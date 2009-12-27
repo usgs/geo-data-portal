@@ -1,0 +1,285 @@
+/*
+	This css file sets up a basic three column layout with an expandable center
+	column and fixed width left and right columns, each of which can be turned off.
+	
+	This layout is based on primarily on this article: http://www.positioniseverything.net/articles/onetruelayout
+	The page sizing technique (Jello Sizing) is based on this article: http://www.positioniseverything.net/articles/jello-expo.html
+	
+	
+	Section name within this file starts with '=' to make searching easier.
+	For instance for find the formatting for links, search for '=link'.
+*/
+
+/* =Jello =Sizing =wrapper
+	Based on: http://www.positioniseverything.net/articles/jello-expo.html
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+body {
+	padding: 0 250px 0 250px; margin: 0;
+	text-align: center; /* Allow older browsers to center the sizer and expander */
+	background: #ffffff;
+}
+		
+#sizer {
+	margin: 0 auto 0 auto;
+	padding: 0;
+	width: 77%;
+	max-width: 700px;  /* version for IE is at the bottom of this style block */
+}
+
+#expander {
+	background: white;
+	margin: 0 -317px;
+	text-align: left;	/* set back to normal */
+	min-width: 500px; /* Critical Safari fix! */
+	position: relative;
+}
+
+/* Holly hack for IE \*/
+* html #expander { height: 0; }
+/* */
+
+/* helps IE get the child percentages right. */
+#wrapper { width: 100%; }
+
+
+/* =Any Order Columns =Columns
+		http://www.positioniseverything.net/articles/onetruelayout/appendix/holygrail
+		http://www.positioniseverything.net/articles/onetruelayout/anyorder
+		
+		
+		
+		<body>
+		<!-- The SIZER takes a percentage of the space left by the BODY -->
+		<div id="sizer">
+		
+		<!-- The EXPANDER uses negative margins to push out the sides and take back the space lost to BODY padding -->
+			<div id="expander">
+				<div id="wrapper" class="clearfix">
+					<div id="header"> ... the header content ... </div>
+					
+					<div id="page-area-container" class="area-container">
+						<div id="page-content" class="area-1 area">
+							<div class="area-content">
+								<div class="area-header"><h2 id="page-name">This Page Name</h2></div>
+								
+								YOUR CONTENT HERE
+							
+							</div><!-- end of area-content -->
+						</div><!-- end of area-1 -->
+						<div class="area-2 area"> [SAME AS area-1] </div>
+						<div class="area-3 area"> [SAME AS area-1] </div>
+						
+					</div><!-- end of #page-area-container -->
+					
+				<div id="footer"> ...footer... </div>
+			</div> <!-- /wrapper -->
+		</div> <!-- /expander -->
+	</div> <!-- /sizer -->
+</body>
+		
+    12/09/2005 Eric Everman: Added .area-container { position: relative; } to fix an
+    issue where nested .a-c's had children positioned relative to the a-c's parent.
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+.area-container { position: relative; z-index: 1; }
+.area { float: left; width: 100%; }
+.area-content { position: relative; min-height: 0;}
+
+/* Ensure that this container contains its floating content */
+.area-content:after {
+	content: '[Ignore]'; 
+	display: block; 
+	height: 0; 
+	clear: both; 
+	visibility: hidden;
+}
+.area-container .area-1 .area-content {
+  margin: 0 15em 0 178px; /* Reserve area from area-2 and area-3 */
+  padding-bottom: .4em; /* extra pad on bottom of content.  bugfix for buttons on bottom of page hidden by footer */
+}
+.area-container .area-2 {	margin: 0 -178px 0 -100%; width: 178px; }
+.area-container .area-3 {
+	float: right;
+	/* width and m-left must match for IE.  In theory, m-left could be arbitrarily large, but no. */
+	width: 15em;	margin-left: -15em;
+}
+
+/* Fix double margin bug in IE.  Only needed on some areas, but safe for all */
+* html area { display: inline; }
+
+/* Hollyhack fix for IE to force content to 'have layout' */
+* html .area-content { height: 1%; }
+	
+/*--------------------------------------------------------
+the rest is the same no matter what the column ordering 
+and plays no real part in the technique
+---------------------------------------------------------*/
+/*  throat, er cough, float, clearer
+the container div and the clearing rules have no bearing on the 
+technique - they're needed here on the footer's behalf
+see http://www.positioniseverything.net/easyclearing.html for
+an explanation of the voodoo applied to #container
+Unfortunately neither of the other two easy clearing methods, 
+namely applying either a float or overflow: auto (or hidden) to 
+the containing wrapper works.
+http://mezzoblue.com/archives/2005/03/03/clearance/
+http://annevankesteren.nl/2005/03/clearing-floats
+http://www.456bereastreet.com/lab/clearing_floats/
+In both cases, the height of the containing wrapper is set to the 
+height of block_1. Great if block_1 is the tallest column, not so good 
+if it's not. (Though, of course, it should be noted that both 
+methods work just fine in IE because of its infamous broken float
+implementation)
+*/
+.area-container:after {
+	content: '[Ignore]'; 
+	display: block; 
+	height: 0; 
+	clear: both; 
+	visibility: hidden;
+}
+
+/*\*/
+* html .area-container { height: 1%; }
+.area-container { display: block; }
+/* */
+	
+	
+
+/* =Equal Height Columns =Columns
+		http://www.positioniseverything.net/articles/onetruelayout/equalheight
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+	
+/* Start Mac IE5 filter \*/
+.area
+	{
+	padding-bottom: 32767px !important;
+	margin-bottom: -32767px !important;
+	}
+/* End Mac IE5 filter */
+.area-container {
+	overflow: hidden; /* This hides the excess padding in non-IE browsers */
+}
+
+
+/* we need this for IE 5.01 - otherwise the wrapper does not expand to the
+necessary height (unless fixed, this problem becomes even more acute 
+weirdness as the method is enhanced */
+.area-container {
+/* Normally a Holly-style hack height: 1% would suffice but that causes 
+IE 5.01 to completely collapse the wrapper - instead we float it */
+	float: left;
+/* NB. possibly only IE 5.01 needs to get this float value - otherwise 5.5 sometimes 
+(I saw it happen many moons ago) makes the width of wrapper too small 
+the float: none with the comment is ignored by 5.01,
+5.5 and above see it and carry on about their business
+It's probably fine to just remove it, but it's left here 
+just in case that many moons ago problem rears its head again */
+	float/**/: none;
+}
+
+/* easy clearing */
+.area-container:after {
+	content: '[Ignore]'; 
+	display: block; 
+	height: 0; 
+	clear: both; 
+	visibility: hidden;
+}
+
+/* Eric Everman 12/16/2005
+Partial fix for Netscape 7 and firefox 1.x, which will allow any 'area' with a
+negative margin to be covered by the footer.  It seems that these browsers do
+not include the height of a neg margin area when clearing floats.  Netscape 8
+clears this properly, but is unfortunately affected by this patch, which simply
+specifies a minimum height.
+*/
+/* Set a min-height for most standards compliant browsers */
+html > body #page-area-container { min-height: 30em; }
+/*
+	Turn the min-height back off for *really* standards compliant browsers.
+	Tried using this rule:
+	html > body #page-area-container:not(:enabled):not(:disabled) { min-height: 0; }
+	however FF had an issue w/ selection boxes (couldn't make selections)
+*/
+html:root > body div#page-area-container { min-height: 0; }
+
+/* A non-valid hack for IE Mac */
+.area-container { display: inline-block;  }
+
+
+/*\*/
+.area-container { display: block; }
+/* end easy clearing */
+/* Safari needs this - otherwise the ghost overflow, though painted 
+correctly obscures links and form elements that by rights should be above it.
+An unintended side-effect is that it cause such elements to vanish in IE 5.01
+and 5.5, hence the child selector hack.
+Eric Everman 12/13/2005.  IE 5.2 Mac chokes on the z-index value and causes it to
+make area-2 links unclickable.
+*/
+/* Hide from IE Mac \*/
+* > #footer { position: relative; z-index: 1000; }
+/* End IE mac Hiding */
+
+
+	
+/* =Generic =Misc
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+/* Equal text size - mostly IE vs everything else */
+body { font-size: 95%; line-height: 1.0; font-family: Verdana, Arial, Helvetica, sans-serif; }
+* html body { font-size: 75%; line-height: 1.2; /* Visible only to IE */ }
+#sizer { font-size: 92%; }	/* A reasonable text size */
+
+#page-area-container .area-1 { background-color: #fff; }
+#page-area-container .area-2 { background-color: #999; }
+#page-area-container .area-3 { background-color: #BFC3CC; }
+
+#header, #footer {
+	padding: .1em; /* Minimal padding required to prevent margins pushing out */
+	background-color: transparent;
+}
+
+div { margin: 0; padding: 0; /*Assume this, but it is important */ }
+
+/* margin values and font sizes for headings, and margins on paragraphs
+ * and lists are not consistent across browser platforms. to achieve a
+ * consistent look we need to explicity set these values here. it may
+ * seem an odd way to declare the margins like this but you never
+ * know what kind of horizontal padding a browser may be using on an
+ * element, and I only want to change the vertical padding.
+ *
+ * pixels are used here, rather than ems, because I want a consistent
+ * margin on the different headings. if I use ems, 1em for an h1 element
+ * is much larger than 1em on an h6 element. I don't wnat this.
+ *
+ * salt to taste
+ */
+
+ul, ol, dl, p, h1, h2, h3, h4, h5, h6 {
+	margin: .5em 0 .4em 0;
+  padding: .1em;
+}
+
+ul { list-style-position: inside; }
+li { margin: .3em 0; }
+li li { margin-left: .5em; }
+li p { padding-left: .9em; }
+h1 { font-size: 160%; }
+h2 { font-size: 130%; }
+h3 { font-size: 116%; }
+h4 { font-size: 100%; }
+h5 { font-size: 95%; }
+h6 { font-size: 90%; }
+
+/* alter some HTML elements' default style */
+a img { border: none; padding: 0; margin: 0; }
+cite { font-weight: bold; font-style: italic; }
+code { font-family: "Courier New", Courier, monospace; }
+label {	cursor: pointer; }
+table {	font-size: 100% }
+td, th { vertical-align: top; }
+th { font-weight: bold; font-size: 100%; }
+
+
