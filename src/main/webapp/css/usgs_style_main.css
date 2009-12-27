@@ -35,7 +35,7 @@
   position: relative; overflow:	hidden; width: 100%; height: 72px;
 	margin: 1px 0; padding: 0;
 	color: #fff; background-color: #141414;
-	background-image: url(../template/lake2_bkg.jpeg); /* Modify for alternate banner images */
+	background-image: url(../images/lake2_bkg.jpeg); /* Modify for alternate banner images */
 	background-position: 178px 0px;
 	background-repeat: no-repeat;
 }

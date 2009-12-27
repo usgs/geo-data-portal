@@ -13,7 +13,20 @@
 </head>
 <body>
 ${head}
-test
+File Upload Area: <br />
+<form method="post" enctype="multipart/form-data" action="<%=request.getContextPath()%>/ParseFile">
+	<label for="emailAddress">E-Mail Address</label>
+	<input id="emailAddress" type="text" name="emailAddress" size="100" />
+	<br />
+	<label for="shpFile">SHP File</label>
+	<input id="shpFile" type="file" name="shpFile" size="100" />
+	<br />
+	<label for="shxFile">SHX File</label>
+	<input id="shxFile" type="file" name="shxFile" size="100" />
+	<br />
+	<input type="submit" />
+	
+</form>
 ${foot}
 </body>
 </html>
