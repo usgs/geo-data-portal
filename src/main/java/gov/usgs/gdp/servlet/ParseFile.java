@@ -2,6 +2,7 @@ package gov.usgs.gdp.servlet;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -17,6 +18,9 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
+import org.geotools.factory.GeoTools;
+import org.geotools.data.shapefile.ShpFiles;
+import org.geotools.data.shapefile.shp.ShapefileReader;
 
 /**
  * Servlet implementation class ParseFile
@@ -42,10 +46,13 @@ public class ParseFile extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@SuppressWarnings("deprecation")
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		boolean isMultiPart = ServletFileUpload.isMultipartContent(request);
 		String emailAddress = "";
+
 		log.debug("Form was sent with multipart content: " + Boolean.toString(isMultiPart));
+		log.debug("GeoTools version in use: " + GeoTools.getVersion());
 		
 		// Create a factory for disk-based file items
 		FileItemFactory factory = new DiskFileItemFactory();
@@ -53,8 +60,15 @@ public class ParseFile extends HttpServlet {
 		// Create a new file upload handler
 		ServletFileUpload upload = new ServletFileUpload(factory);
 		
+		List<String> uploadedFiles = new ArrayList<String>();
 		List<FileItem> items = null;
-		try {
+		Date currentDate = new Date();
+	    String currentMilliseconds = Long.toString(currentDate.getTime());
+	    String directoryName = "/tmp/" + currentMilliseconds;
+	    boolean directoryCreated = (new File(directoryName)).mkdir();
+	    log.debug("Directory created: " + Boolean.toString(directoryCreated));
+		
+	    try {
 			items = upload.parseRequest(request);
 			// process the uploaded items
 			Iterator<FileItem> iter = items.iterator();
@@ -69,31 +83,70 @@ public class ParseFile extends HttpServlet {
 						if (emailAddress == null) emailAddress = "";
 					} 
 				} else {
-					String fieldName = item.getFieldName();
 				    String fileName = item.getName();
-				    String contentType = item.getContentType();
-				    boolean isInMemory = item.isInMemory();
-				    long sizeInBytes = item.getSize();
-				    log.debug("FieldName: " + fieldName);
-				    log.debug("FileName: " + fileName);
-				    log.debug("ContentType: " + contentType);
-				    log.debug("IsInMemory: " + Boolean.toString(isInMemory));
-				    log.debug("SizeInBytes: " + sizeInBytes);
-				    String tempFile = "/tmp/" + fileName;
-				    Date currentDate = new Date();
-				    String currentMilliseconds = Long.toString(currentDate.getTime());
-				    File uploadedFile = new File(tempFile + currentMilliseconds);
+				    String tempFile = directoryName + "/" + fileName;
+				    
+				    File uploadedFile = new File(tempFile);
 				    try {
 						item.write(uploadedFile);
+						uploadedFiles.add(tempFile);
+						
 					} catch (Exception e) {
 						log.error(e.getMessage());
 					}
+					
 				}
 				
 			}
 		} catch (FileUploadException e) {
 			log.error(e.getMessage());
 		}
+		
+		// Load in the files and try them out....
+		for (String uploadedFile : uploadedFiles) {
+			if (uploadedFile.toLowerCase().contains(".shp")) {
+				ShapefileReader reader = new ShapefileReader(new ShpFiles(uploadedFile),true,true);
+				log.debug(reader.getHeader().toString());
+				int counter = 1;
+				while (reader.hasNext()) {
+					ShapefileReader.Record nextRecord = reader.nextRecord();
+					log.debug("Record number: " + Integer.toString(counter)
+							+ ", MaxX: " + nextRecord.maxX
+							+ ", MaxY: " + nextRecord.maxY
+							+ ", MinX: " + nextRecord.minX
+							+ ", MinY: " + nextRecord.minY
+							+ ", Offset: " + nextRecord.offset()
+							+ ", ShapeType: " + nextRecord.type.name);
+					counter++;
+				}
+				reader.close();
+			}
+		}
+		
+		boolean directoryRemoved = deleteDir(new File(directoryName));
+	    log.debug("Directory deleted: " + Boolean.toString(directoryRemoved));
 	}
+	
+	/**
+	 * Deletes all files and subdirectories under dir.
+	 * Returns true if all deletions were successful.
+     * If a deletion fails, the method stops attempting to delete and returns false.
+	 * @param dir
+	 * @return
+	 */
+	public static boolean deleteDir(File dir) {
+        if (dir.isDirectory()) {
+            String[] children = dir.list();
+            for (int i=0; i<children.length; i++) {
+                boolean success = deleteDir(new File(dir, children[i]));
+                if (!success) {
+                    return false;
+                }
+            }
+        }
+    
+        // The directory is now empty so delete it
+        return dir.delete();
+    }
 
 }

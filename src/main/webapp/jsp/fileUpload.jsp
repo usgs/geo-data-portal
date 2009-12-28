@@ -16,13 +16,16 @@ ${head}
 File Upload Area: <br />
 <form method="post" enctype="multipart/form-data" action="<%=request.getContextPath()%>/ParseFile">
 	<label for="emailAddress">E-Mail Address</label>
-	<input id="emailAddress" type="text" name="emailAddress" size="100" />
+	<input id="emailAddress" type="text" name="emailAddress" size="30" />
 	<br />
 	<label for="shpFile">SHP File</label>
-	<input id="shpFile" type="file" name="shpFile" size="100" />
+	<input id="shpFile" type="file" name="shpFile" size="70" />
 	<br />
 	<label for="shxFile">SHX File</label>
-	<input id="shxFile" type="file" name="shxFile" size="100" />
+	<input id="shxFile" type="file" name="shxFile" size="70" />
+	<br />
+	<label for="prjFile">PRJ File</label>
+	<input id="prjFile" type="file" name="prjFile" size="70" />
 	<br />
 	<input type="submit" />
 	
