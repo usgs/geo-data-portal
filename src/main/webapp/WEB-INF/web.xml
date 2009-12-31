@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app id="WebApp_ID" version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	<description>
+	  	Geodata Portal
+	</description>
+  	<display-name>
+  		Geodata Portal {Owner: NB, Coder: IS}
+	</display-name>
 	<display-name>GDP</display-name>
 	<servlet>
 		<description>Parses 
@@ -9,9 +15,23 @@
 		<servlet-class>
 		gov.usgs.gdp.servlet.ParseFile</servlet-class>
 	</servlet>
+	<servlet>
+		<description>
+		Runs application initialization tasks at beginning of app and at end of app</description>
+		<display-name>AppInitializationServlet</display-name>
+		<servlet-name>AppInitializationServlet</servlet-name>
+		<servlet-class>
+			gov.usgs.gdp.servlet.AppInitializationServlet
+		</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
 	<servlet-mapping>
 		<servlet-name>ParseFile</servlet-name>
 		<url-pattern>/ParseFile</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>AppInitializationServlet</servlet-name>
+		<url-pattern>/AppInitializationServlet</url-pattern>
 	</servlet-mapping>
 	
 	<welcome-file-list>
