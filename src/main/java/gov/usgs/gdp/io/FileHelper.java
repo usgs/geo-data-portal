@@ -59,12 +59,18 @@ public class FileHelper {
 	
 	/**
 	 * Creates a directory in the filesystem
+	 * 
 	 * @param directory
+	 * @param removeAtSysExit
 	 * @return
 	 */
 	public  static final boolean  createDir(String directory) {
 		boolean result = false;
-		result = (new File(directory)).mkdir();
+		try {
+			result = (new File(directory)).mkdir();
+		} catch (SecurityException e) {
+			System.out.println("Could not create directory: " + e.getMessage());
+		}
 		return result;
 	}
 	

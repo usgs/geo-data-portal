@@ -43,6 +43,9 @@ public class AppInitializationServlet extends HttpServlet {
     		log.debug("\tIf this directory is not created manually, there may be issues during application run");
     	}
     	
+    	// Place example files in temporary directory 
+    	
+    	
     	log.debug("Saving example shapefiles ");
     	log.debug("Application has started");
     }
