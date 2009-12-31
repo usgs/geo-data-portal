@@ -2,6 +2,7 @@ package gov.usgs.gdp.servlet;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -20,6 +21,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
 import org.geotools.factory.GeoTools;
 import org.geotools.data.shapefile.ShpFiles;
+import org.geotools.data.shapefile.shp.ShapefileException;
 import org.geotools.data.shapefile.shp.ShapefileReader;
 
 /**
@@ -46,8 +48,14 @@ public class ParseFile extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
-	@SuppressWarnings("deprecation")
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// Pull in parameters
+		String action 	= (request.getParameter("action") == null) ? "" : request.getParameter("action").toLowerCase();
+		String fileset 	= (request.getParameter("fileset") == null) ? "" : request.getParameter("fileset").toLowerCase();
+		String method 	= (request.getParameter("method") == null) ? "" : request.getParameter("method").toLowerCase();
+		
+		
+		/*
 		boolean isMultiPart = ServletFileUpload.isMultipartContent(request);
 		String emailAddress = "";
 
@@ -60,15 +68,20 @@ public class ParseFile extends HttpServlet {
 		// Create a new file upload handler
 		ServletFileUpload upload = new ServletFileUpload(factory);
 		
-		List<String> uploadedFiles = new ArrayList<String>();
-		List<FileItem> items = null;
+		// Create a directory name for the files being uploaded
 		Date currentDate = new Date();
 	    String currentMilliseconds = Long.toString(currentDate.getTime());
 	    String directoryName = "/tmp/" + currentMilliseconds;
+		
+	    // Create the directory
 	    boolean directoryCreated = (new File(directoryName)).mkdir();
 	    log.debug("Directory created: " + Boolean.toString(directoryCreated));
+	    
+		List<String> uploadedFiles = new ArrayList<String>();
+		List<FileItem> items = null;
 		
 	    try {
+	    	
 			items = upload.parseRequest(request);
 			// process the uploaded items
 			Iterator<FileItem> iter = items.iterator();
@@ -90,7 +103,6 @@ public class ParseFile extends HttpServlet {
 				    try {
 						item.write(uploadedFile);
 						uploadedFiles.add(tempFile);
-						
 					} catch (Exception e) {
 						log.error(e.getMessage());
 					}
@@ -102,6 +114,15 @@ public class ParseFile extends HttpServlet {
 			log.error(e.getMessage());
 		}
 		
+		getGeotoolsSummary(uploadedFiles);
+		
+		boolean directoryRemoved = deleteDir(new File(directoryName));
+	    log.debug("Directory deleted: " + Boolean.toString(directoryRemoved));*/
+	}
+
+	@SuppressWarnings("deprecation")
+	private void getGeotoolsSummary(List<String> uploadedFiles)
+			throws IOException, ShapefileException, MalformedURLException {
 		// Load in the files and try them out....
 		for (String uploadedFile : uploadedFiles) {
 			if (uploadedFile.toLowerCase().contains(".shp")) {
@@ -119,12 +140,10 @@ public class ParseFile extends HttpServlet {
 							+ ", ShapeType: " + nextRecord.type.name);
 					counter++;
 				}
+				
 				reader.close();
 			}
 		}
-		
-		boolean directoryRemoved = deleteDir(new File(directoryName));
-	    log.debug("Directory deleted: " + Boolean.toString(directoryRemoved));
 	}
 	
 	/**

@@ -13,4 +13,8 @@
 		<servlet-name>ParseFile</servlet-name>
 		<url-pattern>/ParseFile</url-pattern>
 	</servlet-mapping>
+	
+	<welcome-file-list>
+		<welcome-file>/jsp/entry.jsp</welcome-file>
+	</welcome-file-list>
 </web-app>
