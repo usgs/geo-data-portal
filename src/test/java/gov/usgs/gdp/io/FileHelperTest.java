@@ -3,8 +3,11 @@ package gov.usgs.gdp.io;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Date;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -15,6 +18,7 @@ import org.junit.Test;
 public class FileHelperTest {
 	private static org.apache.log4j.Logger log = Logger.getLogger(FileHelperTest.class);
 	private String tempDir = ""; 
+	private String seperator = "";
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		log.debug("Started testing class");
@@ -28,15 +32,30 @@ public class FileHelperTest {
 	@Before
 	public void setUp() throws Exception {
 		String systemTempDir = System.getProperty("java.io.tmpdir"); 
-		String seperator =  java.io.File.separator;
+		this.seperator =  java.io.File.separator;
 		String currentTime = Long.toString((new Date()).getTime());
-		this.tempDir = systemTempDir + seperator + currentTime;
+		this.tempDir = systemTempDir + this.seperator + currentTime;
 		(new File(this.tempDir)).mkdir();
+		
+		// Copy example files 
+		ClassLoader cl = Thread.currentThread().getContextClassLoader(); 
+		URL sampleFileLocation = cl.getResource("Sample_Files/");
+		if (sampleFileLocation != null) {
+			File sampleFiles = null;
+			try {
+				sampleFiles = new File(sampleFileLocation.toURI());
+			} catch (URISyntaxException e) {
+				assertTrue("Exception encountered: " + e.getMessage(), false);
+			}
+			FileHelper.copyFileToFile(sampleFiles, this.tempDir + this.seperator);
+		} else {
+			assertTrue("Sample files could not be loaded for test", false);
+		}
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		(new File(this.tempDir)).delete();
+		FileUtils.deleteDirectory((new File(this.tempDir)));
 	}
 
 
@@ -66,13 +85,6 @@ public class FileHelperTest {
 	}
 
 	@Test
-	public void testDeleteDir() {
-		boolean result = false;
-		result = FileHelper.deleteDir(this.tempDir);
-		assertTrue(result);
-	}
-	
-	@Test
 	public void testCreateDir() {
 		boolean result = false;
 		// 1 Has to be added since based on how quickly this test runs after the 
@@ -86,4 +98,19 @@ public class FileHelperTest {
 		(new File(testDir)).delete();
 	}
 	
+	@Test
+	public void testLoadFile() { 
+		String fileToLoad = this.tempDir 
+			+ this.seperator 
+			+ "Sample_Files" 
+			+ this.seperator
+			+ "Shapefiles" 
+			+ this.seperator
+			+ "hru20VSR.SHX";
+		
+		File result = FileHelper.loadFile(fileToLoad);
+		assertNotNull("File came back null", result);
+		assertTrue("File is not a file", result.isFile());
+		
+	}
 }

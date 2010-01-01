@@ -7,24 +7,23 @@ import org.apache.commons.io.FileUtils;
 
 public class FileHelper {
 
-	/**
-	 * Deletes a directory in the filesystem<br />
-	 * Directory needs to be empty.
-	 * @param directory
-	 * @return 
-	 */
-	public static final boolean deleteDir(String directory) {
-		boolean result = false;
-		File dir = new File(directory);
-		result = FileHelper.deleteDir(dir);
+	public static File loadFile(String filePath) {
+		File result = null;
+		
+		result = new File(filePath);
+		
 		return result;
 	}
-	
-	public static final boolean deleteDir(File directory) {
+
+	/**
+	 * Recursively deletes a directory from the filesystem.
+	 * @param directory
+	 * @return
+	 */
+	public static  boolean deleteDirRecursively(String directory) {
 		boolean result = false;
-		 if (directory.isDirectory()) {
-			 result = directory.delete();
-		 }
+		File dir = new File(directory);
+		result = FileHelper.deleteDirRecursively(dir);
 		return result;
 	}
 	
@@ -33,13 +32,16 @@ public class FileHelper {
 	 * @param directory
 	 * @return
 	 */
-	public static final boolean deleteDirRecursively(String directory) {
-		boolean result = false;
-		File dir = new File(directory);
-		result = FileHelper.deleteDirRecursively(dir);
-		return result;
+	public static  boolean deleteDirRecursively(File directory) {
+		try {
+			FileUtils.deleteDirectory(directory);
+		} catch (IOException e) {
+			return false;
+		}
+		// The directory is now empty so delete it
+		return true;
 	}
-	
+
 	/**
 	 * Copies a File object to a given location
 	 * Is able to handle 
@@ -48,7 +50,7 @@ public class FileHelper {
 	 * @param outFileString
 	 * @return
 	 */
-	public static final boolean copyFileToFile(final File inFile, final String outFileString) {
+	public static  boolean copyFileToFile(final File inFile, final String outFileString) {
 		try {
 			if (inFile.isDirectory()) {
 				FileUtils.copyDirectory(inFile, (new File(outFileString + inFile.getName())));
@@ -62,33 +64,13 @@ public class FileHelper {
 	}
 
 	/**
-	 * Recursively deletes a directory from the filesystem.
-	 * @param directory
-	 * @return
-	 */
-	public static final boolean deleteDirRecursively(File directory) {
-		if (directory.isDirectory()) {
-		       String[] children = directory.list();
-		       for (int i=0; i<children.length; i++) {
-		           boolean success = FileHelper.deleteDirRecursively(new File(directory, children[i]));
-		           if (!success) {
-		               return false;
-		           }
-		       }
-		   }
-		
-		// The directory is now empty so delete it
-		return directory.delete();
-	}
-	
-	/**
 	 * Creates a directory in the filesystem
 	 * 
 	 * @param directory
 	 * @param removeAtSysExit
 	 * @return
 	 */
-	public  static final boolean  createDir(String directory) {
+	public  static  boolean  createDir(String directory) {
 		boolean result = false;
 		try {
 			result = (new File(directory)).mkdir();
@@ -102,7 +84,7 @@ public class FileHelper {
 	 * @see System.getProperty("java.io.tmpdir")
 	 * @return
 	 */
-	public static final String getSystemTemp() {
+	public static  String getSystemTemp() {
 		String result = "";
 		
 		result = System.getProperty("java.io.tmpdir");
@@ -114,7 +96,7 @@ public class FileHelper {
 	 * @see java.io.File.pathSeparator
 	 * @return
 	 */
-	public static final String getSystemPathSeparator() {
+	public static  String getSystemPathSeparator() {
 		String result = "";
 		
 		result = java.io.File.pathSeparator;
@@ -126,7 +108,7 @@ public class FileHelper {
 	 * @see java.io.File.separator
 	 * @return
 	 */
-	public static final String getSeparator() {
+	public static  String getSeparator() {
 		String result = "";
 		
 		result = java.io.File.separator;
