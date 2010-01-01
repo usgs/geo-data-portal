@@ -2,8 +2,14 @@ package gov.usgs.gdp.servlet;
 
 import gov.usgs.gdp.io.FileHelper;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Date;
+import java.util.Enumeration;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -28,25 +34,41 @@ public class AppInitializationServlet extends HttpServlet {
     	super.init(config);
     	log.debug("Application is starting");
     	
-    	tmpDir = FileHelper.getSystemTemp();
+    	this.tmpDir = FileHelper.getSystemTemp();
     	this.seperator = FileHelper.getSeparator();
-    	log.debug("Current system temp directory is: " + tmpDir);
+    	log.debug("Current system temp directory is: " + this.tmpDir);
     	
     	// Create application temporary directory
-    	applicationTempDir = generateApplicationTempDirName();
-    	boolean dirCreated = createApplicationTempDir(applicationTempDir);
+    	this.applicationTempDir = generateApplicationTempDirName();
+    	boolean dirCreated = createApplicationTempDir(this.applicationTempDir);
     	if (dirCreated) {
-    		System.setProperty("applicationTempDir", applicationTempDir);
-    		log.debug("Current application temp directory is: " + applicationTempDir);
+    		System.setProperty("applicationTempDir", this.applicationTempDir);
+    		log.debug("Current application temp directory is: " + this.applicationTempDir);
     	} else {
-    		log.debug("ERROR: Could not create application temp directory: " + applicationTempDir);
+    		log.debug("ERROR: Could not create application temp directory: " + this.applicationTempDir);
     		log.debug("\tIf this directory is not created manually, there may be issues during application run");
     	}
     	
     	// Place example files in temporary directory 
+    	try {
+    		ClassLoader cl = Thread.currentThread().getContextClassLoader(); 
+			URL sampleFileLocation = cl.getResource("Sample_Files/");
+			if (sampleFileLocation != null) {
+				log.debug("Saving example shapefiles ");
+				File sampleFiles = new File(sampleFileLocation.toURI());
+				
+				File[] sampleFileList = sampleFiles.listFiles();
+						
+				
+				
+			}
+			System.out.println("....");
+		}  catch (URISyntaxException e1) {
+			log.debug("Unable to read from src/main/resources/Sample_Files");
+			log.debug("Sample files were not written to the application temp directory");
+		}
     	
     	
-    	log.debug("Saving example shapefiles ");
     	log.debug("Application has started");
     }
     
@@ -55,7 +77,7 @@ public class AppInitializationServlet extends HttpServlet {
 		
 		Date currentDate = new Date();
 	    String currentMilliseconds = Long.toString(currentDate.getTime());
-	    result = tmpDir + this.seperator + currentMilliseconds;
+	    result = this.tmpDir + this.seperator + currentMilliseconds;
 		
 		return result;
 	}
@@ -70,11 +92,11 @@ public class AppInitializationServlet extends HttpServlet {
     public void destroy() {
     	super.destroy();
     	log.debug("Application is ending.");
-    	boolean result = FileHelper.deleteDirRecursively(applicationTempDir);
+    	boolean result = FileHelper.deleteDirRecursively(this.applicationTempDir);
     	if (result) {
-    		log.debug("Application temp directory " + applicationTempDir + " successfully deleted.");
+    		log.debug("Application temp directory " + this.applicationTempDir + " successfully deleted.");
     	} else {
-    		log.debug("WARNING: Application temp directory " + applicationTempDir + " could not be deleted.");
+    		log.debug("WARNING: Application temp directory " + this.applicationTempDir + " could not be deleted.");
     		log.debug("\t If this directory exists, you may want to delete it to free up space on your storage device.");
     	}
     	log.debug("Application has ended.");
@@ -90,6 +112,7 @@ public class AppInitializationServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// This servlet does not receive commands
 	}
@@ -97,6 +120,7 @@ public class AppInitializationServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// This servlet does not receive commands
 	}
