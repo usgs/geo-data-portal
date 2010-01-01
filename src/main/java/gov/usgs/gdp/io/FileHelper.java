@@ -1,6 +1,9 @@
 package gov.usgs.gdp.io;
 
 import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
 
 public class FileHelper {
 
@@ -37,6 +40,27 @@ public class FileHelper {
 		return result;
 	}
 	
+	/**
+	 * Copies a File object to a given location
+	 * Is able to handle 
+	 * 
+	 * @param inFile
+	 * @param outFileString
+	 * @return
+	 */
+	public static final boolean copyFileToFile(final File inFile, final String outFileString) {
+		try {
+			if (inFile.isDirectory()) {
+				FileUtils.copyDirectory(inFile, (new File(outFileString + inFile.getName())));
+			} else {
+				FileUtils.copyFile(inFile, (new File(outFileString + inFile.getName())));
+			}
+			return true;
+		} catch (IOException e) {
+			return false;
+		}
+	}
+
 	/**
 	 * Recursively deletes a directory from the filesystem.
 	 * @param directory

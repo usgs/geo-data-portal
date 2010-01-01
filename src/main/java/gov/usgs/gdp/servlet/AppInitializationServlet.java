@@ -54,14 +54,17 @@ public class AppInitializationServlet extends HttpServlet {
     		ClassLoader cl = Thread.currentThread().getContextClassLoader(); 
 			URL sampleFileLocation = cl.getResource("Sample_Files/");
 			if (sampleFileLocation != null) {
-				log.debug("Saving example shapefiles ");
+				log.debug("Saving example files to temp directory.");
 				File sampleFiles = new File(sampleFileLocation.toURI());
-				
-				File[] sampleFileList = sampleFiles.listFiles();
-						
-				
-				
-			}
+				boolean filesCopied = 
+					FileHelper.copyFileToFile(sampleFiles, this.applicationTempDir + this.seperator);
+				if (filesCopied) {
+					log.debug("Example files saved to: " + this.applicationTempDir + this.seperator + "Sample_Files/");					
+				} else {
+					log.debug("Sample files were not written to the application temp directory");
+					log.debug("These files will not be available for processing.");
+				}
+		}
 			System.out.println("....");
 		}  catch (URISyntaxException e1) {
 			log.debug("Unable to read from src/main/resources/Sample_Files");
