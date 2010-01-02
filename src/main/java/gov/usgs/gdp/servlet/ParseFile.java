@@ -51,16 +51,11 @@ public class ParseFile extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// Pull in parameters
 		String action 	= (request.getParameter("action") == null) ? "" : request.getParameter("action").toLowerCase();
-		String fileset 	= (request.getParameter("fileset") == null) ? "" : request.getParameter("fileset").toLowerCase();
 		String method 	= (request.getParameter("method") == null) ? "" : request.getParameter("method").toLowerCase();
 		
-		
-		/*
 		boolean isMultiPart = ServletFileUpload.isMultipartContent(request);
-		String emailAddress = "";
 
 		log.debug("Form was sent with multipart content: " + Boolean.toString(isMultiPart));
-		log.debug("GeoTools version in use: " + GeoTools.getVersion());
 		
 		// Create a factory for disk-based file items
 		FileItemFactory factory = new DiskFileItemFactory();
@@ -69,46 +64,29 @@ public class ParseFile extends HttpServlet {
 		ServletFileUpload upload = new ServletFileUpload(factory);
 		
 		// Create a directory name for the files being uploaded
-		Date currentDate = new Date();
-	    String currentMilliseconds = Long.toString(currentDate.getTime());
-	    String directoryName = "/tmp/" + currentMilliseconds;
-		
-	    // Create the directory
-	    boolean directoryCreated = (new File(directoryName)).mkdir();
-	    log.debug("Directory created: " + Boolean.toString(directoryCreated));
+	    String applicationTempDir = System.getProperty("applicationTempDir");
 	    
 		List<String> uploadedFiles = new ArrayList<String>();
 		List<FileItem> items = null;
 		
 	    try {
-	    	
 			items = upload.parseRequest(request);
 			// process the uploaded items
 			Iterator<FileItem> iter = items.iterator();
 			while (iter.hasNext()) {
 				FileItem item = iter.next();
 				
-				if (item.isFormField()) { 
-					// Did user enter an E-Mail address
-					String fieldName = item.getFieldName();
-					if ("emailAddress".equals(fieldName)) {
-						emailAddress = item.getString();
-						if (emailAddress == null) emailAddress = "";
-					} 
-				} else {
-				    String fileName = item.getName();
-				    String tempFile = directoryName + "/" + fileName;
-				    
-				    File uploadedFile = new File(tempFile);
-				    try {
-						item.write(uploadedFile);
-						uploadedFiles.add(tempFile);
-					} catch (Exception e) {
-						log.error(e.getMessage());
-					}
-					
+			    String fileName = item.getName();
+			    String tempFile = applicationTempDir + "/" + fileName;
+			    
+			    File uploadedFile = new File(tempFile);
+			    try {
+					item.write(uploadedFile);
+					uploadedFiles.add(tempFile);
+				} catch (Exception e) {
+					log.error(e.getMessage());
 				}
-				
+			
 			}
 		} catch (FileUploadException e) {
 			log.error(e.getMessage());
@@ -116,8 +94,8 @@ public class ParseFile extends HttpServlet {
 		
 		getGeotoolsSummary(uploadedFiles);
 		
-		boolean directoryRemoved = deleteDir(new File(directoryName));
-	    log.debug("Directory deleted: " + Boolean.toString(directoryRemoved));*/
+		boolean directoryRemoved = deleteDir(new File(applicationTempDir));
+	    log.debug("Directory deleted: " + Boolean.toString(directoryRemoved));
 	}
 
 	@SuppressWarnings("deprecation")

@@ -7,9 +7,12 @@
   		Geodata Portal {Owner: NB, Coder: IS}
 	</display-name>
 	<display-name>GDP</display-name>
+	<listener>
+		<listener-class>gov.usgs.gdp.servlet.SessionListener</listener-class>
+	</listener>
+
 	<servlet>
-		<description>Parses 
-		</description>
+		<description>Parses Uploaded Files</description>
 		<display-name>ParseFile</display-name>
 		<servlet-name>ParseFile</servlet-name>
 		<servlet-class>
