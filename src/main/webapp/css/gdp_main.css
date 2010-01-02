@@ -1,3 +1,7 @@
+.applicationFieldSet legend{
+	display: block !important;
+}
+
 #formheader {
 	text-align: center;
 	width: 100%;

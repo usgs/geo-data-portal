@@ -3,8 +3,10 @@
 <c:import url="/jsp/header.jsp" var="head" />
 <c:import url="/jsp/footer.jsp" var="foot" />
 <c:set var="cont" value="<%=request.getContextPath()%>" />
+<jsp:useBean id="uploadedFileList" scope="session" class="java.util.ArrayList"  />
+
 <c:url var="upload" value="/jsp/fileUpload.jsp"/>
-<c:url var="geotoolsProcessing" value="/jsp/geotoolsProcessing.jsp"/>
+<c:url var="geotoolsProcessing" value="/Router?location=geotoolsProcessing&action=initial"/>
 <c:url var="cdmProcessing" value="/jsp/cdmProcessing.jsp"/>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -15,6 +17,18 @@
 	<link rel="stylesheet" href="${cont}/css/full_width.css"  title="USGS Full Width Nav" media="projection, screen, tv" type="text/css">
 	<title>File Upload</title>
 </head>
+
+<script type="text/javascript">
+<!--
+	function addUploadSlot() {
+		var uploadInputList = document.getElementById("fileUploads");
+		var addSlotText = "<label for='fileUploadInput'>File...</label> " +
+			"<input class='fileUploadInput' type='file' name='fileUploadInput' size='30' />" +
+			"<br />";
+		uploadInputList.innerHTML = uploadInputList.innerHTML + addSlotText;
+	}
+-->
+</script> 
 <body>
 ${head}
 	<a href="${geotoolsProcessing}">Geotools Processing</a> | 
@@ -23,23 +37,29 @@ ${head}
 	<hr />
 File Upload Area: <br />
 <form method="post" enctype="multipart/form-data" action="${cont}/ParseFile">
-	<label for="emailAddress">E-Mail Address</label>
-	<input id="emailAddress" type="text" name="emailAddress" size="30" />
-	<br />
-	<label for="shpFile">SHP File</label>
-	<input id="shpFile" type="file" name="shpFile" size="70" />
-	<br />
-	<label for="shxFile">SHX File</label>
-	<input id="shxFile" type="file" name="shxFile" size="70" />
-	<br />
-	<label for="prjFile">PRJ File</label>
-	<input id="prjFile" type="file" name="prjFile" size="70" />
-	<br />
-	<input type="submit" value="Submit Files" title="Submit Files" /><br />
-	<input type="submit" value="Process Stored Files Using CDM" title="Process Stored Files Using CDM" /><br />
-	<input type="submit" value="Process Stored Files Using Geotools" title="Process Stored Files Using Geotools" /><br />
-</form>
 
+	<div id="fileUploads">
+		<label for="fileUploadInput">File...</label>
+		<input class="fileUploadInput" type="file" name="fileUploadInput" size="30" />
+		<br />
+	</div>
+	
+	<input type="button" value="Add More Slots" onclick="addUploadSlot()" />
+	<input type="submit" value="Submit Files" title="Submit Files" /><br />
+</form>
+<br />
+
+Files Uploaded So Far This Session:<br />
+<fieldset class="applicationFieldSet">
+	<legend style="display: solid !important">
+		Uploaded File List
+	</legend>
+	<c:forEach var="fileName" items="${uploadedFileList}">
+		${fileName}<br />
+		<br />
+	</c:forEach>
+</fieldset>
+	
 ${foot}
 </body>
 </html>

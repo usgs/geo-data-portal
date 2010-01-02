@@ -44,6 +44,7 @@ public class RouterServlet extends HttpServlet {
 		String location	= (request.getParameter("location") == null) ? "" : request.getParameter("location").toLowerCase();
 		String action	= (request.getParameter("action") == null) ? "" : request.getParameter("action").toLowerCase();
 		String forwardTo = "";
+		
 		// If no example File List exists, create one
 		List<String> exampleFileList = (List<String>) request.getSession().getAttribute("exampleFileList");
 		if (exampleFileList == null || exampleFileList.isEmpty()) {

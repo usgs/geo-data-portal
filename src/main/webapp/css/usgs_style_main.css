@@ -474,18 +474,21 @@ form h2, form h3, form h4, form h5 {
 */
 
 /* A grouping of form controls.  Each form-group contains a content or distinct-content classed tag */
+/*
 fieldset, fieldset fieldset.pier-set {
   float: left; clear: both; width: 100%;
   margin: .6em 0; padding: 0;
   border: none;
 }
+*/
 
 /* A nested fieldset */
+/*
 fieldset fieldset {
   float:left; width:72%; clear: none;
   margin: .5em 0 .5em 27%; padding: 0;
 }
-
+*/
 /* Force the fieldset and .form-group containers stretch to contain all children */
 fieldset:after, .form-group:after {
   content: "."; 

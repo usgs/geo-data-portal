@@ -28,14 +28,14 @@ ${head}
 	
 	<form id="processGeotoolsForm" method="post" name="processGeotoolsForm" action="${cont}">
 	Files Available For Use:<br />
-	<fieldset>
-		<legend>
+	<fieldset class="applicationFieldSet">
+		<legend style="display: solid !important">
 			Example File List
 		</legend>
 		<c:forEach var="fileName" items="${exampleFileList}">
 			<input id="exampleFileCheckbox" type="checkbox" name="${fileName}" value="${fileName}">
-				${fileName}
-			</input><br />
+			${fileName}
+			<br />
 		</c:forEach>
 	</fieldset>
 	
