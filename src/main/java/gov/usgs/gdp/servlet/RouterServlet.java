@@ -58,7 +58,7 @@ public class RouterServlet extends HttpServlet {
 				forwardTo = "/GeoToolsServlet?action=initial";
 			}
 		} else if ("uploadfiles".equals(location)) {
-			forwardTo = "/ParseFile?action=uploadFiles";
+			forwardTo = "/ParseFile";
 		}
 		
 		RequestDispatcher rd = request.getRequestDispatcher(forwardTo);

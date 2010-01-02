@@ -1,5 +1,7 @@
 package gov.usgs.gdp.servlet;
 
+import gov.usgs.gdp.io.FileHelper;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -8,6 +10,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -53,6 +56,35 @@ public class ParseFile extends HttpServlet {
 		String action 	= (request.getParameter("action") == null) ? "" : request.getParameter("action").toLowerCase();
 		String method 	= (request.getParameter("method") == null) ? "" : request.getParameter("method").toLowerCase();
 		
+		// What is directory name for the files being uploaded
+		String seperator = FileHelper.getSeparator();
+	    String userDirectory = (String) request.getSession().getAttribute("userTempDir")+ seperator;
+		
+	    if ("delete".equals(action)) {
+	    	String filename = (request.getParameter("file") == null) ? "" : request.getParameter("file");
+	    	if ("".equals(filename) || filename == null) {
+	    		log.debug("There was no filename passed to be deleted");
+	    		
+	    	} else {
+	    		FileHelper.deleteFile(userDirectory + filename);
+	    	}
+	    } else {
+	    	if (uploadFiles(request, userDirectory)) {
+	    		log.debug("Files successfully uploaded.");
+	    	} else {
+	    		log.debug("Files were unable to be uploaded");
+	    	}
+	    }
+		
+		List<String> uploadedFiles = FileHelper.getFileList(userDirectory, false);
+		
+		request.getSession().setAttribute("uploadedFileList", uploadedFiles);
+		RequestDispatcher rd = request.getRequestDispatcher("/jsp/fileUpload.jsp");
+		rd.forward(request, response);
+		
+	}
+
+	private boolean uploadFiles(HttpServletRequest request, String userDirectory) {
 		boolean isMultiPart = ServletFileUpload.isMultipartContent(request);
 
 		log.debug("Form was sent with multipart content: " + Boolean.toString(isMultiPart));
@@ -63,10 +95,8 @@ public class ParseFile extends HttpServlet {
 		// Create a new file upload handler
 		ServletFileUpload upload = new ServletFileUpload(factory);
 		
-		// Create a directory name for the files being uploaded
-	    String applicationTempDir = System.getProperty("applicationTempDir");
+		
 	    
-		List<String> uploadedFiles = new ArrayList<String>();
 		List<FileItem> items = null;
 		
 	    try {
@@ -77,25 +107,20 @@ public class ParseFile extends HttpServlet {
 				FileItem item = iter.next();
 				
 			    String fileName = item.getName();
-			    String tempFile = applicationTempDir + "/" + fileName;
+			    String tempFile = userDirectory + fileName;
 			    
 			    File uploadedFile = new File(tempFile);
 			    try {
 					item.write(uploadedFile);
-					uploadedFiles.add(tempFile);
 				} catch (Exception e) {
-					log.error(e.getMessage());
+					return false;
 				}
 			
 			}
 		} catch (FileUploadException e) {
-			log.error(e.getMessage());
+			return false;
 		}
-		
-		getGeotoolsSummary(uploadedFiles);
-		
-		boolean directoryRemoved = deleteDir(new File(applicationTempDir));
-	    log.debug("Directory deleted: " + Boolean.toString(directoryRemoved));
+		return true;
 	}
 
 	@SuppressWarnings("deprecation")

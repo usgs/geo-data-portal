@@ -66,6 +66,16 @@ public class FileHelper {
 	}
 	
 	/**
+	 * Deletes a file.
+	 * 
+	 * @param filePath
+	 * @return
+	 */
+	public static boolean deleteFile(String filePath) {
+		return FileUtils.deleteQuietly(new File(filePath));
+	}
+	
+	/**
 	 * Recursively deletes a directory from the filesystem.
 	 * @param directory
 	 * @return
@@ -74,6 +84,8 @@ public class FileHelper {
 		try {
 			FileUtils.deleteDirectory(directory);
 		} catch (IOException e) {
+			return false;
+		} catch (IllegalArgumentException e1) {
 			return false;
 		}
 		// The directory is now empty so delete it

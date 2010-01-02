@@ -2,13 +2,15 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <c:import url="${cont}/jsp/header.jsp" var="head" />
 <c:import url="${cont}/jsp/footer.jsp" var="foot" />
-<jsp:useBean id="exampleFileList" scope="session" type="java.util.ArrayList<java.lang.String>"  />
+<jsp:useBean id="exampleFileList" scope="session" class="java.util.ArrayList"  />
+<jsp:useBean id="uploadedFileList" scope="session" class="java.util.ArrayList"  />
+
 
 <c:set var="cont" value="<%=request.getContextPath()%>" />
 <c:set var="processExampleShapeFiles"
 	value="/ParseFile?action=processFiles&fileset=exampleShape&method=geoTools" />
 <c:url var="upload" value="/jsp/fileUpload.jsp"/>
-<c:url var="geotoolsProcessing" value="/jsp/geotoolsProcessing.jsp"/>
+<c:url var="geotoolsProcessing" value="/Router?location=geotoolsProcessing&action=initial"/>
 <c:url var="cdmProcessing" value="/jsp/cdmProcessing.jsp"/>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -33,6 +35,16 @@ ${head}
 			Example File List
 		</legend>
 		<c:forEach var="fileName" items="${exampleFileList}">
+			<input id="exampleFileCheckbox" type="checkbox" name="${fileName}" value="${fileName}">
+			${fileName}
+			<br />
+		</c:forEach>
+	</fieldset>
+	<fieldset class="applicationFieldSet">
+		<legend style="display: solid !important">
+			Uploaded File List
+		</legend>
+		<c:forEach var="fileName" items="${uploadedFileList}">
 			<input id="exampleFileCheckbox" type="checkbox" name="${fileName}" value="${fileName}">
 			${fileName}
 			<br />

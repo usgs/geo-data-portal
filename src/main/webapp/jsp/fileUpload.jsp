@@ -8,6 +8,8 @@
 <c:url var="upload" value="/jsp/fileUpload.jsp"/>
 <c:url var="geotoolsProcessing" value="/Router?location=geotoolsProcessing&action=initial"/>
 <c:url var="cdmProcessing" value="/jsp/cdmProcessing.jsp"/>
+<c:url var="deleteFile" value="/Router?location=uploadFiles&action=delete&file="/>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -36,7 +38,7 @@ ${head}
 	<br />
 	<hr />
 File Upload Area: <br />
-<form method="post" enctype="multipart/form-data" action="${cont}/Router?action=uploadFiles">
+<form method="post" enctype="multipart/form-data" action="${cont}/Router?location=uploadFiles">
 
 	<div id="fileUploads">
 		<label for="fileUploadInput">File...</label>
@@ -55,7 +57,7 @@ Files Uploaded So Far This Session:<br />
 		Uploaded File List
 	</legend>
 	<c:forEach var="fileName" items="${uploadedFileList}">
-		${fileName}<br />
+		${fileName} <a href="${deleteFile}${fileName}">[- Delete -]</a><br />
 		<br />
 	</c:forEach>
 </fieldset>
