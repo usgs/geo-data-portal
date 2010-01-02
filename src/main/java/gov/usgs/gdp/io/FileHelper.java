@@ -2,11 +2,49 @@ package gov.usgs.gdp.io;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
 public class FileHelper {
 
+	
+	/**
+	 * Get recursive directory listing
+	 * 
+	 * @param filePath
+	 * @return
+	 */
+	public static List<String> getFileList(String filePath, String[] extensions, boolean recursive) {
+		List<String> result = null;
+		Collection<File> fileList = null;
+		
+		fileList = FileUtils.listFiles((new File(filePath)), extensions, recursive);
+		if (fileList != null) {
+			result = new ArrayList<String>();
+			for (File file : fileList) {
+				result.add(file.getName());
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Get recursive directory listing
+	 * 
+	 * @param filePath
+	 * @return
+	 */
+	public static List<String> getFileList(String filePath, boolean recursive) {
+		List<String> result = null;
+		
+		result = FileHelper.getFileList(filePath, null, recursive);
+		
+		return result;
+	}
+	
 	public static File loadFile(String filePath) {
 		File result = null;
 		

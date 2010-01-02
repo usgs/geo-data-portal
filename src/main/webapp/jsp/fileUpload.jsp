@@ -10,8 +10,8 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<link rel="stylesheet" href="${cont}/css/ippa_main.css"  title="USGS Full Width Nav" media="projection, screen, tv" type="text/css">
-	<link rel="stylesheet" href="${cont}/css/ippa_main_print.css"  title="USGS Full Width Nav" media="print" type="text/css">
+	<link rel="stylesheet" href="${cont}/css/gdp_main.css"  title="USGS Full Width Nav" media="projection, screen, tv" type="text/css">
+	<link rel="stylesheet" href="${cont}/css/gdp_main_print.css"  title="USGS Full Width Nav" media="print" type="text/css">
 	<link rel="stylesheet" href="${cont}/css/full_width.css"  title="USGS Full Width Nav" media="projection, screen, tv" type="text/css">
 	<title>File Upload</title>
 </head>

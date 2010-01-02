@@ -25,6 +25,22 @@
 		</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
+	<servlet>
+		<description>
+		</description>
+		<display-name>RouterServlet</display-name>
+		<servlet-name>RouterServlet</servlet-name>
+		<servlet-class>
+		gov.usgs.gdp.servlet.RouterServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<description>
+		</description>
+		<display-name>GeoToolsServlet</display-name>
+		<servlet-name>GeoToolsServlet</servlet-name>
+		<servlet-class>
+		gov.usgs.gdp.servlet.GeoToolsServlet</servlet-class>
+	</servlet>
 	<servlet-mapping>
 		<servlet-name>ParseFile</servlet-name>
 		<url-pattern>/ParseFile</url-pattern>
@@ -32,6 +48,14 @@
 	<servlet-mapping>
 		<servlet-name>AppInitializationServlet</servlet-name>
 		<url-pattern>/AppInitializationServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>RouterServlet</servlet-name>
+		<url-pattern>/Router</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>GeoToolsServlet</servlet-name>
+		<url-pattern>/GeoToolsServlet</url-pattern>
 	</servlet-mapping>
 	
 	<welcome-file-list>

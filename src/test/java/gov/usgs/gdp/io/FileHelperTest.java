@@ -6,6 +6,7 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -111,6 +112,13 @@ public class FileHelperTest {
 		File result = FileHelper.loadFile(fileToLoad);
 		assertNotNull("File came back null", result);
 		assertTrue("File is not a file", result.isFile());
-		
+	}
+	
+	@Test
+	public void testGetFileList() {
+		String dirToList = this.tempDir + this.seperator;
+		List<String> result = FileHelper.getFileList(dirToList, true);
+		assertNotNull("File listing came back null", result);
+		assertFalse("There were no files listed", result.isEmpty());
 	}
 }
