@@ -100,6 +100,15 @@ public class FileHelperTest {
 	}
 	
 	@Test
+	public void testFindFile() {
+		String fileToLoad = "hru20VSR.SHX";
+		String rootDir = this.tempDir + this.seperator;
+		File result = FileHelper.findFile(fileToLoad, rootDir);
+		assertNotNull("FineFile did not find the file " + fileToLoad + " within " + rootDir, result);
+		assertEquals("File loaded does not have the same name as the file suggested", fileToLoad, result.getName());
+	}
+	
+	@Test
 	public void testLoadFile() { 
 		String fileToLoad = this.tempDir 
 			+ this.seperator 

@@ -1,6 +1,12 @@
 package gov.usgs.gdp.servlet;
 
+import gov.usgs.gdp.geotools.GeoToolsFileAnalysis;
+import gov.usgs.gdp.io.FileHelper;
+
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -8,10 +14,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
+
 /**
  * Servlet implementation class GeoToolsServlet
  */
 public class GeoToolsServlet extends HttpServlet {
+	private static org.apache.log4j.Logger log = Logger.getLogger(GeoToolsServlet.class);
 	private static final long serialVersionUID = 1L;
        
     /**
@@ -34,12 +43,55 @@ public class GeoToolsServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String applicationTempDir = System.getProperty("applicationTempDir");
 		String action	= (request.getParameter("action") == null) ? "" : request.getParameter("action").toLowerCase();
+		String function = (request.getParameter("function") == null) ? "" : request.getParameter("function").toLowerCase();
 		
+		List<List<String>> summaryResults = null; 
+		if ("processfiles".equals(action)) {
+			if ("summarize".equals(function)) {
+				summaryResults = summarize(request);
+				request.setAttribute("summaryResults", summaryResults);
+			}
+		} 
 		
 		RequestDispatcher rd = request.getRequestDispatcher("/jsp/geotoolsProcessing.jsp");
 		rd.forward(request, response);
+	}
+
+	
+	
+	private List<List<String>> summarize(HttpServletRequest request) {
+		String applicationTempDir = System.getProperty("applicationTempDir");
+		List<List<String>> result = null;
+		
+		List<String> filesToProcess = new ArrayList<String>();
+		String[] checkboxItems = request.getParameterValues("fileName");
+		if (checkboxItems != null) {
+			
+			if (result == null) {
+				result = new ArrayList<List<String>>();
+			}
+			
+			for (String checkboxItem : checkboxItems) {
+				List<String> fileListing = new ArrayList<String>();
+				String suffix = checkboxItem.substring(checkboxItem.indexOf('.') + 1).toLowerCase();
+				if ("dbf".equals(suffix)) {										
+					File dbFile = FileHelper.findFile(checkboxItem, applicationTempDir);
+					if (dbFile == null || dbFile.length() == 0) {
+						fileListing.add("Unable to load " + checkboxItem);
+						result.add(fileListing);
+					} else {
+						log.debug("File " + checkboxItem + " being summarized.");
+						fileListing.add("File: " + checkboxItem);
+						fileListing.addAll(1, GeoToolsFileAnalysis.getDBaseFileSummary(dbFile));
+						result.add(fileListing);
+					}
+				} else if ("dbf".equals(suffix)) {
+					
+				}
+			}
+		}
+		return result;
 	}
 
 }

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -53,6 +54,20 @@ public class FileHelper {
 		return result;
 	}
 
+	public static File findFile(String file, String rootPath) {
+		File result = null;
+		Collection fileCollection = FileUtils.listFiles(new File(rootPath), new String[] {file.substring(file.indexOf('.') + 1)}, true);
+		if (fileCollection.isEmpty()) return result;
+		Iterator fileCollectionIterator = fileCollection.iterator();
+		while (fileCollectionIterator.hasNext()) {
+			File testFile = (File) fileCollectionIterator.next();
+			if (file.equals(testFile.getName())) {
+				result = testFile;
+			}
+		}
+		return result;
+	}
+	
 	/**
 	 * Recursively deletes a directory from the filesystem.
 	 * @param directory

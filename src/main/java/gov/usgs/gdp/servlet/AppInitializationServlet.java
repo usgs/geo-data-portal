@@ -68,7 +68,8 @@ public class AppInitializationServlet extends HttpServlet {
 			log.debug("Sample files were not written to the application temp directory");
 		}
     	
-    	
+    	Date created = new Date();
+    	System.setProperty("tomcatStarted", Long.toString(created.getTime()));
     	log.debug("Application has started");
     }
     

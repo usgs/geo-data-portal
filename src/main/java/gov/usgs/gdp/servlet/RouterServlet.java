@@ -40,7 +40,17 @@ public class RouterServlet extends HttpServlet {
 	 */
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// Check for stale session
+		String tomcatStarted = System.getProperty("tomcatStarted");
+		String sessionStarted = Long.toString(request.getSession().getCreationTime());
+		if (Long.parseLong(sessionStarted) < Long.parseLong(tomcatStarted)) {
+			log.debug("User has stale session. Re-initializing user session.");
+			request.getSession().invalidate();
+		}
+		
+		// First check that session information is synchronized
 		String applicationTempDir = System.getProperty("applicationTempDir");
+		
 		String location	= (request.getParameter("location") == null) ? "" : request.getParameter("location").toLowerCase();
 		String action	= (request.getParameter("action") == null) ? "" : request.getParameter("action").toLowerCase();
 		String forwardTo = "";
@@ -54,9 +64,7 @@ public class RouterServlet extends HttpServlet {
 		}
 		
 		if ("geotoolsprocessing".equals(location)) {
-			if ("initial".equals(action)) {
-				forwardTo = "/GeoToolsServlet?action=initial";
-			}
+			forwardTo = "/GeoToolsServlet?action=" + action;
 		} else if ("uploadfiles".equals(location)) {
 			forwardTo = "/ParseFile";
 		}

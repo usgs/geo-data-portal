@@ -38,7 +38,7 @@ ${head}
 	<br />
 	<hr />
 File Upload Area: <br />
-<form method="post" enctype="multipart/form-data" action="${cont}/Router?location=uploadFiles">
+<form method="post" enctype="multipart/form-data" action="${cont}/Router?location=uploadFiles&action=upload">
 
 	<div id="fileUploads">
 		<label for="fileUploadInput">File...</label>

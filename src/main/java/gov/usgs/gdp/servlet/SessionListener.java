@@ -85,6 +85,7 @@ public class SessionListener implements HttpSessionListener, HttpSessionAttribut
         String seperator = FileHelper.getSeparator();
         String userSubDir = Long.toString(new Date().getTime());
         String userTempDir = applicationTempDir + seperator + userSubDir;
+        arg0.getSession().setAttribute("sessionAppTempDir", applicationTempDir);
         arg0.getSession().setAttribute("userSubDir", userSubDir);
         arg0.getSession().setAttribute("userTempDir", userTempDir);
         if (FileHelper.createDir(userTempDir)) {

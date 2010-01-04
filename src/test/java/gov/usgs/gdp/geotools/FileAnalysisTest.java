@@ -10,6 +10,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -52,7 +53,25 @@ public class FileAnalysisTest {
 	}
 
 	@Test
-	public void readInDBaseFile() {
+	public void testGetDBaseFileSummary() {
+		List<String> result =  null;
+		String fileToLoad = this.tempDir 
+			+ this.seperator 
+			+ "Sample_Files" 
+			+ this.seperator
+			+ "Shapefiles" 
+			+ this.seperator
+			+ "hru20VSR.DBF";
+		GeoToolsFileAnalysis analyzer = new GeoToolsFileAnalysis();
+		analyzer.setFileReader(GeoToolsFileAnalysis.readInDBaseFile(FileHelper.loadFile(fileToLoad), false, Charset.defaultCharset()));
+		assertNotNull(analyzer.getFileReader()); // Ensure we've read in a file
+		result = analyzer.getDBaseFileSummary();
+		assertNotNull("Analyzer returned a null result object", result);
+		assertFalse("Analyzer returned an empty result object",result.isEmpty());
+	}
+	
+	@Test
+	public void testReadInDBaseFile() {
 		String fileToLoad = this.tempDir 
 		+ this.seperator 
 		+ "Sample_Files" 
@@ -63,7 +82,7 @@ public class FileAnalysisTest {
 	
 		File file = FileHelper.loadFile(fileToLoad);
 		assertNotNull("File came back null. Cannot continue test.", file);
-		FileAnalysis fa = new FileAnalysis();
+		GeoToolsFileAnalysis fa = new GeoToolsFileAnalysis();
 		DbaseFileReader result = fa.readInDBaseFile(file, false, Charset.defaultCharset());
 		assertNotNull("DbaseFileReader object came back null", result);
 		assertNotSame("", result.id());
