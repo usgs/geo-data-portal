@@ -18,17 +18,17 @@ import org.junit.Test;
 
 public class FileHelperTest {
 	private static org.apache.log4j.Logger log = Logger.getLogger(FileHelperTest.class);
-	private String tempDir = ""; 
-	private String seperator = "";
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		log.debug("Started testing class");
-	}
-
+	} 
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
 		log.debug("Ended testing class");
 	}
+	private String tempDir = "";
+
+	private String seperator = "";
 	
 	@Before
 	public void setUp() throws Exception {
@@ -59,32 +59,6 @@ public class FileHelperTest {
 		FileUtils.deleteDirectory((new File(this.tempDir)));
 	}
 
-
-	
-	@Test
-	public void testGetSystemTemp() {
-		String result = FileHelper.getSystemTemp();
-		assertNotNull(result);
-		assertFalse("".equals(result));
-		log.debug("System temp path: " + result);
-	}
-
-	@Test
-	public void testGetSystemPathSeparator() {
-		String result = FileHelper.getSystemPathSeparator();
-		assertNotNull(result);
-		assertFalse("".equals(result));
-		log.debug("System path separator: " + result);
-	}
-
-	@Test
-	public void testGetSeparator() {
-		String result = FileHelper.getSeparator();
-		assertNotNull(result);
-		assertFalse("".equals(result));
-		log.debug("System separator: " + result);
-	}
-
 	@Test
 	public void testCreateDir() {
 		boolean result = false;
@@ -100,12 +74,105 @@ public class FileHelperTest {
 	}
 	
 	@Test
+	public void testCopyFileToFile() {
+		File fileToCopy = new File(this.tempDir 
+		+ this.seperator 
+		+ "Sample_Files" 
+		+ this.seperator
+		+ "Shapefiles" 
+		+ this.seperator
+		+ "hru20VSR.SHX");
+		
+		String fileToCopyTo = this.tempDir 
+		+ this.seperator 
+		+ "Sample_Files" 
+		+ this.seperator
+		+ "Shapefiles" 
+		+ this.seperator
+		+ "hru20VSR.COPY";
+		
+		boolean result = FileHelper.copyFileToFile(fileToCopy, fileToCopyTo);
+		assertTrue(result);
+		
+	}
+	
+	@Test 
+	public void testDeleteDirRecursively() {
+		String dirToDelete = this.tempDir 
+		+ this.seperator;
+		boolean result = FileHelper.deleteDirRecursively(new File(dirToDelete));
+		assertTrue(result);
+		result = FileHelper.deleteDirRecursively(new File("Directory/That/Doesnt/Exist"));
+		assertFalse(result);
+	}
+	
+	@Test 
+	public void testDeleteFile() {
+		String fileToLoad = this.tempDir 
+		+ this.seperator 
+		+ "Sample_Files" 
+		+ this.seperator
+		+ "Shapefiles" 
+		+ this.seperator
+		+ "hru20VSR.SHX";
+		
+		boolean result = FileHelper.deleteFile("File/That/Doesnt/Exist");
+		assertFalse(result);
+		result = FileHelper.deleteFile(fileToLoad);
+		assertTrue(result);
+	}
+	
+	@Test
+	public void testFileHelper() {
+		FileHelper result = new FileHelper();
+		assertNotNull(result);
+	}
+
+	@Test
 	public void testFindFile() {
 		String fileToLoad = "hru20VSR.SHX";
 		String rootDir = this.tempDir + this.seperator;
 		File result = FileHelper.findFile(fileToLoad, rootDir);
 		assertNotNull("FineFile did not find the file " + fileToLoad + " within " + rootDir, result);
 		assertEquals("File loaded does not have the same name as the file suggested", fileToLoad, result.getName());
+		result = FileHelper.findFile("should.not.work", rootDir);
+		assertNull(result);
+	}
+
+	@Test
+	public void testGetFileList() {
+		String dirToList = this.tempDir + this.seperator;
+		
+		List<String> result = null;
+		result = FileHelper.getFileList(null, true);
+		assertNull(result);
+		result = FileHelper.getFileList(dirToList, true);
+		assertNotNull("File listing came back null", result);
+		assertFalse("There were no files listed", result.isEmpty());
+	}
+
+	@Test
+	public void testGetSeparator() {
+		String result = FileHelper.getSeparator();
+		assertNotNull(result);
+		assertFalse("".equals(result));
+		log.debug("System separator: " + result);
+	}
+	
+	@Test
+	public void testGetSystemPathSeparator() {
+		String result = FileHelper.getSystemPathSeparator();
+		assertNotNull(result);
+		assertFalse("".equals(result));
+		log.debug("System path separator: " + result);
+	}
+	
+	@Test
+	public void testGetSystemTemp() {
+		String result = FileHelper.getSystemTemp();
+		assertNotNull(result);
+		assertFalse("".equals(result));
+		log.debug("System temp path: " + result);
 	}
 	
 	@Test
@@ -121,13 +188,5 @@ public class FileHelperTest {
 		File result = FileHelper.loadFile(fileToLoad);
 		assertNotNull("File came back null", result);
 		assertTrue("File is not a file", result.isFile());
-	}
-	
-	@Test
-	public void testGetFileList() {
-		String dirToList = this.tempDir + this.seperator;
-		List<String> result = FileHelper.getFileList(dirToList, true);
-		assertNotNull("File listing came back null", result);
-		assertFalse("There were no files listed", result.isEmpty());
 	}
 }
