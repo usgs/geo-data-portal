@@ -85,6 +85,28 @@ public class GeoToolsFileAnalysisTest {
 	}
 	
 	@Test
+	public void testGetShapeFileHeaderSummary() {
+		String fileToLoad = this.tempDir 
+		+ this.seperator 
+		+ "Sample_Files" 
+		+ this.seperator
+		+ "Shapefiles" 
+		+ this.seperator
+		+ "hru20VSR.SHP";
+		
+		ShapefileReader reader = GeoToolsFileAnalysis.getShapeFileReader(null);
+		assertNull(reader);
+		
+		reader = GeoToolsFileAnalysis.getShapeFileReader(fileToLoad);
+		assertNotNull(reader);
+		
+		List<String> result = GeoToolsFileAnalysis.getShapeFileHeaderSummary(reader);
+		assertNotNull("GeoToolsFileAnalysis.getShapeFileHeaderSummary returned null",result);
+		assertFalse("GeoToolsFileAnalysis.getShapeFileHeaderSummary returned empty List of type String",result.isEmpty());
+		
+	}
+	
+	@Test
 	public void testGetGeotoolsSummary() {
 		String fileToLoad = this.tempDir 
 		+ this.seperator 
@@ -98,6 +120,7 @@ public class GeoToolsFileAnalysisTest {
 		List<String> result = GeoToolsFileAnalysis.getShapeFileSummary(shpFileReader);
 		assertNotNull(result);
 		assertFalse(result.isEmpty());
+		
 	}
 	
 	@Test
@@ -112,8 +135,7 @@ public class GeoToolsFileAnalysisTest {
 	
 		File file = FileHelper.loadFile(fileToLoad);
 		assertNotNull("File came back null. Cannot continue test.", file);
-		GeoToolsFileAnalysis fa = new GeoToolsFileAnalysis();
-		DbaseFileReader result = fa.readInDBaseFile(file, false, Charset.defaultCharset());
+		DbaseFileReader result = GeoToolsFileAnalysis.readInDBaseFile(file, false, Charset.defaultCharset());
 		assertNotNull("DbaseFileReader object came back null", result);
 		assertNotSame("", result.id());
 		try {

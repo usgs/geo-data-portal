@@ -64,7 +64,6 @@ public class GeoToolsServlet extends HttpServlet {
 		String applicationTempDir = System.getProperty("applicationTempDir");
 		List<List<String>> result = null;
 		
-		List<String> filesToProcess = new ArrayList<String>();
 		String[] checkboxItems = request.getParameterValues("fileName");
 		if (checkboxItems != null) {
 			
@@ -78,7 +77,7 @@ public class GeoToolsServlet extends HttpServlet {
 				if ("dbf".equals(suffix)) {										
 					File dbFile = FileHelper.findFile(checkboxItem, applicationTempDir);
 					if (dbFile == null || dbFile.length() == 0) {
-						fileListing.add("Unable to load " + checkboxItem);
+						fileListing.add("Unable to load: " + checkboxItem);
 						result.add(fileListing);
 					} else {
 						log.debug("File " + checkboxItem + " being summarized.");
@@ -87,7 +86,17 @@ public class GeoToolsServlet extends HttpServlet {
 						result.add(fileListing);
 					}
 				} else if ("shp".equals(suffix)) {
-					
+					File shpFile = FileHelper.findFile(checkboxItem, applicationTempDir);
+					if (shpFile == null || shpFile.length() == 0) {
+						fileListing.add("Unable to load :" + checkboxItem);
+						result.add(fileListing);
+					} else {
+						log.debug("File " + checkboxItem + " being summarized.");
+						fileListing.add("File: " + checkboxItem);
+						fileListing.addAll(1, GeoToolsFileAnalysis.getShapeFileHeaderSummary(shpFile));
+						fileListing.addAll(2, GeoToolsFileAnalysis.getShapeFileSummary(shpFile));
+						result.add(fileListing);
+					}
 				}
 			}
 		}

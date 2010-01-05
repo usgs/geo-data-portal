@@ -54,7 +54,6 @@ public class ParseFile extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// Pull in parameters
 		String action 	= (request.getParameter("action") == null) ? "" : request.getParameter("action").toLowerCase();
-		String method 	= (request.getParameter("method") == null) ? "" : request.getParameter("method").toLowerCase();
 		
 		// What is directory name for the files being uploaded
 		String seperator = FileHelper.getSeparator();

@@ -1,5 +1,6 @@
 package gov.usgs.gdp.io;
 
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ public class FileHelper {
 	 * @param filePath
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public static List<String> getFileList(String filePath, String[] extensions, boolean recursive) {
 		List<String> result = null;
 		Collection<File> fileList = null;

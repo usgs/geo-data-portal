@@ -16,6 +16,7 @@ import org.geotools.data.shapefile.ShpFiles;
 import org.geotools.data.shapefile.dbf.DbaseFileHeader;
 import org.geotools.data.shapefile.dbf.DbaseFileReader;
 import org.geotools.data.shapefile.shp.ShapefileException;
+import org.geotools.data.shapefile.shp.ShapefileHeader;
 import org.geotools.data.shapefile.shp.ShapefileReader;
 
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -74,7 +75,12 @@ public class GeoToolsFileAnalysis {
 	}
 	
 	
-	
+	/**
+	 * Returns a summary of the DBase File
+	 * 
+	 * @param dbaseFileReader
+	 * @return
+	 */
 	public static List<String> getDBaseFileSummary(DbaseFileReader dbaseFileReader) {
 		if (dbaseFileReader == null) return null;
 		List<String> result = new ArrayList<String>();
@@ -111,29 +117,18 @@ public class GeoToolsFileAnalysis {
 		return GeoToolsFileAnalysis.getDBaseFileSummary(GeoToolsFileAnalysis.readInDBaseFile(FileHelper.loadFile(filePath), false, Charset.defaultCharset()));
 	}
 	
-	/**
-	 * Read in a SHAPE file from the file structure
-	 * 
-	 * @param file
-	 * @return
-	 */
-	public static ShapefileReader getShapeFileReader(String file) {
-		ShapefileReader result = null;
-		
-		try {
-			result = new ShapefileReader(new ShpFiles(file), true, true, new GeometryFactory());
-		} catch (ShapefileException e) {
-			return result;
-		} catch (MalformedURLException e) {
-			return result;
-		} catch (IOException e) {
-			return result;
-		}
-		return result;
+	public List<String> getShapeFileSummary(String filePath) {
+		if ("".equals(filePath) || filePath == null) return null;
+		return GeoToolsFileAnalysis.getShapeFileSummary(GeoToolsFileAnalysis.getShapeFileReader(filePath));
+	}
+	
+	public List<String> getShapeFileSummary() {
+		if (getShpFileReader() == null) return null;
+		return GeoToolsFileAnalysis.getShapeFileSummary(getShpFileReader());
 	}
 	
 	/**
-	 * 
+	 * Returns a Shape File summary
 	 * @param file
 	 * @return
 	 */
@@ -151,6 +146,33 @@ public class GeoToolsFileAnalysis {
 		} catch (IOException e) {
 			return result;
 		}
+	}
+
+	/**
+	 * Gets a ShapeFile summary using a File Object
+	 * 
+	 * @param shpFile
+	 * @return
+	 */
+	public static List<String> getShapeFileSummary(File shpFile) {
+		return GeoToolsFileAnalysis.getShapeFileSummary(GeoToolsFileAnalysis.getShapefileReader(shpFile));
+	}
+
+	/**
+	 * Returns a Shapefile Header summary
+	 * 
+	 * @param file
+	 * @return
+	 */
+	public static List<String> getShapeFileHeaderSummary(ShapefileReader file) {
+		if (file == null) return null;
+		List<String> result = null;
+		ShapefileHeader shpHead = file.getHeader();
+		if (shpHead != null) {
+			result = new ArrayList<String>();
+			result.add(shpHead.toString());
+		}
+		return result;
 	}
 	
 	/**
@@ -180,5 +202,50 @@ public class GeoToolsFileAnalysis {
 
 	public void setShpFileReader(ShapefileReader shpFileReader) {
 		this.shpFileReader = shpFileReader;
+	}
+
+	public static List<String> getShapeFileHeaderSummary(File shpFile) {
+		return GeoToolsFileAnalysis.getShapeFileHeaderSummary(GeoToolsFileAnalysis.getShapefileHeader(shpFile));
+	}
+
+	private static ShapefileReader getShapefileHeader(File shpFile) {
+		return GeoToolsFileAnalysis.getShapefileReader(shpFile);
+	}
+
+	private static ShapefileReader getShapefileReader(File shpFile) {
+		if (shpFile == null) return null;
+		ShapefileReader result = null;
+		
+		try {
+			result = new ShapefileReader(new ShpFiles(shpFile), true, true, new GeometryFactory());
+		} catch (ShapefileException e) {
+			return result;
+		} catch (MalformedURLException e) {
+			return result;
+		} catch (IOException e) {
+			return result;
+		}
+		return result;
+	}
+
+	/**
+	 * Read in a SHAPE file from the file structure
+	 * 
+	 * @param file
+	 * @return
+	 */
+	public static ShapefileReader getShapeFileReader(String file) {
+		if (file == null) return null;
+		ShapefileReader result = null;
+		try {
+			result = new ShapefileReader(new ShpFiles(file), true, true, new GeometryFactory());
+		} catch (ShapefileException e) {
+			return result;
+		} catch (MalformedURLException e) {
+			return result;
+		} catch (IOException e) {
+			return result;
+		}
+		return result;
 	}
 }
