@@ -6,16 +6,23 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.geotools.data.shapefile.ShpFiles;
 import org.geotools.data.shapefile.dbf.DbaseFileHeader;
 import org.geotools.data.shapefile.dbf.DbaseFileReader;
+import org.geotools.data.shapefile.shp.ShapefileException;
+import org.geotools.data.shapefile.shp.ShapefileReader;
+
+import com.vividsolutions.jts.geom.GeometryFactory;
 
 public class GeoToolsFileAnalysis {
-	DbaseFileReader fileReader;
+	DbaseFileReader dbFileReader;
+	ShapefileReader shpFileReader;
 	
 	public GeoToolsFileAnalysis() {
 		// Placeholder
@@ -44,27 +51,29 @@ public class GeoToolsFileAnalysis {
 	
 	/**
 	 * Pull a DBase File Header object from an internal in DbaseFileReader object
-	 * @param fileReader
+	 * @param dbFileReader
 	 * @return null if no internal DbaseFileReader object is defined
 	 */
 	public DbaseFileHeader getDBaseFileHeader() {
 		DbaseFileHeader result = null;
 		
-		DbaseFileReader localFileReader = getFileReader();
+		DbaseFileReader localFileReader = getDbFileReader();
 		if (localFileReader != null) result = getDBaseFileHeader(localFileReader);
 		
 		return result;
 	}
 	
 	public List<String> getDBaseFileSummary() {
-		if (getFileReader() == null) return null; 
-		return GeoToolsFileAnalysis.getDBaseFileSummary(getFileReader());
+		if (getDbFileReader() == null) return null; 
+		return GeoToolsFileAnalysis.getDBaseFileSummary(getDbFileReader());
 	}
 	
 	public static  List<String> getDBaseFileSummary(File file) {
 		if (file == null) return null; 
 		return GeoToolsFileAnalysis.getDBaseFileSummary(GeoToolsFileAnalysis.readInDBaseFile(file, false, Charset.defaultCharset()));
 	}
+	
+	
 	
 	public static List<String> getDBaseFileSummary(DbaseFileReader dbaseFileReader) {
 		if (dbaseFileReader == null) return null;
@@ -103,8 +112,50 @@ public class GeoToolsFileAnalysis {
 	}
 	
 	/**
+	 * Read in a SHAPE file from the file structure
+	 * 
+	 * @param file
+	 * @return
+	 */
+	public static ShapefileReader getShapeFileReader(String file) {
+		ShapefileReader result = null;
+		
+		try {
+			result = new ShapefileReader(new ShpFiles(file), true, true, new GeometryFactory());
+		} catch (ShapefileException e) {
+			return result;
+		} catch (MalformedURLException e) {
+			return result;
+		} catch (IOException e) {
+			return result;
+		}
+		return result;
+	}
+	
+	/**
+	 * 
+	 * @param file
+	 * @return
+	 */
+	public static List<String> getShapeFileSummary(ShapefileReader file) {
+		List<String> result = null;
+		// Load in the files and try them out....
+		try {			
+			while (file.hasNext()) {
+				if (result == null) result = new ArrayList<String>();
+				ShapefileReader.Record nextRecord = file.nextRecord();
+				result.add("Record number: " + nextRecord.toString());
+			}
+			file.close();
+			return result;
+		} catch (IOException e) {
+			return result;
+		}
+	}
+	
+	/**
 	 * Pull a DBase File Header object from a passed in DbaseFileReader object
-	 * @param fileReader
+	 * @param dbFileReader
 	 * @return
 	 */
 	public DbaseFileHeader getDBaseFileHeader(DbaseFileReader localFileReader) {
@@ -115,11 +166,19 @@ public class GeoToolsFileAnalysis {
 		return result;
 	}
 
-	public DbaseFileReader getFileReader() {
-		return this.fileReader;
+	public DbaseFileReader getDbFileReader() {
+		return this.dbFileReader;
 	}
 
-	public void setFileReader(DbaseFileReader localFileReader) {
-		this.fileReader = localFileReader;
+	public void setDbFileReader(DbaseFileReader localFileReader) {
+		this.dbFileReader = localFileReader;
+	}
+
+	public ShapefileReader getShpFileReader() {
+		return this.shpFileReader;
+	}
+
+	public void setShpFileReader(ShapefileReader shpFileReader) {
+		this.shpFileReader = shpFileReader;
 	}
 }

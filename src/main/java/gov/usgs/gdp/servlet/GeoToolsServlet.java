@@ -86,7 +86,7 @@ public class GeoToolsServlet extends HttpServlet {
 						fileListing.addAll(1, GeoToolsFileAnalysis.getDBaseFileSummary(dbFile));
 						result.add(fileListing);
 					}
-				} else if ("dbf".equals(suffix)) {
+				} else if ("shp".equals(suffix)) {
 					
 				}
 			}
