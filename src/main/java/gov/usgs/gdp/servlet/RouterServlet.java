@@ -3,6 +3,7 @@ package gov.usgs.gdp.servlet;
 import gov.usgs.gdp.io.FileHelper;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -59,6 +60,7 @@ public class RouterServlet extends HttpServlet {
 		List<String> exampleFileList = (List<String>) request.getSession().getAttribute("exampleFileList");
 		if (exampleFileList == null || exampleFileList.isEmpty()) {
 			exampleFileList = FileHelper.getFileList(applicationTempDir + java.io.File.separator + "Sample_Files", true);
+			Collections.sort(exampleFileList);
 			if (exampleFileList == null || exampleFileList.isEmpty()) log.debug("Could not find sample files. User will not have access to them.");
 			request.getSession().setAttribute("exampleFileList", exampleFileList);
 		}
@@ -67,6 +69,8 @@ public class RouterServlet extends HttpServlet {
 			forwardTo = "/GeoToolsServlet?action=" + action;
 		} else if ("uploadfiles".equals(location)) {
 			forwardTo = "/ParseFile";
+		} else if ("".equals(location)) {
+			
 		}
 		
 		RequestDispatcher rd = request.getRequestDispatcher(forwardTo);

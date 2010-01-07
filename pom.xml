@@ -26,7 +26,7 @@
 			<configuration>
 				<instrumentation>
 					<ignores>
-						<ignore>gov.usgs.gdp.servlet.*</ignore>
+						<ignore>gov.usgs.gdp.servlet</ignore>
 					</ignores>
 					<excludes>
 						<!-- <exclude>com/example/dullcode/**/*.class</exclude>  -->

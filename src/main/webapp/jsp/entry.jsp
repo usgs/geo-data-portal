@@ -3,7 +3,7 @@
 <c:import url="${cont}/jsp/header.jsp" var="head" />
 <c:import url="${cont}/jsp/footer.jsp" var="foot" />
 <c:set var="cont" value="<%=request.getContextPath()%>" />
-<c:url var="upload" value="/jsp/fileUpload.jsp"/>
+<c:url var="upload" value="/Router?location=uploadFiles" />
 <c:url var="geotoolsProcessing" value="/Router?location=geotoolsProcessing&action=initial"/>
 <c:url var="cdmProcessing" value="/jsp/cdmProcessing.jsp"/>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">

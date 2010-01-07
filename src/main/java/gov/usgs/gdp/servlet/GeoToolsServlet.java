@@ -1,6 +1,6 @@
 package gov.usgs.gdp.servlet;
 
-import gov.usgs.gdp.geotools.GeoToolsFileAnalysis;
+import gov.usgs.gdp.analysis.GeoToolsFileAnalysis;
 import gov.usgs.gdp.io.FileHelper;
 
 import java.io.File;

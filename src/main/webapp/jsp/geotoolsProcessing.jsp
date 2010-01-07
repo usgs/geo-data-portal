@@ -7,10 +7,8 @@
 <jsp:useBean id="summaryResults" scope="request" class="java.util.ArrayList"  />
 
 <c:set var="cont" value="<%=request.getContextPath()%>" />
-<c:set var="processShapeFiles"
-	value="/Router?location=geotoolsProcessing&action=processFiles&method=geoTools&function=summarize" />
-<c:url var="upload" value="/jsp/fileUpload.jsp"/>
-<c:url var="geotoolsProcessing" value="/Router?location=geotoolsProcessing&action=initial"/>
+<c:set var="process" value="/Router?location=geotoolsProcessing&action=processFiles&method=geoTools&function=summarize" />
+<c:url var="upload" value="/Router?location=uploadFiles" />
 <c:url var="cdmProcessing" value="/jsp/cdmProcessing.jsp"/>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -56,7 +54,7 @@ ${head}
 			value="Process Shape Files" 
 			name="processExampleShape" 
 			id="processExampleShapeFiles" 
-			onclick="document.processGeotoolsForm.action='${cont}${processShapeFiles}';document.processGeotoolsForm.submit()" />
+			onclick="document.processGeotoolsForm.action='${cont}${process}';document.processGeotoolsForm.submit()" />
 	</form>
 	<c:forEach var="summaryResultArraylist" items="${summaryResults}"> 
 		<c:forEach var="summaryResultsArrayListItem" items="${summaryResultArraylist}">

@@ -43,11 +43,7 @@ public class FileHelper {
 	 */
 	public  static  boolean  createDir(String directory) {
 		boolean result = false;
-		try {
-			result = (new File(directory)).mkdir();
-		} catch (SecurityException e) {
-			System.out.println("Could not create directory: " + e.getMessage());
-		}
+		result = (new File(directory)).mkdir();
 		return result;
 	}
 	
@@ -63,10 +59,7 @@ public class FileHelper {
 			return true;
 		} catch (IOException e) {
 			return false;
-		} catch (IllegalArgumentException e1) {
-			return false;
 		}
-
 	}
 
 	/**
@@ -92,11 +85,15 @@ public class FileHelper {
 		return FileUtils.deleteQuietly(new File(filePath));
 	}
 	
+	public static boolean deleteFile(File file) {
+		return FileUtils.deleteQuietly(file);
+	}
+	
 	public static File findFile(String file, String rootPath) {
 		File result = null;
 		Collection fileCollection = FileUtils.listFiles(new File(rootPath), new String[] {file.substring(file.indexOf('.') + 1)}, true);
 		if (fileCollection.isEmpty()) return result;
-		Iterator fileCollectionIterator = fileCollection.iterator();
+		Iterator<File> fileCollectionIterator = fileCollection.iterator();
 		while (fileCollectionIterator.hasNext()) {
 			File testFile = (File) fileCollectionIterator.next();
 			if (file.equals(testFile.getName())) {
@@ -128,15 +125,22 @@ public class FileHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	public static List<String> getFileList(String filePath, String[] extensions, boolean recursive) {
-		if (filePath == null) return null;
+		if (filePath == null)
+			return null;
 		List<String> result = null;
-		Collection<File> fileList = FileUtils.listFiles((new File(filePath)), extensions, recursive);
-		if (fileList != null) {
-			result = new ArrayList<String>();
-			for (File file : fileList) {
-				result.add(file.getName());
-			}
+		Collection<File> fileList = null;
+		try {
+			fileList = FileUtils.listFiles((new File(filePath)), extensions,
+					recursive);
+		} catch (IllegalArgumentException e) {
+			return null;
 		}
+		result = new ArrayList<String>();
+		
+		for (File file : fileList) {
+			result.add(file.getName());
+		}
+		
 		return result;
 	}
 

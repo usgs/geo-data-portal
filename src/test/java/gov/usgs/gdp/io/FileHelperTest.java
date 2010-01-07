@@ -62,9 +62,6 @@ public class FileHelperTest {
 	@Test
 	public void testCreateDir() {
 		boolean result = false;
-		// 1 Has to be added since based on how quickly this test runs after the 
-		// setUp() method, directory naming may clash, directory is not created but
-		// java.io.File.mkdir() passes no exception
 		String testDir =  System.getProperty("java.io.tmpdir") + 
 			java.io.File.separator + 
 			Long.toString((new Date()).getTime()) + 1;
@@ -93,17 +90,9 @@ public class FileHelperTest {
 		
 		boolean result = FileHelper.copyFileToFile(fileToCopy, fileToCopyTo);
 		assertTrue(result);
-		
-	}
-	
-	@Test 
-	public void testDeleteDirRecursively() {
-		String dirToDelete = this.tempDir 
-		+ this.seperator;
-		boolean result = FileHelper.deleteDirRecursively(new File(dirToDelete));
-		assertTrue(result);
-		result = FileHelper.deleteDirRecursively(new File("Directory/That/Doesnt/Exist"));
+		result = FileHelper.copyFileToFile(new File("doesnt/exist"), "doesnt/exist");
 		assertFalse(result);
+		
 	}
 	
 	@Test 
@@ -120,6 +109,38 @@ public class FileHelperTest {
 		assertFalse(result);
 		result = FileHelper.deleteFile(fileToLoad);
 		assertTrue(result);
+	}
+	
+	@Test 
+	public void testDeleteDirRecursively() {
+		File lockedFile = new File(this.tempDir 
+		+ this.seperator 
+		+ "Sample_Files" 
+		+ this.seperator
+		+ "Shapefiles" 
+		+ this.seperator
+		+ "hru20VSR.SHX");
+		lockedFile.setWritable(false);
+		
+		String dirToDelete = this.tempDir 
+		+ this.seperator;
+		boolean result = FileHelper.deleteDirRecursively(new File(dirToDelete));
+		assertTrue(result);
+		result = FileHelper.deleteDirRecursively(new File("Directory/That/Doesnt/Exist"));
+		assertFalse(result);
+		result = FileHelper.deleteDirRecursively(lockedFile);
+		assertFalse(result);
+		lockedFile.setWritable(true);
+		FileHelper.deleteFile(lockedFile);
+	}
+	
+	@Test public void testDeleteDirRecursivelyUsingString() {
+		String dirToDelete = this.tempDir 
+		+ this.seperator;
+		boolean result = FileHelper.deleteDirRecursively(dirToDelete);
+		assertTrue(result);
+		result = FileHelper.deleteDirRecursively("Directory/That/Doesnt/Exist");
+		assertFalse(result);
 	}
 	
 	@Test
@@ -142,13 +163,15 @@ public class FileHelperTest {
 	@Test
 	public void testGetFileList() {
 		String dirToList = this.tempDir + this.seperator;
-		
 		List<String> result = null;
 		result = FileHelper.getFileList(null, true);
 		assertNull(result);
 		result = FileHelper.getFileList(dirToList, true);
 		assertNotNull("File listing came back null", result);
 		assertFalse("There were no files listed", result.isEmpty());
+		String fakeDirToList = this.tempDir + this.seperator + "9387509352";
+		result = FileHelper.getFileList(fakeDirToList, true);
+		assertNull(result);
 	}
 
 	@Test
