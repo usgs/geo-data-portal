@@ -4,7 +4,9 @@ package gov.usgs.gdp.io;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -91,11 +93,11 @@ public class FileHelper {
 	
 	public static File findFile(String file, String rootPath) {
 		File result = null;
-		Collection fileCollection = FileUtils.listFiles(new File(rootPath), new String[] {file.substring(file.indexOf('.') + 1)}, true);
+		Collection<File> fileCollection = FileUtils.listFiles(new File(rootPath), new String[] {file.substring(file.indexOf('.') + 1)}, true);
 		if (fileCollection.isEmpty()) return result;
 		Iterator<File> fileCollectionIterator = fileCollection.iterator();
 		while (fileCollectionIterator.hasNext()) {
-			File testFile = (File) fileCollectionIterator.next();
+			File testFile = fileCollectionIterator.next();
 			if (file.equals(testFile.getName())) {
 				result = testFile;
 			}
@@ -143,7 +145,44 @@ public class FileHelper {
 		
 		return result;
 	}
+	
+	/**
+	 * Returns a Collection of type File
+	 * 
+	 * @param filePath
+	 * @param recursive
+	 * @return
+	 */
+	public static Collection<File> getFileCollection(String filePath, boolean recursive) {
+		Collection<File> result = null;
+		
+		result = FileHelper.getFileCollection(filePath, null, recursive);
+		
+		return result;
+	}
 
+	/**
+	 * Returns a Collection of type File
+	 * 
+	 * @param filePath
+	 * @param extensions
+	 * @param recursive
+	 * @return
+	 */
+	public static Collection<File> getFileCollection(String filePath, String[] extensions, boolean recursive) {
+		if (filePath == null) return null;
+		Collection<File> result = null;
+		try {
+			result = FileUtils.listFiles((new File(filePath)), extensions,
+					recursive);
+		} catch (IllegalArgumentException e) {
+			return null;
+		}
+		
+		return result;
+		
+	}
+	
 	/**
 	 * @see java.io.File.separator
 	 * @return

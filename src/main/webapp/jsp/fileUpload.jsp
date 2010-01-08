@@ -1,12 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
 <c:import url="/jsp/header.jsp" var="head" />
 <c:import url="/jsp/footer.jsp" var="foot" />
-<c:set var="cont" value="<%=request.getContextPath()%>" />
-<jsp:useBean id="uploadedFileList" scope="session" class="java.util.ArrayList"  />
 
-<c:url var="upload" value="/jsp/fileUpload.jsp"/>
-<c:url var="geotoolsProcessing" value="/Router?location=geotoolsProcessing&action=initial"/>
+<c:set var="cont" value="<%=request.getContextPath()%>" />
+<jsp:useBean id="uploadedFilesBean" scope="session" class="gov.usgs.gdp.bean.FilesBean"  />
+
+<c:url var="filesProcessing" value="/Router?location=filesProcessing&action=initial"/>
 <c:url var="cdmProcessing" value="/jsp/cdmProcessing.jsp"/>
 <c:url var="deleteFile" value="/Router?location=uploadFiles&action=delete&file="/>
 
@@ -33,16 +34,16 @@
 </script> 
 <body>
 ${head}
-	<a href="${geotoolsProcessing}">Geotools Processing</a> | 
-	<a href="${cdmProcessing}">CDM Processing</a>
+	<a href="${filesProcessing}">Files Processing</a> 
 	<br />
 	<hr />
 File Upload Area: <br />
 <form method="post" enctype="multipart/form-data" action="${cont}/Router?location=uploadFiles&action=upload">
 
 	<div id="fileUploads">
-		<label for="fileUploadInput">File...</label>
-		<input class="fileUploadInput" type="file" name="fileUploadInput" size="30" />
+		<input class="fileUploadInput" type="file" name="fileUploadInput" size="30" /> <br />
+		<input class="fileUploadInput" type="file" name="fileUploadInput" size="30" /> <br />
+		<input class="fileUploadInput" type="file" name="fileUploadInput" size="30" /> <br />
 		<br />
 	</div>
 	
@@ -56,8 +57,8 @@ Files Uploaded So Far This Session:<br />
 	<legend style="display: solid !important">
 		Uploaded File List
 	</legend>
-	<c:forEach var="fileName" items="${uploadedFileList}">
-		${fileName} <a href="${deleteFile}${fileName}">[- Delete -]</a><br />
+	<c:forEach var="file" items="${uploadedFilesBean.files}">
+		${file.name} <a href="${deleteFile}${file}">[- Delete -]</a><br />
 		<br />
 	</c:forEach>
 </fieldset>

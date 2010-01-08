@@ -1,12 +1,12 @@
 package gov.usgs.gdp.servlet;
 
+import gov.usgs.gdp.bean.FilesBean;
 import gov.usgs.gdp.io.FileHelper;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -22,22 +22,21 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
-import org.geotools.factory.GeoTools;
 import org.geotools.data.shapefile.ShpFiles;
 import org.geotools.data.shapefile.shp.ShapefileException;
 import org.geotools.data.shapefile.shp.ShapefileReader;
 
 /**
- * Servlet implementation class ParseFile
+ * Servlet implementation class UploadFilesServlet
  */
-public class ParseFile extends HttpServlet {
-	private static org.apache.log4j.Logger log = Logger.getLogger(ParseFile.class);
+public class UploadFilesServlet extends HttpServlet {
+	private static org.apache.log4j.Logger log = Logger.getLogger(UploadFilesServlet.class);
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public ParseFile() {
+    public UploadFilesServlet() {
         super();
     }
 
@@ -59,28 +58,41 @@ public class ParseFile extends HttpServlet {
 		String seperator = FileHelper.getSeparator();
 	    String userDirectory = (String) request.getSession().getAttribute("userTempDir")+ seperator;
 		
+	    // Pull in the uploaded Files bean from the user's session
+	    FilesBean uploadedFilesBean = (request.getSession().getAttribute("uploadedFilesBean") == null) ? new FilesBean() : (FilesBean) request.getSession().getAttribute("uploadedFilesBean");
+	    
 	    if ("delete".equals(action)) {
 	    	String filename = (request.getParameter("file") == null) ? "" : request.getParameter("file");
 	    	if ("".equals(filename) || filename == null) {
 	    		log.debug("There was no filename passed to be deleted");
-	    		
 	    	} else {
-	    		FileHelper.deleteFile(userDirectory + filename);
+	    		FileHelper.deleteFile(filename);
 	    	}
-	    } else {
+	    } else if ("upload".equals(action)){
 	    	if (uploadFiles(request, userDirectory)) {
 	    		log.debug("Files successfully uploaded.");
 	    	} else {
 	    		log.debug("Files were unable to be uploaded");
 	    	}
 	    }
+	    
+	    // Rescan the user directory for updates
+	    uploadedFilesBean = populateUploadedFilesBean(userDirectory);
 		
-		List<String> uploadedFiles = FileHelper.getFileList(userDirectory, false);
+	    // Place the bean in the user's session
+		request.getSession().setAttribute("uploadedFilesBean", uploadedFilesBean);
 		
-		request.getSession().setAttribute("uploadedFileList", uploadedFiles);
+		// Away we go
 		RequestDispatcher rd = request.getRequestDispatcher("/jsp/fileUpload.jsp");
 		rd.forward(request, response);
 		
+	}
+
+	private FilesBean populateUploadedFilesBean(String userDirectory) {
+		FilesBean result = new FilesBean();
+		Collection<File> uploadedFiles = FileHelper.getFileCollection(userDirectory, true);
+		if (uploadedFiles != null) result.setFiles(uploadedFiles);
+		return result;
 	}
 
 	private boolean uploadFiles(HttpServletRequest request, String userDirectory) {
@@ -122,52 +134,5 @@ public class ParseFile extends HttpServlet {
 		return true;
 	}
 
-	@SuppressWarnings("deprecation")
-	private void getGeotoolsSummary(List<String> uploadedFiles)
-			throws IOException, ShapefileException, MalformedURLException {
-		// Load in the files and try them out....
-		for (String uploadedFile : uploadedFiles) {
-			if (uploadedFile.toLowerCase().contains(".shp")) {
-				ShapefileReader reader = new ShapefileReader(new ShpFiles(uploadedFile),true,true);
-				log.debug(reader.getHeader().toString());
-				int counter = 1;
-				while (reader.hasNext()) {
-					ShapefileReader.Record nextRecord = reader.nextRecord();
-					log.debug("Record number: " + Integer.toString(counter)
-							+ ", MaxX: " + nextRecord.maxX
-							+ ", MaxY: " + nextRecord.maxY
-							+ ", MinX: " + nextRecord.minX
-							+ ", MinY: " + nextRecord.minY
-							+ ", Offset: " + nextRecord.offset()
-							+ ", ShapeType: " + nextRecord.type.name);
-					counter++;
-				}
-				
-				reader.close();
-			}
-		}
-	}
-	
-	/**
-	 * Deletes all files and subdirectories under dir.
-	 * Returns true if all deletions were successful.
-     * If a deletion fails, the method stops attempting to delete and returns false.
-	 * @param dir
-	 * @return
-	 */
-	public static boolean deleteDir(File dir) {
-        if (dir.isDirectory()) {
-            String[] children = dir.list();
-            for (int i=0; i<children.length; i++) {
-                boolean success = deleteDir(new File(dir, children[i]));
-                if (!success) {
-                    return false;
-                }
-            }
-        }
-    
-        // The directory is now empty so delete it
-        return dir.delete();
-    }
 
 }

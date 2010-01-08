@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -211,5 +212,21 @@ public class FileHelperTest {
 		File result = FileHelper.loadFile(fileToLoad);
 		assertNotNull("File came back null", result);
 		assertTrue("File is not a file", result.isFile());
+	}
+	
+	@Test
+	public void testGetFileCollection() {
+		String dirToList = this.tempDir + this.seperator;
+		Collection<File> result = null;
+		
+		String nullString = null;
+		result = FileHelper.getFileCollection(nullString, true);
+		assertNull(result);
+		result = FileHelper.getFileCollection(dirToList, true);
+		assertNotNull("File listing came back null", result);
+		assertFalse("There were no files listed", result.isEmpty());
+		String fakeDirToList = this.tempDir + this.seperator + "9387509352";
+		result = FileHelper.getFileCollection(fakeDirToList, true);
+		assertNull(result);
 	}
 }

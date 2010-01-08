@@ -1,8 +1,11 @@
 package gov.usgs.gdp.servlet;
 
+import gov.usgs.gdp.bean.FilesBean;
 import gov.usgs.gdp.io.FileHelper;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -41,6 +44,7 @@ public class RouterServlet extends HttpServlet {
 	 */
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
 		// Check for stale session
 		String tomcatStarted = System.getProperty("tomcatStarted");
 		String sessionStarted = Long.toString(request.getSession().getCreationTime());
@@ -51,26 +55,27 @@ public class RouterServlet extends HttpServlet {
 		
 		// First check that session information is synchronized
 		String applicationTempDir = System.getProperty("applicationTempDir");
-		
 		String location	= (request.getParameter("location") == null) ? "" : request.getParameter("location").toLowerCase();
-		String action	= (request.getParameter("action") == null) ? "" : request.getParameter("action").toLowerCase();
 		String forwardTo = "";
 		
 		// If no example File List exists, create one
-		List<String> exampleFileList = (List<String>) request.getSession().getAttribute("exampleFileList");
-		if (exampleFileList == null || exampleFileList.isEmpty()) {
-			exampleFileList = FileHelper.getFileList(applicationTempDir + java.io.File.separator + "Sample_Files", true);
-			Collections.sort(exampleFileList);
-			if (exampleFileList == null || exampleFileList.isEmpty()) log.debug("Could not find sample files. User will not have access to them.");
-			request.getSession().setAttribute("exampleFileList", exampleFileList);
+		FilesBean exampleFiles = new FilesBean();
+		Collection<File> files = (Collection<File>) request.getSession().getAttribute("exampleFileList");
+		if (files == null || files.isEmpty()) {
+			files = FileHelper.getFileCollection(applicationTempDir + java.io.File.separator + "Sample_Files", true);
+			//Collections.sort(files);
+			if (files == null || files.isEmpty()) log.debug("Could not find sample files. User will not have access to them.");
+			if (files != null) exampleFiles.setFiles(files);
+			request.getSession().setAttribute("exampleFileBean", exampleFiles);
 		}
 		
-		if ("geotoolsprocessing".equals(location)) {
-			forwardTo = "/GeoToolsServlet?action=" + action;
+		// Where is the user trying to get to?
+		if ("filesprocessing".equals(location)) {
+			forwardTo = "/jsp/fileSelection.jsp";
 		} else if ("uploadfiles".equals(location)) {
-			forwardTo = "/ParseFile";
-		} else if ("".equals(location)) {
-			
+			forwardTo = "/UploadFilesServlet";
+		}  else if ("summarize".equals(location)) {
+			forwardTo = "/FileSelectionServlet?action=summarize";
 		}
 		
 		RequestDispatcher rd = request.getRequestDispatcher(forwardTo);

@@ -12,7 +12,7 @@
 					<h1>Geodata Portal</h1><!-- Not actually visible unless printed -->
 					<div id="usgs-header-logo">
 						<a href="http://www.usgs.gov" title="Link to the US Geological Survey main web page">
-							<img alt="USGS Logo" src="${cont}/images/usgs_logo.jpg" >
+							<img alt="USGS Logo" src="../images/usgs_logo.jpg" >
 						</a>
 					</div>
 
