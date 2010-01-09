@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.geotools.data.FileDataStore;
 import org.geotools.data.shapefile.dbf.DbaseFileHeader;
 import org.geotools.data.shapefile.dbf.DbaseFileReader;
 import org.geotools.data.shapefile.shp.ShapefileReader;
@@ -295,4 +296,23 @@ public class GeoToolsFileAnalysisTest {
 		assertNotNull(result);
 	}
 	
+	@Test
+	public void testGetFileDataStore() {
+		String fileToLoad = this.tempDir 
+		+ this.seperator 
+		+ "Sample_Files" 
+		+ this.seperator
+		+ "Shapefiles" 
+		+ this.seperator
+		+ "hru20VSR.SHP";
+		
+		FileDataStore result = GeoToolsFileAnalysis.getFileDataStore(new File("does/not/exist"));
+		assertNull(result);
+		
+		result = GeoToolsFileAnalysis.getFileDataStore(null);
+		assertNull(result);
+		
+		result = GeoToolsFileAnalysis.getFileDataStore(new File(fileToLoad));
+		assertNotNull(result);
+	}
 }

@@ -5,12 +5,14 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.geotools.data.FileDataStore;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -228,5 +230,43 @@ public class FileHelperTest {
 		String fakeDirToList = this.tempDir + this.seperator + "9387509352";
 		result = FileHelper.getFileCollection(fakeDirToList, true);
 		assertNull(result);
+	}
+	
+	@Test
+	public void testGetShapeFileDataStores() {
+		String firstFileToLoad = this.tempDir 
+		+ this.seperator 
+		+ "Sample_Files" 
+		+ this.seperator
+		+ "Shapefiles" 
+		+ this.seperator
+		+ "hru20VSR.SHP";
+		
+		String secondFileToLoad = this.tempDir 
+		+ this.seperator 
+		+ "Sample_Files" 
+		+ this.seperator
+		+ "Shapefiles" 
+		+ this.seperator
+		+ "Yahara_River_HRUs_geo_WGS84.shp";
+		
+		List<String> fileList = new ArrayList<String>();
+		
+		List<FileDataStore> result = null;
+		result = FileHelper.getShapeFileDataStores(fileList);
+		assertNotNull(result);
+		assertTrue(result.isEmpty());
+		
+		fileList.add(firstFileToLoad);
+		result = FileHelper.getShapeFileDataStores(fileList);
+		assertNotNull(result);
+		assertFalse(result.isEmpty());
+		assertEquals(1, result.size());
+		
+		fileList.add(secondFileToLoad);
+		result = FileHelper.getShapeFileDataStores(fileList);
+		assertNotNull(result);
+		assertFalse(result.isEmpty());
+		assertEquals(2, result.size());
 	}
 }

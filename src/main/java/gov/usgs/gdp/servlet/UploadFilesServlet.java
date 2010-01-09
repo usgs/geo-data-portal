@@ -6,6 +6,7 @@ import gov.usgs.gdp.io.FileHelper;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -22,9 +23,6 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
-import org.geotools.data.shapefile.ShpFiles;
-import org.geotools.data.shapefile.shp.ShapefileException;
-import org.geotools.data.shapefile.shp.ShapefileReader;
 
 /**
  * Servlet implementation class UploadFilesServlet
@@ -59,7 +57,7 @@ public class UploadFilesServlet extends HttpServlet {
 	    String userDirectory = (String) request.getSession().getAttribute("userTempDir")+ seperator;
 		
 	    // Pull in the uploaded Files bean from the user's session
-	    FilesBean uploadedFilesBean = (request.getSession().getAttribute("uploadedFilesBean") == null) ? new FilesBean() : (FilesBean) request.getSession().getAttribute("uploadedFilesBean");
+	    List<FilesBean> uploadedFilesBean = (request.getSession().getAttribute("uploadedFilesBeanList") == null) ? new ArrayList<FilesBean>() : (List<FilesBean>) request.getSession().getAttribute("uploadedFilesBean");
 	    
 	    if ("delete".equals(action)) {
 	    	String filename = (request.getParameter("file") == null) ? "" : request.getParameter("file");
@@ -80,7 +78,7 @@ public class UploadFilesServlet extends HttpServlet {
 	    uploadedFilesBean = populateUploadedFilesBean(userDirectory);
 		
 	    // Place the bean in the user's session
-		request.getSession().setAttribute("uploadedFilesBean", uploadedFilesBean);
+		request.getSession().setAttribute("uploadedFilesBeanList", uploadedFilesBean);
 		
 		// Away we go
 		RequestDispatcher rd = request.getRequestDispatcher("/jsp/fileUpload.jsp");
@@ -88,10 +86,10 @@ public class UploadFilesServlet extends HttpServlet {
 		
 	}
 
-	private FilesBean populateUploadedFilesBean(String userDirectory) {
-		FilesBean result = new FilesBean();
+	private List<FilesBean> populateUploadedFilesBean(String userDirectory) {
+		List<FilesBean> result = new ArrayList<FilesBean>();
 		Collection<File> uploadedFiles = FileHelper.getFileCollection(userDirectory, true);
-		if (uploadedFiles != null) result.setFiles(uploadedFiles);
+		result = FilesBean.getFilesBeanSetList(uploadedFiles);
 		return result;
 	}
 

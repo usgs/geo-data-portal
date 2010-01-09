@@ -1,5 +1,22 @@
-.applicationFieldSet legend{
+.applicationFieldSet legend {
 	display: block !important;
+	width: 50%;
+}
+
+#shapeFileSetDiv {
+	width: 50%;
+	float: left;
+}
+
+#fileSetDiv {
+	width: 50%;
+	float: right;
+	background-color: #CCCCCC;	
+}
+
+#errorText {
+	color: #FF0000;
+	padding-top: 20px;
 }
 
 #formheader {
@@ -27,7 +44,7 @@
 	width: 700px;
 }
 
-#left_column, #right_column {
+#left_column,#right_column {
 	float: left;
 }
 
@@ -47,7 +64,7 @@ form {
 	font-size: small;
 }
 
-#publishing_table input, #com_services_table input {
+#publishing_table input,#com_services_table input {
 	width: 50px;
 }
 
@@ -67,31 +84,42 @@ form {
 }
 
 #prepared_table {
+	
 }
+
 #description_table {
 	width: 690px;
 }
+
 #prod_desc {
 	width: 680px;
 	height: 50px;
 }
+
 #status_desc {
 	width: 680px;
 	height: 25px;
 }
 
-#signatures, #signatures2 {
+#signatures,#signatures2 {
 	margin-top: 5px;
 	width: 690px;
 	text-align: left;
 }
+
 .sigs {
 	padding: 5px;
 	float: left;
 }
+
 .sigs2 {
 	padding: 5px;
 	float: right;
+}
+
+.summaryTextArea {
+	width: 100%;
+	text-align: left;
 }
 
 .nobr {
@@ -100,21 +128,27 @@ form {
 
 /*Second defintion of clearfix*/
 .clear-fix:after {
-    content: "."; 
-    display: block; 
-    height: 0; 
-    clear: both; 
-    visibility: hidden;
+	content: ".";
+	display: block;
+	height: 0;
+	clear: both;
+	visibility: hidden;
 }
 
-.clear-fix {display: inline-block;}
+.clear-fix {
+	display: inline-block;
+}
 
 /* Hides from IE-mac \*/
-* html .clear-fix {height: 1%;}
-.clear-fix {display: block;}
+* html .clear-fix {
+	height: 1%;
+}
+
+.clear-fix {
+	display: block;
+}
+
 /* End hide from IE-mac */
-
-
 #costCenterLink {
 	font-size: x-small;
 }
@@ -122,4 +156,3 @@ form {
 .yui-ac-bd ul {
 	list-style: none !important;
 }
-

@@ -12,6 +12,8 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.geotools.data.FileDataStore;
+import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.shapefile.ShpFiles;
 import org.geotools.data.shapefile.dbf.DbaseFileHeader;
 import org.geotools.data.shapefile.dbf.DbaseFileReader;
@@ -28,6 +30,17 @@ public class GeoToolsFileAnalysis {
 	public GeoToolsFileAnalysis() {
 		// Placeholder
 	}
+	
+	public static FileDataStore getFileDataStore(File file) {
+		if (file == null) return null;
+		try {
+			return FileDataStoreFinder.getDataStore(file);
+		} catch (IOException e) {
+			return null;
+		}
+	}
+	
+	
 	
 	/**
 	 * Reads in a File and transforms it to a DbaseFileReader object
@@ -133,7 +146,7 @@ public class GeoToolsFileAnalysis {
 			while (file.hasNext()) {
 				if (result == null) result = new ArrayList<String>();
 				ShapefileReader.Record nextRecord = file.nextRecord();
-				result.add("Record number: " + nextRecord.toString());
+				result.add("Record number: " + nextRecord.toString().trim());
 			}
 			file.close();
 			return result;
@@ -165,7 +178,7 @@ public class GeoToolsFileAnalysis {
 		ShapefileHeader shpHead = file.getHeader();
 		if (shpHead != null) {
 			result = new ArrayList<String>();
-			result.add(shpHead.toString());
+			result.add(shpHead.toString().trim());
 		}
 		return result;
 	}

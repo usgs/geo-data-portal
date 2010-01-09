@@ -1,6 +1,8 @@
 package gov.usgs.gdp.io;
 
 
+import gov.usgs.gdp.analysis.GeoToolsFileAnalysis;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.geotools.data.FileDataStore;
 
 public class FileHelper {
 
@@ -227,5 +230,16 @@ public class FileHelper {
 		
 		return result;
 	}
+
+	public static List<FileDataStore> getShapeFileDataStores(
+			List<String> shpFiles) {
+		List<FileDataStore> result = new ArrayList<FileDataStore>();
+		for (String file : shpFiles) {
+			FileDataStore fds = GeoToolsFileAnalysis.getFileDataStore(new File(file.trim()));
+			if (fds != null) result.add(fds);
+		}
+		return result;
+	}
+
 	
 }

@@ -5,9 +5,9 @@
 <c:import url="/jsp/footer.jsp" var="foot" />
 
 <c:set var="cont" value="<%=request.getContextPath()%>" />
-<jsp:useBean id="uploadedFilesBean" scope="session" class="gov.usgs.gdp.bean.FilesBean"  />
+<jsp:useBean id="uploadedFilesBeanList" scope="session" type="java.util.ArrayList<gov.usgs.gdp.bean.FilesBean>"  />
 
-<c:url var="filesProcessing" value="/Router?location=filesProcessing&action=initial"/>
+<c:url var="filesProcessing" value="/Router?location=filesProcessing"/>
 <c:url var="cdmProcessing" value="/jsp/cdmProcessing.jsp"/>
 <c:url var="deleteFile" value="/Router?location=uploadFiles&action=delete&file="/>
 
@@ -53,16 +53,19 @@ File Upload Area: <br />
 <br />
 
 Files Uploaded So Far This Session:<br />
+
 <fieldset class="applicationFieldSet">
 	<legend style="display: solid !important">
 		Uploaded File List
 	</legend>
-	<c:forEach var="file" items="${uploadedFilesBean.files}">
-		${file.name} <a href="${deleteFile}${file}">[- Delete -]</a><br />
-		<br />
+	<c:forEach var="files" items="${uploadedFilesBeanList}">
+		<c:forEach var="file" items="${files.files}">
+			${file.name} <a href="${deleteFile}${file}">[- Delete -]</a><br />
+			<br />
+		</c:forEach>
 	</c:forEach>
 </fieldset>
-	
+
 ${foot}
 </body>
 </html>

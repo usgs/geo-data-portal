@@ -60,14 +60,10 @@ public class GeoToolsServlet extends HttpServlet {
 	
 	private List<SummaryBean> summarize(HttpServletRequest request) {
 		String applicationTempDir = System.getProperty("applicationTempDir");
-		List<SummaryBean> result = null;
+		List<SummaryBean> result = new ArrayList<SummaryBean>();
 		
 		String[] checkboxItems = request.getParameterValues("fileName");
 		if (checkboxItems != null) {
-			
-			if (result == null) {
-				result = new ArrayList<SummaryBean>();
-			}
 			
 			for (String checkboxItem : checkboxItems) {
 				String fileName	= checkboxItem;
@@ -95,7 +91,7 @@ public class GeoToolsServlet extends HttpServlet {
 				SummaryBean summaryBean = new SummaryBean(checkboxItem, summaryResults);
 				result.add(summaryBean);
 			}
-		}
+		} 
 		return result;
 	}
 

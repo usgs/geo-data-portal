@@ -52,6 +52,14 @@
 		<servlet-class>
 		gov.usgs.gdp.servlet.FileSelectionServlet</servlet-class>
 	</servlet>
+	<servlet>
+		<description>
+		</description>
+		<display-name>FileProcessServlet</display-name>
+		<servlet-name>FileProcessServlet</servlet-name>
+		<servlet-class>
+		gov.usgs.gdp.servlet.FileProcessServlet</servlet-class>
+	</servlet>
 	<servlet-mapping>
 		<servlet-name>UploadFilesServlet</servlet-name>
 		<url-pattern>/UploadFilesServlet</url-pattern>
@@ -71,6 +79,10 @@
 	<servlet-mapping>
 		<servlet-name>FileSelectionServlet</servlet-name>
 		<url-pattern>/FileSelectionServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>FileProcessServlet</servlet-name>
+		<url-pattern>/FileProcessServlet</url-pattern>
 	</servlet-mapping>
 	
 	<welcome-file-list>

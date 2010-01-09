@@ -11,7 +11,7 @@
 <c:set var="process" value="/Router?location=geotoolsProcessing&action=processFiles&method=geoTools&function=summarize" />
 <c:set var="summarize" value="/Router?location=summarize" />
 <c:url var="upload" value="/Router?location=uploadFiles" />
-<c:url var="fileSelection" value="/Router?location=fileSelection" />
+<c:url var="fileSelection" value="/Router?location=filesProcessing" />
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -27,16 +27,18 @@ ${head}
 	<a href="${fileSelection}">Select Files For Processing</a>
 	<br />
 	<hr />
-	
-	<c:forEach var="summaryBean" items="${summaryBeanList}"> 
-			File Name: ${summaryBean.fileName} <hr />
-			<c:set var="summaryList" value="${summaryBean.fileSummary}" />
-			<c:forEach var="summaryLine" items="${summaryList}">
-				${summaryLine} <br />
-			</c:forEach>
-		<br /><br />
-	</c:forEach>
-	
+		<c:forEach var="summaryBean" items="${summaryBeanList}"> 
+				<c:set var="summaryList" value="${summaryBean.fileSummary}" />
+				File Name: ${summaryBean.fileName} <hr />
+				
+				<textarea class="summaryTextArea" rows="10">
+					<c:forEach var="summaryLine" items="${summaryList}">
+						${summaryLine}
+					</c:forEach>
+				</textarea>
+				
+			<br /><br />
+		</c:forEach>
 ${foot}
 </body>
 </html>
