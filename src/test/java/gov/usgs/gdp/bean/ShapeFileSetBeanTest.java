@@ -109,4 +109,44 @@ public class ShapeFileSetBeanTest {
 		assertNotNull(result);
 		assertFalse(result.isEmpty());
 	}
+	
+	@Test 
+	public void testGetFeatureListFromBean() {
+		String shpFile = this.tempDir 
+		+ this.seperator 
+		+ "Sample_Files" 
+		+ this.seperator
+		+ "Shapefiles" 
+		+ this.seperator
+		+ "hru20VSR.SHP";
+		
+		String prjFile = this.tempDir 
+		+ this.seperator 
+		+ "Sample_Files" 
+		+ this.seperator
+		+ "Shapefiles" 
+		+ this.seperator
+		+ "hru20VSR.PRJ";
+		String dbfFile = this.tempDir 
+		
+		+ this.seperator 
+		+ "Sample_Files" 
+		+ this.seperator
+		+ "Shapefiles" 
+		+ this.seperator
+		+ "hru20VSR.DBF";
+		
+		FilesBean filesBean = new FilesBean();
+		Collection<File> files = new ArrayList<File>();
+		files.add(new File(shpFile));
+		files.add(new File(prjFile));
+		files.add(new File(dbfFile));
+		filesBean.setFiles(files);
+		ShapeFileSetBean shapeFileSetBean = filesBean.getShapeFileSetBean();
+		shapeFileSetBean.setChosenAttribute("AREA");
+		List<String> result = ShapeFileSetBean.getFeatureListFromBean(shapeFileSetBean);
+		assertNotNull(result);
+		assertFalse(result.isEmpty());
+		
+	}
 }

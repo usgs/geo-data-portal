@@ -85,11 +85,12 @@ public class RouterServlet extends HttpServlet {
 			File projectionFile = null;
 			File shapeFile = null;
 			File dbFile = null;			
-			
+			File shapeFileIndexFile = null;
 			for (File file : exampleFilesBean.getFiles()) {
 				if (file.getName().toLowerCase().contains(".shp")) shapeFile = file;
 				if (file.getName().toLowerCase().contains(".prj")) projectionFile = file;
-				if (file.getName().toLowerCase().contains(".dbf")) dbFile= file;
+				if (file.getName().toLowerCase().contains(".dbf")) dbFile = file;
+				if (file.getName().toLowerCase().contains(".shx")) shapeFileIndexFile = file;
 			}
 			
 			if (projectionFile != null && shapeFile != null && dbFile != null) {
@@ -98,6 +99,7 @@ public class RouterServlet extends HttpServlet {
 				shapeFileSetBean.setDbfFile(dbFile);
 				shapeFileSetBean.setShapeFile(shapeFile);
 				shapeFileSetBean.setProjectionFile(projectionFile);
+				shapeFileSetBean.setShapeFileIndexFile(shapeFileIndexFile);
 				shapeFileSetBeanList.add(shapeFileSetBean);
 			}
 		}
