@@ -73,7 +73,6 @@ public class FileProcessServlet extends HttpServlet {
      */
     public FileProcessServlet() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
 	/**
@@ -88,47 +87,57 @@ public class FileProcessServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String action = (request.getParameter("action") == null) ? "" : request.getParameter("action").toLowerCase();
+		List<ShapeFileSetBean> shapeFileSetBeanList = (List<ShapeFileSetBean>) request.getSession().getAttribute("shapeFileSetBeanList");
+		List<ShapeFileSetBean> shapeFileSetBeanSubsetList = (List<ShapeFileSetBean>) request.getSession().getAttribute("shapeFileSetBeanSubsetList");
+
 		
 		MessageBean errorBean = new MessageBean();
+	    MessageBean messageBean = new MessageBean();
 		String forwardTo = "";
 		
 		if (action == null || "".equals(action)) {
-			errorBean.getMessages().add("Unable to parse action.");
-		} else if ("step1".equals(action)) {
-			List<ShapeFileSetBean> shapeFileSetBeanList = (List<ShapeFileSetBean>) request.getSession().getAttribute("shapeFileSetBeanList");
+			errorBean.addMessage("Your action was not read in properly. Please try again");
+			request.setAttribute("messageBean", messageBean);
+			request.setAttribute("errorBean", errorBean);
+			RequestDispatcher rd = request.getRequestDispatcher("/jsp/fileSelection.jsp");
+			rd.forward(request, response);
+			return;
+		} 
+	
+		if ("step1".equals(action)) {
+			String[] checkboxItems = request.getParameterValues("fileName");
+			
 			if (shapeFileSetBeanList == null) {
-				errorBean.getMessages().add("Unable to retrieve shape file set lists.");
-				forwardTo = "/jsp/fileSelection.jsp";
-			} else {
-				
-				String[] checkboxItems = request.getParameterValues("fileName");
-				if (checkboxItems != null) {
-					
-					// Get the subset of ShapeFile sets the user wants to work on
-					List<ShapeFileSetBean> shpFilesSetSubList = new ArrayList<ShapeFileSetBean>();
-					for (String item : checkboxItems) {
-						for (ShapeFileSetBean shapeFileSetBean : shapeFileSetBeanList) {
-							if (shapeFileSetBean.getName().equals(item)) {
-								shpFilesSetSubList.add(shapeFileSetBean);
-							}
-						}
-					}
-					
-					// Populate the attribute values of each ShapeFileSet
-					for (ShapeFileSetBean shapeFileSetBean : shpFilesSetSubList) {
-						shapeFileSetBean.setAttributeList(ShapeFileSetBean.getAttributeListFromBean(shapeFileSetBean));
-					}
-					request.getSession().setAttribute("shapeFileSetBeanSubsetList", shpFilesSetSubList);
-					forwardTo = "/jsp/attributeSelection.jsp";
-					
-				} else {
-					errorBean.getMessages().add("You must select at least one file to process.");
-					forwardTo = "/jsp/fileSelection.jsp";
-				}
+				errorBean.addMessage("Unable to retrieve shape file set lists. Please choose new shape file(s).");
+				request.setAttribute("messageBean", messageBean);
+				request.setAttribute("errorBean", errorBean);
+				RequestDispatcher rd = request.getRequestDispatcher("/jsp/fileSelection.jsp");
+				rd.forward(request, response);
+				return;
+			} 
+							
+			if (checkboxItems == null || checkboxItems.length == 0) {
+				errorBean.addMessage("You must select at least one file to process.");
+				request.setAttribute("messageBean", messageBean);
+				request.setAttribute("errorBean", errorBean);
+				RequestDispatcher rd = request.getRequestDispatcher("/jsp/fileSelection.jsp");
+				rd.forward(request, response);
+				return;
+			} 
+			
+			// Get the subset of ShapeFile sets the user wants to work on
+			List<ShapeFileSetBean> shpFilesSetSubList = getShapeFilesSetSubList(checkboxItems, shapeFileSetBeanList);
+			
+			// Populate the attribute values of each ShapeFileSet
+			for (ShapeFileSetBean shapeFileSetBean : shpFilesSetSubList) {
+				shapeFileSetBean.setAttributeList(ShapeFileSetBean.getAttributeListFromBean(shapeFileSetBean));
 			}
+			
+			request.getSession().setAttribute("shapeFileSetBeanSubsetList", shpFilesSetSubList);
+			forwardTo = "/jsp/attributeSelection.jsp";
+				
 		} else if ("step2".equals(action)) { // Attributes chosen, set up feature list 
 			String[] attributeSelections = request.getParameterValues("attributeSelection");
-			List<ShapeFileSetBean> shapeFileSetBeanSubsetList = (List<ShapeFileSetBean>) request.getSession().getAttribute("shapeFileSetBeanSubsetList");
 			
 			// Set the chosen attribute on the ShapeFileSetBeans
 			for (String attributeSelection : attributeSelections) {
@@ -151,7 +160,6 @@ public class FileProcessServlet extends HttpServlet {
 		} else if ("step3".equals(action)) { 
 			// Set the chosen feature to work with on the bean
 			String[] featureSelections = request.getParameterValues("featureSelection");			
-			List<ShapeFileSetBean> shapeFileSetBeanSubsetList = (List<ShapeFileSetBean>) request.getSession().getAttribute("shapeFileSetBeanSubsetList");
 			
 			// Set the chosen feature on the ShapeFileSetBeans			
 			for (String featureSelection : featureSelections) {
@@ -166,7 +174,6 @@ public class FileProcessServlet extends HttpServlet {
 			request.getSession().setAttribute("shapeFileSetBeanSubsetList", shapeFileSetBeanSubsetList);			
 			forwardTo = "/jsp/THREDDSSelection.jsp";
 		} else if ("step4".equals(action)) {
-			List<ShapeFileSetBean> shapeFileSetBeanSubsetList = (List<ShapeFileSetBean>) request.getSession().getAttribute("shapeFileSetBeanSubsetList");
 			THREDDSInfoBean threddsInfoBean = new THREDDSInfoBean();
 			String THREDDSUrl = request.getParameter("THREDDSUrl");
 			
@@ -287,7 +294,10 @@ public class FileProcessServlet extends HttpServlet {
 			forwardTo = "/jsp/TimePeriodSelection.jsp";
 		} else if ("step7".equals(action)) {
 			THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");	
-			List<ShapeFileSetBean> shapeFileSetBeanSubsetList = (List<ShapeFileSetBean>) request.getSession().getAttribute("shapeFileSetBeanSubsetList");
+			String fromTime = request.getParameter("timeFromSelection");
+			String toTime = request.getParameter("timeToSelection");
+			threddsInfoBean.setFromTime(fromTime);
+			threddsInfoBean.setToTime(toTime);
 			for (ShapeFileSetBean shapeFileSetBean : shapeFileSetBeanSubsetList) {
 				FileDataStore shapeFileDataStore = FileDataStoreFinder.getDataStore(shapeFileSetBean.getShapeFile());
 				FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = shapeFileDataStore.getFeatureSource();
@@ -363,17 +373,33 @@ public class FileProcessServlet extends HttpServlet {
 		            
 		            outputFile.delete();
 		            outputGrid.writeFile(outputFile.toString());
+		            request.setAttribute("fileLink", outputFile.getPath());
 		        } finally {
 		            gridDataset.close();
 		        }
+		        forwardTo = "/jsp/downloadCompletedFile.jsp";
 				
 			}
 			
 		}
-
+		request.setAttribute("messageBean", messageBean);
 		request.setAttribute("errorBean", errorBean);
 		RequestDispatcher rd = request.getRequestDispatcher(forwardTo);
 		rd.forward(request, response);
+	}
+
+	private List<ShapeFileSetBean> getShapeFilesSetSubList(String[] checkboxItems, List<ShapeFileSetBean> shapeFileSetBeanList) {
+		List<ShapeFileSetBean> result = new ArrayList<ShapeFileSetBean>();
+		
+		for (String item : checkboxItems) {
+			for (ShapeFileSetBean shapeFileSetBean : shapeFileSetBeanList) {
+				if (shapeFileSetBean.getName().equals(item)) {
+					result.add(shapeFileSetBean);
+				}
+			}
+		}
+		
+		return result;
 	}
 
 	private final static class ShapedGridReader implements ProxyReader {

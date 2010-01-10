@@ -47,7 +47,7 @@ public class SummaryServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String action	= (request.getParameter("action") == null) ? "" : request.getParameter("action").toLowerCase();
+		String action	= (request.getParameter("action") == null) ? "" : request.getParameter("action").toLowerCase();		
 		MessageBean errorBean = new MessageBean();
 	    MessageBean messageBean = new MessageBean();
 		    

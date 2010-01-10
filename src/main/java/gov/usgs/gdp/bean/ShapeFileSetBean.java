@@ -42,7 +42,6 @@ public class ShapeFileSetBean implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	public static List<String> getAttributeListFromBean(ShapeFileSetBean shapeFileSetBean) {
-		
 		List<String> result = new ArrayList<String>();
 		FileDataStore fds = GeoToolsFileAnalysis.getFileDataStore(shapeFileSetBean.getShapeFile());		
 		FeatureSource<SimpleFeatureType, SimpleFeature> featureSource;

@@ -11,6 +11,7 @@
 
 <jsp:useBean id="shapeFileSetBeanSubsetList" scope="session" type="java.util.ArrayList<gov.usgs.gdp.bean.ShapeFileSetBean>"  />
 <jsp:useBean id="errorBean" scope="request" class="gov.usgs.gdp.bean.MessageBean"  />
+<jsp:useBean id="messageBean" scope="request" class="gov.usgs.gdp.bean.MessageBean"  />
 <jsp:useBean id="threddsInfoBean" scope="session" class="gov.usgs.gdp.bean.THREDDSInfoBean"  />
 
 <c:set var="process" value="/Router?location=processFiles&action=step5" />
@@ -66,14 +67,21 @@ ${head}
 				onclick="document.processFiles.action='${cont}${process}';document.processFiles.submit()" />		
 		</form>
 
-		
-		<div id="errorText">
-			<ul>
-				<c:forEach var="error" items="${errorBean.errors}">				
-					<li>${error}</li>
-				</c:forEach>
-			</ul>
-		</div>
+<div id="errorText">
+	<ul>
+		<c:forEach var="error" items="${errorBean.messages}">				
+			<li>${error}</li>
+			<br />
+		</c:forEach>
+	</ul>
+</div>
+<div id="messageText">
+	<ul>
+		<c:forEach var="message" items="${messageBean.messages}">				
+			<li>${message}</li>
+		</c:forEach>
+	</ul>
+</div>
 ${foot}
 </body>
 </html>

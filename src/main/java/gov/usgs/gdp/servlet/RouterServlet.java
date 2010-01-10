@@ -58,6 +58,7 @@ public class RouterServlet extends HttpServlet {
 		String applicationTempDir 				= System.getProperty("applicationTempDir");
 		String location							= (request.getParameter("location") == null) ? "" : request.getParameter("location").toLowerCase();
 		String action							= (request.getParameter("action") == null) ? "" : request.getParameter("action").toLowerCase();
+		String file 							= (request.getParameter("file") == null) ? "" : request.getParameter("file");
 		List<FilesBean> exampleFilesBeanList 	= (List<FilesBean>) request.getSession().getAttribute("exampleFileBeanList");
 		List<FilesBean> uploadedFilesBeanList 	= (List<FilesBean>) request.getSession().getAttribute("uploadedFilesBeanList");	
 		String forwardTo 						= "";
@@ -104,6 +105,8 @@ public class RouterServlet extends HttpServlet {
 			forwardTo = "/FileSelectionServlet?action=summarize";
 		} else if ("processfiles".equals(location)) {
 			forwardTo = "/FileProcessServlet?action=" + action;
+		} else if ("downloadfile".equals(location)) {
+			forwardTo = "/FileUploadServlet?file=" + file;
 		}
 		
 		// Forward the user to their destination

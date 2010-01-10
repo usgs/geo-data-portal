@@ -10,6 +10,7 @@
 
 <jsp:useBean id="shapeFileSetBeanSubsetList" scope="session" type="java.util.ArrayList<gov.usgs.gdp.bean.ShapeFileSetBean>"  />
 <jsp:useBean id="errorBean" scope="request" class="gov.usgs.gdp.bean.MessageBean"  />
+<jsp:useBean id="messageBean" scope="request" class="gov.usgs.gdp.bean.MessageBean"  />>
 
 <c:set var="process" value="/Router?location=processFiles&action=step2" />
 <c:set var="summarize" value="/Router?location=summarize" />
@@ -56,10 +57,19 @@ ${head}
 		</form>
 	</div>
 	<div id="errorText">
-		<c:forEach var="error" items="${errorBean.errors}">				
-			${error}
-			<br />
-		</c:forEach>
+		<ul>
+			<c:forEach var="error" items="${errorBean.messages}">				
+				<li>${error}</li>
+				<br />
+			</c:forEach>
+		</ul>
+	</div>
+	<div id="messageText">
+		<ul>
+			<c:forEach var="message" items="${messageBean.messages}">				
+				<li>${message}</li>
+			</c:forEach>
+		</ul>
 	</div>
 ${foot}
 </body>
