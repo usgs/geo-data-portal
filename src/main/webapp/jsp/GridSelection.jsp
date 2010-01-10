@@ -13,7 +13,7 @@
 <jsp:useBean id="errorBean" scope="request" class="gov.usgs.gdp.bean.ErrorBean"  />
 <jsp:useBean id="threddsInfoBean" scope="session" class="gov.usgs.gdp.bean.THREDDSInfoBean"  />
 
-<c:set var="process" value="/Router?location=processFiles&action=step5" />
+<c:set var="process" value="/Router?location=processFiles&action=step6" />
 <c:set var="summarize" value="/Router?location=summarize" />
 <c:url var="upload" value="/Router?location=uploadFiles" />
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -23,7 +23,7 @@
 	<link rel="stylesheet" href="${cont}/css/gdp_main.css"  title="USGS Full Width Nav" media="projection, screen, tv" type="text/css">
 	<link rel="stylesheet" href="${cont}/css/gdp_main_print.css"  title="USGS Full Width Nav" media="print" type="text/css">
 	<link rel="stylesheet" href="${cont}/css/full_width.css"  title="USGS Full Width Nav" media="projection, screen, tv" type="text/css">
-	<title>Select Dataset To Work With</title>
+	<title>Select Grid To Work With</title>
 </head>
 <script type="text/javascript">
 
@@ -45,17 +45,16 @@ ${head}
 				Attribute: ${shapeFileSetBean.chosenAttribute} <br />
 				Feature: ${shapeFileSetBean.chosenFeature} <br />
 				THREDDS Server: ${threddsInfoBean.THREDDSServer}
+				DataSet: ${threddsInfoBean.dataSetNameSelection}
 			</fieldset>
 		</c:forEach>		
 	</div>
 	
 		<form id="processFiles" method="post" name="processFiles" action="${cont}">
 			Please choose a data set to work with:<br />
-			<select id="datasetSelect" name="datasetSelection">
-				<c:set var="openDapStandardURLNameList" value="${threddsInfoBean.openDapStandardURLNameList}" />
-				<c:set var="openDapDataSetNameList" value="${threddsInfoBean.openDapDataSetNameList}" />
-				<c:forEach var="openDapStandardURLNameListItem"  varStatus="listCount" items="${openDapStandardURLNameList}">
-						<option value="${openDapStandardURLNameListItem}:::${openDapDataSetNameList[listCount.count - 1]}" />${openDapDataSetNameList[listCount.count - 1]}
+			<select id="gridSelect" name="gridSelection">
+				<c:forEach var="gridItem" items="${threddsInfoBean.openDapGridItems}">
+						<option value="${gridItem}" />${gridItem}
 				</c:forEach>
 			</select>
 			<br />

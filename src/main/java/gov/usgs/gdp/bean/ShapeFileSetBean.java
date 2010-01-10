@@ -31,11 +31,10 @@ public class ShapeFileSetBean implements Serializable {
 	private String name;
 	private List<String> attributeList;
 	private List<String> featureList;
-	private List<String> datasetList;
 	private String chosenDataset;
 	private String chosenAttribute;
 	private String chosenFeature;
-	private InvCatalog THREDDSCatalog;
+
 
 	/**
 	 * 
@@ -166,22 +165,6 @@ public class ShapeFileSetBean implements Serializable {
 		this.shapeFileIndexFile = shapeFileIndexFile;
 	}
 
-	public InvCatalog getTHREDDSCatalog() {
-		return THREDDSCatalog;
-	}
-
-	public void setTHREDDSCatalog(InvCatalog tHREDDSCatalog) {
-		THREDDSCatalog = tHREDDSCatalog;
-	}
-
-	public List<String> getDatasetList() {
-		return datasetList;
-	}
-
-	public void setDatasetList(List<String> datasetList) {
-		this.datasetList = datasetList;
-	}
-
 	public String getChosenDataset() {
 		return chosenDataset;
 	}
@@ -189,5 +172,5 @@ public class ShapeFileSetBean implements Serializable {
 	public void setChosenDataset(String chosenDataset) {
 		this.chosenDataset = chosenDataset;
 	}
-	
+
 }
