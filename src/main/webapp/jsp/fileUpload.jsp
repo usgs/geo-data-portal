@@ -6,6 +6,8 @@
 
 <c:set var="cont" value="<%=request.getContextPath()%>" />
 <jsp:useBean id="uploadedFilesBeanList" scope="session" type="java.util.ArrayList<gov.usgs.gdp.bean.FilesBean>"  />
+<jsp:useBean id="errorBean" scope="request" class="gov.usgs.gdp.bean.MessageBean"  />
+<jsp:useBean id="messageBean" scope="request" class="gov.usgs.gdp.bean.MessageBean"  />
 
 <c:url var="filesProcessing" value="/Router?location=filesProcessing"/>
 <c:url var="cdmProcessing" value="/jsp/cdmProcessing.jsp"/>
@@ -65,7 +67,22 @@ Files Uploaded So Far This Session:<br />
 		</c:forEach>
 	</c:forEach>
 </fieldset>
-
+<br />
+	<div id="errorText">
+		<ul>
+			<c:forEach var="error" items="${errorBean.messages}">				
+				<li>${error}</li>
+				<br />
+			</c:forEach>
+		</ul>
+	</div>
+	<div id="messageText">
+		<ul>
+			<c:forEach var="message" items="${messageBean.messages}">				
+				<li>${message}</li>
+			</c:forEach>
+		</ul>
+	</div>
 ${foot}
 </body>
 </html>

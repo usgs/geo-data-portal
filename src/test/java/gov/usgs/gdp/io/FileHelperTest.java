@@ -3,6 +3,7 @@ package gov.usgs.gdp.io;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -10,6 +11,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.geotools.data.FileDataStore;
@@ -99,6 +102,23 @@ public class FileHelperTest {
 	}
 	
 	@Test 
+	public void testDeleteFileQuietly() {
+		String fileToLoad = this.tempDir 
+		+ this.seperator 
+		+ "Sample_Files" 
+		+ this.seperator
+		+ "Shapefiles" 
+		+ this.seperator
+		+ "hru20VSR.SHX";
+		
+		boolean result = FileHelper.deleteFileQuietly("File/That/Doesnt/Exist");
+		assertFalse(result);
+		result = FileHelper.deleteFileQuietly(fileToLoad);
+		assertTrue(result);
+	}
+	
+	
+	@Test 
 	public void testDeleteFile() {
 		String fileToLoad = this.tempDir 
 		+ this.seperator 
@@ -108,7 +128,12 @@ public class FileHelperTest {
 		+ this.seperator
 		+ "hru20VSR.SHX";
 		
-		boolean result = FileHelper.deleteFile("File/That/Doesnt/Exist");
+		boolean result = false;
+		try {
+			FileHelper.deleteFile("File/That/Doesnt/Exist");
+		} catch (SecurityException e) {
+			fail(e.getMessage());
+		}
 		assertFalse(result);
 		result = FileHelper.deleteFile(fileToLoad);
 		assertTrue(result);
@@ -127,22 +152,54 @@ public class FileHelperTest {
 		
 		String dirToDelete = this.tempDir 
 		+ this.seperator;
-		boolean result = FileHelper.deleteDirRecursively(new File(dirToDelete));
-		assertTrue(result);
-		result = FileHelper.deleteDirRecursively(new File("Directory/That/Doesnt/Exist"));
-		assertFalse(result);
-		result = FileHelper.deleteDirRecursively(lockedFile);
+		boolean result = false; 
+			try {
+				result = FileHelper.deleteDirRecursively(new File(dirToDelete));
+				assertTrue(result);
+			} catch (IOException e) {
+				fail(e.getMessage());
+			}
+		
+		
+		try {
+			result = FileHelper.deleteDirRecursively("Directory/That/Doesnt/Exist");
+			assertFalse(result);
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		
+		try {
+			result = FileHelper.deleteDirRecursively(new File("Directory/That/Doesnt/Exist"));
+			assertFalse(result);
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		
+		try {
+			result = FileHelper.deleteDirRecursively(lockedFile);
+		}  catch (IOException e) {
+			fail(e.getMessage());
+		}
 		assertFalse(result);
 		lockedFile.setWritable(true);
-		FileHelper.deleteFile(lockedFile);
+		FileHelper.deleteFileQuietly(lockedFile);
 	}
 	
 	@Test public void testDeleteDirRecursivelyUsingString() {
 		String dirToDelete = this.tempDir 
 		+ this.seperator;
-		boolean result = FileHelper.deleteDirRecursively(dirToDelete);
+		boolean result = false;
+		try {
+			result = FileHelper.deleteDirRecursively(dirToDelete);
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
 		assertTrue(result);
-		result = FileHelper.deleteDirRecursively("Directory/That/Doesnt/Exist");
+		try {
+			result = FileHelper.deleteDirRecursively("Directory/That/Doesnt/Exist");
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
 		assertFalse(result);
 	}
 	
@@ -228,8 +285,12 @@ public class FileHelperTest {
 		assertNotNull("File listing came back null", result);
 		assertFalse("There were no files listed", result.isEmpty());
 		String fakeDirToList = this.tempDir + this.seperator + "9387509352";
-		result = FileHelper.getFileCollection(fakeDirToList, true);
-		assertNull(result);
+		try {
+			result = FileHelper.getFileCollection(fakeDirToList, true);
+		} catch (IllegalArgumentException e) {
+			assertNotNull(e);
+		}
+		
 	}
 	
 	@Test
@@ -269,4 +330,25 @@ public class FileHelperTest {
 		assertFalse(result.isEmpty());
 		assertEquals(2, result.size());
 	}
+	/*
+	@Test 
+	public void testSaveFileItems() {
+		String firstFileToLoad = "hru20VSR.SHP";
+		
+		String secondFileToLoad = "Yahara_River_HRUs_geo_WGS84.shp";
+		
+		boolean result = false;
+		FileItem file1 = new DiskFileItem("A", null, false, firstFileToLoad, 100000000, new File(this.tempDir));
+		FileItem file2 = new DiskFileItem("A", null, false, secondFileToLoad, 100000000, new File(this.tempDir));
+		List<FileItem> files = new ArrayList<FileItem>();
+		files.add(file1);
+		files.add(file2);
+		
+		try {
+			result = FileHelper.saveFileItems(this.tempDir, files);
+			assertTrue(result);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}*/
 }

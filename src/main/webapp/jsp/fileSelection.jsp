@@ -13,7 +13,7 @@
 <jsp:useBean id="uploadedFilesBeanList" scope="session" type="java.util.ArrayList<gov.usgs.gdp.bean.FilesBean>"  />
 <jsp:useBean id="shapeFileSetBeanList" scope="session" type="java.util.ArrayList<gov.usgs.gdp.bean.ShapeFileSetBean>"  />
 
-<jsp:useBean id="errorBean" scope="request" class="gov.usgs.gdp.bean.ErrorBean"  />
+<jsp:useBean id="errorBean" scope="request" class="gov.usgs.gdp.bean.MessageBean"  />
 
 <c:set var="process" value="/Router?location=processFiles&action=step1" />
 <c:set var="summarize" value="/Router?location=summarize" />
@@ -91,7 +91,7 @@ ${head}
 		
 	</div>
 	<div id="errorText">
-		<c:forEach var="error" items="${errorBean.errors}">				
+		<c:forEach var="error" items="${errorBean.messages}">				
 			${error}
 			<br />
 		</c:forEach>

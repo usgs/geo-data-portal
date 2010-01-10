@@ -1,5 +1,6 @@
 package gov.usgs.gdp.servlet;
 
+import java.io.IOException;
 import java.util.Date;
 
 import gov.usgs.gdp.io.FileHelper;
@@ -102,12 +103,17 @@ public class SessionListener implements HttpSessionListener, HttpSessionAttribut
     public void sessionDestroyed(HttpSessionEvent arg0) {
     	log.debug("Session is dying. Cleaning up.");
     	String userTempDir = (String) arg0.getSession().getAttribute("userTempDir");
-    	if (FileHelper.deleteDirRecursively(userTempDir)) {
-    		log.debug("User subdirectory deleted at: " + userTempDir);
-    	} else {
-        	log.debug("User subdirectory could not be deleted at: " + userTempDir);
-        	log.debug("This should be manually removed at a later point or will automatically be removed when application ends.");
-        }
+    	try {
+			if (FileHelper.deleteDirRecursively(userTempDir)) {
+				log.debug("User subdirectory deleted at: " + userTempDir);
+			} else {
+				log.debug("User subdirectory could not be deleted at: " + userTempDir);
+				log.debug("This should be manually removed at a later point or will automatically be removed when application ends.");
+			}
+		} catch (IOException e) {
+			log.debug("User subdirectory could not be deleted at: " + userTempDir);
+			log.debug("This should be manually removed at a later point or will automatically be removed when application ends.");
+		}
     }
 	
 }

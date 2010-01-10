@@ -19,6 +19,11 @@
 	padding-top: 20px;
 }
 
+#messageText {
+	color: #00FF00;
+	padding-top: 20px;
+}
+
 #formheader {
 	text-align: center;
 	width: 100%;

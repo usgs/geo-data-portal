@@ -10,7 +10,7 @@
 <c:import url="/jsp/footer.jsp" var="foot" />
 
 <jsp:useBean id="shapeFileSetBeanSubsetList" scope="session" type="java.util.ArrayList<gov.usgs.gdp.bean.ShapeFileSetBean>"  />
-<jsp:useBean id="errorBean" scope="request" class="gov.usgs.gdp.bean.ErrorBean"  />
+<jsp:useBean id="errorBean" scope="request" class="gov.usgs.gdp.bean.MessageBean"  />
 <jsp:useBean id="threddsInfoBean" scope="session" class="gov.usgs.gdp.bean.THREDDSInfoBean"  />
 
 <c:set var="process" value="/Router?location=processFiles&action=step5" />

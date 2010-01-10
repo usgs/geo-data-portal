@@ -6,12 +6,11 @@ import gov.usgs.gdp.analysis.GeoToolsFileAnalysis;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.geotools.data.FileDataStore;
 
@@ -57,14 +56,10 @@ public class FileHelper {
 	 * @param directory
 	 * @return
 	 */
-	public static  boolean deleteDirRecursively(File directory) {
-		try {
+	public static  boolean deleteDirRecursively(File directory) throws IOException {
 			if (!directory.exists()) return false;
 			FileUtils.deleteDirectory(directory);
 			return true;
-		} catch (IOException e) {
-			return false;
-		}
 	}
 
 	/**
@@ -72,7 +67,7 @@ public class FileHelper {
 	 * @param directory
 	 * @return
 	 */
-	public static  boolean deleteDirRecursively(String directory) {
+	public static  boolean deleteDirRecursively(String directory) throws IOException {
 		boolean result = false;
 		File dir = new File(directory);
 		if (!dir.exists()) return false;
@@ -86,12 +81,20 @@ public class FileHelper {
 	 * @param filePath
 	 * @return
 	 */
-	public static boolean deleteFile(String filePath) {
+	public static boolean deleteFileQuietly(String filePath) {
 		return FileUtils.deleteQuietly(new File(filePath));
 	}
 	
-	public static boolean deleteFile(File file) {
+	public static boolean deleteFileQuietly(File file) {
 		return FileUtils.deleteQuietly(file);
+	}
+	
+	public static boolean deleteFile(String filePath) throws SecurityException {
+		return FileHelper.deleteFile(new File(filePath));
+	}
+	
+	public static boolean deleteFile(File file) throws SecurityException {
+		return file.delete();
 	}
 	
 	public static File findFile(String file, String rootPath) {
@@ -156,12 +159,9 @@ public class FileHelper {
 	 * @param recursive
 	 * @return
 	 */
-	public static Collection<File> getFileCollection(String filePath, boolean recursive) {
-		Collection<File> result = null;
-		
-		result = FileHelper.getFileCollection(filePath, null, recursive);
-		
-		return result;
+	@SuppressWarnings("unchecked")
+	public static Collection<File> getFileCollection(String filePath, boolean recursive) throws IllegalArgumentException {
+		return (Collection<File>) FileHelper.getFileCollection(filePath, null, recursive);
 	}
 
 	/**
@@ -172,18 +172,15 @@ public class FileHelper {
 	 * @param recursive
 	 * @return
 	 */
-	public static Collection<File> getFileCollection(String filePath, String[] extensions, boolean recursive) {
+	@SuppressWarnings("unchecked")
+	public static Collection<?> getFileCollection(String filePath, String[] extensions, boolean recursive) throws IllegalArgumentException {
 		if (filePath == null) return null;
-		Collection<File> result = null;
-		try {
-			result = FileUtils.listFiles((new File(filePath)), extensions,
-					recursive);
-		} catch (IllegalArgumentException e) {
-			return null;
+		Collection<File> result = null;		
+		Object interimResult = FileUtils.listFiles((new File(filePath)), extensions, recursive);
+		if (interimResult instanceof Collection<?>) {
+			result = (Collection<File>) interimResult;
 		}
-		
 		return result;
-		
 	}
 	
 	/**
@@ -231,6 +228,22 @@ public class FileHelper {
 		return result;
 	}
 
+	public static boolean saveFileItems(String directory, List<FileItem> items) throws Exception {
+		// process the uploaded items
+		Iterator<FileItem> iter = items.iterator();
+		while (iter.hasNext()) {
+			FileItem item = iter.next();
+			
+		    String fileName = item.getName();
+		    String tempFile = directory + java.io.File.separator + fileName;
+		    if (fileName != null && !"".equals(fileName) ) {
+			    File uploadedFile = new File(tempFile);
+			    item.write(uploadedFile);
+		    }
+		}
+		return true;
+	}
+	
 	public static List<FileDataStore> getShapeFileDataStores(
 			List<String> shpFiles) {
 		List<FileDataStore> result = new ArrayList<FileDataStore>();

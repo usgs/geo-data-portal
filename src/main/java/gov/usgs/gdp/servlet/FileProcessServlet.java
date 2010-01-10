@@ -1,7 +1,7 @@
 package gov.usgs.gdp.servlet;
 
 import gov.usgs.gdp.analysis.NetCDFUtility;
-import gov.usgs.gdp.bean.ErrorBean;
+import gov.usgs.gdp.bean.MessageBean;
 import gov.usgs.gdp.bean.ShapeFileSetBean;
 import gov.usgs.gdp.bean.THREDDSInfoBean;
 import gov.usgs.gdp.io.FileHelper;
@@ -89,15 +89,15 @@ public class FileProcessServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String action = (request.getParameter("action") == null) ? "" : request.getParameter("action").toLowerCase();
 		
-		ErrorBean errorBean = new ErrorBean();
+		MessageBean errorBean = new MessageBean();
 		String forwardTo = "";
 		
 		if (action == null || "".equals(action)) {
-			errorBean.getErrors().add("Unable to parse action.");
+			errorBean.getMessages().add("Unable to parse action.");
 		} else if ("step1".equals(action)) {
 			List<ShapeFileSetBean> shapeFileSetBeanList = (List<ShapeFileSetBean>) request.getSession().getAttribute("shapeFileSetBeanList");
 			if (shapeFileSetBeanList == null) {
-				errorBean.getErrors().add("Unable to retrieve shape file set lists.");
+				errorBean.getMessages().add("Unable to retrieve shape file set lists.");
 				forwardTo = "/jsp/fileSelection.jsp";
 			} else {
 				
@@ -122,7 +122,7 @@ public class FileProcessServlet extends HttpServlet {
 					forwardTo = "/jsp/attributeSelection.jsp";
 					
 				} else {
-					errorBean.getErrors().add("You must select at least one file to process.");
+					errorBean.getMessages().add("You must select at least one file to process.");
 					forwardTo = "/jsp/fileSelection.jsp";
 				}
 			}
@@ -172,7 +172,7 @@ public class FileProcessServlet extends HttpServlet {
 			
 			List<InvAccess> openDapResources = new LinkedList<InvAccess>();
 			if (THREDDSUrl == null || "".equals(THREDDSUrl)) {
-				errorBean.getErrors().add("You must select a THREDDS URL to work with..");
+				errorBean.getMessages().add("You must select a THREDDS URL to work with..");
 				request.setAttribute("errorBean", errorBean);
 				RequestDispatcher rd = request.getRequestDispatcher("/jsp/THREDDSSelection.jsp");
         		rd.forward(request, response);
@@ -186,7 +186,7 @@ public class FileProcessServlet extends HttpServlet {
 			InvCatalog catalog = factory.readXML(catalogURI);
 			StringBuilder buff = new StringBuilder();
             if (!catalog.check(buff)) {
-            	errorBean.getErrors().add(buff.toString());
+            	errorBean.getMessages().add(buff.toString());
             	request.setAttribute("errorBean", errorBean);
         		RequestDispatcher rd = request.getRequestDispatcher("/jsp/THREDDSSelection.jsp");
         		rd.forward(request, response);
@@ -196,7 +196,7 @@ public class FileProcessServlet extends HttpServlet {
             // Grab resources from the THREDDS catalog
         	openDapResources = NetCDFUtility.getOpenDapResources(catalog);
         	if (openDapResources == null) {
-        		errorBean.getErrors().add("Could not pull information from THREDDS Server");
+        		errorBean.getMessages().add("Could not pull information from THREDDS Server");
         		request.setAttribute("errorBean", errorBean);
         		RequestDispatcher rd = request.getRequestDispatcher("/jsp/THREDDSSelection.jsp");
         		rd.forward(request, response);
@@ -215,7 +215,7 @@ public class FileProcessServlet extends HttpServlet {
 			
 			String dataSetSelection = request.getParameter("datasetSelection");
 			if (dataSetSelection == null || "".equals(dataSetSelection)) {
-				errorBean.getErrors().add("Did not get a DataSet selection. Please try again.");
+				errorBean.getMessages().add("Did not get a DataSet selection. Please try again.");
         		request.setAttribute("errorBean", errorBean);
         		RequestDispatcher rd = request.getRequestDispatcher("/jsp/DataSetSelection.jsp");
         		rd.forward(request, response);
@@ -233,8 +233,8 @@ public class FileProcessServlet extends HttpServlet {
 			GridDataset gridDataSet = (GridDataset) FeatureDatasetFactoryManager.open(
 		                FeatureType.GRID, dataSetUrl, null, errorLog);
 			if (gridDataSet == null) {
-				errorBean.getErrors().add("Could not open a grid at location: " + dataSetUrl);
-				errorBean.getErrors().add("Reason: " + errorLog);
+				errorBean.getMessages().add("Could not open a grid at location: " + dataSetUrl);
+				errorBean.getMessages().add("Reason: " + errorLog);
         		request.setAttribute("errorBean", errorBean);
         		RequestDispatcher rd = request.getRequestDispatcher("/jsp/DataSetSelection.jsp");
         		rd.forward(request, response);
@@ -255,7 +255,7 @@ public class FileProcessServlet extends HttpServlet {
 			THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");		
 			String gridSelection = request.getParameter("gridSelection");
 			if (gridSelection == null || "".equals(gridSelection)) {
-				errorBean.getErrors().add("Did not get a Grid selection. Please try again.");
+				errorBean.getMessages().add("Did not get a Grid selection. Please try again.");
         		request.setAttribute("errorBean", errorBean);
         		RequestDispatcher rd = request.getRequestDispatcher("/jsp/GridSelection.jsp");
         		rd.forward(request, response);
@@ -267,8 +267,8 @@ public class FileProcessServlet extends HttpServlet {
 			GridDataset gridDataSet = (GridDataset) FeatureDatasetFactoryManager.open(
 	                FeatureType.GRID, threddsInfoBean.getDataSetUrlSelection(), null, errorLog);
 			if (gridDataSet == null) {
-				errorBean.getErrors().add("Could not open a grid at location: " + threddsInfoBean.getDataSetUrlSelection());
-				errorBean.getErrors().add("Reason: " + errorLog);
+				errorBean.getMessages().add("Could not open a grid at location: " + threddsInfoBean.getDataSetUrlSelection());
+				errorBean.getMessages().add("Reason: " + errorLog);
         		request.setAttribute("errorBean", errorBean);
         		RequestDispatcher rd = request.getRequestDispatcher("/jsp/DataSetSelection.jsp");
         		rd.forward(request, response);

@@ -93,7 +93,13 @@ public class AppInitializationServlet extends HttpServlet {
     public void destroy() {
     	super.destroy();
     	log.debug("Application is ending.");
-    	boolean result = FileHelper.deleteDirRecursively(this.applicationTempDir);
+    	boolean result = false;
+		try {
+			result = FileHelper.deleteDirRecursively(this.applicationTempDir);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     	if (result) {
     		log.debug("Application temp directory " + this.applicationTempDir + " successfully deleted.");
     	} else {
