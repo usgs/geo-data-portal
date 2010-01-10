@@ -37,7 +37,7 @@ public class FileSelectionServlet extends HttpServlet {
 		String forwardTo = "";
 		
 		if ("summarize".equals(action)) {
-			forwardTo = "/GeoToolsServlet?action=summarize";
+			forwardTo = "/SummaryServlet?action=summarize";
 		}
 		
 		RequestDispatcher rd = request.getRequestDispatcher(forwardTo);

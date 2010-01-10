@@ -6,7 +6,9 @@
 <c:import url="/jsp/header.jsp" var="head" />
 <c:import url="/jsp/footer.jsp" var="foot" />
 
-<jsp:useBean id="summaryBeanList" scope="session" class="gov.usgs.gdp.bean.SummaryBean"  />
+<jsp:useBean id="summaryBeanList" scope="request" type="java.util.ArrayList<gov.usgs.gdp.bean.SummaryBean>"/>
+<jsp:useBean id="errorBean" scope="request" class="gov.usgs.gdp.bean.MessageBean"  />
+<jsp:useBean id="messageBean" scope="request" class="gov.usgs.gdp.bean.MessageBean"  />
 
 <c:set var="process" value="/Router?location=geotoolsProcessing&action=processFiles&method=geoTools&function=summarize" />
 <c:set var="summarize" value="/Router?location=summarize" />
@@ -27,6 +29,21 @@ ${head}
 	<a href="${fileSelection}">Select Files For Processing</a>
 	<br />
 	<hr />
+	<div id="errorText">
+		<ul>
+			<c:forEach var="error" items="${errorBean.messages}">				
+				<li>${error}</li>
+				<br />
+			</c:forEach>
+		</ul>
+	</div>
+	<div id="messageText">
+		<ul>
+			<c:forEach var="message" items="${messageBean.messages}">				
+				<li>${message}</li>
+			</c:forEach>
+		</ul>
+	</div>
 		<c:forEach var="summaryBean" items="${summaryBeanList}"> 
 				<c:set var="summaryList" value="${summaryBean.fileSummary}" />
 				File Name: ${summaryBean.fileName} <hr />

@@ -173,4 +173,37 @@ public class ShapeFileSetBean implements Serializable {
 		this.chosenDataset = chosenDataset;
 	}
 
+	
+	/**
+	 * If a FilesBean contains the proper filetypes to create a ShapeFile set,
+	 * method creates a ShapeFileSetBean 
+	 * 
+	 * @param exampleFilesBean
+	 * @return
+	 */
+	public static ShapeFileSetBean getShapeFileSetBeanFromFilesBean(
+			FilesBean exampleFilesBean) {
+		ShapeFileSetBean result = null;
+		File projectionFile = null;
+		File shapeFile = null;
+		File dbFile = null;			
+		File shapeFileIndexFile = null;
+		for (File file : exampleFilesBean.getFiles()) {
+			if (file.getName().toLowerCase().contains(".shp")) shapeFile = file;
+			if (file.getName().toLowerCase().contains(".prj")) projectionFile = file;
+			if (file.getName().toLowerCase().contains(".dbf")) dbFile = file;
+			if (file.getName().toLowerCase().contains(".shx")) shapeFileIndexFile = file;
+		}
+		
+		if (projectionFile != null && shapeFile != null && dbFile != null) {
+			result = new ShapeFileSetBean();
+			result.setName(shapeFile.getName().substring(0, shapeFile.getName().indexOf(".")));
+			result.setDbfFile(dbFile);
+			result.setShapeFile(shapeFile);
+			result.setProjectionFile(projectionFile);
+			result.setShapeFileIndexFile(shapeFileIndexFile);
+		}
+		return result;
+	}
+
 }

@@ -127,8 +127,8 @@ public class ShapeFileSetBeanTest {
 		+ "Shapefiles" 
 		+ this.seperator
 		+ "hru20VSR.PRJ";
-		String dbfFile = this.tempDir 
 		
+		String dbfFile = this.tempDir 
 		+ this.seperator 
 		+ "Sample_Files" 
 		+ this.seperator
@@ -147,6 +147,58 @@ public class ShapeFileSetBeanTest {
 		List<String> result = ShapeFileSetBean.getFeatureListFromBean(shapeFileSetBean);
 		assertNotNull(result);
 		assertFalse(result.isEmpty());
+	}
+	
+	@Test 
+	public void testGetShapeFileSetBeanFromFilesBean() {
+		String shpFile = this.tempDir 
+		+ this.seperator 
+		+ "Sample_Files" 
+		+ this.seperator
+		+ "Shapefiles" 
+		+ this.seperator
+		+ "hru20VSR.SHP";
+		
+		String prjFile = this.tempDir 
+		+ this.seperator 
+		+ "Sample_Files" 
+		+ this.seperator
+		+ "Shapefiles" 
+		+ this.seperator
+		+ "hru20VSR.PRJ";
+		
+		String dbfFile = this.tempDir 
+		+ this.seperator 
+		+ "Sample_Files" 
+		+ this.seperator
+		+ "Shapefiles" 
+		+ this.seperator
+		+ "hru20VSR.DBF";
+		
+
+		String shxFile = this.tempDir 
+		+ this.seperator 
+		+ "Sample_Files" 
+		+ this.seperator
+		+ "Shapefiles" 
+		+ this.seperator
+		+ "hru20VSR.SHX";
+		
+		ShapeFileSetBean result = null;
+		FilesBean filesBean = new FilesBean();
+		Collection<File> files = new ArrayList<File>();
+		files.add(new File(shpFile));
+		files.add(new File(prjFile));
+		files.add(new File(dbfFile));
+		
+		result = ShapeFileSetBean.getShapeFileSetBeanFromFilesBean(filesBean);
+		assertNull(result);
+		
+		files.add(new File(shxFile));
+		filesBean.setFiles(files);
+		result = ShapeFileSetBean.getShapeFileSetBeanFromFilesBean(filesBean);
+		assertNotNull(result);
+		
 		
 	}
 }

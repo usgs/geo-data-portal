@@ -68,21 +68,21 @@ Files Uploaded So Far This Session:<br />
 	</c:forEach>
 </fieldset>
 <br />
-	<div id="errorText">
-		<ul>
-			<c:forEach var="error" items="${errorBean.messages}">				
-				<li>${error}</li>
-				<br />
-			</c:forEach>
-		</ul>
-	</div>
-	<div id="messageText">
-		<ul>
-			<c:forEach var="message" items="${messageBean.messages}">				
-				<li>${message}</li>
-			</c:forEach>
-		</ul>
-	</div>
+<div id="errorText">
+	<ul>
+		<c:forEach var="error" items="${errorBean.messages}">				
+			<li>${error}</li>
+			<br />
+		</c:forEach>
+	</ul>
+</div>
+<div id="messageText">
+	<ul>
+		<c:forEach var="message" items="${messageBean.messages}">				
+			<li>${message}</li>
+		</c:forEach>
+	</ul>
+</div>
 ${foot}
 </body>
 </html>

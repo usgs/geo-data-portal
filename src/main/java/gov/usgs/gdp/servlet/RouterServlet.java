@@ -7,8 +7,6 @@ import gov.usgs.gdp.io.FileHelper;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -44,6 +42,7 @@ public class RouterServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
@@ -56,13 +55,14 @@ public class RouterServlet extends HttpServlet {
 		}
 		
 		// First check that session information is synchronized
-		String applicationTempDir = System.getProperty("applicationTempDir");
-		String location	= (request.getParameter("location") == null) ? "" : request.getParameter("location").toLowerCase();
-		String action	= (request.getParameter("action") == null) ? "" : request.getParameter("action").toLowerCase();
-		String forwardTo = "";
+		String applicationTempDir 				= System.getProperty("applicationTempDir");
+		String location							= (request.getParameter("location") == null) ? "" : request.getParameter("location").toLowerCase();
+		String action							= (request.getParameter("action") == null) ? "" : request.getParameter("action").toLowerCase();
+		List<FilesBean> exampleFilesBeanList 	= (List<FilesBean>) request.getSession().getAttribute("exampleFileBeanList");
+		List<FilesBean> uploadedFilesBeanList 	= (List<FilesBean>) request.getSession().getAttribute("uploadedFilesBeanList");	
+		String forwardTo 						= "";
 		
 		// If no example File List exists, create one
-		List<FilesBean> exampleFilesBeanList = (List<FilesBean>) request.getSession().getAttribute("exampleFileBeanList");
 		if (exampleFilesBeanList == null || exampleFilesBeanList.isEmpty()) {
 			exampleFilesBeanList = FilesBean.getFilesBeanSetList(FileHelper.getFileCollection(applicationTempDir + java.io.File.separator + "Sample_Files", true));		
 			if (exampleFilesBeanList == null || exampleFilesBeanList.isEmpty()) {
@@ -72,37 +72,27 @@ public class RouterServlet extends HttpServlet {
 			request.getSession().setAttribute("exampleFileBeanList", exampleFilesBeanList);
 		}		
 		
-		// If no uploaded FileBean List exists, create one
-		List<FilesBean> uploadedFilesBeanList = (List<FilesBean>) request.getSession().getAttribute("uploadedFilesBeanList");
+		// If no uploaded FileBean List exists, create one		
 		if (uploadedFilesBeanList == null) {
 			uploadedFilesBeanList = new ArrayList<FilesBean>();
 			request.getSession().setAttribute("uploadedFilesBeanList", uploadedFilesBeanList);
 		}
 		
-		//Create shapefile sets for the user to choose from
 		List<ShapeFileSetBean> shapeFileSetBeanList = new ArrayList<ShapeFileSetBean>();
+		
+		//Create shapefile sets from the example files for the user to choose from
 		for (FilesBean exampleFilesBean : exampleFilesBeanList) {
-			File projectionFile = null;
-			File shapeFile = null;
-			File dbFile = null;			
-			File shapeFileIndexFile = null;
-			for (File file : exampleFilesBean.getFiles()) {
-				if (file.getName().toLowerCase().contains(".shp")) shapeFile = file;
-				if (file.getName().toLowerCase().contains(".prj")) projectionFile = file;
-				if (file.getName().toLowerCase().contains(".dbf")) dbFile = file;
-				if (file.getName().toLowerCase().contains(".shx")) shapeFileIndexFile = file;
-			}
-			
-			if (projectionFile != null && shapeFile != null && dbFile != null) {
-				ShapeFileSetBean shapeFileSetBean = new ShapeFileSetBean();
-				shapeFileSetBean.setName(shapeFile.getName().substring(0, shapeFile.getName().indexOf(".")));
-				shapeFileSetBean.setDbfFile(dbFile);
-				shapeFileSetBean.setShapeFile(shapeFile);
-				shapeFileSetBean.setProjectionFile(projectionFile);
-				shapeFileSetBean.setShapeFileIndexFile(shapeFileIndexFile);
-				shapeFileSetBeanList.add(shapeFileSetBean);
-			}
+			ShapeFileSetBean shapeFileSetList = ShapeFileSetBean.getShapeFileSetBeanFromFilesBean(exampleFilesBean);
+			if (shapeFileSetList != null) shapeFileSetBeanList.add(shapeFileSetList);
 		}
+
+		//Create shapefile sets from the upload files for the user to choose from
+		for (FilesBean uploadedFilesBean : uploadedFilesBeanList) {
+			ShapeFileSetBean shapeFileSetList = ShapeFileSetBean.getShapeFileSetBeanFromFilesBean(uploadedFilesBean);
+			if (shapeFileSetList != null) shapeFileSetBeanList.add(shapeFileSetList);
+		}
+		
+		// Set up the session
 		request.getSession().setAttribute("shapeFileSetBeanList", shapeFileSetBeanList);
 		
 		// Where is the user trying to get to?
@@ -116,6 +106,7 @@ public class RouterServlet extends HttpServlet {
 			forwardTo = "/FileProcessServlet?action=" + action;
 		}
 		
+		// Forward the user to their destination
 		RequestDispatcher rd = request.getRequestDispatcher(forwardTo);
 		rd.forward(request, response);
 	}

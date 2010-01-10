@@ -39,10 +39,10 @@
 	<servlet>
 		<description>
 		</description>
-		<display-name>GeoToolsServlet</display-name>
-		<servlet-name>GeoToolsServlet</servlet-name>
+		<display-name>SummaryServlet</display-name>
+		<servlet-name>SummaryServlet</servlet-name>
 		<servlet-class>
-		gov.usgs.gdp.servlet.GeoToolsServlet</servlet-class>
+		gov.usgs.gdp.servlet.SummaryServlet</servlet-class>
 	</servlet>
 	<servlet>
 		<description>
@@ -73,8 +73,8 @@
 		<url-pattern>/Router</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>GeoToolsServlet</servlet-name>
-		<url-pattern>/GeoToolsServlet</url-pattern>
+		<servlet-name>SummaryServlet</servlet-name>
+		<url-pattern>/SummaryServlet</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>FileSelectionServlet</servlet-name>
