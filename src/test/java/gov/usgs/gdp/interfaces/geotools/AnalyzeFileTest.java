@@ -5,6 +5,7 @@ import gov.usgs.gdp.bean.ShapeFileSetBean;
 import gov.usgs.gdp.io.FileHelper;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Date;
@@ -62,6 +63,12 @@ public class AnalyzeFileTest {
 		FileUtils.deleteDirectory((new File(this.tempDir)));
 	}
 	
+	@Test
+	public void createClass() {
+		AnalyzeFile result = new AnalyzeFile();
+		assertNotNull(result);
+	}
+	
 	@Test 
 	public void testGetFileSummaryFromShapeFileSetBean() {
 		String shpFile = this.tempDir 
@@ -79,13 +86,39 @@ public class AnalyzeFileTest {
 		+ this.seperator
 		+ "hru20VSR.DBF";
 		
+		List<String> result = null;
+		
 		ShapeFileSetBean testBean = new ShapeFileSetBean();
 		testBean.setDbfFile(new File(dbfFile));
 		testBean.setShapeFile(new File(shpFile));
-		List<String> result = AnalyzeFile.getFileSummary(testBean);
+		result = AnalyzeFile.getFileSummary(testBean);
 		assertNotNull(result);
 		assertFalse(result.isEmpty());
 		
+		testBean.setDbfFile(null);
+		testBean.setShapeFile(null);
+		result = AnalyzeFile.getFileSummary(testBean);
+		assertNotNull(result);
+		assertTrue(result.isEmpty());
+		
+		File zeroByteFile = null;
+		try {
+			zeroByteFile = File.createTempFile("temp", "tmp");
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		
+		testBean.setDbfFile(zeroByteFile);
+		testBean.setShapeFile(zeroByteFile);
+		result = AnalyzeFile.getFileSummary(testBean);
+		assertNotNull(result);
+		assertTrue(result.isEmpty());
+		
+		testBean.setDbfFile(new File("does/not/exist"));
+		testBean.setShapeFile(new File("does/not/exist"));
+		result = AnalyzeFile.getFileSummary(testBean);
+		assertNotNull(result);
+		assertTrue(result.isEmpty());
 	}
 	
 	@Test 
@@ -113,6 +146,14 @@ public class AnalyzeFileTest {
 		assertNotNull(result);
 		assertTrue(result.isEmpty());
 		
+		result = AnalyzeFile.getFileSummary(dbfFile);
+		assertNotNull(result);
+		assertFalse(result.isEmpty());
+		
+		result = AnalyzeFile.getFileSummary(shpFile);
+		assertNotNull(result);
+		assertFalse(result.isEmpty());
+		
 		result = AnalyzeFile.getFileSummary(DBFFILE);
 		assertNotNull(result);
 		assertFalse(result.isEmpty());
@@ -120,5 +161,26 @@ public class AnalyzeFileTest {
 		result = AnalyzeFile.getFileSummary(SHPFILE);
 		assertNotNull(result);
 		assertFalse(result.isEmpty());
+		
+		try {
+			File zeroByteFile = File.createTempFile("temp", "tmp");
+			result = AnalyzeFile.getFileSummary(zeroByteFile);
+			assertNotNull(result);
+			assertTrue(result.isEmpty());
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		
+		File directory = new File(this.tempDir 		
+				+ this.seperator 
+				+ "Sample_Files" 
+				+ this.seperator
+				+ "Shapefiles" 
+				+ this.seperator);
+		result = AnalyzeFile.getFileSummary(directory);
+		assertNotNull(result);
+		assertTrue(result.isEmpty());
+		
+		
 	}
 }

@@ -23,10 +23,13 @@ public class AnalyzeFile {
 		
 		if (file.getName().toLowerCase().contains(".dbf")) {
 			result = GeoToolsFileAnalysis.getDBaseFileSummary(file);
-		} else if (file.getName().toLowerCase().contains(".shp")) {
+		} 
+		
+		if (file.getName().toLowerCase().contains(".shp")) {
 			result = GeoToolsFileAnalysis.getShapeFileHeaderSummary(file);
 			result.addAll(GeoToolsFileAnalysis.getShapeFileSummary(file));
 		}
+		
 		return result;
 	}
 	
