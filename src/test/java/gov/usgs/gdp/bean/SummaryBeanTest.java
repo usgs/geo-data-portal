@@ -71,6 +71,31 @@ private static org.apache.log4j.Logger log = Logger.getLogger(SummaryBeanTest.cl
 		FileUtils.deleteDirectory((new File(this.tempDir)));
 	}
 
+        @Test
+        public void testConstructors() {
+            System.out.println("testConstructors");
+            SummaryBean result = null;
+            assertNull(result);
+
+            result = new SummaryBean();
+            assertNotNull(result);
+            assertEquals("", result.getFileName());
+            assertNotNull(result.getFileSummary());
+            assertTrue(result.getFileSummary().isEmpty());
+
+            result = new SummaryBean("Test");
+            assertNotNull(result);
+            assertEquals("Test", result.getFileName());
+            assertNotNull(result.getFileSummary());
+            assertTrue(result.getFileSummary().isEmpty());
+
+            result = new SummaryBean("Test", new ArrayList<String>());
+            assertNotNull(result);
+            assertEquals("", result.getFileName());
+            assertNotNull(result.getFileSummary());
+            assertTrue(result.getFileSummary().isEmpty());
+        }
+
     /**
      * Test of getFileName method, of class SummaryBean.
      */
