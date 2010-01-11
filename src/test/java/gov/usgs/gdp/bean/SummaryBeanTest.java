@@ -86,12 +86,11 @@ private static org.apache.log4j.Logger log = Logger.getLogger(SummaryBeanTest.cl
             result = new SummaryBean("Test");
             assertNotNull(result);
             assertEquals("Test", result.getFileName());
-            assertNotNull(result.getFileSummary());
-            assertTrue(result.getFileSummary().isEmpty());
+            assertNull(result.getFileSummary());
 
             result = new SummaryBean("Test", new ArrayList<String>());
             assertNotNull(result);
-            assertEquals("", result.getFileName());
+            assertEquals("Test", result.getFileName());
             assertNotNull(result.getFileSummary());
             assertTrue(result.getFileSummary().isEmpty());
         }
