@@ -3,7 +3,6 @@ package gov.usgs.gdp.analysis;
 import static org.junit.Assert.*;
 
 import java.net.URI;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.junit.Test;

@@ -1,10 +1,16 @@
 package gov.usgs.gdp.bean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SummaryBean {
 	private String fileName;
 	private List<String> fileSummary;
+
+        public SummaryBean() {
+            this.fileName = "";
+            this.fileSummary = new ArrayList<String>();
+        }
 
 	public SummaryBean(String fileName) {
 		new SummaryBean(fileName, null);
