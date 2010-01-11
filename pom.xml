@@ -194,7 +194,7 @@
             <groupId>org.opendap</groupId>
             <artifactId>Java-OPeNDAP</artifactId>
             <version>r21538</version>
-            <scope>compile</scope>
+            <scope>runtime</scope>
         </dependency>
 	</dependencies>
 
