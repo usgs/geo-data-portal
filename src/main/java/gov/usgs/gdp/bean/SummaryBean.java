@@ -13,11 +13,11 @@ public class SummaryBean {
         }
 
 	public SummaryBean(String fileName) {
-		new SummaryBean(fileName, null);
+		this.fileName = fileName;
 	}
 	
 	public SummaryBean(List<String> fileSummary) {
-		new SummaryBean(null, fileSummary);
+		this.fileSummary = fileSummary;
 	}
 	
 	public SummaryBean(String fileName, List<String> fileSummary) {
