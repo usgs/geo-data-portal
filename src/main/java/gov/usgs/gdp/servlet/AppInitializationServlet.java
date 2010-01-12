@@ -32,6 +32,12 @@ public class AppInitializationServlet extends HttpServlet {
     	log.debug("Application is starting");
     	
     	this.tmpDir = FileHelper.getSystemTemp();
+    	
+    	this.tmpDir = System.getProperty("java.io.tmpdir");
+
+		if ( !(this.tmpDir.endsWith("/") || this.tmpDir.endsWith("\\")) )
+		   this.tmpDir = this.tmpDir + System.getProperty("file.separator");
+    	
     	this.seperator = FileHelper.getSeparator();
     	log.debug("Current system temp directory is: " + this.tmpDir);
     	
