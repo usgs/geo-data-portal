@@ -63,6 +63,12 @@ ${head}
 				<li><a>RUNOFF</a></li>
 			</ul>
 		</div>
+		<div class="THREDDSServerSuggestions" onclick="document.getElementById('THREDDSUrlInputBox').value = 'http://geoport.whoi.edu:8081/thredds/catalog.xml'">
+			<ul>
+				<li><a>PRISM</a></li>
+			</ul>
+		</div>
+		
 <div id="errorText">
 	<ul>
 		<c:forEach var="error" items="${errorBean.messages}">				
