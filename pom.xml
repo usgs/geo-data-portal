@@ -211,17 +211,10 @@
             <version>1.1</version>
         </dependency>
         <!-- DEPENDENCIES NOT AVAILABLE IN A REMOTE MAVEN REPOSITORY -->
-<!--        <dependency>-->
-<!--            <groupId>org.opendap</groupId>-->
-<!--            <artifactId>Java-OPeNDAP</artifactId>-->
-<!--            <version>r21538</version>-->
-<!--            <scope>compile</scope>-->
-<!--        </dependency>-->
-
         <dependency>
-            <groupId>essi-opendap</groupId>
-            <artifactId>dods</artifactId>
-            <version>1.1.7</version>
+            <groupId>org.opendap</groupId>
+            <artifactId>Java-OPeNDAP</artifactId>
+            <version>r21538</version>
             <scope>compile</scope>
         </dependency>
 	</dependencies>
