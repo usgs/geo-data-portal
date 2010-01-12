@@ -27,7 +27,7 @@ public class GeoToolsFileAnalysis {
 	DbaseFileReader dbFileReader;
 	ShapefileReader shpFileReader;
 	
-	public GeoToolsFileAnalysisXXX() {
+	public GeoToolsFileAnalysis() {
 		// Placeholder
 	}
 	
