@@ -47,7 +47,7 @@ public class FileHelper {
 	 */
 	public  static  boolean  createDir(String directory) {
 		boolean result = false;
-		result = (new File(directory)).mkdir();
+		result = new File(directory).mkdir();
 		return result;
 	}
 	
@@ -104,6 +104,7 @@ public class FileHelper {
 		return result;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static File findFile(String file, String rootPath) {
 		File result = null;
 		Collection<File> fileCollection = FileUtils.listFiles(new File(rootPath), new String[] {file.substring(file.indexOf('.') + 1)}, true);
