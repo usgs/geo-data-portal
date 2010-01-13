@@ -6,7 +6,8 @@
 
 <c:import url="/jsp/header.jsp" var="head" />
 <c:import url="/jsp/footer.jsp" var="foot" />
-
+<jsp:useBean id="errorBean" scope="request" class="gov.usgs.gdp.bean.MessageBean"  />
+<jsp:useBean id="messageBean" scope="request" class="gov.usgs.gdp.bean.MessageBean"  />
 <c:url var="upload" value="/Router?location=uploadFiles" />
 <c:url var="fileSelection" value="/Router?location=fileSelection" />
 <c:url var="filesProcessing" value="/Router?location=filesProcessing"/>
@@ -26,6 +27,22 @@ ${head}
 	<br />
 	<hr />
 	Welcome to the GeoData Portal
+	<br />
+		<div id="errorText">
+		<ul>
+			<c:forEach var="error" items="${errorBean.messages}">				
+				<li>${error}</li>
+				<br />
+			</c:forEach>
+		</ul>
+	</div>
+	<div id="messageText">
+		<ul>
+			<c:forEach var="message" items="${messageBean.messages}">				
+				<li>${message}</li>
+			</c:forEach>
+		</ul>
+	</div>
 ${foot}
 </body>
 </html>

@@ -1,6 +1,7 @@
 package gov.usgs.gdp.servlet;
 
 import gov.usgs.gdp.bean.FilesBean;
+import gov.usgs.gdp.bean.MessageBean;
 import gov.usgs.gdp.bean.ShapeFileSetBean;
 import gov.usgs.gdp.io.FileHelper;
 
@@ -52,6 +53,9 @@ public class RouterServlet extends HttpServlet {
 		if (Long.parseLong(sessionStarted) < Long.parseLong(tomcatStarted)) {
 			log.debug("User has stale session. Re-initializing user session.");
 			request.getSession().invalidate();
+			RequestDispatcher rd = request.getRequestDispatcher("/");
+			MessageBean errorBean = new MessageBean();
+			errorBean.addMessage("Your session has become stale. Session restarted.");
 		}
 		
 		// First check that session information is synchronized
@@ -107,6 +111,8 @@ public class RouterServlet extends HttpServlet {
 			forwardTo = "/FileProcessServlet?action=" + action;
 		} else if ("downloadfile".equals(location)) {
 			forwardTo = "/FileUploadServlet?file=" + file;
+		} else if ("sessionrestart".equals(location)) {
+			forwardTo = "/Router";
 		}
 		
 		// Forward the user to their destination
