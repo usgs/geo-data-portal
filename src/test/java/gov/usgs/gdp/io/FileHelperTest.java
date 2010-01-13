@@ -81,6 +81,32 @@ public class FileHelperTest {
 		(new File(testDir)).delete();
 	}
 	
+	@Test 
+	public void testDoesDirectoryOrFileExist() {
+		boolean result = false;
+		String fileToCheckFor = this.tempDir 
+		+ this.seperator 
+		+ "Sample_Files" 
+		+ this.seperator
+		+ "Shapefiles" 
+		+ this.seperator
+		+ "hru20VSR.SHX";
+		
+		String directoryToCheckFor = this.tempDir 
+		+ this.seperator 
+		+ "Sample_Files" 
+		+ this.seperator
+		+ "Shapefiles" 
+		+ this.seperator;
+		
+		result = FileHelper.doesDirectoryOrFileExist(fileToCheckFor);
+		assertTrue(result);
+		result = FileHelper.doesDirectoryOrFileExist(directoryToCheckFor);
+		assertTrue(result);
+		result = FileHelper.doesDirectoryOrFileExist("does/not/exist");
+		assertFalse(result);
+	}
+	
 	@Test
 	public void testCopyFileToFile() {
 		File fileToCopy = new File(this.tempDir 

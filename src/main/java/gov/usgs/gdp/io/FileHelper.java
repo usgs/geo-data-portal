@@ -97,6 +97,13 @@ public class FileHelper {
 		return file.delete();
 	}
 	
+	public static boolean doesDirectoryOrFileExist(String filePath) {
+		boolean result = false;
+		File testFile = new File(filePath);
+		result = testFile.exists();
+		return result;
+	}
+	
 	public static File findFile(String file, String rootPath) {
 		File result = null;
 		Collection<File> fileCollection = FileUtils.listFiles(new File(rootPath), new String[] {file.substring(file.indexOf('.') + 1)}, true);

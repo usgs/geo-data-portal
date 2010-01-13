@@ -31,17 +31,21 @@ public class AppInitializationServlet extends HttpServlet {
     	super.init(config);
     	log.debug("Application is starting");
     	
-    	this.tmpDir = FileHelper.getSystemTemp();
-    	
-    	this.tmpDir = System.getProperty("java.io.tmpdir");
-
-		if ( !(this.tmpDir.endsWith("/") || this.tmpDir.endsWith("\\")) )
-		   this.tmpDir = this.tmpDir + System.getProperty("file.separator");
-    	
+    	// Get the temp directory for the system
     	this.seperator = FileHelper.getSeparator();
-    	log.debug("Current system temp directory is: " + this.tmpDir);
+    	this.tmpDir = FileHelper.getSystemTemp() + this.seperator + "GDP-APP-TEMP" + this.seperator;
+		log.debug("Current system temp directory is: " + this.tmpDir);
+		
+    	boolean doesPreviousTempDirExist = FileHelper.doesDirectoryOrFileExist(this.tmpDir);
+    	if (doesPreviousTempDirExist) {
+    		if(deleteApplicationTempDirs()) {
+    			log.debug("Temporary files from application's previous run have been removed");
+    		} else {
+    			log.debug("Application could not delete temp directories created on previous run.");
+    		}
+    	}
     	
-    	// Create application temporary directory
+    	// Now that the previous temp dirs are gone, create application temporary directory
     	this.applicationTempDir = generateApplicationTempDirName();
     	boolean dirCreated = createApplicationTempDir(this.applicationTempDir);
     	if (dirCreated) {
@@ -84,7 +88,7 @@ public class AppInitializationServlet extends HttpServlet {
 		
 		Date currentDate = new Date();
 	    String currentMilliseconds = Long.toString(currentDate.getTime());
-	    result = this.tmpDir + this.seperator + currentMilliseconds;
+	    result = this.tmpDir + FileHelper.getSeparator() + currentMilliseconds;
 		
 		return result;
 	}
@@ -100,12 +104,7 @@ public class AppInitializationServlet extends HttpServlet {
     	super.destroy();
     	log.debug("Application is ending.");
     	boolean result = false;
-		try {
-			result = FileHelper.deleteDirRecursively(this.applicationTempDir);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		result = deleteApplicationTempDirs();
     	if (result) {
     		log.debug("Application temp directory " + this.applicationTempDir + " successfully deleted.");
     	} else {
@@ -115,6 +114,22 @@ public class AppInitializationServlet extends HttpServlet {
     	log.debug("Application has ended.");
     }
     
+	public boolean deleteApplicationTempDirs() {
+		boolean result = false;
+		try {
+			String tempDir = FileHelper.getSystemTemp() + FileHelper.getSeparator();
+			result = FileHelper.deleteDirRecursively(tempDir + "GDP-APP-TEMP" + FileHelper.getSeparator());
+			if (result) {
+				log.debug("Temporary files from application's previous run have been removed");
+			} else {
+				log.debug("Application could not delete temp directories created on previous run.");
+			}
+		} catch (IOException e) {
+			log.debug("Application did not find or could not delete temp directories created on previous run.");
+		}
+		return result;
+	}
+	
     /**
      * @see HttpServlet#HttpServlet()
      */
