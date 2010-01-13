@@ -48,6 +48,7 @@ public class AppInitializationServlet extends HttpServlet {
     	// Now that the previous temp dirs are gone, create application temporary directory
     	this.applicationTempDir = generateApplicationTempDirName();
     	boolean dirCreated = createApplicationTempDir(this.applicationTempDir);
+    	if (!dirCreated) dirCreated = FileHelper.doesDirectoryOrFileExist(this.applicationTempDir);
     	if (dirCreated) {
     		System.setProperty("applicationTempDir", this.applicationTempDir);
     		log.debug("Current application temp directory is: " + this.applicationTempDir);
@@ -88,7 +89,7 @@ public class AppInitializationServlet extends HttpServlet {
 		
 		Date currentDate = new Date();
 	    String currentMilliseconds = Long.toString(currentDate.getTime());
-	    result = this.tmpDir + FileHelper.getSeparator() + currentMilliseconds;
+	    result = this.tmpDir + FileHelper.getSeparator() + currentMilliseconds + FileHelper.getSeparator();
 		
 		return result;
 	}
