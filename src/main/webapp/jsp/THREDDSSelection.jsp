@@ -68,6 +68,11 @@ ${head}
 				<li><a>PRISM</a></li>
 			</ul>
 		</div>
+		<div class="THREDDSServerSuggestions" onclick="document.getElementById('THREDDSUrlInputBox').value = 'http://130.11.161.219:8080/thredds/catalog/models/catalog.xml'">
+			<ul>
+				<li><a>130.11.161.219</a></li>
+			</ul>
+		</div>
 		
 <div id="errorText">
 	<ul>
