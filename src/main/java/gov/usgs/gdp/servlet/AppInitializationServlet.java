@@ -49,8 +49,9 @@ public class AppInitializationServlet extends HttpServlet {
     	this.applicationTempDir = generateApplicationTempDirName();
     	boolean dirCreated = createApplicationTempDir(this.applicationTempDir);
     	if (!dirCreated) dirCreated = FileHelper.doesDirectoryOrFileExist(this.applicationTempDir);
+		System.setProperty("applicationTempDir", this.applicationTempDir);
+
     	if (dirCreated) {
-    		System.setProperty("applicationTempDir", this.applicationTempDir);
     		log.debug("Current application temp directory is: " + this.applicationTempDir);
     	} else {
     		log.debug("ERROR: Could not create application temp directory: " + this.applicationTempDir);

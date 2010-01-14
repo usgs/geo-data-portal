@@ -9,7 +9,11 @@ import gov.usgs.gdp.io.FileHelper;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Formatter;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -21,6 +25,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
@@ -69,6 +74,7 @@ import ucar.unidata.geoloc.LatLonRect;
  * Servlet implementation class FileProcessServlet
  */
 public class FileProcessServlet extends HttpServlet {
+	private static org.apache.log4j.Logger log = Logger.getLogger(FileProcessServlet.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -280,7 +286,7 @@ public class FileProcessServlet extends HttpServlet {
 
             request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);
             forwardTo = "/jsp/GridSelection.jsp";
-        } else if ("step6".equals(action)) {
+        } else if ("step6".equals(action)) { // Set up time selection
             THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");
             String gridSelection = request.getParameter("gridSelection");
             if (gridSelection == null || "".equals(gridSelection)) {
@@ -304,6 +310,7 @@ public class FileProcessServlet extends HttpServlet {
 
                     for (NamedObject time : grid.getTimes()) {
                         timeSelectItemList.add(time.getName());
+                        //System.out.println(time.getName());
                     }
                 } else {
                     // TODO:
@@ -311,6 +318,7 @@ public class FileProcessServlet extends HttpServlet {
 
                 featureDataset.close();
                 threddsInfoBean.setOpenDapGridTimes(timeSelectItemList);
+                              
                 request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);
                 forwardTo = "/jsp/TimePeriodSelection.jsp";
 
@@ -326,6 +334,28 @@ public class FileProcessServlet extends HttpServlet {
             THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");
             String fromTime = request.getParameter("timeFromSelection");
             String toTime = request.getParameter("timeToSelection");
+            
+            DateFormat df = new SimpleDateFormat("MM-dd-yyyy");
+            Date toDate = null;
+            Date fromDate = null;
+            boolean parsedDates = false;
+            try {
+				toDate = df.parse(toTime);
+				fromDate = df.parse(fromTime);
+				parsedDates = true;
+			} catch (ParseException e1) {
+				parsedDates = false;
+				log.debug(e1.getMessage());
+			}
+			
+			if (!parsedDates) {
+				errorBean.getMessages().add("Could not parse dates.");
+                request.setAttribute("errorBean", errorBean);
+                RequestDispatcher rd = request.getRequestDispatcher("/jsp/TimePeriodSelection.jsp");
+                rd.forward(request, response);
+                return;
+			}
+			
             threddsInfoBean.setFromTime(fromTime);
             threddsInfoBean.setToTime(toTime);
             for (ShapeFileSetBean shapeFileSetBean : shapeFileSetBeanSubsetList) {
@@ -340,6 +370,7 @@ public class FileProcessServlet extends HttpServlet {
                 } catch (CQLException e) {
                     // Do nothing right now -- this will be handled by another class
                 }
+                
                 FeatureCollection<SimpleFeatureType, SimpleFeature> filteredFeatures = featureSource.getFeatures(filter);
                 SimpleFeature feature;
                 Iterator<SimpleFeature> featureIter = filteredFeatures.iterator();

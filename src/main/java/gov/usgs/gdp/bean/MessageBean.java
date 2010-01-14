@@ -8,10 +8,10 @@ public class MessageBean {
 
 	public List<String> getMessages() {
 		if (this.messages == null) this.messages = new ArrayList<String>();
-		return messages;
+		return this.messages;
 	}
 
-	public void setmessages(List<String> messages) {
+	public void setMessages(List<String> messages) {
 		this.messages = messages;
 	}
 	

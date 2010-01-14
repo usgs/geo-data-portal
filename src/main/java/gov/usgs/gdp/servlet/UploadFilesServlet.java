@@ -41,6 +41,7 @@ public class UploadFilesServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
 	}
@@ -48,6 +49,7 @@ public class UploadFilesServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
@@ -70,20 +72,23 @@ public class UploadFilesServlet extends HttpServlet {
 	    	if ("".equals(filename) || filename == null) {
 	    		log.debug("There was no filename passed to be deleted");
 	    		errorBean.addMessage("Client did not pass a filename to be deleted. Please try again or contact system administrator for assistance");
-	    	} else {
-	    		try {
-		    		if (FileHelper.deleteFile(filename)) {
-		    			messageBean.addMessage("File \"" + filename + " was deleted.");
-		    			log.debug("File \"" + filename + " was deleted.");
-		    		} else {
-		    			errorBean.addMessage("File \"" + filename + " could not be deleted (doesn't exist?).");
-		    			log.debug("File \"" + filename + " could not be deleted (doesn't exist?).");
-		    		}
-	    		} catch (SecurityException e) {
-	    			log.debug("Unable to delete file: " + e.getMessage());
-					errorBean.addMessage("Unable to delete file: " + e.getMessage());
+	    		request.setAttribute("errorBean", errorBean);
+	    		RequestDispatcher rd = request.getRequestDispatcher("/jsp/fileUpload.jsp");
+	    		rd.forward(request, response);
+	    	} 
+	    	
+    		try {
+	    		if (FileHelper.deleteFile(filename)) {
+	    			messageBean.addMessage("File \"" + filename + " was deleted.");
+	    			log.debug("File \"" + filename + " was deleted.");
+	    		} else {
+	    			errorBean.addMessage("File \"" + filename + " could not be deleted (doesn't exist?).");
+	    			log.debug("File \"" + filename + " could not be deleted (doesn't exist?).");
 	    		}
-	    	}
+    		} catch (SecurityException e) {
+    			log.debug("Unable to delete file: " + e.getMessage());
+				errorBean.addMessage("Unable to delete file: " + e.getMessage());
+    		}
 	    } else if ("upload".equals(action)){ // Upload files to server
 	    	try {
 				if (uploadFiles(request, userDirectory)) {
@@ -134,6 +139,7 @@ public class UploadFilesServlet extends HttpServlet {
 	@SuppressWarnings("unchecked")
 	private boolean uploadFiles(HttpServletRequest request, String directory) throws Exception {
 		boolean result = false;
+		
 		// Utility method that determines whether the request contains multipart content (files)
 		// true if the request is multipart; false otherwise.
 		boolean isMultiPart = ServletFileUpload.isMultipartContent(request);

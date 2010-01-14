@@ -53,7 +53,7 @@ public class RouterServlet extends HttpServlet {
 		if (Long.parseLong(sessionStarted) < Long.parseLong(tomcatStarted)) {
 			log.debug("User has stale session. Re-initializing user session.");
 			request.getSession().invalidate();
-			RequestDispatcher rd = request.getRequestDispatcher("/");
+			RequestDispatcher rd = request.getRequestDispatcher("/jsp/index.jsp");
 			MessageBean errorBean = new MessageBean();
 			errorBean.addMessage("Your session has become stale. Session restarted.");
 		}

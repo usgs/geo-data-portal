@@ -19,9 +19,12 @@ import org.geotools.data.FileDataStore;
 import org.geotools.data.shapefile.dbf.DbaseFileHeader;
 import org.geotools.data.shapefile.dbf.DbaseFileReader;
 import org.geotools.data.shapefile.shp.ShapefileReader;
+import org.geotools.data.shapefile.shp.ShapefileReader.Record;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.vividsolutions.jts.geom.Geometry;
 
 public class GeoToolsFileAnalysisTest {
 	private static org.apache.log4j.Logger log = Logger.getLogger(GeoToolsFileAnalysisTest.class);
@@ -96,6 +99,35 @@ public class GeoToolsFileAnalysisTest {
 		result = analyzer.getDBaseFileSummary();
 		assertNotNull("Analyzer returned a null result object", result);
 		assertFalse("Analyzer returned an empty result object",result.isEmpty());
+	}
+	
+	@Test
+	public void testProcessShapeFilePolygons() {
+		String fileToLoad = this.tempDir 
+		+ this.seperator 
+		+ "Sample_Files" 
+		+ this.seperator
+		+ "Shapefiles" 
+		+ this.seperator
+		+ "statesp020.shp";
+		
+		ShapefileReader result = GeoToolsFileAnalysis.getShapeFileReader(fileToLoad);
+		try {
+			
+			while (result.hasNext()) {
+				Record record = result.nextRecord();
+				Geometry shape = (Geometry) record.shape();
+				int numOfGeometries = shape.getNumGeometries();
+				
+				
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try { result.close(); } catch (IOException e) {	e.printStackTrace(); }
+		}
+			
 	}
 	
 	@Test
