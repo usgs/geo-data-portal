@@ -89,11 +89,27 @@ public class FileHelper {
 		return FileUtils.deleteQuietly(file);
 	}
 	
+	/**
+	 * @see FileHelper.deleteFile
+	 * 
+	 * @param filePath
+	 * @return
+	 * @throws SecurityException
+	 */
 	public static boolean deleteFile(String filePath) throws SecurityException {
+		if ("".equals(filePath)) return false;
 		return FileHelper.deleteFile(new File(filePath));
 	}
 	
+	/**
+	 * Deletes a file from the file system
+	 * 
+	 * @param file - method returns false if File object passed in was null 
+	 * @return true if file was deleted, false if not 
+	 * @throws SecurityException
+	 */
 	public static boolean deleteFile(File file) throws SecurityException {
+		if (file == null) return false;
 		return file.delete();
 	}
 	
@@ -236,8 +252,16 @@ public class FileHelper {
 		return result;
 	}
 
-	public static boolean saveFileItems(String directory, List<FileItem> items) throws Exception {
-		// process the uploaded items
+	/**
+	 * Saves a List of type FileItem to a directory
+	 * 
+	 * @param directory
+	 * @param items
+	 * @return
+	 * @throws Exception
+	 */
+	public static boolean saveFileItems(String directory, List<FileItem> items) throws Exception{
+		// Process the uploaded items
 		Iterator<FileItem> iter = items.iterator();
 		while (iter.hasNext()) {
 			FileItem item = iter.next();
