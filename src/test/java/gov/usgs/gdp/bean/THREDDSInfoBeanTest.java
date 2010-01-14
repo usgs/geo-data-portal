@@ -40,7 +40,7 @@ public class THREDDSInfoBeanTest {
 	public final void testGetToYearFunction() {
 		int year = this.tIBean.getToYear();
 		assertFalse(year < 0);
-		assertEquals(11, year);
+		assertEquals(1911, year);
 	}
 	
 	@Test

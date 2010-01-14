@@ -29,7 +29,7 @@ public class MessageBeanTest {
 		MessageBean messageBean = new MessageBean();
 		List<String> messageList = new ArrayList<String>(1);
 		messageList.add("Test message");
-		messageBean.setmessages(messageList);
+		messageBean.setMessages(messageList);
 		List<String> result = messageBean.getMessages();
 		assertNotNull(result);
 		assertFalse(result.isEmpty());
