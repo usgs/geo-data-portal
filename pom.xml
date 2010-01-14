@@ -193,11 +193,16 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
+<!--		<dependency>
 			<groupId>essi-unidata</groupId>
 			<artifactId>netcdf-java</artifactId>
 			<version>4.0.41</version>
-		</dependency>
+		</dependency>-->
+        <dependency>
+            <groupId>edu.ucar.unidata</groupId>
+            <artifactId>netcdf-all</artifactId>
+            <version>4.1</version>
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-jdk14</artifactId>
@@ -211,12 +216,12 @@
             <version>1.1</version>
         </dependency>
         <!-- DEPENDENCIES NOT AVAILABLE IN A REMOTE MAVEN REPOSITORY -->
-        <dependency>
+<!--        <dependency>
             <groupId>org.opendap</groupId>
             <artifactId>Java-OPeNDAP</artifactId>
             <version>r21538</version>
             <scope>compile</scope>
-        </dependency>
+        </dependency>-->
 	</dependencies>
 
 

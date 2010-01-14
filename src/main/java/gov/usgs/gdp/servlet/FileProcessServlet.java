@@ -48,6 +48,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.ProxyReader;
 import ucar.nc2.Variable;
+import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.VariableDS;
@@ -56,18 +57,22 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
+import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.NamedObject;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
+
 /**
  * Servlet implementation class FileProcessServlet
  */
 public class FileProcessServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-       
+
+    private static final long serialVersionUID = 1L;
+
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -75,440 +80,463 @@ public class FileProcessServlet extends HttpServlet {
         super();
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doPost(request, response);
-	}
+    /**
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doPost(request, response);
+    }
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String action = (request.getParameter("action") == null) ? "" : request.getParameter("action").toLowerCase();
-		List<ShapeFileSetBean> shapeFileSetBeanList = (List<ShapeFileSetBean>) request.getSession().getAttribute("shapeFileSetBeanList");
-		List<ShapeFileSetBean> shapeFileSetBeanSubsetList = (List<ShapeFileSetBean>) request.getSession().getAttribute("shapeFileSetBeanSubsetList");
+    /**
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String action = (request.getParameter("action") == null) ? "" : request.getParameter("action").toLowerCase();
+        List<ShapeFileSetBean> shapeFileSetBeanList = (List<ShapeFileSetBean>) request.getSession().getAttribute("shapeFileSetBeanList");
+        List<ShapeFileSetBean> shapeFileSetBeanSubsetList = (List<ShapeFileSetBean>) request.getSession().getAttribute("shapeFileSetBeanSubsetList");
 
-		
-		MessageBean errorBean = new MessageBean();
-	    MessageBean messageBean = new MessageBean();
-		String forwardTo = "";
-		
-		if (action == null || "".equals(action)) {
-			errorBean.addMessage("Your action was not read in properly. Please try again");
-			request.setAttribute("messageBean", messageBean);
-			request.setAttribute("errorBean", errorBean);
-			RequestDispatcher rd = request.getRequestDispatcher("/jsp/fileSelection.jsp");
-			rd.forward(request, response);
-			return;
-		} 
-	
-		if ("step1".equals(action)) {
-			String[] checkboxItems = request.getParameterValues("fileName");
-			
-			if (shapeFileSetBeanList == null) {
-				errorBean.addMessage("Unable to retrieve shape file set lists. Please choose new shape file(s).");
-				request.setAttribute("messageBean", messageBean);
-				request.setAttribute("errorBean", errorBean);
-				RequestDispatcher rd = request.getRequestDispatcher("/jsp/fileSelection.jsp");
-				rd.forward(request, response);
-				return;
-			} 
-							
-			if (checkboxItems == null || checkboxItems.length == 0) {
-				errorBean.addMessage("You must select at least one file to process.");
-				request.setAttribute("messageBean", messageBean);
-				request.setAttribute("errorBean", errorBean);
-				RequestDispatcher rd = request.getRequestDispatcher("/jsp/fileSelection.jsp");
-				rd.forward(request, response);
-				return;
-			} 
-			
-			// Get the subset of ShapeFile sets the user wants to work on
-			List<ShapeFileSetBean> shpFilesSetSubList = getShapeFilesSetSubList(checkboxItems, shapeFileSetBeanList);
-			
-			// Populate the attribute values of each ShapeFileSet
-			for (ShapeFileSetBean shapeFileSetBean : shpFilesSetSubList) {
-				shapeFileSetBean.setAttributeList(ShapeFileSetBean.getAttributeListFromBean(shapeFileSetBean));
-			}
-			
-			request.getSession().setAttribute("shapeFileSetBeanSubsetList", shpFilesSetSubList);
-			forwardTo = "/jsp/attributeSelection.jsp";
-				
-		} else if ("step2".equals(action)) { // Attributes chosen, set up feature list 
-			String[] attributeSelections = request.getParameterValues("attributeSelection");
-			
-			// Set the chosen attribute on the ShapeFileSetBeans
-			for (String attributeSelection : attributeSelections) {
-				String attributeAppliesTo = attributeSelection.substring(0, attributeSelection.indexOf("::"));
-				String attribute = attributeSelection.substring(attributeSelection.indexOf("::") + 2);
-				for (ShapeFileSetBean shapeFileSetBean : shapeFileSetBeanSubsetList) {
-					if (shapeFileSetBean.getName().equals(attributeAppliesTo)) {
-						shapeFileSetBean.setChosenAttribute(attribute);
-					}
-				}
-			}
-			
-			// Pull Feature Lists
-			for (ShapeFileSetBean shapeFileSetBean : shapeFileSetBeanSubsetList) {
-				shapeFileSetBean.setFeatureList(ShapeFileSetBean.getFeatureListFromBean(shapeFileSetBean));				
-			}
-			
-			request.getSession().setAttribute("shapeFileSetBeanSubsetList", shapeFileSetBeanSubsetList);			
-			forwardTo = "/jsp/featureSelection.jsp";
-		} else if ("step3".equals(action)) { 
-			// Set the chosen feature to work with on the bean
-			String[] featureSelections = request.getParameterValues("featureSelection");			
-			
-			// Set the chosen feature on the ShapeFileSetBeans			
-			for (String featureSelection : featureSelections) {
-				String featureAppliesTo = featureSelection.substring(0, featureSelection.indexOf("::"));
-				String feature = featureSelection.substring(featureSelection.indexOf("::") + 2);
-				for (ShapeFileSetBean shapeFileSetBean : shapeFileSetBeanSubsetList) {
-					if (shapeFileSetBean.getName().equals(featureAppliesTo)) {
-						shapeFileSetBean.setChosenFeature(feature);
-					}
-				}
-			}
-			request.getSession().setAttribute("shapeFileSetBeanSubsetList", shapeFileSetBeanSubsetList);			
-			forwardTo = "/jsp/THREDDSSelection.jsp";
-		} else if ("step4".equals(action)) {
-			THREDDSInfoBean threddsInfoBean = new THREDDSInfoBean();
-			String THREDDSUrl = request.getParameter("THREDDSUrl");
-			
-			List<InvAccess> openDapResources = new LinkedList<InvAccess>();
-			if (THREDDSUrl == null || "".equals(THREDDSUrl)) {
-				errorBean.getMessages().add("You must select a THREDDS URL to work with..");
-				request.setAttribute("errorBean", errorBean);
-				RequestDispatcher rd = request.getRequestDispatcher("/jsp/THREDDSSelection.jsp");
-        		rd.forward(request, response);
-        		return;  
-			}
-			threddsInfoBean.setTHREDDSServer(THREDDSUrl);
-			
-			// Grab the THREDDS catalog
-			URI catalogURI = URI.create(THREDDSUrl);
-			InvCatalogFactory factory = new InvCatalogFactory("default", true);
-			InvCatalog catalog = factory.readXML(catalogURI);
-			StringBuilder buff = new StringBuilder();
+
+        MessageBean errorBean = new MessageBean();
+        MessageBean messageBean = new MessageBean();
+        String forwardTo = "";
+
+        if (action == null || "".equals(action)) {
+            errorBean.addMessage("Your action was not read in properly. Please try again");
+            request.setAttribute("messageBean", messageBean);
+            request.setAttribute("errorBean", errorBean);
+            RequestDispatcher rd = request.getRequestDispatcher("/jsp/fileSelection.jsp");
+            rd.forward(request, response);
+            return;
+        }
+
+        if ("step1".equals(action)) {
+            String[] checkboxItems = request.getParameterValues("fileName");
+
+            if (shapeFileSetBeanList == null) {
+                errorBean.addMessage("Unable to retrieve shape file set lists. Please choose new shape file(s).");
+                request.setAttribute("messageBean", messageBean);
+                request.setAttribute("errorBean", errorBean);
+                RequestDispatcher rd = request.getRequestDispatcher("/jsp/fileSelection.jsp");
+                rd.forward(request, response);
+                return;
+            }
+
+            if (checkboxItems == null || checkboxItems.length == 0) {
+                errorBean.addMessage("You must select at least one file to process.");
+                request.setAttribute("messageBean", messageBean);
+                request.setAttribute("errorBean", errorBean);
+                RequestDispatcher rd = request.getRequestDispatcher("/jsp/fileSelection.jsp");
+                rd.forward(request, response);
+                return;
+            }
+
+            // Get the subset of ShapeFile sets the user wants to work on
+            List<ShapeFileSetBean> shpFilesSetSubList = getShapeFilesSetSubList(checkboxItems, shapeFileSetBeanList);
+
+            // Populate the attribute values of each ShapeFileSet
+            for (ShapeFileSetBean shapeFileSetBean : shpFilesSetSubList) {
+                shapeFileSetBean.setAttributeList(ShapeFileSetBean.getAttributeListFromBean(shapeFileSetBean));
+            }
+
+            request.getSession().setAttribute("shapeFileSetBeanSubsetList", shpFilesSetSubList);
+            forwardTo = "/jsp/attributeSelection.jsp";
+
+        } else if ("step2".equals(action)) { // Attributes chosen, set up feature list
+            String[] attributeSelections = request.getParameterValues("attributeSelection");
+
+            // Set the chosen attribute on the ShapeFileSetBeans
+            for (String attributeSelection : attributeSelections) {
+                String attributeAppliesTo = attributeSelection.substring(0, attributeSelection.indexOf("::"));
+                String attribute = attributeSelection.substring(attributeSelection.indexOf("::") + 2);
+                for (ShapeFileSetBean shapeFileSetBean : shapeFileSetBeanSubsetList) {
+                    if (shapeFileSetBean.getName().equals(attributeAppliesTo)) {
+                        shapeFileSetBean.setChosenAttribute(attribute);
+                    }
+                }
+            }
+
+            // Pull Feature Lists
+            for (ShapeFileSetBean shapeFileSetBean : shapeFileSetBeanSubsetList) {
+                shapeFileSetBean.setFeatureList(ShapeFileSetBean.getFeatureListFromBean(shapeFileSetBean));
+            }
+
+            request.getSession().setAttribute("shapeFileSetBeanSubsetList", shapeFileSetBeanSubsetList);
+            forwardTo = "/jsp/featureSelection.jsp";
+        } else if ("step3".equals(action)) {
+            // Set the chosen feature to work with on the bean
+            String[] featureSelections = request.getParameterValues("featureSelection");
+
+            // Set the chosen feature on the ShapeFileSetBeans
+            for (String featureSelection : featureSelections) {
+                String featureAppliesTo = featureSelection.substring(0, featureSelection.indexOf("::"));
+                String feature = featureSelection.substring(featureSelection.indexOf("::") + 2);
+                for (ShapeFileSetBean shapeFileSetBean : shapeFileSetBeanSubsetList) {
+                    if (shapeFileSetBean.getName().equals(featureAppliesTo)) {
+                        shapeFileSetBean.setChosenFeature(feature);
+                    }
+                }
+            }
+            request.getSession().setAttribute("shapeFileSetBeanSubsetList", shapeFileSetBeanSubsetList);
+            forwardTo = "/jsp/THREDDSSelection.jsp";
+        } else if ("step4".equals(action)) {
+            THREDDSInfoBean threddsInfoBean = new THREDDSInfoBean();
+            String THREDDSUrl = request.getParameter("THREDDSUrl");
+
+            List<InvAccess> openDapResources = new LinkedList<InvAccess>();
+            if (THREDDSUrl == null || "".equals(THREDDSUrl)) {
+                errorBean.getMessages().add("You must select a THREDDS URL to work with..");
+                request.setAttribute("errorBean", errorBean);
+                RequestDispatcher rd = request.getRequestDispatcher("/jsp/THREDDSSelection.jsp");
+                rd.forward(request, response);
+                return;
+            }
+            threddsInfoBean.setTHREDDSServer(THREDDSUrl);
+
+            // Grab the THREDDS catalog
+            URI catalogURI = URI.create(THREDDSUrl);
+            InvCatalogFactory factory = new InvCatalogFactory("default", true);
+            InvCatalog catalog = factory.readXML(catalogURI);
+            StringBuilder buff = new StringBuilder();
             if (!catalog.check(buff)) {
-            	errorBean.getMessages().add(buff.toString());
-            	request.setAttribute("errorBean", errorBean);
-        		RequestDispatcher rd = request.getRequestDispatcher("/jsp/THREDDSSelection.jsp");
-        		rd.forward(request, response);
-        		return;
+                errorBean.getMessages().add(buff.toString());
+                request.setAttribute("errorBean", errorBean);
+                RequestDispatcher rd = request.getRequestDispatcher("/jsp/THREDDSSelection.jsp");
+                rd.forward(request, response);
+                return;
             }
-            
+
             // Grab resources from the THREDDS catalog
-        	openDapResources = NetCDFUtility.getOpenDapResources(catalog);
-        	if (openDapResources == null) {
-        		errorBean.getMessages().add("Could not pull information from THREDDS Server");
-        		request.setAttribute("errorBean", errorBean);
-        		RequestDispatcher rd = request.getRequestDispatcher("/jsp/THREDDSSelection.jsp");
-        		rd.forward(request, response);
-        		return;                	
-        	}
-        	
-        	for (InvAccess opendapResource : openDapResources) {
-        		threddsInfoBean.getOpenDapStandardURLNameList().add(opendapResource.getStandardUrlName());
-        		threddsInfoBean.getOpenDapDataSetNameList().add(opendapResource.getDataset().getName());
+            openDapResources = NetCDFUtility.getOpenDapResources(catalog);
+            if (openDapResources == null) {
+                errorBean.getMessages().add("Could not pull information from THREDDS Server");
+                request.setAttribute("errorBean", errorBean);
+                RequestDispatcher rd = request.getRequestDispatcher("/jsp/THREDDSSelection.jsp");
+                rd.forward(request, response);
+                return;
             }
-        	request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);	
-        	request.getSession().setAttribute("shapeFileSetBeanSubsetList", shapeFileSetBeanSubsetList);			
-			forwardTo = "/jsp/DataSetSelection.jsp";
-		}  else if ("step5".equals(action)) {
-			THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");			
-			
-			String dataSetSelection = request.getParameter("datasetSelection");
-			if (dataSetSelection == null || "".equals(dataSetSelection)) {
-				errorBean.getMessages().add("Did not get a DataSet selection. Please try again.");
-        		request.setAttribute("errorBean", errorBean);
-        		RequestDispatcher rd = request.getRequestDispatcher("/jsp/DataSetSelection.jsp");
-        		rd.forward(request, response);
-        		return;    
-			}
-			
-			// Throw the settings into the THREDDSInfoBean
-			String dataSetUrl = dataSetSelection.substring(0, dataSetSelection.indexOf(":::"));
-			String dataSetName = dataSetSelection.substring(dataSetSelection.indexOf(":::") + 3);
-			threddsInfoBean.setDataSetUrlSelection(dataSetUrl);
-			threddsInfoBean.setDataSetNameSelection(dataSetName);
-			
-			// Grab the grid dataset
-			Formatter errorLog = new Formatter();
-			GridDataset gridDataSet = (GridDataset) FeatureDatasetFactoryManager.open(
-		                FeatureType.GRID, dataSetUrl, null, errorLog);
-			if (gridDataSet == null) {
-				errorBean.getMessages().add("Could not open a grid at location: " + dataSetUrl);
-				errorBean.getMessages().add("Reason: " + errorLog);
-        		request.setAttribute("errorBean", errorBean);
-        		RequestDispatcher rd = request.getRequestDispatcher("/jsp/DataSetSelection.jsp");
-        		rd.forward(request, response);
-        		return;    
-			}
-			
-			// Grab the grid items
-			List<String> gridSelectItemList = new ArrayList<String>();
-			for (GridDatatype grid : gridDataSet.getGrids()) {
-				gridSelectItemList.add(grid.getName());
-			}
-			gridDataSet.close();
-			threddsInfoBean.setOpenDapGridItems(gridSelectItemList);
-			
-			request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);	
-			forwardTo = "/jsp/GridSelection.jsp";
-		}   else if ("step6".equals(action)) {
-			THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");		
-			String gridSelection = request.getParameter("gridSelection");
-			if (gridSelection == null || "".equals(gridSelection)) {
-				errorBean.getMessages().add("Did not get a Grid selection. Please try again.");
-        		request.setAttribute("errorBean", errorBean);
-        		RequestDispatcher rd = request.getRequestDispatcher("/jsp/GridSelection.jsp");
-        		rd.forward(request, response);
-        		return;    
-			}
-			
-			threddsInfoBean.setGridItemSelection(gridSelection);
-			Formatter errorLog = new Formatter();
-			GridDataset gridDataSet = (GridDataset) FeatureDatasetFactoryManager.open(
-	                FeatureType.GRID, threddsInfoBean.getDataSetUrlSelection(), null, errorLog);
-			if (gridDataSet == null) {
-				errorBean.getMessages().add("Could not open a grid at location: " + threddsInfoBean.getDataSetUrlSelection());
-				errorBean.getMessages().add("Reason: " + errorLog);
-        		request.setAttribute("errorBean", errorBean);
-        		RequestDispatcher rd = request.getRequestDispatcher("/jsp/DataSetSelection.jsp");
-        		rd.forward(request, response);
-        		return;    
-			}
 
-            List<String> timeSelectItemList = new ArrayList<String>();
-            GeoGrid grid = gridDataSet.findGridByName(gridSelection);
-
-            for (NamedObject time : grid.getTimes()) {
-                timeSelectItemList.add(time.getName());
+            for (InvAccess opendapResource : openDapResources) {
+                threddsInfoBean.getOpenDapStandardURLNameList().add(opendapResource.getStandardUrlName());
+                threddsInfoBean.getOpenDapDataSetNameList().add(opendapResource.getDataset().getName());
             }
-            gridDataSet.close();
-            threddsInfoBean.setOpenDapGridTimes(timeSelectItemList);
-            request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);	
-			forwardTo = "/jsp/TimePeriodSelection.jsp";
-		} else if ("step7".equals(action)) {
-			THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");	
-			String fromTime = request.getParameter("timeFromSelection");
-			String toTime = request.getParameter("timeToSelection");
-			threddsInfoBean.setFromTime(fromTime);
-			threddsInfoBean.setToTime(toTime);
-			for (ShapeFileSetBean shapeFileSetBean : shapeFileSetBeanSubsetList) {
-				FileDataStore shapeFileDataStore = FileDataStoreFinder.getDataStore(shapeFileSetBean.getShapeFile());
-				FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = shapeFileDataStore.getFeatureSource();
-				
-				String attributeType  = shapeFileSetBean.getChosenAttribute();
-		        String attributeValue = shapeFileSetBean.getChosenFeature();
-		        Filter filter = null;
-		        try {
-					filter = CQL.toFilter(attributeType + " = '" + attributeValue + "'");
-				} catch (CQLException e) {
-					// Do nothing right now -- this will be handled by another class
-				}
-				FeatureCollection<SimpleFeatureType, SimpleFeature> filteredFeatures = featureSource.getFeatures(filter);
-				 SimpleFeature feature;
-			        Iterator<SimpleFeature> featureIter = filteredFeatures.iterator();
-			        try {
-			            feature = featureIter.next();   // Return only the first feature, even if there are multiple matches.
-			        } finally {
-			            filteredFeatures.close(featureIter);
-			        }
+            request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);
+            request.getSession().setAttribute("shapeFileSetBeanSubsetList", shapeFileSetBeanSubsetList);
+            forwardTo = "/jsp/DataSetSelection.jsp";
+        } else if ("step5".equals(action)) {
+            THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");
 
-		        Geometry geom = (Geometry) feature.getDefaultGeometry();
-		        String datasetUrl = threddsInfoBean.getDataSetUrlSelection();
-		        Formatter errorLog = new Formatter();
-		        GridDataset gridDataset = (GridDataset) FeatureDatasetFactoryManager.open(
-		                FeatureType.GRID, datasetUrl, null, errorLog);
-		        if (gridDataset == null) {
-		            throw new IOException("Cannot open GRID at location= " + datasetUrl + "; error message = " + errorLog);
-		        }
-		        
-		        try {
-		            List<GridDatatype> grids = gridDataset.getGrids();
-		            GeoGrid grid = (GeoGrid) grids.iterator().next();
-		            Range timeRange = null;
-		            try {
-						timeRange = new Range(Integer.parseInt(threddsInfoBean.getFromTime()),
-								Integer.parseInt( threddsInfoBean.getToTime()));
-					} catch (NumberFormatException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (InvalidRangeException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+            String dataSetSelection = request.getParameter("datasetSelection");
+            if (dataSetSelection == null || "".equals(dataSetSelection)) {
+                errorBean.getMessages().add("Did not get a DataSet selection. Please try again.");
+                request.setAttribute("errorBean", errorBean);
+                RequestDispatcher rd = request.getRequestDispatcher("/jsp/DataSetSelection.jsp");
+                rd.forward(request, response);
+                return;
+            }
 
-					Envelope envelope = geom.getEnvelopeInternal();
+            // Throw the settings into the THREDDSInfoBean
+            String dataSetUrl = dataSetSelection.substring(0, dataSetSelection.indexOf(":::"));
+            String dataSetName = dataSetSelection.substring(dataSetSelection.indexOf(":::") + 3);
+            threddsInfoBean.setDataSetUrlSelection(dataSetUrl);
+            threddsInfoBean.setDataSetNameSelection(dataSetName);
 
-			        LatLonPoint lowerLeftPoint  = new LatLonPointImpl(envelope.getMinY(), envelope.getMinX());
-			        LatLonPoint upperRightPoint = new LatLonPointImpl(envelope.getMaxY(), envelope.getMaxX());
-			        LatLonRect boundingBox = new LatLonRect(lowerLeftPoint, upperRightPoint);
+            // Grab the grid dataset
+            Formatter errorLog = new Formatter();
 
-			        GeoGrid slicedGrid = null;
-					try {
-						slicedGrid = grid.subset(timeRange, null, boundingBox, 1, 1, 1);
-					} catch (InvalidRangeException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-		            VariableDS gridVar = slicedGrid.getVariable();
-		            VariableDS proxiedGridVar = new VariableDS(null, gridVar, true);
 
-		            proxiedGridVar.addAttribute(new Attribute("_FillValue", -999f));
-		            proxiedGridVar.addAttribute(new Attribute("missing_value", -999f));
-		            proxiedGridVar.setProxyReader(new ShapedGridReader(slicedGrid, geom));
+            FeatureDataset featureDataset = FeatureDatasetFactoryManager.open(
+                    null, dataSetUrl, null, errorLog);
 
-		            GeoGrid outputGrid =
-		                    new GeoGrid(gridDataset, proxiedGridVar, (GridCoordSys) slicedGrid.getCoordinateSystem());
-		            
-		            // What is directory name for the files being uploaded
-		    		String seperator = FileHelper.getSeparator();
-		    	    String userDirectory = (String) request.getSession().getAttribute("userTempDir")+ seperator;
-		            File outputFile = new File(userDirectory, attributeValue + ".nc");
-		            
-		            outputFile.delete();
-		            outputGrid.writeFile(outputFile.toString());
-		            request.setAttribute("fileLink", outputFile.getPath());
-		        } finally {
-		            gridDataset.close();
-		        }
-		        forwardTo = "/jsp/downloadCompletedFile.jsp";
-				
-			}
-			
-		}
-		request.setAttribute("messageBean", messageBean);
-		request.setAttribute("errorBean", errorBean);
-		RequestDispatcher rd = request.getRequestDispatcher(forwardTo);
-		rd.forward(request, response);
-	}
+            if (featureDataset != null) {
 
-	private List<ShapeFileSetBean> getShapeFilesSetSubList(String[] checkboxItems, List<ShapeFileSetBean> shapeFileSetBeanList) {
-		List<ShapeFileSetBean> result = new ArrayList<ShapeFileSetBean>();
-		
-		for (String item : checkboxItems) {
-			for (ShapeFileSetBean shapeFileSetBean : shapeFileSetBeanList) {
-				if (shapeFileSetBean.getName().equals(item)) {
-					result.add(shapeFileSetBean);
-				}
-			}
-		}
-		
-		return result;
-	}
+                List<String> dataSelectItemList = new ArrayList<String>();
+//                if(featureDataset instanceof GridDataset) {
+//                    // Grab the grid items
+//                    for (GridDatatype grid : ((GridDataset)featureDataset).getGrids()) {
+//                        dataSelectItemList.add(grid.getName());
+//                    }
+//                    ((GridDataset)featureDataset).close();
+//                } else
+//                if(featureDataset instanceof FeatureDatasetPoint) {
+//                    for (ucar.nc2.ft.FeatureCollection fc : ((FeatureDatasetPoint)featureDataset).getPointFeatureCollectionList()) {
+//                        System.out.println(fc.getName());
+//                    }
+//                }
+                for (VariableSimpleIF vs : featureDataset.getDataVariables()) {
+                    dataSelectItemList.add(vs.getName());
+                }
+                threddsInfoBean.setOpenDapGridItems(dataSelectItemList);
 
-	private final static class ShapedGridReader implements ProxyReader {
-	    private GeoGrid  grid;
-	    private Geometry shape;
-	    private GeometryFactory geometryFactory;
+            } else {
 
-	    private CoordinateAxis1D xAxis;
-	    private CoordinateAxis1D yAxis;
+                errorBean.getMessages().add("Could not open a grid at location: " + dataSetUrl);
+                errorBean.getMessages().add("Reason: " + errorLog);
+                request.setAttribute("errorBean", errorBean);
+                RequestDispatcher rd = request.getRequestDispatcher("/jsp/DataSetSelection.jsp");
+                rd.forward(request, response);
+                return;
+            }
 
-	    private double[][] percentOfShapeOverlappingCells;
+            request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);
+            forwardTo = "/jsp/GridSelection.jsp";
+        } else if ("step6".equals(action)) {
+            THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");
+            String gridSelection = request.getParameter("gridSelection");
+            if (gridSelection == null || "".equals(gridSelection)) {
+                errorBean.getMessages().add("Did not get a Grid selection. Please try again.");
+                request.setAttribute("errorBean", errorBean);
+                RequestDispatcher rd = request.getRequestDispatcher("/jsp/GridSelection.jsp");
+                rd.forward(request, response);
+                return;
+            }
 
-	    public ShapedGridReader(GeoGrid grid, Geometry shape) {
-	        this.grid = grid;
-	        this.shape = shape;
-	        this.geometryFactory = JTSFactoryFinder.getGeometryFactory(null);
+            threddsInfoBean.setGridItemSelection(gridSelection);
+            Formatter errorLog = new Formatter();
+            FeatureDataset featureDataset = FeatureDatasetFactoryManager.open(
+                    null, threddsInfoBean.getDataSetUrlSelection(), null, errorLog);
 
-	        GridCoordSystem gcs = grid.getCoordinateSystem();
-	        this.xAxis = (CoordinateAxis1D) gcs.getXHorizAxis();
-	        this.yAxis = (CoordinateAxis1D) gcs.getYHorizAxis();
+            if (featureDataset != null) {
 
-	        this.percentOfShapeOverlappingCells = new double[(int) xAxis.getSize()][(int) yAxis.getSize()];
-	        for (int x = 0; x < xAxis.getSize(); ++x) {
-	            for (int y = 0; y < yAxis.getSize(); ++y) {
-	                percentOfShapeOverlappingCells[x][y] = Double.NaN;
-	            }
-	        }
-	    }
+                List<String> timeSelectItemList = new ArrayList<String>();
+                if (featureDataset instanceof GridDataset) {
+                    GeoGrid grid = ((GridDataset)featureDataset).findGridByName(gridSelection);
 
-	    @Override public Array read(Variable mainv, CancelTask cancelTask) throws IOException {
-	        if (!(mainv instanceof VariableDS) || ((VariableDS) mainv).getOriginalVariable() != grid.getVariable()) {
-	            throw new RuntimeException("mainv is not a proxy for the grid's underlying Variable.");
-	        }
+                    for (NamedObject time : grid.getTimes()) {
+                        timeSelectItemList.add(time.getName());
+                    }
+                } else {
+                    // TODO:
+                }
 
-	        Array data = grid.getVariable().read();
+                featureDataset.close();
+                threddsInfoBean.setOpenDapGridTimes(timeSelectItemList);
+                request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);
+                forwardTo = "/jsp/TimePeriodSelection.jsp";
 
-	        Dimension xDim = grid.getXDimension();
-	        Dimension yDim = grid.getYDimension();
-	        List<Dimension> varDims = grid.getDimensions();
+            } else {
+                errorBean.getMessages().add("Could not open a grid at location: " + threddsInfoBean.getDataSetUrlSelection());
+                errorBean.getMessages().add("Reason: " + errorLog);
+                request.setAttribute("errorBean", errorBean);
+                RequestDispatcher rd = request.getRequestDispatcher("/jsp/DataSetSelection.jsp");
+                rd.forward(request, response);
+                return;
+            }
+        } else if ("step7".equals(action)) {
+            THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");
+            String fromTime = request.getParameter("timeFromSelection");
+            String toTime = request.getParameter("timeToSelection");
+            threddsInfoBean.setFromTime(fromTime);
+            threddsInfoBean.setToTime(toTime);
+            for (ShapeFileSetBean shapeFileSetBean : shapeFileSetBeanSubsetList) {
+                FileDataStore shapeFileDataStore = FileDataStoreFinder.getDataStore(shapeFileSetBean.getShapeFile());
+                FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = shapeFileDataStore.getFeatureSource();
 
-	        int xDimIndex = varDims.indexOf(xDim);  // The index of the X dimension in grid's list of dimensions.
-	        int yDimIndex = varDims.indexOf(yDim);  // The index of the Y dimension in grid's list of dimensions.
+                String attributeType = shapeFileSetBean.getChosenAttribute();
+                String attributeValue = shapeFileSetBean.getChosenFeature();
+                Filter filter = null;
+                try {
+                    filter = CQL.toFilter(attributeType + " = '" + attributeValue + "'");
+                } catch (CQLException e) {
+                    // Do nothing right now -- this will be handled by another class
+                }
+                FeatureCollection<SimpleFeatureType, SimpleFeature> filteredFeatures = featureSource.getFeatures(filter);
+                SimpleFeature feature;
+                Iterator<SimpleFeature> featureIter = filteredFeatures.iterator();
+                try {
+                    feature = featureIter.next();   // Return only the first feature, even if there are multiple matches.
+                } finally {
+                    filteredFeatures.close(featureIter);
+                }
 
-	        for (IndexIterator indexIter = data.getIndexIterator(); indexIter.hasNext(); ) {
-	            indexIter.next();
-	            int[] iterPos = indexIter.getCurrentCounter();  // The position of indexIter in data.
-	            int xDimPos = iterPos[xDimIndex];               // The X component of iterPos.
-	            int yDimPos = iterPos[yDimIndex];               // The Y component of iterPos.
+                Geometry geom = (Geometry) feature.getDefaultGeometry();
+                String datasetUrl = threddsInfoBean.getDataSetUrlSelection();
+                Formatter errorLog = new Formatter();
+                GridDataset gridDataset = (GridDataset) FeatureDatasetFactoryManager.open(
+                        FeatureType.GRID, datasetUrl, null, errorLog);
+                if (gridDataset == null) {
+                    throw new IOException("Cannot open GRID at location= " + datasetUrl + "; error message = " + errorLog);
+                }
 
-	            double percentOfShapeOverlappingCell = getPercentOfShapeOverlappingCell(xDimPos, yDimPos);
-	            if (percentOfShapeOverlappingCell == 0) {
-	                indexIter.setDoubleCurrent(-999.0);
-	            }
-	        }
+                try {
+                    List<GridDatatype> grids = gridDataset.getGrids();
+                    GeoGrid grid = (GeoGrid) grids.iterator().next();
+                    Range timeRange = null;
+                    try {
+                        timeRange = new Range(Integer.parseInt(threddsInfoBean.getFromTime()),
+                                Integer.parseInt(threddsInfoBean.getToTime()));
+                    } catch (NumberFormatException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    } catch (InvalidRangeException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
 
-	        return data;
-	    }
+                    Envelope envelope = geom.getEnvelopeInternal();
 
-	    @Override public Array read(Variable mainv, Section section, CancelTask cancelTask)
-	            throws IOException, InvalidRangeException {
-	        if (!(mainv instanceof VariableDS) || ((VariableDS) mainv).getOriginalVariable() != grid.getVariable()) {
-	            throw new RuntimeException("mainv is not a proxy for the grid's underlying Variable.");
-	        }
+                    LatLonPoint lowerLeftPoint = new LatLonPointImpl(envelope.getMinY(), envelope.getMinX());
+                    LatLonPoint upperRightPoint = new LatLonPointImpl(envelope.getMaxY(), envelope.getMaxX());
+                    LatLonRect boundingBox = new LatLonRect(lowerLeftPoint, upperRightPoint);
 
-	        Array data = grid.getVariable().read(section);
+                    GeoGrid slicedGrid = null;
+                    try {
+                        slicedGrid = grid.subset(timeRange, null, boundingBox, 1, 1, 1);
+                    } catch (InvalidRangeException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                    VariableDS gridVar = slicedGrid.getVariable();
+                    VariableDS proxiedGridVar = new VariableDS(null, gridVar, true);
 
-	        Dimension xDim = grid.getXDimension();
-	        Dimension yDim = grid.getYDimension();
-	        List<Dimension> varDims = grid.getDimensions();
+                    proxiedGridVar.addAttribute(new Attribute("_FillValue", -999f));
+                    proxiedGridVar.addAttribute(new Attribute("missing_value", -999f));
+                    proxiedGridVar.setProxyReader(new ShapedGridReader(slicedGrid, geom));
 
-	        int xDimIndex = varDims.indexOf(xDim);  // The index of the X dimension in grid's list of dimensions.
-	        int yDimIndex = varDims.indexOf(yDim);  // The index of the Y dimension in grid's list of dimensions.
+                    GeoGrid outputGrid =
+                            new GeoGrid(gridDataset, proxiedGridVar, (GridCoordSys) slicedGrid.getCoordinateSystem());
 
-	        int[] origin = section.getOrigin();
-	        int xDimOffset = origin[xDimIndex];
-	        int yDimOffset = origin[yDimIndex];
+                    // What is directory name for the files being uploaded
+                    String seperator = FileHelper.getSeparator();
+                    String userDirectory = (String) request.getSession().getAttribute("userTempDir") + seperator;
+                    File outputFile = new File(userDirectory, attributeValue + ".nc");
 
-	        for (IndexIterator indexIter = data.getIndexIterator(); indexIter.hasNext(); ) {
-	            indexIter.next();
-	            int[] iterPos = indexIter.getCurrentCounter();  // The position of indexIter in data.
-	            int xDimPos = xDimOffset + iterPos[xDimIndex];  // The X component of iterPos.
-	            int yDimPos = yDimOffset + iterPos[yDimIndex];  // The Y component of iterPos.
+                    outputFile.delete();
+                    outputGrid.writeFile(outputFile.toString());
+                    request.setAttribute("fileLink", outputFile.getPath());
+                } finally {
+                    gridDataset.close();
+                }
+                forwardTo = "/jsp/downloadCompletedFile.jsp";
 
-	            double percentOfShapeOverlappingCell = getPercentOfShapeOverlappingCell(xDimPos, yDimPos);
-	            if (percentOfShapeOverlappingCell == 0) {
-	                indexIter.setFloatCurrent(-999f);
-	            }
-	        }
+            }
 
-	        return data;
-	    }
+        }
+        request.setAttribute("messageBean", messageBean);
+        request.setAttribute("errorBean", errorBean);
+        RequestDispatcher rd = request.getRequestDispatcher(forwardTo);
+        rd.forward(request, response);
+    }
 
-	    private double getPercentOfShapeOverlappingCell(int xIndex, int yIndex) {
-	        if (!Double.isNaN(percentOfShapeOverlappingCells[xIndex][yIndex])) {
-	            return percentOfShapeOverlappingCells[xIndex][yIndex];
-	        }
+    private List<ShapeFileSetBean> getShapeFilesSetSubList(String[] checkboxItems, List<ShapeFileSetBean> shapeFileSetBeanList) {
+        List<ShapeFileSetBean> result = new ArrayList<ShapeFileSetBean>();
 
-	        double[] xCellEdges = xAxis.getCoordEdges(xIndex);
-	        double[] yCellEdges = yAxis.getCoordEdges(yIndex);
+        for (String item : checkboxItems) {
+            for (ShapeFileSetBean shapeFileSetBean : shapeFileSetBeanList) {
+                if (shapeFileSetBean.getName().equals(item)) {
+                    result.add(shapeFileSetBean);
+                }
+            }
+        }
 
-	        Envelope envelope = new Envelope(xCellEdges[0], xCellEdges[1], yCellEdges[0], yCellEdges[1]);
-	        Geometry cellRectangle = geometryFactory.toGeometry(envelope);
+        return result;
+    }
 
-	        Geometry intersection = cellRectangle.intersection(shape);
-	        percentOfShapeOverlappingCells[xIndex][yIndex] = intersection.getArea() / shape.getArea();
-	        return percentOfShapeOverlappingCells[xIndex][yIndex];
-	    }
-	}
+    private final static class ShapedGridReader implements ProxyReader {
 
-	
+        private GeoGrid grid;
+        private Geometry shape;
+        private GeometryFactory geometryFactory;
+        private CoordinateAxis1D xAxis;
+        private CoordinateAxis1D yAxis;
+        private double[][] percentOfShapeOverlappingCells;
+
+        public ShapedGridReader(GeoGrid grid, Geometry shape) {
+            this.grid = grid;
+            this.shape = shape;
+            this.geometryFactory = JTSFactoryFinder.getGeometryFactory(null);
+
+            GridCoordSystem gcs = grid.getCoordinateSystem();
+            this.xAxis = (CoordinateAxis1D) gcs.getXHorizAxis();
+            this.yAxis = (CoordinateAxis1D) gcs.getYHorizAxis();
+
+            this.percentOfShapeOverlappingCells = new double[(int) xAxis.getSize()][(int) yAxis.getSize()];
+            for (int x = 0; x < xAxis.getSize(); ++x) {
+                for (int y = 0; y < yAxis.getSize(); ++y) {
+                    percentOfShapeOverlappingCells[x][y] = Double.NaN;
+                }
+            }
+        }
+
+        @Override
+        public Array read(Variable mainv, CancelTask cancelTask) throws IOException {
+            if (!(mainv instanceof VariableDS) || ((VariableDS) mainv).getOriginalVariable() != grid.getVariable()) {
+                throw new RuntimeException("mainv is not a proxy for the grid's underlying Variable.");
+            }
+
+            Array data = grid.getVariable().read();
+
+            Dimension xDim = grid.getXDimension();
+            Dimension yDim = grid.getYDimension();
+            List<Dimension> varDims = grid.getDimensions();
+
+            int xDimIndex = varDims.indexOf(xDim);  // The index of the X dimension in grid's list of dimensions.
+            int yDimIndex = varDims.indexOf(yDim);  // The index of the Y dimension in grid's list of dimensions.
+
+            for (IndexIterator indexIter = data.getIndexIterator(); indexIter.hasNext();) {
+                indexIter.next();
+                int[] iterPos = indexIter.getCurrentCounter();  // The position of indexIter in data.
+                int xDimPos = iterPos[xDimIndex];               // The X component of iterPos.
+                int yDimPos = iterPos[yDimIndex];               // The Y component of iterPos.
+
+                double percentOfShapeOverlappingCell = getPercentOfShapeOverlappingCell(xDimPos, yDimPos);
+                if (percentOfShapeOverlappingCell == 0) {
+                    indexIter.setDoubleCurrent(-999.0);
+                }
+            }
+
+            return data;
+        }
+
+        @Override
+        public Array read(Variable mainv, Section section, CancelTask cancelTask)
+                throws IOException, InvalidRangeException {
+            if (!(mainv instanceof VariableDS) || ((VariableDS) mainv).getOriginalVariable() != grid.getVariable()) {
+                throw new RuntimeException("mainv is not a proxy for the grid's underlying Variable.");
+            }
+
+            Array data = grid.getVariable().read(section);
+
+            Dimension xDim = grid.getXDimension();
+            Dimension yDim = grid.getYDimension();
+            List<Dimension> varDims = grid.getDimensions();
+
+            int xDimIndex = varDims.indexOf(xDim);  // The index of the X dimension in grid's list of dimensions.
+            int yDimIndex = varDims.indexOf(yDim);  // The index of the Y dimension in grid's list of dimensions.
+
+            int[] origin = section.getOrigin();
+            int xDimOffset = origin[xDimIndex];
+            int yDimOffset = origin[yDimIndex];
+
+            for (IndexIterator indexIter = data.getIndexIterator(); indexIter.hasNext();) {
+                indexIter.next();
+                int[] iterPos = indexIter.getCurrentCounter();  // The position of indexIter in data.
+                int xDimPos = xDimOffset + iterPos[xDimIndex];  // The X component of iterPos.
+                int yDimPos = yDimOffset + iterPos[yDimIndex];  // The Y component of iterPos.
+
+                double percentOfShapeOverlappingCell = getPercentOfShapeOverlappingCell(xDimPos, yDimPos);
+                if (percentOfShapeOverlappingCell == 0) {
+                    indexIter.setFloatCurrent(-999f);
+                }
+            }
+
+            return data;
+        }
+
+        private double getPercentOfShapeOverlappingCell(int xIndex, int yIndex) {
+            if (!Double.isNaN(percentOfShapeOverlappingCells[xIndex][yIndex])) {
+                return percentOfShapeOverlappingCells[xIndex][yIndex];
+            }
+
+            double[] xCellEdges = xAxis.getCoordEdges(xIndex);
+            double[] yCellEdges = yAxis.getCoordEdges(yIndex);
+
+            Envelope envelope = new Envelope(xCellEdges[0], xCellEdges[1], yCellEdges[0], yCellEdges[1]);
+            Geometry cellRectangle = geometryFactory.toGeometry(envelope);
+
+            Geometry intersection = cellRectangle.intersection(shape);
+            percentOfShapeOverlappingCells[xIndex][yIndex] = intersection.getArea() / shape.getArea();
+            return percentOfShapeOverlappingCells[xIndex][yIndex];
+        }
+    }
 }
 

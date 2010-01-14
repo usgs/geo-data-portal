@@ -73,7 +73,11 @@ ${head}
 				<li><a>130.11.161.219</a></li>
 			</ul>
 		</div>
-		
+		<div class="THREDDSServerSuggestions" onclick="document.getElementById('THREDDSUrlInputBox').value = 'http://motherlode.ucar.edu:8080/thredds/catalog/station/metar/catalog.xml'">
+			<ul>
+				<li><a>http://motherlode.ucar.edu:8080/thredds/catalog/station/metar/catalog.xml</a></li>
+			</ul>
+		</div>
 <div id="errorText">
 	<ul>
 		<c:forEach var="error" items="${errorBean.messages}">				
