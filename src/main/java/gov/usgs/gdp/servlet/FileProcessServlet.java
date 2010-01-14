@@ -40,6 +40,8 @@ import org.opengis.filter.Filter;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 
 import thredds.catalog.InvAccess;
 import thredds.catalog.InvCatalog;
@@ -49,6 +51,8 @@ import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.ma2.Section;
+import ucar.ma2.StructureData;
+import ucar.ma2.StructureMembers;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.ProxyReader;
@@ -64,6 +68,9 @@ import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
+import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.PointFeatureCollection;
+import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.NamedObject;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -448,6 +455,54 @@ public class FileProcessServlet extends HttpServlet {
         request.setAttribute("errorBean", errorBean);
         RequestDispatcher rd = request.getRequestDispatcher(forwardTo);
         rd.forward(request, response);
+    }
+
+    /**
+     * Writes a collection of {@link PointFeature}s to a file in CSV format. PointFeatures are written one per line
+     * in the order that they appear in {@code points}'s iterator.
+     *
+     * @param points    a collection of point features. Before being passed to this method, a PointFeatureCollection
+     *                  can be subset in space and/or time with {@link PointFeatureCollection#subset}.
+     * @param outFile   the file to write output to.
+     * @throws IOException  if an I/O error occurs.
+     */
+    public static void writePointsToFile(PointFeatureCollection points, File outFile)
+            throws IOException {
+        boolean columnNamesWritten = false;
+        BufferedWriter writer = new BufferedWriter(new FileWriter(outFile));
+        String fieldSep = ", ";
+        String eol = "\n";
+
+        try {
+            for (PointFeatureIterator iter = points.getPointFeatureIterator(-1); iter.hasNext();) {
+                StringBuilder strBuilder = new StringBuilder();
+
+                PointFeature pointFeature = iter.next();
+                StructureData data = pointFeature.getData();
+
+                if (!columnNamesWritten) {
+                    for (StructureMembers.Member member : data.getMembers()) {
+                        String memberName = member.getName().trim();
+                        strBuilder.append(memberName).append(fieldSep);
+                    }
+
+                    // Replace trailing fieldSep with eol.
+                    strBuilder.replace(strBuilder.length() - fieldSep.length(), strBuilder.length(), eol);
+                    columnNamesWritten = true;
+                }
+
+                for (StructureMembers.Member member : data.getMembers()) {
+                    String memberValue = data.getArray(member).toString().trim();
+                    strBuilder.append(memberValue).append(fieldSep);
+                }
+
+                // Replace trailing fieldSep with eol.
+                strBuilder.replace(strBuilder.length() - fieldSep.length(), strBuilder.length(), eol);
+                writer.write(strBuilder.toString());
+            }
+        } finally {
+            writer.close();
+        }
     }
 
     private List<ShapeFileSetBean> getShapeFilesSetSubList(String[] checkboxItems, List<ShapeFileSetBean> shapeFileSetBeanList) {
