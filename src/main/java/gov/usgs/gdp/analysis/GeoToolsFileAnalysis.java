@@ -12,6 +12,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.shapefile.ShpFiles;
@@ -24,11 +25,11 @@ import org.geotools.data.shapefile.shp.ShapefileReader;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
 public class GeoToolsFileAnalysis {
+	private static org.apache.log4j.Logger log = Logger.getLogger(GeoToolsFileAnalysis.class);
 	DbaseFileReader dbFileReader;
 	ShapefileReader shpFileReader;
 	
 	public GeoToolsFileAnalysis() {
-		// Placeholder
 	}
 	
 	public static FileDataStore getFileDataStore(File file) {
@@ -49,13 +50,23 @@ public class GeoToolsFileAnalysis {
 	 */
 	public static DbaseFileReader readInDBaseFile(File file, boolean useMemoryMappedBuffer, Charset charset) {
 		DbaseFileReader result = null;
+		FileChannel in = null;
 		try {
-			FileChannel in =  new FileInputStream(file).getChannel();
+			in =  new FileInputStream(file).getChannel();
 			result = new DbaseFileReader(in, useMemoryMappedBuffer, charset);
 		} catch (FileNotFoundException e) {
 			return null;
 		} catch (IOException e) {
 			return null;
+		} finally {
+			try {
+				if (in != null) {
+					in.close();
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return result;		
 	}
@@ -81,7 +92,16 @@ public class GeoToolsFileAnalysis {
 	}
 	
 	public static  List<String> getDBaseFileSummary(File file) {
-		return GeoToolsFileAnalysis.getDBaseFileSummary(GeoToolsFileAnalysis.readInDBaseFile(file, false, Charset.defaultCharset()));
+		DbaseFileReader reader = GeoToolsFileAnalysis.readInDBaseFile(file, false, Charset.defaultCharset());
+		List<String> result = null;
+			result = GeoToolsFileAnalysis.getDBaseFileSummary(reader);
+			try {
+				reader.close();
+			} catch (IOException e) {
+				log.debug(e.getMessage());
+			}
+			return result;
+
 	}
 	
 	

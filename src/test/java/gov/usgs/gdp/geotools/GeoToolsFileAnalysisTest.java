@@ -99,6 +99,7 @@ public class GeoToolsFileAnalysisTest {
 		result = analyzer.getDBaseFileSummary();
 		assertNotNull("Analyzer returned a null result object", result);
 		assertFalse("Analyzer returned an empty result object",result.isEmpty());
+		loadedFile.delete();
 	}
 	
 	@Test

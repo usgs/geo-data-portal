@@ -51,7 +51,6 @@ public class ShapeFileSetBean implements Serializable {
 		} catch (IOException e) {
 			return result;
 		}
-		fds.dispose();
 		
 		List<AttributeType> attribTypes = featureSource.getSchema().getTypes();
 		for (AttributeType attribType : attribTypes) {
@@ -59,6 +58,8 @@ public class ShapeFileSetBean implements Serializable {
             String selectItem = attribTypeName;
             result.add(selectItem);
         }
+		
+		featureSource.getDataStore().dispose();
 		return result;
 		
 	}

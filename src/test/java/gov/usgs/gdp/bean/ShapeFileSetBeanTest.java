@@ -110,6 +110,7 @@ public class ShapeFileSetBeanTest {
 		ShapeFileSetBean shapeFileSetBean = filesBean.getShapeFileSetBean();
 		assertNotNull(shapeFileSetBean);
 		List<String> result = ShapeFileSetBean.getAttributeListFromBean(shapeFileSetBean);
+		
 		assertNotNull(result);
 		assertFalse(result.isEmpty());
 	}
