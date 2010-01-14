@@ -108,32 +108,32 @@ public class ShapeFileSetBean implements Serializable {
 	
 	public List<String> getAttributeList() {
 		if (this.attributeList == null) this.attributeList = new ArrayList<String>();
-		return attributeList;
+		return this.attributeList;
 	}
 	public String getChosenAttribute() {
-		return chosenAttribute;
+		return this.chosenAttribute;
 	}
 	public String getChosenFeature() {
-		return chosenFeature;
+		return this.chosenFeature;
 	}
 	public File getDbfFile() {
-		return dbfFile;
+		return this.dbfFile;
 	}
 	public List<String> getFeatureList() {
 		if (this.featureList == null) this.featureList = new ArrayList<String>();
-		return featureList;
+		return this.featureList;
 	}
 	public String getName() {
-		return name;
+		return this.name;
 	}
 	public File getProjectionFile() {
-		return projectionFile;
+		return this.projectionFile;
 	}
 	public File getShapeFile() {
-		return shapeFile;
+		return this.shapeFile;
 	}
 	public File getShapeFileIndexFile() {
-		return shapeFileIndexFile;
+		return this.shapeFileIndexFile;
 	}
 	public void setAttributeList(List<String> attributeList) {
 		
