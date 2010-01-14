@@ -59,7 +59,6 @@ import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
-import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.NamedObject;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -83,14 +82,16 @@ public class FileProcessServlet extends HttpServlet {
     /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doPost(request, response);
     }
 
     /**
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = (request.getParameter("action") == null) ? "" : request.getParameter("action").toLowerCase();
         List<ShapeFileSetBean> shapeFileSetBeanList = (List<ShapeFileSetBean>) request.getSession().getAttribute("shapeFileSetBeanList");
         List<ShapeFileSetBean> shapeFileSetBeanSubsetList = (List<ShapeFileSetBean>) request.getSession().getAttribute("shapeFileSetBeanSubsetList");
@@ -385,11 +386,12 @@ public class FileProcessServlet extends HttpServlet {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
+                    // Create a null check here
                     VariableDS gridVar = slicedGrid.getVariable();
                     VariableDS proxiedGridVar = new VariableDS(null, gridVar, true);
 
-                    proxiedGridVar.addAttribute(new Attribute("_FillValue", -999f));
-                    proxiedGridVar.addAttribute(new Attribute("missing_value", -999f));
+                    proxiedGridVar.addAttribute(new Attribute("_FillValue", Float.valueOf(-999f)));
+                    proxiedGridVar.addAttribute(new Attribute("missing_value", Float.valueOf(-999f)));
                     proxiedGridVar.setProxyReader(new ShapedGridReader(slicedGrid, geom));
 
                     GeoGrid outputGrid =
@@ -440,34 +442,34 @@ public class FileProcessServlet extends HttpServlet {
         private CoordinateAxis1D yAxis;
         private double[][] percentOfShapeOverlappingCells;
 
-        public ShapedGridReader(GeoGrid grid, Geometry shape) {
-            this.grid = grid;
-            this.shape = shape;
+        public ShapedGridReader(GeoGrid gridParam, Geometry shapeParam) {
+            this.grid = gridParam;
+            this.shape = shapeParam;
             this.geometryFactory = JTSFactoryFinder.getGeometryFactory(null);
 
-            GridCoordSystem gcs = grid.getCoordinateSystem();
+            GridCoordSystem gcs = this.grid.getCoordinateSystem();
             this.xAxis = (CoordinateAxis1D) gcs.getXHorizAxis();
             this.yAxis = (CoordinateAxis1D) gcs.getYHorizAxis();
 
-            this.percentOfShapeOverlappingCells = new double[(int) xAxis.getSize()][(int) yAxis.getSize()];
-            for (int x = 0; x < xAxis.getSize(); ++x) {
-                for (int y = 0; y < yAxis.getSize(); ++y) {
-                    percentOfShapeOverlappingCells[x][y] = Double.NaN;
+            this.percentOfShapeOverlappingCells = new double[(int) this.xAxis.getSize()][(int) this.yAxis.getSize()];
+            for (int x = 0; x < this.xAxis.getSize(); ++x) {
+                for (int y = 0; y < this.yAxis.getSize(); ++y) {
+                    this.percentOfShapeOverlappingCells[x][y] = Double.NaN;
                 }
             }
         }
 
         @Override
         public Array read(Variable mainv, CancelTask cancelTask) throws IOException {
-            if (!(mainv instanceof VariableDS) || ((VariableDS) mainv).getOriginalVariable() != grid.getVariable()) {
+            if (!(mainv instanceof VariableDS) || ((VariableDS) mainv).getOriginalVariable() != this.grid.getVariable()) {
                 throw new RuntimeException("mainv is not a proxy for the grid's underlying Variable.");
             }
 
-            Array data = grid.getVariable().read();
+            Array data = this.grid.getVariable().read();
 
-            Dimension xDim = grid.getXDimension();
-            Dimension yDim = grid.getYDimension();
-            List<Dimension> varDims = grid.getDimensions();
+            Dimension xDim = this.grid.getXDimension();
+            Dimension yDim = this.grid.getYDimension();
+            List<Dimension> varDims = this.grid.getDimensions();
 
             int xDimIndex = varDims.indexOf(xDim);  // The index of the X dimension in grid's list of dimensions.
             int yDimIndex = varDims.indexOf(yDim);  // The index of the Y dimension in grid's list of dimensions.
@@ -490,15 +492,15 @@ public class FileProcessServlet extends HttpServlet {
         @Override
         public Array read(Variable mainv, Section section, CancelTask cancelTask)
                 throws IOException, InvalidRangeException {
-            if (!(mainv instanceof VariableDS) || ((VariableDS) mainv).getOriginalVariable() != grid.getVariable()) {
+            if (!(mainv instanceof VariableDS) || ((VariableDS) mainv).getOriginalVariable() != this.grid.getVariable()) {
                 throw new RuntimeException("mainv is not a proxy for the grid's underlying Variable.");
             }
 
-            Array data = grid.getVariable().read(section);
+            Array data = this.grid.getVariable().read(section);
 
-            Dimension xDim = grid.getXDimension();
-            Dimension yDim = grid.getYDimension();
-            List<Dimension> varDims = grid.getDimensions();
+            Dimension xDim =this.grid.getXDimension();
+            Dimension yDim = this.grid.getYDimension();
+            List<Dimension> varDims = this.grid.getDimensions();
 
             int xDimIndex = varDims.indexOf(xDim);  // The index of the X dimension in grid's list of dimensions.
             int yDimIndex = varDims.indexOf(yDim);  // The index of the Y dimension in grid's list of dimensions.
@@ -523,19 +525,19 @@ public class FileProcessServlet extends HttpServlet {
         }
 
         private double getPercentOfShapeOverlappingCell(int xIndex, int yIndex) {
-            if (!Double.isNaN(percentOfShapeOverlappingCells[xIndex][yIndex])) {
-                return percentOfShapeOverlappingCells[xIndex][yIndex];
+            if (!Double.isNaN(this.percentOfShapeOverlappingCells[xIndex][yIndex])) {
+                return this.percentOfShapeOverlappingCells[xIndex][yIndex];
             }
 
-            double[] xCellEdges = xAxis.getCoordEdges(xIndex);
-            double[] yCellEdges = yAxis.getCoordEdges(yIndex);
+            double[] xCellEdges = this.xAxis.getCoordEdges(xIndex);
+            double[] yCellEdges = this.yAxis.getCoordEdges(yIndex);
 
             Envelope envelope = new Envelope(xCellEdges[0], xCellEdges[1], yCellEdges[0], yCellEdges[1]);
-            Geometry cellRectangle = geometryFactory.toGeometry(envelope);
+            Geometry cellRectangle = this.geometryFactory.toGeometry(envelope);
 
-            Geometry intersection = cellRectangle.intersection(shape);
-            percentOfShapeOverlappingCells[xIndex][yIndex] = intersection.getArea() / shape.getArea();
-            return percentOfShapeOverlappingCells[xIndex][yIndex];
+            Geometry intersection = cellRectangle.intersection(this.shape);
+            this.percentOfShapeOverlappingCells[xIndex][yIndex] = intersection.getArea() / this.shape.getArea();
+            return this.percentOfShapeOverlappingCells[xIndex][yIndex];
         }
     }
 }
