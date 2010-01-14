@@ -29,9 +29,6 @@ public class GeoToolsFileAnalysis {
 	DbaseFileReader dbFileReader;
 	ShapefileReader shpFileReader;
 	
-	public GeoToolsFileAnalysis() {
-	}
-	
 	public static FileDataStore getFileDataStore(File file) {
 		if (file == null) return null;
 		try {
@@ -135,7 +132,12 @@ public class GeoToolsFileAnalysis {
 				// Do nothing at this point. It was a file read error.
 			}
 		}
-		
+		try {
+			dbaseFileReader.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return result;
 	}
 	
