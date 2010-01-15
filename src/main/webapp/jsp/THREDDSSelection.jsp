@@ -58,26 +58,13 @@ ${head}
 				onclick="document.processFiles.action='${cont}${process}';document.processFiles.submit()" />		
 		</form>
 		Known THREDDS Servers (click): <br />
+		
 		<div class="THREDDSServerSuggestions" onclick="document.getElementById('THREDDSUrlInputBox').value = 'http://runoff.cr.usgs.gov:8086/thredds/hydrologic_catalog.xml'">
 			<ul>
 				<li><a>RUNOFF</a></li>
 			</ul>
 		</div>
-		<div class="THREDDSServerSuggestions" onclick="document.getElementById('THREDDSUrlInputBox').value = 'http://geoport.whoi.edu:8081/thredds/catalog.xml'">
-			<ul>
-				<li><a>PRISM</a></li>
-			</ul>
-		</div>
-		<div class="THREDDSServerSuggestions" onclick="document.getElementById('THREDDSUrlInputBox').value = 'http://130.11.161.219:8080/thredds/catalog/models/catalog.xml'">
-			<ul>
-				<li><a>130.11.161.219</a></li>
-			</ul>
-		</div>
-		<div class="THREDDSServerSuggestions" onclick="document.getElementById('THREDDSUrlInputBox').value = 'http://motherlode.ucar.edu:8080/thredds/catalog/station/metar/catalog.xml'">
-			<ul>
-				<li><a>http://motherlode.ucar.edu:8080/thredds/catalog/station/metar/catalog.xml</a></li>
-			</ul>
-		</div>
+		
 <div id="errorText">
 	<ul>
 		<c:forEach var="error" items="${errorBean.messages}">				
