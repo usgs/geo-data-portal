@@ -1,7 +1,7 @@
 package gov.usgs.gdp.bean;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+
+import gov.usgs.gdp.helper.PropertyFactory;
 
 import java.io.Serializable;
 import java.text.DateFormat;
@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 
 public class THREDDSInfoBean implements Serializable {
@@ -25,118 +27,117 @@ public class THREDDSInfoBean implements Serializable {
 	private List<String> openDapGridItems;
 	private List<String> openDapGridTimes;
 	
-	public int getFromYear() {
+	public int getFromYear() throws ParseException {
 		int result = -1;
 		
 		String beginDate = getOpenDapGridTimes().get(0);
 		String substrDate = beginDate.substring(0, beginDate.indexOf(' '));
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		Date parsedDate = null;
-		try {
-			parsedDate = df.parse(substrDate);
-			Calendar calendar  = Calendar.getInstance();
-			calendar.setTime(parsedDate);
-			result = calendar.get(Calendar.YEAR);
-		} catch (ParseException e) {
-			fail(e.getMessage());
-		}
+		parsedDate = df.parse(substrDate);
+		Calendar calendar  = Calendar.getInstance();
+		calendar.setTime(parsedDate);
+		result = calendar.get(Calendar.YEAR);
 
 		return result;
 	}
 	
-	public int getToYear() {
+	/**
+	 * Returns a Map<String, String> object of the URLs from the property file
+	 * 
+	 * @return empty Map<String, String> if not found
+	 */
+	public static Map<String, String> getTHREDDSUrlMap() {
+		Map<String, String> result = new TreeMap<String, String>();
+		int urlCounter = 0;
+		String urlProperty = "";
+		do {
+			urlProperty = PropertyFactory.getProperty("thredds.url." + urlCounter);
+			urlCounter++;
+			if (!"".equals(urlProperty)) {
+				String key = urlProperty.substring(0,urlProperty.indexOf(";"));
+				String property = urlProperty.substring(urlProperty.indexOf(";") + 1);
+				result.put(key, property);
+			}
+		} while (!"".equals(urlProperty));
+		
+		return result;
+		
+	}
+	
+	public int getToYear() throws ParseException {
 		int result = -1;
 		
 		String endDate = getOpenDapGridTimes().get(getOpenDapGridTimes().size() - 1);
 		String substrDate = endDate.substring(0, endDate.indexOf(' '));
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		Date parsedDate = null;
-		try {
-			parsedDate = df.parse(substrDate);
-			Calendar calendar  = Calendar.getInstance();
-			calendar.setTime(parsedDate);
-			result = calendar.get(Calendar.YEAR);
-		} catch (ParseException e) {
-			fail(e.getMessage());
-		}
+		parsedDate = df.parse(substrDate);
+		Calendar calendar  = Calendar.getInstance();
+		calendar.setTime(parsedDate);
+		result = calendar.get(Calendar.YEAR);
 
 		return result;
 	}
 	
-	public int getToDay() {
+	public int getToDay() throws ParseException {
 		int result = -1;
 		
 		String endDate = getOpenDapGridTimes().get(getOpenDapGridTimes().size() - 1);
 		String substrDate = endDate.substring(0, endDate.indexOf(' '));
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		Date parsedDate = null;
-		try {
-			parsedDate = df.parse(substrDate);
-			Calendar calendar  = Calendar.getInstance();
-			calendar.setTime(parsedDate);
-			result = calendar.get(Calendar.DAY_OF_MONTH);
-		} catch (ParseException e) {
-			fail(e.getMessage());
-		}
+		parsedDate = df.parse(substrDate);
+		Calendar calendar  = Calendar.getInstance();
+		calendar.setTime(parsedDate);
+		result = calendar.get(Calendar.DAY_OF_MONTH);
 
 		return result;
 	}
 	
-	public int getFromDay() {
+	public int getFromDay() throws ParseException {
 		int result = -1;
 		
 		String beginDate = getOpenDapGridTimes().get(0);
 		String substrDate = beginDate.substring(0, beginDate.indexOf(' '));
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		Date parsedDate = null;
-		try {
-			parsedDate = df.parse(substrDate);
-			Calendar calendar  = Calendar.getInstance();
-			calendar.setTime(parsedDate);
-			result = calendar.get(Calendar.DAY_OF_MONTH);
-		} catch (ParseException e) {
-			fail(e.getMessage());
-		}
+		parsedDate = df.parse(substrDate);
+		Calendar calendar  = Calendar.getInstance();
+		calendar.setTime(parsedDate);
+		result = calendar.get(Calendar.DAY_OF_MONTH);
 
 		return result;
 	}
 	
 	
-	public int getFromMonth() {
+	public int getFromMonth() throws ParseException {
 		int result = -1;
 		
 		String beginDate = getOpenDapGridTimes().get(0);
 		String substrDate = beginDate.substring(0, beginDate.indexOf(' '));
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		Date parsedDate = null;
-		try {
-			parsedDate = df.parse(substrDate);
-			Calendar calendar  = Calendar.getInstance();
-			calendar.setTime(parsedDate);
-			result = calendar.get(Calendar.MONTH);
-		} catch (ParseException e) {
-			fail(e.getMessage());
-		}
+		parsedDate = df.parse(substrDate);
+		Calendar calendar  = Calendar.getInstance();
+		calendar.setTime(parsedDate);
+		result = calendar.get(Calendar.MONTH);
 
 		return result;
 	}
 	
 	
-	public int getToMonth() {
+	public int getToMonth() throws ParseException {
 		int result = -1;
 		
 		String endDate = getOpenDapGridTimes().get(getOpenDapGridTimes().size() - 1);
 		String substrDate = endDate.substring(0, endDate.indexOf(' '));
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		Date parsedDate = null;
-		try {
-			parsedDate = df.parse(substrDate);
-			Calendar calendar  = Calendar.getInstance();
-			calendar.setTime(parsedDate);
-			result = calendar.get(Calendar.MONTH);
-		} catch (ParseException e) {
-			fail(e.getMessage());
-		}
+		parsedDate = df.parse(substrDate);
+		Calendar calendar  = Calendar.getInstance();
+		calendar.setTime(parsedDate);
+		result = calendar.get(Calendar.MONTH);
 
 		return result;
 	}

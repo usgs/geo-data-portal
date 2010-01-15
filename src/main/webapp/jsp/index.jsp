@@ -19,6 +19,9 @@
 	<link rel="stylesheet" href="${cont}/css/gdp_main_print.css"  title="USGS Full Width Nav" media="print" type="text/css">
 	<link rel="stylesheet" href="${cont}/css/full_width.css"  title="USGS Full Width Nav" media="projection, screen, tv" type="text/css">
 	<title>Welcome to the GeoData Portal</title>
+	<script type='text/JavaScript' src='js/scw.js'>
+	scwDisabledDates[0] = [new Date(1990,0,1),new Date(1990,0,20)];
+	</script>
 </head>
 <body>
 ${head}
@@ -27,6 +30,8 @@ ${head}
 	<br />
 	<hr />
 	Welcome to the GeoData Portal
+	<form><input type="text" value="" id="calInput1"></input></form>
+	<div id="cal1" onclick="scwShow (scwID('calInput1'), this);">Calendar 1</div>
 	<br />
 		<div id="errorText">
 		<ul>

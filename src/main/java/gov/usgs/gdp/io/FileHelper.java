@@ -14,9 +14,14 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.geotools.data.FileDataStore;
 
+/**
+ * Utility class that helps with multiple FileIO operations
+ * 
+ * @author isuftin
+ *
+ */
 public class FileHelper {
 
-	
 	/**
 	 * Copies a File object to a given location
 	 * Is able to handle 
@@ -24,18 +29,15 @@ public class FileHelper {
 	 * @param inFile
 	 * @param outFileString
 	 * @return
+	 * @throws IOException 
 	 */
-	public static  boolean copyFileToFile(final File inFile, final String outFileString) {
-		try {
-			if (inFile.isDirectory()) {
-				FileUtils.copyDirectory(inFile, (new File(outFileString + inFile.getName())));
-			} else {
-				FileUtils.copyFile(inFile, (new File(outFileString + inFile.getName())));
-			}
-			return true;
-		} catch (IOException e) {
-			return false;
+	public static  boolean copyFileToFile(final File inFile, final String outFileString) throws IOException {
+		if (inFile.isDirectory()) {
+			FileUtils.copyDirectory(inFile, (new File(outFileString + inFile.getName())));
+		} else {
+			FileUtils.copyFile(inFile, (new File(outFileString + inFile.getName())));
 		}
+		return true;
 	}
 	
 	/**
@@ -161,12 +163,7 @@ public class FileHelper {
 			return null;
 		List<String> result = null;
 		Collection<File> fileList = null;
-		try {
-			fileList = FileUtils.listFiles((new File(filePath)), extensions,
-					recursive);
-		} catch (IllegalArgumentException e) {
-			return null;
-		}
+		fileList = FileUtils.listFiles((new File(filePath)), extensions, recursive);
 		result = new ArrayList<String>();
 		
 		for (File file : fileList) {

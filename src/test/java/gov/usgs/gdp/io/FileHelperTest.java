@@ -125,9 +125,19 @@ public class FileHelperTest {
 		+ this.seperator
 		+ "hru20VSR.COPY";
 		
-		boolean result = FileHelper.copyFileToFile(fileToCopy, fileToCopyTo);
+		boolean result = false;
+		try {
+			result = FileHelper.copyFileToFile(fileToCopy, fileToCopyTo);
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
 		assertTrue(result);
-		result = FileHelper.copyFileToFile(new File("doesnt/exist"), "doesnt/exist");
+		
+		try {
+			result = FileHelper.copyFileToFile(new File("doesnt/exist"), "doesnt/exist");
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
 		assertFalse(result);
 		
 	}

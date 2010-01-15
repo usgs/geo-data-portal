@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.*"  isELIgnored="false" %>
+<%@ page import="java.lang.*"  isELIgnored="false" %>
 <%@ page import="gov.usgs.gdp.bean.FilesBean" isELIgnored="false" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -35,7 +36,8 @@ ${head}
 	<hr />
 	
 	<div id="fileSetDiv">
-	Chosen FileSet(s) and options:<br />
+		Chosen FileSet(s) and options:<br />
+		
 		<c:forEach var="shapeFileSetBean" items="${shapeFileSetBeanSubsetList}">
 			<fieldset class="applicationFieldSet">
 				<legend>
@@ -58,12 +60,16 @@ ${head}
 				onclick="document.processFiles.action='${cont}${process}';document.processFiles.submit()" />		
 		</form>
 		Known THREDDS Servers (click): <br />
+		<jsp:useBean id="threddsMap" scope="request" class="java.util.TreeMap"  /> 
+		<c:forEach var='item' items='${threddsMap}'>
+			<div class="THREDDSServerSuggestions" onclick="document.getElementById('THREDDSUrlInputBox').value = '${item.value}'">
+				<ul>
+					<li><a>${item.key}</a></li>
+				</ul>
+			</div>
+  			<!--  c:out value='Key=${item.key}, Value=${item.value}'/ -->
+		</c:forEach>
 		
-		<div class="THREDDSServerSuggestions" onclick="document.getElementById('THREDDSUrlInputBox').value = 'http://runoff.cr.usgs.gov:8086/thredds/hydrologic_catalog.xml'">
-			<ul>
-				<li><a>RUNOFF</a></li>
-			</ul>
-		</div>
 		
 <div id="errorText">
 	<ul>

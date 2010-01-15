@@ -18,6 +18,7 @@ import java.util.Formatter;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -190,6 +191,11 @@ public class FileProcessServlet extends HttpServlet {
                     }
                 }
             }
+            
+            // Pull the THREDDS urls from the properties files
+            Map<String, String> threddsMap = THREDDSInfoBean.getTHREDDSUrlMap();
+            request.setAttribute("threddsMap", threddsMap);
+            
             request.getSession().setAttribute("shapeFileSetBeanSubsetList", shapeFileSetBeanSubsetList);
             forwardTo = "/jsp/THREDDSSelection.jsp";
         } else if ("step4".equals(action)) {
@@ -317,7 +323,6 @@ public class FileProcessServlet extends HttpServlet {
 
                     for (NamedObject time : grid.getTimes()) {
                         timeSelectItemList.add(time.getName());
-                        //System.out.println(time.getName());
                     }
                 } else {
                     // TODO:
