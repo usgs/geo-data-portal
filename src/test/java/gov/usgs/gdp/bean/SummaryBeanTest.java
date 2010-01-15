@@ -5,7 +5,8 @@
 
 package gov.usgs.gdp.bean;
 
-import gov.usgs.gdp.io.FileHelper;
+import gov.usgs.gdp.helper.FileHelper;
+
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;

@@ -1,6 +1,6 @@
 package gov.usgs.gdp.analysis;
 
-import gov.usgs.gdp.io.FileHelper;
+import gov.usgs.gdp.helper.FileHelper;
 
 import java.io.File;
 import java.io.FileInputStream;

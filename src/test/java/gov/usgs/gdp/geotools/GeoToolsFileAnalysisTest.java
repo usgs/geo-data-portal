@@ -3,7 +3,7 @@ package gov.usgs.gdp.geotools;
 
 import static org.junit.Assert.*;
 import gov.usgs.gdp.analysis.GeoToolsFileAnalysis;
-import gov.usgs.gdp.io.FileHelper;
+import gov.usgs.gdp.helper.FileHelper;
 
 import java.io.File;
 import java.io.IOException;

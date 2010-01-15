@@ -5,8 +5,8 @@ import gov.usgs.gdp.bean.FilesBean;
 import gov.usgs.gdp.bean.MessageBean;
 import gov.usgs.gdp.bean.ShapeFileSetBean;
 import gov.usgs.gdp.bean.SummaryBean;
+import gov.usgs.gdp.helper.FileHelper;
 import gov.usgs.gdp.interfaces.geotools.AnalyzeFile;
-import gov.usgs.gdp.io.FileHelper;
 
 import java.io.File;
 import java.io.IOException;

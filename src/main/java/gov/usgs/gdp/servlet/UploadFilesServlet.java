@@ -2,7 +2,7 @@ package gov.usgs.gdp.servlet;
 
 import gov.usgs.gdp.bean.MessageBean;
 import gov.usgs.gdp.bean.FilesBean;
-import gov.usgs.gdp.io.FileHelper;
+import gov.usgs.gdp.helper.FileHelper;
 
 import java.io.File;
 import java.io.IOException;

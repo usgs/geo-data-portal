@@ -4,7 +4,7 @@ import gov.usgs.gdp.analysis.NetCDFUtility;
 import gov.usgs.gdp.bean.MessageBean;
 import gov.usgs.gdp.bean.ShapeFileSetBean;
 import gov.usgs.gdp.bean.THREDDSInfoBean;
-import gov.usgs.gdp.io.FileHelper;
+import gov.usgs.gdp.helper.FileHelper;
 
 import java.io.File;
 import java.io.IOException;
