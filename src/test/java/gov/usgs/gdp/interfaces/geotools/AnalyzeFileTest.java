@@ -96,15 +96,26 @@ public class AnalyzeFileTest {
 		ShapeFileSetBean testBean = new ShapeFileSetBean();
 		testBean.setDbfFile(new File(dbfFile));
 		testBean.setShapeFile(new File(shpFile));
-		result = AnalyzeFile.getFileSummary(testBean);
-		assertNotNull(result);
-		assertFalse(result.isEmpty());
+		
+		try {
+			result = AnalyzeFile.getFileSummary(testBean);
+			assertNotNull(result);
+			assertFalse(result.isEmpty());
+		} catch (IOException e1) {
+			fail(e1.getMessage());
+		}
+		
 		
 		testBean.setDbfFile(null);
 		testBean.setShapeFile(null);
-		result = AnalyzeFile.getFileSummary(testBean);
-		assertNotNull(result);
-		assertTrue(result.isEmpty());
+		try {
+			result = AnalyzeFile.getFileSummary(testBean);
+			assertNotNull(result);
+			assertTrue(result.isEmpty());
+		} catch (IOException e1) {
+			fail(e1.getMessage());
+		}
+		
 		
 		File zeroByteFile = null;
 		try {
@@ -115,15 +126,25 @@ public class AnalyzeFileTest {
 		
 		testBean.setDbfFile(zeroByteFile);
 		testBean.setShapeFile(zeroByteFile);
-		result = AnalyzeFile.getFileSummary(testBean);
-		assertNotNull(result);
-		assertTrue(result.isEmpty());
+		try {
+			result = AnalyzeFile.getFileSummary(testBean);
+			assertNotNull(result);
+			assertTrue(result.isEmpty());
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		
 		
 		testBean.setDbfFile(new File("does/not/exist"));
 		testBean.setShapeFile(new File("does/not/exist"));
-		result = AnalyzeFile.getFileSummary(testBean);
-		assertNotNull(result);
-		assertTrue(result.isEmpty());
+		try {
+			result = AnalyzeFile.getFileSummary(testBean);
+			assertNotNull(result);
+			assertTrue(result.isEmpty());
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		
 	}
 	
 	@Test 
@@ -147,25 +168,51 @@ public class AnalyzeFileTest {
 		File DBFFILE = new File(dbfFile);
 		File SHPFILE = new File(shpFile);
 		
-		List<String> result = AnalyzeFile.getFileSummary(new File("does/not/exist"));
-		assertNotNull(result);
-		assertTrue(result.isEmpty());
+		List<String> result;
+		try {
+			result = AnalyzeFile.getFileSummary(new File("does/not/exist"));
+			assertNotNull(result);
+			assertTrue(result.isEmpty());
+		} catch (IOException e1) {
+			fail(e1.getMessage());
+		}
 		
-		result = AnalyzeFile.getFileSummary(dbfFile);
-		assertNotNull(result);
-		assertFalse(result.isEmpty());
 		
-		result = AnalyzeFile.getFileSummary(shpFile);
-		assertNotNull(result);
-		assertFalse(result.isEmpty());
+		try {
+			result = AnalyzeFile.getFileSummary(dbfFile);
+			assertNotNull(result);
+			assertFalse(result.isEmpty());
+		} catch (IOException e1) {
+			fail(e1.getMessage());
+		}
 		
-		result = AnalyzeFile.getFileSummary(DBFFILE);
-		assertNotNull(result);
-		assertFalse(result.isEmpty());
 		
-		result = AnalyzeFile.getFileSummary(SHPFILE);
-		assertNotNull(result);
-		assertFalse(result.isEmpty());
+		try {
+			result = AnalyzeFile.getFileSummary(shpFile);
+			assertNotNull(result);
+			assertFalse(result.isEmpty());
+		} catch (IOException e1) {
+			fail(e1.getMessage());
+		}
+		
+		
+		try {
+			result = AnalyzeFile.getFileSummary(DBFFILE);
+			assertNotNull(result);
+			assertFalse(result.isEmpty());
+		} catch (IOException e1) {
+			fail(e1.getMessage());
+		}
+		
+		
+		try {
+			result = AnalyzeFile.getFileSummary(SHPFILE);
+			assertNotNull(result);
+			assertFalse(result.isEmpty());
+		} catch (IOException e1) {
+			fail(e1.getMessage());
+		}
+		
 		
 		try {
 			File zeroByteFile = File.createTempFile("temp", "tmp");
@@ -182,9 +229,14 @@ public class AnalyzeFileTest {
 				+ this.seperator
 				+ "Shapefiles" 
 				+ this.seperator);
-		result = AnalyzeFile.getFileSummary(directory);
-		assertNotNull(result);
-		assertTrue(result.isEmpty());
+		try {
+			result = AnalyzeFile.getFileSummary(directory);
+			assertNotNull(result);
+			assertTrue(result.isEmpty());
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		
 		
 		
 	}

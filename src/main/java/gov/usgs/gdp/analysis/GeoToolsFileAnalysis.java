@@ -29,13 +29,9 @@ public class GeoToolsFileAnalysis {
 	DbaseFileReader dbFileReader;
 	ShapefileReader shpFileReader;
 	
-	public static FileDataStore getFileDataStore(File file) {
+	public static FileDataStore getFileDataStore(File file) throws IOException {
 		if (file == null) return null;
-		try {
-			return FileDataStoreFinder.getDataStore(file);
-		} catch (IOException e) {
-			return null;
-		}
+		return FileDataStoreFinder.getDataStore(file);
 	}
 	
 	
@@ -44,25 +40,17 @@ public class GeoToolsFileAnalysis {
 	 * Reads in a File and transforms it to a DbaseFileReader object
 	 * @param file
 	 * @return
+	 * @throws IOException 
 	 */
-	public static DbaseFileReader readInDBaseFile(File file, boolean useMemoryMappedBuffer, Charset charset) {
+	public static DbaseFileReader readInDBaseFile(File file, boolean useMemoryMappedBuffer, Charset charset) throws IOException {
 		DbaseFileReader result = null;
 		FileChannel in = null;
 		try {
 			in =  new FileInputStream(file).getChannel();
 			result = new DbaseFileReader(in, useMemoryMappedBuffer, charset);
-		} catch (FileNotFoundException e) {
-			return null;
-		} catch (IOException e) {
-			return null;
 		} finally {
-			try {
-				if (in != null) {
-					in.close();
-				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			if (in != null) {
+				in.close();
 			}
 		}
 		return result;		
@@ -83,23 +71,23 @@ public class GeoToolsFileAnalysis {
 		return result;
 	}
 	
-	public List<String> getDBaseFileSummary() {
+	public List<String> getDBaseFileSummary() throws IOException {
 		if (getDbFileReader() == null) return null; 
 		return GeoToolsFileAnalysis.getDBaseFileSummary(getDbFileReader());
 	}
 	
-	public static  List<String> getDBaseFileSummary(File file) {
+	public static  List<String> getDBaseFileSummary(File file) throws IOException {
 		DbaseFileReader reader = GeoToolsFileAnalysis.readInDBaseFile(file, false, Charset.defaultCharset());
+		try {
 		List<String> result = null;
 			result = GeoToolsFileAnalysis.getDBaseFileSummary(reader);
-			try {
-				if (!(reader.getHeader() == null)) {
-					reader.close();
-				}
-			} catch (IOException e) {
-				log.debug(e.getMessage());
+			if (!(reader.getHeader() == null)) {
+				reader.close();
 			}
 			return result;
+		} finally {
+			if (reader.getHeader() != null)	reader.close();
+		}
 
 	}
 	
@@ -109,8 +97,9 @@ public class GeoToolsFileAnalysis {
 	 * 
 	 * @param dbaseFileReader
 	 * @return
+	 * @throws IOException 
 	 */
-	public static List<String> getDBaseFileSummary(DbaseFileReader dbaseFileReader) {
+	public static List<String> getDBaseFileSummary(DbaseFileReader dbaseFileReader) throws IOException {
 		List<String> result = new ArrayList<String>();
 		int fields = dbaseFileReader.getHeader().getNumFields();
 		int recordCount = dbaseFileReader.getHeader().getNumRecords();
@@ -124,36 +113,30 @@ public class GeoToolsFileAnalysis {
 		result.add("Header String Rep: " + dbaseFileReader.getHeader().toString());
 		result.add("Begin record scroll: \n");
 		
-		//Object[] fields = new Object[dbaseFileReader.getHeader().getNumFields()];
-		while (dbaseFileReader.hasNext()) {
-			DbaseFileReader.Row row = null;
-			try {
-				row = dbaseFileReader.readRow();
-				result.add(row.toString());
-			} catch (IOException e) {
-				// Do nothing at this point. It was a file read error.
-			}
-		}
 		try {
+			while (dbaseFileReader.hasNext()) {
+				DbaseFileReader.Row row = null;
+					row = dbaseFileReader.readRow();
+					result.add(row.toString());
+			}
+		} finally {
 			dbaseFileReader.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
+		
 		return result;
 	}
 	
-	public static List<String> getDBaseFileSummary(String filePath) {
+	public static List<String> getDBaseFileSummary(String filePath) throws IOException {
 		if ("".equals(filePath) || filePath == null) return null;
 		return GeoToolsFileAnalysis.getDBaseFileSummary(GeoToolsFileAnalysis.readInDBaseFile(FileHelper.loadFile(filePath), false, Charset.defaultCharset()));
 	}
 	
-	public static List<String> getShapeFileSummary(String filePath) {
+	public static List<String> getShapeFileSummary(String filePath) throws IOException {
 		if ("".equals(filePath) || filePath == null) return null;
 		return GeoToolsFileAnalysis.getShapeFileSummary(GeoToolsFileAnalysis.getShapeFileReader(filePath));
 	}
 	
-	public List<String> getShapeFileSummary() {
+	public List<String> getShapeFileSummary() throws IOException {
 		if (getShpFileReader() == null) return null;
 		return GeoToolsFileAnalysis.getShapeFileSummary(getShpFileReader());
 	}
@@ -162,21 +145,18 @@ public class GeoToolsFileAnalysis {
 	 * Returns a Shape File summary
 	 * @param file
 	 * @return
+	 * @throws IOException 
 	 */
-	public static List<String> getShapeFileSummary(ShapefileReader file) {
+	public static List<String> getShapeFileSummary(ShapefileReader file) throws IOException {
 		List<String> result = null;
 		// Load in the files and try them out....
-		try {			
-			while (file.hasNext()) {
-				if (result == null) result = new ArrayList<String>();
-				ShapefileReader.Record nextRecord = file.nextRecord();
-				result.add("Record number: " + nextRecord.toString().trim());
-			}
-			file.close();
-			return result;
-		} catch (IOException e) {
-			return result;
+		while (file.hasNext()) {
+			if (result == null) result = new ArrayList<String>();
+			ShapefileReader.Record nextRecord = file.nextRecord();
+			result.add("Record number: " + nextRecord.toString().trim());
 		}
+		file.close();
+		return result;
 	}
 
 	/**
@@ -184,8 +164,9 @@ public class GeoToolsFileAnalysis {
 	 * 
 	 * @param shpFile
 	 * @return
+	 * @throws IOException 
 	 */
-	public static List<String> getShapeFileSummary(File shpFile) {
+	public static List<String> getShapeFileSummary(File shpFile) throws IOException {
 		if (shpFile == null) return null;
 		return GeoToolsFileAnalysis.getShapeFileSummary(GeoToolsFileAnalysis.getShapeFileReader(shpFile));
 	}
@@ -236,15 +217,11 @@ public class GeoToolsFileAnalysis {
 		this.shpFileReader = localShpFileReader;
 	}
 
-	public static List<String> getShapeFileHeaderSummary(File shpFile) {
+	public static List<String> getShapeFileHeaderSummary(File shpFile) throws IOException {
 		ShapefileReader reader = GeoToolsFileAnalysis.getShapeFileReader(shpFile);
 		List<String> result = GeoToolsFileAnalysis.getShapeFileHeaderSummary(reader);
-		try {
-			reader.close();
-			return result;
-		} catch (IOException e) {
-			return result;
-		}
+		reader.close();
+		return result;
 	}
 
 
@@ -253,38 +230,25 @@ public class GeoToolsFileAnalysis {
 	 * 
 	 * @param file
 	 * @return
+	 * @throws IOException 
+	 * @throws MalformedURLException 
+	 * @throws ShapefileException 
 	 */
-	public static ShapefileReader getShapeFileReader(String file) {
+	public static ShapefileReader getShapeFileReader(String file) throws ShapefileException, MalformedURLException, IOException {
 		if (file == null) return null;
 		ShapefileReader result = null;
-		try {
 			//FileChannel stream = new FileInputStream(new File(file)).getChannel();
 			//ReadableByteChannel channel = Channels.newChannel(stream);
 			//result = new ShapefileReader(stream);
 			result = new ShapefileReader(new ShpFiles(file), true, true, new GeometryFactory());
-		} catch (ShapefileException e) {
-			return result;
-		} catch (MalformedURLException e) {
-			return result;
-		} catch (IOException e) {
-			return result;
-		}
 		return result;
 	}
 
-	public static ShapefileReader getShapeFileReader(File shpFile) {
+	public static ShapefileReader getShapeFileReader(File shpFile) throws ShapefileException, MalformedURLException, IOException {
 		if (shpFile == null) return null;
 		ShapefileReader result = null;
 		
-		try {
-			result = new ShapefileReader(new ShpFiles(shpFile), true, true, new GeometryFactory());
-		} catch (ShapefileException e) {
-			return result;
-		} catch (MalformedURLException e) {
-			return result;
-		} catch (IOException e) {
-			return result;
-		}
+		result = new ShapefileReader(new ShpFiles(shpFile), true, true, new GeometryFactory());
 		return result;
 	}
 }

@@ -4,6 +4,7 @@ import gov.usgs.gdp.analysis.GeoToolsFileAnalysis;
 import gov.usgs.gdp.bean.ShapeFileSetBean;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,8 +15,9 @@ public class AnalyzeFile {
 	 * 
 	 * @param file
 	 * @return
+	 * @throws IOException 
 	 */
-	public static List<String> getFileSummary(File file) {
+	public static List<String> getFileSummary(File file) throws IOException {
 		List<String> result = new ArrayList<String>();
 		if (!file.exists() 
 				|| file.isDirectory() 
@@ -37,8 +39,9 @@ public class AnalyzeFile {
 	 * Summarizes files in a ShapeFileSetBean file set
 	 * @param shapeFileSetBean
 	 * @return
+	 * @throws IOException 
 	 */
-	public static List<String> getFileSummary(ShapeFileSetBean shapeFileSetBean) {
+	public static List<String> getFileSummary(ShapeFileSetBean shapeFileSetBean) throws IOException {
 		List<String> result = new ArrayList<String>();
 		File dbFile = shapeFileSetBean.getDbfFile();
 		File shpFile = shapeFileSetBean.getShapeFile();
@@ -58,7 +61,7 @@ public class AnalyzeFile {
 		return result;
 	}
 	
-	public static List<String> getFileSummary(String file) {
+	public static List<String> getFileSummary(String file) throws IOException {
 		return AnalyzeFile.getFileSummary(new File(file));
 	}
 }

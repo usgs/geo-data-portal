@@ -100,7 +100,11 @@ public class SummaryServlet extends HttpServlet {
 			if (workingShapeFileSet == null) return null;
 			
 			List<String> summaryResults = new ArrayList<String>();
-			summaryResults = AnalyzeFile.getFileSummary(workingShapeFileSet);
+			try {
+				summaryResults = AnalyzeFile.getFileSummary(workingShapeFileSet);
+			} catch (IOException e) {
+				log.debug(e.getMessage());
+			}
 			
 			SummaryBean summaryBean = new SummaryBean(checkboxItem, summaryResults);
 			result.add(summaryBean);

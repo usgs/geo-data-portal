@@ -7,6 +7,7 @@ import gov.usgs.gdp.helper.FileHelper;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -17,6 +18,7 @@ import org.apache.commons.io.FileUtils;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.shapefile.dbf.DbaseFileHeader;
 import org.geotools.data.shapefile.dbf.DbaseFileReader;
+import org.geotools.data.shapefile.shp.ShapefileException;
 import org.geotools.data.shapefile.shp.ShapefileReader;
 import org.geotools.data.shapefile.shp.ShapefileReader.Record;
 import org.junit.After;
@@ -75,28 +77,57 @@ public class GeoToolsFileAnalysisTest {
 		File loadedFile = new File(fileToLoad);
 		
 		GeoToolsFileAnalysis analyzer = new GeoToolsFileAnalysis();
-		result = analyzer.getDBaseFileSummary();
 		assertNull(result);
+		try {
+			result = analyzer.getDBaseFileSummary();
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
 		
-		result = GeoToolsFileAnalysis.getDBaseFileSummary("");
-		assertNull(result);
 		
-		result = GeoToolsFileAnalysis.getDBaseFileSummary(nullString);
-		assertNull(result);
+		try {
+			result = GeoToolsFileAnalysis.getDBaseFileSummary("");
+			assertNull(result);
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
 		
-		result = GeoToolsFileAnalysis.getDBaseFileSummary(loadedFile);
-		assertNotNull(result);
-		assertFalse(result.isEmpty());
 		
-		result = GeoToolsFileAnalysis.getDBaseFileSummary(fileToLoad);
-		assertNotNull(result);
-		assertFalse(result.isEmpty());
-		analyzer.setDbFileReader(GeoToolsFileAnalysis.readInDBaseFile(FileHelper.loadFile(fileToLoad), false, Charset.defaultCharset()));
-		assertNotNull(analyzer.getDbFileReader()); // Ensure we've read in a file
+		try {
+			result = GeoToolsFileAnalysis.getDBaseFileSummary(nullString);
+			assertNull(result);
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
 		
-		result = analyzer.getDBaseFileSummary();
-		assertNotNull("Analyzer returned a null result object", result);
-		assertFalse("Analyzer returned an empty result object",result.isEmpty());
+		
+		try {
+			result = GeoToolsFileAnalysis.getDBaseFileSummary(loadedFile);
+			assertNotNull(result);
+			assertFalse(result.isEmpty());
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		
+		
+		try {
+			result = GeoToolsFileAnalysis.getDBaseFileSummary(fileToLoad);
+			assertNotNull(result);
+			assertFalse(result.isEmpty());
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		
+		try {
+			analyzer.setDbFileReader(GeoToolsFileAnalysis.readInDBaseFile(FileHelper.loadFile(fileToLoad), false, Charset.defaultCharset()));
+			assertNotNull(analyzer.getDbFileReader()); // Ensure we've read in a file		
+			result = analyzer.getDBaseFileSummary();
+			assertNotNull("Analyzer returned a null result object", result);
+			assertFalse("Analyzer returned an empty result object",result.isEmpty());
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		
 		loadedFile.delete();
 	}
 	
@@ -110,22 +141,27 @@ public class GeoToolsFileAnalysisTest {
 		+ this.seperator
 		+ "statesp020.shp";
 		
-		ShapefileReader result = GeoToolsFileAnalysis.getShapeFileReader(fileToLoad);
+		ShapefileReader result = null;
 		try {
-			
-			while (result.hasNext()) {
-				Record record = result.nextRecord();
-				Geometry shape = (Geometry) record.shape();
-				int numOfGeometries = shape.getNumGeometries();
-				assertTrue(numOfGeometries > 0);
-				
+			result = GeoToolsFileAnalysis.getShapeFileReader(fileToLoad);
+			try {
+				while (result.hasNext()) {
+					Record record = result.nextRecord();
+					Geometry shape = (Geometry) record.shape();
+					int numOfGeometries = shape.getNumGeometries();
+					assertTrue(numOfGeometries > 0);
+				}
+			} finally {
+				try { result.close(); } catch (IOException e) {	e.printStackTrace(); }
 			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			try { result.close(); } catch (IOException e) {	e.printStackTrace(); }
+		} catch (ShapefileException e1) {
+			fail(e1.getMessage());
+		} catch (MalformedURLException e1) {
+			fail(e1.getMessage());
+		} catch (IOException e1) {
+			fail(e1.getMessage());
 		}
+		
 			
 	}
 	
@@ -140,21 +176,45 @@ public class GeoToolsFileAnalysisTest {
 		+ "hru20VSR.SHP";
 		
 		String nullString= null;
-		ShapefileReader result = GeoToolsFileAnalysis.getShapeFileReader(nullString);
-		assertNull(result);
+		ShapefileReader result;
+		try {
+			result = GeoToolsFileAnalysis.getShapeFileReader(nullString);
+			assertNull(result);
+		} catch (ShapefileException e1) {
+			fail(e1.getMessage());
+		} catch (MalformedURLException e1) {
+			fail(e1.getMessage());
+		} catch (IOException e1) {
+			fail(e1.getMessage());
+		}
+		
 		
 		File nullFile = null;
-		result = GeoToolsFileAnalysis.getShapeFileReader(nullFile);
-		assertNull(result);
-		
-		result = GeoToolsFileAnalysis.getShapeFileReader(fileToLoad);
-		assertNotNull(result);
 		try {
-			result.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			result = GeoToolsFileAnalysis.getShapeFileReader(nullFile);
+			assertNull(result);
+		} catch (ShapefileException e1) {
+			fail(e1.getMessage());
+		} catch (MalformedURLException e1) {
+			fail(e1.getMessage());
+		} catch (IOException e1) {
+			fail(e1.getMessage());
 		}
+		
+		
+		try {
+			result = GeoToolsFileAnalysis.getShapeFileReader(fileToLoad);
+			assertNotNull(result);
+			result.close();
+		} catch (ShapefileException e1) {
+			fail(e1.getMessage());
+		} catch (MalformedURLException e1) {
+			fail(e1.getMessage());
+		} catch (IOException e1) {
+			fail(e1.getMessage());
+		}
+		
+	
 	}
 	
 	@Test
@@ -169,32 +229,45 @@ public class GeoToolsFileAnalysisTest {
 		+ "hru20VSR.SHP";
 		
 		String nullString = null;
-		ShapefileReader reader = GeoToolsFileAnalysis.getShapeFileReader(nullString);
-		assertNull(reader);
-		
-		reader = GeoToolsFileAnalysis.getShapeFileReader(fileToLoad);
-		assertNotNull(reader);
-		
-		
-		
-		result = GeoToolsFileAnalysis.getShapeFileHeaderSummary(reader);
-		assertNotNull("GeoToolsFileAnalysis.getShapeFileHeaderSummary returned null",result);
-		assertFalse("GeoToolsFileAnalysis.getShapeFileHeaderSummary returned empty List of type String",result.isEmpty());
+		ShapefileReader reader;
 		try {
-			reader.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			reader = GeoToolsFileAnalysis.getShapeFileReader(nullString);
+			assertNull(reader);
+		} catch (ShapefileException e1) {
+			fail(e1.getMessage());
+		} catch (MalformedURLException e1) {
+			fail(e1.getMessage());
+		} catch (IOException e1) {
+			fail(e1.getMessage());
 		}
 		
-		result = GeoToolsFileAnalysis.getShapeFileHeaderSummary(reader);
-		assertNull(result);
+		
+		try {
+			reader = GeoToolsFileAnalysis.getShapeFileReader(fileToLoad);
+			assertNotNull(reader);
+			result = GeoToolsFileAnalysis.getShapeFileHeaderSummary(reader);
+			assertNotNull("GeoToolsFileAnalysis.getShapeFileHeaderSummary returned null",result);
+			assertFalse("GeoToolsFileAnalysis.getShapeFileHeaderSummary returned empty List of type String",result.isEmpty());
+			reader.close();
+			
+			result = GeoToolsFileAnalysis.getShapeFileHeaderSummary(reader);
+			assertNull(result);
+			
+			ShapefileReader nullReader = null;
+			result = GeoToolsFileAnalysis.getShapeFileHeaderSummary(nullReader);
+			assertNull(result);
+		} catch (ShapefileException e1) {
+			fail(e1.getMessage());
+		} catch (MalformedURLException e1) {
+			fail(e1.getMessage());
+		} catch (IOException e1) {
+			fail(e1.getMessage());
+		}
 		
 		
 		
-		ShapefileReader nullReader = null;
-		result = GeoToolsFileAnalysis.getShapeFileHeaderSummary(nullReader);
-		assertNull(result);
+		
+		
 	}
 	
 	@Test
@@ -208,9 +281,14 @@ public class GeoToolsFileAnalysisTest {
 		+ this.seperator
 		+ "hru20VSR.SHP";
 		
-		result = GeoToolsFileAnalysis.getShapeFileHeaderSummary(new File(fileToLoad));
-		assertNotNull(result);
-		fileToLoad = null;
+		try {
+			result = GeoToolsFileAnalysis.getShapeFileHeaderSummary(new File(fileToLoad));
+			assertNotNull(result);
+			fileToLoad = null;
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		
 	}
 	
 	@Test 
@@ -226,32 +304,71 @@ public class GeoToolsFileAnalysisTest {
 		String nullString = null;
 		
 		GeoToolsFileAnalysis subject = new GeoToolsFileAnalysis();
-		result = subject.getShapeFileSummary();
-		assertNull(result);
+		try {
+			result = subject.getShapeFileSummary();
+			assertNull(result);
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
 		
-		result = GeoToolsFileAnalysis.getShapeFileSummary("");
-		assertNull(result);
+		try {
+			result = GeoToolsFileAnalysis.getShapeFileSummary("");
+			assertNull(result);
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
 		
-		result = GeoToolsFileAnalysis.getShapeFileSummary(nullString);
-		assertNull(result);
 		
-		ShapefileReader shpFileReader = GeoToolsFileAnalysis.getShapeFileReader(fileToLoad);
-		subject.setShpFileReader(shpFileReader);
-		result = subject.getShapeFileSummary();
-		assertNotNull(result);
-		assertFalse(result.isEmpty());
+		try {
+			result = GeoToolsFileAnalysis.getShapeFileSummary(nullString);
+			assertNull(result);
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		
+		
+		ShapefileReader shpFileReader;
+		try {
+			shpFileReader = GeoToolsFileAnalysis.getShapeFileReader(fileToLoad);
+			subject.setShpFileReader(shpFileReader);
+			result = subject.getShapeFileSummary();
+			assertNotNull(result);
+			assertFalse(result.isEmpty());
+		} catch (ShapefileException e) {
+			fail(e.getMessage());
+		} catch (MalformedURLException e) {
+			fail(e.getMessage());
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		
 				
-		result = GeoToolsFileAnalysis.getShapeFileSummary(fileToLoad);
-		assertNotNull(result);
-		assertFalse(result.isEmpty());
+		try {
+			result = GeoToolsFileAnalysis.getShapeFileSummary(fileToLoad);
+			assertNotNull(result);
+			assertFalse(result.isEmpty());
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
 		
-		result = GeoToolsFileAnalysis.getShapeFileSummary(new File(fileToLoad));
-		assertNotNull(result);
-		assertFalse(result.isEmpty());
+		
+		try {
+			result = GeoToolsFileAnalysis.getShapeFileSummary(new File(fileToLoad));
+			assertNotNull(result);
+			assertFalse(result.isEmpty());
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		
 		
 		File nullFile = null;
-		result = GeoToolsFileAnalysis.getShapeFileSummary(nullFile);
-		assertNull(result);
+		try {
+			result = GeoToolsFileAnalysis.getShapeFileSummary(nullFile);
+			assertNull(result);
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		
 		
 	}
 	
@@ -264,11 +381,21 @@ public class GeoToolsFileAnalysisTest {
 		+ "Shapefiles" 
 		+ this.seperator
 		+ "hru20VSR.SHP";
-		ShapefileReader shpFileReader = GeoToolsFileAnalysis.getShapeFileReader(fileToLoad);
-		assertNotNull(shpFileReader);
-		List<String> result = GeoToolsFileAnalysis.getShapeFileSummary(shpFileReader);
-		assertNotNull(result);
-		assertFalse(result.isEmpty());
+		ShapefileReader shpFileReader;
+		try {
+			shpFileReader = GeoToolsFileAnalysis.getShapeFileReader(fileToLoad);
+			assertNotNull(shpFileReader);
+			List<String> result = GeoToolsFileAnalysis.getShapeFileSummary(shpFileReader);
+			assertNotNull(result);
+			assertFalse(result.isEmpty());
+		} catch (ShapefileException e) {
+			fail(e.getMessage());
+		} catch (MalformedURLException e) {
+			fail(e.getMessage());
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		
 		
 	}
 	
@@ -296,20 +423,32 @@ public class GeoToolsFileAnalysisTest {
 		File fakeFile = FileHelper.loadFile(fakeFileToLoad);
 		File nonDbFile = FileHelper.loadFile(nonDbaseFileToLoad);
 		assertNotNull("File came back null. Cannot continue test.", file);
-		DbaseFileReader result = GeoToolsFileAnalysis.readInDBaseFile(file, false, Charset.defaultCharset());
-		assertNotNull("DbaseFileReader object came back null", result);
-		assertNotSame("", result.id());		
+		DbaseFileReader result;
 		try {
+			result = GeoToolsFileAnalysis.readInDBaseFile(file, false, Charset.defaultCharset());
+			assertNotNull("DbaseFileReader object came back null", result);
+			assertNotSame("", result.id());		
 			result.close();
-		} catch (IOException e) {
-			// Do nothing. Test is complete
+		} catch (IOException e1) {
+			fail(e1.getMessage());
 		}
+		
 		// Test FileNotFound
-		result = GeoToolsFileAnalysis.readInDBaseFile(fakeFile, false, Charset.defaultCharset()); 
-		assertNull(result);
+		try {
+			result = GeoToolsFileAnalysis.readInDBaseFile(fakeFile, false, Charset.defaultCharset());
+			assertNull(result);
+		} catch (IOException e) {
+			fail(e.getMessage());
+		} 
+		
 		// Test IOException
-		result = GeoToolsFileAnalysis.readInDBaseFile(nonDbFile, false, Charset.defaultCharset());
-		assertNull(result);
+		try {
+			result = GeoToolsFileAnalysis.readInDBaseFile(nonDbFile, false, Charset.defaultCharset());
+			assertNull(result);
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		
 	}
 	
 	@Test
@@ -325,10 +464,16 @@ public class GeoToolsFileAnalysisTest {
 		DbaseFileHeader result = subject.getDBaseFileHeader();
 		assertNull(result);
 		File file = FileHelper.loadFile(fileToLoad);
-		DbaseFileReader reader = GeoToolsFileAnalysis.readInDBaseFile(file, false, Charset.defaultCharset());
-		subject.setDbFileReader(reader);
-		result = subject.getDBaseFileHeader();
-		assertNotNull(result);
+		DbaseFileReader reader;
+		try {
+			reader = GeoToolsFileAnalysis.readInDBaseFile(file, false, Charset.defaultCharset());
+			subject.setDbFileReader(reader);
+			result = subject.getDBaseFileHeader();
+			assertNotNull(result);
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		
 	}
 	
 	@Test
@@ -341,13 +486,29 @@ public class GeoToolsFileAnalysisTest {
 		+ this.seperator
 		+ "hru20VSR.SHP";
 		
-		FileDataStore result = GeoToolsFileAnalysis.getFileDataStore(new File("does/not/exist"));
-		assertNull(result);
+		FileDataStore result = null;
+		try {
+			result = GeoToolsFileAnalysis.getFileDataStore(new File("does/not/exist"));
+			assertNull(result);
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
 		
-		result = GeoToolsFileAnalysis.getFileDataStore(null);
-		assertNull(result);
 		
-		result = GeoToolsFileAnalysis.getFileDataStore(new File(fileToLoad));
-		assertNotNull(result);
+		try {
+			result = GeoToolsFileAnalysis.getFileDataStore(null);
+			assertNull(result);
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		
+		
+		try {
+			result = GeoToolsFileAnalysis.getFileDataStore(new File(fileToLoad));
+			assertNotNull(result);
+		} catch (IOException e) {
+			fail(e.getMessage());;
+		}
+		
 	}
 }

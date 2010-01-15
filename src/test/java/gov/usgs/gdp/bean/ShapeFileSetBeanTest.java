@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 import gov.usgs.gdp.helper.FileHelper;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -109,10 +110,17 @@ public class ShapeFileSetBeanTest {
 		filesBean.setFiles(files);
 		ShapeFileSetBean shapeFileSetBean = filesBean.getShapeFileSetBean();
 		assertNotNull(shapeFileSetBean);
-		List<String> result = ShapeFileSetBean.getAttributeListFromBean(shapeFileSetBean);
+		List<String> result = null;
+		try {
+			result = ShapeFileSetBean.getAttributeListFromBean(shapeFileSetBean);
+		} catch (IOException e) {
+			assertNotNull(result);
+		}
 		
 		assertNotNull(result);
-		assertFalse(result.isEmpty());
+		if (result != null) {
+			assertFalse(result.isEmpty());
+		}
 	}
 	
 	@Test 
@@ -149,9 +157,15 @@ public class ShapeFileSetBeanTest {
 		filesBean.setFiles(files);
 		ShapeFileSetBean shapeFileSetBean = filesBean.getShapeFileSetBean();
 		shapeFileSetBean.setChosenAttribute("AREA");
-		List<String> result = ShapeFileSetBean.getFeatureListFromBean(shapeFileSetBean);
-		assertNotNull(result);
-		assertFalse(result.isEmpty());
+		List<String> result = null;
+		try {
+			result = ShapeFileSetBean.getFeatureListFromBean(shapeFileSetBean);
+			assertNotNull(result);
+			assertFalse(result.isEmpty());
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		
 	}
 	
 	@Test 

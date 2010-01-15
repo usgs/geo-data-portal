@@ -38,16 +38,12 @@ public class ShapeFileSetBean implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	public static List<String> getAttributeListFromBean(ShapeFileSetBean shapeFileSetBean) {
+	public static List<String> getAttributeListFromBean(ShapeFileSetBean shapeFileSetBean) throws IOException {
 		List<String> result = new ArrayList<String>();
 		FileDataStore fds = GeoToolsFileAnalysis.getFileDataStore(shapeFileSetBean.getShapeFile());		
 		FeatureSource<SimpleFeatureType, SimpleFeature> featureSource;
 		
-		try {
-			featureSource = fds.getFeatureSource();
-		} catch (IOException e) {
-			return result;
-		}
+		featureSource = fds.getFeatureSource();
 		
 		List<AttributeType> attribTypes = featureSource.getSchema().getTypes();
 		for (AttributeType attribType : attribTypes) {
@@ -66,35 +62,33 @@ public class ShapeFileSetBean implements Serializable {
 	 * 
 	 * @param shapeFileSetBean
 	 * @return
+	 * @throws IOException 
 	 */
-	public static List<String> getFeatureListFromBean(ShapeFileSetBean shapeFileSetBean) {
+	public static List<String> getFeatureListFromBean(ShapeFileSetBean shapeFileSetBean) throws IOException {
 		List<String> result = null;
 		FileDataStore shapeFileDataStore;
+		shapeFileDataStore = FileDataStoreFinder.getDataStore(shapeFileSetBean.getShapeFile());
+		FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = shapeFileDataStore.getFeatureSource();
+		FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = featureSource.getFeatures();
+		Iterator<SimpleFeature> featureIter = featureCollection.iterator();
+		Set<String> attribValList = new TreeSet<String>();
 		try {
-			shapeFileDataStore = FileDataStoreFinder.getDataStore(shapeFileSetBean.getShapeFile());
-			FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = shapeFileDataStore.getFeatureSource();
-			FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = featureSource.getFeatures();
-			Iterator<SimpleFeature> featureIter = featureCollection.iterator();
-			Set<String> attribValList = new TreeSet<String>();
-			try {
-				 while (featureIter.hasNext()) {
-                   SimpleFeature feature = featureIter.next();
-                   String attribTypeIdentifer = shapeFileSetBean.getChosenAttribute();
-                   Object featureAttributeObject = feature.getAttribute(attribTypeIdentifer.trim());                   
-                   if (featureAttributeObject != null) attribValList.add(feature.getAttribute(attribTypeIdentifer).toString());
-               }
-			} finally {
-               featureCollection.close(featureIter);
+			 while (featureIter.hasNext()) {
+               SimpleFeature feature = featureIter.next();
+               String attribTypeIdentifer = shapeFileSetBean.getChosenAttribute();
+               Object featureAttributeObject = feature.getAttribute(attribTypeIdentifer.trim());                   
+               if (featureAttributeObject != null) attribValList.add(feature.getAttribute(attribTypeIdentifer).toString());
            }
+		} finally {
+           featureCollection.close(featureIter);
+       }
+		
+		result = new ArrayList<String>();
+		for (String attribVal : attribValList) {
+			result.add(attribVal);
+       }
 			
-			result = new ArrayList<String>();
-			for (String attribVal : attribValList) {
-				result.add(attribVal);
-           }
-			
-		} catch (IOException e) {
-			return null;
-		}
+		
 		
 		return result;
 	}

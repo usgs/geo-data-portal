@@ -360,21 +360,36 @@ public class FileHelperTest {
 		List<String> fileList = new ArrayList<String>();
 		
 		List<FileDataStore> result = null;
-		result = FileHelper.getShapeFileDataStores(fileList);
-		assertNotNull(result);
-		assertTrue(result.isEmpty());
+		try {
+			result = FileHelper.getShapeFileDataStores(fileList);
+			assertNotNull(result);
+			assertTrue(result.isEmpty());
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		
 		
 		fileList.add(firstFileToLoad);
-		result = FileHelper.getShapeFileDataStores(fileList);
-		assertNotNull(result);
-		assertFalse(result.isEmpty());
-		assertEquals(1, result.size());
+		try {
+			result = FileHelper.getShapeFileDataStores(fileList);
+			assertNotNull(result);
+			assertFalse(result.isEmpty());
+			assertEquals(1, result.size());
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		
 		
 		fileList.add(secondFileToLoad);
-		result = FileHelper.getShapeFileDataStores(fileList);
-		assertNotNull(result);
-		assertFalse(result.isEmpty());
-		assertEquals(2, result.size());
+		try {
+			result = FileHelper.getShapeFileDataStores(fileList);
+			assertNotNull(result);
+			assertFalse(result.isEmpty());
+			assertEquals(2, result.size());
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		
 	}
 	/*
 	@Test 

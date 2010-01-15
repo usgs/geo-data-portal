@@ -274,7 +274,7 @@ public class FileHelper {
 	}
 	
 	public static List<FileDataStore> getShapeFileDataStores(
-			List<String> shpFiles) {
+			List<String> shpFiles) throws IOException {
 		List<FileDataStore> result = new ArrayList<FileDataStore>();
 		for (String file : shpFiles) {
 			FileDataStore fds = GeoToolsFileAnalysis.getFileDataStore(new File(file.trim()));
