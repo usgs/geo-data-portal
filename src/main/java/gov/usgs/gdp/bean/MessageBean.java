@@ -16,6 +16,7 @@ public class MessageBean {
 	}
 	
 	public boolean addMessage(String message) {
+		if (this.messages == null) this.messages = new ArrayList<String>();
 		return this.messages.add(message);
 	}
 }
