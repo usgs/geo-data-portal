@@ -2,14 +2,7 @@ package gov.usgs.gdp.analysis;
 
 import static org.junit.Assert.*;
 
-import java.io.IOException;
 import java.net.URI;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Formatter;
 import java.util.List;
 
 import org.junit.Test;
@@ -18,7 +11,6 @@ import thredds.catalog.InvAccess;
 import thredds.catalog.InvCatalog;
 import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.InvDataset;
-import ucar.nc2.dt.PointObsDatatype;
 
 
 public class NetCDFUtilityTest {

@@ -159,59 +159,59 @@ public class THREDDSInfoBean implements Serializable {
 		if (this.openDapStandardURLNameList == null) this.openDapStandardURLNameList = new ArrayList<String>(); 
 		return this.openDapStandardURLNameList;
 	}
-	public void setOpenDapStandardURLNameList(List<String> openDapStandardURLNameList) {
-		this.openDapStandardURLNameList = openDapStandardURLNameList;
+	public void setOpenDapStandardURLNameList(List<String> localOpenDapStandardURLNameList) {
+		this.openDapStandardURLNameList = localOpenDapStandardURLNameList;
 	}
 	public List<String> getOpenDapDataSetNameList() {
 		if (this.openDapDataSetNameList == null) this.openDapDataSetNameList = new ArrayList<String>();
 		return this.openDapDataSetNameList;
 	}
-	public void setOpenDapDataSetNameList(List<String> openDapDataSetNameList) {
-		this.openDapDataSetNameList = openDapDataSetNameList;
+	public void setOpenDapDataSetNameList(List<String> localOpenDapDataSetNameList) {
+		this.openDapDataSetNameList = localOpenDapDataSetNameList;
 	}
 	public String getDataSetUrlSelection() {
 		return this.dataSetUrlSelection;
 	}
-	public void setDataSetUrlSelection(String dataSetUrlSelection) {
-		this.dataSetUrlSelection = dataSetUrlSelection;
+	public void setDataSetUrlSelection(String localDataSetUrlSelection) {
+		this.dataSetUrlSelection = localDataSetUrlSelection;
 	}
 	public String getDataSetNameSelection() {
 		return this.dataSetNameSelection;
 	}
-	public void setDataSetNameSelection(String dataSetNameSelection) {
-		this.dataSetNameSelection = dataSetNameSelection;
+	public void setDataSetNameSelection(String localDataSetNameSelection) {
+		this.dataSetNameSelection = localDataSetNameSelection;
 	}
 	public String getGridItemSelection() {
 		return this.gridItemSelection;
 	}
-	public void setGridItemSelection(String gridItemSelection) {
-		this.gridItemSelection = gridItemSelection;
+	public void setGridItemSelection(String localGridItemSelection) {
+		this.gridItemSelection = localGridItemSelection;
 	}
 	public List<String> getOpenDapGridItems() {
 		if (this.openDapGridTimes == null) this.openDapGridTimes = new ArrayList<String>();
 		return this.openDapGridItems;
 	}
-	public void setOpenDapGridItems(List<String> openDapGridItems) {
-		this.openDapGridItems = openDapGridItems;
+	public void setOpenDapGridItems(List<String> localOpenDapGridItems) {
+		this.openDapGridItems = localOpenDapGridItems;
 	}
 	public String getFromTime() {
 		return this.fromTime;
 	}
-	public void setFromTime(String fromTime) {
-		this.fromTime = fromTime;
+	public void setFromTime(String localFromTime) {
+		this.fromTime = localFromTime;
 	}
 	public String getToTime() {
 		return this.toTime;
 	}
-	public void setToTime(String toTime) {
-		this.toTime = toTime;
+	public void setToTime(String localToTime) {
+		this.toTime = localToTime;
 	}
 	public List<String> getOpenDapGridTimes() {
 		if (this.openDapGridTimes == null) this.openDapGridTimes = new ArrayList<String>();
 		return this.openDapGridTimes;
 	}
-	public void setOpenDapGridTimes(List<String> openDapGridTimes) {
-		this.openDapGridTimes = openDapGridTimes;
+	public void setOpenDapGridTimes(List<String> localOpenDapGridTimes) {
+		this.openDapGridTimes = localOpenDapGridTimes;
 	}
 
 

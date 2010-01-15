@@ -5,7 +5,6 @@ import gov.usgs.gdp.bean.MessageBean;
 import gov.usgs.gdp.bean.ShapeFileSetBean;
 import gov.usgs.gdp.helper.FileHelper;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +55,8 @@ public class RouterServlet extends HttpServlet {
 			RequestDispatcher rd = request.getRequestDispatcher("/jsp/index.jsp");
 			MessageBean errorBean = new MessageBean();
 			errorBean.addMessage("Your session has become stale. Session restarted.");
+			rd.forward(request, response);
+			return;
 		}
 		
 		// First check that session information is synchronized

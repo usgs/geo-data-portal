@@ -12,30 +12,30 @@ public class SummaryBean {
             this.fileSummary = new ArrayList<String>();
         }
 
-	public SummaryBean(String fileName) {
-		this.fileName = fileName;
+	public SummaryBean(String localFileName) {
+		this.fileName = localFileName;
 	}
 	
-	public SummaryBean(List<String> fileSummary) {
-		this.fileSummary = fileSummary;
+	public SummaryBean(List<String> fileSummaryParam) {
+		this.fileSummary = fileSummaryParam;
 	}
 	
-	public SummaryBean(String fileName, List<String> fileSummary) {
-		this.fileName = fileName;
-		this.fileSummary = fileSummary;
+	public SummaryBean(String fileNameParam, List<String> fileSummaryParam) {
+		this.fileName = fileNameParam;
+		this.fileSummary = fileSummaryParam;
 	}
 	
 	public String getFileName() {
-		return fileName;
+		return this.fileName;
 	}
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
+	public void setFileName(String fileNameParam) {
+		this.fileName = fileNameParam;
 	}
 	public List<String> getFileSummary() {
-		return fileSummary;
+		return this.fileSummary;
 	}
-	public void setFileSummary(List<String> fileSummary) {
-		this.fileSummary = fileSummary;
+	public void setFileSummary(List<String> fileSummaryParam) {
+		this.fileSummary = fileSummaryParam;
 	}
 	
 	

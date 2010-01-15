@@ -13,8 +13,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.geotools.data.FileDataStore;

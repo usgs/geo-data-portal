@@ -19,7 +19,7 @@ public class FilesBean implements Serializable {
 	
 	public ShapeFileSetBean getShapeFileSetBean() {
 		ShapeFileSetBean result = new ShapeFileSetBean();
-		for (File file : files) {			
+		for (File file : this.files) {			
 			if (file.getName().toLowerCase().contains(".shp")) {
 				result.setShapeFile(file);
 			} else if (file.getName().toLowerCase().contains(".prj")) {
@@ -32,20 +32,20 @@ public class FilesBean implements Serializable {
 	}
 
 	public Collection<File> getFiles() {
-		if (files == null) this.files = new ArrayList<File>();
-		return files;
+		if (this.files == null) this.files = new ArrayList<File>();
+		return this.files;
 	}
 
-	public void setFiles(Collection<File> files) {
-		this.files = files;
+	public void setFiles(Collection<File> localFiles) {
+		this.files = localFiles;
 	}
 
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setName(String localName) {
+		this.name = localName;
 	}
 	
 	/**

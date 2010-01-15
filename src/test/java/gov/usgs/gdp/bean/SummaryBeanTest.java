@@ -28,8 +28,6 @@ import static org.junit.Assert.*;
  */
 public class SummaryBeanTest {
 
-    public SummaryBeanTest() {
-    }
 private static org.apache.log4j.Logger log = Logger.getLogger(SummaryBeanTest.class);
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -133,8 +131,8 @@ private static org.apache.log4j.Logger log = Logger.getLogger(SummaryBeanTest.cl
         System.out.println("getFileSummary");
         SummaryBean instance = new SummaryBean();
         instance.setFileSummary(new ArrayList<String>());
-        List expResult = new ArrayList<String>();
-        List result = instance.getFileSummary();
+        List<String> expResult = new ArrayList<String>();
+        List<String> result = instance.getFileSummary();
         assertEquals(expResult, result);
         
     }
@@ -147,8 +145,8 @@ private static org.apache.log4j.Logger log = Logger.getLogger(SummaryBeanTest.cl
         System.out.println("getFileSummary");
         SummaryBean instance = new SummaryBean();
         instance.setFileSummary(new ArrayList<String>());
-        List expResult = new ArrayList<String>();
-        List result = instance.getFileSummary();
+        List<String> expResult = new ArrayList<String>();
+        List<String> result = instance.getFileSummary();
         assertEquals(expResult, result);
     }
 

@@ -104,7 +104,8 @@ public class FileProcessServlet extends HttpServlet {
     /**
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = (request.getParameter("action") == null) ? "" : request.getParameter("action").toLowerCase();
         List<ShapeFileSetBean> shapeFileSetBeanList = (List<ShapeFileSetBean>) request.getSession().getAttribute("shapeFileSetBeanList");
@@ -348,8 +349,10 @@ public class FileProcessServlet extends HttpServlet {
             String toTime = request.getParameter("timeToSelection");
             
             DateFormat df = new SimpleDateFormat("MM-dd-yyyy");
-            Date toDate = null;
-            Date fromDate = null;
+            @SuppressWarnings("unused")
+			Date toDate = null;
+            @SuppressWarnings("unused")
+			Date fromDate = null;
             boolean parsedDates = false;
             try {
 				toDate = df.parse(toTime);
@@ -426,8 +429,11 @@ public class FileProcessServlet extends HttpServlet {
                     try {
                         slicedGrid = grid.subset(timeRange, null, boundingBox, 1, 1, 1);
                     } catch (InvalidRangeException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                    	errorBean.getMessages().add("Unable to slice grid");
+                    	errorBean.getMessages().add("Error output:\n" + e.getMessage());
+                        RequestDispatcher rd = request.getRequestDispatcher("/jsp/DataSetSelection.jsp");
+                        rd.forward(request, response);
+                        return;
                     }
                     // Create a null check here
                     VariableDS gridVar = slicedGrid.getVariable();

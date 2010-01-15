@@ -11,12 +11,11 @@ public class MessageBean {
 		return this.messages;
 	}
 
-	public void setMessages(List<String> messages) {
-		this.messages = messages;
+	public void setMessages(List<String> localMessages) {
+		this.messages = localMessages;
 	}
 	
 	public boolean addMessage(String message) {
-		List<String> messages = getMessages();
-		return messages.add(message);
+		return this.messages.add(message);
 	}
 }

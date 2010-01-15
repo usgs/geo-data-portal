@@ -1,14 +1,10 @@
 package gov.usgs.gdp.servlet;
 
-import gov.usgs.gdp.analysis.GeoToolsFileAnalysis;
-import gov.usgs.gdp.bean.FilesBean;
 import gov.usgs.gdp.bean.MessageBean;
 import gov.usgs.gdp.bean.ShapeFileSetBean;
 import gov.usgs.gdp.bean.SummaryBean;
-import gov.usgs.gdp.helper.FileHelper;
 import gov.usgs.gdp.interfaces.geotools.AnalyzeFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +42,7 @@ public class SummaryServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String action	= (request.getParameter("action") == null) ? "" : request.getParameter("action").toLowerCase();		
 		MessageBean errorBean = new MessageBean();
@@ -64,6 +61,7 @@ public class SummaryServlet extends HttpServlet {
 		} 
 		request.setAttribute("errorBean", errorBean);
 		request.setAttribute("messageBean", messageBean);
+		log.debug("Summary result");
 		RequestDispatcher rd = request.getRequestDispatcher("/jsp/showSummaryResults.jsp");
 		rd.forward(request, response);
 	}
@@ -84,7 +82,7 @@ public class SummaryServlet extends HttpServlet {
 		}
 		
 		String[] checkboxItems = request.getParameterValues("fileName");
-		if (shapeFileSetBeanList == null || checkboxItems == null) return result;		
+		if (checkboxItems == null) return result;		
 		
 		// For each set that the user wants to analyze
 		for (String checkboxItem : checkboxItems) {

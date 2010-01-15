@@ -1,14 +1,12 @@
 package gov.usgs.gdp.bean;
 
 import gov.usgs.gdp.analysis.GeoToolsFileAnalysis;
-import gov.usgs.gdp.helper.FileHelper;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -21,7 +19,6 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeType;
 
-import thredds.catalog.InvCatalog;
 
 public class ShapeFileSetBean implements Serializable {
 	private File projectionFile;
@@ -135,42 +132,42 @@ public class ShapeFileSetBean implements Serializable {
 	public File getShapeFileIndexFile() {
 		return this.shapeFileIndexFile;
 	}
-	public void setAttributeList(List<String> attributeList) {
+	public void setAttributeList(List<String> localAttributeList) {
 		
-		this.attributeList = attributeList;
+		this.attributeList = localAttributeList;
 	}
-	public void setChosenAttribute(String chosenAttribute) {
-		this.chosenAttribute = chosenAttribute;
+	public void setChosenAttribute(String localChosenAttribute) {
+		this.chosenAttribute = localChosenAttribute;
 	}
 	public void setChosenFeature(String chosenfeature) {
 		this.chosenFeature = chosenfeature;
 	}
-	public void setDbfFile(File dbfFile) {
-		this.dbfFile = dbfFile;
+	public void setDbfFile(File localDbfFile) {
+		this.dbfFile = localDbfFile;
 	}
 	
-	public void setFeatureList(List<String> featureList) {
-		this.featureList = featureList;
+	public void setFeatureList(List<String> localFeatureList) {
+		this.featureList = localFeatureList;
 	}
-	public void setName(String name) {
-		this.name = name;
+	public void setName(String localName) {
+		this.name = localName;
 	}
-	public void setProjectionFile(File projectionFile) {
-		this.projectionFile = projectionFile;
+	public void setProjectionFile(File localProjectionFile) {
+		this.projectionFile = localProjectionFile;
 	}
-	public void setShapeFile(File shapeFile) {
-		this.shapeFile = shapeFile;
+	public void setShapeFile(File localShapeFile) {
+		this.shapeFile = localShapeFile;
 	}
-	public void setShapeFileIndexFile(File shapeFileIndexFile) {
-		this.shapeFileIndexFile = shapeFileIndexFile;
+	public void setShapeFileIndexFile(File localShapeFileIndexFile) {
+		this.shapeFileIndexFile = localShapeFileIndexFile;
 	}
 
 	public String getChosenDataset() {
-		return chosenDataset;
+		return this.chosenDataset;
 	}
 
-	public void setChosenDataset(String chosenDataset) {
-		this.chosenDataset = chosenDataset;
+	public void setChosenDataset(String localChosenDataset) {
+		this.chosenDataset = localChosenDataset;
 	}
 
 	

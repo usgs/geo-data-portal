@@ -14,7 +14,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.shapefile.dbf.DbaseFileHeader;
 import org.geotools.data.shapefile.dbf.DbaseFileReader;
@@ -27,7 +26,6 @@ import org.junit.Test;
 import com.vividsolutions.jts.geom.Geometry;
 
 public class GeoToolsFileAnalysisTest {
-	private static org.apache.log4j.Logger log = Logger.getLogger(GeoToolsFileAnalysisTest.class);
 	private String tempDir = ""; 
 	private String seperator = "";
 	@Before
@@ -119,7 +117,7 @@ public class GeoToolsFileAnalysisTest {
 				Record record = result.nextRecord();
 				Geometry shape = (Geometry) record.shape();
 				int numOfGeometries = shape.getNumGeometries();
-				
+				assertTrue(numOfGeometries > 0);
 				
 			}
 		} catch (Exception e) {

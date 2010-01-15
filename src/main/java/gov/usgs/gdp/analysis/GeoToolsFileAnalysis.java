@@ -232,8 +232,8 @@ public class GeoToolsFileAnalysis {
 		return this.shpFileReader;
 	}
 
-	public void setShpFileReader(ShapefileReader shpFileReader) {
-		this.shpFileReader = shpFileReader;
+	public void setShpFileReader(ShapefileReader localShpFileReader) {
+		this.shpFileReader = localShpFileReader;
 	}
 
 	public static List<String> getShapeFileHeaderSummary(File shpFile) {

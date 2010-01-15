@@ -1,7 +1,6 @@
 package gov.usgs.gdp.bean;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertTrue;
 import gov.usgs.gdp.helper.FileHelper;
 
 import java.io.File;

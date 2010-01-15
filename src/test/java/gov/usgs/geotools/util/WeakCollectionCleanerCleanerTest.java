@@ -5,10 +5,6 @@
 package gov.usgs.geotools.util;
 
 import java.lang.reflect.Field;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -21,25 +17,6 @@ public class WeakCollectionCleanerCleanerTest {
 
     // this value is actually hardcoded as a literal in the WeakCollectionCleaner impl.
     public final static String ThreadName_WeakCollectionCleaner = "WeakCollectionCleaner";
-
-    public WeakCollectionCleanerCleanerTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
-    }
 
     @Test
     public void testWeakCollectionCleanerSignature() {

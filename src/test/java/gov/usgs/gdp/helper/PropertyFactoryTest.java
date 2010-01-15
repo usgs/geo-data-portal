@@ -1,11 +1,7 @@
 package gov.usgs.gdp.helper;
 
 import static org.junit.Assert.*;
-
 import java.util.Enumeration;
-
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 public class PropertyFactoryTest {
