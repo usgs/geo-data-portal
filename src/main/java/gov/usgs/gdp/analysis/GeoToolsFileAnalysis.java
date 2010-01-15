@@ -93,7 +93,9 @@ public class GeoToolsFileAnalysis {
 		List<String> result = null;
 			result = GeoToolsFileAnalysis.getDBaseFileSummary(reader);
 			try {
-				reader.close();
+				if (!(reader.getHeader() == null)) {
+					reader.close();
+				}
 			} catch (IOException e) {
 				log.debug(e.getMessage());
 			}

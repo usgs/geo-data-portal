@@ -143,7 +143,7 @@ public class FileHelper {
 	 * @param filePath
 	 * @return
 	 */
-	public static List<String> getFileList(String filePath, boolean recursive) {
+	public static List<String> getFileList(String filePath, boolean recursive) throws IllegalArgumentException{
 		List<String> result = null;
 		
 		result = FileHelper.getFileList(filePath, null, recursive);
@@ -158,7 +158,7 @@ public class FileHelper {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static List<String> getFileList(String filePath, String[] extensions, boolean recursive) {
+	public static List<String> getFileList(String filePath, String[] extensions, boolean recursive) throws IllegalArgumentException {
 		if (filePath == null)
 			return null;
 		List<String> result = null;

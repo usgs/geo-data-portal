@@ -30,8 +30,8 @@ public class PropertyFactoryTest {
 	public final void testSetProperty() {
 		String result = PropertyFactory.getProperty("thredds.url.0");
 		assertEquals("RUNOFF;http://runoff.cr.usgs.gov:8086/thredds/hydrologic_catalog.xml", result);	
-		PropertyFactory.setProperty("thredds.url.0", "...");
-		result = PropertyFactory.getProperty("thredds.url.0");
+		PropertyFactory.setProperty("test...test", "...");
+		result = PropertyFactory.getProperty("test...test");
 		assertEquals("...", result);
 	}
 

@@ -138,7 +138,8 @@ public class FileHelperTest {
 		try {
 			result = FileHelper.copyFileToFile(new File("doesnt/exist"), "doesnt/exist");
 		} catch (IOException e) {
-			fail(e.getMessage());
+			assertNotNull(e);
+			result = false;
 		}
 		assertFalse(result);
 		
@@ -272,9 +273,13 @@ public class FileHelperTest {
 		result = FileHelper.getFileList(dirToList, true);
 		assertNotNull("File listing came back null", result);
 		assertFalse("There were no files listed", result.isEmpty());
-		String fakeDirToList = this.tempDir + this.seperator + "9387509352";
-		result = FileHelper.getFileList(fakeDirToList, true);
-		assertNull(result);
+		String fakeDirToList = this.tempDir + this.seperator + "9387509352"  + this.seperator;
+		try {
+			result = FileHelper.getFileList(fakeDirToList, true);
+		} catch (IllegalArgumentException e) {
+			assertNotNull(e);
+		}
+		
 	}
 
 	@Test
