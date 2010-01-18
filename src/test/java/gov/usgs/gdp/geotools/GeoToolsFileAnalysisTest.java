@@ -39,7 +39,7 @@ public class GeoToolsFileAnalysisTest {
 		String systemTempDir = System.getProperty("java.io.tmpdir"); 
 		this.seperator =  java.io.File.separator;
 		String currentTime = Long.toString((new Date()).getTime());
-		this.tempDir = systemTempDir + this.seperator + currentTime;
+		this.tempDir = systemTempDir + this.seperator + "GDP-APP-TEMP" + this.seperator + currentTime;
 		(new File(this.tempDir)).mkdir();
 		
 		// Copy example files 
@@ -436,9 +436,8 @@ public class GeoToolsFileAnalysisTest {
 		// Test FileNotFound
 		try {
 			result = GeoToolsFileAnalysis.readInDBaseFile(fakeFile, false, Charset.defaultCharset());
-			assertNull(result);
 		} catch (IOException e) {
-			fail(e.getMessage());
+			assertNotNull(e.getMessage());
 		} 
 		
 		// Test IOException
@@ -446,7 +445,7 @@ public class GeoToolsFileAnalysisTest {
 			result = GeoToolsFileAnalysis.readInDBaseFile(nonDbFile, false, Charset.defaultCharset());
 			assertNull(result);
 		} catch (IOException e) {
-			fail(e.getMessage());
+			assertNotNull(e.getMessage());
 		}
 		
 	}

@@ -116,14 +116,20 @@ public class GeoToolsFileAnalysis {
 		try {
 			while (dbaseFileReader.hasNext()) {
 				DbaseFileReader.Row row = null;
-					row = dbaseFileReader.readRow();
-					result.add(row.toString());
+					try {
+						row = dbaseFileReader.readRow();
+						result.add(row.toString());
+					} catch (IOException e) {
+						// Do nothing.
+					}
+					
 			}
+			return result;
 		} finally {
 			dbaseFileReader.close();
 		}
 		
-		return result;
+		
 	}
 	
 	public static List<String> getDBaseFileSummary(String filePath) throws IOException {
