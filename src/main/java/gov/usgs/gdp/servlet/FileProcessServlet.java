@@ -84,466 +84,7 @@ import ucar.unidata.geoloc.LatLonRect;
  * Servlet implementation class FileProcessServlet
  */
 public class FileProcessServlet extends HttpServlet {
-	private static org.apache.log4j.Logger log = Logger.getLogger(FileProcessServlet.class);
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public FileProcessServlet() {
-        super();
-    }
-
-    /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-     */
-    @Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doPost(request, response);
-    }
-
-    /**
-     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-     */
-    @SuppressWarnings("unchecked")
-	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String action = (request.getParameter("action") == null) ? "" : request.getParameter("action").toLowerCase();
-        List<ShapeFileSetBean> shapeFileSetBeanList = (List<ShapeFileSetBean>) request.getSession().getAttribute("shapeFileSetBeanList");
-        List<ShapeFileSetBean> shapeFileSetBeanSubsetList = (List<ShapeFileSetBean>) request.getSession().getAttribute("shapeFileSetBeanSubsetList");
-
-
-        MessageBean errorBean = new MessageBean();
-        MessageBean messageBean = new MessageBean();
-        String forwardTo = "";
-
-        if (action == null || "".equals(action)) {
-            errorBean.addMessage("Your action was not read in properly. Please try again");
-            request.setAttribute("messageBean", messageBean);
-            request.setAttribute("errorBean", errorBean);
-            RequestDispatcher rd = request.getRequestDispatcher("/jsp/fileSelection.jsp");
-            rd.forward(request, response);
-            return;
-        }
-
-        if ("step1".equals(action)) {
-            String[] checkboxItems = request.getParameterValues("fileName");
-
-            if (shapeFileSetBeanList == null) {
-                errorBean.addMessage("Unable to retrieve shape file set lists. Please choose new shape file(s).");
-                request.setAttribute("messageBean", messageBean);
-                request.setAttribute("errorBean", errorBean);
-                RequestDispatcher rd = request.getRequestDispatcher("/jsp/fileSelection.jsp");
-                rd.forward(request, response);
-                return;
-            }
-
-            if (checkboxItems == null || checkboxItems.length == 0) {
-                errorBean.addMessage("You must select at least one file to process.");
-                request.setAttribute("messageBean", messageBean);
-                request.setAttribute("errorBean", errorBean);
-                RequestDispatcher rd = request.getRequestDispatcher("/jsp/fileSelection.jsp");
-                rd.forward(request, response);
-                return;
-            }
-
-            // Get the subset of ShapeFile sets the user wants to work on
-            List<ShapeFileSetBean> shpFilesSetSubList = getShapeFilesSetSubList(checkboxItems, shapeFileSetBeanList);
-
-            // Populate the attribute values of each ShapeFileSet
-            for (ShapeFileSetBean shapeFileSetBean : shpFilesSetSubList) {
-                shapeFileSetBean.setAttributeList(ShapeFileSetBean.getAttributeListFromBean(shapeFileSetBean));
-            }
-
-            request.getSession().setAttribute("shapeFileSetBeanSubsetList", shpFilesSetSubList);
-            forwardTo = "/jsp/attributeSelection.jsp";
-
-        } else if ("step2".equals(action)) { // Attributes chosen, set up feature list
-            String[] attributeSelections = request.getParameterValues("attributeSelection");
-
-            // Set the chosen attribute on the ShapeFileSetBeans
-            for (String attributeSelection : attributeSelections) {
-                String attributeAppliesTo = attributeSelection.substring(0, attributeSelection.indexOf("::"));
-                String attribute = attributeSelection.substring(attributeSelection.indexOf("::") + 2);
-                for (ShapeFileSetBean shapeFileSetBean : shapeFileSetBeanSubsetList) {
-                    if (shapeFileSetBean.getName().equals(attributeAppliesTo)) {
-                        shapeFileSetBean.setChosenAttribute(attribute);
-                    }
-                }
-            }
-
-            // Pull Feature Lists
-            for (ShapeFileSetBean shapeFileSetBean : shapeFileSetBeanSubsetList) {
-                shapeFileSetBean.setFeatureList(ShapeFileSetBean.getFeatureListFromBean(shapeFileSetBean));
-            }
-
-            request.getSession().setAttribute("shapeFileSetBeanSubsetList", shapeFileSetBeanSubsetList);
-            forwardTo = "/jsp/featureSelection.jsp";
-        } else if ("step3".equals(action)) {
-            // Set the chosen feature to work with on the bean
-            String[] featureSelections = request.getParameterValues("featureSelection");
-
-            // Set the chosen feature on the ShapeFileSetBeans
-            for (String featureSelection : featureSelections) {
-                String featureAppliesTo = featureSelection.substring(0, featureSelection.indexOf("::"));
-                String feature = featureSelection.substring(featureSelection.indexOf("::") + 2);
-                for (ShapeFileSetBean shapeFileSetBean : shapeFileSetBeanSubsetList) {
-                    if (shapeFileSetBean.getName().equals(featureAppliesTo)) {
-                        shapeFileSetBean.setChosenFeature(feature);
-                    }
-                }
-            }
-            
-            // Pull the THREDDS urls from the properties files
-            Map<String, String> threddsMap = THREDDSInfoBean.getTHREDDSUrlMap();
-            request.setAttribute("threddsMap", threddsMap);
-            
-            request.getSession().setAttribute("shapeFileSetBeanSubsetList", shapeFileSetBeanSubsetList);
-            forwardTo = "/jsp/THREDDSSelection.jsp";
-        } else if ("step4".equals(action)) {
-            THREDDSInfoBean threddsInfoBean = new THREDDSInfoBean();
-            String THREDDSUrl = request.getParameter("THREDDSUrl");
-
-            List<InvAccess> openDapResources = new LinkedList<InvAccess>();
-            if (THREDDSUrl == null || "".equals(THREDDSUrl)) {
-                errorBean.getMessages().add("You must select a THREDDS URL to work with..");
-                request.setAttribute("errorBean", errorBean);
-                RequestDispatcher rd = request.getRequestDispatcher("/jsp/THREDDSSelection.jsp");
-                rd.forward(request, response);
-                return;
-            }
-            threddsInfoBean.setTHREDDSServer(THREDDSUrl);
-
-            // Grab the THREDDS catalog
-            URI catalogURI = URI.create(THREDDSUrl);
-            InvCatalogFactory factory = new InvCatalogFactory("default", true);
-            InvCatalog catalog = factory.readXML(catalogURI);
-            StringBuilder buff = new StringBuilder();
-            if (!catalog.check(buff)) {
-                errorBean.getMessages().add(buff.toString());
-                request.setAttribute("errorBean", errorBean);
-                RequestDispatcher rd = request.getRequestDispatcher("/jsp/THREDDSSelection.jsp");
-                rd.forward(request, response);
-                return;
-            }
-
-            // Grab resources from the THREDDS catalog
-            openDapResources = NetCDFUtility.getOpenDapResources(catalog);
-            if (openDapResources == null) {
-                errorBean.getMessages().add("Could not pull information from THREDDS Server");
-                request.setAttribute("errorBean", errorBean);
-                RequestDispatcher rd = request.getRequestDispatcher("/jsp/THREDDSSelection.jsp");
-                rd.forward(request, response);
-                return;
-            }
-
-            for (InvAccess opendapResource : openDapResources) {
-                threddsInfoBean.getOpenDapStandardURLNameList().add(opendapResource.getStandardUrlName());
-                threddsInfoBean.getOpenDapDataSetNameList().add(opendapResource.getDataset().getName());
-            }
-            request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);
-            request.getSession().setAttribute("shapeFileSetBeanSubsetList", shapeFileSetBeanSubsetList);
-            forwardTo = "/jsp/DataSetSelection.jsp";
-        } else if ("step5".equals(action)) {
-            THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");
-
-            String dataSetSelection = request.getParameter("datasetSelection");
-            if (dataSetSelection == null || "".equals(dataSetSelection)) {
-                errorBean.getMessages().add("Did not get a DataSet selection. Please try again.");
-                request.setAttribute("errorBean", errorBean);
-                RequestDispatcher rd = request.getRequestDispatcher("/jsp/DataSetSelection.jsp");
-                rd.forward(request, response);
-                return;
-            }
-
-            // Throw the settings into the THREDDSInfoBean
-            String dataSetUrl = dataSetSelection.substring(0, dataSetSelection.indexOf(":::"));
-            String dataSetName = dataSetSelection.substring(dataSetSelection.indexOf(":::") + 3);
-            threddsInfoBean.setDataSetUrlSelection(dataSetUrl);
-            threddsInfoBean.setDataSetNameSelection(dataSetName);
-
-            // Grab the grid dataset
-            Formatter errorLog = new Formatter();
-
-
-            FeatureDataset featureDataset = FeatureDatasetFactoryManager.open(
-                    null, dataSetUrl, null, errorLog);
-
-            if (featureDataset != null) {
-
-                List<String> dataSelectItemList = new ArrayList<String>();
-//                if(featureDataset instanceof GridDataset) {
-//                    // Grab the grid items
-//                    for (GridDatatype grid : ((GridDataset)featureDataset).getGrids()) {
-//                        dataSelectItemList.add(grid.getName());
-//                    }
-//                    ((GridDataset)featureDataset).close();
-//                } else
-//                if(featureDataset instanceof FeatureDatasetPoint) {
-//                    for (ucar.nc2.ft.FeatureCollection fc : ((FeatureDatasetPoint)featureDataset).getPointFeatureCollectionList()) {
-//                        System.out.println(fc.getName());
-//                    }
-//                }
-                for (VariableSimpleIF vs : featureDataset.getDataVariables()) {
-                    dataSelectItemList.add(vs.getName());
-                }
-                threddsInfoBean.setOpenDapGridItems(dataSelectItemList);
-
-            } else {
-
-                errorBean.getMessages().add("Could not open a grid at location: " + dataSetUrl);
-                errorBean.getMessages().add("Reason: " + errorLog);
-                request.setAttribute("errorBean", errorBean);
-                RequestDispatcher rd = request.getRequestDispatcher("/jsp/DataSetSelection.jsp");
-                rd.forward(request, response);
-                return;
-            }
-
-            request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);
-            forwardTo = "/jsp/GridSelection.jsp";
-        } else if ("step6".equals(action)) { // Set up time selection
-            THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");
-            String gridSelection = request.getParameter("gridSelection");
-            if (gridSelection == null || "".equals(gridSelection)) {
-                errorBean.getMessages().add("Did not get a Grid selection. Please try again.");
-                request.setAttribute("errorBean", errorBean);
-                RequestDispatcher rd = request.getRequestDispatcher("/jsp/GridSelection.jsp");
-                rd.forward(request, response);
-                return;
-            }
-
-            threddsInfoBean.setGridItemSelection(gridSelection);
-            Formatter errorLog = new Formatter();
-            FeatureDataset featureDataset = FeatureDatasetFactoryManager.open(
-                    null, threddsInfoBean.getDataSetUrlSelection(), null, errorLog);
-
-            if (featureDataset != null) {
-
-                List<String> timeSelectItemList = new ArrayList<String>();
-                if (featureDataset instanceof GridDataset) {
-                    GeoGrid grid = ((GridDataset)featureDataset).findGridByName(gridSelection);
-
-                    for (NamedObject time : grid.getTimes()) {
-                        timeSelectItemList.add(time.getName());
-                    }
-                } else {
-                    // TODO:
-                }
-
-                featureDataset.close();
-                threddsInfoBean.setOpenDapGridTimes(timeSelectItemList);
-                              
-                request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);
-                forwardTo = "/jsp/TimePeriodSelection.jsp";
-
-            } else {
-                errorBean.getMessages().add("Could not open a grid at location: " + threddsInfoBean.getDataSetUrlSelection());
-                errorBean.getMessages().add("Reason: " + errorLog);
-                request.setAttribute("errorBean", errorBean);
-                RequestDispatcher rd = request.getRequestDispatcher("/jsp/DataSetSelection.jsp");
-                rd.forward(request, response);
-                return;
-            }
-        } else if ("step7".equals(action)) {
-            THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");
-            String fromTime = request.getParameter("timeFromSelection");
-            String toTime = request.getParameter("timeToSelection");
-            
-            DateFormat df = new SimpleDateFormat("MM-dd-yyyy");
-			Date toDate = new Date();
-			Date fromDate = new Date();
-            boolean parsedDates = false;
-            try {
-				toDate = df.parse(toTime);
-				fromDate = df.parse(fromTime);
-				parsedDates = true;
-			} catch (ParseException e1) {
-				parsedDates = false;
-				log.debug(e1.getMessage());
-			}
-			
-			if (!parsedDates) {
-				errorBean.getMessages().add("Could not parse dates.");
-                request.setAttribute("errorBean", errorBean);
-                RequestDispatcher rd = request.getRequestDispatcher("/jsp/TimePeriodSelection.jsp");
-                rd.forward(request, response);
-                return;
-			}
-			
-            threddsInfoBean.setFromTime(fromTime);
-            threddsInfoBean.setToTime(toTime);
-            for (ShapeFileSetBean shapeFileSetBean : shapeFileSetBeanSubsetList) {
-                FileDataStore shapeFileDataStore = FileDataStoreFinder.getDataStore(shapeFileSetBean.getShapeFile());
-                FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = shapeFileDataStore.getFeatureSource();
-
-                String attributeType = shapeFileSetBean.getChosenAttribute();
-                String attributeValue = shapeFileSetBean.getChosenFeature();
-                Filter filter = null;
-                try {
-                    filter = CQL.toFilter(attributeType + " = '" + attributeValue + "'");
-                } catch (CQLException e) {
-                    // Do nothing right now -- this will be handled by another class
-                }
-                
-                FeatureCollection<SimpleFeatureType, SimpleFeature> filteredFeatures = featureSource.getFeatures(filter);
-                SimpleFeature feature;
-                Iterator<SimpleFeature> featureIter = filteredFeatures.iterator();
-                try {
-                    feature = featureIter.next();   // Return only the first feature, even if there are multiple matches.
-                } finally {
-                    filteredFeatures.close(featureIter);
-                }
-
-                Geometry geom = (Geometry) feature.getDefaultGeometry();
-                String datasetUrl = threddsInfoBean.getDataSetUrlSelection();
-                Formatter errorLog = new Formatter();
-                GridDataset gridDataset = (GridDataset) FeatureDatasetFactoryManager.open(
-                        FeatureType.GRID, datasetUrl, null, errorLog);
-                if (gridDataset == null) {
-                    throw new IOException("Cannot open GRID at location= " + datasetUrl + "; error message = " + errorLog);
-                }
-
-                try {
-                    List<GridDatatype> grids = gridDataset.getGrids();
-                    GeoGrid grid = (GeoGrid) grids.iterator().next();
-                    Range timeRange = null;
-                    try {
-                        CoordinateAxis1DTime timeAxis = grid.getCoordinateSystem().getTimeAxis1D();
-                        int timeIndexMin = timeAxis.findTimeIndexFromDate(fromDate);
-                        int timeIndexMax = timeAxis.findTimeIndexFromDate(toDate);
-                        timeRange = new Range(timeIndexMin, timeIndexMax);
-                    } catch (NumberFormatException e) {
-                       log.debug(e.getMessage());
-                    } catch (InvalidRangeException e) {
-                    	log.debug(e.getMessage());
-                    }
-
-                    Envelope envelope = geom.getEnvelopeInternal();
-
-                    LatLonPoint lowerLeftPoint = new LatLonPointImpl(envelope.getMinY(), envelope.getMinX());
-                    LatLonPoint upperRightPoint = new LatLonPointImpl(envelope.getMaxY(), envelope.getMaxX());
-                    LatLonRect boundingBox = new LatLonRect(lowerLeftPoint, upperRightPoint);
-
-                    GeoGrid slicedGrid = null;
-                    try {
-                        slicedGrid = grid.subset(timeRange, null, boundingBox, 1, 1, 1);
-                    } catch (InvalidRangeException e) {
-                    	errorBean.getMessages().add("Unable to slice grid");
-                    	errorBean.getMessages().add("Error output:\n" + e.getMessage());
-                        RequestDispatcher rd = request.getRequestDispatcher("/jsp/DataSetSelection.jsp");
-                        rd.forward(request, response);
-                        return;
-                    }
-
-                    List<String> simpleStats = SimpleStatistics.getStatisticsList(feature, gridDataset, slicedGrid.getVariable().getName(), timeRange);
-                    threddsInfoBean.setStatsSummary(simpleStats);
-                    
-                    // Create a null check here
-                    VariableDS gridVar = slicedGrid.getVariable();
-                    VariableDS proxiedGridVar = new VariableDS(null, gridVar, true);
-
-                    proxiedGridVar.addAttribute(new Attribute("_FillValue", Float.valueOf(-999f)));
-                    proxiedGridVar.addAttribute(new Attribute("missing_value", Float.valueOf(-999f)));
-                    proxiedGridVar.setProxyReader(new ShapedGridReader(slicedGrid, geom));
-
-                    GeoGrid outputGrid = new GeoGrid(gridDataset, proxiedGridVar, (GridCoordSys) slicedGrid.getCoordinateSystem());
-                    threddsInfoBean.setGeoGrid(outputGrid);
-                    request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);
-                    forwardTo = "/jsp/showSummary.jsp";
-                    
-                } finally {
-                    gridDataset.close();
-                }
-                forwardTo = "/jsp/showSummary.jsp";
-
-            }
-
-        } else if ("step8".equals(action))  {
-        	
-        	THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");
-            // What is directory name for the files being uploaded
-            String seperator = FileHelper.getSeparator();
-            String userDirectory = (String) request.getSession().getAttribute("userTempDir") + seperator;
-            GeoGrid outputGrid = threddsInfoBean.getGeoGrid();
-            ShapeFileSetBean shapeFileSetBean = shapeFileSetBeanSubsetList.get(0);
-            String attributeValue = shapeFileSetBean.getChosenFeature();
-            File outputFile = new File(userDirectory, attributeValue + ".nc");
-
-            outputFile.delete();
-            outputGrid.writeFile(outputFile.toString());
-            request.setAttribute("fileLink", outputFile.getPath());
-        }
-        
-        request.setAttribute("messageBean", messageBean);
-        request.setAttribute("errorBean", errorBean);
-        RequestDispatcher rd = request.getRequestDispatcher(forwardTo);
-        rd.forward(request, response);
-    }
-
-    /**
-     * Writes a collection of {@link PointFeature}s to a file in CSV format. PointFeatures are written one per line
-     * in the order that they appear in {@code points}'s iterator.
-     *
-     * @param points    a collection of point features. Before being passed to this method, a PointFeatureCollection
-     *                  can be subset in space and/or time with {@link PointFeatureCollection#subset}.
-     * @param outFile   the file to write output to.
-     * @throws IOException  if an I/O error occurs.
-     */
-    public static void writePointsToFile(PointFeatureCollection points, File outFile)
-            throws IOException {
-        boolean columnNamesWritten = false;
-        BufferedWriter writer = new BufferedWriter(new FileWriter(outFile));
-        String fieldSep = ", ";
-        String eol = "\n";
-
-        try {
-            for (PointFeatureIterator iter = points.getPointFeatureIterator(-1); iter.hasNext();) {
-                StringBuilder strBuilder = new StringBuilder();
-
-                PointFeature pointFeature = iter.next();
-                StructureData data = pointFeature.getData();
-
-                if (!columnNamesWritten) {
-                    for (StructureMembers.Member member : data.getMembers()) {
-                        String memberName = member.getName().trim();
-                        strBuilder.append(memberName).append(fieldSep);
-                    }
-
-                    // Replace trailing fieldSep with eol.
-                    strBuilder.replace(strBuilder.length() - fieldSep.length(), strBuilder.length(), eol);
-                    columnNamesWritten = true;
-                }
-
-                for (StructureMembers.Member member : data.getMembers()) {
-                    String memberValue = data.getArray(member).toString().trim();
-                    strBuilder.append(memberValue).append(fieldSep);
-                }
-
-                // Replace trailing fieldSep with eol.
-                strBuilder.replace(strBuilder.length() - fieldSep.length(), strBuilder.length(), eol);
-                writer.write(strBuilder.toString());
-            }
-        } finally {
-            writer.close();
-        }
-    }
-
-    private List<ShapeFileSetBean> getShapeFilesSetSubList(String[] checkboxItems, List<ShapeFileSetBean> shapeFileSetBeanList) {
-        List<ShapeFileSetBean> result = new ArrayList<ShapeFileSetBean>();
-
-        for (String item : checkboxItems) {
-            for (ShapeFileSetBean shapeFileSetBean : shapeFileSetBeanList) {
-                if (shapeFileSetBean.getName().equals(item)) {
-                    result.add(shapeFileSetBean);
-                }
-            }
-        }
-
-        return result;
-    }
-
-    private final static class ShapedGridReader implements ProxyReader {
+	private final static class ShapedGridReader implements ProxyReader {
 
         private GeoGrid grid;
         private Geometry shape;
@@ -567,6 +108,22 @@ public class FileProcessServlet extends HttpServlet {
                     this.percentOfShapeOverlappingCells[x][y] = Double.NaN;
                 }
             }
+        }
+
+        private double getPercentOfShapeOverlappingCell(int xIndex, int yIndex) {
+            if (!Double.isNaN(this.percentOfShapeOverlappingCells[xIndex][yIndex])) {
+                return this.percentOfShapeOverlappingCells[xIndex][yIndex];
+            }
+
+            double[] xCellEdges = this.xAxis.getCoordEdges(xIndex);
+            double[] yCellEdges = this.yAxis.getCoordEdges(yIndex);
+
+            Envelope envelope = new Envelope(xCellEdges[0], xCellEdges[1], yCellEdges[0], yCellEdges[1]);
+            Geometry cellRectangle = this.geometryFactory.toGeometry(envelope);
+
+            Geometry intersection = cellRectangle.intersection(this.shape);
+            this.percentOfShapeOverlappingCells[xIndex][yIndex] = intersection.getArea() / this.shape.getArea();
+            return this.percentOfShapeOverlappingCells[xIndex][yIndex];
         }
 
         @Override
@@ -633,22 +190,593 @@ public class FileProcessServlet extends HttpServlet {
 
             return data;
         }
+    }
 
-        private double getPercentOfShapeOverlappingCell(int xIndex, int yIndex) {
-            if (!Double.isNaN(this.percentOfShapeOverlappingCells[xIndex][yIndex])) {
-                return this.percentOfShapeOverlappingCells[xIndex][yIndex];
+    private static org.apache.log4j.Logger log = Logger.getLogger(FileProcessServlet.class);
+
+    /**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	    doPost(request, response);
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	    String action = (request.getParameter("action") == null) ? "" : request.getParameter("action").toLowerCase();
+	    List<ShapeFileSetBean> shapeFileSetBeanSubsetList = (List<ShapeFileSetBean>) request.getSession().getAttribute("shapeFileSetBeanSubsetList");
+	
+	
+	    MessageBean errorBean = new MessageBean();
+	    MessageBean messageBean = new MessageBean();
+	    String forwardTo = "";
+	
+	    if (action == null || "".equals(action)) {
+	        errorBean.addMessage("Your action was not read in properly. Please try again");
+	        request.setAttribute("messageBean", messageBean);
+	        request.setAttribute("errorBean", errorBean);
+	        RequestDispatcher rd = request.getRequestDispatcher("/jsp/fileSelection.jsp");
+	        rd.forward(request, response);
+	        return;
+	    }
+	
+	    if ("step1".equals(action)) {
+	    	forwardTo = populateAttributeList(request);
+	    } else if ("step2".equals(action)) { 
+	    	forwardTo = populateFeatureList(request);
+	    } else if ("step3".equals(action)) {
+	        forwardTo = populateTHREDDSSelections(request);
+	    } else if ("step4".equals(action)) {
+	        forwardTo = populateDataSet(request);
+	    } else if ("step5".equals(action)) {
+	        forwardTo = populateGrid(request);
+	    } else if ("step6".equals(action)) { 
+	    	forwardTo = populateTimeSelection(request);
+	    } else if ("step7".equals(action)) {
+	        forwardTo = populateSummary(request);
+	    } else if ("step8".equals(action))  {
+	    	forwardTo = populateFileUpload(request);
+	    	
+	    }
+	    RequestDispatcher rd = request.getRequestDispatcher(forwardTo);
+	    rd.forward(request, response);
+	}
+
+	private static final long serialVersionUID = 1L;
+
+    /**
+     * Writes a collection of {@link PointFeature}s to a file in CSV format. PointFeatures are written one per line
+     * in the order that they appear in {@code points}'s iterator.
+     *
+     * @param points    a collection of point features. Before being passed to this method, a PointFeatureCollection
+     *                  can be subset in space and/or time with {@link PointFeatureCollection#subset}.
+     * @param outFile   the file to write output to.
+     * @throws IOException  if an I/O error occurs.
+     */
+    public static void writePointsToFile(PointFeatureCollection points, File outFile)
+            throws IOException {
+        boolean columnNamesWritten = false;
+        BufferedWriter writer = new BufferedWriter(new FileWriter(outFile));
+        String fieldSep = ", ";
+        String eol = "\n";
+
+        try {
+            for (PointFeatureIterator iter = points.getPointFeatureIterator(-1); iter.hasNext();) {
+                StringBuilder strBuilder = new StringBuilder();
+
+                PointFeature pointFeature = iter.next();
+                StructureData data = pointFeature.getData();
+
+                if (!columnNamesWritten) {
+                    for (StructureMembers.Member member : data.getMembers()) {
+                        String memberName = member.getName().trim();
+                        strBuilder.append(memberName).append(fieldSep);
+                    }
+
+                    // Replace trailing fieldSep with eol.
+                    strBuilder.replace(strBuilder.length() - fieldSep.length(), strBuilder.length(), eol);
+                    columnNamesWritten = true;
+                }
+
+                for (StructureMembers.Member member : data.getMembers()) {
+                    String memberValue = data.getArray(member).toString().trim();
+                    strBuilder.append(memberValue).append(fieldSep);
+                }
+
+                // Replace trailing fieldSep with eol.
+                strBuilder.replace(strBuilder.length() - fieldSep.length(), strBuilder.length(), eol);
+                writer.write(strBuilder.toString());
             }
-
-            double[] xCellEdges = this.xAxis.getCoordEdges(xIndex);
-            double[] yCellEdges = this.yAxis.getCoordEdges(yIndex);
-
-            Envelope envelope = new Envelope(xCellEdges[0], xCellEdges[1], yCellEdges[0], yCellEdges[1]);
-            Geometry cellRectangle = this.geometryFactory.toGeometry(envelope);
-
-            Geometry intersection = cellRectangle.intersection(this.shape);
-            this.percentOfShapeOverlappingCells[xIndex][yIndex] = intersection.getArea() / this.shape.getArea();
-            return this.percentOfShapeOverlappingCells[xIndex][yIndex];
+        } finally {
+            writer.close();
         }
     }
+
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public FileProcessServlet() {
+        super();
+    }
+
+    private ShapeFileSetBean getShapeFilesSetBean(String fileSetSelection, List<ShapeFileSetBean> shapeFileSetBeanList) {
+        ShapeFileSetBean result = null;
+
+        for (ShapeFileSetBean shapeFileSetBean : shapeFileSetBeanList) {
+            if (shapeFileSetBean.getName().equals(fileSetSelection)) {
+                result = shapeFileSetBean;
+            }
+        }
+
+        return result;
+    }
+
+	private List<ShapeFileSetBean> getShapeFilesSetSubList(String[] checkboxItems, List<ShapeFileSetBean> shapeFileSetBeanList) {
+        List<ShapeFileSetBean> result = new ArrayList<ShapeFileSetBean>();
+
+        for (String item : checkboxItems) {
+            for (ShapeFileSetBean shapeFileSetBean : shapeFileSetBeanList) {
+                if (shapeFileSetBean.getName().equals(item)) {
+                    result.add(shapeFileSetBean);
+                }
+            }
+        }
+
+        return result;
+    }
+
+	/**
+     * Gets called after user has chosen a ShapeFile set to work with
+     * 
+     * @param request
+     * @return
+     */
+	private String populateAttributeList(HttpServletRequest request) {
+    	String fileSelection = request.getParameter("fileName");
+        List<ShapeFileSetBean> shapeFileSetBeanList = (List<ShapeFileSetBean>) request.getSession().getAttribute("shapeFileSetBeanList");
+    	ShapeFileSetBean shpFileSetBean = (ShapeFileSetBean) request.getSession().getAttribute("shapeFileSetBean");
+		
+		MessageBean errorBean = new MessageBean();
+        MessageBean messageBean = new MessageBean();
+    	 
+		if (shapeFileSetBeanList == null) {
+			errorBean.addMessage("Unable to retrieve shape file set lists. Please choose new shape file(s).");
+			request.setAttribute("messageBean", messageBean);
+			request.setAttribute("errorBean", errorBean);
+			return "/jsp/fileSelection.jsp";
+		}
+
+		if (fileSelection == null || "".equals(fileSelection)) {
+			errorBean.addMessage("You must select at least one file to process.");
+			request.setAttribute("messageBean", messageBean);
+			request.setAttribute("errorBean", errorBean);
+			return "/jsp/fileSelection.jsp";
+		}
+
+		// Get the correct shapeFileSet out of the list...
+		for (ShapeFileSetBean shapeFileSubset : shapeFileSetBeanList) {
+			if (fileSelection.equals(shapeFileSubset.getName())) {
+				shpFileSetBean = shapeFileSubset;
+			}
+		}
+		
+		try {
+			shpFileSetBean.setAttributeList(ShapeFileSetBean.getAttributeListFromBean(shpFileSetBean));
+		} catch (IOException e) {
+			log.debug(e.getMessage());
+			errorBean.addMessage("An error was encountered. Please try again.");
+			errorBean.addMessage("ERROR: \n" + e.getMessage());
+			return "/jsp/fileSelection.jsp";
+		}
+
+		request.getSession().setAttribute("shapeFileSetBean", shpFileSetBean);
+		return "/jsp/attributeSelection.jsp";
+	}
+
+	private String populateDataSet(HttpServletRequest request) {
+    	
+    	MessageBean errorBean = new MessageBean();
+        
+    	THREDDSInfoBean threddsInfoBean = new THREDDSInfoBean();
+        String THREDDSUrl = request.getParameter("THREDDSUrl");
+
+        List<InvAccess> openDapResources = new LinkedList<InvAccess>();
+        if (THREDDSUrl == null || "".equals(THREDDSUrl)) {
+            errorBean.getMessages().add("You must select a THREDDS URL to work with..");
+            request.setAttribute("errorBean", errorBean);
+            return "/jsp/THREDDSSelection.jsp";
+        }
+        
+        threddsInfoBean.setTHREDDSServer(THREDDSUrl);
+
+        // Grab the THREDDS catalog
+        URI catalogURI = URI.create(THREDDSUrl);
+        InvCatalogFactory factory = new InvCatalogFactory("default", true);
+        InvCatalog catalog = factory.readXML(catalogURI);
+        StringBuilder buff = new StringBuilder();
+        if (!catalog.check(buff)) {
+            errorBean.getMessages().add(buff.toString());
+            request.setAttribute("errorBean", errorBean);
+            return "/jsp/THREDDSSelection.jsp";
+        }
+
+        // Grab resources from the THREDDS catalog
+        openDapResources = NetCDFUtility.getOpenDapResources(catalog);
+        if (openDapResources == null) {
+            errorBean.getMessages().add("Could not pull information from THREDDS Server");
+            request.setAttribute("errorBean", errorBean);
+            return "/jsp/THREDDSSelection.jsp";
+        }
+
+        for (InvAccess opendapResource : openDapResources) {
+            threddsInfoBean.getOpenDapStandardURLNameList().add(opendapResource.getStandardUrlName());
+            threddsInfoBean.getOpenDapDataSetNameList().add(opendapResource.getDataset().getName());
+        }
+        request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);
+        return "/jsp/DataSetSelection.jsp";
+	}
+
+	/**
+     * Set up a feature list
+     * 
+     * @param request
+     * @return
+     */
+	private String populateFeatureList(HttpServletRequest request) {
+    	// Attribute chosen, set up feature list
+    	String  attributeSelection = request.getParameter("attributeSelection");
+    	ShapeFileSetBean shpFileSetBean = (ShapeFileSetBean) request.getSession().getAttribute("shapeFileSetBean");
+    	
+        // Set the chosen attribute on the ShapeFileSetBeans
+        //String attributeAppliesTo = attributeSelection.substring(0, attributeSelection.indexOf("::"));
+        String attribute = attributeSelection.substring(attributeSelection.indexOf("::") + 2);
+        shpFileSetBean.setChosenAttribute(attribute);
+        
+        MessageBean errorBean = new MessageBean();
+        MessageBean messageBean = new MessageBean();
+        // Pull Feature Lists
+            try {
+				shpFileSetBean.setFeatureList(ShapeFileSetBean.getFeatureListFromBean(shpFileSetBean));
+			} catch (IOException e) {
+				errorBean.addMessage("Unable to attain feature list for shape file. Please try again.");
+				request.setAttribute("messageBean", messageBean);
+				request.setAttribute("errorBean", errorBean);
+				return "/jsp/attributeSelection.jsp";
+			}
+
+        request.getSession().setAttribute("shapeFileSetBean", shpFileSetBean);
+        return "/jsp/featureSelection.jsp";
+	}
+
+	private String populateFileUpload(HttpServletRequest request) {
+    	THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");
+    	ShapeFileSetBean shpFileSetBean = (ShapeFileSetBean) request.getSession().getAttribute("shapeFileSetBean");
+
+        // What is directory name for the files being uploaded
+        String seperator = FileHelper.getSeparator();
+        String userDirectory = (String) request.getSession().getAttribute("userTempDir") + seperator;
+        GeoGrid outputGrid = threddsInfoBean.getGeoGrid();
+        String attributeValue = shpFileSetBean.getChosenFeature();
+        File outputFile = new File(userDirectory, attributeValue + ".nc");
+
+        outputFile.delete();
+        
+        try {
+			outputGrid.writeFile(outputFile.toString());
+		} catch (IOException e) {
+			MessageBean errorBean = new MessageBean();
+			errorBean.getMessages().add("Could not write file.");
+            request.setAttribute("errorBean", errorBean);
+            return "/jsp/TimePeriodSelection.jsp";
+		}
+		
+        threddsInfoBean.setFileLink(outputFile.getPath());
+        request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);
+        return "/FileUploadServlet?file=" + outputFile.getPath();
+        
+	}
+
+	private String populateGrid(HttpServletRequest request) {
+    	THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");
+    	MessageBean errorBean = new MessageBean();
+    	
+        String dataSetSelection = request.getParameter("datasetSelection");
+        if (dataSetSelection == null || "".equals(dataSetSelection)) {
+            errorBean.getMessages().add("Did not get a DataSet selection. Please try again.");
+            request.setAttribute("errorBean", errorBean);
+            return "/jsp/DataSetSelection.jsp";
+        }
+
+        // Throw the settings into the THREDDSInfoBean
+        String dataSetUrl = dataSetSelection.substring(0, dataSetSelection.indexOf(":::"));
+        String dataSetName = dataSetSelection.substring(dataSetSelection.indexOf(":::") + 3);
+        threddsInfoBean.setDataSetUrlSelection(dataSetUrl);
+        threddsInfoBean.setDataSetNameSelection(dataSetName);
+
+        // Grab the grid dataset
+        Formatter errorLog = new Formatter();
+
+
+        FeatureDataset featureDataset;
+		try {
+			featureDataset = FeatureDatasetFactoryManager.open(
+			        null, dataSetUrl, null, errorLog);
+		} catch (IOException e) {
+			errorBean.getMessages().add("Could not pull Feature Data. Please try again.");
+            request.setAttribute("errorBean", errorBean);
+            return "/jsp/DataSetSelection.jsp";
+		}
+
+        if (featureDataset != null) {
+
+            List<String> dataSelectItemList = new ArrayList<String>();
+//            if(featureDataset instanceof GridDataset) {
+//                // Grab the grid items
+//                for (GridDatatype grid : ((GridDataset)featureDataset).getGrids()) {
+//                    dataSelectItemList.add(grid.getName());
+//                }
+//                ((GridDataset)featureDataset).close();
+//            } else
+//            if(featureDataset instanceof FeatureDatasetPoint) {
+//                for (ucar.nc2.ft.FeatureCollection fc : ((FeatureDatasetPoint)featureDataset).getPointFeatureCollectionList()) {
+//                    System.out.println(fc.getName());
+//                }
+//            }
+            for (VariableSimpleIF vs : featureDataset.getDataVariables()) {
+                dataSelectItemList.add(vs.getName());
+            }
+            threddsInfoBean.setOpenDapGridItems(dataSelectItemList);
+
+        } else {
+
+            errorBean.getMessages().add("Could not open a grid at location: " + dataSetUrl);
+            errorBean.getMessages().add("Reason: " + errorLog);
+            request.setAttribute("errorBean", errorBean);
+            return "/jsp/DataSetSelection.jsp";
+            
+        }
+
+        request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);
+        return "/jsp/GridSelection.jsp";
+	}
+
+    private String populateSummary(HttpServletRequest request) {
+    	THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");
+    	ShapeFileSetBean shpFileSetBean = (ShapeFileSetBean) request.getSession().getAttribute("shapeFileSetBean");
+
+    	MessageBean errorBean = new MessageBean();
+    	
+        String fromTime = request.getParameter("timeFromSelection");
+        String toTime = request.getParameter("timeToSelection");
+        
+        DateFormat df = new SimpleDateFormat("MM-dd-yyyy");
+		Date toDate = new Date();
+		Date fromDate = new Date();
+        boolean parsedDates = false;
+        try {
+			toDate = df.parse(toTime);
+			fromDate = df.parse(fromTime);
+			parsedDates = true;
+		} catch (ParseException e1) {
+			parsedDates = false;
+			log.debug(e1.getMessage());
+		}
+		
+		if (!parsedDates) {
+			errorBean.getMessages().add("Could not parse dates.");
+            request.setAttribute("errorBean", errorBean);
+            return "/jsp/TimePeriodSelection.jsp";
+		}
+		
+        threddsInfoBean.setFromTime(fromTime);
+        threddsInfoBean.setToTime(toTime);
+        FileDataStore shapeFileDataStore;
+        FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = null;
+		try {
+			shapeFileDataStore = FileDataStoreFinder.getDataStore(shpFileSetBean.getShapeFile());
+			featureSource = shapeFileDataStore.getFeatureSource();
+		} catch (IOException e1) {
+			errorBean.getMessages().add("Could not parse dates.");
+            request.setAttribute("errorBean", errorBean);
+            return "/jsp/TimePeriodSelection.jsp";
+		}
+        
+
+        String attributeType = shpFileSetBean.getChosenAttribute();
+        String attributeValue = shpFileSetBean.getChosenFeature();
+        Filter filter = null;
+        try {
+            filter = CQL.toFilter(attributeType + " = '" + attributeValue + "'");
+        } catch (CQLException e) {
+            // Do nothing right now -- this will be handled by another class
+        }
+        
+        FeatureCollection<SimpleFeatureType, SimpleFeature> filteredFeatures = null;
+		try {
+			filteredFeatures = featureSource.getFeatures(filter);
+		} catch (IOException e1) {
+			errorBean.getMessages().add("Error: " + e1.getMessage());
+            request.setAttribute("errorBean", errorBean);
+            return "/jsp/TimePeriodSelection.jsp";
+		}
+        SimpleFeature feature;
+        Iterator<SimpleFeature> featureIter = filteredFeatures.iterator();
+        try {
+            feature = featureIter.next();   // Return only the first feature, even if there are multiple matches.
+        } finally {
+            filteredFeatures.close(featureIter);
+        }
+
+        Geometry geom = (Geometry) feature.getDefaultGeometry();
+        String datasetUrl = threddsInfoBean.getDataSetUrlSelection();
+        Formatter errorLog = new Formatter();
+        GridDataset gridDataset;
+		try {
+			gridDataset = (GridDataset) FeatureDatasetFactoryManager.open(
+			        FeatureType.GRID, datasetUrl, null, errorLog);
+		} catch (IOException e1) {
+			errorBean.getMessages().add("Error: " + e1.getMessage());
+            request.setAttribute("errorBean", errorBean);
+            return "/jsp/TimePeriodSelection.jsp";
+		}
+		
+        if (gridDataset == null) {
+            errorBean.getMessages().add("Cannot open GRID at location= " + datasetUrl + "; error message = " + errorLog);
+            request.setAttribute("errorBean", errorBean);
+            return "/jsp/TimePeriodSelection.jsp";
+        }
+
+        try {
+            List<GridDatatype> grids = gridDataset.getGrids();
+            GeoGrid grid = (GeoGrid) grids.iterator().next();
+            Range timeRange = null;
+            try {
+                CoordinateAxis1DTime timeAxis = grid.getCoordinateSystem().getTimeAxis1D();
+                int timeIndexMin = timeAxis.findTimeIndexFromDate(fromDate);
+                int timeIndexMax = timeAxis.findTimeIndexFromDate(toDate);
+                timeRange = new Range(timeIndexMin, timeIndexMax);
+            } catch (NumberFormatException e) {
+               log.debug(e.getMessage());
+            } catch (InvalidRangeException e) {
+            	log.debug(e.getMessage());
+            }
+
+            Envelope envelope = geom.getEnvelopeInternal();
+
+            LatLonPoint lowerLeftPoint = new LatLonPointImpl(envelope.getMinY(), envelope.getMinX());
+            LatLonPoint upperRightPoint = new LatLonPointImpl(envelope.getMaxY(), envelope.getMaxX());
+            LatLonRect boundingBox = new LatLonRect(lowerLeftPoint, upperRightPoint);
+
+            GeoGrid slicedGrid = null;
+            try {
+                slicedGrid = grid.subset(timeRange, null, boundingBox, 1, 1, 1);
+            } catch (InvalidRangeException e) {
+            	errorBean.getMessages().add("Unable to slice grid");
+            	errorBean.getMessages().add("Error output:\n" + e.getMessage());
+                return "/jsp/DataSetSelection.jsp";
+            }
+
+            List<String> simpleStats = null;
+			try {
+				simpleStats = SimpleStatistics.getStatisticsList(feature, gridDataset, slicedGrid.getVariable().getName(), timeRange);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+            threddsInfoBean.setStatsSummary(simpleStats);
+            
+            // Create a null check here
+            VariableDS gridVar = slicedGrid.getVariable();
+            VariableDS proxiedGridVar = new VariableDS(null, gridVar, true);
+
+            proxiedGridVar.addAttribute(new Attribute("_FillValue", Float.valueOf(-999f)));
+            proxiedGridVar.addAttribute(new Attribute("missing_value", Float.valueOf(-999f)));
+            proxiedGridVar.setProxyReader(new ShapedGridReader(slicedGrid, geom));
+
+            GeoGrid outputGrid = new GeoGrid(gridDataset, proxiedGridVar, (GridCoordSys) slicedGrid.getCoordinateSystem());
+            threddsInfoBean.setGeoGrid(outputGrid);
+            request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);
+            return "/jsp/showSummary.jsp";
+        } finally {
+            try {
+				gridDataset.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
+        
+
+	}
+    
+    /**
+     * Populates the ShapeFileSetbean with the THREDDS servers
+     * 
+     * @param request
+     * @return
+     */
+    private String populateTHREDDSSelections(HttpServletRequest request) {
+    	ShapeFileSetBean shpFileSetBean = (ShapeFileSetBean) request.getSession().getAttribute("shapeFileSetBean");
+
+    	// Set the chosen feature to work with on the bean
+        String featureSelection = request.getParameter("featureSelection");
+
+        // Set the chosen feature on the ShapeFileSetBeans
+        //String featureAppliesTo = featureSelection.substring(0, featureSelection.indexOf("::"));
+        String feature = featureSelection.substring(featureSelection.indexOf("::") + 2);
+        shpFileSetBean.setChosenFeature(feature);
+        
+        // Pull the THREDDS urls from the properties files
+        Map<String, String> threddsMap = THREDDSInfoBean.getTHREDDSUrlMap();
+        request.setAttribute("threddsMap", threddsMap);
+        
+        request.getSession().setAttribute("shapeFileSetBean", shpFileSetBean);
+        return "/jsp/THREDDSSelection.jsp";
+	}
+
+    private String populateTimeSelection(HttpServletRequest request) {
+    	// Set up time selection
+        THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");
+        MessageBean errorBean = new MessageBean();
+        
+        String gridSelection = request.getParameter("gridSelection");
+        if (gridSelection == null || "".equals(gridSelection)) {
+            errorBean.getMessages().add("Did not get a Grid selection. Please try again.");
+            request.setAttribute("errorBean", errorBean);
+            return "/jsp/GridSelection.jsp";
+        }
+
+        threddsInfoBean.setGridItemSelection(gridSelection);
+        Formatter errorLog = new Formatter();
+        FeatureDataset featureDataset = null;
+		try {
+			featureDataset = FeatureDatasetFactoryManager.open(
+			        null, threddsInfoBean.getDataSetUrlSelection(), null, errorLog);
+		} catch (IOException e1) {
+			errorBean.getMessages().add("Could not open a feature data set");
+            errorBean.getMessages().add("Reason: " + e1.getMessage());
+            request.setAttribute("errorBean", errorBean);
+            return "/jsp/DataSetSelection.jsp";
+		}
+
+        if (featureDataset != null) {
+
+            List<String> timeSelectItemList = new ArrayList<String>();
+            if (featureDataset instanceof GridDataset) {
+                GeoGrid grid = ((GridDataset)featureDataset).findGridByName(gridSelection);
+
+                for (NamedObject time : grid.getTimes()) {
+                    timeSelectItemList.add(time.getName());
+                }
+            } else {
+            	errorBean.getMessages().add("Could not open a feature data set");
+                errorBean.getMessages().add("Reason: " + errorLog);
+                request.setAttribute("errorBean", errorBean);
+                return "/jsp/DataSetSelection.jsp";
+            }
+
+            try {
+				featureDataset.close();
+			} catch (IOException e) {
+				log.debug(e.getMessage());
+			}
+			
+            threddsInfoBean.setOpenDapGridTimes(timeSelectItemList);
+                          
+            request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);
+            return "/jsp/TimePeriodSelection.jsp";
+
+        } else {
+            errorBean.getMessages().add("Could not open a grid at location: " + threddsInfoBean.getDataSetUrlSelection());
+            errorBean.getMessages().add("Reason: " + errorLog);
+            request.setAttribute("errorBean", errorBean);
+            return "/jsp/DataSetSelection.jsp";
+        }
+	}
 }
 

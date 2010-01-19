@@ -10,7 +10,7 @@
 <c:import url="/jsp/header.jsp" var="head" />
 <c:import url="/jsp/footer.jsp" var="foot" />
 
-<jsp:useBean id="shapeFileSetBeanSubsetList" scope="session" type="java.util.ArrayList<gov.usgs.gdp.bean.ShapeFileSetBean>"  />
+<jsp:useBean id="shapeFileSetBean" scope="session" type="gov.usgs.gdp.bean.ShapeFileSetBean"  />
 <jsp:useBean id="errorBean" scope="request" class="gov.usgs.gdp.bean.MessageBean"  />
 <jsp:useBean id="messageBean" scope="request" class="gov.usgs.gdp.bean.MessageBean"  />
 
@@ -37,9 +37,8 @@ ${head}
 	<hr />
 	
 	<div id="fileSetDiv">
-		Chosen FileSet(s) and options:<br />
+		Chosen FileSet and options:<br />
 		
-		<c:forEach var="shapeFileSetBean" items="${shapeFileSetBeanSubsetList}">
 			<fieldset class="applicationFieldSet">
 				<legend>
 						${shapeFileSetBean.name}
@@ -47,7 +46,6 @@ ${head}
 				Attribute: ${shapeFileSetBean.chosenAttribute} <br />
 				Feature: ${shapeFileSetBean.chosenFeature} 
 			</fieldset>
-		</c:forEach>		
 	</div>
 	
 		<form id="processFiles" method="post" name="processFiles" action="${cont}">

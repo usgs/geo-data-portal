@@ -8,7 +8,7 @@
 <c:import url="/jsp/header.jsp" var="head" />
 <c:import url="/jsp/footer.jsp" var="foot" />
 
-<jsp:useBean id="shapeFileSetBeanSubsetList" scope="session" type="java.util.ArrayList<gov.usgs.gdp.bean.ShapeFileSetBean>"  />
+<jsp:useBean id="shapeFileSetBean" scope="session" type="gov.usgs.gdp.bean.ShapeFileSetBean"  />
 <jsp:useBean id="errorBean" scope="request" class="gov.usgs.gdp.bean.MessageBean"  />
 <jsp:useBean id="messageBean" scope="request" class="gov.usgs.gdp.bean.MessageBean"  />>
 
@@ -36,24 +36,25 @@ ${head}
 	Please select fileset attributes:<br />
 	<div id="shapeFileSetDiv">
 		<form id="processFiles" method="post" name="processFiles" action="${cont}">
-		<c:forEach var="shapeFileSetBean" items="${shapeFileSetBeanSubsetList}">
 			<fieldset class="applicationFieldSet">
-			<legend style="display: solid !important">
-					${shapeFileSetBean.name}
-			</legend>
-			<select id="attributeSelect" name="attributeSelection">
-				<c:forEach var="listItem" items="${shapeFileSetBean.attributeList}">
-						<option value="${shapeFileSetBean.name}::${listItem}" />${listItem}
-				</c:forEach>
-			</select>
-		</fieldset>
-		</c:forEach>		
+			
+				<legend style="display: solid !important">
+						${shapeFileSetBean.name}
+				</legend>
+				
+				<select id="attributeSelect" name="attributeSelection">
+					<c:forEach var="listItem" items="${shapeFileSetBean.attributeList}">
+							<option value="${shapeFileSetBean.name}::${listItem}" />${listItem}
+					</c:forEach>
+				</select>
+				
+			</fieldset>
 		
-		<input type="button" 
-			value="Submit Attribute Selection(s)" 
-			name="processExampleShape" 
-			id="processExampleShapeFiles" 
-			onclick="document.processFiles.action='${cont}${process}';document.processFiles.submit()" />		
+			<input type="button" 
+				value="Submit Attribute Selection(s)" 
+				name="processExampleShape" 
+				id="processExampleShapeFiles" 
+				onclick="document.processFiles.action='${cont}${process}';document.processFiles.submit()" />		
 		</form>
 	</div>
 	<div id="errorText">

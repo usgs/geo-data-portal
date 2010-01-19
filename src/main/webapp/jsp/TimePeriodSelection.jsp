@@ -11,7 +11,7 @@
 <c:import url="/jsp/header.jsp" var="head" />
 <c:import url="/jsp/footer.jsp" var="foot" />
 
-<jsp:useBean id="shapeFileSetBeanSubsetList" scope="session" type="java.util.ArrayList<gov.usgs.gdp.bean.ShapeFileSetBean>"  />
+<jsp:useBean id="shapeFileSetBean" scope="session" type="gov.usgs.gdp.bean.ShapeFileSetBean"  />
 <jsp:useBean id="errorBean" scope="request" class="gov.usgs.gdp.bean.MessageBean"  />
 <jsp:useBean id="messageBean" scope="request" class="gov.usgs.gdp.bean.MessageBean"  />
 <jsp:useBean id="threddsInfoBean" scope="session" class="gov.usgs.gdp.bean.THREDDSInfoBean"  />
@@ -1695,18 +1695,16 @@ ${head}
 	
 	<div id="fileSetDiv">
 	Chosen FileSet(s) and options:<br />
-		<c:forEach var="shapeFileSetBean" items="${shapeFileSetBeanSubsetList}">
-			<fieldset class="applicationFieldSet">
-				<legend>
-						${shapeFileSetBean.name}
-				</legend>
-				Attribute: ${shapeFileSetBean.chosenAttribute} <br />
-				Feature: ${shapeFileSetBean.chosenFeature} <br />
-				THREDDS Server: ${threddsInfoBean.THREDDSServer} <br />
-				DataSet: ${threddsInfoBean.dataSetNameSelection} <br />
-				Grid: ${threddsInfoBean.gridItemSelection}
-			</fieldset>
-		</c:forEach>		
+		<fieldset class="applicationFieldSet">
+			<legend>
+					${shapeFileSetBean.name}
+			</legend>
+			Attribute: ${shapeFileSetBean.chosenAttribute} <br />
+			Feature: ${shapeFileSetBean.chosenFeature} <br />
+			THREDDS Server: ${threddsInfoBean.THREDDSServer} <br />
+			DataSet: ${threddsInfoBean.dataSetNameSelection} <br />
+			Grid: ${threddsInfoBean.gridItemSelection}
+		</fieldset>
 	</div>
 	
 		<form id="processFiles" method="post" name="processFiles" action="${cont}">

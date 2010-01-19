@@ -24,12 +24,14 @@ public class THREDDSInfoBean implements Serializable {
 	private String gridItemSelection;
 	private String fromTime;
 	private String toTime;
+	private String fileLink;
 	private List<String> openDapStandardURLNameList;
 	private List<String> openDapDataSetNameList;
 	private List<String> openDapGridItems;
 	private List<String> openDapGridTimes;
 	private List<String> statsSummary;
 	private GeoGrid geoGrid;
+	
 	
 
 
@@ -234,6 +236,14 @@ public class THREDDSInfoBean implements Serializable {
 
 	public void setStatsSummary(List<String> statsSummary) {
 		this.statsSummary = statsSummary;
+	}
+
+	public String getFileLink() {
+		return fileLink;
+	}
+
+	public void setFileLink(String fileLink) {
+		this.fileLink = fileLink;
 	}
 
 }
