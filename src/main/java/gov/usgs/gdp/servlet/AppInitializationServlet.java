@@ -1,6 +1,5 @@
 package gov.usgs.gdp.servlet;
 
-import gov.usgs.gdp.bean.THREDDSServerBean;
 import gov.usgs.gdp.helper.FileHelper;
 
 import java.io.File;

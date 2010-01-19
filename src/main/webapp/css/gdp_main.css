@@ -3,6 +3,19 @@
 	width: 50%;
 }
 
+.green_ball_status {
+	height: 10px;
+}
+
+.red_ball_status {
+	height: 10px;
+}
+
+.status_date {
+	font-size: .7em;
+	color: #003399; 
+}
+
 #shapeFileSetDiv {
 	width: 50%;
 	float: left;
@@ -11,7 +24,7 @@
 #fileSetDiv {
 	width: 50%;
 	float: right;
-	background-color: #CCCCCC;	
+	background-color: #CCCCCC;
 }
 
 #errorText {

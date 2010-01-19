@@ -67,7 +67,20 @@ ${head}
 			<c:set var="threddsServerBean" value="${threddsServerBeanMap[item.key]}" />
 			<div class="THREDDSServerSuggestions" onclick="document.getElementById('THREDDSUrlInputBox').value = '${item.value}'">
 				<ul>
-					<li><a>${item.key}</a> <br /> STATUS: ${threddsServerBean.active} <br /> LAST CHECKED: ${threddsServerBean.lastCheck}</li>
+					<li>
+						<a>${item.key}</a> 
+	
+						<c:choose> 
+							<c:when test="${threddsServerBean.active == true}" >
+								<img class="green_ball_status" src="${cont}/images/green-ball.gif" alt="Active" title="Active"/>
+							</c:when>
+							<c:otherwise>
+								<img class="red_ball_status" src="${cont}/images/red-ball.gif"  alt="Inactive" title="Inactive"/>
+							</c:otherwise>
+						</c:choose>
+						
+						<span class="status_date">(${threddsServerBean.lastCheck})</span>
+					</li>
 				</ul>
 			</div>
 		</c:forEach>
