@@ -36,7 +36,7 @@ ${head}
 	<br />	<hr />
 	
 	<div id="shapeFileSetDiv">
-		<form id="processFiles" method="get" name="processFiles" action="${cont}">		
+		<form id="processFiles" method="post" name="processFiles" action="${cont}">		
 		<fieldset class="applicationFieldSet">
 			<legend style="display: solid !important">
 				Available ShapeFile Sets
