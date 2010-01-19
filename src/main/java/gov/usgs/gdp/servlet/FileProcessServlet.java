@@ -413,7 +413,6 @@ public class FileProcessServlet extends HttpServlet {
                         int timeIndexMin = timeAxis.findTimeIndexFromDate(fromDate);
                         int timeIndexMax = timeAxis.findTimeIndexFromDate(toDate);
                         timeRange = new Range(timeIndexMin, timeIndexMax);
-                        //timeRange = new Range(0, 99);
                     } catch (NumberFormatException e) {
                        log.debug(e.getMessage());
                     } catch (InvalidRangeException e) {

@@ -69,22 +69,43 @@ public class SimpleStatistics {
             }
         }
 
-        StatisticsAccumulator1D s = new StatisticsAccumulator1D();
+        GridCoverage gridCoverage = new GridCoverage(simpleFeature, gd, variableName);
+        double[][] coverage = gridCoverage.getCoverage();
+
+        StatisticsAccumulator1D coveredStats = new StatisticsAccumulator1D();
+        StatisticsAccumulator1D envelopeStats = new StatisticsAccumulator1D();
+
         ucar.ma2.Array array = gdt.readVolumeData(-1);
         GridCoordSystem gcs = gdt.getCoordinateSystem();
         dumpGridBB(gcs);
-        while(array.hasNext()) {
-            s.accumulate(array.nextDouble());
+        int tCount = (int) gcs.getTimeAxis().getSize();
+        int yCount = (int) gcs.getYHorizAxis().getSize();
+        int xCount = (int) gcs.getXHorizAxis().getSize();
+        for (int tIndex = 0; tIndex < tCount; ++tIndex) {
+            int tOffset = tIndex * yCount * xCount;
+            for (int yIndex = 0; yIndex < yCount; ++yIndex) {
+                int tyOffset = tOffset + (yIndex * xCount);
+                for (int xIndex = 0; xIndex < xCount; ++xIndex) {
+                    int index = tyOffset + xIndex;
+                    double value = array.getDouble(index);
+                    if(coverage[xIndex][yIndex] > 0d) {
+                        coveredStats.accumulate(value);
+                    }
+                    envelopeStats.accumulate(value);
+                }
+            }
         }
-
-        System.out.println(s);
+        System.out.println("*** Covered ***");
+        System.out.println(coveredStats);
+        System.out.println("*** Envelope ***");
+        System.out.println(envelopeStats);
 
 
         System.out.println(" geotools feature bounds "
                 + sfge.getMinX() + ":" + sfge.getMinY()
                 + sfge.getMaxX() + ":" + sfge.getMaxY());
 
-        return s;
+        return coveredStats;
     }
     
     public static List<String> getStatisticsList(SimpleFeature simpleFeature,
@@ -117,7 +138,11 @@ public class SimpleStatistics {
         GridCoordSystem gcs = gdt.getCoordinateSystem();
         dumpGridBB(gcs);
         while(array.hasNext()) {
-            s.accumulate(array.nextDouble());
+            double value = array.nextDouble();
+            // NaN / missing value check
+            if (value == value) {
+                s.accumulate(value);
+            }
         }
 
         result.add(s.toString());
