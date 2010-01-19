@@ -41,6 +41,7 @@ import org.opengis.filter.Filter;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import gov.usgs.gdp.analysis.SimpleStatistics;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
@@ -61,6 +62,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
@@ -409,8 +411,11 @@ public class FileProcessServlet extends HttpServlet {
                     GeoGrid grid = (GeoGrid) grids.iterator().next();
                     Range timeRange = null;
                     try {
-                        timeRange = new Range(Integer.parseInt(threddsInfoBean.getFromTime()),
-                                Integer.parseInt(threddsInfoBean.getToTime()));
+                        CoordinateAxis1DTime timeAxis = grid.getCoordinateSystem().getTimeAxis1D();
+                        int timeIndexMin = timeAxis.findTimeIndexFromDate(fromDate);
+                        int timeIndexMax = timeAxis.findTimeIndexFromDate(toDate);
+//                        timeRange = new Range(timeIndexMin, timeIndexMax);
+                        timeRange = new Range(0, 99);
                     } catch (NumberFormatException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
@@ -435,6 +440,9 @@ public class FileProcessServlet extends HttpServlet {
                         rd.forward(request, response);
                         return;
                     }
+
+                    SimpleStatistics.calculate(feature, gridDataset, slicedGrid.getVariable().getName(), timeRange);
+
                     // Create a null check here
                     VariableDS gridVar = slicedGrid.getVariable();
                     VariableDS proxiedGridVar = new VariableDS(null, gridVar, true);
