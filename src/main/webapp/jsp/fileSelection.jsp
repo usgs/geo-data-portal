@@ -5,6 +5,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <c:set var="cont" value="<%=request.getContextPath()%>" />
+<c:set var="process" value="/Router?location=processFiles&action=step1" />
+<c:set var="summarize" value="/Router?location=summarize" />
 
 <c:import url="/jsp/header.jsp" var="head" />
 <c:import url="/jsp/footer.jsp" var="foot" />
@@ -12,11 +14,9 @@
 <jsp:useBean id="exampleFileBeanList" scope="session" type="java.util.ArrayList<gov.usgs.gdp.bean.FilesBean>"  />
 <jsp:useBean id="uploadedFilesBeanList" scope="session" type="java.util.ArrayList<gov.usgs.gdp.bean.FilesBean>"  />
 <jsp:useBean id="shapeFileSetBeanList" scope="session" type="java.util.ArrayList<gov.usgs.gdp.bean.ShapeFileSetBean>"  />
-
 <jsp:useBean id="errorBean" scope="request" class="gov.usgs.gdp.bean.MessageBean"  />
+<jsp:useBean id="messageBean" scope="request" class="gov.usgs.gdp.bean.MessageBean"  />
 
-<c:set var="process" value="/Router?location=processFiles&action=step1" />
-<c:set var="summarize" value="/Router?location=summarize" />
 <c:url var="upload" value="/Router?location=uploadFiles" />
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -33,35 +33,35 @@
 <body>
 ${head}
 	<a href="${upload}">Upload Files For Current Session</a>
-	<br />
-	<hr />
+	<br />	<hr />
+	
 	<div id="shapeFileSetDiv">
-		<form id="processFiles" method="post" name="processFiles" action="${cont}">		
-		Files Available:<br />
+		<form id="processFiles" method="get" name="processFiles" action="${cont}">		
 		<fieldset class="applicationFieldSet">
 			<legend style="display: solid !important">
 				Available ShapeFile Sets
 			</legend>
 			<c:forEach var="fileBean" items="${shapeFileSetBeanList}">
-					<input id="exampleFileCheckbox" type="checkbox" name="fileName" value="${fileBean.name}">
+					<input id="exampleFileCheckbox" type="radio" name="fileName" value="${fileBean.name}">
 					${fileBean.name}
 					<br />
 			</c:forEach>
 		</fieldset>
 		<input type="button" 
-			value="Process Shape Files" 
+			value="Process Shape File Set" 
 			name="processExampleShape" 
 			id="processExampleShapeFiles" 
 			onclick="document.processFiles.action='${cont}${process}';document.processFiles.submit()" />
 		
 		<input type="button" 
-			value="Summarize Shape Files" 
+			value="Summarize Shape File Set" 
 			name="summarizeShapeFiles" 
 			id="summarizeShapeFiles" 
 			onclick="document.processFiles.action='${cont}${summarize}';document.processFiles.submit()" />
 		
 		</form>
 	</div>
+	
 	<div id="fileSetDiv">
 		<fieldset class="applicationFieldSet">
 			<legend style="display: solid !important">
@@ -87,14 +87,20 @@ ${head}
 				<br />
 			</c:forEach>
 		</fieldset>
-		
-		
 	</div>
+	
 	<div id="errorText">
 		<c:forEach var="error" items="${errorBean.messages}">				
 			${error}
 			<br />
 		</c:forEach>
+	</div>
+	<div id="messageText">
+		<ul>
+			<c:forEach var="message" items="${messageBean.messages}">				
+				<li>${message}</li>
+			</c:forEach>
+		</ul>
 	</div>
 ${foot}
 </body>
