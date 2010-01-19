@@ -18,7 +18,7 @@ import org.apache.log4j.Logger;
  * Application Lifecycle Listener implementation class SessionListener
  *
  */
-public class SessionListener implements HttpSessionListener, HttpSessionAttributeListener, HttpSessionActivationListener, HttpSessionBindingListener {
+public class SessionListener implements HttpSessionListener {
 	private static org.apache.log4j.Logger log = Logger.getLogger(SessionListener.class);
 
     /**
@@ -26,55 +26,6 @@ public class SessionListener implements HttpSessionListener, HttpSessionAttribut
      */
     public SessionListener() {
         // TODO Auto-generated constructor stub
-    }
-
-	/**
-     * @see HttpSessionAttributeListener#attributeRemoved(HttpSessionBindingEvent)
-     */
-    public void attributeRemoved(HttpSessionBindingEvent arg0) {
-        // TODO Auto-generated method stub
-    }
-
-	/**
-     * @see HttpSessionAttributeListener#attributeAdded(HttpSessionBindingEvent)
-     */
-    public void attributeAdded(HttpSessionBindingEvent arg0) {
-        // TODO Auto-generated method stub
-    }
-
-	/**
-     * @see HttpSessionBindingListener#valueUnbound(HttpSessionBindingEvent)
-     */
-    public void valueUnbound(HttpSessionBindingEvent arg0) {
-        // TODO Auto-generated method stub
-    }
-
-	/**
-     * @see HttpSessionActivationListener#sessionDidActivate(HttpSessionEvent)
-     */
-    public void sessionDidActivate(HttpSessionEvent arg0) {
-        // TODO Auto-generated method stub
-    }
-
-	/**
-     * @see HttpSessionActivationListener#sessionWillPassivate(HttpSessionEvent)
-     */
-    public void sessionWillPassivate(HttpSessionEvent arg0) {
-        // TODO Auto-generated method stub
-    }
-
-	/**
-     * @see HttpSessionBindingListener#valueBound(HttpSessionBindingEvent)
-     */
-    public void valueBound(HttpSessionBindingEvent arg0) {
-        // TODO Auto-generated method stub
-    }
-
-	/**
-     * @see HttpSessionAttributeListener#attributeReplaced(HttpSessionBindingEvent)
-     */
-    public void attributeReplaced(HttpSessionBindingEvent arg0) {
-        // TODO Auto-generated method stub
     }
 
 	/**
