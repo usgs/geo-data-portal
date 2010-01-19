@@ -4,7 +4,6 @@ import gov.usgs.gdp.helper.FileHelper;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.channels.FileChannel;
@@ -12,7 +11,6 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.shapefile.ShpFiles;
@@ -25,7 +23,6 @@ import org.geotools.data.shapefile.shp.ShapefileReader;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
 public class GeoToolsFileAnalysis {
-	private static org.apache.log4j.Logger log = Logger.getLogger(GeoToolsFileAnalysis.class);
 	DbaseFileReader dbFileReader;
 	ShapefileReader shpFileReader;
 	
@@ -243,9 +240,7 @@ public class GeoToolsFileAnalysis {
 	public static ShapefileReader getShapeFileReader(String file) throws ShapefileException, MalformedURLException, IOException {
 		if (file == null) return null;
 		ShapefileReader result = null;
-			//FileChannel stream = new FileInputStream(new File(file)).getChannel();
-			//ReadableByteChannel channel = Channels.newChannel(stream);
-			//result = new ShapefileReader(stream);
+
 			result = new ShapefileReader(new ShpFiles(file), true, true, new GeometryFactory());
 		return result;
 	}

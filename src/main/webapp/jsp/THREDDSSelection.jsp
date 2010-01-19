@@ -13,6 +13,7 @@
 <jsp:useBean id="shapeFileSetBeanSubsetList" scope="session" type="java.util.ArrayList<gov.usgs.gdp.bean.ShapeFileSetBean>"  />
 <jsp:useBean id="errorBean" scope="request" class="gov.usgs.gdp.bean.MessageBean"  />
 <jsp:useBean id="messageBean" scope="request" class="gov.usgs.gdp.bean.MessageBean"  />
+
 <c:set var="process" value="/Router?location=processFiles&action=step4" />
 <c:set var="summarize" value="/Router?location=summarize" />
 <c:url var="upload" value="/Router?location=uploadFiles" />
@@ -60,14 +61,15 @@ ${head}
 				onclick="document.processFiles.action='${cont}${process}';document.processFiles.submit()" />		
 		</form>
 		Known THREDDS Servers (click): <br />
+		<jsp:useBean id="threddsServerBeanMap" scope="application" class="java.util.TreeMap"  />
 		<jsp:useBean id="threddsMap" scope="request" class="java.util.TreeMap"  /> 
-		<c:forEach var='item' items='${threddsMap}'>
+		<c:forEach var='item' items='${threddsMap}'>			
+			<c:set var="threddsServerBean" value="${threddsServerBeanMap[item.key]}" />
 			<div class="THREDDSServerSuggestions" onclick="document.getElementById('THREDDSUrlInputBox').value = '${item.value}'">
 				<ul>
-					<li><a>${item.key}</a></li>
+					<li><a>${item.key}</a> <br /> STATUS: ${threddsServerBean.active} <br /> LAST CHECKED: ${threddsServerBean.lastCheck}</li>
 				</ul>
 			</div>
-  			<!--  c:out value='Key=${item.key}, Value=${item.value}'/ -->
 		</c:forEach>
 		
 		

@@ -1,5 +1,6 @@
 package gov.usgs.gdp.servlet;
 
+import gov.usgs.gdp.bean.THREDDSServerBean;
 import gov.usgs.gdp.helper.FileHelper;
 
 import java.io.File;
@@ -31,6 +32,7 @@ public class AppInitializationServlet extends HttpServlet {
     	super.init(config);
     	log.debug("Application is starting");
     	
+
     	// Get the temp directory for the system
     	this.seperator = FileHelper.getSeparator();
     	this.tmpDir = FileHelper.getSystemTemp() + this.seperator + "GDP-APP-TEMP" + this.seperator;

@@ -31,6 +31,7 @@ public class THREDDSInfoBeanTest {
 		}
 	}
 
+	
 	@Test
 	public final void testGetTHREDDSUrlMap() {
 		Map<String, String> result = THREDDSInfoBean.getTHREDDSUrlMap();

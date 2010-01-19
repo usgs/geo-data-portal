@@ -3,7 +3,6 @@ package gov.usgs.gdp.analysis;
 import static org.junit.Assert.*;
 
 import gov.usgs.gdp.helper.THREDDSServerHelper;
-import gov.usgs.gdp.servlet.FileProcessServlet;
 
 import java.io.IOException;
 import java.net.URI;
