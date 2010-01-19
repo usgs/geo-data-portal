@@ -21,6 +21,11 @@
 	float: left;
 }
 
+#shapeFileSetDivCenter {
+	width: 50%;
+	margin-left: 50%; 	
+}
+
 #fileSetDiv {
 	width: 50%;
 	float: right;

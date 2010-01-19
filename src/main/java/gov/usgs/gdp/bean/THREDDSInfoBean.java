@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import ucar.nc2.dt.grid.GeoGrid;
+
 
 public class THREDDSInfoBean implements Serializable {
 	private String THREDDSServer;
@@ -26,7 +28,11 @@ public class THREDDSInfoBean implements Serializable {
 	private List<String> openDapDataSetNameList;
 	private List<String> openDapGridItems;
 	private List<String> openDapGridTimes;
+	private List<String> statsSummary;
+	private GeoGrid geoGrid;
 	
+
+
 	public int getFromYear() throws ParseException {
 		int result = -1;
 		
@@ -214,5 +220,20 @@ public class THREDDSInfoBean implements Serializable {
 		this.openDapGridTimes = localOpenDapGridTimes;
 	}
 
+	public GeoGrid getGeoGrid() {
+		return geoGrid;
+	}
+
+	public void setGeoGrid(GeoGrid geoGrid) {
+		this.geoGrid = geoGrid;
+	}
+
+	public List<String> getStatsSummary() {
+		return statsSummary;
+	}
+
+	public void setStatsSummary(List<String> statsSummary) {
+		this.statsSummary = statsSummary;
+	}
 
 }

@@ -438,6 +438,7 @@ public class FileProcessServlet extends HttpServlet {
                     }
 
                     List<String> simpleStats = SimpleStatistics.getStatisticsList(feature, gridDataset, slicedGrid.getVariable().getName(), timeRange);
+                    threddsInfoBean.setStatsSummary(simpleStats);
                     
                     // Create a null check here
                     VariableDS gridVar = slicedGrid.getVariable();
@@ -447,25 +448,34 @@ public class FileProcessServlet extends HttpServlet {
                     proxiedGridVar.addAttribute(new Attribute("missing_value", Float.valueOf(-999f)));
                     proxiedGridVar.setProxyReader(new ShapedGridReader(slicedGrid, geom));
 
-                    GeoGrid outputGrid =
-                            new GeoGrid(gridDataset, proxiedGridVar, (GridCoordSys) slicedGrid.getCoordinateSystem());
-
-                    // What is directory name for the files being uploaded
-                    String seperator = FileHelper.getSeparator();
-                    String userDirectory = (String) request.getSession().getAttribute("userTempDir") + seperator;
-                    File outputFile = new File(userDirectory, attributeValue + ".nc");
-
-                    outputFile.delete();
-                    outputGrid.writeFile(outputFile.toString());
-                    request.setAttribute("fileLink", outputFile.getPath());
+                    GeoGrid outputGrid = new GeoGrid(gridDataset, proxiedGridVar, (GridCoordSys) slicedGrid.getCoordinateSystem());
+                    threddsInfoBean.setGeoGrid(outputGrid);
+                    request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);
+                    forwardTo = "/jsp/showSummary.jsp";
+                    
                 } finally {
                     gridDataset.close();
                 }
-                forwardTo = "/jsp/downloadCompletedFile.jsp";
+                forwardTo = "/jsp/showSummary.jsp";
 
             }
 
+        } else if ("step8".equals(action))  {
+        	
+        	THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");
+            // What is directory name for the files being uploaded
+            String seperator = FileHelper.getSeparator();
+            String userDirectory = (String) request.getSession().getAttribute("userTempDir") + seperator;
+            GeoGrid outputGrid = threddsInfoBean.getGeoGrid();
+            ShapeFileSetBean shapeFileSetBean = shapeFileSetBeanSubsetList.get(0);
+            String attributeValue = shapeFileSetBean.getChosenFeature();
+            File outputFile = new File(userDirectory, attributeValue + ".nc");
+
+            outputFile.delete();
+            outputGrid.writeFile(outputFile.toString());
+            request.setAttribute("fileLink", outputFile.getPath());
         }
+        
         request.setAttribute("messageBean", messageBean);
         request.setAttribute("errorBean", errorBean);
         RequestDispatcher rd = request.getRequestDispatcher(forwardTo);
