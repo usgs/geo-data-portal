@@ -211,7 +211,6 @@ public class FileProcessServlet extends HttpServlet {
 	    String action = (request.getParameter("action") == null) ? "" : request.getParameter("action").toLowerCase();
 	    List<ShapeFileSetBean> shapeFileSetBeanSubsetList = (List<ShapeFileSetBean>) request.getSession().getAttribute("shapeFileSetBeanSubsetList");
 	
-	
 	    MessageBean errorBean = new MessageBean();
 	    MessageBean messageBean = new MessageBean();
 	    String forwardTo = "";
@@ -460,7 +459,14 @@ public class FileProcessServlet extends HttpServlet {
         // What is directory name for the files being uploaded
         String seperator = FileHelper.getSeparator();
         String userDirectory = (String) request.getSession().getAttribute("userTempDir") + seperator;
-        GeoGrid outputGrid = threddsInfoBean.getGeoGrid();
+        
+        GridDataset gridDataset = threddsInfoBean.getGridDataSet();
+        VariableDS proxiedGridVar = threddsInfoBean.getVariableDs();
+        GridCoordSys slicedGrid = threddsInfoBean.getGridCoordSys();
+        
+        GeoGrid outputGrid = new GeoGrid(gridDataset, proxiedGridVar, slicedGrid);
+        
+        //GeoGrid outputGrid = threddsInfoBean.getGeoGrid();
         String attributeValue = shpFileSetBean.getChosenFeature();
         File outputFile = new File(userDirectory, attributeValue + ".nc");
 
@@ -678,8 +684,12 @@ public class FileProcessServlet extends HttpServlet {
             proxiedGridVar.addAttribute(new Attribute("missing_value", Float.valueOf(-999f)));
             proxiedGridVar.setProxyReader(new ShapedGridReader(slicedGrid, geom));
 
-            GeoGrid outputGrid = new GeoGrid(gridDataset, proxiedGridVar, (GridCoordSys) slicedGrid.getCoordinateSystem());
-            threddsInfoBean.setGeoGrid(outputGrid);
+            threddsInfoBean.setGridDataSet(gridDataset);
+            threddsInfoBean.setVariableDs(proxiedGridVar);
+            threddsInfoBean.setGridCoordSys((GridCoordSys) slicedGrid.getCoordinateSystem());
+            
+            //GeoGrid outputGrid = new GeoGrid(gridDataset, proxiedGridVar, (GridCoordSys) slicedGrid.getCoordinateSystem());
+            
             request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);
             return "/jsp/showSummary.jsp";
         } finally {

@@ -14,7 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dt.grid.GeoGrid;
+import ucar.nc2.dt.grid.GridCoordSys;
+import ucar.nc2.dt.grid.GridDataset;
 
 
 public class THREDDSInfoBean implements Serializable {
@@ -30,10 +33,34 @@ public class THREDDSInfoBean implements Serializable {
 	private List<String> openDapGridItems;
 	private List<String> openDapGridTimes;
 	private List<String> statsSummary;
-	private GeoGrid geoGrid;
+	private GridDataset gridDataSet;
+	private VariableDS variableDs;
+	private GridCoordSys gridCoordSys;
 	
 	
+	public GridDataset getGridDataSet() {
+		return gridDataSet;
+	}
 
+	public void setGridDataSet(GridDataset gridDataSet) {
+		this.gridDataSet = gridDataSet;
+	}
+
+	public VariableDS getVariableDs() {
+		return variableDs;
+	}
+
+	public void setVariableDs(VariableDS variableDs) {
+		this.variableDs = variableDs;
+	}
+
+	public GridCoordSys getGridCoordSys() {
+		return gridCoordSys;
+	}
+
+	public void setGridCoordSys(GridCoordSys gridCoordSys) {
+		this.gridCoordSys = gridCoordSys;
+	}
 
 	public int getFromYear() throws ParseException {
 		int result = -1;
@@ -218,17 +245,11 @@ public class THREDDSInfoBean implements Serializable {
 		if (this.openDapGridTimes == null) this.openDapGridTimes = new ArrayList<String>();
 		return this.openDapGridTimes;
 	}
+	
 	public void setOpenDapGridTimes(List<String> localOpenDapGridTimes) {
 		this.openDapGridTimes = localOpenDapGridTimes;
 	}
 
-	public GeoGrid getGeoGrid() {
-		return geoGrid;
-	}
-
-	public void setGeoGrid(GeoGrid geoGrid) {
-		this.geoGrid = geoGrid;
-	}
 
 	public List<String> getStatsSummary() {
 		return statsSummary;
