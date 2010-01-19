@@ -8,11 +8,15 @@ package gov.usgs.gdp.analysis;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import gov.usgs.gdp.analysis.statistics.StatisticsAccumulator1D;
+import gov.usgs.gdp.servlet.FileProcessServlet;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -82,7 +86,64 @@ public class SimpleStatistics {
 
         return s;
     }
+    
+    public static List<String> getStatisticsList(SimpleFeature simpleFeature,
+            FeatureDataset featureDataset,
+            String variableName,
+            Range timeRange) throws IOException {
+    	
+    	List<String> result = new ArrayList<String>();
 
+        Geometry sfg = (Geometry)simpleFeature.getDefaultGeometry();
+        Envelope sfge = sfg.getEnvelopeInternal();
+        LatLonRect llr = new LatLonRect(
+                new LatLonPointImpl(sfge.getMinY(), sfge.getMinX()),
+                new LatLonPointImpl(sfge.getMaxY(), sfge.getMaxX()));
+
+        GridDataset gd = (GridDataset)featureDataset;
+
+        GridDatatype gdt = gd.findGridDatatype(variableName);
+        if(gdt != null) {
+            try {
+                gdt = gdt.makeSubset(timeRange, null, llr, 1, 1, 1);
+                result.add(gdt.toString());
+            } catch (InvalidRangeException ex) {
+                Logger.getLogger(SimpleStatistics.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        StatisticsAccumulator1D s = new StatisticsAccumulator1D();
+        ucar.ma2.Array array = gdt.readVolumeData(-1);
+        GridCoordSystem gcs = gdt.getCoordinateSystem();
+        dumpGridBB(gcs);
+        while(array.hasNext()) {
+            s.accumulate(array.nextDouble());
+        }
+
+        result.add(s.toString());
+        result.add(" geotools feature bounds "
+                + sfge.getMinX() + ":" + sfge.getMinY()
+                + sfge.getMaxX() + ":" + sfge.getMaxY());
+    	result.addAll(dumpGridBBToList(gcs));
+    	return result;
+    	
+    }
+
+    public static List<String> dumpGridBBToList(GridCoordSystem gcs) {
+    	 List<String> result = new ArrayList<String>();
+    	 
+    	 result.add("netcdf feature bounds");
+    	 result.add("  X min " + gcs.getXHorizAxis().getMinValue());
+    	 result.add("  X max " + gcs.getXHorizAxis().getMaxValue());
+    	 result.add("  Y min " + gcs.getYHorizAxis().getMinValue());
+    	 result.add("  Y max " + gcs.getYHorizAxis().getMaxValue());
+    	 result.add("  T min " + gcs.getTimeAxis().getMinValue());
+    	 result.add("  T max " + gcs.getTimeAxis().getMaxValue());
+    	 result.add("  D min " + gcs.getDateRange().getStart().toDateTimeStringISO());
+    	 result.add("  D max " + gcs.getDateRange().getEnd().toDateTimeStringISO());
+    	 return result;
+    }
+    
     public static void dumpGridBB(GridCoordSystem gcs) {
         StringBuffer sb = new StringBuffer("netcdf feature bounds").append('\n');
         sb.append("  X min ").append(gcs.getXHorizAxis().getMinValue()).append('\n');

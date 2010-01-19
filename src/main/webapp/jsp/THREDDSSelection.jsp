@@ -61,6 +61,9 @@ ${head}
 				onclick="document.processFiles.action='${cont}${process}';document.processFiles.submit()" />		
 		</form>
 		Known THREDDS Servers (click): <br />
+		
+		
+		
 		<jsp:useBean id="threddsServerBeanMap" scope="application" class="java.util.TreeMap"  />
 		<jsp:useBean id="threddsMap" scope="request" class="java.util.TreeMap"  /> 
 		<c:forEach var='item' items='${threddsMap}'>			
@@ -84,7 +87,10 @@ ${head}
 				</ul>
 			</div>
 		</c:forEach>
-		
+		<br />
+		<img class="green_ball_status" src="${cont}/images/green-ball.gif" alt="Active" title="Active"/> = Active
+		<br />
+		<img class="red_ball_status" src="${cont}/images/red-ball.gif"  alt="Inactive" title="Inactive"/> = Inactive
 		
 <div id="errorText">
 	<ul>

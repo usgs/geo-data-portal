@@ -351,10 +351,8 @@ public class FileProcessServlet extends HttpServlet {
             String toTime = request.getParameter("timeToSelection");
             
             DateFormat df = new SimpleDateFormat("MM-dd-yyyy");
-            @SuppressWarnings("unused")
-			Date toDate = null;
-            @SuppressWarnings("unused")
-			Date fromDate = null;
+			Date toDate = new Date();
+			Date fromDate = new Date();
             boolean parsedDates = false;
             try {
 				toDate = df.parse(toTime);
@@ -414,14 +412,12 @@ public class FileProcessServlet extends HttpServlet {
                         CoordinateAxis1DTime timeAxis = grid.getCoordinateSystem().getTimeAxis1D();
                         int timeIndexMin = timeAxis.findTimeIndexFromDate(fromDate);
                         int timeIndexMax = timeAxis.findTimeIndexFromDate(toDate);
-//                        timeRange = new Range(timeIndexMin, timeIndexMax);
-                        timeRange = new Range(0, 99);
+                        timeRange = new Range(timeIndexMin, timeIndexMax);
+                        //timeRange = new Range(0, 99);
                     } catch (NumberFormatException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                       log.debug(e.getMessage());
                     } catch (InvalidRangeException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                    	log.debug(e.getMessage());
                     }
 
                     Envelope envelope = geom.getEnvelopeInternal();
@@ -441,8 +437,8 @@ public class FileProcessServlet extends HttpServlet {
                         return;
                     }
 
-                    SimpleStatistics.calculate(feature, gridDataset, slicedGrid.getVariable().getName(), timeRange);
-
+                    List<String> simpleStats = SimpleStatistics.getStatisticsList(feature, gridDataset, slicedGrid.getVariable().getName(), timeRange);
+                    
                     // Create a null check here
                     VariableDS gridVar = slicedGrid.getVariable();
                     VariableDS proxiedGridVar = new VariableDS(null, gridVar, true);
