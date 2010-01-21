@@ -205,11 +205,9 @@ public class FileProcessServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	    String action = (request.getParameter("action") == null) ? "" : request.getParameter("action").toLowerCase();
-	    List<ShapeFileSetBean> shapeFileSetBeanSubsetList = (List<ShapeFileSetBean>) request.getSession().getAttribute("shapeFileSetBeanSubsetList");
 	
 	    MessageBean errorBean = new MessageBean();
 	    MessageBean messageBean = new MessageBean();
@@ -303,7 +301,8 @@ public class FileProcessServlet extends HttpServlet {
         super();
     }
 
-    private ShapeFileSetBean getShapeFilesSetBean(String fileSetSelection, List<ShapeFileSetBean> shapeFileSetBeanList) {
+    @SuppressWarnings("unused")
+	private ShapeFileSetBean getShapeFilesSetBean(String fileSetSelection, List<ShapeFileSetBean> shapeFileSetBeanList) {
         ShapeFileSetBean result = null;
 
         for (ShapeFileSetBean shapeFileSetBean : shapeFileSetBeanList) {
@@ -315,6 +314,7 @@ public class FileProcessServlet extends HttpServlet {
         return result;
     }
 
+	@SuppressWarnings("unused")
 	private List<ShapeFileSetBean> getShapeFilesSetSubList(String[] checkboxItems, List<ShapeFileSetBean> shapeFileSetBeanList) {
         List<ShapeFileSetBean> result = new ArrayList<ShapeFileSetBean>();
 
@@ -335,6 +335,7 @@ public class FileProcessServlet extends HttpServlet {
      * @param request
      * @return
      */
+	@SuppressWarnings("unchecked")
 	private String populateAttributeList(HttpServletRequest request) {
     	String fileSelection = request.getParameter("fileName");
         List<ShapeFileSetBean> shapeFileSetBeanList = (List<ShapeFileSetBean>) request.getSession().getAttribute("shapeFileSetBeanList");
