@@ -1,16 +1,24 @@
 package gov.usgs.gdp.servlet;
 
+import gov.usgs.gdp.bean.ErrorBean;
 import gov.usgs.gdp.bean.FilesBean;
 import gov.usgs.gdp.bean.MessageBean;
 import gov.usgs.gdp.bean.ShapeFileSetBean;
 import gov.usgs.gdp.helper.FileHelper;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -45,6 +53,17 @@ public class RouterServlet extends HttpServlet {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		Map<String, String> requestParameters = request.getParameterMap();
+		
+		String xmlOutput = "";
+		
+		if (!requestParameters.containsKey("command")) {
+			ErrorBean errorBean = new ErrorBean("A Command Was Not Supplied With The Request", ErrorBean.ERR_NO_COMMAND);
+			xmlOutput = errorBean.toXml();
+			sendXml(xmlOutput, response);
+			return;
+		}
 		
 		// Check for stale session
 		String tomcatStarted = System.getProperty("tomcatStarted");
@@ -120,5 +139,26 @@ public class RouterServlet extends HttpServlet {
 		RequestDispatcher rd = request.getRequestDispatcher(forwardTo);
 		rd.forward(request, response);
 	}
+
+	private void sendXml(String xmlOutput, HttpServletResponse response) throws IOException {
+		 ServletOutputStream stream = null;
+		 BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(xmlOutput.getBytes()));
+		 try {
+			stream = response.getOutputStream();
+			response.setContentType("text/xml");
+			response.setContentLength((int) xmlOutput.length());
+			int readBytes = 0;
+			while ((readBytes = bis.read()) != -1) {
+				stream.write(readBytes);
+			}
+		} finally {
+			if (stream != null) stream.close();
+			if (bis != null) bis.close();
+		}
+		
+	}
+
+	
+
 
 }

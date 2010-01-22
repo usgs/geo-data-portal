@@ -45,7 +45,7 @@ public class PropertyFactory {
 		if (properties == null) {
 			log.debug("Loading properties file");
 			try {	
-			loadProperties();
+				loadProperties();
 			} catch (RuntimeException e) {
 				log.error(e.getMessage());
 			}

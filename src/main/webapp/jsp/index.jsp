@@ -9,8 +9,9 @@
 <jsp:useBean id="errorBean" scope="request" class="gov.usgs.gdp.bean.MessageBean"  />
 <jsp:useBean id="messageBean" scope="request" class="gov.usgs.gdp.bean.MessageBean"  />
 
-<c:url var="upload" value="/Router?location=uploadFiles" />
-<c:url var="filesProcessing" value="/Router?location=filesProcessing"/>
+<c:url var="upload" value="/Router?action=uploadFiles" />
+<c:url var="filesProcessing" value="/Router?action=filesProcessing"/>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>

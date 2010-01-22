@@ -68,13 +68,13 @@ public class AppInitializationServlet extends HttpServlet {
 				File sampleFiles = new File(sampleFileLocation.toURI());
 				boolean filesCopied = false;
 				try {
-					filesCopied = FileHelper.copyFileToFile(sampleFiles, this.applicationTempDir + this.seperator);
+					filesCopied = FileHelper.copyFileToFile(sampleFiles, this.applicationTempDir);
 				} catch (IOException e) {
 					log.debug(e.getMessage());
 				}
 				
 				if (filesCopied) {
-					log.debug("Example files saved to: " + this.applicationTempDir + this.seperator + "Sample_Files/");					
+					log.debug("Example files saved to: " + this.applicationTempDir + "Sample_Files/");					
 				} else {
 					log.debug("Sample files were not written to the application temp directory");
 					log.debug("These files will not be available for processing.");
@@ -96,7 +96,7 @@ public class AppInitializationServlet extends HttpServlet {
 		
 		Date currentDate = new Date();
 	    String currentMilliseconds = Long.toString(currentDate.getTime());
-	    result = this.tmpDir + FileHelper.getSeparator() + currentMilliseconds + FileHelper.getSeparator();
+	    result = this.tmpDir + currentMilliseconds + FileHelper.getSeparator();
 		
 		return result;
 	}
