@@ -43,7 +43,7 @@ public class NetCDFUtilityTest {
 			InvCatalogFactory factory = new InvCatalogFactory("default", true);
 	        InvCatalog catalog = factory.readXML(catalogURI);
 	        StringBuilder buff = new StringBuilder();
-	        assertTrue(buff.toString(),catalog.check(buff));
+	        assertTrue(buff.toString(), catalog.check(buff));
 	        
 	        assertNull(NetCDFUtility.getOpendapResourcesAux(null));
 	        
