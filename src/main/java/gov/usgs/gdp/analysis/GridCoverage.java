@@ -59,6 +59,8 @@ public class GridCoverage {
         Geometry sfg = (Geometry)simpleFeature.getDefaultGeometry();
         sfg = sfg.getEnvelope();
         Envelope sfge = sfg.getEnvelopeInternal();
+        
+        // llr is never read...
         LatLonRect llr = new LatLonRect(
                 new LatLonPointImpl(sfge.getMinY(), sfge.getMinX()),
                 new LatLonPointImpl(sfge.getMaxY(), sfge.getMaxX()));

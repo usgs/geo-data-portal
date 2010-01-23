@@ -55,7 +55,6 @@ public class THREDDSCheckServlet extends HttpServlet {
 			setParamConfig(paramConfig);
 		}
 		
-		@SuppressWarnings("unchecked")
 		@Override
 		public void run() {
 			Map<String, THREDDSServerBean> threddsServerBeanMap = (Map<String, THREDDSServerBean>) paramConfig.getServletContext().getAttribute("threddsServerBeanMap");
@@ -67,6 +66,12 @@ public class THREDDSCheckServlet extends HttpServlet {
 			paramConfig.getServletContext().setAttribute("threddsServerBeanMap", threddsServerBeanMap);
 		}
 
+		/**
+		 * Check the Map of servers to see if they're up or down
+		 * 
+		 * @param threddsServerBeanMap
+		 * @return
+		 */
 		private Map<String, THREDDSServerBean> checkServers(Map<String, THREDDSServerBean> threddsServerBeanMap) {
 			Map<String, THREDDSServerBean> result = new TreeMap<String, THREDDSServerBean>();
 			
@@ -85,9 +90,9 @@ public class THREDDSCheckServlet extends HttpServlet {
 				try {
 					serverIsUp = THREDDSServerHelper.isServerReachable(host, port, timeout);
 				} catch (UnknownHostException e) {
-					log.debug(e.getMessage());
+					log.debug("Host " + host + ":" + port + " could not be reached. Reason: " + e.getMessage() + "\n\tBeing labeled as down. Will re-check in 5 minutes.");
 				} catch (IOException e) {
-					log.debug(e.getMessage());
+					log.debug("Host " + host + ":" + port + " could not be reached. Reason: " + e.getMessage() + "\n\tBeing labeled as down. Will re-check in 5 minutes.");
 				}
 				threddsServerBean.setActive(serverIsUp);
 				result.put(key, threddsServerBean);

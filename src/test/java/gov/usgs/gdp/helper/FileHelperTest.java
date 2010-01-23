@@ -1,4 +1,4 @@
-package gov.usgs.gdp.io;
+package gov.usgs.gdp.helper;
 
 import static org.junit.Assert.*;
 

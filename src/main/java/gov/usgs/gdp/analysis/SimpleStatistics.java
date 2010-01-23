@@ -8,16 +8,13 @@ package gov.usgs.gdp.analysis;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import gov.usgs.gdp.analysis.statistics.StatisticsAccumulator1D;
-import gov.usgs.gdp.servlet.FileProcessServlet;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geotools.data.FeatureSource;
@@ -30,7 +27,6 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
-import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
@@ -139,8 +135,8 @@ public class SimpleStatistics {
         dumpGridBB(gcs);
         while(array.hasNext()) {
             double value = array.nextDouble();
-            // NaN / missing value check
-            if (value == value) {
+            // NaN / missing value check            
+            if (value == value) { // Comparing expression with itself -i.s.
                 s.accumulate(value);
             }
         }

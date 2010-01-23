@@ -49,7 +49,7 @@ public class FileHelper {
 	 */
 	public  static  boolean  createDir(String directory) {
 		boolean result = false;
-		result = new File(directory).mkdir();
+		result = new File(directory).mkdirs();
 		return result;
 	}
 	

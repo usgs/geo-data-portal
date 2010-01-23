@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.dt.grid.GridDataset;
 
