@@ -62,7 +62,7 @@ public class AppInitializationServlet extends HttpServlet {
     	// Place example files in temporary directory 
     	try {
     		ClassLoader cl = Thread.currentThread().getContextClassLoader(); 
-			URL sampleFileLocation = cl.getResource("Sample_Files/");
+			URL sampleFileLocation = cl.getResource("Sample_Files" + FileHelper.getSeparator());
 			if (sampleFileLocation != null) {
 				log.debug("Saving example files to temp directory.");
 				File sampleFiles = new File(sampleFileLocation.toURI());

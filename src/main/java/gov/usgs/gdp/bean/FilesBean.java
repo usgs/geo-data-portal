@@ -1,5 +1,7 @@
 package gov.usgs.gdp.bean;
 
+import gov.usgs.gdp.helper.FileHelper;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -9,13 +11,22 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
+
+@XStreamAlias("file-set")
 public class FilesBean implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private Collection<File> files;
+
+	@XStreamAlias("file-set-name")
+	@XStreamAsAttribute
 	private String name;
+	private static final long serialVersionUID = 1L;
+	
+	@XStreamAlias("files")
+	@XStreamImplicit
+	private Collection<File> files;
+	
 	
 	public ShapeFileSetBean getShapeFileSetBean() {
 		ShapeFileSetBean result = new ShapeFileSetBean();
@@ -46,6 +57,10 @@ public class FilesBean implements Serializable {
 
 	public void setName(String localName) {
 		this.name = localName;
+	}
+	
+	public static List<FilesBean> getFilesBeanSetList(String directory, boolean recursive) {
+		return FilesBean.getFilesBeanSetList(FileHelper.getFileCollection(directory, recursive));
 	}
 	
 	/**

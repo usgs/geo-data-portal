@@ -1,17 +1,22 @@
 package gov.usgs.gdp.servlet;
 
+import gov.usgs.gdp.bean.ErrorBean;
 import gov.usgs.gdp.bean.MessageBean;
 import gov.usgs.gdp.bean.FilesBean;
+import gov.usgs.gdp.helper.CookieHelper;
 import gov.usgs.gdp.helper.FileHelper;
+import gov.usgs.gdp.helper.PropertyFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -52,12 +57,45 @@ public class UploadFilesServlet extends HttpServlet {
 	@Override
 	@SuppressWarnings("unchecked")
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		// Pull in parameters
-		String action 	= (request.getParameter("action") == null) ? "" : request.getParameter("action").toLowerCase();
+		String xmlOutput = "";
+		String command = (String) request.getSession().getAttribute("command");
+		Cookie userDirectory = CookieHelper.getCookie(request, "userDirectory");
+
+		if ("upload".equals(command)) {
+			// Create the user directory.
+			if (userDirectory == null) {
+				userDirectory = createUserDirectory();
+				if (userDirectory == null) {
+					ErrorBean error = new ErrorBean(ErrorBean.ERR_USER_DIR_CREATE);
+					xmlOutput = error.toXml();
+					RouterServlet.sendXml(xmlOutput, response);
+					return;
+				}
+			}
+			
+			boolean filesUploaded;
+			try {
+				filesUploaded = uploadFiles(request, userDirectory.getValue());
+			} catch (Exception e) {
+				ErrorBean error = new ErrorBean(ErrorBean.ERR_FILE_UPLOAD);
+				error.setException(e);
+				xmlOutput = error.toXml();
+				RouterServlet.sendXml(xmlOutput, response);
+				return;
+			}
+			if (filesUploaded) {
+				log.debug("Files successfully uploaded.");
+//					messageBean.addMessage("File(s) successfully uploaded.");
+			} else {
+				ErrorBean error = new ErrorBean(ErrorBean.ERR_FILE_UPLOAD);
+				xmlOutput = error.toXml();
+				RouterServlet.sendXml(xmlOutput, response);
+				return;
+			}
+		}
 		
 		// What is directory name for the files being uploaded
-	    String userDirectory = (String) request.getSession().getAttribute("userTempDir");
+	    //String userDirectory = (String) request.getSession().getAttribute("userTempDir");
 		
 	    // Pull in the uploaded Files bean from the user's session
 	    List<FilesBean> uploadedFilesBean = 
@@ -66,7 +104,7 @@ public class UploadFilesServlet extends HttpServlet {
 	    
 	    MessageBean errorBean = new MessageBean();
 	    MessageBean messageBean = new MessageBean();
-	    
+	    /*
 	    if ("delete".equals(action)) { // Delete Files
 	    	String filename = (request.getParameter("file") == null) ? "" : request.getParameter("file");
 	    	if ("".equals(filename) || filename == null) {
@@ -110,7 +148,7 @@ public class UploadFilesServlet extends HttpServlet {
 	    // Place the bean in the user's session
 		request.getSession().setAttribute("uploadedFilesBeanList", uploadedFilesBean);
 		request.setAttribute("errorBean", errorBean);
-		request.setAttribute("messageBean", messageBean);
+		request.setAttribute("messageBean", messageBean);*/
 		
 		// Away we go		
 		RequestDispatcher rd = request.getRequestDispatcher("/jsp/fileUpload.jsp");
@@ -135,15 +173,19 @@ public class UploadFilesServlet extends HttpServlet {
 	 * @param request
 	 * @param directory
 	 * @return
+	 * @throws Exception 
 	 */
-	@SuppressWarnings("unchecked")
-	private boolean uploadFiles(HttpServletRequest request, String directory) throws Exception {
+	private boolean uploadFiles(HttpServletRequest request, String uploadDirectory) throws Exception{
+		log.debug("User uploading file(s).");
+				
 		boolean result = false;
 		
 		// Utility method that determines whether the request contains multipart content (files)
-		// true if the request is multipart; false otherwise.
 		boolean isMultiPart = ServletFileUpload.isMultipartContent(request);
-		if (!isMultiPart) return false;
+		if (!isMultiPart) {
+			log.debug("ServletFileUpload.isMultipartContent(request) was false. Could not upload files.");
+			return false;
+		}
 		
 		// Create a factory for disk-based file items
 		FileItemFactory factory = new DiskFileItemFactory();
@@ -159,12 +201,37 @@ public class UploadFilesServlet extends HttpServlet {
     		items = (List<FileItem>) interimItems;
     	}
 		
-		result = FileHelper.saveFileItems(directory, items);
+		result = FileHelper.saveFileItems(uploadDirectory, items);
 		
 		return result;
 	}
 
-	
-
-
+	private Cookie createUserDirectory() {
+		Cookie result = null;
+		boolean wasCreated = false;
+		String applicationTempDir = System.getProperty("applicationTempDir");
+        String seperator = FileHelper.getSeparator();
+        String userSubDir = Long.toString(new Date().getTime());
+        String userTempDir = applicationTempDir + seperator + userSubDir;
+        
+        wasCreated = FileHelper.createDir(userTempDir);
+        if (wasCreated) {
+        	log.debug("User subdirectory created at: " + userTempDir);
+			String cookieDaysString = PropertyFactory.getProperty("cookie.lifespan");
+			int cookieHours = 0;
+			try {
+				cookieHours = Integer.parseInt(cookieDaysString);
+			} catch (NumberFormatException e) {
+				log.debug("Properties did not contain a value for the amount of days a cookie is set for. (\"cookie.lifespan\") Using: 2");
+				cookieHours = CookieHelper.ONE_HOUR * 48;
+			}
+			result = new Cookie("userDirectory", userTempDir);
+			result.setMaxAge(cookieHours);
+    		return result;
+        }
+        
+    	log.debug("User subdirectory could not be created at: " + userTempDir);
+    	log.debug("User will be unable to upload files for this session.");
+    	return null;
+	}
 }

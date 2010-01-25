@@ -2,32 +2,55 @@ package gov.usgs.gdp.bean;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import org.geotools.data.FeatureReader;
 
-import org.geotools.data.FeatureSource;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
-import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeType;
 
-public class ShapeFileSetBean implements Serializable {
-	private File projectionFile;
-	private File shapeFile;
-	private File dbfFile;
-	private File shapeFileIndexFile;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
+
+@XStreamAlias("shape-set")
+public class ShapeFileSetBean {
+	
+	@XStreamAlias("shape-set-name")
+	@XStreamAsAttribute
 	private String name;
+	
+	@XStreamAlias("prj-file")
+	private File projectionFile;
+	
+	@XStreamAlias("shp-file")
+	private File shapeFile;
+	
+	@XStreamAlias("db-file")
+	private File dbfFile;
+	
+	@XStreamAlias("idx-file")
+	private File shapeFileIndexFile;
+	
+	@XStreamAlias("attributes")
+	@XStreamImplicit
 	private List<String> attributeList;
+	
+	@XStreamAlias("features")
+	@XStreamImplicit
 	private List<String> featureList;
+	
+	@XStreamOmitField
 	private String chosenDataset;
+	@XStreamOmitField
 	private String chosenAttribute;
+	@XStreamOmitField
 	private String chosenFeature;
 
 

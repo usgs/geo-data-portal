@@ -59,9 +59,24 @@ public class RouterServlet extends HttpServlet {
 		String xmlOutput = "";
 		
 		if (!requestParameters.containsKey("command")) {
-			ErrorBean errorBean = new ErrorBean("A Command Was Not Supplied With The Request", ErrorBean.ERR_NO_COMMAND);
+			ErrorBean errorBean = new ErrorBean(ErrorBean.ERR_NO_COMMAND);
 			xmlOutput = errorBean.toXml();
-			sendXml(xmlOutput, response);
+			RouterServlet.sendXml(xmlOutput, response);
+			return;
+		}
+		
+		String command = request.getParameter("command");
+		if ("upload".equals(command)) {
+			// Forward the user to their destination
+			RequestDispatcher rd = request.getRequestDispatcher("/UploadFilesServlet?command=upload");
+			rd.forward(request, response);
+			return;
+		}
+		
+		if ("listfiles".equals(command)) {
+			// Forward the user to their destination
+			RequestDispatcher rd = request.getRequestDispatcher("/FileSelectionServlet?command=listfiles");
+			rd.forward(request, response);
 			return;
 		}
 		
@@ -140,20 +155,20 @@ public class RouterServlet extends HttpServlet {
 		rd.forward(request, response);
 	}
 
-	private void sendXml(String xmlOutput, HttpServletResponse response) throws IOException {
+	public static void sendXml(String xmlOutput, HttpServletResponse response) throws IOException {
 		 ServletOutputStream stream = null;
 		 BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(xmlOutput.getBytes()));
 		 try {
 			stream = response.getOutputStream();
 			response.setContentType("text/xml");
-			response.setContentLength((int) xmlOutput.length());
+			response.setContentLength(xmlOutput.length());
 			int readBytes = 0;
 			while ((readBytes = bis.read()) != -1) {
 				stream.write(readBytes);
 			}
 		} finally {
 			if (stream != null) stream.close();
-			if (bis != null) bis.close();
+			bis.close();
 		}
 		
 	}

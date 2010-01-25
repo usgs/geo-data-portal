@@ -38,16 +38,13 @@ public class ShapeFileSetBeanTest {
 
     @Before
     public void setUp() throws Exception {
-        this.tempDir = System.getProperty("java.io.tmpdir");
-
-        if (!(this.tempDir.endsWith("/") || this.tempDir.endsWith("\\"))) {
-            this.tempDir = this.tempDir + System.getProperty("file.separator");
-        }
-        String systemTempDir = System.getProperty("java.io.tmpdir");
-        this.seperator = java.io.File.separator;
-        String currentTime = Long.toString((new Date()).getTime());
-        this.tempDir = systemTempDir + this.seperator + currentTime;
-        (new File(this.tempDir)).mkdir();
+		this.tempDir = FileHelper.getSystemTemp() 
+		+ this.seperator 
+		+ "GDP-APP-TEMP" 
+		+ this.seperator
+		+ "testing-feel-free-to-delete"
+		+ this.seperator;
+		(new File(this.tempDir)).mkdir();
 
         // Copy example files
         ClassLoader cl = Thread.currentThread().getContextClassLoader();

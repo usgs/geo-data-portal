@@ -39,4 +39,19 @@ public class ErrorBeanTest {
 		assertNotNull(result);
 	}
 
+	@Test
+	public void testInitializeWithInteger() {
+		ErrorBean errBean = new ErrorBean(Integer.valueOf(0));
+		assertNotNull(errBean.getErrorMessage());
+		assertEquals(errBean.getErrorMessage(), "No Command Has Been Provided - To list all available commands, use command=commandlist");
+	}
+	
+	@Test
+	public void testInitializeWithIntegerXmlOutput() {
+		ErrorBean errBean = new ErrorBean(Integer.valueOf(0));
+		assertNotNull(errBean.getErrorMessage());
+		assertEquals(errBean.getErrorMessage(), "No Command Has Been Provided - To list all available commands, use command=commandlist");
+		String result = errBean.toXml();
+		assertNotNull(result);
+	}
 }

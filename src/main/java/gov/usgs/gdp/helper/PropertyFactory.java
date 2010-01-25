@@ -1,7 +1,9 @@
 package gov.usgs.gdp.helper;
 
 
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Properties;
 import org.apache.log4j.Logger;
 
@@ -43,7 +45,11 @@ public class PropertyFactory {
 	 */
 	static public String getProperty(String key) {
 		if (properties == null) {
-			log.debug("Loading properties file");
+			try {
+				log.debug("Loading properties file");
+			} catch (NullPointerException e) {
+				// Do nothing
+			}
 			try {	
 				loadProperties();
 			} catch (RuntimeException e) {
@@ -84,4 +90,17 @@ public class PropertyFactory {
 		}
 	}
 
+	public static List<String> getValueList(String key) {
+		List<String> result = new ArrayList<String>();
+		int index = 0;
+		String valueResult = PropertyFactory.getProperty(key + "." + index);
+		
+		while (!"".equals(valueResult)) {
+			index++;
+			result.add(valueResult);
+			valueResult = PropertyFactory.getProperty(key + "." + index);
+		}
+		
+		return result;
+	}
 }

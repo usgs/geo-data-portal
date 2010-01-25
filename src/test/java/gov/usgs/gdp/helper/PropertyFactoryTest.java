@@ -2,6 +2,8 @@ package gov.usgs.gdp.helper;
 
 import static org.junit.Assert.*;
 import java.util.Enumeration;
+import java.util.List;
+
 import org.junit.Test;
 
 public class PropertyFactoryTest {
@@ -31,4 +33,11 @@ public class PropertyFactoryTest {
 		assertEquals("...", result);
 	}
 
+	@Test
+	public final void testGetValueList() {
+		List<String> result = null;
+		result = PropertyFactory.getValueList("thredds.url");
+		assertNotNull(result);
+		assertTrue(result.size() > 1);
+	}
 }
