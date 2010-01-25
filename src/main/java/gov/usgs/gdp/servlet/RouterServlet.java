@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
 
 /**
@@ -57,6 +58,12 @@ public class RouterServlet extends HttpServlet {
 		Map<String, String> requestParameters = request.getParameterMap();
 		
 		String xmlOutput = "";
+		if (ServletFileUpload.isMultipartContent(request)) {
+			// User is uploading files...
+			RequestDispatcher rd = request.getRequestDispatcher("/UploadFilesServlet?command=upload");
+			rd.forward(request, response);
+			return;
+		}
 		
 		if (!requestParameters.containsKey("command")) {
 			ErrorBean errorBean = new ErrorBean(ErrorBean.ERR_NO_COMMAND);
@@ -66,15 +73,9 @@ public class RouterServlet extends HttpServlet {
 		}
 		
 		String command = request.getParameter("command");
-		if ("upload".equals(command)) {
-			// Forward the user to their destination
-			RequestDispatcher rd = request.getRequestDispatcher("/UploadFilesServlet?command=upload");
-			rd.forward(request, response);
-			return;
-		}
 		
 		if ("listfiles".equals(command)) {
-			// Forward the user to their destination
+			// Forward the user to their destination						
 			RequestDispatcher rd = request.getRequestDispatcher("/FileSelectionServlet?command=listfiles");
 			rd.forward(request, response);
 			return;
@@ -155,17 +156,20 @@ public class RouterServlet extends HttpServlet {
 		rd.forward(request, response);
 	}
 
-	public static void sendXml(String xmlOutput, HttpServletResponse response) throws IOException {
+	public static void sendXml(String xml, HttpServletResponse response) throws IOException {
+		 String xmlHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+		 xml = xmlHeader + xml;
 		 ServletOutputStream stream = null;
-		 BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(xmlOutput.getBytes()));
+		 BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(xml.getBytes()));
 		 try {
 			stream = response.getOutputStream();
 			response.setContentType("text/xml");
-			response.setContentLength(xmlOutput.length());
+			response.setContentLength(xml.length());
 			int readBytes = 0;
 			while ((readBytes = bis.read()) != -1) {
 				stream.write(readBytes);
 			}
+			stream.flush();
 		} finally {
 			if (stream != null) stream.close();
 			bis.close();

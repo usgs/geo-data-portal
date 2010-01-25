@@ -25,7 +25,6 @@ public class AvailableFilesBean {
 		XStream xstream = new XStream();
 		xstream.processAnnotations(AvailableFilesBean.class);
 		StringBuffer sb = new StringBuffer();
-		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 		sb.append(xstream.toXML(this));
 		result = sb.toString();
 		return result;

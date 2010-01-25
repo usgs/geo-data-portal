@@ -58,12 +58,12 @@ public class UploadFilesServlet extends HttpServlet {
 	@SuppressWarnings("unchecked")
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String xmlOutput = "";
-		String command = (String) request.getSession().getAttribute("command");
+		String command = (String) request.getParameter("command");
 		Cookie userDirectory = CookieHelper.getCookie(request, "userDirectory");
 
 		if ("upload".equals(command)) {
 			// Create the user directory.
-			if (userDirectory == null) {
+			if (userDirectory == null || !FileHelper.doesDirectoryOrFileExist(userDirectory.getValue())) {
 				userDirectory = createUserDirectory();
 				if (userDirectory == null) {
 					ErrorBean error = new ErrorBean(ErrorBean.ERR_USER_DIR_CREATE);
@@ -73,7 +73,7 @@ public class UploadFilesServlet extends HttpServlet {
 				}
 			}
 			
-			boolean filesUploaded;
+			boolean filesUploaded = false;
 			try {
 				filesUploaded = uploadFiles(request, userDirectory.getValue());
 			} catch (Exception e) {
@@ -85,7 +85,14 @@ public class UploadFilesServlet extends HttpServlet {
 			}
 			if (filesUploaded) {
 				log.debug("Files successfully uploaded.");
-//					messageBean.addMessage("File(s) successfully uploaded.");
+				response.addCookie(userDirectory);
+				/*List<FilesBean> filesBeanList = FilesBean.getFilesBeanSetList(System.getProperty("applicationTempDir"), userDirectory.getValue());
+				for (FilesBean filesBean : filesBeanList) {
+					xmlOutput = xmlOutput + filesBean.toXml();
+				}
+				RouterServlet.sendXml(xmlOutput, response);*/
+				RequestDispatcher rd = request.getRequestDispatcher("/FileSelectionServlet?command=listfiles");
+				rd.forward(request, response);
 			} else {
 				ErrorBean error = new ErrorBean(ErrorBean.ERR_FILE_UPLOAD);
 				xmlOutput = error.toXml();
@@ -94,16 +101,18 @@ public class UploadFilesServlet extends HttpServlet {
 			}
 		}
 		
+		
+		
 		// What is directory name for the files being uploaded
 	    //String userDirectory = (String) request.getSession().getAttribute("userTempDir");
 		
 	    // Pull in the uploaded Files bean from the user's session
-	    List<FilesBean> uploadedFilesBean = 
+	    /*List<FilesBean> uploadedFilesBean = 
 	    	(request.getSession().getAttribute("uploadedFilesBeanList") == null) 
 	    	? new ArrayList<FilesBean>() : (List<FilesBean>) request.getSession().getAttribute("uploadedFilesBean");
 	    
 	    MessageBean errorBean = new MessageBean();
-	    MessageBean messageBean = new MessageBean();
+	    MessageBean messageBean = new MessageBean();*/
 	    /*
 	    if ("delete".equals(action)) { // Delete Files
 	    	String filename = (request.getParameter("file") == null) ? "" : request.getParameter("file");
@@ -151,8 +160,8 @@ public class UploadFilesServlet extends HttpServlet {
 		request.setAttribute("messageBean", messageBean);*/
 		
 		// Away we go		
-		RequestDispatcher rd = request.getRequestDispatcher("/jsp/fileUpload.jsp");
-		rd.forward(request, response);
+		/*RequestDispatcher rd = request.getRequestDispatcher("/jsp/fileUpload.jsp");
+		rd.forward(request, response);*/
 		
 	}
 

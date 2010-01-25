@@ -44,10 +44,13 @@ public class FileSelectionServlet extends HttpServlet {
 
 		if ("listfiles".equals(command)) {
 			String xmlReply = "";
+			
+			// 
 			Cookie userDirectoryCookie = CookieHelper.getCookie(request, "userDirectory");
 			String userDirectory = "";
 			if (userDirectoryCookie != null) {
-				userDirectoryCookie.getValue();
+				userDirectory = userDirectoryCookie.getValue();
+				
 			}
 			String appTempDir = System.getProperty("applicationTempDir");
 			AvailableFilesBean afb = AvailableFilesBean.getAvailableFilesBean(appTempDir, userDirectory);
