@@ -2,6 +2,8 @@ package gov.usgs.gdp.servlet;
 
 import gov.usgs.gdp.bean.AvailableFilesBean;
 import gov.usgs.gdp.bean.ErrorBean;
+import gov.usgs.gdp.bean.MessageBean;
+import gov.usgs.gdp.bean.XmlReplyBean;
 import gov.usgs.gdp.helper.CookieHelper;
 
 import java.io.IOException;
@@ -41,11 +43,8 @@ public class FileSelectionServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String command = (request.getParameter("command") == null) ? "" : request.getParameter("command");
-
+		XmlReplyBean xmlReply = null;
 		if ("listfiles".equals(command)) {
-			String xmlReply = "";
-			
-			// 
 			Cookie userDirectoryCookie = CookieHelper.getCookie(request, "userDirectory");
 			String userDirectory = "";
 			if (userDirectoryCookie != null) {
@@ -60,13 +59,12 @@ public class FileSelectionServlet extends HttpServlet {
 					|| afb.getExampleFileList().isEmpty()
 					|| afb.getShapeSetList() == null
 					|| afb.getShapeSetList().isEmpty()) {
-				ErrorBean error = new ErrorBean(2);
-				xmlReply = error.toXml();
+				xmlReply = new XmlReplyBean(2, new MessageBean("Could not find any files to work with."));
 				RouterServlet.sendXml(xmlReply, response);
 				return;
 			}
 			
-			xmlReply = afb.toXml();
+			xmlReply = new XmlReplyBean(1, afb);
 			RouterServlet.sendXml(xmlReply, response);
 			return;
 			

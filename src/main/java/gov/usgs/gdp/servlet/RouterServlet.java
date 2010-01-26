@@ -1,18 +1,17 @@
 package gov.usgs.gdp.servlet;
 
+import gov.usgs.gdp.bean.AckBean;
 import gov.usgs.gdp.bean.ErrorBean;
 import gov.usgs.gdp.bean.FilesBean;
 import gov.usgs.gdp.bean.MessageBean;
 import gov.usgs.gdp.bean.ShapeFileSetBean;
+import gov.usgs.gdp.bean.XmlReplyBean;
 import gov.usgs.gdp.helper.FileHelper;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -67,8 +66,8 @@ public class RouterServlet extends HttpServlet {
 		
 		if (!requestParameters.containsKey("command")) {
 			ErrorBean errorBean = new ErrorBean(ErrorBean.ERR_NO_COMMAND);
-			xmlOutput = errorBean.toXml();
-			RouterServlet.sendXml(xmlOutput, response);
+			XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, errorBean);
+			RouterServlet.sendXml(xmlReply, response);
 			return;
 		}
 		
@@ -156,14 +155,14 @@ public class RouterServlet extends HttpServlet {
 		rd.forward(request, response);
 	}
 
-	public static void sendXml(String xml, HttpServletResponse response) throws IOException {
-		 String xmlHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-		 xml = xmlHeader + xml;
+	public static void sendXml(XmlReplyBean xmlReply, HttpServletResponse response) throws IOException {
+		 String xml = xmlReply.toXml();
 		 ServletOutputStream stream = null;
 		 BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(xml.getBytes()));
 		 try {
 			stream = response.getOutputStream();
 			response.setContentType("text/xml");
+			response.setCharacterEncoding("utf-8");
 			response.setContentLength(xml.length());
 			int readBytes = 0;
 			while ((readBytes = bis.read()) != -1) {

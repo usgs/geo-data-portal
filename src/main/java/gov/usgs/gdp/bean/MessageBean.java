@@ -6,13 +6,21 @@ import java.util.List;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
-@XStreamAlias("response")
-public class MessageBean {
+@XStreamAlias("messages")
+public class MessageBean implements XmlBean {
 	
-	@XStreamAlias("messages")
+	@XStreamAlias("message")
 	@XStreamImplicit
-	private List<String> messages;
+	private List<String> message;
 
+	public MessageBean(String... messages) {
+		this.message = new ArrayList<String>();
+		for (String singleMessage : messages) {
+			message.add(singleMessage);
+		}
+	}
+	
+	@Override
 	public String toXml() {
 		XStream xstream = new XStream();
 		xstream.processAnnotations(MessageBean.class);
@@ -24,16 +32,16 @@ public class MessageBean {
 	}
 	
 	public List<String> getMessages() {
-		if (this.messages == null) this.messages = new ArrayList<String>();
-		return this.messages;
+		if (this.message == null) this.message = new ArrayList<String>();
+		return this.message;
 	}
 
 	public void setMessages(List<String> localMessages) {
-		this.messages = localMessages;
+		this.message = localMessages;
 	}
 	
 	public boolean addMessage(String message) {
-		if (this.messages == null) this.messages = new ArrayList<String>();
-		return this.messages.add(message);
+		if (this.message == null) this.message = new ArrayList<String>();
+		return this.message.add(message);
 	}
 }

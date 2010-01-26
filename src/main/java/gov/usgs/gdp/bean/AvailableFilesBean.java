@@ -9,7 +9,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("files")
-public class AvailableFilesBean {
+public class AvailableFilesBean implements XmlBean{
 	
 	@XStreamAlias("shape-sets")
 	private List<ShapeFileSetBean> shapeSetList;
@@ -20,6 +20,7 @@ public class AvailableFilesBean {
 	@XStreamAlias("user-files")
 	private List<FilesBean> userFileList;
 	
+	@Override
 	public String toXml() {
 		String result = "";
 		XStream xstream = new XStream();

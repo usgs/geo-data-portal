@@ -61,6 +61,9 @@ public class ErrorBean {
 	public ErrorBean(String errorMessageParam, Integer errorNumberParam) { 
 		this(errorMessageParam, errorNumberParam, null); 
 	}
+	public ErrorBean(Integer errorNumberParam, Exception stackTrace) { 
+		this("", errorNumberParam, stackTrace, null); 
+	}
 	
 	public ErrorBean(String errorMessageParam, Integer errorNumberParam, Exception stackTrace) { 
 		this(errorMessageParam, errorNumberParam, stackTrace, null); 

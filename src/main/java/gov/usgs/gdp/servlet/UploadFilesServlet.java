@@ -1,8 +1,9 @@
 package gov.usgs.gdp.servlet;
 
+import gov.usgs.gdp.bean.AckBean;
 import gov.usgs.gdp.bean.ErrorBean;
-import gov.usgs.gdp.bean.MessageBean;
 import gov.usgs.gdp.bean.FilesBean;
+import gov.usgs.gdp.bean.XmlReplyBean;
 import gov.usgs.gdp.helper.CookieHelper;
 import gov.usgs.gdp.helper.FileHelper;
 import gov.usgs.gdp.helper.PropertyFactory;
@@ -55,9 +56,8 @@ public class UploadFilesServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String xmlOutput = "";
+		XmlReplyBean xmlOutput = null;
 		String command = (String) request.getParameter("command");
 		Cookie userDirectory = CookieHelper.getCookie(request, "userDirectory");
 
@@ -66,8 +66,7 @@ public class UploadFilesServlet extends HttpServlet {
 			if (userDirectory == null || !FileHelper.doesDirectoryOrFileExist(userDirectory.getValue())) {
 				userDirectory = createUserDirectory();
 				if (userDirectory == null) {
-					ErrorBean error = new ErrorBean(ErrorBean.ERR_USER_DIR_CREATE);
-					xmlOutput = error.toXml();
+					xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_USER_DIR_CREATE));
 					RouterServlet.sendXml(xmlOutput, response);
 					return;
 				}
@@ -77,9 +76,7 @@ public class UploadFilesServlet extends HttpServlet {
 			try {
 				filesUploaded = uploadFiles(request, userDirectory.getValue());
 			} catch (Exception e) {
-				ErrorBean error = new ErrorBean(ErrorBean.ERR_FILE_UPLOAD);
-				error.setException(e);
-				xmlOutput = error.toXml();
+				xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FILE_UPLOAD, e));
 				RouterServlet.sendXml(xmlOutput, response);
 				return;
 			}
@@ -94,9 +91,7 @@ public class UploadFilesServlet extends HttpServlet {
 				RequestDispatcher rd = request.getRequestDispatcher("/FileSelectionServlet?command=listfiles");
 				rd.forward(request, response);
 			} else {
-				ErrorBean error = new ErrorBean(ErrorBean.ERR_FILE_UPLOAD);
-				xmlOutput = error.toXml();
-				RouterServlet.sendXml(xmlOutput, response);
+				xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FILE_UPLOAD));
 				return;
 			}
 		}
@@ -184,6 +179,7 @@ public class UploadFilesServlet extends HttpServlet {
 	 * @return
 	 * @throws Exception 
 	 */
+	@SuppressWarnings("unchecked")
 	private boolean uploadFiles(HttpServletRequest request, String uploadDirectory) throws Exception{
 		log.debug("User uploading file(s).");
 				
