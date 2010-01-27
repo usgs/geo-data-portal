@@ -88,6 +88,14 @@
         </servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
+    <servlet>
+    	<description>
+    	</description>
+    	<display-name>FileAttributeServlet</display-name>
+    	<servlet-name>FileAttributeServlet</servlet-name>
+    	<servlet-class>
+    	gov.usgs.gdp.servlet.FileAttributeServlet</servlet-class>
+    </servlet>
     
     <servlet-mapping>
         <servlet-name>UploadFilesServlet</servlet-name>
@@ -121,6 +129,10 @@
     <servlet-mapping>
         <servlet-name>THREDDSCheckServlet</servlet-name>
         <url-pattern>/THREDDSCheckServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+    	<servlet-name>FileAttributeServlet</servlet-name>
+    	<url-pattern>/FileAttributeServlet</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>/jsp/index.jsp</welcome-file>

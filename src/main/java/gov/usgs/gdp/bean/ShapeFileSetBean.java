@@ -14,13 +14,14 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeType;
 
+import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 @XStreamAlias("shape-set")
-public class ShapeFileSetBean {
+public class ShapeFileSetBean implements XmlBean {
 	
 	@XStreamAlias("shape-set-name")
 	@XStreamAsAttribute
@@ -251,4 +252,31 @@ public class ShapeFileSetBean {
         }
         return result;
     }
+
+    /**
+     * Extract a ShapeFileSetBean from a List of type FilesBean that matches a FileSet Name
+     * 
+     * @param filesBeanList
+     * @param fileSetName
+     * @return ShapeFileSetBean if available, null if not
+     */
+	public static ShapeFileSetBean getShapeFileSetBeanFromFilesBeanList(List<FilesBean> filesBeanList, String fileSetName) {
+		
+		for (FilesBean filesBean : filesBeanList) {
+			if (filesBean.getName().equals(fileSetName)) return ShapeFileSetBean.getShapeFileSetBeanFromFilesBean(filesBean);
+		}
+		
+		return null;
+	}
+
+	@Override
+	public String toXml() {
+		XStream xstream = new XStream();
+		xstream.processAnnotations(ShapeFileSetBean.class);
+		StringBuffer sb = new StringBuffer();
+		String result = "";
+		sb.append(xstream.toXML(this));
+		result = sb.toString();
+		return result;
+	}
 }

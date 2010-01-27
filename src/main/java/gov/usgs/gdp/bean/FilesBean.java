@@ -72,7 +72,7 @@ public class FilesBean implements Serializable {
 	public static List<FilesBean> getFilesBeanSetList(String exampleDir, String userDir) {
 		List<FilesBean> result = new ArrayList<FilesBean>();
 		result.addAll(FilesBean.getFilesBeanSetList(exampleDir, true));
-		result.addAll(FilesBean.getFilesBeanSetList(userDir, false));
+		if (!"".equals(userDir)) result.addAll(FilesBean.getFilesBeanSetList(userDir, false));
 		return result;
 	}
 

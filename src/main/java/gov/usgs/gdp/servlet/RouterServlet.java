@@ -80,6 +80,16 @@ public class RouterServlet extends HttpServlet {
 			return;
 		}
 		
+		if ("listattributes".equals(command)) {
+			String shapefile = request.getParameter("shapefile");
+			if (shapefile == null || "".equals(shapefile)) {
+				// TODO- Send an error				
+			}
+			RequestDispatcher rd = request.getRequestDispatcher("/FileAttributeServlet?command=listattributes&shapefile=" + shapefile);
+			rd.forward(request, response);
+			return;
+		}
+		
 		// Check for stale session
 		String tomcatStarted = System.getProperty("tomcatStarted");
 		String sessionStarted = Long.toString(request.getSession().getCreationTime());

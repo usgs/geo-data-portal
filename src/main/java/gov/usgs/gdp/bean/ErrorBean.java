@@ -19,6 +19,8 @@ public class ErrorBean {
 	public final static int ERR_USER_DIR_CREATE = 1;
 	public final static int ERR_FILE_UPLOAD = 2;
 	public final static int ERR_FILE_LIST = 3;
+	public final static int ERR_FILE_NOT_FOUND = 4;
+	public final static int ERR_ATTRIBUTES_NOT_FOUND = 5;
 
 	public final static Map<Integer, String> ERROR_MESSAGES;
 	
