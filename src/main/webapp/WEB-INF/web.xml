@@ -93,7 +93,6 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>RouterServlet</servlet-name>
-        <url-pattern>/Router</url-pattern>
         <url-pattern>/router</url-pattern>
     </servlet-mapping>
     <servlet-mapping>

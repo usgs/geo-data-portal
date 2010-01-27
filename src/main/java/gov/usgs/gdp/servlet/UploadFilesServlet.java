@@ -58,9 +58,9 @@ public class UploadFilesServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		XmlReplyBean xmlOutput = null;
-		String command = (String) request.getParameter("command");
+		String command = request.getParameter("command");
 		Cookie userDirectory = CookieHelper.getCookie(request, "userDirectory");
-
+		
 		if ("upload".equals(command)) {
 			// Create the user directory.
 			if (userDirectory == null || !FileHelper.doesDirectoryOrFileExist(userDirectory.getValue())) {
@@ -83,11 +83,7 @@ public class UploadFilesServlet extends HttpServlet {
 			if (filesUploaded) {
 				log.debug("Files successfully uploaded.");
 				response.addCookie(userDirectory);
-				/*List<FilesBean> filesBeanList = FilesBean.getFilesBeanSetList(System.getProperty("applicationTempDir"), userDirectory.getValue());
-				for (FilesBean filesBean : filesBeanList) {
-					xmlOutput = xmlOutput + filesBean.toXml();
-				}
-				RouterServlet.sendXml(xmlOutput, response);*/
+				request.setAttribute("c00kie", userDirectory);
 				RequestDispatcher rd = request.getRequestDispatcher("/FileSelectionServlet?command=listfiles");
 				rd.forward(request, response);
 			} else {

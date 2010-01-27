@@ -38,7 +38,7 @@ public class AvailableFilesBean implements XmlBean{
 	 * @param userDirectory
 	 * @return
 	 */
-	static public AvailableFilesBean getAvailableFilesBean(String baseDirectory, String userDirectory) {
+	static public AvailableFilesBean getAvailableFilesBean(String baseDirectory, String userDirectory) throws IllegalArgumentException {
 		if (baseDirectory == null) return null;
 		if ("".equals(baseDirectory)) return null;
 		

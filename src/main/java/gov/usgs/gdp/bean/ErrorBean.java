@@ -51,24 +51,24 @@ public class ErrorBean {
 	}
 	
 	public ErrorBean(int errorNumberParam) throws InvalidParameterException {
-		this(ErrorBean.ERROR_MESSAGES.get(Integer.valueOf(errorNumberParam)), Integer.valueOf(errorNumberParam));
+		this(Integer.valueOf(errorNumberParam), ErrorBean.ERROR_MESSAGES.get(Integer.valueOf(errorNumberParam)));
 	}
 	
 	public ErrorBean(String errorMessageParam) { 
-		this(errorMessageParam, Integer.valueOf(-1)); 
+		this(Integer.valueOf(-1), errorMessageParam); 
 	}
 	
-	public ErrorBean(String errorMessageParam, Integer errorNumberParam) { 
-		this(errorMessageParam, errorNumberParam, null); 
+	public ErrorBean(Integer errorNumberParam, String errorMessageParam) { 
+		this(errorNumberParam, errorMessageParam, null); 
 	}
-	public ErrorBean(Integer errorNumberParam, Exception stackTrace) { 
-		this("", errorNumberParam, stackTrace, null); 
+	public ErrorBean(int errorNumberParam, Exception stackTrace) { 
+		this(Integer.valueOf(errorNumberParam), ErrorBean.ERROR_MESSAGES.get(Integer.valueOf(errorNumberParam)), stackTrace, null); 
 	}
 	
-	public ErrorBean(String errorMessageParam, Integer errorNumberParam, Exception stackTrace) { 
-		this(errorMessageParam, errorNumberParam, stackTrace, null); 
+	public ErrorBean(Integer errorNumberParam, String errorMessageParam, Exception stackTrace) { 
+		this(errorNumberParam, errorMessageParam, stackTrace, null); 
 	}
-	public ErrorBean(String errorMessageParam,Integer errorNumberParam, Exception stackTrace, String errorClassParam) {
+	public ErrorBean(Integer errorNumberParam, String errorMessageParam, Exception stackTrace, String errorClassParam) {
 		setErrorMessage(errorMessageParam);
 		setErrorNumber(errorNumberParam);
 		setException(stackTrace);

@@ -1,10 +1,12 @@
 package gov.usgs.gdp.servlet;
 
+import gov.usgs.gdp.bean.AckBean;
 import gov.usgs.gdp.bean.AvailableFilesBean;
 import gov.usgs.gdp.bean.ErrorBean;
 import gov.usgs.gdp.bean.MessageBean;
 import gov.usgs.gdp.bean.XmlReplyBean;
 import gov.usgs.gdp.helper.CookieHelper;
+import gov.usgs.gdp.helper.FileHelper;
 
 import java.io.IOException;
 
@@ -46,25 +48,38 @@ public class FileSelectionServlet extends HttpServlet {
 		XmlReplyBean xmlReply = null;
 		if ("listfiles".equals(command)) {
 			Cookie userDirectoryCookie = CookieHelper.getCookie(request, "userDirectory");
+			// This line is needed because the last request may be from another servlet
+			// that puts the cookie in the response, but it hits this servlet before
+			// it hits the client that consumes it
+			if (userDirectoryCookie == null) userDirectoryCookie = (Cookie) request.getAttribute("c00kie");
 			String userDirectory = "";
 			if (userDirectoryCookie != null) {
-				userDirectory = userDirectoryCookie.getValue();
-				
+				if (FileHelper.doesDirectoryOrFileExist(userDirectoryCookie.getValue())) {
+					userDirectory = userDirectoryCookie.getValue();
+				}
 			}
+			
 			String appTempDir = System.getProperty("applicationTempDir");
-			AvailableFilesBean afb = AvailableFilesBean.getAvailableFilesBean(appTempDir, userDirectory);
+			AvailableFilesBean afb = null;
+			try {
+				afb = AvailableFilesBean.getAvailableFilesBean(appTempDir, userDirectory);
+			} catch (IllegalArgumentException e) {
+				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FILE_LIST, e));
+				RouterServlet.sendXml(xmlReply, response);
+				return;
+			}
 			
 			// Couldn't pull any files. Send an error to the caller.
 			if (afb == null || afb.getExampleFileList() == null 
 					|| afb.getExampleFileList().isEmpty()
 					|| afb.getShapeSetList() == null
 					|| afb.getShapeSetList().isEmpty()) {
-				xmlReply = new XmlReplyBean(2, new MessageBean("Could not find any files to work with."));
+				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new MessageBean("Could not find any files to work with."));
 				RouterServlet.sendXml(xmlReply, response);
 				return;
 			}
 			
-			xmlReply = new XmlReplyBean(1, afb);
+			xmlReply = new XmlReplyBean(AckBean.ACK_OK, afb);
 			RouterServlet.sendXml(xmlReply, response);
 			return;
 			

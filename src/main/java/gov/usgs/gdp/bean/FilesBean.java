@@ -76,7 +76,7 @@ public class FilesBean implements Serializable {
 		return result;
 	}
 
-	public static List<FilesBean> getFilesBeanSetList(String directory, boolean recursive) {
+	public static List<FilesBean> getFilesBeanSetList(String directory, boolean recursive) throws IllegalArgumentException {
 		return FilesBean.getFilesBeanSetList(FileHelper.getFileCollection(directory, recursive));
 	}
 	
