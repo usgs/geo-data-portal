@@ -2,14 +2,21 @@ package gov.usgs.gdp.servlet;
 
 
 
+import gov.usgs.gdp.bean.AckBean;
+import gov.usgs.gdp.bean.AttributeBean;
 import gov.usgs.gdp.bean.THREDDSInfoBean;
 import gov.usgs.gdp.bean.THREDDSServerBean;
+import gov.usgs.gdp.bean.THREDDSServerBeanList;
+import gov.usgs.gdp.bean.XmlReplyBean;
 import gov.usgs.gdp.helper.THREDDSServerHelper;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
@@ -19,8 +26,12 @@ import java.util.TreeMap;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Servlet implementation class THREDDSCheckServlet
@@ -47,6 +58,39 @@ public class THREDDSCheckServlet extends HttpServlet {
 		
 	}	
 
+	@Override
+	public void doGet(HttpServletRequest request, HttpServletResponse response) {
+		doPost(request, response);
+	}
+	
+	@Override
+	public void doPost(HttpServletRequest request, HttpServletResponse response) {
+		String command = request.getParameter("command");
+		XmlReplyBean xmlReply = null;
+		if ("listthredds".equals(command)) {
+			log.debug("User is attempting to retrieve a list of THREDDS servers");
+			
+			Map<String, THREDDSServerBean> threddsServerBeanMap = (Map<String, THREDDSServerBean>) this.getServletContext().getAttribute("threddsServerBeanMap");
+			
+			if (threddsServerBeanMap != null) {
+				try {
+					Collection<THREDDSServerBean> threddsServerBeanCollection = threddsServerBeanMap.values();
+					List<THREDDSServerBean> threddsServerBeanList = new ArrayList<THREDDSServerBean>();
+					threddsServerBeanList.addAll(threddsServerBeanCollection);
+					
+					// Best naming scheme ever.
+					THREDDSServerBeanList threddsServerBeanListBean = new THREDDSServerBeanList(threddsServerBeanList);
+					xmlReply = new XmlReplyBean(AckBean.ACK_OK, threddsServerBeanListBean);
+					RouterServlet.sendXml(xmlReply, response);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return;
+			}
+		}
+	}
+	
 	class testTHREDDSServers extends TimerTask {
 		private ServletConfig paramConfig;
 		

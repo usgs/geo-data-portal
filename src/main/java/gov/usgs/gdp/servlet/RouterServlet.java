@@ -104,6 +104,12 @@ public class RouterServlet extends HttpServlet {
 			return;
 		}
 		
+		if ("listthredds".equals(command)) {
+			RequestDispatcher rd = request.getRequestDispatcher("/THREDDSCheckServlet?command=listthredds");
+			rd.forward(request, response);
+			return;
+		}
+		
 		// Check for stale session
 		String tomcatStarted = System.getProperty("tomcatStarted");
 		String sessionStarted = Long.toString(request.getSession().getCreationTime());
