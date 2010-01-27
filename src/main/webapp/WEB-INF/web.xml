@@ -96,6 +96,14 @@
     	<servlet-class>
     	gov.usgs.gdp.servlet.FileAttributeServlet</servlet-class>
     </servlet>
+    <servlet>
+    	<description>
+    	</description>
+    	<display-name>FileFeatureServlet</display-name>
+    	<servlet-name>FileFeatureServlet</servlet-name>
+    	<servlet-class>
+    	gov.usgs.gdp.servlet.FileFeatureServlet</servlet-class>
+    </servlet>
     
     <servlet-mapping>
         <servlet-name>UploadFilesServlet</servlet-name>
@@ -133,6 +141,10 @@
     <servlet-mapping>
     	<servlet-name>FileAttributeServlet</servlet-name>
     	<url-pattern>/FileAttributeServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+    	<servlet-name>FileFeatureServlet</servlet-name>
+    	<url-pattern>/FileFeatureServlet</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>/jsp/index.jsp</welcome-file>

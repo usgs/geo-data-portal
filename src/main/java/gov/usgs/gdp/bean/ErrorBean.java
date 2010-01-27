@@ -13,7 +13,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
 @XStreamAlias("error")
-public class ErrorBean {
+public class ErrorBean implements XmlBean{
 	// Check properties file to read/change message for these codes
 	public final static int ERR_NO_COMMAND = 0;
 	public final static int ERR_USER_DIR_CREATE = 1;
@@ -21,6 +21,7 @@ public class ErrorBean {
 	public final static int ERR_FILE_LIST = 3;
 	public final static int ERR_FILE_NOT_FOUND = 4;
 	public final static int ERR_ATTRIBUTES_NOT_FOUND = 5;
+	public final static int ERR_FEATURES_NOT_FOUND = 6;
 
 	public final static Map<Integer, String> ERROR_MESSAGES;
 	

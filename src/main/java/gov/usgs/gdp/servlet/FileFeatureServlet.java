@@ -1,8 +1,8 @@
 package gov.usgs.gdp.servlet;
 
 import gov.usgs.gdp.bean.AckBean;
-import gov.usgs.gdp.bean.AttributeBean;
 import gov.usgs.gdp.bean.ErrorBean;
+import gov.usgs.gdp.bean.FeatureBean;
 import gov.usgs.gdp.bean.FilesBean;
 import gov.usgs.gdp.bean.ShapeFileSetBean;
 import gov.usgs.gdp.bean.XmlReplyBean;
@@ -21,37 +21,35 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 /**
- * Servlet implementation class FileAttributeServlet
+ * Servlet implementation class FileFeatureServlet
  */
-public class FileAttributeServlet extends HttpServlet {
+public class FileFeatureServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static org.apache.log4j.Logger log = Logger.getLogger(FileAttributeServlet.class);
-       
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public FileAttributeServlet() {
+    public FileFeatureServlet() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doPost(request,response);
+		doPost(request, response);
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
 		String command = request.getParameter("command");
 		XmlReplyBean xmlReply = null;
-		if ("listattributes".equals(command)) {
-			log.debug("User has chosen to list shapefile attributes");
+		if ("listfeatures".equals(command)) {
+			log.debug("User has chosen to list shapefile features");
 			String shapefile = request.getParameter("shapefile");
+			String attribute = request.getParameter("attribute");
 			Cookie userDirectoryCookie = CookieHelper.getCookie(request, "userDirectory");			
 			String userDirectory = "";
 			if (userDirectoryCookie != null) {
@@ -67,22 +65,29 @@ public class FileAttributeServlet extends HttpServlet {
 				return;
 			}
 			ShapeFileSetBean shapeFileSetBean = ShapeFileSetBean.getShapeFileSetBeanFromFilesBeanList(filesBeanList, shapefile);
-			
-			List<String> attributeList = ShapeFileSetBean.getAttributeListFromBean(shapeFileSetBean);
-			if (attributeList == null || attributeList.isEmpty()) {
-				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_ATTRIBUTES_NOT_FOUND));
+			shapeFileSetBean.setChosenAttribute(attribute);
+			// Pull Feature Lists
+			List<String> features = null;
+            try {
+				features = ShapeFileSetBean.getFeatureListFromBean(shapeFileSetBean);
+			} catch (IOException e) {
+				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FEATURES_NOT_FOUND));
 				RouterServlet.sendXml(xmlReply, response);
 				return;
 			}
 			
-			AttributeBean attributeBean = new AttributeBean(attributeList);
-			attributeBean.setFilesetName(shapefile);
-			xmlReply = new XmlReplyBean(AckBean.ACK_OK, attributeBean);
-			RouterServlet.sendXml(xmlReply, response);
-			return;
-			
+			if (features != null && !features.isEmpty()) {
+				FeatureBean featureBean = new FeatureBean(features);
+				featureBean.setFilesetName(shapefile);
+				xmlReply = new XmlReplyBean(AckBean.ACK_OK, featureBean);
+				RouterServlet.sendXml(xmlReply, response);
+				return;
+			} else {
+				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FEATURES_NOT_FOUND));
+				RouterServlet.sendXml(xmlReply, response);
+				return;
+			}
 		}
-		
 	}
 
 }
