@@ -4,6 +4,7 @@ package gov.usgs.gdp.servlet;
 
 import gov.usgs.gdp.bean.AckBean;
 import gov.usgs.gdp.bean.AttributeBean;
+import gov.usgs.gdp.bean.ErrorBean;
 import gov.usgs.gdp.bean.THREDDSInfoBean;
 import gov.usgs.gdp.bean.THREDDSServerBean;
 import gov.usgs.gdp.bean.THREDDSServerBeanList;
@@ -38,7 +39,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 public class THREDDSCheckServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private static org.apache.log4j.Logger log	= Logger.getLogger(THREDDSCheckServlet.class);
+	static org.apache.log4j.Logger log	= Logger.getLogger(THREDDSCheckServlet.class);
 	private Timer	timer;
 	private static final long FIVE_MINUTES 			= 1000 * 60 * 5; 		// Run every 5 minutes
     /**
@@ -59,14 +60,45 @@ public class THREDDSCheckServlet extends HttpServlet {
 	}	
 
 	@Override
-	public void doGet(HttpServletRequest request, HttpServletResponse response) {
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException{
 		doPost(request, response);
 	}
 	
 	@Override
-	public void doPost(HttpServletRequest request, HttpServletResponse response) {
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException{
 		String command = request.getParameter("command");
 		XmlReplyBean xmlReply = null;
+		
+		if ("checkserver".equals(command)) {
+			String hostname = request.getParameter("hostname");
+			String portString = request.getParameter("port");
+			int port = 80;
+			try {
+				if (portString != null && !"".equals(portString) && !"null".equals(portString)) {
+					port = Integer.parseInt(portString);
+				}
+			} catch (NumberFormatException e) {
+				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean("Port provided is not a number"));
+				RouterServlet.sendXml(xmlReply, response);
+				return;
+			}
+			log.debug("User is attempting to get server status: " + hostname + ":" + port);
+			try {
+				boolean isServerUp = THREDDSServerHelper.isServerReachable(hostname, port, 5000);
+				THREDDSServerBean tsb = new THREDDSServerBean();
+				tsb.setActive(isServerUp);
+				tsb.setHostname(hostname);
+				tsb.setPort(port);
+				tsb.setLastCheck(new Date());
+				xmlReply = new XmlReplyBean(AckBean.ACK_OK, tsb);
+				RouterServlet.sendXml(xmlReply, response);
+			} catch (IOException e) {
+				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_ERROR_WHILE_CONNECTING));
+				RouterServlet.sendXml(xmlReply, response);
+				return;
+			}
+		}
+		
 		if ("listthredds".equals(command)) {
 			log.debug("User is attempting to retrieve a list of THREDDS servers");
 			
@@ -107,7 +139,7 @@ public class THREDDSCheckServlet extends HttpServlet {
 			}
 			
 			threddsServerBeanMap = checkServers(threddsServerBeanMap);
-			paramConfig.getServletContext().setAttribute("threddsServerBeanMap", threddsServerBeanMap);
+			this.paramConfig.getServletContext().setAttribute("threddsServerBeanMap", threddsServerBeanMap);
 		}
 
 		/**

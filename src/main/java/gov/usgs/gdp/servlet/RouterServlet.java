@@ -110,6 +110,14 @@ public class RouterServlet extends HttpServlet {
 			return;
 		}
 		
+		if ("checkserver".equals(command)) {
+			String hostname = request.getParameter("hostname");
+			String port = request.getParameter("port");
+			RequestDispatcher rd = request.getRequestDispatcher("/THREDDSCheckServlet?command=checkserver&hostname=" + hostname + "&port=" + port);
+			rd.forward(request, response);
+			return;
+		}
+		
 		// Check for stale session
 		String tomcatStarted = System.getProperty("tomcatStarted");
 		String sessionStarted = Long.toString(request.getSession().getCreationTime());

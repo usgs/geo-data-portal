@@ -12,7 +12,7 @@ public class THREDDSServerHelper {
      *
      * @param host
      * @param port
-     * @param timeout
+     * @param timeout - milliseconds
      * @return
      * @throws IOException
      */
