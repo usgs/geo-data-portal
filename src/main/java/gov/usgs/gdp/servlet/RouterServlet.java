@@ -118,6 +118,22 @@ public class RouterServlet extends HttpServlet {
 			return;
 		}
 		
+		if ("getdatasets".equals(command)) {
+			String hostname = request.getParameter("hostname");
+			String port = request.getParameter("port");
+			RequestDispatcher rd = request.getRequestDispatcher("/THREDDSServlet?command=getdatasets&hostname=" + hostname + "&port=" + port);
+			rd.forward(request, response);
+			return;
+		}
+		
+		if ("getgrid".equals(command)) {
+			String hostname = request.getParameter("hostname");
+			String port = request.getParameter("port");
+			RequestDispatcher rd = request.getRequestDispatcher("/THREDDSServlet?command=getgrid&hostname=" + hostname + "&port=" + port);
+			rd.forward(request, response);
+			return;
+		}
+		
 		// Check for stale session
 		String tomcatStarted = System.getProperty("tomcatStarted");
 		String sessionStarted = Long.toString(request.getSession().getCreationTime());

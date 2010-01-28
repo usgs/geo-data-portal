@@ -104,6 +104,14 @@
     	<servlet-class>
     	gov.usgs.gdp.servlet.FileFeatureServlet</servlet-class>
     </servlet>
+    <servlet>
+    	<description>
+    	</description>
+    	<display-name>THREDDSServlet</display-name>
+    	<servlet-name>THREDDSServlet</servlet-name>
+    	<servlet-class>
+    	gov.usgs.gdp.servlet.THREDDSServlet</servlet-class>
+    </servlet>
     
     <servlet-mapping>
         <servlet-name>UploadFilesServlet</servlet-name>
@@ -145,6 +153,10 @@
     <servlet-mapping>
     	<servlet-name>FileFeatureServlet</servlet-name>
     	<url-pattern>/FileFeatureServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+    	<servlet-name>THREDDSServlet</servlet-name>
+    	<url-pattern>/THREDDSServlet</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>/jsp/index.jsp</welcome-file>

@@ -23,8 +23,11 @@ public class ErrorBean implements XmlBean{
 	public final static int ERR_ATTRIBUTES_NOT_FOUND = 5;
 	public final static int ERR_FEATURES_NOT_FOUND = 6;
 	public final static int ERR_ERROR_WHILE_CONNECTING = 7;
-
+	public final static int ERR_MISSING_PARAM = 8;
+	public final static int ERR_MISSING_DATASET = 9;
+	
 	public final static Map<Integer, String> ERROR_MESSAGES;
+	
 	
 	@XStreamAlias("code")
 	@XStreamAsAttribute
