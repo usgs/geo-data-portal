@@ -119,6 +119,13 @@ public class RouterServlet extends HttpServlet {
 			return;
 		}
 		
+		if ("createdatastore".equals(command)) {
+			String shapefile = request.getParameter("shapefile");
+			RequestDispatcher rd = request.getRequestDispatcher("/GeoServerServlet?command=createdatastore&shapefile=" + shapefile);
+			rd.forward(request, response);
+			return;
+		}
+		
 		if ("getdatasetlist".equals(command)) {
 			String hostname = request.getParameter("hostname");
 			String port = request.getParameter("port");

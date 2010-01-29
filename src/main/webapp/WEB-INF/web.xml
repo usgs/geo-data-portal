@@ -105,6 +105,14 @@
     	gov.usgs.gdp.servlet.FileFeatureServlet</servlet-class>
     </servlet>
     <servlet>
+        <description>Sends RESTful request to GeoServer.</description>
+        <display-name>GeoServerServlet</display-name>
+        <servlet-name>GeoServerServlet</servlet-name>
+        <servlet-class>
+            gov.usgs.gdp.servlet.GeoServerServlet
+        </servlet-class>
+    </servlet>
+    <servlet>
     	<description>
     	</description>
     	<display-name>THREDDSServlet</display-name>
@@ -153,6 +161,10 @@
     <servlet-mapping>
     	<servlet-name>FileFeatureServlet</servlet-name>
     	<url-pattern>/FileFeatureServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+    	<servlet-name>GeoServerServlet</servlet-name>
+    	<url-pattern>/GeoServerServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
     	<servlet-name>THREDDSServlet</servlet-name>
