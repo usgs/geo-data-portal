@@ -25,6 +25,7 @@ public class ErrorBean implements XmlBean{
 	public final static int ERR_ERROR_WHILE_CONNECTING = 7;
 	public final static int ERR_MISSING_PARAM = 8;
 	public final static int ERR_MISSING_DATASET = 9;
+	public final static int ERR_PORT_INCORRECT = 10;
 	
 	public final static Map<Integer, String> ERROR_MESSAGES;
 	

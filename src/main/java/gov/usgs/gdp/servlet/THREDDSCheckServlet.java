@@ -203,10 +203,16 @@ public class THREDDSCheckServlet extends HttpServlet {
 				}
 				
 				String port = "80";
+				startAt = hostname.length() + startAt;
 				if (hasPort) {
-					startAt = hostname.length() + startAt;
 					port = serverUrl.substring(startAt + 1, serverUrl.indexOf("/", startAt));
+					startAt = startAt + port.length() + 1;
 				}
+				
+				String uri = "";
+				
+				uri = serverUrl.substring(startAt);
+				threddsServerBean.setUri(uri);
 				
 				threddsServerBean.setHostname(hostname);
 				threddsServerBean.setPort(Integer.parseInt(port));

@@ -113,20 +113,22 @@ public class RouterServlet extends HttpServlet {
 		if ("checkserver".equals(command)) {
 			String hostname = request.getParameter("hostname");
 			String port = request.getParameter("port");
-			RequestDispatcher rd = request.getRequestDispatcher("/THREDDSCheckServlet?command=checkserver&hostname=" + hostname + "&port=" + port);
+			String uri = request.getParameter("uri");
+			RequestDispatcher rd = request.getRequestDispatcher("/THREDDSCheckServlet?command=checkserver&hostname=" + hostname + "&port=" + port + "&uri=" + uri);
 			rd.forward(request, response);
 			return;
 		}
 		
-		if ("getdatasets".equals(command)) {
+		if ("getdatasetlist".equals(command)) {
 			String hostname = request.getParameter("hostname");
 			String port = request.getParameter("port");
-			RequestDispatcher rd = request.getRequestDispatcher("/THREDDSServlet?command=getdatasets&hostname=" + hostname + "&port=" + port);
+			String uri = request.getParameter("uri");
+			RequestDispatcher rd = request.getRequestDispatcher("/THREDDSServlet?command=getdatasetlist&hostname=" + hostname + "&port=" + port + "&uri=" + uri);
 			rd.forward(request, response);
 			return;
 		}
 		
-		if ("getgrid".equals(command)) {
+		if ("getgridlist".equals(command)) {
 			String hostname = request.getParameter("hostname");
 			String port = request.getParameter("port");
 			RequestDispatcher rd = request.getRequestDispatcher("/THREDDSServlet?command=getgrid&hostname=" + hostname + "&port=" + port);

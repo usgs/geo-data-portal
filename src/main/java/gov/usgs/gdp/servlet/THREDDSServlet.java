@@ -2,15 +2,18 @@ package gov.usgs.gdp.servlet;
 
 import gov.usgs.gdp.bean.AckBean;
 import gov.usgs.gdp.bean.AttributeBean;
+import gov.usgs.gdp.bean.DataSetBean;
 import gov.usgs.gdp.bean.ErrorBean;
 import gov.usgs.gdp.bean.FilesBean;
 import gov.usgs.gdp.bean.ShapeFileSetBean;
+import gov.usgs.gdp.bean.XmlBean;
 import gov.usgs.gdp.bean.XmlReplyBean;
 import gov.usgs.gdp.helper.CookieHelper;
 import gov.usgs.gdp.helper.FileHelper;
 import gov.usgs.gdp.helper.THREDDSServerHelper;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -51,15 +54,19 @@ public class THREDDSServlet extends HttpServlet {
 		String command = request.getParameter("command");
 		XmlReplyBean xmlReply = null;
 		
-		if ("getgrid".equals(command)) {
+		
+		
+		if ("getdatasetlist".equals(command)) {
 			log.debug("User has chosen to get datasets from server");
 			
 			// Grab what we need to work with for this request
 			String hostname = request.getParameter("hostname");
 			String portString = request.getParameter("port");
+			String uri = request.getParameter("uri");
 			if (portString == null || "".equals(portString)) portString = "80";
 			int port = 80;
-			if (hostname == null || "".equals(hostname)) {
+			if (hostname == null || "".equals(hostname)
+					|| uri == null || "".equals(uri)) {
 				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_MISSING_PARAM));
 				RouterServlet.sendXml(xmlReply, response);
 				return;
@@ -70,20 +77,19 @@ public class THREDDSServlet extends HttpServlet {
 					port = Integer.parseInt(portString);
 				}
 			} catch (NumberFormatException e) {
-				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean("Port provided is not a number"));
+				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_PORT_INCORRECT));
 				RouterServlet.sendXml(xmlReply, response);
 				return;
 			}
 
-			List<InvAccess> invAccessList = THREDDSServerHelper.getInvAccessListFromServer(hostname, port);
-			if (invAccessList == null || invAccessList.isEmpty()) {
+			List<XmlBean> datasetBeanList = (List<XmlBean>) THREDDSServerHelper.getDatasetListFromServer(hostname, port, uri);
+			if (datasetBeanList == null || datasetBeanList.isEmpty()) {
 				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_MISSING_DATASET));
 				RouterServlet.sendXml(xmlReply, response);
 				return;
 			}
-			for ()
-			attributeBean.setFilesetName(shapefile);
-			xmlReply = new XmlReplyBean(AckBean.ACK_OK, attributeBean);
+			
+			xmlReply = new XmlReplyBean(AckBean.ACK_OK, datasetBeanList);
 			RouterServlet.sendXml(xmlReply, response);
 			return;
 			
@@ -108,7 +114,7 @@ public class THREDDSServlet extends HttpServlet {
 					port = Integer.parseInt(portString);
 				}
 			} catch (NumberFormatException e) {
-				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean("Port provided is not a number"));
+				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_PORT_INCORRECT));
 				RouterServlet.sendXml(xmlReply, response);
 				return;
 			}

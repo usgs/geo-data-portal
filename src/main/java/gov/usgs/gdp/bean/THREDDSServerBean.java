@@ -14,6 +14,7 @@ public class THREDDSServerBean implements XmlBean{
 	
 	private String hostname;
 	private int port;
+	private String uri;
 	private boolean active;
 	private Date lastCheck;
 	
@@ -56,6 +57,12 @@ public class THREDDSServerBean implements XmlBean{
 		sb.append(xstream.toXML(this));
 		result = sb.toString();
 		return result;
+	}
+	public void setUri(String uri) {
+		this.uri = uri;
+	}
+	public String getUri() {
+		return uri;
 	}
 	
 }

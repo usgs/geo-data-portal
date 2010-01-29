@@ -1,5 +1,7 @@
 package gov.usgs.gdp.bean;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -21,6 +23,14 @@ public class XmlReplyBean implements XmlBean {
 	public XmlReplyBean(XmlBean... contentArray) {
 		this.acknowledgment = new AckBean(AckBean.ACK_OK);
 		this.content = contentArray;
+	}
+	
+	public XmlReplyBean(int result, List<XmlBean> xmlBeanList) {
+		this.acknowledgment = new AckBean(result);
+		XmlBean[] xmlBeanArray = new XmlBean[0];
+		xmlBeanArray = xmlBeanList.toArray(xmlBeanArray);
+		this.content = xmlBeanArray;
+		
 	}
 	
 	public XmlReplyBean(MessageBean messageBean, XmlBean... contentArray) {
