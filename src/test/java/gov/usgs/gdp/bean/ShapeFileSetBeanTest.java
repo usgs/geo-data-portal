@@ -95,6 +95,7 @@ public class ShapeFileSetBeanTest {
                 + "Shapefiles"
                 + this.seperator
                 + "hru20VSR.PRJ";
+
         String dbfFile = this.tempDir
                 + this.seperator
                 + "Sample_Files"
@@ -193,7 +194,6 @@ public class ShapeFileSetBeanTest {
                 + "Shapefiles"
                 + this.seperator
                 + "hru20VSR.DBF";
-
 
         String shxFile = this.tempDir
                 + this.seperator

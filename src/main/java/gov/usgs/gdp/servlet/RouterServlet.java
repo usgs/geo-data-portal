@@ -1,18 +1,17 @@
 package gov.usgs.gdp.servlet;
 
+import gov.usgs.gdp.bean.AckBean;
 import gov.usgs.gdp.bean.ErrorBean;
 import gov.usgs.gdp.bean.FilesBean;
 import gov.usgs.gdp.bean.MessageBean;
 import gov.usgs.gdp.bean.ShapeFileSetBean;
+import gov.usgs.gdp.bean.XmlReplyBean;
 import gov.usgs.gdp.helper.FileHelper;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +22,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
 
 /**
@@ -57,11 +57,26 @@ public class RouterServlet extends HttpServlet {
 		Map<String, String> requestParameters = request.getParameterMap();
 		
 		String xmlOutput = "";
+		if (ServletFileUpload.isMultipartContent(request)) {
+			// User is uploading files...
+			RequestDispatcher rd = request.getRequestDispatcher("/UploadFilesServlet?command=upload");
+			rd.forward(request, response);
+			return;
+		}
 		
 		if (!requestParameters.containsKey("command")) {
-			ErrorBean errorBean = new ErrorBean("A Command Was Not Supplied With The Request", ErrorBean.ERR_NO_COMMAND);
-			xmlOutput = errorBean.toXml();
-			sendXml(xmlOutput, response);
+			ErrorBean errorBean = new ErrorBean(ErrorBean.ERR_NO_COMMAND);
+			XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, errorBean);
+			RouterServlet.sendXml(xmlReply, response);
+			return;
+		}
+		
+		String command = request.getParameter("command");
+		
+		if ("listfiles".equals(command)) {
+			// Forward the user to their destination						
+			RequestDispatcher rd = request.getRequestDispatcher("/FileSelectionServlet?command=listfiles");
+			rd.forward(request, response);
 			return;
 		}
 		
@@ -140,20 +155,23 @@ public class RouterServlet extends HttpServlet {
 		rd.forward(request, response);
 	}
 
-	private void sendXml(String xmlOutput, HttpServletResponse response) throws IOException {
+	public static void sendXml(XmlReplyBean xmlReply, HttpServletResponse response) throws IOException {
+		 String xml = xmlReply.toXml();
 		 ServletOutputStream stream = null;
-		 BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(xmlOutput.getBytes()));
+		 BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(xml.getBytes()));
 		 try {
 			stream = response.getOutputStream();
 			response.setContentType("text/xml");
-			response.setContentLength((int) xmlOutput.length());
+			response.setCharacterEncoding("utf-8");
+			response.setContentLength(xml.length());
 			int readBytes = 0;
 			while ((readBytes = bis.read()) != -1) {
 				stream.write(readBytes);
 			}
+			stream.flush();
 		} finally {
 			if (stream != null) stream.close();
-			if (bis != null) bis.close();
+			bis.close();
 		}
 		
 	}

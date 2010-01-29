@@ -3,20 +3,51 @@ package gov.usgs.gdp.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MessageBean {
-	private List<String> messages;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
+@XStreamAlias("messages")
+public class MessageBean implements XmlBean {
+	@XStreamAlias("message")
+	@XStreamImplicit
+	private List<String> message;
+
+    // A JavaBean must have a public, nullary constructor. We must explicitly provide it because the generation
+    // of the default constructor has been suppressed by the presence of other constructors in this class.
+    public MessageBean() {
+        this(new String[0]);
+    }
+
+	public MessageBean(String... messages) {
+		this.message = new ArrayList<String>();
+		for (String singleMessage : messages) {
+			message.add(singleMessage);
+		}
+	}
+	
+	@Override
+	public String toXml() {
+		XStream xstream = new XStream();
+		xstream.processAnnotations(MessageBean.class);
+		StringBuffer sb = new StringBuffer();
+		String result = "";
+		sb.append(xstream.toXML(this));
+		result = sb.toString();
+		return result;
+	}
+	
 	public List<String> getMessages() {
-		if (this.messages == null) this.messages = new ArrayList<String>();
-		return this.messages;
+		if (this.message == null) this.message = new ArrayList<String>();
+		return this.message;
 	}
 
 	public void setMessages(List<String> localMessages) {
-		this.messages = localMessages;
+		this.message = localMessages;
 	}
 	
 	public boolean addMessage(String message) {
-		if (this.messages == null) this.messages = new ArrayList<String>();
-		return this.messages.add(message);
+		if (this.message == null) this.message = new ArrayList<String>();
+		return this.message.add(message);
 	}
 }

@@ -199,16 +199,8 @@ public class FileProcessServlet extends HttpServlet {
 	 */
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	    doPost(request, response);
-	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	    String action = (request.getParameter("action") == null) ? "" : request.getParameter("action").toLowerCase();
-	
+		String action = (request.getParameter("action") == null) ? "" : request.getParameter("action").toLowerCase();
+		
 	    MessageBean errorBean = new MessageBean();
 	    MessageBean messageBean = new MessageBean();
 	    String forwardTo = "";
@@ -242,6 +234,14 @@ public class FileProcessServlet extends HttpServlet {
 	    }
 	    RequestDispatcher rd = request.getRequestDispatcher(forwardTo);
 	    rd.forward(request, response);
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	    doGet(request, response);
 	}
 
 	private static final long serialVersionUID = 1L;
