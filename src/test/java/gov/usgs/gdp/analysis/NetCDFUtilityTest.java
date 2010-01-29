@@ -73,9 +73,9 @@ public class NetCDFUtilityTest {
         StringBuilder buff = new StringBuilder();
         assertTrue(buff.toString(),catalog.check(buff));
         
-        assertNull(NetCDFUtility.getOpenDapResources(null));
+        assertNull(NetCDFUtility.getDatasetHandles(null));
         
-		List<InvAccess>  result = NetCDFUtility.getOpenDapResources(catalog);
+		List<InvAccess>  result = NetCDFUtility.getDatasetHandles(catalog);
 		assertNotNull(result);
 		} else {
 			log.debug("runoff.cr.usgs.gov:8086 is unreachable. Skipping this unit test.");

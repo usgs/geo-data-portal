@@ -379,13 +379,11 @@ public class FileProcessServlet extends HttpServlet {
 	}
 
 	private String populateDataSet(HttpServletRequest request) {
-    	
     	MessageBean errorBean = new MessageBean();
         
     	THREDDSInfoBean threddsInfoBean = new THREDDSInfoBean();
         String THREDDSUrl = request.getParameter("THREDDSUrl");
 
-        List<InvAccess> openDapResources = new LinkedList<InvAccess>();
         if (THREDDSUrl == null || "".equals(THREDDSUrl)) {
             errorBean.getMessages().add("You must select a THREDDS URL to work with..");
             request.setAttribute("errorBean", errorBean);
@@ -406,7 +404,7 @@ public class FileProcessServlet extends HttpServlet {
         }
 
         // Grab resources from the THREDDS catalog
-        openDapResources = NetCDFUtility.getOpenDapResources(catalog);
+        List<InvAccess> openDapResources = NetCDFUtility.getDatasetHandles(catalog);
         if (openDapResources == null) {
             errorBean.getMessages().add("Could not pull information from THREDDS Server");
             request.setAttribute("errorBean", errorBean);

@@ -18,7 +18,6 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 @XStreamAlias("file-set")
 public class FilesBean implements Serializable {
-
 	@XStreamAlias("file-set-name")
 	@XStreamAsAttribute
 	private String name;
@@ -31,11 +30,7 @@ public class FilesBean implements Serializable {
 	public String toXml() {
 		XStream xstream = new XStream();
 		xstream.processAnnotations(FilesBean.class);
-		StringBuffer sb = new StringBuffer();
-		String result = "";
-		sb.append(xstream.toXML(this));
-		result = sb.toString();
-		return result;
+		return xstream.toXML(this);
 	}
 	
 	public ShapeFileSetBean getShapeFileSetBean() {
@@ -113,5 +108,4 @@ public class FilesBean implements Serializable {
 		}
 		return result;
 	}
-	
 }
