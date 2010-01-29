@@ -72,6 +72,7 @@ public class THREDDSServlet extends HttpServlet {
 				return;
 			}
 			
+			// Check that a port was provided and correct			
 			try {
 				if (portString != null && !"".equals(portString) && !"null".equals(portString)) {
 					port = Integer.parseInt(portString);
@@ -95,20 +96,24 @@ public class THREDDSServlet extends HttpServlet {
 			
 		}
 		
-		if ("getgrid".equals(command)) {
+		if ("getgridlist".equals(command)) {
 			log.debug("User has chosen to list shapefile attributes");
 			
 			// Grab what we need to work with for this request
 			String hostname = request.getParameter("hostname");
 			String portString = request.getParameter("port");
+			String uri = request.getParameter("uri");
+			String dataset = request.getParameter("dataset");
 			if (portString == null || "".equals(portString)) portString = "80";
 			int port = 80;
-			if (hostname == null || "".equals(hostname)) {
+			if (hostname == null || "".equals(hostname)
+					|| uri == null || "".equals(uri)) {
 				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_MISSING_PARAM));
 				RouterServlet.sendXml(xmlReply, response);
 				return;
 			}
 			
+			// Check that a port was provided and correct
 			try {
 				if (portString != null && !"".equals(portString) && !"null".equals(portString)) {
 					port = Integer.parseInt(portString);
@@ -119,6 +124,8 @@ public class THREDDSServlet extends HttpServlet {
 				return;
 			}
 
+			
+			
 			/*AttributeBean attributeBean = new AttributeBean(attributeList);
 			attributeBean.setFilesetName(shapefile);
 			xmlReply = new XmlReplyBean(AckBean.ACK_OK, attributeBean);

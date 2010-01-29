@@ -131,7 +131,7 @@ public class RouterServlet extends HttpServlet {
 		if ("getgridlist".equals(command)) {
 			String hostname = request.getParameter("hostname");
 			String port = request.getParameter("port");
-			RequestDispatcher rd = request.getRequestDispatcher("/THREDDSServlet?command=getgrid&hostname=" + hostname + "&port=" + port);
+			RequestDispatcher rd = request.getRequestDispatcher("/THREDDSServlet?command=getgridlist&hostname=" + hostname + "&port=" + port);
 			rd.forward(request, response);
 			return;
 		}

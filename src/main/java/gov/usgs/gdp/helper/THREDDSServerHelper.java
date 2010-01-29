@@ -2,6 +2,7 @@ package gov.usgs.gdp.helper;
 
 import gov.usgs.gdp.analysis.NetCDFUtility;
 import gov.usgs.gdp.bean.DataSetBean;
+import gov.usgs.gdp.bean.GridBean;
 import gov.usgs.gdp.bean.XmlBean;
 
 import java.io.IOException;
@@ -9,10 +10,14 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.LinkedList;
 import java.util.List;
 
 import thredds.catalog.*;
+import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.ft.FeatureDatasetFactoryManager;
 
 public class THREDDSServerHelper {
 
@@ -68,6 +73,14 @@ public class THREDDSServerHelper {
     	
     }
 
+    public static InvCatalog getInvCatalogFromServer(String hostname, int port, String uri) {
+    	String ThreddsURL = "http://" + hostname + ":" + port + uri;
+    	URI catalogURI = URI.create(ThreddsURL);
+    	InvCatalogFactory factory = new InvCatalogFactory("default", true);
+    	InvCatalog catalog = factory.readXML(catalogURI);
+    	return catalog;
+    }
+    
     /**
      * Returns a List<XmlBean> which is actually a List<DataSetBean>
      * 
@@ -81,6 +94,7 @@ public class THREDDSServerHelper {
 			int port, String uri) throws IllegalArgumentException {
 		
 		if (hostname == null || "".equals(hostname)) throw new IllegalArgumentException("Hostname invalid or null");
+		if (uri == null || "".equals(uri)) throw new IllegalArgumentException("URI invalid or null");
 		if (port == 0) port = 80;
 		
 		List<XmlBean> result = new ArrayList<XmlBean>();
@@ -90,6 +104,7 @@ public class THREDDSServerHelper {
 		for (InvAccess invAccess : invAccessList) {
 			
 			InvDataset ds = invAccess.getDataset();
+			List<InvPropertyBean> = ds.getP 
 			DataSetBean dsb = new DataSetBean(ds);			
 			result.add(dsb);
 		}
@@ -97,4 +112,38 @@ public class THREDDSServerHelper {
 		
 		return result;
 	}
+	
+	public static List<XmlBean> getGridBeanListFromServer(String hostname,
+			int port, String uri, String datasetUrl) throws IllegalArgumentException, IOException{
+		
+		if (hostname == null || "".equals(hostname)) throw new IllegalArgumentException("Hostname invalid or null");
+		if (uri == null || "".equals(uri)) throw new IllegalArgumentException("URI invalid or null");
+		if (datasetUrl == null || "".equals(datasetUrl)) throw new IllegalArgumentException("DataSet invalid or null");
+		if (port == 0) port = 80;
+		
+		List<XmlBean> result = new ArrayList<XmlBean>();
+		// Grab the grid dataset
+        Formatter errorLog = new Formatter();
+
+
+        FeatureDataset featureDataset;
+		try {
+			featureDataset = FeatureDatasetFactoryManager.open(null, datasetUrl, null, errorLog);
+		} catch (IOException e) {
+			throw e;
+		}
+		
+		 if (featureDataset != null) {	           
+            for (VariableSimpleIF vs : featureDataset.getDataVariables()) {
+            	GridBean gb = new GridBean(vs);
+            	result.add(gb);
+            }
+        } else {
+        	return null;
+        }
+		
+		return result;
+		
+	}
+	
 }
