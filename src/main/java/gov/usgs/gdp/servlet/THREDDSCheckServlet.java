@@ -186,11 +186,17 @@ public class THREDDSCheckServlet extends HttpServlet {
 			while (threddsUrlMapKeySetIterator.hasNext()) {
 				String key = threddsUrlMapKeySetIterator.next();
 				String serverUrl = threddsUrlMap.get(key);
+				String protocol;
 				THREDDSServerBean threddsServerBean = new THREDDSServerBean();
 				
 				int startAt = 0;
-				if (serverUrl.contains("http:")) startAt = 7;
-				else startAt = 8;
+				if (serverUrl.contains("http:")) {
+					startAt = 7;
+					protocol = "http://";
+				} else {
+					startAt = 8; 
+					protocol = "https://";
+				}
 				
 				String hostname = "";
 				boolean hasPort = true;
@@ -213,7 +219,7 @@ public class THREDDSCheckServlet extends HttpServlet {
 				
 				uri = serverUrl.substring(startAt);
 				threddsServerBean.setUri(uri);
-				
+				threddsServerBean.setProtocol(protocol);
 				threddsServerBean.setHostname(hostname);
 				threddsServerBean.setPort(Integer.parseInt(port));
 				result.put(key, threddsServerBean);

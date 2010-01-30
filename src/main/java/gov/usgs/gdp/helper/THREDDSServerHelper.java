@@ -90,7 +90,7 @@ public class THREDDSServerHelper {
      * @return
      * @throws IllegalArgumentException
      */
-	public static List<XmlBean> getDatasetListFromServer(String hostname,
+	/*public static List<XmlBean> getDatasetListFromServer(String hostname,
 			int port, String uri) throws IllegalArgumentException {
 		
 		if (hostname == null || "".equals(hostname)) throw new IllegalArgumentException("Hostname invalid or null");
@@ -111,7 +111,7 @@ public class THREDDSServerHelper {
 		
 		
 		return result;
-	}
+	}*/
 	
 	public static List<XmlBean> getGridBeanListFromServer(String hostname,
 			int port, String uri, String datasetUrl) throws IllegalArgumentException, IOException{

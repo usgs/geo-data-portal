@@ -12,6 +12,7 @@ public class THREDDSServerBean implements XmlBean{
 
 	private static org.apache.log4j.Logger log = Logger.getLogger(THREDDSServerBean.class);
 	
+	private String protocol;
 	private String hostname;
 	private int port;
 	private String uri;
@@ -63,6 +64,12 @@ public class THREDDSServerBean implements XmlBean{
 	}
 	public String getUri() {
 		return uri;
+	}
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
+	}
+	public String getProtocol() {
+		return protocol;
 	}
 	
 }

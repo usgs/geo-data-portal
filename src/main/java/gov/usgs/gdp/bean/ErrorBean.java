@@ -26,7 +26,7 @@ public class ErrorBean implements XmlBean{
 	public final static int ERR_MISSING_PARAM = 8;
 	public final static int ERR_MISSING_DATASET = 9;
 	public final static int ERR_PORT_INCORRECT = 10;
-	
+	public final static int ERR_MISSING_THREDDS = 11;
 	public final static Map<Integer, String> ERROR_MESSAGES;
 	
 	
@@ -84,6 +84,7 @@ public class ErrorBean implements XmlBean{
 		setErrorCreated(new Date());
 	}
 	
+	@Override
 	public String toXml() {
 		XStream xstream = new XStream();
 		xstream.processAnnotations(ErrorBean.class);

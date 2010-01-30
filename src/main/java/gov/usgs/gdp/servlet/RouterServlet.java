@@ -143,6 +143,13 @@ public class RouterServlet extends HttpServlet {
 			return;
 		}
 		
+		if ("getcatalog".equals(command)) {
+			String url = request.getParameter("url");
+			RequestDispatcher rd = request.getRequestDispatcher("/THREDDSServlet?command=getcatalog&url=" + url);
+			rd.forward(request, response);
+			return;
+		}
+		
 		// Check for stale session
 		String tomcatStarted = System.getProperty("tomcatStarted");
 		String sessionStarted = Long.toString(request.getSession().getCreationTime());
@@ -218,6 +225,25 @@ public class RouterServlet extends HttpServlet {
 		rd.forward(request, response);
 	}
 
+	public static void sendXml(String xml, HttpServletResponse response) throws IOException {
+		 ServletOutputStream stream = null;
+		 BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(xml.getBytes()));
+		 try {
+			stream = response.getOutputStream();
+			response.setContentType("text/xml");
+			response.setCharacterEncoding("utf-8");
+			response.setContentLength(xml.length());
+			int readBytes = 0;
+			while ((readBytes = bis.read()) != -1) {
+				stream.write(readBytes);
+			}
+			stream.flush();
+		} finally {
+			if (stream != null) stream.close();
+			bis.close();
+		}
+		
+	}
 	public static void sendXml(XmlReplyBean xmlReply, HttpServletResponse response) throws IOException {
 		 String xml = xmlReply.toXml();
 		 ServletOutputStream stream = null;

@@ -60,14 +60,14 @@ public class THREDDSServerHelperTest {
     	assertFalse(result.isEmpty());
     }
     
+
     @Test
     public void testGetInvCatalogFromServer() {
-    	String host = "runoff.cr.usgs.gov";
-    	int port = 8086; 
-    	String uri = "/thredds/hydrologic_catalog.xml";
+    	String host = "motherlode.ucar.edu";
+    	int port = 8080; 
+    	String uri = "/thredds/catalog/station/metar/catalog.xml";
     	InvCatalog result = THREDDSServerHelper.getInvCatalogFromServer(host, port, uri);
     	assertNotNull(result);
-    	
     }
     
     @Test 
