@@ -127,7 +127,7 @@ public class RouterServlet extends HttpServlet {
 		}
 		
 		if ("getdatasetlist".equals(command)) {
-			String hostname = request.getParameter("hostname");
+			String hostname = request.getParameter("dataseturl");
 			String port = request.getParameter("port");
 			String uri = request.getParameter("uri");
 			RequestDispatcher rd = request.getRequestDispatcher("/THREDDSServlet?command=getdatasetlist&hostname=" + hostname + "&port=" + port + "&uri=" + uri);
@@ -136,9 +136,8 @@ public class RouterServlet extends HttpServlet {
 		}
 		
 		if ("getgridlist".equals(command)) {
-			String hostname = request.getParameter("hostname");
-			String port = request.getParameter("port");
-			RequestDispatcher rd = request.getRequestDispatcher("/THREDDSServlet?command=getgridlist&hostname=" + hostname + "&port=" + port);
+			String dataseturl = request.getParameter("dataseturl");
+			RequestDispatcher rd = request.getRequestDispatcher("/THREDDSServlet?command=getgridlist&dataseturl=" + dataseturl);
 			rd.forward(request, response);
 			return;
 		}

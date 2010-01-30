@@ -72,22 +72,21 @@ public class THREDDSServerHelperTest {
     
     @Test 
     public void testGetGridListFromServer() {
-    	String host = "runoff.cr.usgs.gov";
-    	int port = 8086; 
-    	String uri = "/thredds/hydrologic_catalog.xml";
-//    	String gridUrl = "http://runoff.cr.usgs.gov:8086/thredds/hydrologic_catalog.xml";
-    	String gridUrl = "http://runoff.cr.usgs.gov:8086/thredds/dodsC/hydro/national/2.5arcmin";
+    	String gridUrl = "http://geoport.whoi.edu:8081/thredds/dodsC/bathy/adria15";
     	List<XmlBean> result = null;
 		try {
-			result = THREDDSServerHelper.getGridBeanListFromServer(host, port, uri, gridUrl);
+			result = THREDDSServerHelper.getGridBeanListFromServer(gridUrl);
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			fail(e.getMessage());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			fail(e.getMessage());
 		}
     	assertNotNull(result);
     	assertFalse(result.isEmpty());
+    }
+    
+    @Test 
+    public void testGetFeatureDataSet() {
+    	//
     }
 }

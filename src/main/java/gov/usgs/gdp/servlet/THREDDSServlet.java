@@ -5,6 +5,7 @@ import gov.usgs.gdp.bean.AttributeBean;
 import gov.usgs.gdp.bean.DataSetBean;
 import gov.usgs.gdp.bean.ErrorBean;
 import gov.usgs.gdp.bean.FilesBean;
+import gov.usgs.gdp.bean.GridBean;
 import gov.usgs.gdp.bean.PassThroughXmlResponseBean;
 import gov.usgs.gdp.bean.ShapeFileSetBean;
 import gov.usgs.gdp.bean.XmlBean;
@@ -51,6 +52,7 @@ public class THREDDSServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
 	}
@@ -58,6 +60,7 @@ public class THREDDSServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String command = request.getParameter("command");
 		XmlReplyBean xmlReply = null;
@@ -144,37 +147,17 @@ public class THREDDSServlet extends HttpServlet {
 			log.debug("User has chosen to list shapefile attributes");
 			
 			// Grab what we need to work with for this request
-			String hostname = request.getParameter("hostname");
-			String portString = request.getParameter("port");
-			String uri = request.getParameter("uri");
-			String dataset = request.getParameter("dataset");
-			if (portString == null || "".equals(portString)) portString = "80";
-			int port = 80;
-			if (hostname == null || "".equals(hostname)
-					|| uri == null || "".equals(uri)) {
+			String datasetUrl = request.getParameter("dataseturl");
+			if (datasetUrl == null || "".equals(datasetUrl)) {
 				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_MISSING_PARAM));
 				RouterServlet.sendXml(xmlReply, response);
 				return;
 			}
-			
-			// Check that a port was provided and correct
-			try {
-				if (portString != null && !"".equals(portString) && !"null".equals(portString)) {
-					port = Integer.parseInt(portString);
-				}
-			} catch (NumberFormatException e) {
-				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_PORT_INCORRECT));
-				RouterServlet.sendXml(xmlReply, response);
-				return;
-			}
 
-			
-			
-			/*AttributeBean attributeBean = new AttributeBean(attributeList);
-			attributeBean.setFilesetName(shapefile);
-			xmlReply = new XmlReplyBean(AckBean.ACK_OK, attributeBean);
-			RouterServlet.sendXml(xmlReply, response);
-			return;*/
+			List<XmlBean> gridBeanList = THREDDSServerHelper.getGridBeanListFromServer(datasetUrl);
+			XmlReplyBean xrb = new XmlReplyBean(AckBean.ACK_OK, gridBeanList);
+			RouterServlet.sendXml(xrb, response);
+			return;
 			
 		}
 	}

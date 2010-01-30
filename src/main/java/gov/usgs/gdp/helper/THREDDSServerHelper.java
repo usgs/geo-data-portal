@@ -44,7 +44,9 @@ public class THREDDSServerHelper {
         return result;
     }
     
-    /**
+
+
+	/**
      * Returns a List of type InvAccess which is a set of resources a THREDDS server offers
      * 
      * @param hostname
@@ -113,35 +115,34 @@ public class THREDDSServerHelper {
 		return result;
 	}*/
 	
-	public static List<XmlBean> getGridBeanListFromServer(String hostname,
-			int port, String uri, String datasetUrl) throws IllegalArgumentException, IOException{
+	public static List<XmlBean> getGridBeanListFromServer(String datasetUrl) throws IllegalArgumentException, IOException{
 		
-		if (hostname == null || "".equals(hostname)) throw new IllegalArgumentException("Hostname invalid or null");
-		if (uri == null || "".equals(uri)) throw new IllegalArgumentException("URI invalid or null");
-		if (datasetUrl == null || "".equals(datasetUrl)) throw new IllegalArgumentException("DataSet invalid or null");
-		if (port == 0) port = 80;
+		if (datasetUrl == null || "".equals(datasetUrl)) throw new IllegalArgumentException("DataSet URL invalid or null");
 		
 		List<XmlBean> result = new ArrayList<XmlBean>();
 		// Grab the grid dataset
         Formatter errorLog = new Formatter();
-
-
-        FeatureDataset featureDataset;
+        FeatureDataset featureDataset = null;
 		try {
 			featureDataset = FeatureDatasetFactoryManager.open(null, datasetUrl, null, errorLog);
+
+			 if (featureDataset != null) {	  
+				 List<VariableSimpleIF> vsifList = featureDataset.getDataVariables();
+	            for (VariableSimpleIF vs : vsifList) {
+	            	GridBean gb = new GridBean(vs);
+	            	result.add(gb);
+	            }
+	        } else {
+	        	return null;
+	        }
+			 
 		} catch (IOException e) {
+		
+		
 			throw e;
+		} finally {
+			featureDataset.close();
 		}
-		
-		 if (featureDataset != null) {	           
-            for (VariableSimpleIF vs : featureDataset.getDataVariables()) {
-            	GridBean gb = new GridBean(vs);
-            	result.add(gb);
-            }
-        } else {
-        	return null;
-        }
-		
 		return result;
 		
 	}
