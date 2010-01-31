@@ -77,7 +77,7 @@ public class THREDDSServerHelperTest {
     	String grid = "record.wind_from_direction_max";
     	TimeBean result = null;
 		try {
-			result = THREDDSServerHelper.getAvailableTimeBeanList(datasetUrl, grid);
+			result = THREDDSServerHelper.getTimeBean(datasetUrl, grid);
 		} catch (IllegalArgumentException e) {
 			fail(e.getMessage());
 		} catch (IOException e) {
