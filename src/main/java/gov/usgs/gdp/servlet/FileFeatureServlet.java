@@ -50,6 +50,13 @@ public class FileFeatureServlet extends HttpServlet {
 			log.debug("User has chosen to list shapefile features");
 			String shapefile = request.getParameter("shapefile");
 			String attribute = request.getParameter("attribute");
+			if (attribute == null || "".equals(attribute)
+					|| shapefile == null || "".equals(shapefile)) {
+				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_MISSING_PARAM));
+				RouterServlet.sendXml(xmlReply, response);
+				return;			
+			}
+			
 			Cookie userDirectoryCookie = CookieHelper.getCookie(request, "userDirectory");			
 			String userDirectory = "";
 			if (userDirectoryCookie != null) {

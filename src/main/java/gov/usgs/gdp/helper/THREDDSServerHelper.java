@@ -3,6 +3,9 @@ package gov.usgs.gdp.helper;
 import gov.usgs.gdp.analysis.NetCDFUtility;
 import gov.usgs.gdp.bean.DataSetBean;
 import gov.usgs.gdp.bean.GridBean;
+import gov.usgs.gdp.bean.MessageBean;
+import gov.usgs.gdp.bean.THREDDSInfoBean;
+import gov.usgs.gdp.bean.TimeBean;
 import gov.usgs.gdp.bean.XmlBean;
 
 import java.io.IOException;
@@ -16,8 +19,11 @@ import java.util.List;
 
 import thredds.catalog.*;
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.dt.grid.GeoGrid;
+import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
+import ucar.nc2.util.NamedObject;
 
 public class THREDDSServerHelper {
 
@@ -45,7 +51,33 @@ public class THREDDSServerHelper {
     }
     
 
+    public static TimeBean getTimeBean(String datasetUrl, String gridSelection) throws IOException{
+    	Formatter errorLog = new Formatter();
+    	FeatureDataset featureDataset = null;
+    	featureDataset = 
+    		FeatureDatasetFactoryManager.open(null, datasetUrl, null, errorLog);
 
+    	if (featureDataset != null) {
+    		try {
+    			
+    			TimeBean timeBean = null;
+    			if (featureDataset instanceof GridDataset) {
+    				timeBean = new TimeBean(featureDataset, gridSelection);
+    				return timeBean;
+    			}
+    			
+    			if (featureDataset instanceof FeatureDataset) {
+    				timeBean = new TimeBean(featureDataset, gridSelection);
+    				return timeBean;
+    			}
+    			
+    			return null;
+    		} finally {
+    			featureDataset.close();
+    		}
+    	}
+    	return null;
+    }
 	/**
      * Returns a List of type InvAccess which is a set of resources a THREDDS server offers
      * 

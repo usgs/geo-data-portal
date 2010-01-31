@@ -8,6 +8,7 @@ import gov.usgs.gdp.bean.FilesBean;
 import gov.usgs.gdp.bean.GridBean;
 import gov.usgs.gdp.bean.PassThroughXmlResponseBean;
 import gov.usgs.gdp.bean.ShapeFileSetBean;
+import gov.usgs.gdp.bean.TimeBean;
 import gov.usgs.gdp.bean.XmlBean;
 import gov.usgs.gdp.bean.XmlReplyBean;
 import gov.usgs.gdp.helper.CookieHelper;
@@ -158,8 +159,23 @@ public class THREDDSServlet extends HttpServlet {
 			XmlReplyBean xrb = new XmlReplyBean(AckBean.ACK_OK, gridBeanList);
 			RouterServlet.sendXml(xrb, response);
 			return;
-			
 		}
+		
+		if ("gettimerange".equals(command)) {
+			String datasetUrl = request.getParameter("dataseturl");
+			String gridSelection = request.getParameter("grid");
+			TimeBean timeBean = THREDDSServerHelper.getTimeBean(datasetUrl, gridSelection);
+			if (timeBean == null || timeBean.getTime().isEmpty()) {
+				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_MISSING_TIMERANGE));
+				RouterServlet.sendXml(xmlReply, response);
+				return;
+			} 
+			
+			XmlReplyBean xrb = new XmlReplyBean(AckBean.ACK_OK, timeBean);
+			RouterServlet.sendXml(xrb, response);
+			return;
+		}
+		
 	}
 
 }

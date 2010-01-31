@@ -2,6 +2,7 @@ package gov.usgs.gdp.helper;
 
 import static org.junit.Assert.*;
 
+import gov.usgs.gdp.bean.TimeBean;
 import gov.usgs.gdp.bean.XmlBean;
 
 import java.io.IOException;
@@ -71,19 +72,20 @@ public class THREDDSServerHelperTest {
     }
     
     @Test 
-    public void testGetGridListFromServer() {
-    	String gridUrl = "http://geoport.whoi.edu:8081/thredds/dodsC/bathy/adria15";
-    	List<XmlBean> result = null;
+    public void testGetAvailableTimeBeanList() {
+    	String datasetUrl = "http://motherlode.ucar.edu:8080/thredds/dodsC/station/metar/Surface_METAR_20100130_0000.nc";
+    	String grid = "record.wind_from_direction_max";
+    	TimeBean result = null;
 		try {
-			result = THREDDSServerHelper.getGridBeanListFromServer(gridUrl);
+			result = THREDDSServerHelper.getAvailableTimeBeanList(datasetUrl, grid);
 		} catch (IllegalArgumentException e) {
 			fail(e.getMessage());
 		} catch (IOException e) {
 			fail(e.getMessage());
 		}
     	assertNotNull(result);
-    	assertFalse(result.isEmpty());
     }
+
     
     @Test 
     public void testGetFeatureDataSet() {
