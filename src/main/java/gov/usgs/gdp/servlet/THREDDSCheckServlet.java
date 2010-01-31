@@ -3,7 +3,6 @@ package gov.usgs.gdp.servlet;
 
 
 import gov.usgs.gdp.bean.AckBean;
-import gov.usgs.gdp.bean.AttributeBean;
 import gov.usgs.gdp.bean.ErrorBean;
 import gov.usgs.gdp.bean.THREDDSInfoBean;
 import gov.usgs.gdp.bean.THREDDSServerBean;
@@ -31,8 +30,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-
-import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Servlet implementation class THREDDSCheckServlet

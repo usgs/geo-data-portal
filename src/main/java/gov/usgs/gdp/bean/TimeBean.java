@@ -21,16 +21,20 @@ public class TimeBean implements XmlBean{
 	private List<String> time;
 	
 	public TimeBean() {}
-	public TimeBean(FeatureDataset geoGrid, String gridSelection) {
-		Date fun = geoGrid.getStartDate();
+	public TimeBean(GridDataset geoGrid, String gridSelection) {
 		List<String> result = new ArrayList<String>();
-		if (geoGrid instanceof GridDataset) {
-			GeoGrid grid = ((GridDataset)geoGrid).findGridByName(gridSelection);
-			for (NamedObject time : grid.getTimes()) {
-				result.add(time.getName());
-			}
+		GeoGrid grid = geoGrid.findGridByName(gridSelection);
+		for (NamedObject time : grid.getTimes()) {
+			result.add(time.getName());
 			this.time = result;
 		}
+	}
+	
+	public static TimeBean getTimeBean(FeatureDataset geoGrid, String gridSelection) {
+		if (geoGrid instanceof GridDataset) {
+			return new TimeBean((GridDataset) geoGrid, gridSelection);
+		}
+		return null;
 	}
 	
 	@Override
