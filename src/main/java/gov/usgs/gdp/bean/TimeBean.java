@@ -1,12 +1,13 @@
 package gov.usgs.gdp.bean;
 
+import gov.usgs.gdp.analysis.NetCDFUtility;
+
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.util.NamedObject;
 
 import com.thoughtworks.xstream.XStream;
@@ -30,11 +31,21 @@ public class TimeBean implements XmlBean{
 		}
 	}
 	
-	public static TimeBean getTimeBean(FeatureDataset geoGrid, String gridSelection) {
-		if (geoGrid instanceof GridDataset) {
+	//public static TimeBean getTimeBean(FeatureDataset geoGrid, String gridSelection) {
+		//List<String> dates = NetCDFUtility.getDateRange(location, variableName)
+		/*if (geoGrid instanceof GridDataset) {
 			return new TimeBean((GridDataset) geoGrid, gridSelection);
 		}
-		return null;
+		return null;*/
+	//}
+	public static TimeBean getTimeBean(String location, String gridSelection) throws IOException {
+		List<String> dateRange = NetCDFUtility.getDateRange(location, gridSelection);
+		TimeBean result = new TimeBean(dateRange);
+		return result;
+	}
+	
+	public TimeBean(List<String> dateRange) {
+		this.time = dateRange;
 	}
 	
 	@Override
