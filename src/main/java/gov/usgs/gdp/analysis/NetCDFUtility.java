@@ -93,8 +93,6 @@ public class NetCDFUtility {
     	}
 
     	List<String> dateRange = new ArrayList<String>(2);
-    	dateRange.add(null);
-    	dateRange.add(null);
     	FeatureDataset dataset = null;
     	try {
     		dataset = FeatureDatasetFactoryManager.open(
@@ -102,12 +100,18 @@ public class NetCDFUtility {
     		if(dataset.getFeatureType() == FeatureType.GRID) {
     			GeoGrid grid = ((GridDataset)dataset).findGridByName(variableName);
     			if (grid == null) return dateRange;
+    			
     			List<NamedObject> times = grid.getTimes();
     			if (times.isEmpty()) return dateRange;
-    			NamedObject namedObject  = times.get(0); 
-    			String time = namedObject.getName();
-    			dateRange.set(0, time);
-    			dateRange.set(1, times.get(times.size() - 1).getName());
+    			
+    			NamedObject startTimeNamedObject  = times.get(0); 
+    			String startTime = startTimeNamedObject.getName();
+    			dateRange.add(0, startTime);
+    			
+    			NamedObject endTimeNamedObject =  times.get(times.size() - 1);
+    			String endTime = endTimeNamedObject.getName();
+    			dateRange.add(1, endTime);
+    			
     		} else if (dataset.getFeatureType() == FeatureType.STATION) {
     			DateRange dr = null;
     			List<FeatureCollection> list =
