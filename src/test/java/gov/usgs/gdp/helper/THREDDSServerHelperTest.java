@@ -3,11 +3,11 @@ package gov.usgs.gdp.helper;
 import static org.junit.Assert.*;
 
 import gov.usgs.gdp.bean.TimeBean;
-import gov.usgs.gdp.bean.XmlBean;
 
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
+import java.text.ParseException;
 import java.util.List;
 
 import org.junit.Test;
@@ -82,6 +82,9 @@ public class THREDDSServerHelperTest {
 			fail(e.getMessage());
 		} catch (IOException e) {
 			fail(e.getMessage());
+		} catch (ParseException e) {
+			fail(e.getMessage());
+
 		}
     	assertNotNull(result);
     }

@@ -88,82 +88,88 @@ public class NetCDFUtility {
     }
 
     public static List<String> getDateRange(String location, String variableName) throws IOException {
-        if (location == null) {
-            throw new IllegalArgumentException("location can't be null");
-        }
+    	if (location == null) {
+    		throw new IllegalArgumentException("location can't be null");
+    	}
 
-        List<String> dateRange = new ArrayList<String>(2);
-        FeatureDataset dataset = null;
-        try {
-            dataset = FeatureDatasetFactoryManager.open(
-                    null, location, null, new Formatter());
-            if(dataset.getFeatureType() == FeatureType.GRID) {
-                GeoGrid grid = ((GridDataset)dataset).findGridByName(variableName);
-                List<NamedObject> times = grid.getTimes();
-                dateRange.set(0, times.get(0).getName());
-                dateRange.set(0, times.get(times.size() - 1).getName());
-            } else if (dataset.getFeatureType() == FeatureType.STATION) {
-                DateRange dr = null;
-                List<FeatureCollection> list =
-                        ((FeatureDatasetPoint)dataset).getPointFeatureCollectionList();
-                for(FeatureCollection fc : list) {
-                    if(fc instanceof StationTimeSeriesFeatureCollection) {
-                        StationTimeSeriesFeatureCollection stsfc =
-                                (StationTimeSeriesFeatureCollection)fc;
-                        //stsfc = stsfc.subset(boundingBox);
-                        while (dr == null && stsfc.hasNext()) {
-                            StationTimeSeriesFeature stsf = stsfc.next();
-                            System.out.println(stsf.getName() +  "" + stsf.size());
-                            PointFeatureIterator pfi = stsf.getPointFeatureIterator(1 << 20);
-                            while(pfi.hasNext()) {
-                                pfi.next();
-                            }
-                        }
-                        while (stsfc.hasNext()) {
-                            dr.extend(stsfc.next().getDateRange());
-                        }
-                    }
-                }
-                if (dr == null) {
-                    dr = dataset.getDateRange();
-                }
-                if( dr != null) {
-                    dateRange.set(0, dr.getEnd().toString());
-                    dateRange.set(0, dr.getEnd().toString());
-                }
-            }
-        } finally {
-            if (dataset != null) {
-                dataset.close();
-            }
-        }
-        return dateRange;
-//
-//            Formatter errorLog = new Formatter();
-//            FeatureDataset featureDataset = FeatureDatasetFactoryManager.open(
-//                    null, location, null, errorLog);
-//
-//            if (featureDataset != null) {
-//
-//                List<String> timeSelectItemList = new ArrayList<String>();
-//                if (featureDataset instanceof GridDataset) {
-//                    GeoGrid grid = ((GridDataset)featureDataset).findGridByName(gridSelection);
-//
-//                    for (NamedObject time : grid.getTimes()) {
-//                        timeSelectItemList.add(time.getName());
-//                    }
-//                } else {
-//                    // TODO:
-//                }
-//            }
+    	List<String> dateRange = new ArrayList<String>(2);
+    	dateRange.add(null);
+    	dateRange.add(null);
+    	FeatureDataset dataset = null;
+    	try {
+    		dataset = FeatureDatasetFactoryManager.open(
+    				null, location, null, new Formatter());
+    		if(dataset.getFeatureType() == FeatureType.GRID) {
+    			GeoGrid grid = ((GridDataset)dataset).findGridByName(variableName);
+    			if (grid == null) return dateRange;
+    			List<NamedObject> times = grid.getTimes();
+    			if (times.isEmpty()) return dateRange;
+    			NamedObject namedObject  = times.get(0); 
+    			String time = namedObject.getName();
+    			dateRange.set(0, time);
+    			dateRange.set(1, times.get(times.size() - 1).getName());
+    		} else if (dataset.getFeatureType() == FeatureType.STATION) {
+    			DateRange dr = null;
+    			List<FeatureCollection> list =
+    				((FeatureDatasetPoint)dataset).getPointFeatureCollectionList();
+    			for(FeatureCollection fc : list) {
+    				if(fc instanceof StationTimeSeriesFeatureCollection) {
+    					StationTimeSeriesFeatureCollection stsfc =
+    						(StationTimeSeriesFeatureCollection)fc;
+    					//stsfc = stsfc.subset(boundingBox);
+    					while (dr == null && stsfc.hasNext()) {
+    						StationTimeSeriesFeature stsf = stsfc.next();
+    						System.out.println(stsf.getName() +  "" + stsf.size());
+    						PointFeatureIterator pfi = stsf.getPointFeatureIterator(1 << 20);
+    						while(pfi.hasNext()) {
+    							pfi.next();
+    						}
+    					}
+    					while (stsfc.hasNext()) {
+    						dr.extend(stsfc.next().getDateRange());
+    					}
+    				}
+    			}
+    			if (dr == null) {
+    				dr = dataset.getDateRange();
+    			}
+    			if( dr != null) {
+    				dateRange.set(0, dr.getEnd().toString());
+    				dateRange.set(0, dr.getEnd().toString());
+    			}
+    		}
+    	} finally {
+    		if (dataset != null) {
+    			dataset.close();
+    		}
+    	}
+    	return dateRange;
+    	//
+    	//            Formatter errorLog = new Formatter();
+    	//            FeatureDataset featureDataset = FeatureDatasetFactoryManager.open(
+    	//                    null, location, null, errorLog);
+    	//
+    	//            if (featureDataset != null) {
+    	//
+    	//                List<String> timeSelectItemList = new ArrayList<String>();
+    	//                if (featureDataset instanceof GridDataset) {
+    	//                    GeoGrid grid = ((GridDataset)featureDataset).findGridByName(gridSelection);
+    	//
+    	//                    for (NamedObject time : grid.getTimes()) {
+    	//                        timeSelectItemList.add(time.getName());
+    	//                    }
+    	//                } else {
+    	//                    // TODO:
+    	//                }
+    	//            }
 
-//                    FeatureDatasetPoint fdp = (FeatureDatasetPoint) dataset;
-//            for (FeatureCollection fc : fdp.getPointFeatureCollectionList()) {
-//                StationTimeSeriesFeatureCollection sc = (StationTimeSeriesFeatureCollection) fc;
-//                for (Station s : sc.getStations()) {
-//                    System.out.println("  " + s.getName());
-//                }
-//            }
+    	//                    FeatureDatasetPoint fdp = (FeatureDatasetPoint) dataset;
+    	//            for (FeatureCollection fc : fdp.getPointFeatureCollectionList()) {
+    	//                StationTimeSeriesFeatureCollection sc = (StationTimeSeriesFeatureCollection) fc;
+    	//                for (Station s : sc.getStations()) {
+    	//                    System.out.println("  " + s.getName());
+    	//                }
+    	//            }
     }
 
     public static void main(String[] args) {

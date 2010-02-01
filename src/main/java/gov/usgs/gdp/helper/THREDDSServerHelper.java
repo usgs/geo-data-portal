@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URI;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.LinkedList;
@@ -45,7 +46,7 @@ public class THREDDSServerHelper {
     }
     
 
-    public static TimeBean getTimeBean(String datasetUrl, String gridSelection) throws IOException{
+    public static TimeBean getTimeBean(String datasetUrl, String gridSelection) throws IOException, ParseException{
     	Formatter errorLog = new Formatter();
     	FeatureDataset featureDataset = null;
     	featureDataset = 

@@ -8,6 +8,8 @@ import gov.usgs.gdp.bean.XmlReplyBean;
 import gov.usgs.gdp.helper.THREDDSServerHelper;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -130,7 +132,14 @@ public class THREDDSServlet extends HttpServlet {
 				return;
 			}
 
-			List<XmlBean> gridBeanList = THREDDSServerHelper.getGridBeanListFromServer(datasetUrl);
+			List<XmlBean> gridBeanList = null;
+				try {
+					gridBeanList = THREDDSServerHelper.getGridBeanListFromServer(datasetUrl);
+				} catch (IOException e) {
+					xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.INVALID_URL));
+					RouterServlet.sendXml(xmlReply, response);
+					return;
+				}
 			XmlReplyBean xrb = new XmlReplyBean(AckBean.ACK_OK, gridBeanList);
 			RouterServlet.sendXml(xrb, response);
 			return;
@@ -139,13 +148,20 @@ public class THREDDSServlet extends HttpServlet {
 		if ("gettimerange".equals(command)) {
 			String datasetUrl = request.getParameter("dataseturl");
 			String gridSelection = request.getParameter("grid");
-			TimeBean timeBean = THREDDSServerHelper.getTimeBean(datasetUrl, gridSelection);
+			TimeBean timeBean = null;
+			try {
+				timeBean = THREDDSServerHelper.getTimeBean(datasetUrl, gridSelection);
+			} catch (ParseException e) {
+				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_MISSING_TIMERANGE));
+				RouterServlet.sendXml(xmlReply, response);
+				return;
+			}
+			
 			if (timeBean == null || timeBean.getTime().isEmpty()) {
 				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_MISSING_TIMERANGE));
 				RouterServlet.sendXml(xmlReply, response);
 				return;
 			} 
-			
 			XmlReplyBean xrb = new XmlReplyBean(AckBean.ACK_OK, timeBean);
 			RouterServlet.sendXml(xrb, response);
 			return;

@@ -28,7 +28,10 @@ public class ErrorBean implements XmlBean{
 	public final static int ERR_PORT_INCORRECT = 10;
 	public final static int ERR_MISSING_THREDDS = 11;
 	public final static int ERR_MISSING_TIMERANGE = 12;
+	public final static int ERR_PARSE_TIMERANGE = 13;
+	public static final int INVALID_URL = 14;
 	public final static Map<Integer, String> ERROR_MESSAGES;
+	
 	
 	
 	@XStreamAlias("code")
