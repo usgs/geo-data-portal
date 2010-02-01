@@ -90,12 +90,19 @@ public class TimeBean implements XmlBean{
 			
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(dateInstanceDate);
-			
+			this.month = cal.get(Calendar.MONTH) + 1;
+			this.day = cal.get(Calendar.DAY_OF_MONTH);
+			this.year  = cal.get(Calendar.YEAR);
+			this.hour  = cal.get(Calendar.HOUR_OF_DAY);
+			this.minute = cal.get(Calendar.MINUTE);
+			this.second = cal.get(Calendar.SECOND);
 			
 		}
 		
+		
+		
 		public TimeBreakdown(Calendar cal) {
-			this.month = cal.get(Calendar.MONTH);
+			this.month = cal.get(Calendar.MONTH) + 1;
 			this.day = cal.get(Calendar.DAY_OF_MONTH);
 			this.year  = cal.get(Calendar.YEAR);
 			this.hour  = cal.get(Calendar.HOUR_OF_DAY);
