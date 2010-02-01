@@ -93,7 +93,7 @@ public class FilesBean implements Serializable {
 		
 		for (File file : files) {
 			String fileName = file.getName();
-			String fileNameWithoutSuffix = fileName.substring(0, fileName.indexOf('.'));
+			String fileNameWithoutSuffix = fileName.substring(0, fileName.lastIndexOf('.'));
 			
 			//Check if we already have a FilesBean by this name
 			FilesBean filesBean = filesBeanMap.get(fileNameWithoutSuffix);

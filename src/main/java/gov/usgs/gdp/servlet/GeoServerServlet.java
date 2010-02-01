@@ -2,9 +2,12 @@ package gov.usgs.gdp.servlet;
 
 import gov.usgs.gdp.bean.AckBean;
 import gov.usgs.gdp.bean.XmlReplyBean;
+import gov.usgs.gdp.helper.FileHelper;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -23,7 +26,6 @@ public class GeoServerServlet extends HttpServlet {
      */
     public GeoServerServlet() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
 	/**
@@ -43,7 +45,7 @@ public class GeoServerServlet extends HttpServlet {
 		XmlReplyBean xmlReply = null;
 		if ("createdatastore".equals(command)) {
 			
-			String shapefile = request.getParameter("shapefile");
+			String shapefileName = request.getParameter("shapefile");
 			/*Cookie userDirectoryCookie = CookieHelper.getCookie(request, "userDirectory");
 			String userDirectory = "";
 			if (userDirectoryCookie != null) {
@@ -59,60 +61,92 @@ public class GeoServerServlet extends HttpServlet {
 				return;
 			}*/
 			
-			String shapefileLoc = System.getProperty("applicationTempDir") + shapefile;
-			System.out.println(shapefileLoc);
+			String geoServerURL = new String("http://localhost:8080/geoserver/");
+			String tempDir = System.getProperty("applicationTempDir");
+			String shapefileLoc = tempDir + "Sample_Files/Shapefiles/" + shapefileName + ".shp";
+			
+			String[] dir = tempDir.split(FileHelper.getSeparator());
+			// set the workspace to the name of the temp directory
+			String workspace = dir[dir.length - 1];
 
-			String workspace = "blah";
+			String workspaceXML = createWorkspaceXML(workspace);
+			String dataStoreXML = createDataStoreXML(shapefileName, workspace, shapefileLoc);
+			String featureTypeXML = createFeatureTypeXML(shapefileName, workspace);
 			
-			String geoServerLoc = new String("http://localhost:8080/geoserver/rest/workspaces/");
-			URL geoServerURL = new URL(geoServerLoc + workspace + "/datastores/" + workspace + ".xml");
-			HttpURLConnection geoServerConnection = (HttpURLConnection) geoServerURL.openConnection();
-			geoServerConnection.setRequestMethod("POST");
-			geoServerConnection.addRequestProperty("Content-Type", "text/xml");
+			URL workspacesURL = new URL(geoServerURL + "rest/workspaces/");
+			URL dataStoresURL = new URL(workspacesURL + workspace + "/datastores/");
+			URL featureTypesURL = new URL(dataStoresURL + shapefileName +  "/featuretypes.xml");
 			
-			//OutputStream geoServerConnOS = geoServerConnection.getOutputStream();
-			//geoServerConnOS.write(b);
-			
-			
-		  /*<dataStore>
-			  <name>counties</name>
-			  <type>Shapefile</type>
-			  <enabled>true</enabled>
-			  <workspace>
-			    <name>usgs</name>
-			    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/WorkspaceInfoImpl-3c812e7b:1267b99a288:-8000.xml" type="application/xml"/>
-			  </workspace>
-			  <connectionParameters>
-			    <entry key="memory mapped buffer">true</entry>
-			    <entry key="create spatial index">true</entry>
-			    <entry key="charset">ISO-8859-1</entry>
-			    <entry key="url">file:/Users/razoerb/Documents/workspace/GDP/src/main/resources/Sample_Files/Shapefiles/usa_counties.shp</entry>
-			    <entry key="namespace">http://www.usgs.gov</entry>
-			  </connectionParameters>
-			  <featureTypes>
-			    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/usgs/datastores/counties/featuretypes.xml" type="application/xml"/>
-			  </featureTypes>
-			</dataStore>*/
-			
-		  /*<featureType>
-			  <name>usa_counties</name>
-			  <nativeName>usa_counties</nativeName>
-			  <namespace>
-			    <name>usgs</name>
-			    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/namespaces/usgs.xml" type="application/xml"/>
-			  </namespace>
-			  <title>usa_counties</title>
-			  <enabled>true</enabled>
-			  <store class="dataStore">
-			    <name>counties</name>
-			    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/usgs/datastores/counties.xml" type="application/xml"/>
-			  </store>
-			</featureType>*/		
-			
+			sendXMLPacket(workspacesURL, workspaceXML);
+			sendXMLPacket(dataStoresURL, dataStoreXML);
+			sendXMLPacket(featureTypesURL, featureTypeXML);
 			
 			xmlReply = new XmlReplyBean(AckBean.ACK_OK, new AckBean(AckBean.ACK_OK));
 			RouterServlet.sendXml(xmlReply, response);
 			return;
 		}
+	}
+	
+	void sendXMLPacket(URL url, String xml) throws IOException {
+		HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
+		httpConnection.setDoOutput(true);
+		httpConnection.setRequestMethod("POST");
+		httpConnection.addRequestProperty("Content-Type", "text/xml");
+		OutputStreamWriter workspacesWriter = new OutputStreamWriter(httpConnection.getOutputStream());
+		workspacesWriter.write(xml);
+		workspacesWriter.close();
+		
+		// For some reason this has to be here for the packet above to be sent //
+		BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
+		String line;
+		while ((line = reader.readLine()) != null) {
+			System.out.println(line);
+		}
+		reader.close();
+		/////////////////////////////////////////////////////////////////////////
+	}
+	
+	String createWorkspaceXML(String workspace) {
+		return new String("<workspace><name>" + workspace + "</name></workspace>");
+	}
+	
+	String createDataStoreXML(String name, String workspace, String url) {
+		
+		return new String(
+				"<dataStore>" +
+				"  <name>" + name + "</name>" +
+				"  <type>Shapefile</type>" +
+				"  <enabled>true</enabled>" +
+				"  <workspace>" +
+				"    <name>" + workspace + "</name>" +
+				"  </workspace>" +
+				"  <connectionParameters>" +
+				"    <entry key=\"memory mapped buffer\">true</entry>" +
+				"    <entry key=\"create spatial index\">true</entry>" +
+				"    <entry key=\"charset\">ISO-8859-1</entry>" +
+				"    <entry key=\"url\">file:" + url + "</entry>" +
+				"    <entry key=\"namespace\">http://" + workspace + "</entry>" +  // default namespace = "http://" + workspace
+				"  </connectionParameters>" +
+				"</dataStore>");
+	}
+	
+	String createFeatureTypeXML(String name, String workspace) {
+		
+		return new String(
+				"<featureType>" +
+				"  <name>" + name + "</name>" +
+				"  <nativeName>" + name + "</nativeName>" +
+				"  <namespace>" +
+				"    <name>" + workspace + "</name>" +
+				"  </namespace>" +
+				"  <title>" + name + "</title>" +
+				"  <enabled>true</enabled>" +
+				"  <store class=\"dataStore\">" +
+				"    <name>" + name + "</name>" +
+				"    <atom:link xmlns:atom=\"http://www.w3.org/2005/Atom\" rel=\"alternate\" " +
+				"			href=\"http://localhost:8080/geoserver/rest/workspaces/usgs/datastores/counties.xml\" " +
+				"			type=\"application/xml\"/>" +
+				"  </store>" +
+				"</featureType>");
 	}
 }
