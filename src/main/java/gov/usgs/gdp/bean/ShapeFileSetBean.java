@@ -244,7 +244,7 @@ public class ShapeFileSetBean implements XmlBean {
 
         if (projectionFile != null && shapeFile != null && dbFile != null) {
             result = new ShapeFileSetBean();
-            result.setName(shapeFile.getName().substring(0, shapeFile.getName().indexOf(".")));
+            result.setName(shapeFile.getName().substring(0, shapeFile.getName().lastIndexOf(".")));
             result.setDbfFile(dbFile);
             result.setShapeFile(shapeFile);
             result.setProjectionFile(projectionFile);
