@@ -79,11 +79,13 @@ public class THREDDSServlet extends HttpServlet {
 				return;
 				
 			} catch (HttpException e) {
-				System.err.println("Fatal protocol violation: " + e.getMessage());
-				e.printStackTrace();
+				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_PROTOCOL_VIOLATION));
+				RouterServlet.sendXml(xmlReply, response);
+				return;
 			} catch (IOException e) {
-				System.err.println("Fatal transport error: " + e.getMessage());
-				e.printStackTrace();
+				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_TRANSPORT_ERROR));
+				RouterServlet.sendXml(xmlReply, response);
+				return;
 			} finally {
 				// Release the connection.
 				method.releaseConnection();
@@ -136,7 +138,7 @@ public class THREDDSServlet extends HttpServlet {
 				try {
 					gridBeanList = THREDDSServerHelper.getGridBeanListFromServer(datasetUrl);
 				} catch (IOException e) {
-					xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.INVALID_URL));
+					xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_INVALID_URL));
 					RouterServlet.sendXml(xmlReply, response);
 					return;
 				}

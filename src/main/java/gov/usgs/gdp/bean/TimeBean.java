@@ -36,7 +36,7 @@ public class TimeBean implements XmlBean{
 		}
 	}
 
-	public static TimeBean getTimeBean(String location, String gridSelection) throws IOException, ParseException {
+	public static TimeBean getTimeBean(String location, String gridSelection) throws IOException, ParseException, IllegalArgumentException {
 		List<String> dateRange = NetCDFUtility.getDateRange(location, gridSelection);
 		TimeBean result = new TimeBean(dateRange);
 		return result;
