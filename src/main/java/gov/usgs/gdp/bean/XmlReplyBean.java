@@ -72,6 +72,7 @@ public class XmlReplyBean implements XmlBean {
 	public XmlReplyBean(int status, MessageBean messageBean) throws IllegalArgumentException {
 		try {
 			this.acknowledgment = new AckBean(status);
+			this.message = messageBean;
 		} catch (IllegalArgumentException e) {
 			log.debug(e.getMessage());
 			throw e;

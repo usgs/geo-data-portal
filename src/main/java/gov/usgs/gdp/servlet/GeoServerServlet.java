@@ -1,17 +1,24 @@
 package gov.usgs.gdp.servlet;
 
 import gov.usgs.gdp.bean.AckBean;
+import gov.usgs.gdp.bean.ErrorBean;
+import gov.usgs.gdp.bean.FilesBean;
+import gov.usgs.gdp.bean.MessageBean;
 import gov.usgs.gdp.bean.XmlReplyBean;
+import gov.usgs.gdp.helper.CookieHelper;
 import gov.usgs.gdp.helper.FileHelper;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,6 +27,8 @@ import javax.servlet.http.HttpServletResponse;
  * Servlet implementation class FileSelectionServlet
  */
 public class GeoServerServlet extends HttpServlet {
+	
+	private static final String geoServerURL = new String("http://localhost:8080/geoserver/");
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -46,48 +55,85 @@ public class GeoServerServlet extends HttpServlet {
 		if ("createdatastore".equals(command)) {
 			
 			String shapefileName = request.getParameter("shapefile");
-			/*Cookie userDirectoryCookie = CookieHelper.getCookie(request, "userDirectory");
+			
+			Cookie userDirectoryCookie = CookieHelper.getCookie(request, "userDirectory");
 			String userDirectory = "";
-			if (userDirectoryCookie != null) {
-				if (FileHelper.doesDirectoryOrFileExist(userDirectoryCookie.getValue())) {
-					userDirectory = userDirectoryCookie.getValue();
-				}
+			if (userDirectoryCookie != null && FileHelper.doesDirectoryOrFileExist(userDirectoryCookie.getValue())) {
+				userDirectory = userDirectoryCookie.getValue();
+			} else {
+				userDirectory = System.getProperty("applicationTempDir");
 			}
 			
-			List<FilesBean> filesBeanList = FilesBean.getFilesBeanSetList(System.getProperty("applicationTempDir"), userDirectory);
-			if (filesBeanList == null) {
-				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FILE_NOT_FOUND));
-				RouterServlet.sendXml(xmlReply, response);
-				return;
-			}*/
+			// TODO: see if we can put sample shape files in root of temp dir, not Sample_Files/...
+			String shapefileLoc = userDirectory + "Sample_Files/Shapefiles/" + shapefileName + ".shp";
 			
-			String geoServerURL = new String("http://localhost:8080/geoserver/");
-			String tempDir = System.getProperty("applicationTempDir");
-			String shapefileLoc = tempDir + "Sample_Files/Shapefiles/" + shapefileName + ".shp";
-			
-			String[] dir = tempDir.split(FileHelper.getSeparator());
+			String[] dir = userDirectory.split(FileHelper.getSeparator());
 			// set the workspace to the name of the temp directory
 			String workspace = dir[dir.length - 1];
 
-			String workspaceXML = createWorkspaceXML(workspace);
-			String dataStoreXML = createDataStoreXML(shapefileName, workspace, shapefileLoc);
-			String featureTypeXML = createFeatureTypeXML(shapefileName, workspace);
-			
 			URL workspacesURL = new URL(geoServerURL + "rest/workspaces/");
-			URL dataStoresURL = new URL(workspacesURL + workspace + "/datastores/");
-			URL featureTypesURL = new URL(dataStoresURL + shapefileName +  "/featuretypes.xml");
+			if (!workspaceExists(workspace)) {
+				String workspaceXML = createWorkspaceXML(workspace);
+				sendXMLPostPacket(workspacesURL, workspaceXML);
+			}
 			
-			sendXMLPacket(workspacesURL, workspaceXML);
-			sendXMLPacket(dataStoresURL, dataStoreXML);
-			sendXMLPacket(featureTypesURL, featureTypeXML);
+			if (!dataStoreExists(workspace, shapefileName)) {
+				String dataStoreXML = createDataStoreXML(shapefileName, workspace, shapefileLoc);
+				URL dataStoresURL = new URL(workspacesURL + workspace + "/datastores/");
+				sendXMLPostPacket(dataStoresURL, dataStoreXML);
+				
+				String featureTypeXML = createFeatureTypeXML(shapefileName, workspace);
+				URL featureTypesURL = new URL(dataStoresURL + shapefileName +  "/featuretypes.xml");
+				sendXMLPostPacket(featureTypesURL, featureTypeXML);
+			}
 			
-			xmlReply = new XmlReplyBean(AckBean.ACK_OK, new AckBean(AckBean.ACK_OK));
+			String layerLoc = new String(geoServerURL + "wms/reflect?" + 
+										 "layers=" + workspace + ":" + shapefileName +
+										 "&format=application/openlayers");
+			
+			// send back ack and location of layer
+			xmlReply = new XmlReplyBean(AckBean.ACK_OK, new MessageBean(layerLoc));
 			RouterServlet.sendXml(xmlReply, response);
 			return;
 		}
 	}
 	
-	void sendXMLPacket(URL url, String xml) throws IOException {
+	boolean workspaceExists(String workspace) throws IOException {
+		try {
+			sendGetPacket(new URL(geoServerURL + "rest/workspaces/" + workspace + ".xml"));
+		} catch (FileNotFoundException e) {
+			return false;
+		}
+		
+		return true;
+	}
+	
+	boolean dataStoreExists(String workspace, String dataStore) throws IOException {
+		try {
+			sendGetPacket(new URL(geoServerURL + "rest/workspaces/" + workspace + "/datastores/" + dataStore + ".xml"));
+		} catch (FileNotFoundException e) {
+			return false;
+		}
+		
+		return true;
+	}
+	
+	void sendGetPacket(URL url) throws IOException {
+		HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
+		httpConnection.setDoOutput(true);
+		httpConnection.setRequestMethod("GET");
+		
+		// For some reason this has to be here for the packet above to be sent //
+		BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
+		String line;
+		while ((line = reader.readLine()) != null) {
+			//System.out.println(line);
+		}
+		reader.close();
+		/////////////////////////////////////////////////////////////////////////
+	}
+	
+	void sendXMLPostPacket(URL url, String xml) throws IOException {
 		HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
 		httpConnection.setDoOutput(true);
 		httpConnection.setRequestMethod("POST");
