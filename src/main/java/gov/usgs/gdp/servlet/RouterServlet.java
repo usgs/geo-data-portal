@@ -172,6 +172,7 @@ public class RouterServlet extends HttpServlet {
 	
 	public static void sendXml(XmlReplyBean xmlReply, HttpServletResponse response) throws IOException {
 		 String xml = xmlReply.toXml();
+		 log.debug(xml);
 		 ServletOutputStream stream = null;
 		 BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(xml.getBytes()));
 		 try {

@@ -24,8 +24,8 @@ public class TimeBean implements XmlBean{
 	@XStreamAlias("times")
 	@XStreamImplicit(itemFieldName="time")
 	private List<String> time;
-	private TimeBreakdown start_time;
-	private TimeBreakdown end_time;
+	private TimeBreakdown starttime;
+	private TimeBreakdown endtime;
 	public TimeBean() {}
 	public TimeBean(GridDataset geoGrid, String gridSelection) {
 		List<String> result = new ArrayList<String>();
@@ -44,8 +44,8 @@ public class TimeBean implements XmlBean{
 	
 	public TimeBean(List<String> dateRange) throws ParseException {
 		this.time = dateRange;
-		this.start_time = new TimeBreakdown(dateRange.get(0));
-		this.end_time = new TimeBreakdown(dateRange.get(1));
+		this.starttime = new TimeBreakdown(dateRange.get(0));
+		this.endtime = new TimeBreakdown(dateRange.get(1));
 	}
 	
 	@Override
