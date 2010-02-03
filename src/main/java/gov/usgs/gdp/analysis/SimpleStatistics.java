@@ -5,8 +5,6 @@
 
 package gov.usgs.gdp.analysis;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
 import gov.usgs.gdp.analysis.statistics.StatisticsAccumulator1D;
 
 import java.io.File;
@@ -17,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
@@ -25,6 +24,7 @@ import org.geotools.filter.text.cql2.CQL;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
+
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.nc2.dt.GridCoordSystem;
@@ -34,6 +34,9 @@ import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
+
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
 
 /**
  *
@@ -102,6 +105,21 @@ public class SimpleStatistics {
                 + sfge.getMaxX() + ":" + sfge.getMaxY());
 
         return coveredStats;
+    }
+    
+    public static List getStatisticsList(
+            FeatureCollection featureCollection,
+            String featureId,
+            FeatureDataset featureDataset,
+            String variableName,
+            Range timeRange) throws IOException {
+        List list = new ArrayList();
+        Iterator iterator = featureCollection.iterator();
+        while (iterator.hasNext()) {
+            // DUMMY CODE
+            list.add(((SimpleFeature) iterator.next()).getAttribute(featureId).toString());
+        }
+        return list;
     }
     
     public static List<String> getStatisticsList(SimpleFeature simpleFeature,

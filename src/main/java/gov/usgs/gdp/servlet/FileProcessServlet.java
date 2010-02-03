@@ -782,12 +782,11 @@ public class FileProcessServlet extends HttpServlet {
             request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);
             return "/jsp/TimePeriodSelection.jsp";
 
-        } else {
-            errorBean.getMessages().add("Could not open a grid at location: " + threddsInfoBean.getDataSetUrlSelection());
-            errorBean.getMessages().add("Reason: " + errorLog);
-            request.setAttribute("errorBean", errorBean);
-            return "/jsp/DataSetSelection.jsp";
-        }
+        } 
+        errorBean.getMessages().add("Could not open a grid at location: " + threddsInfoBean.getDataSetUrlSelection());
+        errorBean.getMessages().add("Reason: " + errorLog);
+        request.setAttribute("errorBean", errorBean);
+        return "/jsp/DataSetSelection.jsp";
 	}
 }
 

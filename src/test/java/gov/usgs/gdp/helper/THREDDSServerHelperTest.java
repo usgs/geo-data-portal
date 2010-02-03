@@ -2,11 +2,18 @@ package gov.usgs.gdp.helper;
 
 import static org.junit.Assert.*;
 
+import gov.usgs.gdp.bean.TimeBean;
+
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
+import java.text.ParseException;
+import java.util.List;
 
 import org.junit.Test;
+
+import thredds.catalog.InvAccess;
+import thredds.catalog.InvCatalog;
 
 public class THREDDSServerHelperTest {
     @Test
@@ -42,5 +49,49 @@ public class THREDDSServerHelperTest {
         } catch (IOException e) {
             fail(e.getMessage());
         }
+    }
+    
+    @Test
+    public void testGetInvAccessListFromServer() {
+    	String host = "runoff.cr.usgs.gov";
+    	int port = 8086; 
+    	String uri = "/thredds/hydrologic_catalog.xml";
+    	List<InvAccess> result = THREDDSServerHelper.getInvAccessListFromServer(host, port, uri);
+    	assertNotNull(result);
+    	assertFalse(result.isEmpty());
+    }
+    
+
+    @Test
+    public void testGetInvCatalogFromServer() {
+    	String host = "motherlode.ucar.edu";
+    	int port = 8080; 
+    	String uri = "/thredds/catalog/station/metar/catalog.xml";
+    	InvCatalog result = THREDDSServerHelper.getInvCatalogFromServer(host, port, uri);
+    	assertNotNull(result);
+    }
+    
+    @Test 
+    public void testGetAvailableTimeBeanList() {
+    	String datasetUrl = "http://motherlode.ucar.edu:8080/thredds/dodsC/station/metar/Surface_METAR_20100130_0000.nc";
+    	String grid = "record.wind_from_direction_max";
+    	TimeBean result = null;
+		try {
+			result = THREDDSServerHelper.getTimeBean(datasetUrl, grid);
+		} catch (IllegalArgumentException e) {
+			fail(e.getMessage());
+		} catch (IOException e) {
+			fail(e.getMessage());
+		} catch (ParseException e) {
+			fail(e.getMessage());
+
+		}
+    	assertNotNull(result);
+    }
+
+    
+    @Test 
+    public void testGetFeatureDataSet() {
+    	//
     }
 }

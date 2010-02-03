@@ -125,7 +125,7 @@ public class FileHelper {
 	@SuppressWarnings("unchecked")
 	public static File findFile(String file, String rootPath) {
 		File result = null;
-		Collection<File> fileCollection = FileUtils.listFiles(new File(rootPath), new String[] {file.substring(file.indexOf('.') + 1)}, true);
+		Collection<File> fileCollection = FileUtils.listFiles(new File(rootPath), new String[] {file.substring(file.lastIndexOf('.') + 1)}, true);
 		if (fileCollection.isEmpty()) return result;
 		Iterator<File> fileCollectionIterator = fileCollection.iterator();
 		while (fileCollectionIterator.hasNext()) {

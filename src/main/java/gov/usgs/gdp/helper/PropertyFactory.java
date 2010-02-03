@@ -53,7 +53,7 @@ public class PropertyFactory {
 			try {	
 				loadProperties();
 			} catch (RuntimeException e) {
-				log.error(e.getMessage());
+				//
 			}
 			log.debug("Loaded properties file");
 		} 

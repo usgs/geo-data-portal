@@ -4,12 +4,18 @@ import java.util.Date;
 
 import org.apache.log4j.Logger;
 
-public class THREDDSServerBean {
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+@XStreamAlias("server")
+public class THREDDSServerBean implements XmlBean{
 
 	private static org.apache.log4j.Logger log = Logger.getLogger(THREDDSServerBean.class);
 	
+	private String protocol;
 	private String hostname;
 	private int port;
+	private String uri;
 	private boolean active;
 	private Date lastCheck;
 	
@@ -42,6 +48,28 @@ public class THREDDSServerBean {
 	}
 	public void setLastCheck(Date lastCheck) {
 		this.lastCheck = lastCheck;
+	}
+	@Override
+	public String toXml() {
+		XStream xstream = new XStream();
+		xstream.autodetectAnnotations(true);
+		StringBuffer sb = new StringBuffer();
+		String result = "";
+		sb.append(xstream.toXML(this));
+		result = sb.toString();
+		return result;
+	}
+	public void setUri(String uri) {
+		this.uri = uri;
+	}
+	public String getUri() {
+		return uri;
+	}
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
+	}
+	public String getProtocol() {
+		return protocol;
 	}
 	
 }

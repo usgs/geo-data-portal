@@ -80,6 +80,7 @@ public class UploadFilesServlet extends HttpServlet {
 				RouterServlet.sendXml(xmlOutput, response);
 				return;
 			}
+			
 			if (filesUploaded) {
 				log.debug("Files successfully uploaded.");
 				response.addCookie(userDirectory);
@@ -91,69 +92,6 @@ public class UploadFilesServlet extends HttpServlet {
 				return;
 			}
 		}
-		
-		
-		
-		// What is directory name for the files being uploaded
-	    //String userDirectory = (String) request.getSession().getAttribute("userTempDir");
-		
-	    // Pull in the uploaded Files bean from the user's session
-	    /*List<FilesBean> uploadedFilesBean = 
-	    	(request.getSession().getAttribute("uploadedFilesBeanList") == null) 
-	    	? new ArrayList<FilesBean>() : (List<FilesBean>) request.getSession().getAttribute("uploadedFilesBean");
-	    
-	    MessageBean errorBean = new MessageBean();
-	    MessageBean messageBean = new MessageBean();*/
-	    /*
-	    if ("delete".equals(action)) { // Delete Files
-	    	String filename = (request.getParameter("file") == null) ? "" : request.getParameter("file");
-	    	if ("".equals(filename) || filename == null) {
-	    		log.debug("There was no filename passed to be deleted");
-	    		errorBean.addMessage("Client did not pass a filename to be deleted. Please try again or contact system administrator for assistance");
-	    		request.setAttribute("errorBean", errorBean);
-	    		RequestDispatcher rd = request.getRequestDispatcher("/jsp/fileUpload.jsp");
-	    		rd.forward(request, response);
-	    	} 
-	    	
-    		try {
-	    		if (FileHelper.deleteFile(filename)) {
-	    			messageBean.addMessage("File \"" + filename + " was deleted.");
-	    			log.debug("File \"" + filename + " was deleted.");
-	    		} else {
-	    			errorBean.addMessage("File \"" + filename + " could not be deleted (doesn't exist?).");
-	    			log.debug("File \"" + filename + " could not be deleted (doesn't exist?).");
-	    		}
-    		} catch (SecurityException e) {
-    			log.debug("Unable to delete file: " + e.getMessage());
-				errorBean.addMessage("Unable to delete file: " + e.getMessage());
-    		}
-	    } else if ("upload".equals(action)){ // Upload files to server
-	    	try {
-				if (uploadFiles(request, userDirectory)) {
-					log.debug("Files successfully uploaded.");
-					messageBean.addMessage("File(s) successfully uploaded.");
-				} else {
-					log.debug("Unable to upload files.");
-					errorBean.addMessage("Unable to upload files - No message provided");
-				}
-			} catch (Exception e) {
-				log.debug("Unable to upload files: " + e.getMessage());
-				errorBean.addMessage("Unable to upload files: " + e.getMessage());
-			}
-	    }
-	    
-	    // Rescan the user directory for updates
-	    uploadedFilesBean = populateUploadedFilesBean(userDirectory);
-	    
-	    // Place the bean in the user's session
-		request.getSession().setAttribute("uploadedFilesBeanList", uploadedFilesBean);
-		request.setAttribute("errorBean", errorBean);
-		request.setAttribute("messageBean", messageBean);*/
-		
-		// Away we go		
-		/*RequestDispatcher rd = request.getRequestDispatcher("/jsp/fileUpload.jsp");
-		rd.forward(request, response);*/
-		
 	}
 
 	/** 
@@ -161,6 +99,7 @@ public class UploadFilesServlet extends HttpServlet {
 	 * @param userDirectory
 	 * @return
 	 */
+	@SuppressWarnings("unused")
 	private List<FilesBean> populateUploadedFilesBean(String userDirectory) {
 		List<FilesBean> result = new ArrayList<FilesBean>();
 		Collection<File> uploadedFiles = FileHelper.getFileCollection(userDirectory, true);
