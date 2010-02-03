@@ -149,6 +149,8 @@ public class RouterServlet extends HttpServlet {
 			return;
 		}
 		
+		//if ("")
+		
 	}
 
 	public static void sendXml(String xml, HttpServletResponse response) throws IOException {
