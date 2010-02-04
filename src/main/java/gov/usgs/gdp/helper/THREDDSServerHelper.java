@@ -11,8 +11,8 @@ import java.net.Socket;
 import java.net.URI;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Formatter;
-import java.util.LinkedList;
 import java.util.List;
 
 import thredds.catalog.*;
@@ -64,40 +64,37 @@ public class THREDDSServerHelper {
     	}
     	return null;
     }
+
 	/**
-     * Returns a List of type InvAccess which is a set of resources a THREDDS server offers
+     * Returns a list of dataset handles from the specified server.
      * 
      * @param hostname
      * @param port
+     * @param uri
+     * @param serviceType
      * @return
      */
-    public static List<InvAccess> getInvAccessListFromServer(String hostname, int port, String uri) {
-    	List<InvAccess> result = new LinkedList<InvAccess>();
-    	String ThreddsURL = "http://" + hostname + ":" + port + uri;
-    	URI catalogURI = URI.create(ThreddsURL);
-    	InvCatalogFactory factory = new InvCatalogFactory("default", true);
-    	InvCatalog catalog = factory.readXML(catalogURI);
-    	
-    	StringBuilder buff = new StringBuilder();
-    	if (!catalog.check(buff)) {
-            return result;
+    public static List<InvAccess> getDatasetHandlesFromServer(
+            String hostname, int port, String uri, ServiceType serviceType) {
+        try {
+            InvCatalog catalog = getCatalogFromServer(hostname, port, uri);
+            return NetCDFUtility.getDatasetHandles(catalog, serviceType);
+        } catch (IOException e) {
+            return Collections.emptyList();
         }
-    	
-    	// Grab resources from the THREDDS catalog
-    	result = NetCDFUtility.getOpenDapResources(catalog);
-        if (result == null) {
-            return new LinkedList<InvAccess>();
-        }
-    	
-    	return result;
-    	
     }
 
-    public static InvCatalog getInvCatalogFromServer(String hostname, int port, String uri) {
+    public static InvCatalog getCatalogFromServer(String hostname, int port, String uri) throws IOException {
     	String ThreddsURL = "http://" + hostname + ":" + port + uri;
     	URI catalogURI = URI.create(ThreddsURL);
     	InvCatalogFactory factory = new InvCatalogFactory("default", true);
     	InvCatalog catalog = factory.readXML(catalogURI);
+
+    	StringBuilder buff = new StringBuilder();
+    	if (!catalog.check(buff)) {
+            throw new IOException(buff.toString());
+        }
+
     	return catalog;
     }
     
@@ -118,7 +115,7 @@ public class THREDDSServerHelper {
 		if (port == 0) port = 80;
 		
 		List<XmlBean> result = new ArrayList<XmlBean>();
-		List<InvAccess> invAccessList = THREDDSServerHelper.getInvAccessListFromServer(hostname, port, uri);
+		List<InvAccess> invAccessList = THREDDSServerHelper.getDatasetHandlesFromServer(hostname, port, uri);
 		
 		if (invAccessList == null) return result;
 		for (InvAccess invAccess : invAccessList) {
