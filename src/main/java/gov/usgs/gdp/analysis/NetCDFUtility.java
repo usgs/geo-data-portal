@@ -1,5 +1,6 @@
 package gov.usgs.gdp.analysis;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -26,7 +27,10 @@ import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.util.NamedObject;
 
-public class NetCDFUtility {
+public abstract class NetCDFUtility {
+    // Private nullary ctor ensures non-instantiability.
+    private NetCDFUtility() { }
+    
     /**
      * For every dataset discovered in a depth-first traversal of {@code catalog}, this method returns a handle to it
      * of type {@code serviceType}, if available.
@@ -76,7 +80,6 @@ public class NetCDFUtility {
     }
 
     public static List<String> getDataVariableNames(String location) throws IOException {
-
         if (location == null) {
             throw new IllegalArgumentException("location can't be null");
         }
@@ -186,7 +189,10 @@ public class NetCDFUtility {
     }
 
     public static void main(String[] args) {
-        URI catalogURI = URI.create("http://runoff.cr.usgs.gov:8086/thredds/hydrologic_catalog.xml");
+//        URI catalogURI = URI.create("http://runoff.cr.usgs.gov:8086/thredds/hydrologic_catalog.xml");
+//        URI catalogURI = URI.create("http://runoff:8086/thredds/catalog.xml");
+//        URI catalogURI = URI.create("http://geoport.whoi.edu:8081/thredds/multi_catalog_all.xml");
+        URI catalogURI = new File("C:/Documents and Settings/cwardgar/Desktop/multi_catalog_all.xml").toURI();
         InvCatalogFactory factory = new InvCatalogFactory("default", true);
         InvCatalog catalog = factory.readXML(catalogURI);
 
@@ -195,6 +201,9 @@ public class NetCDFUtility {
             System.err.println(buff.toString());
         }
 
-        List<InvAccess> opendapDatasets = getDatasetHandles(catalog, ServiceType.OPENDAP);
+        List<InvAccess> handles = getDatasetHandles(catalog, ServiceType.OPENDAP);
+        for (InvAccess handle : handles) {
+            System.out.println(handle.getDataset().getCatalogUrl());
+        }
     }
 }

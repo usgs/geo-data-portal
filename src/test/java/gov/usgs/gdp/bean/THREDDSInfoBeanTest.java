@@ -15,7 +15,7 @@ public class THREDDSInfoBeanTest {
 	@Before
 	public void setUp() throws Exception {
 		this.tIBean = new THREDDSInfoBean();
-		this.tIBean.setOpenDapGridTimes(new ArrayList<String>());
+		this.tIBean.setDatasetGridTimes(new ArrayList<String>());
 		for (int yearCount = 1;yearCount < 12;yearCount++) {
 			for (int monthCount = 1; monthCount < 13;monthCount++) {
 				String year = Integer.toString(yearCount + 1900);
@@ -26,7 +26,7 @@ public class THREDDSInfoBeanTest {
 					month = Integer.toString(monthCount);
 				}
 				String instanceDate = year + "-" + month + "-15 00:00:00Z";
-				this.tIBean.getOpenDapGridTimes().add(instanceDate);
+				this.tIBean.getDatasetGridTimes().add(instanceDate);
 			}
 		}
 	}

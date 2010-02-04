@@ -50,7 +50,7 @@ public class FileHelperTest {
 		(new File(this.tempDir)).mkdir();
 		
 		// Copy example files 
-		ClassLoader cl = Thread.currentThread().getContextClassLoader(); 
+		ClassLoader cl = Thread.currentThread().getContextClassLoader();
 		URL sampleFileLocation = cl.getResource("Sample_Files/");
 		if (sampleFileLocation != null) {
 			File sampleFiles = null;
