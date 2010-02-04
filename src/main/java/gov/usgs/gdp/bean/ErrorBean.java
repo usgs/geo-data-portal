@@ -13,14 +13,28 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
 @XStreamAlias("error")
-public class ErrorBean {
+public class ErrorBean implements XmlBean{
 	// Check properties file to read/change message for these codes
 	public final static int ERR_NO_COMMAND = 0;
 	public final static int ERR_USER_DIR_CREATE = 1;
 	public final static int ERR_FILE_UPLOAD = 2;
 	public final static int ERR_FILE_LIST = 3;
-
+	public final static int ERR_FILE_NOT_FOUND = 4;
+	public final static int ERR_ATTRIBUTES_NOT_FOUND = 5;
+	public final static int ERR_FEATURES_NOT_FOUND = 6;
+	public final static int ERR_ERROR_WHILE_CONNECTING = 7;
+	public final static int ERR_MISSING_PARAM = 8;
+	public final static int ERR_MISSING_DATASET = 9;
+	public final static int ERR_PORT_INCORRECT = 10;
+	public final static int ERR_MISSING_THREDDS = 11;
+	public final static int ERR_MISSING_TIMERANGE = 12;
+	public final static int ERR_PARSE_TIMERANGE = 13;
+	public final static int ERR_INVALID_URL = 14;
+	public final static int ERR_PROTOCOL_VIOLATION = 15;
+	public final static int ERR_TRANSPORT_ERROR = 16;
 	public final static Map<Integer, String> ERROR_MESSAGES;
+	
+	
 	
 	@XStreamAlias("code")
 	@XStreamAsAttribute
@@ -76,6 +90,7 @@ public class ErrorBean {
 		setErrorCreated(new Date());
 	}
 	
+	@Override
 	public String toXml() {
 		XStream xstream = new XStream();
 		xstream.processAnnotations(ErrorBean.class);

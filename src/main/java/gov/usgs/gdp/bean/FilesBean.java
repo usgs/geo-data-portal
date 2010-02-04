@@ -67,7 +67,7 @@ public class FilesBean implements Serializable {
 	public static List<FilesBean> getFilesBeanSetList(String exampleDir, String userDir) {
 		List<FilesBean> result = new ArrayList<FilesBean>();
 		result.addAll(FilesBean.getFilesBeanSetList(exampleDir, true));
-		result.addAll(FilesBean.getFilesBeanSetList(userDir, false));
+		if (!"".equals(userDir)) result.addAll(FilesBean.getFilesBeanSetList(userDir, false));
 		return result;
 	}
 
@@ -88,7 +88,7 @@ public class FilesBean implements Serializable {
 		
 		for (File file : files) {
 			String fileName = file.getName();
-			String fileNameWithoutSuffix = fileName.substring(0, fileName.indexOf('.'));
+			String fileNameWithoutSuffix = fileName.substring(0, fileName.lastIndexOf('.'));
 			
 			//Check if we already have a FilesBean by this name
 			FilesBean filesBean = filesBeanMap.get(fileNameWithoutSuffix);
