@@ -27,12 +27,20 @@
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
 
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>cobertura-maven-plugin</artifactId>
                 <configuration>
                     <formats>
+                        <format>html</format>
                         <format>xml</format>
                     </formats>
                     <instrumentation>
@@ -44,7 +52,6 @@
                         </excludes>
                     </instrumentation>
                 </configuration>
-
             </plugin>
 
             <plugin>
@@ -225,4 +232,3 @@
         </dependency>-->
     </dependencies>
 </project>
-

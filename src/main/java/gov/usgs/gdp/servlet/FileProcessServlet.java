@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +47,7 @@ import java.io.FileWriter;
 import thredds.catalog.InvAccess;
 import thredds.catalog.InvCatalog;
 import thredds.catalog.InvCatalogFactory;
+import thredds.catalog.ServiceType;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
@@ -379,13 +379,11 @@ public class FileProcessServlet extends HttpServlet {
 	}
 
 	private String populateDataSet(HttpServletRequest request) {
-    	
     	MessageBean errorBean = new MessageBean();
         
     	THREDDSInfoBean threddsInfoBean = new THREDDSInfoBean();
         String THREDDSUrl = request.getParameter("THREDDSUrl");
 
-        List<InvAccess> openDapResources = new LinkedList<InvAccess>();
         if (THREDDSUrl == null || "".equals(THREDDSUrl)) {
             errorBean.getMessages().add("You must select a THREDDS URL to work with..");
             request.setAttribute("errorBean", errorBean);
@@ -405,17 +403,17 @@ public class FileProcessServlet extends HttpServlet {
             return "/jsp/THREDDSSelection.jsp";
         }
 
-        // Grab resources from the THREDDS catalog
-        openDapResources = NetCDFUtility.getOpenDapResources(catalog);
-        if (openDapResources == null) {
+        // Grab dataset handles from the THREDDS catalog
+        List<InvAccess> datasetHandles = NetCDFUtility.getDatasetHandles(catalog, ServiceType.OPENDAP);
+        if (datasetHandles == null) {
             errorBean.getMessages().add("Could not pull information from THREDDS Server");
             request.setAttribute("errorBean", errorBean);
             return "/jsp/THREDDSSelection.jsp";
         }
 
-        for (InvAccess opendapResource : openDapResources) {
-            threddsInfoBean.getOpenDapStandardURLNameList().add(opendapResource.getStandardUrlName());
-            threddsInfoBean.getOpenDapDataSetNameList().add(opendapResource.getDataset().getName());
+        for (InvAccess datasetHandle : datasetHandles) {
+            threddsInfoBean.getDatasetUrlList().add(datasetHandle.getStandardUrlName());
+            threddsInfoBean.getDatasetNameList().add(datasetHandle.getDataset().getName());
         }
         request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);
         return "/jsp/DataSetSelection.jsp";
@@ -521,7 +519,7 @@ public class FileProcessServlet extends HttpServlet {
 
         if (featureDataset != null) {
 
-            List<String> dataSelectItemList = new ArrayList<String>();
+            List<String> gridNames = new ArrayList<String>();
 //            if(featureDataset instanceof GridDataset) {
 //                // Grab the grid items
 //                for (GridDatatype grid : ((GridDataset)featureDataset).getGrids()) {
@@ -535,9 +533,9 @@ public class FileProcessServlet extends HttpServlet {
 //                }
 //            }
             for (VariableSimpleIF vs : featureDataset.getDataVariables()) {
-                dataSelectItemList.add(vs.getName());
+                gridNames.add(vs.getName());
             }
-            threddsInfoBean.setOpenDapGridItems(dataSelectItemList);
+            threddsInfoBean.setDatasetGridItems(gridNames);
 
         } else {
 
@@ -757,12 +755,12 @@ public class FileProcessServlet extends HttpServlet {
 
         if (featureDataset != null) {
 
-            List<String> timeSelectItemList = new ArrayList<String>();
+            List<String> timeStrList = new ArrayList<String>();
             if (featureDataset instanceof GridDataset) {
                 GeoGrid grid = ((GridDataset)featureDataset).findGridByName(gridSelection);
 
                 for (NamedObject time : grid.getTimes()) {
-                    timeSelectItemList.add(time.getName());
+                    timeStrList.add(time.getName());
                 }
             } else {
             	errorBean.getMessages().add("Could not open a feature data set");
@@ -777,7 +775,7 @@ public class FileProcessServlet extends HttpServlet {
 				log.debug(e.getMessage());
 			}
 			
-            threddsInfoBean.setOpenDapGridTimes(timeSelectItemList);
+            threddsInfoBean.setDatasetGridTimes(timeStrList);
                           
             request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);
             return "/jsp/TimePeriodSelection.jsp";

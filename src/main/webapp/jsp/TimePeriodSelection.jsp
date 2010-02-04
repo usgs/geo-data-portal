@@ -1712,7 +1712,7 @@ ${head}
 			From: 
 			<!-- 
 			<select id="timeFromSelect"  name="timeFromSelection">
-				<c:forEach var="timeItem" varStatus="timeIndex" items="${threddsInfoBean.openDapGridTimes}">
+				<c:forEach var="timeItem" varStatus="timeIndex" items="${threddsInfoBean.datasetGridTimes}">
 						<option value="${timeIndex.count - 1}" />${timeItem}
 				</c:forEach>
 			</select>
@@ -1727,7 +1727,7 @@ ${head}
 			<div id="timeToSelectClicker" onclick="scwShow (scwID('timeToSelect'), this);">[- click -]</div>
 			
 			<!--<select id="timeToSelect"   name="timeToSelection">
-				<c:forEach var="timeItem"  varStatus="timeIndex" items="${threddsInfoBean.openDapGridTimes}">
+				<c:forEach var="timeItem"  varStatus="timeIndex" items="${threddsInfoBean.datasetGridTimes}">
 						<option value="${timeIndex.count - 1}" />${timeItem}
 				</c:forEach>
 			</select>

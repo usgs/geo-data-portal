@@ -27,10 +27,10 @@ public class THREDDSInfoBean implements Serializable {
 	private String fromTime;
 	private String toTime;
 	private String fileLink;
-	private List<String> openDapStandardURLNameList;
-	private List<String> openDapDataSetNameList;
-	private List<String> openDapGridItems;
-	private List<String> openDapGridTimes;
+	private List<String> datasetUrlList;
+	private List<String> datasetNameList;
+	private List<String> datasetGridItems;
+	private List<String> datasetGridTimes;
 	private List<String> statsSummary;
 	private GridDataset gridDataSet;
 	private VariableDS variableDs;
@@ -64,7 +64,7 @@ public class THREDDSInfoBean implements Serializable {
 	public int getFromYear() throws ParseException {
 		int result = -1;
 		
-		String beginDate = getOpenDapGridTimes().get(0);
+		String beginDate = getDatasetGridTimes().get(0);
 		String substrDate = beginDate.substring(0, beginDate.indexOf(' '));
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		Date parsedDate = null;
@@ -102,7 +102,7 @@ public class THREDDSInfoBean implements Serializable {
 	public int getToYear() throws ParseException {
 		int result = -1;
 		
-		String endDate = getOpenDapGridTimes().get(getOpenDapGridTimes().size() - 1);
+		String endDate = getDatasetGridTimes().get(getDatasetGridTimes().size() - 1);
 		String substrDate = endDate.substring(0, endDate.indexOf(' '));
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		Date parsedDate = null;
@@ -117,7 +117,7 @@ public class THREDDSInfoBean implements Serializable {
 	public int getToDay() throws ParseException {
 		int result = -1;
 		
-		String endDate = getOpenDapGridTimes().get(getOpenDapGridTimes().size() - 1);
+		String endDate = getDatasetGridTimes().get(getDatasetGridTimes().size() - 1);
 		String substrDate = endDate.substring(0, endDate.indexOf(' '));
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		Date parsedDate = null;
@@ -132,7 +132,7 @@ public class THREDDSInfoBean implements Serializable {
 	public int getFromDay() throws ParseException {
 		int result = -1;
 		
-		String beginDate = getOpenDapGridTimes().get(0);
+		String beginDate = getDatasetGridTimes().get(0);
 		String substrDate = beginDate.substring(0, beginDate.indexOf(' '));
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		Date parsedDate = null;
@@ -148,7 +148,7 @@ public class THREDDSInfoBean implements Serializable {
 	public int getFromMonth() throws ParseException {
 		int result = -1;
 		
-		String beginDate = getOpenDapGridTimes().get(0);
+		String beginDate = getDatasetGridTimes().get(0);
 		String substrDate = beginDate.substring(0, beginDate.indexOf(' '));
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		Date parsedDate = null;
@@ -164,7 +164,7 @@ public class THREDDSInfoBean implements Serializable {
 	public int getToMonth() throws ParseException {
 		int result = -1;
 		
-		String endDate = getOpenDapGridTimes().get(getOpenDapGridTimes().size() - 1);
+		String endDate = getDatasetGridTimes().get(getDatasetGridTimes().size() - 1);
 		String substrDate = endDate.substring(0, endDate.indexOf(' '));
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		Date parsedDate = null;
@@ -189,19 +189,19 @@ public class THREDDSInfoBean implements Serializable {
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
-	public List<String> getOpenDapStandardURLNameList() {
-		if (this.openDapStandardURLNameList == null) this.openDapStandardURLNameList = new ArrayList<String>(); 
-		return this.openDapStandardURLNameList;
+	public List<String> getDatasetUrlList() {
+		if (this.datasetUrlList == null) this.datasetUrlList = new ArrayList<String>();
+		return this.datasetUrlList;
 	}
-	public void setOpenDapStandardURLNameList(List<String> localOpenDapStandardURLNameList) {
-		this.openDapStandardURLNameList = localOpenDapStandardURLNameList;
+	public void setDatasetUrlList(List<String> localDatasetUrlList) {
+		this.datasetUrlList = localDatasetUrlList;
 	}
-	public List<String> getOpenDapDataSetNameList() {
-		if (this.openDapDataSetNameList == null) this.openDapDataSetNameList = new ArrayList<String>();
-		return this.openDapDataSetNameList;
+	public List<String> getDatasetNameList() {
+		if (this.datasetNameList == null) this.datasetNameList = new ArrayList<String>();
+		return this.datasetNameList;
 	}
-	public void setOpenDapDataSetNameList(List<String> localOpenDapDataSetNameList) {
-		this.openDapDataSetNameList = localOpenDapDataSetNameList;
+	public void setDatasetNameList(List<String> localDatasetNameList) {
+		this.datasetNameList = localDatasetNameList;
 	}
 	public String getDataSetUrlSelection() {
 		return this.dataSetUrlSelection;
@@ -221,12 +221,12 @@ public class THREDDSInfoBean implements Serializable {
 	public void setGridItemSelection(String localGridItemSelection) {
 		this.gridItemSelection = localGridItemSelection;
 	}
-	public List<String> getOpenDapGridItems() {
-		if (this.openDapGridTimes == null) this.openDapGridTimes = new ArrayList<String>();
-		return this.openDapGridItems;
+	public List<String> getDatasetGridItems() {
+		if (this.datasetGridTimes == null) this.datasetGridTimes = new ArrayList<String>();
+		return this.datasetGridItems;
 	}
-	public void setOpenDapGridItems(List<String> localOpenDapGridItems) {
-		this.openDapGridItems = localOpenDapGridItems;
+	public void setDatasetGridItems(List<String> localDatasetGridItems) {
+		this.datasetGridItems = localDatasetGridItems;
 	}
 	public String getFromTime() {
 		return this.fromTime;
@@ -240,13 +240,13 @@ public class THREDDSInfoBean implements Serializable {
 	public void setToTime(String localToTime) {
 		this.toTime = localToTime;
 	}
-	public List<String> getOpenDapGridTimes() {
-		if (this.openDapGridTimes == null) this.openDapGridTimes = new ArrayList<String>();
-		return this.openDapGridTimes;
+	public List<String> getDatasetGridTimes() {
+		if (this.datasetGridTimes == null) this.datasetGridTimes = new ArrayList<String>();
+		return this.datasetGridTimes;
 	}
 	
-	public void setOpenDapGridTimes(List<String> localOpenDapGridTimes) {
-		this.openDapGridTimes = localOpenDapGridTimes;
+	public void setDatasetGridTimes(List<String> localDatasetGridTimes) {
+		this.datasetGridTimes = localDatasetGridTimes;
 	}
 
 
@@ -265,5 +265,4 @@ public class THREDDSInfoBean implements Serializable {
 	public void setFileLink(String fileLink) {
 		this.fileLink = fileLink;
 	}
-
 }

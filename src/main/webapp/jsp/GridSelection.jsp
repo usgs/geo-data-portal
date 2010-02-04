@@ -52,7 +52,7 @@ ${head}
 		<form id="processFiles" method="post" name="processFiles" action="${cont}">
 			Please choose a data set to work with:<br />
 			<select id="gridSelect" name="gridSelection">
-				<c:forEach var="gridItem" items="${threddsInfoBean.openDapGridItems}">
+				<c:forEach var="gridItem" items="${threddsInfoBean.datasetGridItems}">
 						<option value="${gridItem}" />${gridItem}
 				</c:forEach>
 			</select>

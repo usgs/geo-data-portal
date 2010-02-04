@@ -1,15 +1,16 @@
 package gov.usgs.gdp.analysis;
 
+import java.io.File;
 import java.io.IOException;
-import java.lang.String;
+import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.Formatter;
 import java.util.LinkedList;
 import java.util.List;
-
 import thredds.catalog.InvAccess;
 import thredds.catalog.InvCatalog;
+import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.InvDataset;
 import thredds.catalog.ServiceType;
 import ucar.nc2.VariableSimpleIF;
@@ -26,38 +27,59 @@ import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.util.NamedObject;
 
-public class NetCDFUtility {
-	
-	public static List<InvAccess> getOpenDapResources(InvCatalog catalog) {
-		if (catalog == null) return null;
-		List<InvAccess> result = new LinkedList<InvAccess>();
-
-        for (InvDataset dataset : catalog.getDatasets()) {
-            result.addAll(NetCDFUtility.getOpendapResourcesAux(dataset));
+public abstract class NetCDFUtility {
+    // Private nullary ctor ensures non-instantiability.
+    private NetCDFUtility() { }
+    
+    /**
+     * For every dataset discovered in a depth-first traversal of {@code catalog}, this method returns a handle to it
+     * of type {@code serviceType}, if available.
+     *
+     * @param catalog       an object representing a THREDDS catalog.
+     * @param serviceType   the type of service that the returned handles will use to access data.
+     * @return  a list of dataset handles. The list will be empty if {@code catalog} or {@code serviceType} is null.
+     */
+    public static List<InvAccess> getDatasetHandles(InvCatalog catalog, ServiceType serviceType) {
+        if (catalog == null || serviceType == null) {
+            return Collections.emptyList();     // Template parameter inferred from return type.
         }
-        return result;
-	}
 
-	public static Collection<InvAccess> getOpendapResourcesAux(
-			InvDataset dataset) {
-		if (dataset == null) return null;
-		List<InvAccess> result = new LinkedList<InvAccess>();
+        List<InvAccess> handles = new LinkedList<InvAccess>();
+        for (InvDataset dataset : catalog.getDatasets()) {
+            handles.addAll(getDatasetHandles(dataset, serviceType));
+        }
 
-        for (InvAccess resource : dataset.getAccess()) {
-            if (resource.getService().getServiceType() == ServiceType.OPENDAP) {
-            	result.add(resource);
+        return handles;
+    }
+
+    /**
+     * For every dataset discovered in a depth-first traversal of {@code dataset} and its nested datasets, this method
+     * returns a handle to it of type {@code serviceType}, if available.
+     *
+     * @param dataset       a THREDDS dataset, which may have nested datasets.
+     * @param serviceType   the type of service that the returned handles will use to access data.
+     * @return  a list of dataset handles. The list will be empty if {@code dataset} or {@code serviceType} is null.
+     */
+    public static List<InvAccess> getDatasetHandles(InvDataset dataset, ServiceType serviceType) {
+        if (dataset == null || serviceType == null) {
+            return Collections.emptyList();     // Template parameter inferred from return type.
+        }
+
+        List<InvAccess> handles = new LinkedList<InvAccess>();
+        for (InvAccess handle : dataset.getAccess()) {
+            if (handle.getService().getServiceType() == serviceType) {
+                handles.add(handle);
             }
         }
 
         for (InvDataset nestedDataset : dataset.getDatasets()) {
-        	result.addAll(getOpendapResourcesAux(nestedDataset));
+            handles.addAll(getDatasetHandles(nestedDataset, serviceType));
         }
 
-        return result;
-	}
+        return handles;
+    }
 
     public static List<String> getDataVariableNames(String location) throws IOException {
-
         if (location == null) {
             throw new IllegalArgumentException("location can't be null");
         }
@@ -67,10 +89,10 @@ public class NetCDFUtility {
         try {
             dataset = FeatureDatasetFactoryManager.open(
                     null, location, null, new Formatter());
-            if(dataset.getFeatureType() == FeatureType.STATION) {
+            if (dataset.getFeatureType() == FeatureType.STATION) {
                 for (VariableSimpleIF variable : dataset.getDataVariables()) {
                     String variableName = variable.getName();
-                    if(!variableName.startsWith("station.")) {
+                    if (!variableName.startsWith("station.")) {
                         variableNames.add(variable.getName());
                     }
                 }
@@ -184,28 +206,21 @@ public class NetCDFUtility {
     }
 
     public static void main(String[] args) {
-        try {
-            String location = null;
-            List<String> list = null;
-            // Grid Data
-//            System.out.println("Example Grid");
-//            list = getDataVariableNames("http://motherlode.ucar.edu:8080/thredds/dodsC/fmrc/NCEP/GFS/Hawaii_160km/NCEP-GFS-Hawaii_160km_fmrc.ncd");
-//            for(String name : list) {
-//                System.out.println("  " + name);
-//            }
-            // Point/Station data
-            System.out.println("Example Station");
+//        URI catalogURI = URI.create("http://runoff.cr.usgs.gov:8086/thredds/hydrologic_catalog.xml");
+//        URI catalogURI = URI.create("http://runoff:8086/thredds/catalog.xml");
+//        URI catalogURI = URI.create("http://geoport.whoi.edu:8081/thredds/multi_catalog_all.xml");
+        URI catalogURI = new File("C:/Documents and Settings/cwardgar/Desktop/multi_catalog_all.xml").toURI();
+        InvCatalogFactory factory = new InvCatalogFactory("default", true);
+        InvCatalog catalog = factory.readXML(catalogURI);
 
-            location = "http://motherlode.ucar.edu:8080/thredds/dodsC/station/metar/Surface_METAR_20100114_0000.nc";
-            //location = "/Users/tkunicki/Downloads/oceansites/station.ncml";
-            //location = "http://130.11.161.213:8080/thredds/dodsC/points/monthly.dods";
-//            list = getDataVariableNames(location);
-            list = getDateRange(location, null);
-            for (String name : list) {
-                System.out.println("  " + name);
-            }
-        } catch (IOException e) {
-            // don't care...
+        StringBuilder buff = new StringBuilder();
+        if (!catalog.check(buff)) {
+            System.err.println(buff.toString());
+        }
+
+        List<InvAccess> handles = getDatasetHandles(catalog, ServiceType.OPENDAP);
+        for (InvAccess handle : handles) {
+            System.out.println(handle.getDataset().getCatalogUrl());
         }
     }
 }
