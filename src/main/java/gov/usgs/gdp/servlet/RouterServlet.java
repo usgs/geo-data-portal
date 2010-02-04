@@ -149,7 +149,11 @@ public class RouterServlet extends HttpServlet {
 			return;
 		}
 		
-		//if ("")
+		if ("submitforprocessing".equals(command)) {
+			RequestDispatcher rd = request.getRequestDispatcher("/THREDDSServlet?command=submitforprocessing");
+			rd.forward(request, response);
+			return;
+		}
 		
 	}
 
