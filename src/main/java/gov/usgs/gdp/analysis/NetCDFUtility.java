@@ -177,32 +177,7 @@ public abstract class NetCDFUtility {
     		}
     	}
     	return dateRange;
-    	//
-    	//            Formatter errorLog = new Formatter();
-    	//            FeatureDataset featureDataset = FeatureDatasetFactoryManager.open(
-    	//                    null, location, null, errorLog);
-    	//
-    	//            if (featureDataset != null) {
-    	//
-    	//                List<String> timeSelectItemList = new ArrayList<String>();
-    	//                if (featureDataset instanceof GridDataset) {
-    	//                    GeoGrid grid = ((GridDataset)featureDataset).findGridByName(gridSelection);
-    	//
-    	//                    for (NamedObject time : grid.getTimes()) {
-    	//                        timeSelectItemList.add(time.getName());
-    	//                    }
-    	//                } else {
-    	//                    // TODO:
-    	//                }
-    	//            }
 
-    	//                    FeatureDatasetPoint fdp = (FeatureDatasetPoint) dataset;
-    	//            for (FeatureCollection fc : fdp.getPointFeatureCollectionList()) {
-    	//                StationTimeSeriesFeatureCollection sc = (StationTimeSeriesFeatureCollection) fc;
-    	//                for (Station s : sc.getStations()) {
-    	//                    System.out.println("  " + s.getName());
-    	//                }
-    	//            }
     }
 
     public static void main(String[] args) {

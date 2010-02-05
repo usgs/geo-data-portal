@@ -26,7 +26,11 @@ public class TimeBean implements XmlBean{
 	private List<String> time;
 	private TimeBreakdown starttime;
 	private TimeBreakdown endtime;
-	public TimeBean() {}
+	public TimeBean() {
+		this.time = new ArrayList<String>();
+		this.starttime =new TimeBreakdown();
+		this.endtime =new TimeBreakdown();
+	}
 	public TimeBean(GridDataset geoGrid, String gridSelection) {
 		List<String> result = new ArrayList<String>();
 		GeoGrid grid = geoGrid.findGridByName(gridSelection);

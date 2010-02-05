@@ -93,7 +93,7 @@ public class THREDDSServlet extends HttpServlet {
 
 
 		}
-		
+/*		
 		if ("getdatasetlist".equals(command)) {
 			log.debug("User has chosen to get datasets from server");
 			
@@ -122,7 +122,7 @@ public class THREDDSServlet extends HttpServlet {
 			}
 			
 		}
-		
+		*/
 		if ("getgridlist".equals(command)) {
 			log.debug("User has chosen to list shapefile attributes");
 			
@@ -159,11 +159,16 @@ public class THREDDSServlet extends HttpServlet {
 				return;
 			}
 			
-			if (timeBean == null || timeBean.getTime().isEmpty()) {
+			if (timeBean == null) {
 				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_MISSING_TIMERANGE));
 				RouterServlet.sendXml(xmlReply, response);
 				return;
 			} 
+			
+			// For testing purposes....
+			// TODO- Comment out this line to get actual times
+			timeBean = new TimeBean();
+			
 			XmlReplyBean xrb = new XmlReplyBean(AckBean.ACK_OK, timeBean);
 			RouterServlet.sendXml(xrb, response);
 			return;
