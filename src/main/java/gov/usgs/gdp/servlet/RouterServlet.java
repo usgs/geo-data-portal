@@ -7,6 +7,7 @@ import gov.usgs.gdp.bean.XmlReplyBean;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
@@ -157,44 +158,28 @@ public class RouterServlet extends HttpServlet {
 		
 	}
 
+	@SuppressWarnings("restriction")
 	public static void sendXml(String xml, HttpServletResponse response) throws IOException {
-		 ServletOutputStream stream = null;
-		 BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(xml.getBytes()));
+		 Writer writer = response.getWriter();
 		 try {
-			stream = response.getOutputStream();
 			response.setContentType("text/xml");
 			response.setCharacterEncoding("utf-8");
-			response.setContentLength(xml.length());
-			int readBytes = 0;
-			while ((readBytes = bis.read()) != -1) {
-				stream.write(readBytes);
+			char[] characters = xml.toCharArray();
+			for (int index = 0; index < characters.length; ++index) {
+				char current = characters[index];
+				if (com.sun.xml.internal.fastinfoset.DecoderStateTables.UTF8(current) == com.sun.xml.internal.fastinfoset.DecoderStateTables.STATE_ILLEGAL) {
+					current = '\u00BF';
+				}
+				writer.write(current);
 			}
-			stream.flush();
+			writer.flush();
 		} finally {
-			if (stream != null) stream.close();
-			bis.close();
+			if (writer != null) writer.close();
 		}
 	}
 	
 	public static void sendXml(XmlReplyBean xmlReply, HttpServletResponse response) throws IOException {
-		 String xml = xmlReply.toXml();
-		 log.debug(xml);
-		 ServletOutputStream stream = null;
-		 BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(xml.getBytes()));
-		 try {
-			stream = response.getOutputStream();
-			response.setContentType("text/xml");
-			response.setCharacterEncoding("utf-8");
-			response.setContentLength(xml.length());
-			int readBytes = 0;
-			while ((readBytes = bis.read()) != -1) {
-				stream.write(readBytes);
-			}
-			stream.flush();
-		} finally {
-			if (stream != null) stream.close();
-			bis.close();
-		}
+		sendXml(xmlReply.toXml(), response);
 	}
 
 }
