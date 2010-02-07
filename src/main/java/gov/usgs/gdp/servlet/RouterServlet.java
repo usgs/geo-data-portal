@@ -156,11 +156,25 @@ public class RouterServlet extends HttpServlet {
 			return;
 		}
 		
+		if ("outputtypelist".equals(command)) {
+			RequestDispatcher rd = request.getRequestDispatcher("/FileAttributeServlet?command=outputtypelist");
+			rd.forward(request, response);
+			return;
+		}
+		
+		if ("submitforprocessing".equals(command)) {
+			// Not yet used
+			return;
+//			RequestDispatcher rd = request.getRequestDispatcher("");
+//			rd.forward(request, response);
+//			return;
+		}
 	}
 
 	@SuppressWarnings("restriction")
 	public static void sendXml(String xml, HttpServletResponse response) throws IOException {
-		 Writer writer = response.getWriter();
+		log.debug(xml);
+		Writer writer = response.getWriter();
 		 try {
 			response.setContentType("text/xml");
 			response.setCharacterEncoding("utf-8");

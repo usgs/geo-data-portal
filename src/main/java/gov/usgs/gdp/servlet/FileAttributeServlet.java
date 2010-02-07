@@ -4,6 +4,7 @@ import gov.usgs.gdp.bean.AckBean;
 import gov.usgs.gdp.bean.AttributeBean;
 import gov.usgs.gdp.bean.ErrorBean;
 import gov.usgs.gdp.bean.FilesBean;
+import gov.usgs.gdp.bean.OutputFileTypeBean;
 import gov.usgs.gdp.bean.ShapeFileSetBean;
 import gov.usgs.gdp.bean.XmlReplyBean;
 import gov.usgs.gdp.helper.CookieHelper;
@@ -45,10 +46,27 @@ public class FileAttributeServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String command = request.getParameter("command");
 		XmlReplyBean xmlReply = null;
+		
+		if ("outputtypelist".equals(command)) {
+			log.debug("User has chosen to get output file type list");
+			List<String> availableFileTypes = FileHelper.getOutputFileTypesAvailable();
+			if (availableFileTypes == null || availableFileTypes.isEmpty()) {
+				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_OUTFILES_UNAVAILABLE));
+				RouterServlet.sendXml(xmlReply, response);
+				return;
+			}
+			
+			OutputFileTypeBean oftb = new OutputFileTypeBean(availableFileTypes);
+			xmlReply = new XmlReplyBean(AckBean.ACK_OK, oftb);
+			RouterServlet.sendXml(xmlReply, response);
+			return;
+		}
+		
 		if ("listattributes".equals(command)) {
 			log.debug("User has chosen to list shapefile attributes");
 			String shapefile = request.getParameter("shapefile");

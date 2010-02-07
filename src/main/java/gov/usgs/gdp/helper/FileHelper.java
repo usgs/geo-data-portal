@@ -54,6 +54,15 @@ public class FileHelper {
 	}
 	
 	/**
+	 * Get the types of files that are available to output to the user
+	 * @return
+	 */
+	public static List<String> getOutputFileTypesAvailable() {
+		List<String> fileTypes = PropertyFactory.getValueList("out.file.type");
+		return fileTypes;
+	}
+	
+	/**
 	 * Recursively deletes a directory from the filesystem.
 	 * @param directory
 	 * @return
