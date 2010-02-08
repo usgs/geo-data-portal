@@ -4,18 +4,13 @@ import gov.usgs.gdp.bean.AckBean;
 import gov.usgs.gdp.bean.ErrorBean;
 import gov.usgs.gdp.bean.XmlReplyBean;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
+import com.sun.xml.internal.fastinfoset.*;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
-
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.*;
+import javax.servlet.http.*;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
@@ -181,7 +176,7 @@ public class RouterServlet extends HttpServlet {
 			char[] characters = xml.toCharArray();
 			for (int index = 0; index < characters.length; ++index) {
 				char current = characters[index];
-				if (com.sun.xml.internal.fastinfoset.DecoderStateTables.UTF8(current) == com.sun.xml.internal.fastinfoset.DecoderStateTables.STATE_ILLEGAL) {
+				if (DecoderStateTables.UTF8(current) == DecoderStateTables.STATE_ILLEGAL) {
 					current = '\u00BF';
 				}
 				writer.write(current);

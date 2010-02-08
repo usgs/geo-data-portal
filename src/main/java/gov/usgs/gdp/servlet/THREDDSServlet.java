@@ -166,8 +166,8 @@ public class THREDDSServlet extends HttpServlet {
 			} 
 			
 			// For testing purposes....
-			// TODO- Comment out this line to get actual times
-			timeBean = new TimeBean();
+			// Comment out this line to get actual times
+			//timeBean = new TimeBean();
 			
 			XmlReplyBean xrb = new XmlReplyBean(AckBean.ACK_OK, timeBean);
 			RouterServlet.sendXml(xrb, response);
