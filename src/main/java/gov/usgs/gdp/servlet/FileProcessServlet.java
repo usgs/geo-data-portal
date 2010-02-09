@@ -19,7 +19,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -84,7 +83,8 @@ import ucar.unidata.geoloc.LatLonRect;
  * Servlet implementation class FileProcessServlet
  */
 public class FileProcessServlet extends HttpServlet {
-	private final static class ShapedGridReader implements ProxyReader {
+
+    private final static class ShapedGridReader implements ProxyReader {
 
         private GeoGrid grid;
         private Geometry shape;
@@ -165,7 +165,7 @@ public class FileProcessServlet extends HttpServlet {
 
             Array data = this.grid.getVariable().read(section);
 
-            Dimension xDim =this.grid.getXDimension();
+            Dimension xDim = this.grid.getXDimension();
             Dimension yDim = this.grid.getYDimension();
             List<Dimension> varDims = this.grid.getDimensions();
 
@@ -191,14 +191,13 @@ public class FileProcessServlet extends HttpServlet {
             return data;
         }
     }
-
     private static org.apache.log4j.Logger log = Logger.getLogger(FileProcessServlet.class);
 
     /**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 //
 //	    MessageBean errorBean = new MessageBean();
 //	    MessageBean messageBean = new MessageBean();
@@ -231,29 +230,21 @@ public class FileProcessServlet extends HttpServlet {
 //	    	forwardTo = populateFileUpload(request);
 //
 //	    }
-            String shapeSet = request.getParameter("shapeset");
-            String attribute = request.getParameter("attribute");
-            String[] features = request.getParameterValues("feature");
-            String thredds = request.getParameter("thredds");
-            String dataset = request.getParameter("dataset");
-            String grid = request.getParameter("grid");
-            String from = request.getParameter("from");
-            String to = request.getParameter("to");
-            String output = request.getParameter("outputtype");
-            String email = request.getParameter("email");
-	    RequestDispatcher rd = request.getRequestDispatcher("");
-	    rd.forward(request, response);
-	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	    doGet(request, response);
-	}
+        populateFileUpload(request);
 
-	private static final long serialVersionUID = 1L;
+//	    RequestDispatcher rd = request.getRequestDispatcher("");
+//	    rd.forward(request, response);
+    }
+
+    /**
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doGet(request, response);
+    }
+    private static final long serialVersionUID = 1L;
 
     /**
      * Writes a collection of {@link PointFeature}s to a file in CSV format. PointFeatures are written one per line
@@ -311,7 +302,7 @@ public class FileProcessServlet extends HttpServlet {
     }
 
     @SuppressWarnings("unused")
-	private ShapeFileSetBean getShapeFilesSetBean(String fileSetSelection, List<ShapeFileSetBean> shapeFileSetBeanList) {
+    private ShapeFileSetBean getShapeFilesSetBean(String fileSetSelection, List<ShapeFileSetBean> shapeFileSetBeanList) {
         ShapeFileSetBean result = null;
 
         for (ShapeFileSetBean shapeFileSetBean : shapeFileSetBeanList) {
@@ -323,8 +314,8 @@ public class FileProcessServlet extends HttpServlet {
         return result;
     }
 
-	@SuppressWarnings("unused")
-	private List<ShapeFileSetBean> getShapeFilesSetSubList(String[] checkboxItems, List<ShapeFileSetBean> shapeFileSetBeanList) {
+    @SuppressWarnings("unused")
+    private List<ShapeFileSetBean> getShapeFilesSetSubList(String[] checkboxItems, List<ShapeFileSetBean> shapeFileSetBeanList) {
         List<ShapeFileSetBean> result = new ArrayList<ShapeFileSetBean>();
 
         for (String item : checkboxItems) {
@@ -338,59 +329,59 @@ public class FileProcessServlet extends HttpServlet {
         return result;
     }
 
-	/**
+    /**
      * Gets called after user has chosen a ShapeFile set to work with
      * 
      * @param request
      * @return
      */
-	@SuppressWarnings("unchecked")
-	private String populateAttributeList(HttpServletRequest request) {
-    	String fileSelection = request.getParameter("fileName");
+    @SuppressWarnings("unchecked")
+    private String populateAttributeList(HttpServletRequest request) {
+        String fileSelection = request.getParameter("fileName");
         List<ShapeFileSetBean> shapeFileSetBeanList = (List<ShapeFileSetBean>) request.getSession().getAttribute("shapeFileSetBeanList");
-    	ShapeFileSetBean shpFileSetBean = (ShapeFileSetBean) request.getSession().getAttribute("shapeFileSetBean");
-		
-		MessageBean errorBean = new MessageBean();
+        ShapeFileSetBean shpFileSetBean = (ShapeFileSetBean) request.getSession().getAttribute("shapeFileSetBean");
+
+        MessageBean errorBean = new MessageBean();
         MessageBean messageBean = new MessageBean();
-    	 
-		if (shapeFileSetBeanList == null) {
-			errorBean.addMessage("Unable to retrieve shape file set lists. Please choose new shape file(s).");
-			request.setAttribute("messageBean", messageBean);
-			request.setAttribute("errorBean", errorBean);
-			return "/jsp/fileSelection.jsp";
-		}
 
-		if (fileSelection == null || "".equals(fileSelection)) {
-			errorBean.addMessage("You must select at least one file to process.");
-			request.setAttribute("messageBean", messageBean);
-			request.setAttribute("errorBean", errorBean);
-			return "/jsp/fileSelection.jsp";
-		}
+        if (shapeFileSetBeanList == null) {
+            errorBean.addMessage("Unable to retrieve shape file set lists. Please choose new shape file(s).");
+            request.setAttribute("messageBean", messageBean);
+            request.setAttribute("errorBean", errorBean);
+            return "/jsp/fileSelection.jsp";
+        }
 
-		// Get the correct shapeFileSet out of the list...
-		for (ShapeFileSetBean shapeFileSubset : shapeFileSetBeanList) {
-			if (fileSelection.equals(shapeFileSubset.getName())) {
-				shpFileSetBean = shapeFileSubset;
-			}
-		}
-		
-		try {
-			shpFileSetBean.setAttributeList(ShapeFileSetBean.getAttributeListFromBean(shpFileSetBean));
-		} catch (IOException e) {
-			log.debug(e.getMessage());
-			errorBean.addMessage("An error was encountered. Please try again.");
-			errorBean.addMessage("ERROR: \n" + e.getMessage());
-			return "/jsp/fileSelection.jsp";
-		}
+        if (fileSelection == null || "".equals(fileSelection)) {
+            errorBean.addMessage("You must select at least one file to process.");
+            request.setAttribute("messageBean", messageBean);
+            request.setAttribute("errorBean", errorBean);
+            return "/jsp/fileSelection.jsp";
+        }
 
-		request.getSession().setAttribute("shapeFileSetBean", shpFileSetBean);
-		return "/jsp/attributeSelection.jsp";
-	}
+        // Get the correct shapeFileSet out of the list...
+        for (ShapeFileSetBean shapeFileSubset : shapeFileSetBeanList) {
+            if (fileSelection.equals(shapeFileSubset.getName())) {
+                shpFileSetBean = shapeFileSubset;
+            }
+        }
 
-	private String populateDataSet(HttpServletRequest request) {
-    	MessageBean errorBean = new MessageBean();
-        
-    	THREDDSInfoBean threddsInfoBean = new THREDDSInfoBean();
+        try {
+            shpFileSetBean.setAttributeList(ShapeFileSetBean.getAttributeListFromBean(shpFileSetBean));
+        } catch (IOException e) {
+            log.debug(e.getMessage());
+            errorBean.addMessage("An error was encountered. Please try again.");
+            errorBean.addMessage("ERROR: \n" + e.getMessage());
+            return "/jsp/fileSelection.jsp";
+        }
+
+        request.getSession().setAttribute("shapeFileSetBean", shpFileSetBean);
+        return "/jsp/attributeSelection.jsp";
+    }
+
+    private String populateDataSet(HttpServletRequest request) {
+        MessageBean errorBean = new MessageBean();
+
+        THREDDSInfoBean threddsInfoBean = new THREDDSInfoBean();
         String THREDDSUrl = request.getParameter("THREDDSUrl");
 
         if (THREDDSUrl == null || "".equals(THREDDSUrl)) {
@@ -398,7 +389,7 @@ public class FileProcessServlet extends HttpServlet {
             request.setAttribute("errorBean", errorBean);
             return "/jsp/THREDDSSelection.jsp";
         }
-        
+
         threddsInfoBean.setTHREDDSServer(THREDDSUrl);
 
         // Grab the THREDDS catalog
@@ -426,79 +417,90 @@ public class FileProcessServlet extends HttpServlet {
         }
         request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);
         return "/jsp/DataSetSelection.jsp";
-	}
+    }
 
-	/**
+    /**
      * Set up a feature list
      * 
      * @param request
      * @return
      */
-	private String populateFeatureList(HttpServletRequest request) {
-    	// Attribute chosen, set up feature list
-    	String  attributeSelection = request.getParameter("attributeSelection");
-    	ShapeFileSetBean shpFileSetBean = (ShapeFileSetBean) request.getSession().getAttribute("shapeFileSetBean");
-    	
+    private String populateFeatureList(HttpServletRequest request) {
+        // Attribute chosen, set up feature list
+        String attributeSelection = request.getParameter("attributeSelection");
+        ShapeFileSetBean shpFileSetBean = (ShapeFileSetBean) request.getSession().getAttribute("shapeFileSetBean");
+
         // Set the chosen attribute on the ShapeFileSetBeans
         //String attributeAppliesTo = attributeSelection.substring(0, attributeSelection.indexOf("::"));
         String attribute = attributeSelection.substring(attributeSelection.indexOf("::") + 2);
         shpFileSetBean.setChosenAttribute(attribute);
-        
+
         MessageBean errorBean = new MessageBean();
         MessageBean messageBean = new MessageBean();
         // Pull Feature Lists
-            try {
-				shpFileSetBean.setFeatureList(ShapeFileSetBean.getFeatureListFromBean(shpFileSetBean));
-			} catch (IOException e) {
-				errorBean.addMessage("Unable to attain feature list for shape file. Please try again.");
-				request.setAttribute("messageBean", messageBean);
-				request.setAttribute("errorBean", errorBean);
-				return "/jsp/attributeSelection.jsp";
-			}
+        try {
+            shpFileSetBean.setFeatureList(ShapeFileSetBean.getFeatureListFromBean(shpFileSetBean));
+        } catch (IOException e) {
+            errorBean.addMessage("Unable to attain feature list for shape file. Please try again.");
+            request.setAttribute("messageBean", messageBean);
+            request.setAttribute("errorBean", errorBean);
+            return "/jsp/attributeSelection.jsp";
+        }
 
         request.getSession().setAttribute("shapeFileSetBean", shpFileSetBean);
         return "/jsp/featureSelection.jsp";
-	}
+    }
 
-	private String populateFileUpload(HttpServletRequest request) {
-    	THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");
-    	ShapeFileSetBean shpFileSetBean = (ShapeFileSetBean) request.getSession().getAttribute("shapeFileSetBean");
+    private String populateFileUpload(HttpServletRequest request) {
+        String shapeSet = request.getParameter("shapeset");
+        String attribute = request.getParameter("attribute");
+        String[] features = request.getParameterValues("feature");
+        String thredds = request.getParameter("thredds");
+        String dataset = request.getParameter("dataset");
+        String grid = request.getParameter("grid");
+        String from = request.getParameter("from");
+        String to = request.getParameter("to");
+        String output = request.getParameter("outputtype");
+        String email = request.getParameter("email");
+
+        THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");
+        ShapeFileSetBean shpFileSetBean = (ShapeFileSetBean) request.getSession().getAttribute("shapeFileSetBean");
 
         // What is directory name for the files being uploaded
         String seperator = FileHelper.getSeparator();
         String userDirectory = (String) request.getSession().getAttribute("userTempDir") + seperator;
-        
+
         GridDataset gridDataset = threddsInfoBean.getGridDataSet();
         VariableDS proxiedGridVar = threddsInfoBean.getVariableDs();
         GridCoordSys slicedGrid = threddsInfoBean.getGridCoordSys();
-        
+
         GeoGrid outputGrid = new GeoGrid(gridDataset, proxiedGridVar, slicedGrid);
-        
+
         //GeoGrid outputGrid = threddsInfoBean.getGeoGrid();
         String attributeValue = shpFileSetBean.getChosenFeature();
         File outputFile = new File(userDirectory, attributeValue + ".nc");
 
         outputFile.delete();
-        
+
         try {
-			outputGrid.writeFile(outputFile.toString());
-		} catch (IOException e) {
-			MessageBean errorBean = new MessageBean();
-			errorBean.getMessages().add("Could not write file.");
+            outputGrid.writeFile(outputFile.toString());
+        } catch (IOException e) {
+            MessageBean errorBean = new MessageBean();
+            errorBean.getMessages().add("Could not write file.");
             request.setAttribute("errorBean", errorBean);
             return "/jsp/TimePeriodSelection.jsp";
-		}
-		
+        }
+
         threddsInfoBean.setFileLink(outputFile.getPath());
         request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);
         return "/FileUploadServlet?file=" + outputFile.getPath();
-        
-	}
 
-	private String populateGrid(HttpServletRequest request) {
-    	THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");
-    	MessageBean errorBean = new MessageBean();
-    	
+    }
+
+    private String populateGrid(HttpServletRequest request) {
+        THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");
+        MessageBean errorBean = new MessageBean();
+
         String dataSetSelection = request.getParameter("datasetSelection");
         if (dataSetSelection == null || "".equals(dataSetSelection)) {
             errorBean.getMessages().add("Did not get a DataSet selection. Please try again.");
@@ -517,14 +519,14 @@ public class FileProcessServlet extends HttpServlet {
 
 
         FeatureDataset featureDataset;
-		try {
-			featureDataset = FeatureDatasetFactoryManager.open(
-			        null, dataSetUrl, null, errorLog);
-		} catch (IOException e) {
-			errorBean.getMessages().add("Could not pull Feature Data. Please try again.");
+        try {
+            featureDataset = FeatureDatasetFactoryManager.open(
+                    null, dataSetUrl, null, errorLog);
+        } catch (IOException e) {
+            errorBean.getMessages().add("Could not pull Feature Data. Please try again.");
             request.setAttribute("errorBean", errorBean);
             return "/jsp/DataSetSelection.jsp";
-		}
+        }
 
         if (featureDataset != null) {
 
@@ -552,54 +554,54 @@ public class FileProcessServlet extends HttpServlet {
             errorBean.getMessages().add("Reason: " + errorLog);
             request.setAttribute("errorBean", errorBean);
             return "/jsp/DataSetSelection.jsp";
-            
+
         }
 
         request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);
         return "/jsp/GridSelection.jsp";
-	}
+    }
 
     private String populateSummary(HttpServletRequest request) {
-    	THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");
-    	ShapeFileSetBean shpFileSetBean = (ShapeFileSetBean) request.getSession().getAttribute("shapeFileSetBean");
+        THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");
+        ShapeFileSetBean shpFileSetBean = (ShapeFileSetBean) request.getSession().getAttribute("shapeFileSetBean");
 
-    	MessageBean errorBean = new MessageBean();
-    	
+        MessageBean errorBean = new MessageBean();
+
         String fromTime = request.getParameter("timeFromSelection");
         String toTime = request.getParameter("timeToSelection");
-        
+
         DateFormat df = new SimpleDateFormat("MM-dd-yyyy");
-		Date toDate = new Date();
-		Date fromDate = new Date();
+        Date toDate = new Date();
+        Date fromDate = new Date();
         boolean parsedDates = false;
         try {
-			toDate = df.parse(toTime);
-			fromDate = df.parse(fromTime);
-			parsedDates = true;
-		} catch (ParseException e1) {
-			parsedDates = false;
-			log.debug(e1.getMessage());
-		}
-		
-		if (!parsedDates) {
-			errorBean.getMessages().add("Could not parse dates.");
+            toDate = df.parse(toTime);
+            fromDate = df.parse(fromTime);
+            parsedDates = true;
+        } catch (ParseException e1) {
+            parsedDates = false;
+            log.debug(e1.getMessage());
+        }
+
+        if (!parsedDates) {
+            errorBean.getMessages().add("Could not parse dates.");
             request.setAttribute("errorBean", errorBean);
             return "/jsp/TimePeriodSelection.jsp";
-		}
-		
+        }
+
         threddsInfoBean.setFromTime(fromTime);
         threddsInfoBean.setToTime(toTime);
         FileDataStore shapeFileDataStore;
         FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = null;
-		try {
-			shapeFileDataStore = FileDataStoreFinder.getDataStore(shpFileSetBean.getShapeFile());
-			featureSource = shapeFileDataStore.getFeatureSource();
-		} catch (IOException e1) {
-			errorBean.getMessages().add("Could not parse dates.");
+        try {
+            shapeFileDataStore = FileDataStoreFinder.getDataStore(shpFileSetBean.getShapeFile());
+            featureSource = shapeFileDataStore.getFeatureSource();
+        } catch (IOException e1) {
+            errorBean.getMessages().add("Could not parse dates.");
             request.setAttribute("errorBean", errorBean);
             return "/jsp/TimePeriodSelection.jsp";
-		}
-        
+        }
+
 
         String attributeType = shpFileSetBean.getChosenAttribute();
         String attributeValue = shpFileSetBean.getChosenFeature();
@@ -609,15 +611,15 @@ public class FileProcessServlet extends HttpServlet {
         } catch (CQLException e) {
             // Do nothing right now -- this will be handled by another class
         }
-        
+
         FeatureCollection<SimpleFeatureType, SimpleFeature> filteredFeatures = null;
-		try {
-			filteredFeatures = featureSource.getFeatures(filter);
-		} catch (IOException e1) {
-			errorBean.getMessages().add("Error: " + e1.getMessage());
+        try {
+            filteredFeatures = featureSource.getFeatures(filter);
+        } catch (IOException e1) {
+            errorBean.getMessages().add("Error: " + e1.getMessage());
             request.setAttribute("errorBean", errorBean);
             return "/jsp/TimePeriodSelection.jsp";
-		}
+        }
         SimpleFeature feature;
         Iterator<SimpleFeature> featureIter = filteredFeatures.iterator();
         try {
@@ -630,15 +632,15 @@ public class FileProcessServlet extends HttpServlet {
         String datasetUrl = threddsInfoBean.getDataSetUrlSelection();
         Formatter errorLog = new Formatter();
         GridDataset gridDataset;
-		try {
-			gridDataset = (GridDataset) FeatureDatasetFactoryManager.open(
-			        FeatureType.GRID, datasetUrl, null, errorLog);
-		} catch (IOException e1) {
-			errorBean.getMessages().add("Error: " + e1.getMessage());
+        try {
+            gridDataset = (GridDataset) FeatureDatasetFactoryManager.open(
+                    FeatureType.GRID, datasetUrl, null, errorLog);
+        } catch (IOException e1) {
+            errorBean.getMessages().add("Error: " + e1.getMessage());
             request.setAttribute("errorBean", errorBean);
             return "/jsp/TimePeriodSelection.jsp";
-		}
-		
+        }
+
         if (gridDataset == null) {
             errorBean.getMessages().add("Cannot open GRID at location= " + datasetUrl + "; error message = " + errorLog);
             request.setAttribute("errorBean", errorBean);
@@ -655,9 +657,9 @@ public class FileProcessServlet extends HttpServlet {
                 int timeIndexMax = timeAxis.findTimeIndexFromDate(toDate);
                 timeRange = new Range(timeIndexMin, timeIndexMax);
             } catch (NumberFormatException e) {
-               log.debug(e.getMessage());
+                log.debug(e.getMessage());
             } catch (InvalidRangeException e) {
-            	log.debug(e.getMessage());
+                log.debug(e.getMessage());
             }
 
             Envelope envelope = geom.getEnvelopeInternal();
@@ -670,20 +672,20 @@ public class FileProcessServlet extends HttpServlet {
             try {
                 slicedGrid = grid.subset(timeRange, null, boundingBox, 1, 1, 1);
             } catch (InvalidRangeException e) {
-            	errorBean.getMessages().add("Unable to slice grid");
-            	errorBean.getMessages().add("Error output:\n" + e.getMessage());
+                errorBean.getMessages().add("Unable to slice grid");
+                errorBean.getMessages().add("Error output:\n" + e.getMessage());
                 return "/jsp/DataSetSelection.jsp";
             }
 
             List<String> simpleStats = null;
-			try {
-				simpleStats = SimpleStatistics.getStatisticsList(feature, gridDataset, slicedGrid.getVariable().getName(), timeRange);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+            try {
+                simpleStats = SimpleStatistics.getStatisticsList(feature, gridDataset, slicedGrid.getVariable().getName(), timeRange);
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             threddsInfoBean.setStatsSummary(simpleStats);
-            
+
             // Create a null check here
             VariableDS gridVar = slicedGrid.getVariable();
             VariableDS proxiedGridVar = new VariableDS(null, gridVar, true);
@@ -695,23 +697,23 @@ public class FileProcessServlet extends HttpServlet {
             threddsInfoBean.setGridDataSet(gridDataset);
             threddsInfoBean.setVariableDs(proxiedGridVar);
             threddsInfoBean.setGridCoordSys((GridCoordSys) slicedGrid.getCoordinateSystem());
-            
+
             //GeoGrid outputGrid = new GeoGrid(gridDataset, proxiedGridVar, (GridCoordSys) slicedGrid.getCoordinateSystem());
-            
+
             request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);
             return "/jsp/showSummary.jsp";
         } finally {
             try {
-				gridDataset.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+                gridDataset.close();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
-        
 
-	}
-    
+
+    }
+
     /**
      * Populates the ShapeFileSetbean with the THREDDS servers
      * 
@@ -719,29 +721,29 @@ public class FileProcessServlet extends HttpServlet {
      * @return
      */
     private String populateTHREDDSSelections(HttpServletRequest request) {
-    	ShapeFileSetBean shpFileSetBean = (ShapeFileSetBean) request.getSession().getAttribute("shapeFileSetBean");
+        ShapeFileSetBean shpFileSetBean = (ShapeFileSetBean) request.getSession().getAttribute("shapeFileSetBean");
 
-    	// Set the chosen feature to work with on the bean
+        // Set the chosen feature to work with on the bean
         String featureSelection = request.getParameter("featureSelection");
 
         // Set the chosen feature on the ShapeFileSetBeans
         //String featureAppliesTo = featureSelection.substring(0, featureSelection.indexOf("::"));
         String feature = featureSelection.substring(featureSelection.indexOf("::") + 2);
         shpFileSetBean.setChosenFeature(feature);
-        
+
         // Pull the THREDDS urls from the properties files
         Map<String, String> threddsMap = THREDDSInfoBean.getTHREDDSUrlMap();
         request.setAttribute("threddsMap", threddsMap);
-        
+
         request.getSession().setAttribute("shapeFileSetBean", shpFileSetBean);
         return "/jsp/THREDDSSelection.jsp";
-	}
+    }
 
     private String populateTimeSelection(HttpServletRequest request) {
-    	// Set up time selection
+        // Set up time selection
         THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");
         MessageBean errorBean = new MessageBean();
-        
+
         String gridSelection = request.getParameter("gridSelection");
         if (gridSelection == null || "".equals(gridSelection)) {
             errorBean.getMessages().add("Did not get a Grid selection. Please try again.");
@@ -752,48 +754,48 @@ public class FileProcessServlet extends HttpServlet {
         threddsInfoBean.setGridItemSelection(gridSelection);
         Formatter errorLog = new Formatter();
         FeatureDataset featureDataset = null;
-		try {
-			featureDataset = FeatureDatasetFactoryManager.open(
-			        null, threddsInfoBean.getDataSetUrlSelection(), null, errorLog);
-		} catch (IOException e1) {
-			errorBean.getMessages().add("Could not open a feature data set");
+        try {
+            featureDataset = FeatureDatasetFactoryManager.open(
+                    null, threddsInfoBean.getDataSetUrlSelection(), null, errorLog);
+        } catch (IOException e1) {
+            errorBean.getMessages().add("Could not open a feature data set");
             errorBean.getMessages().add("Reason: " + e1.getMessage());
             request.setAttribute("errorBean", errorBean);
             return "/jsp/DataSetSelection.jsp";
-		}
+        }
 
         if (featureDataset != null) {
 
             List<String> timeStrList = new ArrayList<String>();
             if (featureDataset instanceof GridDataset) {
-                GeoGrid grid = ((GridDataset)featureDataset).findGridByName(gridSelection);
+                GeoGrid grid = ((GridDataset) featureDataset).findGridByName(gridSelection);
 
                 for (NamedObject time : grid.getTimes()) {
                     timeStrList.add(time.getName());
                 }
             } else {
-            	errorBean.getMessages().add("Could not open a feature data set");
+                errorBean.getMessages().add("Could not open a feature data set");
                 errorBean.getMessages().add("Reason: " + errorLog);
                 request.setAttribute("errorBean", errorBean);
                 return "/jsp/DataSetSelection.jsp";
             }
 
             try {
-				featureDataset.close();
-			} catch (IOException e) {
-				log.debug(e.getMessage());
-			}
-			
+                featureDataset.close();
+            } catch (IOException e) {
+                log.debug(e.getMessage());
+            }
+
             threddsInfoBean.setDatasetGridTimes(timeStrList);
-                          
+
             request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);
             return "/jsp/TimePeriodSelection.jsp";
 
-        } 
+        }
         errorBean.getMessages().add("Could not open a grid at location: " + threddsInfoBean.getDataSetUrlSelection());
         errorBean.getMessages().add("Reason: " + errorLog);
         request.setAttribute("errorBean", errorBean);
         return "/jsp/DataSetSelection.jsp";
-	}
+    }
 }
 
