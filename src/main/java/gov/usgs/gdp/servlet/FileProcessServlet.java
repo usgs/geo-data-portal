@@ -199,40 +199,49 @@ public class FileProcessServlet extends HttpServlet {
 	 */
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String action = (request.getParameter("action") == null) ? "" : request.getParameter("action").toLowerCase();
-		
-	    MessageBean errorBean = new MessageBean();
-	    MessageBean messageBean = new MessageBean();
-	    String forwardTo = "";
-	
-	    if (action == null || "".equals(action)) {
-	        errorBean.addMessage("Your action was not read in properly. Please try again");
-	        request.setAttribute("messageBean", messageBean);
-	        request.setAttribute("errorBean", errorBean);
-	        RequestDispatcher rd = request.getRequestDispatcher("/jsp/fileSelection.jsp");
-	        rd.forward(request, response);
-	        return;
-	    }
-	
-	    if ("step1".equals(action)) {
-	    	forwardTo = populateAttributeList(request);
-	    } else if ("step2".equals(action)) { 
-	    	forwardTo = populateFeatureList(request);
-	    } else if ("step3".equals(action)) {
-	        forwardTo = populateTHREDDSSelections(request);
-	    } else if ("step4".equals(action)) {
-	        forwardTo = populateDataSet(request);
-	    } else if ("step5".equals(action)) {
-	        forwardTo = populateGrid(request);
-	    } else if ("step6".equals(action)) { 
-	    	forwardTo = populateTimeSelection(request);
-	    } else if ("step7".equals(action)) {
-	        forwardTo = populateSummary(request);
-	    } else if ("step8".equals(action))  {
-	    	forwardTo = populateFileUpload(request);
-	    	
-	    }
-	    RequestDispatcher rd = request.getRequestDispatcher(forwardTo);
+//
+//	    MessageBean errorBean = new MessageBean();
+//	    MessageBean messageBean = new MessageBean();
+//	    String forwardTo = "";
+//
+//	    if (action == null || "".equals(action)) {
+//	        errorBean.addMessage("Your action was not read in properly. Please try again");
+//	        request.setAttribute("messageBean", messageBean);
+//	        request.setAttribute("errorBean", errorBean);
+//	        RequestDispatcher rd = request.getRequestDispatcher("/jsp/fileSelection.jsp");
+//	        rd.forward(request, response);
+//	        return;
+//	    }
+//
+//	    if ("step1".equals(action)) {
+//	    	forwardTo = populateAttributeList(request);
+//	    } else if ("step2".equals(action)) {
+//	    	forwardTo = populateFeatureList(request);
+//	    } else if ("step3".equals(action)) {
+//	        forwardTo = populateTHREDDSSelections(request);
+//	    } else if ("step4".equals(action)) {
+//	        forwardTo = populateDataSet(request);
+//	    } else if ("step5".equals(action)) {
+//	        forwardTo = populateGrid(request);
+//	    } else if ("step6".equals(action)) {
+//	    	forwardTo = populateTimeSelection(request);
+//	    } else if ("step7".equals(action)) {
+//	        forwardTo = populateSummary(request);
+//	    } else if ("step8".equals(action))  {
+//	    	forwardTo = populateFileUpload(request);
+//
+//	    }
+            String shapeSet = request.getParameter("shapeset");
+            String attribute = request.getParameter("attribute");
+            String[] features = request.getParameterValues("feature");
+            String thredds = request.getParameter("thredds");
+            String dataset = request.getParameter("dataset");
+            String grid = request.getParameter("grid");
+            String from = request.getParameter("from");
+            String to = request.getParameter("to");
+            String output = request.getParameter("outputtype");
+            String email = request.getParameter("email");
+	    RequestDispatcher rd = request.getRequestDispatcher("");
 	    rd.forward(request, response);
 	}
 
