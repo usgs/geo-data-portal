@@ -1,11 +1,12 @@
 package gov.usgs.gdp.helper;
 
+import gov.usgs.gdp.bean.TimeBean;
 import static org.junit.Assert.*;
 
-import gov.usgs.gdp.bean.TimeBean;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.util.List;
@@ -13,7 +14,6 @@ import java.util.List;
 import org.junit.Test;
 
 import thredds.catalog.InvAccess;
-import thredds.catalog.InvCatalog;
 import thredds.catalog.ServiceType;
 
 public class THREDDSServerHelperTest {
@@ -39,7 +39,7 @@ public class THREDDSServerHelperTest {
         } catch (UnknownHostException e) {
             fail(e.getMessage());
         } catch (IOException e) {
-            assertTrue(e instanceof ConnectException);
+            assertTrue(e instanceof ConnectException || e instanceof SocketTimeoutException);
         }
 
         String nonWorkingHost = "www.ivan-suftin-rocks.com";
@@ -54,9 +54,10 @@ public class THREDDSServerHelperTest {
     
     @Test
     public void testGetDatasetHandlesFromServer() {
-    	String host = "runoff.cr.usgs.gov";
-    	int port = 8086; 
-    	String uri = "/thredds/hydrologic_catalog.xml";
+    	String host = "motherlode.ucar.edu";
+    	int port = 8080;
+    	String uri = "/thredds/catalog/station/metar/catalog.xml";
+        
     	List<InvAccess> handles = THREDDSServerHelper.getDatasetHandlesFromServer(host, port, uri, ServiceType.OPENDAP);
     	assertFalse(handles.isEmpty());
     }
@@ -88,8 +89,8 @@ public class THREDDSServerHelperTest {
 //			fail(e.getMessage());
 //		} catch (ParseException e) {
 //			fail(e.getMessage());
-//
 //		}
+//
 //    	assertNotNull(result);
     }
 

@@ -1,5 +1,6 @@
 package gov.usgs.gdp.analysis;
 
+import com.google.common.base.Preconditions;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -115,69 +116,70 @@ public abstract class NetCDFUtility {
      * @param location URL for a THREDDS dataset
      * @param variableName name of a Grid or Station variable contained in that dataset
      * @return
-     * @throws IOException 
+     * @throws IOException
+     * @throws IllegalArgumentException
      */
     public static List<String> getDateRange(String location, String variableName) throws IOException, IllegalArgumentException {
-    	if (location == null || "".equals(location)) throw new IllegalArgumentException("Location cannot be null");
-    	if (variableName == null || "".equals(variableName)) throw new IllegalArgumentException("Variable can not be null");
+        Preconditions.checkNotNull(location, "location cannot be null");
+        Preconditions.checkNotNull(variableName, "variable cannot be null");
 
-    	List<String> dateRange = new ArrayList<String>(2);
-    	FeatureDataset dataset = null;
-    	try {
-    		dataset = FeatureDatasetFactoryManager.open(
-    				null, location, null, new Formatter());
-    		if(dataset.getFeatureType() == FeatureType.GRID) {
-    			GeoGrid grid = ((GridDataset)dataset).findGridByName(variableName);
-    			if (grid == null) return dateRange;
-    			
-    			List<NamedObject> times = grid.getTimes();
-    			if (times.isEmpty()) return dateRange;
-    			
-    			NamedObject startTimeNamedObject  = times.get(0); 
-    			String startTime = startTimeNamedObject.getName();
-    			dateRange.add(0, startTime);
-    			
-    			NamedObject endTimeNamedObject =  times.get(times.size() - 1);
-    			String endTime = endTimeNamedObject.getName();
-    			dateRange.add(1, endTime);
-    			
-    		} else if (dataset.getFeatureType() == FeatureType.STATION) {
-    			DateRange dr = null;
-    			List<FeatureCollection> list =
-    				((FeatureDatasetPoint)dataset).getPointFeatureCollectionList();
-    			for(FeatureCollection fc : list) {
-    				if(fc instanceof StationTimeSeriesFeatureCollection) {
-    					StationTimeSeriesFeatureCollection stsfc =
-    						(StationTimeSeriesFeatureCollection)fc;
-    					//stsfc = stsfc.subset(boundingBox);
-    					while (dr == null && stsfc.hasNext()) {
-    						StationTimeSeriesFeature stsf = stsfc.next();
-    						System.out.println(stsf.getName() +  "" + stsf.size());
-    						PointFeatureIterator pfi = stsf.getPointFeatureIterator(1 << 20);
-    						while(pfi.hasNext()) {
-    							pfi.next();
-    						}
-    					}
-    					while (stsfc.hasNext()) {
-    						dr.extend(stsfc.next().getDateRange());
-    					}
-    				}
-    			}
-    			if (dr == null) {
-    				dr = dataset.getDateRange();
-    			}
-    			if( dr != null) {
-    				dateRange.set(0, dr.getEnd().toString());
-    				dateRange.set(0, dr.getEnd().toString());
-    			}
-    		}
-    	} finally {
-    		if (dataset != null) {
-    			dataset.close();
-    		}
-    	}
-    	return dateRange;
+        FeatureDataset dataset = FeatureDatasetFactoryManager.open(null, location, null, new Formatter());
+        try {
+            List<String> dateRange = new ArrayList<String>(2);
 
+            if (dataset.getFeatureType() == FeatureType.GRID) {
+                GeoGrid grid = ((GridDataset) dataset).findGridByName(variableName);
+                if (grid == null) {
+                    return dateRange;
+                }
+
+                List<NamedObject> times = grid.getTimes();
+                if (times.isEmpty()) {
+                    return dateRange;
+                }
+
+                NamedObject startTimeNamedObject = times.get(0);
+                String startTime = startTimeNamedObject.getName();
+                dateRange.add(0, startTime);
+
+                NamedObject endTimeNamedObject = times.get(times.size() - 1);
+                String endTime = endTimeNamedObject.getName();
+                dateRange.add(1, endTime);
+            } else if (dataset.getFeatureType() == FeatureType.STATION) {
+                DateRange dr = null;
+                List<FeatureCollection> list =
+                        ((FeatureDatasetPoint) dataset).getPointFeatureCollectionList();
+                for (FeatureCollection fc : list) {
+                    if (fc instanceof StationTimeSeriesFeatureCollection) {
+                        StationTimeSeriesFeatureCollection stsfc =
+                                (StationTimeSeriesFeatureCollection) fc;
+                        //stsfc = stsfc.subset(boundingBox);
+                        while (dr == null && stsfc.hasNext()) {
+                            StationTimeSeriesFeature stsf = stsfc.next();
+                            System.out.println(stsf.getName() + "" + stsf.size());
+                            PointFeatureIterator pfi = stsf.getPointFeatureIterator(1 << 20);
+                            while (pfi.hasNext()) {
+                                pfi.next();
+                            }
+                        }
+                        while (stsfc.hasNext()) {
+                            dr.extend(stsfc.next().getDateRange());
+                        }
+                    }
+                }
+                if (dr == null) {
+                    dr = dataset.getDateRange();
+                }
+                if (dr != null) {
+                    dateRange.set(0, dr.getEnd().toString());
+                    dateRange.set(0, dr.getEnd().toString());
+                }
+            }
+
+            return dateRange;
+        } finally {
+            dataset.close();
+        }
     }
 
     public static void main(String[] args) {
