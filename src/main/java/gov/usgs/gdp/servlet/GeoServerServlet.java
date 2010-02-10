@@ -1,6 +1,7 @@
 package gov.usgs.gdp.servlet;
 
 import gov.usgs.gdp.bean.AckBean;
+import gov.usgs.gdp.bean.AvailableFilesBean;
 import gov.usgs.gdp.bean.ErrorBean;
 import gov.usgs.gdp.bean.FilesBean;
 import gov.usgs.gdp.bean.MessageBean;
@@ -15,8 +16,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
@@ -55,22 +56,57 @@ public class GeoServerServlet extends HttpServlet {
 		if ("createdatastore".equals(command)) {
 			
 			String shapefileName = request.getParameter("shapefile");
+			String userDirectory = request.getParameter("userdirectory");
 			
-			Cookie userDirectoryCookie = CookieHelper.getCookie(request, "userDirectory");
-			String userDirectory = "";
-			if (userDirectoryCookie != null && FileHelper.doesDirectoryOrFileExist(userDirectoryCookie.getValue())) {
-				userDirectory = userDirectoryCookie.getValue();
-			} else {
-				userDirectory = System.getProperty("applicationTempDir");
+			String appTempDir = System.getProperty("applicationTempDir");
+			AvailableFilesBean afb = null;
+			try {
+				afb = AvailableFilesBean.getAvailableFilesBean(appTempDir, userDirectory);
+			} catch (IllegalArgumentException e) {
+				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FILE_LIST, e));
+				RouterServlet.sendXml(xmlReply, response);
+				return;
 			}
 			
-			// TODO: see if we can put sample shape files in root of temp dir, not Sample_Files/...
-			String shapefileLoc = userDirectory + "Sample_Files/Shapefiles/" + shapefileName + ".shp";
+			// Couldn't pull any files. Send an error to the caller.
+			if (afb == null) {
+				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new MessageBean("Could not find any files to work with."));
+				RouterServlet.sendXml(xmlReply, response);
+				return;
+			}
 			
-			String[] dir = userDirectory.split(FileHelper.getSeparator());
+			
+			// search for the requested shapefile
+			String directory = null;
+			for (FilesBean fb : afb.getUserFileList()) {
+				if (fb.getName().equals(shapefileName))
+					directory = userDirectory;
+			}
+			
+			// if the file wasn't found in the user directory, search the sample files
+			if (directory == null) {
+				for (FilesBean fb : afb.getExampleFileList()) {
+					if (fb.getName().equals(shapefileName))
+						directory = appTempDir + "Sample_Files/Shapefiles/";
+				}
+			}
+			
+			// Couldn't pull any files. Send an error to the caller.
+			if (directory == null) {
+				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new MessageBean("Could not find any files to work with."));
+				RouterServlet.sendXml(xmlReply, response);
+				return;
+			}
+			
+			
+			String shapefileLoc = directory + shapefileName + ".shp";
+			
+			String[] dir = directory.split(FileHelper.getSeparator());
 			// set the workspace to the name of the temp directory
 			String workspace = dir[dir.length - 1];
 
+			// TODO: make sure that if the workspace and datastore exist,
+			// that they reference a shapefile that actually exists.
 			URL workspacesURL = new URL(geoServerURL + "rest/workspaces/");
 			if (!workspaceExists(workspace)) {
 				String workspaceXML = createWorkspaceXML(workspace);
@@ -87,12 +123,8 @@ public class GeoServerServlet extends HttpServlet {
 				sendXMLPostPacket(featureTypesURL, featureTypeXML);
 			}
 			
-			String layerLoc = new String(geoServerURL + "wms/reflect?" + 
-										 "layers=" + workspace + ":" + shapefileName +
-										 "&format=application/openlayers");
-			
-			// send back ack and location of layer
-			xmlReply = new XmlReplyBean(AckBean.ACK_OK, new MessageBean(layerLoc));
+			// send back ack and workspace and layer names
+			xmlReply = new XmlReplyBean(AckBean.ACK_OK, new MessageBean(workspace, shapefileName));
 			RouterServlet.sendXml(xmlReply, response);
 			return;
 		}
