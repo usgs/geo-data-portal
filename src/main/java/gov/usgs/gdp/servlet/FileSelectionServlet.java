@@ -52,9 +52,9 @@ public class FileSelectionServlet extends HttpServlet {
             // Test to see if the directory does exist. If so,
             // update the time on those files to today to escape the
             // timed deletion process
-            if (userDirectory != null && !"".equals(userDirectory)) {
+            if (userDirectory != null && !"".equals(appTempDir + userDirectory)) {
                 if (FileHelper.doesDirectoryOrFileExist(appTempDir + userDirectory)) {
-                    FileHelper.updateTimestamp(appTempDir + userDirectory, false);
+                    FileHelper.updateTimestamp(appTempDir + userDirectory, false); // Update the timestamp
                 } else {
                 	userDirectory = "";
                 }

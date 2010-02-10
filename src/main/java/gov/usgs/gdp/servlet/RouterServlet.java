@@ -44,15 +44,11 @@ public class RouterServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Map<String, String> requestParameters = request.getParameterMap();
-		
+
+                // If the user is attempting to upload files, send them directly to the correct servlet
 		if (ServletFileUpload.isMultipartContent(request)) {
-			log.debug("User is attempting to upload files.");
-			String userDirectory = request.getParameter("userdirectory");
-			String userDirectoryCommand = "";
-			if (userDirectory != null && !"".equals(userDirectory)) {
-				userDirectoryCommand = "&userdirectory=" + userDirectory;
-			}
-			RequestDispatcher rd = request.getRequestDispatcher("/UploadFilesServlet?command=upload" + userDirectoryCommand);
+			log.debug("User is attempting to upload files.");			
+			RequestDispatcher rd = request.getRequestDispatcher("/UploadFilesServlet?command=upload");
 			rd.forward(request, response);
 			return;
 		}

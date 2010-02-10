@@ -1717,12 +1717,13 @@ ${head}
 				</c:forEach>
 			</select>
 			 -->
-			<input id="timeFromSelect" name="timeFromSelection" value="" ></input>
+			<input id="timeFromSelect" name="timeFromSelection" value="" />
 			<br />
 			<div id="timeFromSelectClicker" onclick="scwShow (scwID('timeFromSelect'), this);">[- click -]</div>
 			<br /><br />
 			To: 
-			<input id="timeToSelect" name="timeToSelection" value="" ></input>
+			<input id="timeToSelect" name="timeToSelection" value="" />
+                        
 			<br />
 			<div id="timeToSelectClicker" onclick="scwShow (scwID('timeToSelect'), this);">[- click -]</div>
 			

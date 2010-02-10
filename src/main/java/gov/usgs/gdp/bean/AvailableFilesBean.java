@@ -43,11 +43,8 @@ public class AvailableFilesBean implements XmlBean{
 		if ("".equals(baseDirectory)) return null;
 		
 		AvailableFilesBean result = new AvailableFilesBean();
-		List<ShapeFileSetBean> shapeFileSetBeanList = new ArrayList<ShapeFileSetBean>();
-		List<FilesBean> exampleFileBeanList = new ArrayList<FilesBean>();
         List<FilesBean> allFilesBeanList = new ArrayList<FilesBean>();
         List<ShapeFileSetBean> allShapes = new ArrayList<ShapeFileSetBean>();
-		List<FilesBean> userFileBeanList = new ArrayList<FilesBean>();
 		String exampleDirectory = baseDirectory 
 			+ FileHelper.getSeparator() 
 			+ "Sample_Files" 
@@ -59,7 +56,7 @@ public class AvailableFilesBean implements XmlBean{
 		// Create the user file bean list (if calling method decides)
 		if (userDirectory != null && !"".equals(userDirectory)) {
 			//userFileBeanList = FilesBean.getFilesBeanSetList(userDirectory, false);			
-            allFilesBeanList = FilesBean.getFilesBeanSetList(exampleDirectory,userDirectory);
+            allFilesBeanList = FilesBean.getFilesBeanSetList(exampleDirectory,baseDirectory + userDirectory);
 		} else {
             allFilesBeanList = FilesBean.getFilesBeanSetList(exampleDirectory, true);
         }
