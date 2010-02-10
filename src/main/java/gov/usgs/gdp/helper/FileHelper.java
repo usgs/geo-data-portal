@@ -292,5 +292,20 @@ public class FileHelper {
 		return result;
 	}
 
+    public static boolean updateTimestamp(final String path, final boolean recursive) throws IOException {
+        if (path == null || "".equals(path)) return false;
+        if (!FileHelper.doesDirectoryOrFileExist(path)) return false;
+        FileUtils.touch(new File(path));
+        if (recursive) {
+            Iterator<File> files = FileUtils.iterateFiles(new File(path), null, true);
+            while (files.hasNext()) {
+                File file =  files.next();
+                FileUtils.touch(file);
+            }
+
+        }
+        return true;
+    }
+
 	
 }

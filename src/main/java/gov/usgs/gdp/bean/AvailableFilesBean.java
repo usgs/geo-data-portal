@@ -19,7 +19,7 @@ public class AvailableFilesBean implements XmlBean{
 	
 	@XStreamAlias("user-files")
 	private List<FilesBean> userFileList;
-	
+
 	@Override
 	public String toXml() {
 		String result = "";
@@ -45,6 +45,8 @@ public class AvailableFilesBean implements XmlBean{
 		AvailableFilesBean result = new AvailableFilesBean();
 		List<ShapeFileSetBean> shapeFileSetBeanList = new ArrayList<ShapeFileSetBean>();
 		List<FilesBean> exampleFileBeanList = new ArrayList<FilesBean>();
+        List<FilesBean> allFilesBeanList = new ArrayList<FilesBean>();
+        List<ShapeFileSetBean> allShapes = new ArrayList<ShapeFileSetBean>();
 		List<FilesBean> userFileBeanList = new ArrayList<FilesBean>();
 		String exampleDirectory = baseDirectory 
 			+ FileHelper.getSeparator() 
@@ -52,34 +54,32 @@ public class AvailableFilesBean implements XmlBean{
 			+ FileHelper.getSeparator();
 		
 		// Create the example file bean list
-		exampleFileBeanList = FilesBean.getFilesBeanSetList(exampleDirectory, true);
-		result.setExampleFileList(exampleFileBeanList);
+		//exampleFileBeanList = FilesBean.getFilesBeanSetList(exampleDirectory, true);
 		
 		// Create the user file bean list (if calling method decides)
 		if (userDirectory != null && !"".equals(userDirectory)) {
-			userFileBeanList = FilesBean.getFilesBeanSetList(userDirectory, false);
-			result.setUserFileList(userFileBeanList);
-		}
-		
-		// Begin populating the ShapeFileSetBean list
-		for (FilesBean exampleBean : exampleFileBeanList) {
-			ShapeFileSetBean sfsb = null;
-			if ((sfsb = ShapeFileSetBean.getShapeFileSetBeanFromFilesBean(exampleBean)) != null){
-				shapeFileSetBeanList.add(sfsb);
-			}
-			
-		}
-		
-		// Begin populating the ShapeFileSetBean list
-		for (FilesBean userBean : userFileBeanList) {
-			ShapeFileSetBean sfsb = null;
-			if ((sfsb = ShapeFileSetBean.getShapeFileSetBeanFromFilesBean(userBean)) != null){
-				shapeFileSetBeanList.add(sfsb);
-			}
-			
-		}
+			//userFileBeanList = FilesBean.getFilesBeanSetList(userDirectory, false);			
+            allFilesBeanList = FilesBean.getFilesBeanSetList(exampleDirectory,baseDirectory 
+        			+ FileHelper.getSeparator()  + userDirectory);
+		} else {
+            allFilesBeanList = FilesBean.getFilesBeanSetList(exampleDirectory, true);
+        }
 
-		result.setShapeSetList(shapeFileSetBeanList);
+	
+        for (FilesBean filesBean : allFilesBeanList) {
+            ShapeFileSetBean sfsb = null;
+            if (filesBean.getUserDirectory() != null) {
+            	result.getUserFileList().add(filesBean);
+            } else {
+            	result.getExampleFileList().add(filesBean);
+            } 
+            
+            if ((sfsb = ShapeFileSetBean.getShapeFileSetBeanFromFilesBean(filesBean)) != null){
+                allShapes.add(sfsb);
+            }
+        }
+        
+		result.setShapeSetList(allShapes);
 		return result;
 	}
 	
@@ -104,7 +104,6 @@ public class AvailableFilesBean implements XmlBean{
 	public void setUserFileList(List<FilesBean> userFileList) {
 		this.userFileList = userFileList;
 	}
-	
-	
+
 	
 }

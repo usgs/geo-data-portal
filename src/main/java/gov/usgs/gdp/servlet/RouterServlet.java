@@ -47,7 +47,12 @@ public class RouterServlet extends HttpServlet {
 		
 		if (ServletFileUpload.isMultipartContent(request)) {
 			log.debug("User is attempting to upload files.");
-			RequestDispatcher rd = request.getRequestDispatcher("/UploadFilesServlet?command=upload");
+			String userDirectory = request.getParameter("userdirectory");
+			String userDirectoryCommand = "";
+			if (userDirectory != null && !"".equals(userDirectory)) {
+				userDirectoryCommand = "&userdirectory=" + userDirectory;
+			}
+			RequestDispatcher rd = request.getRequestDispatcher("/UploadFilesServlet?command=upload" + userDirectoryCommand);
 			rd.forward(request, response);
 			return;
 		}
@@ -64,7 +69,10 @@ public class RouterServlet extends HttpServlet {
 		
 		if ("listfiles".equals(command)) {
 			log.debug("User is attempting to list files");
-			RequestDispatcher rd = request.getRequestDispatcher("/FileSelectionServlet?command=listfiles");
+                        String userDirectory = request.getParameter("userdirectory");
+                        String userDirectoryCommand = "";
+                        if (userDirectory != null && !"".equals(userDirectory)) userDirectoryCommand = "&userdirectory=" + userDirectory;
+			RequestDispatcher rd = request.getRequestDispatcher("/FileSelectionServlet?command=listfiles" + userDirectoryCommand);
 			rd.forward(request, response);
 			return;
 		}

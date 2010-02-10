@@ -21,8 +21,14 @@ public class FilesBean implements Serializable {
 	@XStreamAlias("file-set-name")
 	@XStreamAsAttribute
 	private String name;
+
+    @XStreamAlias("user-directory")
+	@XStreamAsAttribute
+    private String userDirectory;
 	private static final long serialVersionUID = 1L;
-	
+
+
+
 	@XStreamAlias("files")
 	@XStreamImplicit
 	private Collection<File> files;
@@ -67,7 +73,15 @@ public class FilesBean implements Serializable {
 	public static List<FilesBean> getFilesBeanSetList(String exampleDir, String userDir) {
 		List<FilesBean> result = new ArrayList<FilesBean>();
 		result.addAll(FilesBean.getFilesBeanSetList(exampleDir, true));
-		if (!"".equals(userDir)) result.addAll(FilesBean.getFilesBeanSetList(userDir, false));
+                List<FilesBean> userFiles = new ArrayList<FilesBean>();
+		if (!"".equals(userDir)) {
+            //result.addAll(FilesBean.getFilesBeanSetList(userDir, false));
+            userFiles = FilesBean.getFilesBeanSetList(userDir, false);
+            for (FilesBean filesBean : userFiles) {
+                filesBean.setUserDirectory(userDir.substring(userDir.lastIndexOf('/') + 1));                        
+            }
+            result.addAll(userFiles);
+        }
 		return result;
 	}
 
@@ -108,4 +122,18 @@ public class FilesBean implements Serializable {
 		}
 		return result;
 	}
+
+    /**
+     * @return the userDirectory
+     */
+    public String getUserDirectory() {
+        return userDirectory;
+    }
+
+    /**
+     * @param userDirectory the userDirectory to set
+     */
+    public void setUserDirectory(String userDirectory) {
+        this.userDirectory = userDirectory;
+    }
 }

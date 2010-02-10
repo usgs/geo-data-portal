@@ -10,7 +10,6 @@ import gov.usgs.gdp.helper.FileHelper;
 
 import java.io.IOException;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
@@ -47,19 +46,19 @@ public class FileSelectionServlet extends HttpServlet {
 		String command = (request.getParameter("command") == null) ? "" : request.getParameter("command");
 		XmlReplyBean xmlReply = null;
 		if ("listfiles".equals(command)) {
-			Cookie userDirectoryCookie = CookieHelper.getCookie(request, "userDirectory");
-			// This line is needed because the last request may be from another servlet
-			// that puts the cookie in the response, but it hits this servlet before
-			// it hits the client that consumes it
-			if (userDirectoryCookie == null) userDirectoryCookie = (Cookie) request.getAttribute("c00kie");
-			String userDirectory = "";
-			if (userDirectoryCookie != null) {
-				if (FileHelper.doesDirectoryOrFileExist(userDirectoryCookie.getValue())) {
-					userDirectory = userDirectoryCookie.getValue();
-				}
-			}
-			
+            String userDirectory = request.getParameter("userdirectory");
 			String appTempDir = System.getProperty("applicationTempDir");
+                        
+            // Test to see if the directory does exist. If so,
+            // update the time on those files to today to escape the
+            // timed deletion process
+            if (userDirectory != null && !"".equals(userDirectory)) {
+                if (FileHelper.doesDirectoryOrFileExist(userDirectory)) {
+                    FileHelper.updateTimestamp(appTempDir + userDirectory, false);
+                } else {
+                	userDirectory = "";
+                }
+            }
 			AvailableFilesBean afb = null;
 			try {
 				afb = AvailableFilesBean.getAvailableFilesBean(appTempDir, userDirectory);

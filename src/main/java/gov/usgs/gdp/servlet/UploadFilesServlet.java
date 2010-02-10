@@ -59,22 +59,26 @@ public class UploadFilesServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		XmlReplyBean xmlOutput = null;
 		String command = request.getParameter("command");
-		Cookie userDirectory = CookieHelper.getCookie(request, "userDirectory");
+		String userDirectory = request.getParameter("userdirectory");
+		//Cookie userDirectory = CookieHelper.getCookie(request, "userDirectory");
 		
 		if ("upload".equals(command)) {
 			// Create the user directory.
-			if (userDirectory == null || !FileHelper.doesDirectoryOrFileExist(userDirectory.getValue())) {
-				userDirectory = createUserDirectory();
-				if (userDirectory == null) {
+			if (userDirectory == null || !FileHelper.doesDirectoryOrFileExist(userDirectory)) {
+				String userSubDir = createUserDirectory();
+				if ("".equals(userSubDir)) {
 					xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_USER_DIR_CREATE));
 					RouterServlet.sendXml(xmlOutput, response);
 					return;
 				}
+				String applicationTempDir = System.getProperty("applicationTempDir");
+		        String seperator = FileHelper.getSeparator();
+				userDirectory = applicationTempDir + seperator + userSubDir;
 			}
 			
 			boolean filesUploaded = false;
 			try {
-				filesUploaded = uploadFiles(request, userDirectory.getValue());
+				filesUploaded = uploadFiles(request, userDirectory);
 			} catch (Exception e) {
 				xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FILE_UPLOAD, e));
 				RouterServlet.sendXml(xmlOutput, response);
@@ -83,9 +87,7 @@ public class UploadFilesServlet extends HttpServlet {
 			
 			if (filesUploaded) {
 				log.debug("Files successfully uploaded.");
-				response.addCookie(userDirectory);
-				request.setAttribute("c00kie", userDirectory);
-				RequestDispatcher rd = request.getRequestDispatcher("/FileSelectionServlet?command=listfiles");
+				RequestDispatcher rd = request.getRequestDispatcher("/FileSelectionServlet?command=listfiles&userdirectory=" + userDirectory);
 				rd.forward(request, response);
 			} else {
 				xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FILE_UPLOAD));
@@ -117,7 +119,7 @@ public class UploadFilesServlet extends HttpServlet {
 	@SuppressWarnings("unchecked")
 	private boolean uploadFiles(HttpServletRequest request, String uploadDirectory) throws Exception{
 		log.debug("User uploading file(s).");
-				
+		
 		boolean result = false;
 		
 		// Utility method that determines whether the request contains multipart content (files)
@@ -146,32 +148,20 @@ public class UploadFilesServlet extends HttpServlet {
 		return result;
 	}
 
-	private Cookie createUserDirectory() {
-		Cookie result = null;
-		boolean wasCreated = false;
+	private String createUserDirectory() {
 		String applicationTempDir = System.getProperty("applicationTempDir");
         String seperator = FileHelper.getSeparator();
         String userSubDir = Long.toString(new Date().getTime());
         String userTempDir = applicationTempDir + seperator + userSubDir;
         
-        wasCreated = FileHelper.createDir(userTempDir);
+        boolean  wasCreated = FileHelper.createDir(userTempDir);
         if (wasCreated) {
         	log.debug("User subdirectory created at: " + userTempDir);
-			String cookieDaysString = PropertyFactory.getProperty("cookie.lifespan");
-			int cookieHours = 0;
-			try {
-				cookieHours = Integer.parseInt(cookieDaysString);
-			} catch (NumberFormatException e) {
-				log.debug("Properties did not contain a value for the amount of days a cookie is set for. (\"cookie.lifespan\") Using: 2");
-				cookieHours = CookieHelper.ONE_HOUR * 48;
-			}
-			result = new Cookie("userDirectory", userTempDir);
-			result.setMaxAge(cookieHours);
-    		return result;
+			return userSubDir;
         }
         
     	log.debug("User subdirectory could not be created at: " + userTempDir);
     	log.debug("User will be unable to upload files for this session.");
-    	return null;
+    	return "";
 	}
 }
