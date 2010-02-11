@@ -224,6 +224,13 @@
             <artifactId>netcdf-all</artifactId>
             <version>4.1</version>
         </dependency>
+        <dependency>
+        	<groupId>com.preceda</groupId>
+        	<artifactId>email_util</artifactId>
+        	<version>1.0.0</version>
+        	<type>jar</type>
+        	<scope>compile</scope>
+        </dependency>
 
         <!--<dependency>
             <groupId>essi-unidata</groupId>

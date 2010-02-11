@@ -1,9 +1,13 @@
 package gov.usgs.gdp.servlet;
 
 import gov.usgs.gdp.analysis.NetCDFUtility;
+import gov.usgs.gdp.bean.AckBean;
+import gov.usgs.gdp.bean.ErrorBean;
 import gov.usgs.gdp.bean.MessageBean;
 import gov.usgs.gdp.bean.ShapeFileSetBean;
 import gov.usgs.gdp.bean.THREDDSInfoBean;
+import gov.usgs.gdp.bean.UploadLocationBean;
+import gov.usgs.gdp.bean.XmlReplyBean;
 import gov.usgs.gdp.helper.FileHelper;
 
 import java.io.File;
@@ -19,11 +23,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FileDataStore;
@@ -198,43 +204,17 @@ public class FileProcessServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//
-//	    MessageBean errorBean = new MessageBean();
-//	    MessageBean messageBean = new MessageBean();
-//	    String forwardTo = "";
-//
-//	    if (action == null || "".equals(action)) {
-//	        errorBean.addMessage("Your action was not read in properly. Please try again");
-//	        request.setAttribute("messageBean", messageBean);
-//	        request.setAttribute("errorBean", errorBean);
-//	        RequestDispatcher rd = request.getRequestDispatcher("/jsp/fileSelection.jsp");
-//	        rd.forward(request, response);
-//	        return;
-//	    }
-//
-//	    if ("step1".equals(action)) {
-//	    	forwardTo = populateAttributeList(request);
-//	    } else if ("step2".equals(action)) {
-//	    	forwardTo = populateFeatureList(request);
-//	    } else if ("step3".equals(action)) {
-//	        forwardTo = populateTHREDDSSelections(request);
-//	    } else if ("step4".equals(action)) {
-//	        forwardTo = populateDataSet(request);
-//	    } else if ("step5".equals(action)) {
-//	        forwardTo = populateGrid(request);
-//	    } else if ("step6".equals(action)) {
-//	    	forwardTo = populateTimeSelection(request);
-//	    } else if ("step7".equals(action)) {
-//	        forwardTo = populateSummary(request);
-//	    } else if ("step8".equals(action))  {
-//	    	forwardTo = populateFileUpload(request);
-//
-//	    }
-
-        populateFileUpload(request);
-
-//	    RequestDispatcher rd = request.getRequestDispatcher("");
-//	    rd.forward(request, response);
+    	String command = request.getParameter("command");
+    	String uploadLocation = "";
+    	if ("submitforprocessing".equals(command)) {
+    		uploadLocation = populateFileUpload(request);
+    		if (!"".equals(uploadLocation)) {
+    			UploadLocationBean uploadLocationBean = new UploadLocationBean(uploadLocation);
+    			XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, uploadLocationBean);
+    			RouterServlet.sendXml(xmlReply, response);
+    			return;
+        	}
+    	}
     }
 
     /**
@@ -451,6 +431,42 @@ public class FileProcessServlet extends HttpServlet {
         return "/jsp/featureSelection.jsp";
     }
 
+    private String populateFileUpload(String shapeSet, String attribute, String[] features, String thredds, String dataset, String grid, String from, String to, String output, String email) {
+    	return "not.yet.implemented";
+//    	THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");
+//        ShapeFileSetBean shpFileSetBean = (ShapeFileSetBean) request.getSession().getAttribute("shapeFileSetBean");
+//
+//        // What is directory name for the files being uploaded
+//        String seperator = FileHelper.getSeparator();
+//        String userDirectory = (String) request.getSession().getAttribute("userTempDir") + seperator;
+//
+//        GridDataset gridDataset = threddsInfoBean.getGridDataSet();
+//        VariableDS proxiedGridVar = threddsInfoBean.getVariableDs();
+//        GridCoordSys slicedGrid = threddsInfoBean.getGridCoordSys();
+//
+//        GeoGrid outputGrid = new GeoGrid(gridDataset, proxiedGridVar, slicedGrid);
+//
+//        //GeoGrid outputGrid = threddsInfoBean.getGeoGrid();
+//        String attributeValue = shpFileSetBean.getChosenFeature();
+//        File outputFile = new File(userDirectory, attributeValue + ".nc");
+//
+//        outputFile.delete();
+//
+//        try {
+//            outputGrid.writeFile(outputFile.toString());
+//        } catch (IOException e) {
+//            MessageBean errorBean = new MessageBean();
+//            errorBean.getMessages().add("Could not write file.");
+//            request.setAttribute("errorBean", errorBean);
+//            return "/jsp/TimePeriodSelection.jsp";
+//        }
+//
+//        threddsInfoBean.setFileLink(outputFile.getPath());
+//        request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);
+//        return "/FileUploadServlet?file=" + outputFile.getPath();
+//    	
+    }
+    
     private String populateFileUpload(HttpServletRequest request) {
         String shapeSet = request.getParameter("shapeset");
         String attribute = request.getParameter("attribute");
@@ -463,37 +479,7 @@ public class FileProcessServlet extends HttpServlet {
         String output = request.getParameter("outputtype");
         String email = request.getParameter("email");
 
-        THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");
-        ShapeFileSetBean shpFileSetBean = (ShapeFileSetBean) request.getSession().getAttribute("shapeFileSetBean");
-
-        // What is directory name for the files being uploaded
-        String seperator = FileHelper.getSeparator();
-        String userDirectory = (String) request.getSession().getAttribute("userTempDir") + seperator;
-
-        GridDataset gridDataset = threddsInfoBean.getGridDataSet();
-        VariableDS proxiedGridVar = threddsInfoBean.getVariableDs();
-        GridCoordSys slicedGrid = threddsInfoBean.getGridCoordSys();
-
-        GeoGrid outputGrid = new GeoGrid(gridDataset, proxiedGridVar, slicedGrid);
-
-        //GeoGrid outputGrid = threddsInfoBean.getGeoGrid();
-        String attributeValue = shpFileSetBean.getChosenFeature();
-        File outputFile = new File(userDirectory, attributeValue + ".nc");
-
-        outputFile.delete();
-
-        try {
-            outputGrid.writeFile(outputFile.toString());
-        } catch (IOException e) {
-            MessageBean errorBean = new MessageBean();
-            errorBean.getMessages().add("Could not write file.");
-            request.setAttribute("errorBean", errorBean);
-            return "/jsp/TimePeriodSelection.jsp";
-        }
-
-        threddsInfoBean.setFileLink(outputFile.getPath());
-        request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);
-        return "/FileUploadServlet?file=" + outputFile.getPath();
+        return populateFileUpload(shapeSet, attribute, features, thredds, dataset, grid, from, to, output, email);
 
     }
 

@@ -52,10 +52,11 @@ public class PropertyFactory {
 			}
 			try {	
 				loadProperties();
+				log.debug("Loaded properties file");
 			} catch (RuntimeException e) {
 				//
 			}
-			log.debug("Loaded properties file");
+			
 		} 
 		String result = (properties.get(key) == null) ? "" : (String) properties.get(key);
 		if (result == null) {
