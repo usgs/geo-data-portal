@@ -51,12 +51,16 @@ public class PropertyFactory {
 				// Do nothing
 			}
 			try {	
-				loadProperties();
-				log.debug("Loaded properties file");
+				loadProperties();				
 			} catch (RuntimeException e) {
-				//
+				// Do nothing
 			}
 			
+			try {
+				log.debug("Loaded properties file");
+			} catch (NullPointerException e) {
+				// Do nothing
+			}
 		} 
 		String result = (properties.get(key) == null) ? "" : (String) properties.get(key);
 		if (result == null) {
