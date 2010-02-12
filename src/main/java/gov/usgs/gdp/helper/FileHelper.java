@@ -46,6 +46,7 @@ public class FileHelper {
 		if (basePath == null) basePath = "";
 		if (directoryName == null || "".equals(directoryName)) directoryName = "upload-repository";
 		String directory = basePath + directoryName;
+		if (FileHelper.doesDirectoryOrFileExist(directory)) return new File(directory);
 		if (!FileHelper.createDir(directory)) return null;
 		File result = new File(directory);
 		if (!result.exists()) return null;

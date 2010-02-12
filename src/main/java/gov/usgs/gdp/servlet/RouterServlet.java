@@ -186,6 +186,13 @@ public class RouterServlet extends HttpServlet {
 			return;
 		}
 		
+		if ("getfile".equals(command)) {
+			String file = request.getParameter("file");
+			RequestDispatcher rd = request.getRequestDispatcher("/FileProcessServlet?command=getfile&file=" + file);
+			rd.forward(request, response);
+			return;
+		}
+		
 
 	}
 

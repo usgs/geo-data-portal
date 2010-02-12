@@ -176,8 +176,8 @@ public class GridStatistics {
         gs.perTimestepPerAttributeValueStatistics = new LinkedHashMap<Date, Map<Object, WeightedStatisticsAccumulator1D>>();
         gs.perTimestepAllAttributeValueStatistics = new LinkedHashMap<Date,WeightedStatisticsAccumulator1D>();
         
+        int tBase = timeRange.first();
         for (int tIndex = 0; tIndex < tCount; ++tIndex) {
-           
             ucar.ma2.Array array = gdt.readVolumeData(tIndex);
            
             Map<Object, WeightedStatisticsAccumulator1D> timeStepAttributeValueStatisticsMap =  new LinkedHashMap<Object, WeightedStatisticsAccumulator1D>(attributeValueMapSize);
@@ -191,10 +191,8 @@ public class GridStatistics {
                 int yOffset = yIndex * xCount;
                 for (int xIndex = 0; xIndex < xCount; ++xIndex) {
                     int yxIndex = yOffset + xIndex;
-                    
                     double cellCoverageFractionTotal = 0;
                     double value = array.getDouble(yxIndex);
-                    
                     for (Map.Entry<Object, GridCoverage> entry : attributeValueToCoverageMap.entrySet()) {
                         Object av = entry.getKey();
                         GridCoverage gc = entry.getValue();
@@ -213,7 +211,7 @@ public class GridStatistics {
                 }
             }
             
-            Date timestep = gcs.getTimeAxis1D().getTimeDate(tIndex);
+            Date timestep = gcs.getTimeAxis1D().getTimeDate(tBase + tIndex);
             gs.perTimestepPerAttributeValueStatistics.put(timestep, timeStepAttributeValueStatisticsMap);
             gs.perTimestepAllAttributeValueStatistics.put(timestep, timeStepStatistics);
         }
@@ -233,6 +231,8 @@ public class GridStatistics {
     
         FeatureDataset dataset = null;
         FileDataStore dataStore = null;
+        long start = System.currentTimeMillis();
+        System.out.println("eat me.");
         try {
             dataset = FeatureDatasetFactoryManager.open(null, ncLocation, null, new Formatter());
             dataStore = FileDataStoreFinder.getDataStore(new File(sfLocation));
@@ -240,12 +240,12 @@ public class GridStatistics {
             String attributeName = "GRIDCODE";
             FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = featureSource.getFeatures();
             
-            GridStatistics gs = GridStatistics.generate(featureCollection, attributeName, (GridDataset)dataset, "runoff", new Range(0, 100));
+            GridStatistics gs = GridStatistics.generate(featureCollection, attributeName, (GridDataset)dataset, "runoff", new Range(0, 1000));
             
             // example csv dump...
             BufferedWriter writer = null;
             try {
-                writer = new BufferedWriter(new FileWriter("temp.csv"));
+                writer = new BufferedWriter(new FileWriter("temp0.csv"));
                 
                GridStatisticsCSVWriter csv = new GridStatisticsCSVWriter(gs);
                csv.write(writer);
@@ -275,6 +275,7 @@ public class GridStatistics {
                 dataStore.dispose();
             }
         }
+        System.out.println("Completed in " + (System.currentTimeMillis() - start) + " ms.");
     }
 }
     

@@ -1,7 +1,10 @@
 package gov.usgs.gdp.servlet;
 
+import gov.usgs.gdp.analysis.GridStatistics;
+import gov.usgs.gdp.analysis.GridStatisticsCSVWriter;
 import gov.usgs.gdp.analysis.NetCDFUtility;
 import gov.usgs.gdp.bean.AckBean;
+import gov.usgs.gdp.bean.AvailableFilesBean;
 import gov.usgs.gdp.bean.ErrorBean;
 import gov.usgs.gdp.bean.MessageBean;
 import gov.usgs.gdp.bean.ShapeFileSetBean;
@@ -43,6 +46,7 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.geometry.jts.JTSFactoryFinder;
+import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
@@ -210,7 +214,6 @@ public class FileProcessServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	String command = request.getParameter("command");
-    	String uploadLocation = "";
     	if ("submitforprocessing".equals(command)) {
     		File fileForUpload = populateFileUpload(request);
     		// We are, for the moment assuming there is a file at this location
@@ -218,7 +221,7 @@ public class FileProcessServlet extends HttpServlet {
     		// back, we go to the directory at String baseFilePath = System.getProperty("applicationTempDir");
     		// + the file specified by the user ((fileForUpload.getName()) and we send that
     		// back to the user
-    		if (!"".equals(uploadLocation)) {
+    		if (!"".equals(fileForUpload.getPath())) {
     			UploadLocationBean uploadLocationBean = new UploadLocationBean(fileForUpload.getName());
     			XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, uploadLocationBean);
     			RouterServlet.sendXml(xmlReply, response);
@@ -227,11 +230,11 @@ public class FileProcessServlet extends HttpServlet {
     	}
     	
     	// User wishes to grab a file. Send this file if available.
-    	if ("retrievefile".equals(command)) {
+    	if ("getfile".equals(command)) {
     		String file = request.getParameter("file");
     		String baseFilePath = System.getProperty("applicationTempDir");
 	    	baseFilePath = baseFilePath + FileHelper.getSeparator();
-	    	String fullFilePath = baseFilePath + file;
+	    	String fullFilePath = baseFilePath + "upload-repository" +FileHelper.getSeparator()+file;
 	    	File fileToUpload = null;
 	    	if (!FileHelper.doesDirectoryOrFileExist(fullFilePath)) {
 	    		// Send error message ("File Not Found")
@@ -274,50 +277,170 @@ public class FileProcessServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);
     }
-    private File populateFileUpload(String shapeSet, String attribute, String[] features, String thredds, String dataset, String grid, String from, String to, String output, String email) {
+    private File populateFileUpload(HttpServletRequest request) throws IOException {
+	    String shapeSet = request.getParameter("shapeset");
+	    String attribute = request.getParameter("attribute");
+	    String[] features = request.getParameterValues("feature");
+	    String thredds = request.getParameter("thredds");
+	    String dataset = request.getParameter("dataset");
+	    String grid = request.getParameter("grid");
+	    String from = request.getParameter("from");
+	    String to = request.getParameter("to");
+	    String output = request.getParameter("outputtype");
+	    String email = request.getParameter("email");
+	    String userDirectory = request.getParameter("userdirectory");
+	    return populateFileUpload(shapeSet, attribute, features, thredds, dataset, grid, from, to, output, email, userDirectory);
+	    
+	}
+
+	private File populateFileUpload(String shapeSet, String attribute, String[] features, String thredds, String dataset, String grid, String from, String to, String output, String email, String userDirectory) throws IOException {
 	    	String baseFilePath = System.getProperty("applicationTempDir");
 	    	baseFilePath = baseFilePath + FileHelper.getSeparator();
 	    	File uploadDirectory = FileHelper.createFileRepositoryDirectory(baseFilePath);
 	    	if (!uploadDirectory.exists()) return null;
 	    	// Create a File Which represents the output we are looking for.
+	    	File uploadFile = populateSummary(shapeSet, attribute, features, thredds, dataset, grid, from, to, output, email,  uploadDirectory, FileHelper.getSeparator() +"replace-me.csv", userDirectory);
 	    	// Put that file into the directory represented by uploadDirectory
+	    	if (!uploadFile.exists()) return null;
 	    	// Set that file as the result to be returned to the calling function
 	    	// switch uploadDirectory return statement with the file we are looking for
-			return uploadDirectory;
-	    	
-	//    	THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");
-	//        ShapeFileSetBean shpFileSetBean = (ShapeFileSetBean) request.getSession().getAttribute("shapeFileSetBean");
-	//
-	//        // What is directory name for the files being uploaded
-	//        String seperator = FileHelper.getSeparator();
-	//        String userDirectory = (String) request.getSession().getAttribute("userTempDir") + seperator;
-	//
-	//        GridDataset gridDataset = threddsInfoBean.getGridDataSet();
-	//        VariableDS proxiedGridVar = threddsInfoBean.getVariableDs();
-	//        GridCoordSys slicedGrid = threddsInfoBean.getGridCoordSys();
-	//
-	//        GeoGrid outputGrid = new GeoGrid(gridDataset, proxiedGridVar, slicedGrid);
-	//
-	//        //GeoGrid outputGrid = threddsInfoBean.getGeoGrid();
-	//        String attributeValue = shpFileSetBean.getChosenFeature();
-	//        File outputFile = new File(userDirectory, attributeValue + ".nc");
-	//
-	//        outputFile.delete();
-	//
-	//        try {
-	//            outputGrid.writeFile(outputFile.toString());
-	//        } catch (IOException e) {
-	//            MessageBean errorBean = new MessageBean();
-	//            errorBean.getMessages().add("Could not write file.");
-	//            request.setAttribute("errorBean", errorBean);
-	//            return "/jsp/TimePeriodSelection.jsp";
-	//        }
-	//
-	//        threddsInfoBean.setFileLink(outputFile.getPath());
-	//        request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);
-	//        return "/FileUploadServlet?file=" + outputFile.getPath();
-	//    	
+			return uploadFile;
+
 	    }
+
+	private File populateSummary(final String shapeSet, 
+			final String attribute, 
+			final String[] features, 
+			final String thredds, 
+			final String dataset, 
+			final String grid, 
+			final String from, 
+			final String to, 
+			final String output, 
+			final String email, 
+			final File outputPath, 
+			final String outputFile,
+			final String userDirectory) throws IOException {
+	
+	    String fromTime = from;
+	    String toTime = to;
+	
+	    DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+	    Date toDate = new Date();
+	    Date fromDate = new Date();
+	    boolean parsedDates = false;
+	    try {
+	        toDate = df.parse(toTime);
+	        fromDate = df.parse(fromTime);
+	        parsedDates = true;
+	    } catch (ParseException e1) {
+	        parsedDates = false;
+	        log.debug(e1.getMessage());
+	    }
+	
+	    if (!parsedDates) {
+	        // return some sort of error
+	    }
+
+	    FileDataStore shapeFileDataStore;
+	    FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = null;
+	    try {
+	    	// Set up the shapefile
+	    	String appTempDir = System.getProperty("applicationTempDir");
+	    	String userDir = userDirectory;
+            if (userDir != null && !"".equals(appTempDir + userDir)) {
+                if (FileHelper.doesDirectoryOrFileExist(appTempDir + userDir)) {
+                    FileHelper.updateTimestamp(appTempDir + userDir, false); // Update the timestamp
+                } else {
+                	userDir = "";
+                }
+            }
+			AvailableFilesBean afb = AvailableFilesBean.getAvailableFilesBean(appTempDir, userDir);
+			List<ShapeFileSetBean> shapeBeanList = afb.getShapeSetList();
+			File shapeFile = null;
+			for (ShapeFileSetBean sfsb : shapeBeanList) {
+				if (shapeSet.equals(sfsb.getName())) {
+					shapeFile = sfsb.getShapeFile();
+				}
+			}
+			
+	        shapeFileDataStore = FileDataStoreFinder.getDataStore(shapeFile);
+	        featureSource = shapeFileDataStore.getFeatureSource();
+	    } catch (IOException e1) {
+	        // Send error
+	    }
+	
+	
+	    String attributeName = attribute;
+	   // String attributeValue = shpFileSetBean.getChosenFeature();
+	
+	
+	    FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = featureSource.getFeatures();
+	
+	    String datasetUrl = dataset;
+	    Formatter errorLog = new Formatter();
+	    GridDataset gridDataset = null;
+	    try {
+	        gridDataset = (GridDataset) FeatureDatasetFactoryManager.open(
+	                FeatureType.GRID, datasetUrl, null, errorLog);
+	    } catch (IOException e1) {
+	        //send error
+	    }
+	
+	    if (gridDataset == null) {
+	        //send error
+	    }
+	
+	    String gridName = grid;
+	    try {
+	        GridDatatype gdt = gridDataset.findGridByName(gridName);
+	        Range timeRange = null;
+	        try {
+	            CoordinateAxis1DTime timeAxis = gdt.getCoordinateSystem().getTimeAxis1D();
+	            int timeIndexMin = timeAxis.findTimeIndexFromDate(fromDate);
+	            int timeIndexMax = timeAxis.findTimeIndexFromDate(toDate);
+	            timeRange = new Range(timeIndexMin, timeIndexMax);
+	        } catch (NumberFormatException e) {
+	            log.debug(e.getMessage());
+	        } catch (InvalidRangeException e) {
+	            log.debug(e.getMessage());
+	        }
+	
+	        // long running task
+	        GridStatistics gs = GridStatistics.generate(
+	        		featureCollection,
+	        		attributeName,
+	        		gridDataset,
+	        		gridName,
+	        		timeRange);
+	        
+	        
+	        GridStatisticsCSVWriter ivanSucks = new GridStatisticsCSVWriter(gs);
+	        
+	        BufferedWriter writer = null;
+	        try {
+	        	writer = new BufferedWriter(new FileWriter(outputPath.getPath() + outputFile));
+	            ivanSucks.write(writer);
+	        } finally {
+	        	if (writer != null) {
+	        		try { writer.close(); } catch (IOException e) { /* get bent */ }
+	        	}
+	        }
+	        
+	
+	    } finally {
+	        try {
+	            if (gridDataset != null) gridDataset.close();
+	        } catch (IOException e) {
+	            // TODO Auto-generated catch block
+	            e.printStackTrace();
+	        }
+	    }
+		return new File(outputPath.getPath() + outputFile);
+	
+	
+	}
+
 	private static final long serialVersionUID = 1L;
 
     /**
@@ -527,22 +650,6 @@ public class FileProcessServlet extends HttpServlet {
         return "/jsp/featureSelection.jsp";
     }
 
-    private File populateFileUpload(HttpServletRequest request) {
-        String shapeSet = request.getParameter("shapeset");
-        String attribute = request.getParameter("attribute");
-        String[] features = request.getParameterValues("feature");
-        String thredds = request.getParameter("thredds");
-        String dataset = request.getParameter("dataset");
-        String grid = request.getParameter("grid");
-        String from = request.getParameter("from");
-        String to = request.getParameter("to");
-        String output = request.getParameter("outputtype");
-        String email = request.getParameter("email");
-
-        return populateFileUpload(shapeSet, attribute, features, thredds, dataset, grid, from, to, output, email);
-
-    }
-
     private String populateGrid(HttpServletRequest request) {
         THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");
         MessageBean errorBean = new MessageBean();
@@ -605,159 +712,6 @@ public class FileProcessServlet extends HttpServlet {
 
         request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);
         return "/jsp/GridSelection.jsp";
-    }
-
-    private String populateSummary(HttpServletRequest request) {
-        THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");
-        ShapeFileSetBean shpFileSetBean = (ShapeFileSetBean) request.getSession().getAttribute("shapeFileSetBean");
-
-        MessageBean errorBean = new MessageBean();
-
-        String fromTime = request.getParameter("timeFromSelection");
-        String toTime = request.getParameter("timeToSelection");
-
-        DateFormat df = new SimpleDateFormat("MM-dd-yyyy");
-        Date toDate = new Date();
-        Date fromDate = new Date();
-        boolean parsedDates = false;
-        try {
-            toDate = df.parse(toTime);
-            fromDate = df.parse(fromTime);
-            parsedDates = true;
-        } catch (ParseException e1) {
-            parsedDates = false;
-            log.debug(e1.getMessage());
-        }
-
-        if (!parsedDates) {
-            errorBean.getMessages().add("Could not parse dates.");
-            request.setAttribute("errorBean", errorBean);
-            return "/jsp/TimePeriodSelection.jsp";
-        }
-
-        threddsInfoBean.setFromTime(fromTime);
-        threddsInfoBean.setToTime(toTime);
-        FileDataStore shapeFileDataStore;
-        FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = null;
-        try {
-            shapeFileDataStore = FileDataStoreFinder.getDataStore(shpFileSetBean.getShapeFile());
-            featureSource = shapeFileDataStore.getFeatureSource();
-        } catch (IOException e1) {
-            errorBean.getMessages().add("Could not parse dates.");
-            request.setAttribute("errorBean", errorBean);
-            return "/jsp/TimePeriodSelection.jsp";
-        }
-
-
-        String attributeType = shpFileSetBean.getChosenAttribute();
-        String attributeValue = shpFileSetBean.getChosenFeature();
-        Filter filter = null;
-        try {
-            filter = CQL.toFilter(attributeType + " = '" + attributeValue + "'");
-        } catch (CQLException e) {
-            // Do nothing right now -- this will be handled by another class
-        }
-
-        FeatureCollection<SimpleFeatureType, SimpleFeature> filteredFeatures = null;
-        try {
-            filteredFeatures = featureSource.getFeatures(filter);
-        } catch (IOException e1) {
-            errorBean.getMessages().add("Error: " + e1.getMessage());
-            request.setAttribute("errorBean", errorBean);
-            return "/jsp/TimePeriodSelection.jsp";
-        }
-        SimpleFeature feature;
-        Iterator<SimpleFeature> featureIter = filteredFeatures.iterator();
-        try {
-            feature = featureIter.next();   // Return only the first feature, even if there are multiple matches.
-        } finally {
-            filteredFeatures.close(featureIter);
-        }
-
-        Geometry geom = (Geometry) feature.getDefaultGeometry();
-        String datasetUrl = threddsInfoBean.getDataSetUrlSelection();
-        Formatter errorLog = new Formatter();
-        GridDataset gridDataset;
-        try {
-            gridDataset = (GridDataset) FeatureDatasetFactoryManager.open(
-                    FeatureType.GRID, datasetUrl, null, errorLog);
-        } catch (IOException e1) {
-            errorBean.getMessages().add("Error: " + e1.getMessage());
-            request.setAttribute("errorBean", errorBean);
-            return "/jsp/TimePeriodSelection.jsp";
-        }
-
-        if (gridDataset == null) {
-            errorBean.getMessages().add("Cannot open GRID at location= " + datasetUrl + "; error message = " + errorLog);
-            request.setAttribute("errorBean", errorBean);
-            return "/jsp/TimePeriodSelection.jsp";
-        }
-
-        try {
-            List<GridDatatype> grids = gridDataset.getGrids();
-            GeoGrid grid = (GeoGrid) grids.iterator().next();
-            Range timeRange = null;
-            try {
-                CoordinateAxis1DTime timeAxis = grid.getCoordinateSystem().getTimeAxis1D();
-                int timeIndexMin = timeAxis.findTimeIndexFromDate(fromDate);
-                int timeIndexMax = timeAxis.findTimeIndexFromDate(toDate);
-                timeRange = new Range(timeIndexMin, timeIndexMax);
-            } catch (NumberFormatException e) {
-                log.debug(e.getMessage());
-            } catch (InvalidRangeException e) {
-                log.debug(e.getMessage());
-            }
-
-            Envelope envelope = geom.getEnvelopeInternal();
-
-            LatLonPoint lowerLeftPoint = new LatLonPointImpl(envelope.getMinY(), envelope.getMinX());
-            LatLonPoint upperRightPoint = new LatLonPointImpl(envelope.getMaxY(), envelope.getMaxX());
-            LatLonRect boundingBox = new LatLonRect(lowerLeftPoint, upperRightPoint);
-
-            GeoGrid slicedGrid = null;
-            try {
-                slicedGrid = grid.subset(timeRange, null, boundingBox, 1, 1, 1);
-            } catch (InvalidRangeException e) {
-                errorBean.getMessages().add("Unable to slice grid");
-                errorBean.getMessages().add("Error output:\n" + e.getMessage());
-                return "/jsp/DataSetSelection.jsp";
-            }
-
-            List<String> simpleStats = null;
-            try {
-                simpleStats = SimpleStatistics.getStatisticsList(feature, gridDataset, slicedGrid.getVariable().getName(), timeRange);
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            threddsInfoBean.setStatsSummary(simpleStats);
-
-            // Create a null check here
-            VariableDS gridVar = slicedGrid.getVariable();
-            VariableDS proxiedGridVar = new VariableDS(null, gridVar, true);
-
-            proxiedGridVar.addAttribute(new Attribute("_FillValue", Float.valueOf(-999f)));
-            proxiedGridVar.addAttribute(new Attribute("missing_value", Float.valueOf(-999f)));
-            proxiedGridVar.setProxyReader(new ShapedGridReader(slicedGrid, geom));
-
-            threddsInfoBean.setGridDataSet(gridDataset);
-            threddsInfoBean.setVariableDs(proxiedGridVar);
-            threddsInfoBean.setGridCoordSys((GridCoordSys) slicedGrid.getCoordinateSystem());
-
-            //GeoGrid outputGrid = new GeoGrid(gridDataset, proxiedGridVar, (GridCoordSys) slicedGrid.getCoordinateSystem());
-
-            request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);
-            return "/jsp/showSummary.jsp";
-        } finally {
-            try {
-                gridDataset.close();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-
-
     }
 
     /**
