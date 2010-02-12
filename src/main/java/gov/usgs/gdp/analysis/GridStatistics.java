@@ -126,7 +126,7 @@ public class GridStatistics {
 
         // check attribute type binding, if possible we want to sort it's values
         AttributeType attributeType = attributeDescriptor.getType();
-        boolean isAttributeValueComparable = attributeType.getBinding().isAssignableFrom(Comparable.class);
+        boolean isAttributeValueComparable = Comparable.class.isAssignableFrom(attributeType.getBinding());
         Map<Object, Geometry> attributeValueToGeometryMap = isAttributeValueComparable ?
                 new TreeMap<Object, Geometry>() :     // rely on on Comparable to sort
                 new LinkedHashMap<Object, Geometry>(); // use order from featureCollection.iterator();
@@ -192,23 +192,23 @@ public class GridStatistics {
                 for (int xIndex = 0; xIndex < xCount; ++xIndex) {
                     int yxIndex = yOffset + xIndex;
                     
-                    double featureCoverageFraction = 0;
+                    double cellCoverageFractionTotal = 0;
                     double value = array.getDouble(yxIndex);
                     
                     for (Map.Entry<Object, GridCoverage> entry : attributeValueToCoverageMap.entrySet()) {
                         Object av = entry.getKey();
                         GridCoverage gc = entry.getValue();
-                        featureCoverageFraction += gc.getFeatureCoverageFraction(yxIndex);
                         double cellCoverageFraction = gc.getCellCoverageFraction(yxIndex);
                         if(cellCoverageFraction > 0d) {
                             gs.perAttributeValueAllTimestepStatistics.get(av).accumulate(value, cellCoverageFraction);
                             timeStepAttributeValueStatisticsMap.get(av).accumulate(value, cellCoverageFraction);
                         }
+                        cellCoverageFractionTotal += cellCoverageFraction;
                     }
                     
-                    if (featureCoverageFraction > 0) {
-                        timeStepStatistics.accumulate(value, featureCoverageFraction);
-                        gs.allTimestepAllAttributeValueStatistics.accumulate(value, featureCoverageFraction);
+                    if (cellCoverageFractionTotal > 0) {
+                        timeStepStatistics.accumulate(value, cellCoverageFractionTotal);
+                        gs.allTimestepAllAttributeValueStatistics.accumulate(value, cellCoverageFractionTotal);
                     }
                 }
             }
@@ -221,6 +221,9 @@ public class GridStatistics {
         return gs;
     }
     
+    public static void writerCSV(BufferedWriter writer) {
+
+    }
     
     // SIMPLE inline testing only, need unit tests...
     public static void main(String[] args) {
@@ -244,37 +247,14 @@ public class GridStatistics {
             try {
                 writer = new BufferedWriter(new FileWriter("temp.csv"));
                 
-                // START header
-                writer.append("TIMESTEP");
-                for (Object attributeValue : gs.getAttributeValues()) {
-                    writer.append(',').append(attributeValue.toString());
-                }
-                writer.append(',').append("ALL");
-                writer.newLine();
-                // END header
-                for (Map.Entry<Date, Map<Object, WeightedStatisticsAccumulator1D>> entry0 : gs.getPerTimestepPerAttributeValueStatistics().entrySet()) {
-                    writer.append(entry0.getKey().toGMTString()); // deprecated, figure out better way later.
-                    for (Map.Entry<Object, WeightedStatisticsAccumulator1D> entry1 : entry0.getValue().entrySet()) {
-                        // if you are going to output more values that just mean you'll need to tweak the header
-                        writer.append(',').append(Double.toString(entry1.getValue().getMean()));
-                    }
-                    // value for ALL features across timestep
-                    writer.append(',').append(Double.toString(gs.getPerTimestepAllAttributeValueStatistics().get(entry0.getKey()).getMean()));
-                    writer.newLine();
-                }
-                // SUMMARY STUFF for ALL timesteps
-                writer.append("ALL");
-                for (Object attributeValue : gs.getAttributeValues()) {
-                    writer.append(',').append(Double.toString(gs.getPerAttributeValueAllTimestepStatistics().get(attributeValue).getMean()));
-                }
-                writer.append(',').append(Double.toString(gs.allTimestepAllAttributeValueStatistics().getMean()));
-                writer.newLine();
+               GridStatisticsCSVWriter csv = new GridStatisticsCSVWriter(gs);
+               csv.write(writer);
             } catch (IOException ex) {
                 Logger.getLogger(SimpleStatistics.class.getName()).log(Level.SEVERE, null, ex);
             } finally {
-                if (dataset != null) {
+                if (writer != null) {
                     try {
-                        dataset.close();
+                        writer.close();
                     } catch (IOException ex) {
                         Logger.getLogger(SimpleStatistics.class.getName()).log(Level.SEVERE, null, ex);
                     }

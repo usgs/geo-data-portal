@@ -77,6 +77,10 @@ public class WeightedStatisticsAccumulator1D {
     public long getCount() {
         return count;
     }
+    
+    public double getWeightSum() {
+        return weightSum;
+    }
 
     public double getMean() {
         return mean;
