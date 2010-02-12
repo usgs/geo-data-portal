@@ -9,6 +9,7 @@ import gov.usgs.gdp.bean.THREDDSInfoBean;
 import gov.usgs.gdp.bean.UploadLocationBean;
 import gov.usgs.gdp.bean.XmlReplyBean;
 import gov.usgs.gdp.helper.FileHelper;
+import gov.usgs.gdp.helper.PropertyFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -207,7 +208,7 @@ public class FileProcessServlet extends HttpServlet {
     	String command = request.getParameter("command");
     	String uploadLocation = "";
     	if ("submitforprocessing".equals(command)) {
-    		uploadLocation = populateFileUpload(request);
+    		File fileForUpload = populateFileUpload(request);
     		if (!"".equals(uploadLocation)) {
     			UploadLocationBean uploadLocationBean = new UploadLocationBean(uploadLocation);
     			XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, uploadLocationBean);
@@ -294,6 +295,8 @@ public class FileProcessServlet extends HttpServlet {
         return result;
     }
 
+
+    
     @SuppressWarnings("unused")
     private List<ShapeFileSetBean> getShapeFilesSetSubList(String[] checkboxItems, List<ShapeFileSetBean> shapeFileSetBeanList) {
         List<ShapeFileSetBean> result = new ArrayList<ShapeFileSetBean>();
@@ -431,8 +434,16 @@ public class FileProcessServlet extends HttpServlet {
         return "/jsp/featureSelection.jsp";
     }
 
-    private String populateFileUpload(String shapeSet, String attribute, String[] features, String thredds, String dataset, String grid, String from, String to, String output, String email) {
-    	return "not.yet.implemented";
+    private File populateFileUpload(String shapeSet, String attribute, String[] features, String thredds, String dataset, String grid, String from, String to, String output, String email) {
+    	String baseFilePath = System.getProperty("applicationTempDir");
+    	baseFilePath = baseFilePath + FileHelper.getSeparator();
+    	File uploadDirectory = FileHelper.createFileRepositoryDirectory(baseFilePath);
+    	if (!uploadDirectory.exists()) return null;
+    	// Create a File Which represents the output we are looking for
+    	// set that file as the result to be returned to the calling function
+    	// switch uploadDirectory return statement with the file we are looking for
+		return uploadDirectory;
+    	
 //    	THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");
 //        ShapeFileSetBean shpFileSetBean = (ShapeFileSetBean) request.getSession().getAttribute("shapeFileSetBean");
 //
@@ -467,7 +478,7 @@ public class FileProcessServlet extends HttpServlet {
 //    	
     }
     
-    private String populateFileUpload(HttpServletRequest request) {
+    private File populateFileUpload(HttpServletRequest request) {
         String shapeSet = request.getParameter("shapeset");
         String attribute = request.getParameter("attribute");
         String[] features = request.getParameterValues("feature");

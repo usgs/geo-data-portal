@@ -40,6 +40,18 @@ public class FileHelper {
 		return true;
 	}
 	
+	public static File createFileRepositoryDirectory(final String baseFilePath) {
+		String basePath = baseFilePath;
+		String directoryName = PropertyFactory.getProperty("upload.directory.name");
+		if (basePath == null) basePath = "";
+		if (directoryName == null || "".equals(directoryName)) directoryName = "upload-repository";
+		String directory = basePath + directoryName;
+		if (!FileHelper.createDir(directory)) return null;
+		File result = new File(directory);
+		if (!result.exists()) return null;
+		return result;
+	}
+	
 	/**
 	 * Creates a directory in the filesystem
 	 * 
