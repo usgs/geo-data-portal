@@ -143,7 +143,7 @@ public class StatisticsAccumulator1D {
 
 
     public double getSampleVariance() {
-        return m2 / (double) (count - 1);
+        return count > 1 ?  m2 / (double) (count - 1) : 0d;
     }
 
     public double getSampleStandardDeviation() {
@@ -151,7 +151,7 @@ public class StatisticsAccumulator1D {
     }
 
     public double getPopulationVariance() {
-        return m2 / (double) count;
+        return count > 1 ? m2 / (double) count : 0d;
     }
 
     public double getPopulationStandardDeviation() {

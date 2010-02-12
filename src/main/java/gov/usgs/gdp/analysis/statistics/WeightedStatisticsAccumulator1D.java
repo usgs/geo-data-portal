@@ -88,7 +88,7 @@ public class WeightedStatisticsAccumulator1D {
 
 
     public double getSampleVariance() {
-        return S * (double) count / ( (double) (count - 1) * weightSum);
+        return count > 1 ? S * (double) count / ( (double) (count - 1) * weightSum) : 0d;
     }
 
     public double getSampleStandardDeviation() {
@@ -96,11 +96,11 @@ public class WeightedStatisticsAccumulator1D {
     }
 
     public double getPopulationVariance() {
-        return S / weightSum;
+        return weightSum > 0d ? S / weightSum : 0d;
     }
 
     public double getPopulationStandardDeviation() {
-        return Math.sqrt(getSampleVariance());
+        return Math.sqrt(getPopulationVariance());
     }
 
     public double getMinimum() {
