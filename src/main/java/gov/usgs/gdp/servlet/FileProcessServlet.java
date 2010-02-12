@@ -11,8 +11,11 @@ import gov.usgs.gdp.bean.XmlReplyBean;
 import gov.usgs.gdp.helper.FileHelper;
 import gov.usgs.gdp.helper.PropertyFactory;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -26,6 +29,7 @@ import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -209,12 +213,57 @@ public class FileProcessServlet extends HttpServlet {
     	String uploadLocation = "";
     	if ("submitforprocessing".equals(command)) {
     		File fileForUpload = populateFileUpload(request);
+    		// We are, for the moment assuming there is a file at this location
+    		// The link is sent out as just the file name. When the user sends the request
+    		// back, we go to the directory at String baseFilePath = System.getProperty("applicationTempDir");
+    		// + the file specified by the user ((fileForUpload.getName()) and we send that
+    		// back to the user
     		if (!"".equals(uploadLocation)) {
-    			UploadLocationBean uploadLocationBean = new UploadLocationBean(uploadLocation);
+    			UploadLocationBean uploadLocationBean = new UploadLocationBean(fileForUpload.getName());
     			XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, uploadLocationBean);
     			RouterServlet.sendXml(xmlReply, response);
     			return;
         	}
+    	}
+    	
+    	// User wishes to grab a file. Send this file if available.
+    	if ("retrievefile".equals(command)) {
+    		String file = request.getParameter("file");
+    		String baseFilePath = System.getProperty("applicationTempDir");
+	    	baseFilePath = baseFilePath + FileHelper.getSeparator();
+	    	String fullFilePath = baseFilePath + file;
+	    	File fileToUpload = null;
+	    	if (!FileHelper.doesDirectoryOrFileExist(fullFilePath)) {
+	    		// Send error message ("File Not Found")
+	    	}
+	    	fileToUpload = new File(fullFilePath);
+	    	//returnFile(filename, out);
+	    	
+	    	// Set the headers.
+	    	response.setContentType("application/x-download");
+	    	response.setHeader("Content-Disposition", "attachment; filename=" + fileToUpload.getName());
+	    	response.setCharacterEncoding("UTF-8");
+	    	
+	    	// Send the file.
+	    	ServletOutputStream out = null;
+	    	BufferedInputStream buf = null;
+	    	try {
+		    	out = response.getOutputStream();
+		    	response.setContentLength((int) fileToUpload.length());
+		    	FileInputStream input = new FileInputStream(fileToUpload);
+		    	buf = new BufferedInputStream(input);
+		    	int readBytes = 0;
+		    	while ((readBytes = buf.read()) != -1) out.write(readBytes);
+		    	out.close();
+		    	buf.close();
+	    	} catch (IOException ioe) {
+	    	      throw new ServletException(ioe.getMessage()); 
+	    	} finally {
+	    		if (out != null)
+	    			out.close();
+	    	      if (buf != null)
+	    	    	  buf.close();	
+	    	}
     	}
     }
 
@@ -225,7 +274,51 @@ public class FileProcessServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);
     }
-    private static final long serialVersionUID = 1L;
+    private File populateFileUpload(String shapeSet, String attribute, String[] features, String thredds, String dataset, String grid, String from, String to, String output, String email) {
+	    	String baseFilePath = System.getProperty("applicationTempDir");
+	    	baseFilePath = baseFilePath + FileHelper.getSeparator();
+	    	File uploadDirectory = FileHelper.createFileRepositoryDirectory(baseFilePath);
+	    	if (!uploadDirectory.exists()) return null;
+	    	// Create a File Which represents the output we are looking for.
+	    	// Put that file into the directory represented by uploadDirectory
+	    	// Set that file as the result to be returned to the calling function
+	    	// switch uploadDirectory return statement with the file we are looking for
+			return uploadDirectory;
+	    	
+	//    	THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");
+	//        ShapeFileSetBean shpFileSetBean = (ShapeFileSetBean) request.getSession().getAttribute("shapeFileSetBean");
+	//
+	//        // What is directory name for the files being uploaded
+	//        String seperator = FileHelper.getSeparator();
+	//        String userDirectory = (String) request.getSession().getAttribute("userTempDir") + seperator;
+	//
+	//        GridDataset gridDataset = threddsInfoBean.getGridDataSet();
+	//        VariableDS proxiedGridVar = threddsInfoBean.getVariableDs();
+	//        GridCoordSys slicedGrid = threddsInfoBean.getGridCoordSys();
+	//
+	//        GeoGrid outputGrid = new GeoGrid(gridDataset, proxiedGridVar, slicedGrid);
+	//
+	//        //GeoGrid outputGrid = threddsInfoBean.getGeoGrid();
+	//        String attributeValue = shpFileSetBean.getChosenFeature();
+	//        File outputFile = new File(userDirectory, attributeValue + ".nc");
+	//
+	//        outputFile.delete();
+	//
+	//        try {
+	//            outputGrid.writeFile(outputFile.toString());
+	//        } catch (IOException e) {
+	//            MessageBean errorBean = new MessageBean();
+	//            errorBean.getMessages().add("Could not write file.");
+	//            request.setAttribute("errorBean", errorBean);
+	//            return "/jsp/TimePeriodSelection.jsp";
+	//        }
+	//
+	//        threddsInfoBean.setFileLink(outputFile.getPath());
+	//        request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);
+	//        return "/FileUploadServlet?file=" + outputFile.getPath();
+	//    	
+	    }
+	private static final long serialVersionUID = 1L;
 
     /**
      * Writes a collection of {@link PointFeature}s to a file in CSV format. PointFeatures are written one per line
@@ -434,50 +527,6 @@ public class FileProcessServlet extends HttpServlet {
         return "/jsp/featureSelection.jsp";
     }
 
-    private File populateFileUpload(String shapeSet, String attribute, String[] features, String thredds, String dataset, String grid, String from, String to, String output, String email) {
-    	String baseFilePath = System.getProperty("applicationTempDir");
-    	baseFilePath = baseFilePath + FileHelper.getSeparator();
-    	File uploadDirectory = FileHelper.createFileRepositoryDirectory(baseFilePath);
-    	if (!uploadDirectory.exists()) return null;
-    	// Create a File Which represents the output we are looking for
-    	// set that file as the result to be returned to the calling function
-    	// switch uploadDirectory return statement with the file we are looking for
-		return uploadDirectory;
-    	
-//    	THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");
-//        ShapeFileSetBean shpFileSetBean = (ShapeFileSetBean) request.getSession().getAttribute("shapeFileSetBean");
-//
-//        // What is directory name for the files being uploaded
-//        String seperator = FileHelper.getSeparator();
-//        String userDirectory = (String) request.getSession().getAttribute("userTempDir") + seperator;
-//
-//        GridDataset gridDataset = threddsInfoBean.getGridDataSet();
-//        VariableDS proxiedGridVar = threddsInfoBean.getVariableDs();
-//        GridCoordSys slicedGrid = threddsInfoBean.getGridCoordSys();
-//
-//        GeoGrid outputGrid = new GeoGrid(gridDataset, proxiedGridVar, slicedGrid);
-//
-//        //GeoGrid outputGrid = threddsInfoBean.getGeoGrid();
-//        String attributeValue = shpFileSetBean.getChosenFeature();
-//        File outputFile = new File(userDirectory, attributeValue + ".nc");
-//
-//        outputFile.delete();
-//
-//        try {
-//            outputGrid.writeFile(outputFile.toString());
-//        } catch (IOException e) {
-//            MessageBean errorBean = new MessageBean();
-//            errorBean.getMessages().add("Could not write file.");
-//            request.setAttribute("errorBean", errorBean);
-//            return "/jsp/TimePeriodSelection.jsp";
-//        }
-//
-//        threddsInfoBean.setFileLink(outputFile.getPath());
-//        request.getSession().setAttribute("threddsInfoBean", threddsInfoBean);
-//        return "/FileUploadServlet?file=" + outputFile.getPath();
-//    	
-    }
-    
     private File populateFileUpload(HttpServletRequest request) {
         String shapeSet = request.getParameter("shapeset");
         String attribute = request.getParameter("attribute");

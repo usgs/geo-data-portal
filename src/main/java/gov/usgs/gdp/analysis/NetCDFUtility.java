@@ -113,17 +113,17 @@ public abstract class NetCDFUtility {
     /**
      * Retrieves a List of type String which has a date range from the beginning to the end of a FeatureDataSet
      * 
-     * @param location URL for a THREDDS dataset
+     * @param threddsURL URL for a THREDDS dataset
      * @param variableName name of a Grid or Station variable contained in that dataset
      * @return
      * @throws IOException
      * @throws IllegalArgumentException
      */
-    public static List<String> getDateRange(String location, String variableName) throws IOException, IllegalArgumentException {
-        Preconditions.checkNotNull(location, "location cannot be null");
+    public static List<String> getDateRange(String threddsURL, String variableName) throws IOException, IllegalArgumentException {
+        Preconditions.checkNotNull(threddsURL, "location cannot be null");
         Preconditions.checkNotNull(variableName, "variable cannot be null");
 
-        FeatureDataset dataset = FeatureDatasetFactoryManager.open(null, location, null, new Formatter());
+        FeatureDataset dataset = FeatureDatasetFactoryManager.open(null, threddsURL, null, new Formatter());
         try {
             List<String> dateRange = new ArrayList<String>(2);
 
