@@ -224,6 +224,13 @@
             <artifactId>netcdf-all</artifactId>
             <version>4.1</version>
         </dependency>
+        <dependency>
+        	<groupId>com.sun.xml.fastinfoset</groupId>
+        	<artifactId>FastInfoset</artifactId>
+        	<version>1.2.7</version>
+        	<type>jar</type>
+        	<scope>compile</scope>
+        </dependency>
 
         <!--<dependency>
             <groupId>essi-unidata</groupId>

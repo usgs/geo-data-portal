@@ -4,7 +4,7 @@ import gov.usgs.gdp.bean.AckBean;
 import gov.usgs.gdp.bean.ErrorBean;
 import gov.usgs.gdp.bean.XmlReplyBean;
 
-import com.sun.xml.internal.fastinfoset.*; 
+import com.sun.xml.fastinfoset.*; 
 
 import java.io.IOException;
 import java.io.Writer;
