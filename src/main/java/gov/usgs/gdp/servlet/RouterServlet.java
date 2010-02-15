@@ -153,28 +153,30 @@ public class RouterServlet extends HttpServlet {
 		}
 		
 		if ("submitforprocessing".equals(command)) {
-                        String url = "";			
-                        String shapeSet = request.getParameter("shapeset");                        
-                        String attribute = request.getParameter("attribute");
-                        String[] features = request.getParameterValues("feature");
-                        String thredds = request.getParameter("thredds");
-                        String dataset = request.getParameter("dataset");                        
-                        String grid = request.getParameter("grid");                        
-                        String from = request.getParameter("from");                        
-                        String to = request.getParameter("to");                        
-                        String output = request.getParameter("outputtype");                        
-                        String email = request.getParameter("email");                        
-
-                        url = url + "&shapeset=" + shapeSet;
-                        url = url + "&attribute=" + attribute;
-                        for (String feature : features) url = url + "&feature=" + feature;
-                        url = url + "&thredds=" + thredds;
-                        url = url + "&dataset=" + dataset;
-                        url = url + "&grid=" + grid;
-                        if (to != null && "".equals(to)) url = url + "&to=" + to;
-                        if (from != null && "".equals(from)) url = url + "&from=" + from;
-                        url = url + "&output=" + output;
-                        if (email != null && "".equals(email))url = url + "&email=" + email;
+			String url = "";			
+			String shapeSet = request.getParameter("shapeset");                        
+			String attribute = request.getParameter("attribute");
+			String[] features = request.getParameterValues("feature");
+			String thredds = request.getParameter("thredds");
+			String dataset = request.getParameter("dataset");                        
+			String grid = request.getParameter("grid");                        
+			String from = request.getParameter("from");                        
+			String to = request.getParameter("to");                        
+			String output = request.getParameter("outputtype");                        
+			String email = request.getParameter("email");                        
+			String outputFile = request.getParameter("outputfile");
+			
+			url = url + "&shapeset=" + shapeSet;
+			url = url + "&attribute=" + attribute;
+			for (String feature : features) url = url + "&feature=" + feature;
+			url = url + "&thredds=" + thredds;
+			url = url + "&dataset=" + dataset;
+			url = url + "&grid=" + grid;
+			if (to != null && "".equals(to)) url = url + "&to=" + to;
+			if (from != null && "".equals(from)) url = url + "&from=" + from;
+			url = url + "&output=" + output;
+			url = url + "&outputfile=" + outputFile;
+			if (email != null && "".equals(email))url = url + "&email=" + email;
 			RequestDispatcher rd = request.getRequestDispatcher("/FileProcessServlet?command=submitforprocessing" + url);
 			rd.forward(request, response);
 			return;

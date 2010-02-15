@@ -287,19 +287,20 @@ public class FileProcessServlet extends HttpServlet {
 	    String from = request.getParameter("from");
 	    String to = request.getParameter("to");
 	    String output = request.getParameter("outputtype");
+	    String outputFile = request.getParameter("outputfile");
 	    String email = request.getParameter("email");
 	    String userDirectory = request.getParameter("userdirectory");
-	    return populateFileUpload(shapeSet, attribute, features, thredds, dataset, grid, from, to, output, email, userDirectory);
+	    return populateFileUpload(shapeSet, attribute, features, thredds, dataset, grid, from, to, output, outputFile,email, userDirectory);
 	    
 	}
 
-	private File populateFileUpload(String shapeSet, String attribute, String[] features, String thredds, String dataset, String grid, String from, String to, String output, String email, String userDirectory) throws IOException {
+	private File populateFileUpload(String shapeSet, String attribute, String[] features, String thredds, String dataset, String grid, String from, String to, String output, String outputFileName, String email, String userDirectory) throws IOException {
 	    	String baseFilePath = System.getProperty("applicationTempDir");
 	    	baseFilePath = baseFilePath + FileHelper.getSeparator();
 	    	File uploadDirectory = FileHelper.createFileRepositoryDirectory(baseFilePath);
 	    	if (!uploadDirectory.exists()) return null;
 	    	// Create a File Which represents the output we are looking for.
-	    	File uploadFile = populateSummary(shapeSet, attribute, features, thredds, dataset, grid, from, to, output, email,  uploadDirectory, FileHelper.getSeparator() +"replace-me.csv", userDirectory);
+	    	File uploadFile = populateSummary(shapeSet, attribute, features, thredds, dataset, grid, from, to, output, email,  uploadDirectory, FileHelper.getSeparator() +outputFileName, userDirectory);
 	    	// Put that file into the directory represented by uploadDirectory
 	    	if (!uploadFile.exists()) return null;
 	    	// Set that file as the result to be returned to the calling function
