@@ -101,8 +101,11 @@ public class FilesBean implements XmlBean {
 		
 		for (File file : files) {
 			String fileName = file.getName();
-			String fileNameWithoutSuffix = fileName.substring(0, fileName.lastIndexOf('.'));
-			
+			String fileNameWithoutSuffix = fileName;
+			if (fileName.contains(".")) {
+				fileNameWithoutSuffix = fileName.substring(0, fileName.lastIndexOf('.'));
+			}
+						
 			//Check if we already have a FilesBean by this name
 			FilesBean filesBean = filesBeanMap.get(fileNameWithoutSuffix);
 			if (filesBean == null) {
