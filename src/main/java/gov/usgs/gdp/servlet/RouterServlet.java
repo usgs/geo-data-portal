@@ -118,6 +118,13 @@ public class RouterServlet extends HttpServlet {
 			return;
 		}
 		
+		if ("createstyledmap".equals(command)) {
+			log.debug("User is attempting to create styled map");
+			RequestDispatcher rd = request.getRequestDispatcher("/GeoServerServlet?command=createstyledmap");
+			rd.forward(request, response);
+			return;
+		}
+		
 		if ("getdatasetlist".equals(command)) {
 			log.debug("User is attempting to list datasets");
 			String hostname = request.getParameter("dataseturl");
