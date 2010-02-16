@@ -2,7 +2,6 @@ package gov.usgs.gdp.servlet;
 
 import gov.usgs.gdp.bean.AckBean;
 import gov.usgs.gdp.bean.AvailableFilesBean;
-import gov.usgs.gdp.bean.ErrorBean;
 import gov.usgs.gdp.bean.FilesBean;
 import gov.usgs.gdp.bean.MessageBean;
 import gov.usgs.gdp.bean.XmlReplyBean;
@@ -22,7 +21,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.IllegalFormatConversionException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -104,7 +102,7 @@ public class GeoServerServlet extends HttpServlet {
 			
 			String shapefileLoc = directory + shapefileName + ".shp";
 			
-			String[] dir = directory.split(FileHelper.getSeparator());
+			String[] dir = appTempDir.split(FileHelper.getSeparator());
 			// set the workspace to the name of the temp directory
 			String workspace = dir[dir.length - 1];
 
@@ -134,37 +132,57 @@ public class GeoServerServlet extends HttpServlet {
 				sendPacket(new URL(dataStoresURL + shapefileName + ".xml"), "PUT", "text/xml", dataStoreXML);
 			}
 			
-			// send back ack with workspace and layer names
-			sendReply(response, AckBean.ACK_OK, workspace, shapefileName);
-
-		} else if ("createstyledmap".equals(command)) {
+			// create style to color polygons given a date, stat, and data file
 			DateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
 			Date date;
 			try {
 				date = df.parse("15 Jan 1895 00:00:00 GMT");
 			} catch (ParseException e) {
 				e.printStackTrace();
-				sendReply(response, AckBean.ACK_FAIL, "Could not parse requested date.");
+				System.err.println("Could not parse requested date.");
 				return;
 			}
+			String stat = "weight_sum";
+			File file = new File("/Users/razoerb/Desktop/temp.csv");
 			
-			String sld = createStyle(new File("/Users/razoerb/Desktop/temp.csv"), date, "weight_sum");
+			createColoredMap(file, workspace, shapefileName, date, stat);
 			
-			if (sld == null) {
-				sendReply(response, AckBean.ACK_FAIL, "Could not create map style.");
-				return;
-			}
 			
-			sendPacket(new URL(geoServerURL + "rest/styles?name=colors&overwrite=true"), 
-					"POST", "application/vnd.ogc.sld+xml", sld, "name", "colors");
-			
-			sendReply(response, AckBean.ACK_OK);
+			// send back ack with workspace and layer names
+			sendReply(response, AckBean.ACK_OK, workspace, shapefileName);
 		}
+	}
+	
+	void createColoredMap(File csvFile, String workspace, String layer, Date date, String stat) 
+			throws IOException {
+		
+		String sld = createStyle(csvFile, date, stat);
+		
+		if (sld == null) {
+			System.err.println("Could not create map style.");
+			return;
+		}
+		
+		String styleName = "colors" + workspace;
+		
+		// create style in geoserver
+		if (!styleExists(styleName)) {
+			sendPacket(new URL(geoServerURL + "rest/styles?name=" + styleName), 
+					"POST", "application/vnd.ogc.sld+xml", sld);
+		} else {
+			sendPacket(new URL(geoServerURL + "rest/styles/" + styleName), 
+					"PUT", "application/vnd.ogc.sld+xml", sld);
+		}
+		
+		// set layer to use the new style
+		sendPacket(new URL(geoServerURL + "rest/layers/" + workspace + ":" + layer), "PUT", "text/xml",
+				"<layer><defaultStyle><name>" + styleName + "</name></defaultStyle>" +
+				"<enabled>true</enabled></layer>");
 	}
 	
 	boolean workspaceExists(String workspace) throws IOException {
 		try {
-			sendPacket(new URL(geoServerURL + "rest/workspaces/" + workspace + ".xml"), "GET", null, null);
+			sendPacket(new URL(geoServerURL + "rest/workspaces/" + workspace), "GET", null, null);
 		} catch (FileNotFoundException e) {
 			return false;
 		}
@@ -174,7 +192,7 @@ public class GeoServerServlet extends HttpServlet {
 	
 	boolean dataStoreExists(String workspace, String dataStore) throws IOException {
 		try {
-			URL url = new URL(geoServerURL + "rest/workspaces/" + workspace + "/datastores/" + dataStore + ".xml");
+			URL url = new URL(geoServerURL + "rest/workspaces/" + workspace + "/datastores/" + dataStore);
 			sendPacket(url, "GET", null, null);
 		} catch (FileNotFoundException e) {
 			return false;
@@ -183,32 +201,16 @@ public class GeoServerServlet extends HttpServlet {
 		return true;
 	}
 	
-	/*void deleteFeatureType(String workspace, String dataStore) throws IOException {
-		URL url = new URL(geoServerURL + "rest/workspaces/" + workspace + "/datastores/" + dataStore +
-						  "/featuretypes/" + dataStore);
-		HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
-		httpConnection.setRequestMethod("DELETE");
-		
-		BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
-		String line;
-		while ((line = reader.readLine()) != null) {
-			//System.out.println(line);
+	boolean styleExists(String styleName) throws IOException {
+		try {
+			URL url = new URL(geoServerURL + "rest/styles/" + styleName);
+			sendPacket(url, "GET", null, null);
+		} catch (FileNotFoundException e) {
+			return false;
 		}
-		reader.close();
+		
+		return true;
 	}
-	
-	void deleteDateStore(String workspace, String dataStore) throws IOException {
-		URL url = new URL(geoServerURL + "rest/workspaces/" + workspace + "/datastores/" + dataStore);
-		HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
-		httpConnection.setRequestMethod("DELETE");
-		
-		BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
-		String line;
-		while ((line = reader.readLine()) != null) {
-			//System.out.println(line);
-		}
-		reader.close();
-	}*/
 	
 	void sendPacket(URL url, String requestMethod, String contentType, String content, 
 			String... requestProperties) throws IOException {
