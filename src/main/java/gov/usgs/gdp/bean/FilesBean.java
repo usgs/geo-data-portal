@@ -3,7 +3,6 @@ package gov.usgs.gdp.bean;
 import gov.usgs.gdp.helper.FileHelper;
 
 import java.io.File;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -17,7 +16,7 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 @XStreamAlias("file-set")
-public class FilesBean implements Serializable {
+public class FilesBean implements XmlBean {
 	@XStreamAlias("file-set-name")
 	@XStreamAsAttribute
 	private String name;

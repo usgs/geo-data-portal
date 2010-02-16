@@ -9,6 +9,7 @@ import gov.usgs.gdp.bean.ErrorBean;
 import gov.usgs.gdp.bean.MessageBean;
 import gov.usgs.gdp.bean.ShapeFileSetBean;
 import gov.usgs.gdp.bean.THREDDSInfoBean;
+import gov.usgs.gdp.bean.UploadFileCheckBean;
 import gov.usgs.gdp.bean.UploadLocationBean;
 import gov.usgs.gdp.bean.XmlReplyBean;
 import gov.usgs.gdp.helper.FileHelper;
@@ -229,6 +230,18 @@ public class FileProcessServlet extends HttpServlet {
         	}
     	}
     	
+		if ("checkuploadfile".equals(command)) {
+    		String file = request.getParameter("file");
+    		String baseFilePath = System.getProperty("applicationTempDir");
+	    	baseFilePath = baseFilePath + FileHelper.getSeparator();
+	    	String fullFilePath = baseFilePath + "upload-repository" +FileHelper.getSeparator()+file;
+	    	UploadFileCheckBean ufcb = new UploadFileCheckBean(file, FileHelper.doesDirectoryOrFileExist(fullFilePath));
+			
+			XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, ufcb);
+			RouterServlet.sendXml(xmlReply, response);
+			return;
+		}
+    	
     	// User wishes to grab a file. Send this file if available.
     	if ("getfile".equals(command)) {
     		String file = request.getParameter("file");
@@ -299,6 +312,8 @@ public class FileProcessServlet extends HttpServlet {
 	    	baseFilePath = baseFilePath + FileHelper.getSeparator();
 	    	File uploadDirectory = FileHelper.createFileRepositoryDirectory(baseFilePath);
 	    	if (!uploadDirectory.exists()) return null;
+
+	    	
 	    	// Create a File Which represents the output we are looking for.
 	    	File uploadFile = populateSummary(shapeSet, attribute, features, thredds, dataset, grid, from, to, output, email,  uploadDirectory, FileHelper.getSeparator() +outputFileName, userDirectory);
 	    	// Put that file into the directory represented by uploadDirectory
@@ -323,6 +338,7 @@ public class FileProcessServlet extends HttpServlet {
 			final String outputFile,
 			final String userDirectory) throws IOException {
 	
+		FileHelper.deleteFile(outputPath.getPath() + outputFile);
 	    String fromTime = from;
 	    String toTime = to;
 	
@@ -420,6 +436,9 @@ public class FileProcessServlet extends HttpServlet {
 	        
 	        BufferedWriter writer = null;
 	        try {
+		    	
+		    	// Delete the file there previously
+		    	
 	        	writer = new BufferedWriter(new FileWriter(outputPath.getPath() + outputFile));
 	            ivanSucks.write(writer);
 	        } finally {
