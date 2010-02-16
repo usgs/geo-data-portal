@@ -132,7 +132,7 @@ public class UploadFilesServlet extends HttpServlet {
         }
 
         // Check for user subdirectory - Create the user directory.
-        if (userDirectory == null) {
+        if (userDirectory == null || "".equals(userDirectory)) {
         	userDirectory = createUserDirectory();
         } else if (!FileHelper.doesDirectoryOrFileExist(applicationTempDir + userDirectory)) {
         	userDirectory = createUserDirectory(userDirectory);
