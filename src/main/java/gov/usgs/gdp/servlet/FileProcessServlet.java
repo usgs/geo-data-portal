@@ -2,6 +2,7 @@ package gov.usgs.gdp.servlet;
 
 import gov.usgs.gdp.analysis.GridStatistics;
 import gov.usgs.gdp.analysis.GridStatisticsCSVWriter;
+import gov.usgs.gdp.analysis.GridStatisticsWriter;
 import gov.usgs.gdp.analysis.NetCDFUtility;
 import gov.usgs.gdp.bean.AckBean;
 import gov.usgs.gdp.bean.AvailableFilesBean;
@@ -292,7 +293,7 @@ public class FileProcessServlet extends HttpServlet {
 	}
 
 	private File populateFileUpload(String shapeSet, String attribute, String[] features, String thredds, String dataset, String grid, String from, String to, String output, String outputFileName, String email, String userDirectory) throws IOException {
-	    	String baseFilePath = System.getProperty("applicationTempDir");
+			String baseFilePath = System.getProperty("applicationTempDir");
 	    	baseFilePath = baseFilePath + FileHelper.getSeparator();
 	    	File uploadDirectory = FileHelper.createFileRepositoryDirectory(baseFilePath);
 	    	if (!uploadDirectory.exists()) return null;
@@ -415,8 +416,11 @@ public class FileProcessServlet extends HttpServlet {
 	        		gridName,
 	        		timeRange);
 	        
+	        GridStatisticsWriter ouputFileWriter = null;
 	        
-	        GridStatisticsCSVWriter ivanSucks = new GridStatisticsCSVWriter(gs);
+	        if ("csv".equals(output.toLowerCase())) {
+	        	ouputFileWriter = new GridStatisticsCSVWriter(gs);
+	        }
 	        
 	        BufferedWriter writer = null;
 	        try {
@@ -424,7 +428,7 @@ public class FileProcessServlet extends HttpServlet {
 		    	// Delete the file there previously
 		    	
 	        	writer = new BufferedWriter(new FileWriter(outputPath.getPath() + outputFile));
-	            ivanSucks.write(writer);
+	        	ouputFileWriter.write(writer);
 	        } finally {
 	        	if (writer != null) {
 	        		try { writer.close(); } catch (IOException e) { /* get bent */ }

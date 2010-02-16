@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.Formatter;
 import java.util.Map;
 
-public class GridStatisticsCSVWriter {
+public class GridStatisticsCSVWriter implements GridStatisticsWriter {
 
     private GridStatistics gridStatistics;
     

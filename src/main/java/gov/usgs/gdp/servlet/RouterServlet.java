@@ -22,13 +22,6 @@ public class RouterServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static org.apache.log4j.Logger log = Logger.getLogger(RouterServlet.class);
 
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public RouterServlet() {
-        super();
-    }
-
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
@@ -65,9 +58,9 @@ public class RouterServlet extends HttpServlet {
 		
 		if ("listfiles".equals(command)) {
 			log.debug("User is attempting to list files");
-                        String userDirectory = request.getParameter("userdirectory");
-                        String userDirectoryCommand = "";
-                        if (userDirectory != null && !"".equals(userDirectory)) userDirectoryCommand = "&userdirectory=" + userDirectory;
+            String userDirectory = request.getParameter("userdirectory");
+            String userDirectoryCommand = "";
+            if (userDirectory != null && !"".equals(userDirectory)) userDirectoryCommand = "&userdirectory=" + userDirectory;
 			RequestDispatcher rd = request.getRequestDispatcher("/FileSelectionServlet?command=listfiles" + userDirectoryCommand);
 			rd.forward(request, response);
 			return;
@@ -210,7 +203,6 @@ public class RouterServlet extends HttpServlet {
 
 	}
 
-	@SuppressWarnings("restriction")
 	public static void sendXml(String xml, HttpServletResponse response) throws IOException {
 		log.debug(xml);
 		Writer writer = response.getWriter();
