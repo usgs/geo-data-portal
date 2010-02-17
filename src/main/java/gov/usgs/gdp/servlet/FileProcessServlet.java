@@ -6,6 +6,7 @@ import gov.usgs.gdp.analysis.GridStatisticsWriter;
 import gov.usgs.gdp.analysis.NetCDFUtility;
 import gov.usgs.gdp.bean.AckBean;
 import gov.usgs.gdp.bean.AvailableFilesBean;
+import gov.usgs.gdp.bean.ErrorBean;
 import gov.usgs.gdp.bean.MessageBean;
 import gov.usgs.gdp.bean.ShapeFileSetBean;
 import gov.usgs.gdp.bean.THREDDSInfoBean;
@@ -201,7 +202,14 @@ public class FileProcessServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	String command = request.getParameter("command");
     	if ("submitforprocessing".equals(command)) {
-    		File fileForUpload = populateFileUpload(request);
+    		File fileForUpload = null;
+			try {
+				fileForUpload = populateFileUpload(request);
+			} catch (InvalidRangeException e) {
+				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_BOX_NO_INTERSECT_GRID));
+				RouterServlet.sendXml(xmlOutput, response);
+				return;
+			}
     		// We are, for the moment assuming there is a file at this location
     		// The link is sent out as just the file name. When the user sends the request
     		// back, we go to the directory at String baseFilePath = System.getProperty("applicationTempDir");
@@ -234,11 +242,13 @@ public class FileProcessServlet extends HttpServlet {
 	    	baseFilePath = baseFilePath + FileHelper.getSeparator();
 	    	String fullFilePath = baseFilePath + "upload-repository" +FileHelper.getSeparator()+file;
 	    	File fileToUpload = null;
+	    	
 	    	if (!FileHelper.doesDirectoryOrFileExist(fullFilePath)) {
-	    		// Send error message ("File Not Found")
+				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FILE_NOT_FOUND));
+				RouterServlet.sendXml(xmlOutput, response);
+				return;
 	    	}
 	    	fileToUpload = new File(fullFilePath);
-	    	//returnFile(filename, out);
 	    	
 	    	// Set the headers.
 	    	response.setContentType("application/x-download");
@@ -275,7 +285,7 @@ public class FileProcessServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);
     }
-    private File populateFileUpload(HttpServletRequest request) throws IOException {
+    private File populateFileUpload(HttpServletRequest request) throws IOException, InvalidRangeException {
 	    String shapeSet = request.getParameter("shapeset");
 	    String attribute = request.getParameter("attribute");
 	    String[] features = request.getParameterValues("feature");
@@ -292,7 +302,7 @@ public class FileProcessServlet extends HttpServlet {
 	    
 	}
 
-	private File populateFileUpload(String shapeSet, String attribute, String[] features, String thredds, String dataset, String grid, String from, String to, String output, String outputFileName, String email, String userDirectory) throws IOException {
+	private File populateFileUpload(String shapeSet, String attribute, String[] features, String thredds, String dataset, String grid, String from, String to, String output, String outputFileName, String email, String userDirectory) throws IOException, InvalidRangeException {
 			String baseFilePath = System.getProperty("applicationTempDir");
 	    	baseFilePath = baseFilePath + FileHelper.getSeparator();
 	    	File uploadDirectory = FileHelper.createFileRepositoryDirectory(baseFilePath);
@@ -301,6 +311,7 @@ public class FileProcessServlet extends HttpServlet {
 	    	
 	    	// Create a File Which represents the output we are looking for.
 	    	File uploadFile = populateSummary(shapeSet, attribute, features, thredds, dataset, grid, from, to, output, email,  uploadDirectory, FileHelper.getSeparator() +outputFileName, userDirectory);
+			
 	    	// Put that file into the directory represented by uploadDirectory
 	    	if (!uploadFile.exists()) return null;
 	    	// Set that file as the result to be returned to the calling function
@@ -321,7 +332,7 @@ public class FileProcessServlet extends HttpServlet {
 			final String email, 
 			final File outputPath, 
 			final String outputFile,
-			final String userDirectory) throws IOException {
+			final String userDirectory) throws IOException, InvalidRangeException {
 	
 		FileHelper.deleteFile(outputPath.getPath() + outputFile);
 	    String fromTime = from;
@@ -407,15 +418,15 @@ public class FileProcessServlet extends HttpServlet {
 	        } catch (InvalidRangeException e) {
 	            log.debug(e.getMessage());
 	        }
-	
+	        
+	        GridStatistics gs = null;
 	        // long running task
-	        GridStatistics gs = GridStatistics.generate(
+	         gs = GridStatistics.generate(
 	        		featureCollection,
 	        		attributeName,
 	        		gridDataset,
 	        		gridName,
 	        		timeRange);
-	        
 	        GridStatisticsWriter ouputFileWriter = null;
 	        
 	        if ("csv".equals(output.toLowerCase())) {
@@ -435,7 +446,7 @@ public class FileProcessServlet extends HttpServlet {
 	        	}
 	        }
 	        
-	
+	    
 	    } finally {
 	        try {
 	            if (gridDataset != null) gridDataset.close();

@@ -33,6 +33,7 @@ public class ErrorBean implements XmlBean{
 	public final static int ERR_PROTOCOL_VIOLATION = 15;
 	public final static int ERR_TRANSPORT_ERROR = 16;
 	public final static int ERR_OUTFILES_UNAVAILABLE = 17;
+	public final static int ERR_BOX_NO_INTERSECT_GRID = 18;
 	public final static Map<Integer, String> ERROR_MESSAGES;
 	
 	

@@ -101,7 +101,7 @@ public class GridStatistics {
             GridDataset gridDataset,
             String variableName,
             Range timeRange)
-            throws IOException 
+            throws IOException, InvalidRangeException 
     {
         
         ReferencedEnvelope envelope = featureCollection.getBounds();
@@ -115,6 +115,7 @@ public class GridStatistics {
                 gdt = gdt.makeSubset(timeRange, null, llr, 1, 1, 1);
             } catch (InvalidRangeException ex) {
                 Logger.getLogger(SimpleStatistics.class.getName()).log(Level.SEVERE, null, ex);
+                throw ex;
             }
         } else {
             throw new RuntimeException("where's my data?");
