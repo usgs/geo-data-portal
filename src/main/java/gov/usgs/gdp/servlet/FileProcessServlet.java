@@ -203,8 +203,12 @@ public class FileProcessServlet extends HttpServlet {
     	String command = request.getParameter("command");
     	if ("submitforprocessing".equals(command)) {
     		File fileForUpload = null;
+    		String totalTime = "";
 			try {
+				Date startTime = new Date();				
 				fileForUpload = populateFileUpload(request);
+				Date endTime = new Date();
+				totalTime = "Total time: " + (endTime.getTime() - startTime.getTime()) + " milliseconds";
 			} catch (InvalidRangeException e) {
 				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_BOX_NO_INTERSECT_GRID));
 				RouterServlet.sendXml(xmlOutput, response);
@@ -218,7 +222,8 @@ public class FileProcessServlet extends HttpServlet {
     		if (!"".equals(fileForUpload.getPath())) {
     			UploadLocationBean uploadLocationBean = new UploadLocationBean(fileForUpload.getName());
     			XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, uploadLocationBean);
-    			RouterServlet.sendXml(xmlReply, response);
+    			RouterServlet.sendXml(xmlReply, response); 
+    			log.debug(totalTime);
     			return;
         	}
     	}
@@ -298,6 +303,7 @@ public class FileProcessServlet extends HttpServlet {
 	    String outputFile = request.getParameter("outputfile");
 	    String email = request.getParameter("email");
 	    String userDirectory = request.getParameter("userdirectory");
+	    
 	    return populateFileUpload(shapeSet, attribute, features, thredds, dataset, grid, from, to, output, outputFile,email, userDirectory);
 	    
 	}

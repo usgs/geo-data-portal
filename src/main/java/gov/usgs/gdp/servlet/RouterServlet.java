@@ -158,6 +158,7 @@ public class RouterServlet extends HttpServlet {
 			String output = request.getParameter("outputtype");                        
 			String email = request.getParameter("email");                        
 			String outputFile = request.getParameter("outputfile");
+			String userDirectory = request.getParameter("userdirectory");
 			
 			url = url + "&shapeset=" + shapeSet;
 			url = url + "&attribute=" + attribute;
@@ -169,6 +170,7 @@ public class RouterServlet extends HttpServlet {
 			if (from != null && "".equals(from)) url = url + "&from=" + from;
 			url = url + "&output=" + output;
 			url = url + "&outputfile=" + outputFile;
+			url = url + "&userdirectory=" + userDirectory;
 			if (email != null && "".equals(email))url = url + "&email=" + email;
 			RequestDispatcher rd = request.getRequestDispatcher("/FileProcessServlet?command=submitforprocessing" + url);
 			rd.forward(request, response);
