@@ -6,6 +6,7 @@ import gov.usgs.gdp.analysis.GridStatisticsWriter;
 import gov.usgs.gdp.analysis.NetCDFUtility;
 import gov.usgs.gdp.bean.AckBean;
 import gov.usgs.gdp.bean.AvailableFilesBean;
+import gov.usgs.gdp.bean.EmailMessageBean;
 import gov.usgs.gdp.bean.ErrorBean;
 import gov.usgs.gdp.bean.MessageBean;
 import gov.usgs.gdp.bean.ShapeFileSetBean;
@@ -13,6 +14,7 @@ import gov.usgs.gdp.bean.THREDDSInfoBean;
 import gov.usgs.gdp.bean.UploadFileCheckBean;
 import gov.usgs.gdp.bean.UploadLocationBean;
 import gov.usgs.gdp.bean.XmlReplyBean;
+import gov.usgs.gdp.helper.EmailHandler;
 import gov.usgs.gdp.helper.FileHelper;
 
 import java.io.BufferedInputStream;
@@ -29,6 +31,8 @@ import java.util.Formatter;
 import java.util.List;
 import java.util.Map;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
@@ -213,7 +217,16 @@ public class FileProcessServlet extends HttpServlet {
 				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_BOX_NO_INTERSECT_GRID));
 				RouterServlet.sendXml(xmlOutput, response);
 				return;
+			} catch (AddressException e) {
+				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_EMAIL_ERROR_INCORRECT_ADDRESS));
+				RouterServlet.sendXml(xmlOutput, response);
+				return;
+			} catch (MessagingException e) {
+				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_EMAIL_ERROR));
+				RouterServlet.sendXml(xmlOutput, response);
+				return;
 			}
+			
     		// We are, for the moment assuming there is a file at this location
     		// The link is sent out as just the file name. When the user sends the request
     		// back, we go to the directory at String baseFilePath = System.getProperty("applicationTempDir");
@@ -290,7 +303,7 @@ public class FileProcessServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);
     }
-    private File populateFileUpload(HttpServletRequest request) throws IOException, InvalidRangeException {
+    private File populateFileUpload(HttpServletRequest request) throws IOException, InvalidRangeException, AddressException, MessagingException {
 	    String shapeSet = request.getParameter("shapeset");
 	    String attribute = request.getParameter("attribute");
 	    String[] features = request.getParameterValues("feature");
@@ -303,12 +316,13 @@ public class FileProcessServlet extends HttpServlet {
 	    String outputFile = request.getParameter("outputfile");
 	    String email = request.getParameter("email");
 	    String userDirectory = request.getParameter("userdirectory");
+	    String finalUrlEmail = request.getParameter("finalurlemail");
 	    
-	    return populateFileUpload(shapeSet, attribute, features, thredds, dataset, grid, from, to, output, outputFile,email, userDirectory);
+	    return populateFileUpload(shapeSet, attribute, features, thredds, dataset, grid, from, to, output, outputFile,email, userDirectory, finalUrlEmail);
 	    
 	}
 
-	private File populateFileUpload(String shapeSet, String attribute, String[] features, String thredds, String dataset, String grid, String from, String to, String output, String outputFileName, String email, String userDirectory) throws IOException, InvalidRangeException {
+	private File populateFileUpload(String shapeSet, String attribute, String[] features, String thredds, String dataset, String grid, String from, String to, String output, String outputFileName, String email, String userDirectory, String finalUrlEmail) throws IOException, InvalidRangeException, AddressException, MessagingException {
 			String baseFilePath = System.getProperty("applicationTempDir");
 	    	baseFilePath = baseFilePath + FileHelper.getSeparator();
 	    	File uploadDirectory = FileHelper.createFileRepositoryDirectory(baseFilePath);
@@ -316,15 +330,28 @@ public class FileProcessServlet extends HttpServlet {
 
 	    	
 	    	// Create a File Which represents the output we are looking for.
-	    	File uploadFile = populateSummary(shapeSet, attribute, features, thredds, dataset, grid, from, to, output, email,  uploadDirectory, FileHelper.getSeparator() +outputFileName, userDirectory);
+	    	File uploadFile = populateSummary(shapeSet, attribute, features, thredds, dataset, grid, from, to, output, email,  uploadDirectory, FileHelper.getSeparator() + outputFileName, userDirectory);
 			
 	    	// Put that file into the directory represented by uploadDirectory
 	    	if (!uploadFile.exists()) return null;
+	    	
+	    	// If user specified an E-Mail address, send an E-Mail to the user with the provided link 
+	    	if (email != null && !"".equals(email)) sendEmail(email, finalUrlEmail);
+	    	
 	    	// Set that file as the result to be returned to the calling function
 	    	// switch uploadDirectory return statement with the file we are looking for
 			return uploadFile;
 
 	    }
+
+	private boolean sendEmail(String email, String finalUrlEmail) throws AddressException, MessagingException {
+		String content = "Your file is ready: " + finalUrlEmail;
+		String subject = "Your file is ready";
+		String from = "gdp_data@usgs.gov";
+		EmailMessageBean emBean = new EmailMessageBean(from, email, new ArrayList<String>(), subject, content);
+		EmailHandler emh = new EmailHandler();
+		return emh.sendMessage(emBean);		
+	}
 
 	private File populateSummary(final String shapeSet, 
 			final String attribute, 
