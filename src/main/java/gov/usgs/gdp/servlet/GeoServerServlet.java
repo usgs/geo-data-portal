@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class GeoServerServlet extends HttpServlet {
 	
-	private static final String geoServerURL = new String("http://localhost:8080/geoserver/");
+	private static final String geoServerURL = new String("http://localhost:8080/geoserver");
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -107,7 +107,7 @@ public class GeoServerServlet extends HttpServlet {
 			String workspace = dir[dir.length - 1];
 
 			// create the workspace if it doesn't already exist
-			URL workspacesURL = new URL(geoServerURL + "rest/workspaces/");
+			URL workspacesURL = new URL(geoServerURL + "/rest/workspaces/");
 			if (!workspaceExists(workspace)) {
 				String workspaceXML = createWorkspaceXML(workspace);
 				sendPacket(workspacesURL, "POST", "text/xml", workspaceXML);
@@ -116,10 +116,6 @@ public class GeoServerServlet extends HttpServlet {
 			URL dataStoresURL = new URL(workspacesURL + workspace + "/datastores/");
 			String dataStoreXML = createDataStoreXML(shapefileName, workspace, shapefileLoc);
 			if (!dataStoreExists(workspace, shapefileName)) {
-				//deleteLayer(workspace, shapefileName);
-				//deleteFeatureType(workspace, shapefileName);
-				//deleteDateStore(workspace, shapefileName);
-			
 				// POST the datastore to create it if it doesn't exist
 				sendPacket(dataStoresURL, "POST", "text/xml", dataStoreXML);
 			
@@ -145,7 +141,7 @@ public class GeoServerServlet extends HttpServlet {
 			String stat = "weight_sum";
 			File file = new File("/Users/razoerb/Desktop/temp.csv");
 			
-			createColoredMap(file, workspace, shapefileName, date, stat);
+			//createColoredMap(file, workspace, shapefileName, date, stat);
 			
 			
 			// send back ack with workspace and layer names
@@ -167,22 +163,22 @@ public class GeoServerServlet extends HttpServlet {
 		
 		// create style in geoserver
 		if (!styleExists(styleName)) {
-			sendPacket(new URL(geoServerURL + "rest/styles?name=" + styleName), 
+			sendPacket(new URL(geoServerURL + "/rest/styles?name=" + styleName), 
 					"POST", "application/vnd.ogc.sld+xml", sld);
 		} else {
-			sendPacket(new URL(geoServerURL + "rest/styles/" + styleName), 
+			sendPacket(new URL(geoServerURL + "/rest/styles/" + styleName), 
 					"PUT", "application/vnd.ogc.sld+xml", sld);
 		}
 		
 		// set layer to use the new style
-		sendPacket(new URL(geoServerURL + "rest/layers/" + workspace + ":" + layer), "PUT", "text/xml",
+		sendPacket(new URL(geoServerURL + "/rest/layers/" + workspace + ":" + layer), "PUT", "text/xml",
 				"<layer><defaultStyle><name>" + styleName + "</name></defaultStyle>" +
 				"<enabled>true</enabled></layer>");
 	}
 	
 	boolean workspaceExists(String workspace) throws IOException {
 		try {
-			sendPacket(new URL(geoServerURL + "rest/workspaces/" + workspace), "GET", null, null);
+			sendPacket(new URL(geoServerURL + "/rest/workspaces/" + workspace), "GET", null, null);
 		} catch (FileNotFoundException e) {
 			return false;
 		}
@@ -192,7 +188,7 @@ public class GeoServerServlet extends HttpServlet {
 	
 	boolean dataStoreExists(String workspace, String dataStore) throws IOException {
 		try {
-			URL url = new URL(geoServerURL + "rest/workspaces/" + workspace + "/datastores/" + dataStore);
+			URL url = new URL(geoServerURL + "/rest/workspaces/" + workspace + "/datastores/" + dataStore);
 			sendPacket(url, "GET", null, null);
 		} catch (FileNotFoundException e) {
 			return false;
@@ -203,8 +199,7 @@ public class GeoServerServlet extends HttpServlet {
 	
 	boolean styleExists(String styleName) throws IOException {
 		try {
-			URL url = new URL(geoServerURL + "rest/styles/" + styleName);
-			sendPacket(url, "GET", null, null);
+			sendPacket(new URL(geoServerURL + "/rest/styles/" + styleName), "GET", null, null);
 		} catch (FileNotFoundException e) {
 			return false;
 		}
@@ -283,9 +278,9 @@ public class GeoServerServlet extends HttpServlet {
 				"  <enabled>true</enabled>" +
 				"  <store class=\"dataStore\">" +
 				"    <name>" + name + "</name>" +
-				"    <atom:link xmlns:atom=\"http://www.w3.org/2005/Atom\" rel=\"alternate\" " +
+				/*"    <atom:link xmlns:atom=\"http://www.w3.org/2005/Atom\" rel=\"alternate\" " +
 				"			href=\"http://localhost:8080/geoserver/rest/workspaces/usgs/datastores/counties.xml\" " +
-				"			type=\"application/xml\"/>" +
+				"			type=\"application/xml\"/>" +*/
 				"  </store>" +
 				"</featureType>");
 	}
@@ -401,7 +396,7 @@ public class GeoServerServlet extends HttpServlet {
 		for (Float f : requestedStats) {
 
 			float temp = -(f - minVal) / spread + 1;
-			temp = temp * 255;
+			temp = temp * 200;
 			String blgr = String.format("%02x", (int) temp);
 
 			color = "FF" + blgr + blgr;
