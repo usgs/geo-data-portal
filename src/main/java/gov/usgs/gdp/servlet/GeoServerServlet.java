@@ -214,6 +214,9 @@ public class GeoServerServlet extends HttpServlet {
 		httpConnection.setDoOutput(true);
 		httpConnection.setRequestMethod(requestMethod);
 		
+		String encoding = new sun.misc.BASE64Encoder().encode("admin:geoserver".getBytes());
+		httpConnection.addRequestProperty("Authorization", "Basic " + encoding);
+		
 		if (contentType != null)
 			httpConnection.addRequestProperty("Content-Type", contentType);
 		
