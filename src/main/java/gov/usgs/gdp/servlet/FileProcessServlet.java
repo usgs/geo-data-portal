@@ -90,7 +90,113 @@ import ucar.nc2.util.NamedObject;
  */
 public class FileProcessServlet extends HttpServlet {
 
-    private final static class ShapedGridReader implements ProxyReader {
+    /**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String command = request.getParameter("command");
+		if ("submitforprocessing".equals(command)) {
+			File fileForUpload = null;
+			String totalTime = "";
+			try {
+				Date startTime = new Date();				
+				fileForUpload = populateFileUpload(request);
+				Date endTime = new Date();
+				totalTime = "Total time: " + (endTime.getTime() - startTime.getTime()) + " milliseconds";
+			} catch (InvalidRangeException e) {
+				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_BOX_NO_INTERSECT_GRID));
+				RouterServlet.sendXml(xmlOutput, response);
+				return;
+			} catch (AddressException e) {
+				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_EMAIL_ERROR_INCORRECT_ADDRESS));
+				RouterServlet.sendXml(xmlOutput, response);
+				return;
+			} catch (MessagingException e) {
+				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_EMAIL_ERROR));
+				RouterServlet.sendXml(xmlOutput, response);
+				return;
+			}
+
+
+			// We are, for the moment assuming there is a file at this location
+			// The link is sent out as just the file name. When the user sends the request
+			// back, we go to the directory at String baseFilePath = System.getProperty("applicationTempDir");
+			// + the file specified by the user ((fileForUpload.getName()) and we send that
+			// back to the user
+			if (!"".equals(fileForUpload.getPath())) {
+				UploadLocationBean uploadLocationBean = new UploadLocationBean(fileForUpload.getName());
+				XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, uploadLocationBean);
+				RouterServlet.sendXml(xmlReply, response); 
+				log.debug(totalTime);
+				return;
+	    	}
+		}
+		
+		if ("checkuploadfile".equals(command)) {
+			String file = request.getParameter("file");
+			String baseFilePath = System.getProperty("applicationTempDir");
+	    	baseFilePath = baseFilePath + FileHelper.getSeparator();
+	    	String fullFilePath = baseFilePath + "upload-repository" +FileHelper.getSeparator()+file;
+	    	UploadFileCheckBean ufcb = new UploadFileCheckBean(file, FileHelper.doesDirectoryOrFileExist(fullFilePath));
+			
+			XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, ufcb);
+			RouterServlet.sendXml(xmlReply, response);
+			return;
+		}
+		
+		// User wishes to grab a file. Send this file if available.
+		if ("getfile".equals(command)) {
+			String file = request.getParameter("file");
+			String baseFilePath = System.getProperty("applicationTempDir");
+	    	baseFilePath = baseFilePath + FileHelper.getSeparator();
+	    	String fullFilePath = baseFilePath + "upload-repository" +FileHelper.getSeparator()+file;
+	    	File fileToUpload = null;
+	    	
+	    	if (!FileHelper.doesDirectoryOrFileExist(fullFilePath)) {
+				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FILE_NOT_FOUND));
+				RouterServlet.sendXml(xmlOutput, response);
+				return;
+	    	}
+	    	fileToUpload = new File(fullFilePath);
+	    	
+	    	// Set the headers.
+	    	response.setContentType("application/x-download");
+	    	response.setHeader("Content-Disposition", "attachment; filename=" + fileToUpload.getName());
+	    	response.setCharacterEncoding("UTF-8");
+	    	
+	    	// Send the file.
+	    	ServletOutputStream out = null;
+	    	BufferedInputStream buf = null;
+	    	try {
+		    	out = response.getOutputStream();
+		    	response.setContentLength((int) fileToUpload.length());
+		    	FileInputStream input = new FileInputStream(fileToUpload);
+		    	buf = new BufferedInputStream(input);
+		    	int readBytes = 0;
+		    	while ((readBytes = buf.read()) != -1) out.write(readBytes);
+		    	out.close();
+		    	buf.close();
+	    	} catch (IOException ioe) {
+	    	      throw new ServletException(ioe.getMessage()); 
+	    	} finally {
+	    		if (out != null)
+	    			out.close();
+	    	      if (buf != null)
+	    	    	  buf.close();	
+	    	}
+		}
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	    doGet(request, response);
+	}
+
+	private final static class ShapedGridReader implements ProxyReader {
 
         private GeoGrid grid;
         private Geometry shape;
@@ -199,110 +305,6 @@ public class FileProcessServlet extends HttpServlet {
     }
     private static org.apache.log4j.Logger log = Logger.getLogger(FileProcessServlet.class);
 
-    /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	String command = request.getParameter("command");
-    	if ("submitforprocessing".equals(command)) {
-    		File fileForUpload = null;
-    		String totalTime = "";
-			try {
-				Date startTime = new Date();				
-				fileForUpload = populateFileUpload(request);
-				Date endTime = new Date();
-				totalTime = "Total time: " + (endTime.getTime() - startTime.getTime()) + " milliseconds";
-			} catch (InvalidRangeException e) {
-				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_BOX_NO_INTERSECT_GRID));
-				RouterServlet.sendXml(xmlOutput, response);
-				return;
-			} catch (AddressException e) {
-				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_EMAIL_ERROR_INCORRECT_ADDRESS));
-				RouterServlet.sendXml(xmlOutput, response);
-				return;
-			} catch (MessagingException e) {
-				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_EMAIL_ERROR));
-				RouterServlet.sendXml(xmlOutput, response);
-				return;
-			}
-			
-    		// We are, for the moment assuming there is a file at this location
-    		// The link is sent out as just the file name. When the user sends the request
-    		// back, we go to the directory at String baseFilePath = System.getProperty("applicationTempDir");
-    		// + the file specified by the user ((fileForUpload.getName()) and we send that
-    		// back to the user
-    		if (!"".equals(fileForUpload.getPath())) {
-    			UploadLocationBean uploadLocationBean = new UploadLocationBean(fileForUpload.getName());
-    			XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, uploadLocationBean);
-    			RouterServlet.sendXml(xmlReply, response); 
-    			log.debug(totalTime);
-    			return;
-        	}
-    	}
-    	
-		if ("checkuploadfile".equals(command)) {
-    		String file = request.getParameter("file");
-    		String baseFilePath = System.getProperty("applicationTempDir");
-	    	baseFilePath = baseFilePath + FileHelper.getSeparator();
-	    	String fullFilePath = baseFilePath + "upload-repository" +FileHelper.getSeparator()+file;
-	    	UploadFileCheckBean ufcb = new UploadFileCheckBean(file, FileHelper.doesDirectoryOrFileExist(fullFilePath));
-			
-			XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, ufcb);
-			RouterServlet.sendXml(xmlReply, response);
-			return;
-		}
-    	
-    	// User wishes to grab a file. Send this file if available.
-    	if ("getfile".equals(command)) {
-    		String file = request.getParameter("file");
-    		String baseFilePath = System.getProperty("applicationTempDir");
-	    	baseFilePath = baseFilePath + FileHelper.getSeparator();
-	    	String fullFilePath = baseFilePath + "upload-repository" +FileHelper.getSeparator()+file;
-	    	File fileToUpload = null;
-	    	
-	    	if (!FileHelper.doesDirectoryOrFileExist(fullFilePath)) {
-				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FILE_NOT_FOUND));
-				RouterServlet.sendXml(xmlOutput, response);
-				return;
-	    	}
-	    	fileToUpload = new File(fullFilePath);
-	    	
-	    	// Set the headers.
-	    	response.setContentType("application/x-download");
-	    	response.setHeader("Content-Disposition", "attachment; filename=" + fileToUpload.getName());
-	    	response.setCharacterEncoding("UTF-8");
-	    	
-	    	// Send the file.
-	    	ServletOutputStream out = null;
-	    	BufferedInputStream buf = null;
-	    	try {
-		    	out = response.getOutputStream();
-		    	response.setContentLength((int) fileToUpload.length());
-		    	FileInputStream input = new FileInputStream(fileToUpload);
-		    	buf = new BufferedInputStream(input);
-		    	int readBytes = 0;
-		    	while ((readBytes = buf.read()) != -1) out.write(readBytes);
-		    	out.close();
-		    	buf.close();
-	    	} catch (IOException ioe) {
-	    	      throw new ServletException(ioe.getMessage()); 
-	    	} finally {
-	    		if (out != null)
-	    			out.close();
-	    	      if (buf != null)
-	    	    	  buf.close();	
-	    	}
-    	}
-    }
-
-    /**
-     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doGet(request, response);
-    }
     private File populateFileUpload(HttpServletRequest request) throws IOException, InvalidRangeException, AddressException, MessagingException {
 	    String shapeSet = request.getParameter("shapeset");
 	    String attribute = request.getParameter("attribute");
@@ -335,7 +337,7 @@ public class FileProcessServlet extends HttpServlet {
 	    	// Put that file into the directory represented by uploadDirectory
 	    	if (!uploadFile.exists()) return null;
 	    	
-	    	// If user specified an E-Mail address, send an E-Mail to the user with the provided link 
+			// If user specified an E-Mail address, send an E-Mail to the user with the provided link 
 	    	if (email != null && !"".equals(email)) sendEmail(email, finalUrlEmail);
 	    	
 	    	// Set that file as the result to be returned to the calling function
