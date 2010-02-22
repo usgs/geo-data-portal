@@ -48,8 +48,14 @@ public class TimeBean implements XmlBean{
 	
 	public TimeBean(List<String> dateRange) throws ParseException {
 		this.time = dateRange;
-		this.starttime = new TimeBreakdown(dateRange.get(0));
-		this.endtime = new TimeBreakdown(dateRange.get(1));
+
+		if (this.time.isEmpty()) {
+			this.starttime = new TimeBreakdown();
+			this.endtime = new TimeBreakdown();
+		} else {
+			this.starttime = new TimeBreakdown(dateRange.get(0));
+			this.endtime = new TimeBreakdown(dateRange.get(1));
+		}
 	}
 	
 	@Override
@@ -81,7 +87,6 @@ public class TimeBean implements XmlBean{
 		private int minute;
 		private int second;
 		
-		// Working on 0001-01-11 00:00:00Z
 		public TimeBreakdown() {}
 		public TimeBreakdown(String dateInstance) throws ParseException {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

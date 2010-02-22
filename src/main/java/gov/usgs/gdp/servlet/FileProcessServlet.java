@@ -377,14 +377,21 @@ public class FileProcessServlet extends HttpServlet {
 	    Date toDate = new Date();
 	    Date fromDate = new Date();
 	    boolean parsedDates = false;
-	    try {
-	        toDate = df.parse(toTime);
-	        fromDate = df.parse(fromTime);
-	        parsedDates = true;
-	    } catch (ParseException e1) {
-	        parsedDates = false;
-	        log.debug(e1.getMessage());
+	    if (toTime == null || fromTime == null) {
+	    	toDate = null;
+	    	fromDate = null;
+	    	parsedDates = true;
+	    } else {
+	    	try {
+		        toDate = df.parse(toTime);
+		        fromDate = df.parse(fromTime);
+		        parsedDates = true;
+		    } catch (ParseException e1) {
+		        parsedDates = false;
+		        log.debug(e1.getMessage());
+		    }
 	    }
+	    
 	
 	    if (!parsedDates) {
 	        // return some sort of error
@@ -444,9 +451,13 @@ public class FileProcessServlet extends HttpServlet {
 	        GridDatatype gdt = gridDataset.findGridByName(gridName);
 	        Range timeRange = null;
 	        try {
-	            CoordinateAxis1DTime timeAxis = gdt.getCoordinateSystem().getTimeAxis1D();
-	            int timeIndexMin = timeAxis.findTimeIndexFromDate(fromDate);
-	            int timeIndexMax = timeAxis.findTimeIndexFromDate(toDate);
+	            CoordinateAxis1DTime timeAxis = gdt.getCoordinateSystem().getTimeAxis1D();	            
+	            int timeIndexMin = 0;
+	            int timeIndexMax = 0;
+	            if (fromDate != null && toDate != null) {
+		            timeIndexMin = timeAxis.findTimeIndexFromDate(fromDate);
+		            timeIndexMax = timeAxis.findTimeIndexFromDate(toDate);
+	            }
 	            timeRange = new Range(timeIndexMin, timeIndexMax);
 	        } catch (NumberFormatException e) {
 	            log.debug(e.getMessage());

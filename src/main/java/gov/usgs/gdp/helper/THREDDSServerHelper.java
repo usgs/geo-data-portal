@@ -56,7 +56,7 @@ public class THREDDSServerHelper {
     		try {
     			
     			TimeBean timeBean = TimeBean.getTimeBean(datasetUrl, gridSelection);
-    			if (timeBean != null && !timeBean.getTime().isEmpty()) return timeBean;
+    			if (timeBean != null /*&& !timeBean.getTime().isEmpty()*/) return timeBean;
     			return null;
     		} finally {
     			featureDataset.close();
