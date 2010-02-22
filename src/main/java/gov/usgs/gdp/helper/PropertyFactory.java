@@ -44,6 +44,7 @@ public class PropertyFactory {
 	 * @return a property based on key given, "" if not found
 	 */
 	static public String getProperty(String key) {
+		if (key == null) return null;
 		if (properties == null) {
 			try {
 				log.debug("Loading properties file");
