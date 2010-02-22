@@ -50,6 +50,9 @@ public class GridStatistics {
     
     private DateRange timeStepRange;
     private List<Date> timeStepValues;
+
+    private String variableName;
+    private String variableUnits;
     
     public Map<Date, Map<Object, WeightedStatisticsAccumulator1D>> perTimestepPerAttributeValueStatistics;
     public Map<Date, WeightedStatisticsAccumulator1D> perTimestepAllAttributeValueStatistics;
@@ -74,6 +77,14 @@ public class GridStatistics {
     
     public List<Date> getTimeStepValues() {
         return timeStepValues;
+    }
+
+    public String getVariableName() {
+        return variableName;
+    }
+
+    public String getVariableUnits() {
+        return variableUnits;
     }
     
     //NOTE, This API will change once we figure out usage sematics...
@@ -109,16 +120,15 @@ public class GridStatistics {
                 new LatLonPointImpl(envelope.getMinY(), envelope.getMinX()),
                 new LatLonPointImpl(envelope.getMaxY(), envelope.getMaxX()));
 
+
         GridDatatype gdt = gridDataset.findGridDatatype(variableName);
-        if(gdt != null) {
-            try {
-                gdt = gdt.makeSubset(timeRange, null, llr, 1, 1, 1);
-            } catch (InvalidRangeException ex) {
-                Logger.getLogger(SimpleStatistics.class.getName()).log(Level.SEVERE, null, ex);
-                throw ex;
-            }
-        } else {
-            throw new RuntimeException("where's my data?");
+        Preconditions.checkNotNull(gdt, "Variable named %s not found in gridDataset", variableName);
+
+        try {
+            gdt = gdt.makeSubset(timeRange, null, llr, 1, 1, 1);
+        } catch (InvalidRangeException ex) {
+            Logger.getLogger(SimpleStatistics.class.getName()).log(Level.SEVERE, null, ex);
+            throw ex;  // rethrow requested by IS
         }
         
         // verify attribute exists in featureCollection. 
@@ -162,6 +172,8 @@ public class GridStatistics {
         int xCount = (int) gcs.getXHorizAxis().getSize();
         
         GridStatistics gs = new GridStatistics();
+        gs.variableName = variableName;
+        gs.variableUnits = gdt.getVariable().getUnitsString();
         
         gs.attributeValues = Collections.unmodifiableList(new ArrayList<Object>(attributeValueToGeometryMap.keySet()));
         gs.timeStepValues = Collections.unmodifiableList(Arrays.asList(gcs.getTimeAxis1D().getTimeDates()));
@@ -220,20 +232,15 @@ public class GridStatistics {
         return gs;
     }
     
-    public static void writerCSV(BufferedWriter writer) {
-
-    }
-    
     // SIMPLE inline testing only, need unit tests...
     public static void main(String[] args) {
-        String ncLocation = "http://runoff.cr.usgs.gov:8086/thredds/dodsC/hydro/national/2.5arcmin";
-    //  String ncLocation = "http://internal.cida.usgs.gov/thredds/dodsC/models/us_gfdl.A1.monthly.Tavg.1960-2099.nc";
+//        String ncLocation = "http://runoff.cr.usgs.gov:8086/thredds/dodsC/hydro/national/2.5arcmin";
+      String ncLocation = "http://internal.cida.usgs.gov/thredds/dodsC/models/us_gfdl.A1.monthly.Tavg.1960-2099.nc";
         String sfLocation = "src/main/resources/Sample_Files/Shapefiles/Yahara_River_HRUs_geo_WGS84.shp";
     
         FeatureDataset dataset = null;
         FileDataStore dataStore = null;
         long start = System.currentTimeMillis();
-        System.out.println("eat me.");
         try {
             dataset = FeatureDatasetFactoryManager.open(null, ncLocation, null, new Formatter());
             dataStore = FileDataStoreFinder.getDataStore(new File(sfLocation));
@@ -241,7 +248,7 @@ public class GridStatistics {
             String attributeName = "GRIDCODE";
             FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = featureSource.getFeatures();
             
-            GridStatistics gs = GridStatistics.generate(featureCollection, attributeName, (GridDataset)dataset, "runoff", new Range(0, 1000));
+            GridStatistics gs = GridStatistics.generate(featureCollection, attributeName, (GridDataset)dataset, "Tavg", new Range(0, 1000));
             
             // example csv dump...
             BufferedWriter writer = null;

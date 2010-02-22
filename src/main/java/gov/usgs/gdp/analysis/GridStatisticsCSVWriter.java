@@ -16,6 +16,7 @@ public class GridStatisticsCSVWriter implements GridStatisticsWriter {
         this.gridStatistics = gridStatistics;
     }
     
+    @Override
     public void write(BufferedWriter writer)  throws IOException  {
         writerHeader(writer);
         writerBody(writer);
@@ -23,7 +24,11 @@ public class GridStatisticsCSVWriter implements GridStatisticsWriter {
     }
     
     private void writerHeader(BufferedWriter writer)  throws IOException {
-        String[] labels = new String[] { "mean", "minimum", "maximum", "variance", "std_dev","weight_sum", "count" };
+        String units = gridStatistics.getVariableUnits();
+        String[] labels =  (units != null && units.length() > 0) ?
+            new String[] { "mean (" + units + ")", "minimum (" + units + ")", "maximum (" + units + ")", "variance", "std_dev","weight_sum", "count" } :
+            new String[] { "mean", "minimum", "maximum", "variance", "std_dev","weight_sum", "count" } ;
+
         StringBuilder lineSB = new StringBuilder();
         for (Object attributeValue : gridStatistics.getAttributeValues()) {
             for(int i = 0; i < labels.length; ++i) {
