@@ -145,6 +145,7 @@ public class GridStatistics {
         while (fi.hasNext()) {
             SimpleFeature sf = fi.next();
             Object av = sf.getAttribute(attributeName);
+
             if (av != null) {
                 Geometry g0 = (Geometry)sf.getDefaultGeometry(); 
                 Geometry g1 = attributeValueToGeometryMap.get(av);
@@ -153,9 +154,7 @@ public class GridStatistics {
                 } else {
                     attributeValueToGeometryMap.put(av, g1.union(g0));
                 }
-            } else {
-                // do we care?
-            }
+            } 
         }
 
         int attributeValueMapSize = (int) Math.ceil( (float) attributeValueToGeometryMap.size() / 0.75f);

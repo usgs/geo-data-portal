@@ -40,13 +40,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.geotools.data.DefaultQuery;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.filter.text.cql2.CQL;
+import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.filter.Filter;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -427,10 +431,31 @@ public class FileProcessServlet extends HttpServlet {
 	
 	
 	    String attributeName = attribute;
-	   // String attributeValue = shpFileSetBean.getChosenFeature();
-	
-	
-	    FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = featureSource.getFeatures();
+	    
+	    FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = null;
+	    if (features[0].equals("*")) {
+	    	featureCollection = featureSource.getFeatures();
+	    } else {
+		    String cqlQuery = attribute + " == " + features[0];
+		    Filter attributeFilter = null;
+		    for (int index = 1;index < features.length;index++) {
+		    	cqlQuery = cqlQuery + " OR " + attribute + " == " + features[index];
+		    }
+		    
+			try {
+				attributeFilter = CQL.toFilter(cqlQuery);
+			} catch (CQLException e) {
+				log.debug(e);
+			}
+	    	featureCollection = featureSource.getFeatures(
+	   	    	 new DefaultQuery(
+	   	    			 featureSource.getSchema().getTypeName(), 
+	   	    			 attributeFilter
+	   	    	 )
+	   	    );
+	    	
+	    }
+
 	
 	    String datasetUrl = dataset;
 	    Formatter errorLog = new Formatter();
