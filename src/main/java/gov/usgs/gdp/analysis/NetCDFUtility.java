@@ -80,19 +80,19 @@ public abstract class NetCDFUtility {
         return handles;
     }
 
-    public static List<String> getDataVariableNames(String location) throws IOException {
+    public static List<VariableSimpleIF> getDataVariableNames(String location) throws IOException {
         if (location == null) {
             throw new IllegalArgumentException("location can't be null");
         }
 
-        List<String> variableNames = new ArrayList<String>();
+        List<VariableSimpleIF> variableList = new ArrayList<VariableSimpleIF>();
         FeatureDataset dataset = null;
         try {
             dataset = FeatureDatasetFactoryManager.open(
                     null, location, null, new Formatter());
             for (VariableSimpleIF variable : dataset.getDataVariables()) {
-                if (variable.findAttributeIgnoreCase("CoordinateAxisType") == null) {
-                    variableNames.add(variable.getName());
+                if (variable.findAttributeIgnoreCase("_CoordinateAxisType") == null) {
+                	variableList.add(variable);
                 }
             }
         } finally {
@@ -100,7 +100,7 @@ public abstract class NetCDFUtility {
                 dataset.close();
             }
         }
-        return variableNames;
+        return variableList;
     }
 
     /**

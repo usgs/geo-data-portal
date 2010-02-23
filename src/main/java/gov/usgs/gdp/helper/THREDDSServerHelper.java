@@ -135,30 +135,9 @@ public class THREDDSServerHelper {
 		if (datasetUrl == null || "".equals(datasetUrl)) throw new IllegalArgumentException("DataSet URL invalid or null");
 		
 		List<XmlBean> result = new ArrayList<XmlBean>();
-        Formatter errorLog = new Formatter();
-        FeatureDataset featureDataset = null;
-		try {
-			featureDataset = FeatureDatasetFactoryManager.open(null, datasetUrl, null, errorLog);
-
-			 if (featureDataset != null) {	  
-				 List<VariableSimpleIF> vsifList = featureDataset.getDataVariables();
-	            for (VariableSimpleIF vs : vsifList) {
-	            	GridBean gb = new GridBean(vs);
-	            	result.add(gb);
-	            }
-	        } else {
-	        	return null;
-	        }
-			 
-		} catch (IOException e) {
-		
-		
-			throw e;
-		} finally {
-			if (featureDataset != null) {
-				featureDataset.close();
-			}
-			
+		List<VariableSimpleIF> variables = NetCDFUtility.getDataVariableNames(datasetUrl);
+		for (VariableSimpleIF variable : variables) {
+			result.add(new GridBean(variable));
 		}
 		return result;
 		

@@ -4,6 +4,7 @@ import gov.usgs.gdp.analysis.GridStatistics;
 import gov.usgs.gdp.analysis.GridStatisticsCSVWriter;
 import gov.usgs.gdp.analysis.GridStatisticsWriter;
 import gov.usgs.gdp.analysis.NetCDFUtility;
+import gov.usgs.gdp.analysis.StationDataCSVWriter;
 import gov.usgs.gdp.bean.AckBean;
 import gov.usgs.gdp.bean.AvailableFilesBean;
 import gov.usgs.gdp.bean.EmailMessageBean;
@@ -26,6 +27,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.List;
@@ -48,6 +50,7 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.geometry.jts.JTSFactoryFinder;
+import org.omg.CosNaming.IstringHelper;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
@@ -83,9 +86,12 @@ import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
+import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.PointFeatureIterator;
+import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
+import ucar.nc2.units.DateRange;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.NamedObject;
 
@@ -364,7 +370,7 @@ public class FileProcessServlet extends HttpServlet {
 			final String[] features, 
 			final String thredds, 
 			final String dataset, 
-			final String grid, 
+			final String grid, // actually (NetCDF) range variable name, 10$ dblodgett wants more than one variable for station data
 			final String from, 
 			final String to, 
 			final String output, 
@@ -372,164 +378,183 @@ public class FileProcessServlet extends HttpServlet {
 			final File outputPath, 
 			final String outputFile,
 			final String userDirectory) throws IOException, InvalidRangeException {
-	
-		FileHelper.deleteFile(outputPath.getPath() + outputFile);
-	    String fromTime = from;
-	    String toTime = to;
-	
-	    DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-	    Date toDate = new Date();
-	    Date fromDate = new Date();
-	    boolean parsedDates = false;
-	    if (toTime == null || fromTime == null) {
-	    	toDate = null;
-	    	fromDate = null;
-	    	parsedDates = true;
-	    } else {
-	    	try {
-		        toDate = df.parse(toTime);
-		        fromDate = df.parse(fromTime);
-		        parsedDates = true;
-		    } catch (ParseException e1) {
-		        parsedDates = false;
-		        log.debug(e1.getMessage());
-		    }
-	    }
-	    
-	
-	    if (!parsedDates) {
-	        // return some sort of error
-	    }
 
-	    FileDataStore shapeFileDataStore;
-	    FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = null;
-	    try {
-	    	// Set up the shapefile
-	    	String appTempDir = System.getProperty("applicationTempDir");
-	    	String userDir = userDirectory;
-            if (userDir != null && !"".equals(appTempDir + userDir)) {
-                if (FileHelper.doesDirectoryOrFileExist(appTempDir + userDir)) {
-                    FileHelper.updateTimestamp(appTempDir + userDir, false); // Update the timestamp
-                } else {
-                	userDir = "";
-                }
-            }
-			AvailableFilesBean afb = AvailableFilesBean.getAvailableFilesBean(appTempDir, userDir);
-			List<ShapeFileSetBean> shapeBeanList = afb.getShapeSetList();
-			File shapeFile = null;
-			for (ShapeFileSetBean sfsb : shapeBeanList) {
-				if (shapeSet.equals(sfsb.getName())) {
-					shapeFile = sfsb.getShapeFile();
-				}
+		FileHelper.deleteFile(outputPath.getPath() + outputFile);
+		String fromTime = from;
+		String toTime = to;
+
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		Date toDate = new Date();
+		Date fromDate = new Date();
+		boolean parsedDates = false;
+		if (toTime == null || fromTime == null) {
+			toDate = null;
+			fromDate = null;
+			parsedDates = true;
+		} else {
+			try {
+				toDate = df.parse(toTime);
+				fromDate = df.parse(fromTime);
+				parsedDates = true;
+			} catch (ParseException e1) {
+				parsedDates = false;
+				log.debug(e1.getMessage());
 			}
-			
-	        shapeFileDataStore = FileDataStoreFinder.getDataStore(shapeFile);
-	        featureSource = shapeFileDataStore.getFeatureSource();
-	    } catch (IOException e1) {
-	        // Send error
-	    }
-	
-	
-	    String attributeName = attribute;
-	    
-	    FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = null;
-	    if (features[0].equals("*")) {
-	    	featureCollection = featureSource.getFeatures();
-	    } else {
-		    String cqlQuery = attribute + " == " + features[0];
-		    Filter attributeFilter = null;
-		    for (int index = 1;index < features.length;index++) {
-		    	cqlQuery = cqlQuery + " OR " + attribute + " == " + features[index];
-		    }
-		    
+		}
+
+		if (!parsedDates) {
+			// return some sort of error
+		}
+
+		FileDataStore shapeFileDataStore;
+		FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = null;
+		
+		// Set up the shapefile
+		String appTempDir = System.getProperty("applicationTempDir");
+		String userDir = userDirectory;
+		if (userDir != null && !"".equals(appTempDir + userDir)) {
+			if (FileHelper.doesDirectoryOrFileExist(appTempDir + userDir)) {
+				FileHelper.updateTimestamp(appTempDir + userDir, false); // Update the timestamp
+			} else {
+				userDir = "";
+			}
+		}
+		AvailableFilesBean afb = AvailableFilesBean.getAvailableFilesBean(appTempDir, userDir);
+		List<ShapeFileSetBean> shapeBeanList = afb.getShapeSetList();
+		File shapeFile = null;
+		for (ShapeFileSetBean sfsb : shapeBeanList) {
+			if (shapeSet.equals(sfsb.getName())) {
+				shapeFile = sfsb.getShapeFile();
+			}
+		}
+
+		shapeFileDataStore = FileDataStoreFinder.getDataStore(shapeFile);
+		featureSource = shapeFileDataStore.getFeatureSource();
+
+		String attributeName = attribute;
+
+		FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = null;
+		if (features[0].equals("*")) {
+			featureCollection = featureSource.getFeatures();
+		} else {
+			//Implementing a filter using the CQL language
+			// http://docs.codehaus.org/display/GEOTOOLS/CQL+Parser+Design
+			String cqlQuery = attribute + " == '" + features[0] + "'";
+			Filter attributeFilter = null;
+			for (int index = 1;index < features.length;index++) {
+				cqlQuery = cqlQuery + " OR " + attribute + " == '" + features[index] + "'";
+			}
+
 			try {
 				attributeFilter = CQL.toFilter(cqlQuery);
 			} catch (CQLException e) {
+				// TODO- Figure out what to do with this exception
 				log.debug(e);
 			}
-	    	featureCollection = featureSource.getFeatures(
-	   	    	 new DefaultQuery(
-	   	    			 featureSource.getSchema().getTypeName(), 
-	   	    			 attributeFilter
-	   	    	 )
-	   	    );
-	    	
-	    }
+			featureCollection = featureSource.getFeatures(
+					new DefaultQuery(
+							featureSource.getSchema().getTypeName(), 
+							attributeFilter
+					)
+			);
 
+		}
+
+
+		String datasetUrl = dataset;
+		Formatter errorLog = new Formatter();
+		FeatureDataset featureDataset = FeatureDatasetFactoryManager.open(FeatureType.ANY, datasetUrl, null, errorLog);
+
+		if (featureDataset.getFeatureType() == FeatureType.GRID && featureDataset instanceof GridDataset) {
+			GridDataset gridDataset = (GridDataset)featureDataset;
+			String gridName = grid;
+			try {
+				GridDatatype gdt = gridDataset.findGridByName(gridName);
+				Range timeRange = null;
+				try {
+					CoordinateAxis1DTime timeAxis = gdt.getCoordinateSystem().getTimeAxis1D();	            
+					int timeIndexMin = 0;
+					int timeIndexMax = 0;
+					if (fromDate != null && toDate != null) {
+						timeIndexMin = timeAxis.findTimeIndexFromDate(fromDate);
+						timeIndexMax = timeAxis.findTimeIndexFromDate(toDate);
+						timeRange = new Range(timeIndexMin, timeIndexMax);
+					}
 	
-	    String datasetUrl = dataset;
-	    Formatter errorLog = new Formatter();
-	    GridDataset gridDataset = null;
-	    try {
-	        gridDataset = (GridDataset) FeatureDatasetFactoryManager.open(
-	                FeatureType.GRID, datasetUrl, null, errorLog);
-	    } catch (IOException e1) {
-	        //send error
-	    }
+				} catch (NumberFormatException e) {
+					log.debug(e.getMessage());
+				} catch (InvalidRangeException e) {
+					log.debug(e.getMessage());
+				}
 	
-	    if (gridDataset == null) {
-	        //send error
-	    }
+				GridStatistics gs = null;
+				// *** long running task ***
+				gs = GridStatistics.generate(
+						featureCollection,
+						attributeName,
+						gridDataset,
+						gridName,
+						timeRange);
+				GridStatisticsWriter ouputFileWriter = null;
 	
-	    String gridName = grid;
-	    try {
-	        GridDatatype gdt = gridDataset.findGridByName(gridName);
-	        Range timeRange = null;
-	        try {
-	            CoordinateAxis1DTime timeAxis = gdt.getCoordinateSystem().getTimeAxis1D();	            
-	            int timeIndexMin = 0;
-	            int timeIndexMax = 0;
-	            if (fromDate != null && toDate != null) {
-		            timeIndexMin = timeAxis.findTimeIndexFromDate(fromDate);
-		            timeIndexMax = timeAxis.findTimeIndexFromDate(toDate);
-		            timeRange = new Range(timeIndexMin, timeIndexMax);
-	            }
-	            
-	        } catch (NumberFormatException e) {
-	            log.debug(e.getMessage());
-	        } catch (InvalidRangeException e) {
-	            log.debug(e.getMessage());
-	        }
-	        
-	        GridStatistics gs = null;
-	        // long running task
-	         gs = GridStatistics.generate(
-	        		featureCollection,
-	        		attributeName,
-	        		gridDataset,
-	        		gridName,
-	        		timeRange);
-	        GridStatisticsWriter ouputFileWriter = null;
-	        
-	        if ("csv".equals(output.toLowerCase())) {
-	        	ouputFileWriter = new GridStatisticsCSVWriter(gs);
-	        }
-	        
-	        BufferedWriter writer = null;
-	        try {
-		    	
-		    	// Delete the file there previously
-		    	
-	        	writer = new BufferedWriter(new FileWriter(outputPath.getPath() + outputFile));
-	        	ouputFileWriter.write(writer);
-	        } finally {
-	        	if (writer != null) {
-	        		try { writer.close(); } catch (IOException e) { /* get bent */ }
-	        	}
-	        }
-	        
-	    
-	    } finally {
-	        try {
-	            if (gridDataset != null) gridDataset.close();
-	        } catch (IOException e) {
-	            // TODO Auto-generated catch block
-	            e.printStackTrace();
-	        }
-	    }
-		return new File(outputPath.getPath() + outputFile);
+				if ("csv".equals(output.toLowerCase())) {
+					ouputFileWriter = new GridStatisticsCSVWriter(gs);
+				}
 	
-	
+				BufferedWriter writer = null;
+				try {
+					// Delete the file there previously
+					writer = new BufferedWriter(new FileWriter(outputPath.getPath() + outputFile));
+					ouputFileWriter.write(writer);
+				} finally {
+					if (writer != null) {
+						try { writer.close(); } catch (IOException e) { /* get bent */ }
+					}
+				}
+			
+			} finally {
+				try {
+					if (gridDataset != null) gridDataset.close();
+				} catch (IOException e) { /* get bent */ }
+			}
+		} else if (featureDataset.getFeatureType() == FeatureType.STATION && featureDataset instanceof FeatureDatasetPoint) {
+			FeatureDatasetPoint fdp = (FeatureDatasetPoint)featureDataset;
+			List<ucar.nc2.ft.FeatureCollection> fcl = fdp.getPointFeatureCollectionList();
+			if (fcl != null && fcl.size() == 1) {
+				ucar.nc2.ft.FeatureCollection fc = fcl.get(0);
+				if (fc != null && fc instanceof StationTimeSeriesFeatureCollection) {
+					
+					StationTimeSeriesFeatureCollection stsfc = 
+						(StationTimeSeriesFeatureCollection)fc;
+					
+					List<VariableSimpleIF> variableList = Arrays.asList(new VariableSimpleIF[] {
+							featureDataset.getDataVariable(grid)
+					});
+					
+					BufferedWriter writer = null;
+					try {
+						writer = new BufferedWriter(new FileWriter(new File(outputPath, outputFile)));
+						StationDataCSVWriter.write(
+								featureCollection,
+								stsfc,
+								variableList,
+								new DateRange(fromDate, toDate),
+								writer);
+					} finally {
+						if (writer != null) { try { writer.close(); } catch (IOException e) { /* swallow, don't mask exception */ } }
+					}
+					
+				} else {
+					// wtf?  I am gonna punch Ivan...
+				}
+			} else {
+				// error, what do we do when more than one FeatureCollection?  does this happen?  If yes, punch Ivan.
+			}
+			
+		}
+		return new File(outputPath.getPath(), outputFile);
+
+
 	}
 
 	private static final long serialVersionUID = 1L;
