@@ -222,7 +222,7 @@
         <dependency>
             <groupId>edu.ucar.unidata</groupId>
             <artifactId>netcdf-all</artifactId>
-            <version>4.1</version>
+            <version>4.1.20100220.0007</version>
         </dependency>
         <dependency>
         	<groupId>com.sun.xml.fastinfoset</groupId>

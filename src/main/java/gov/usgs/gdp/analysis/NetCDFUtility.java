@@ -90,15 +90,8 @@ public abstract class NetCDFUtility {
         try {
             dataset = FeatureDatasetFactoryManager.open(
                     null, location, null, new Formatter());
-            if (dataset.getFeatureType() == FeatureType.STATION) {
-                for (VariableSimpleIF variable : dataset.getDataVariables()) {
-                    String variableName = variable.getName();
-                    if (!variableName.startsWith("station.")) {
-                        variableNames.add(variable.getName());
-                    }
-                }
-            } else {
-                for (VariableSimpleIF variable : dataset.getDataVariables()) {
+            for (VariableSimpleIF variable : dataset.getDataVariables()) {
+                if (variable.findAttributeIgnoreCase("CoordinateAxisType") == null) {
                     variableNames.add(variable.getName());
                 }
             }
