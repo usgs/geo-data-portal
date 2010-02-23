@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -128,31 +129,41 @@ public class GeoServerServlet extends HttpServlet {
 				sendPacket(new URL(dataStoresURL + shapefileName + ".xml"), "PUT", "text/xml", dataStoreXML);
 			}
 			
-			// create style to color polygons given a date, stat, and data file
-			DateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
-			Date date;
-			try {
-				date = df.parse("15 Jan 1895 00:00:00 GMT");
-			} catch (ParseException e) {
-				e.printStackTrace();
-				System.err.println("Could not parse requested date.");
-				return;
+			if ("demo_HUCs".equals(shapefileName)) {
+				// create style to color polygons given a date, stat, and data file
+				DateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
+				Date date;
+				try {
+					date = df.parse("15 Sep 1979 00:00:00 GMT");
+				} catch (ParseException e) {
+					e.printStackTrace();
+					System.err.println("ERROR: could not parse requested date.");
+					return;
+				}
+				String stat = "mean (mm/month)";
+				String header = "HUC_8";
+				
+				ClassLoader cl = Thread.currentThread().getContextClassLoader(); 
+				URL csvLocation = cl.getResource("demo.CSV");
+				
+				try {
+					File file = new File(csvLocation.toURI());
+					createColoredMap(file, workspace, shapefileName, date, stat, header);
+				} catch (URISyntaxException e) {
+					System.err.println("ERROR: could not open demo.CSV");
+					e.printStackTrace();
+				}
 			}
-			String stat = "weight_sum";
-			File file = new File("/Users/razoerb/Desktop/temp.csv");
-			
-			//createColoredMap(file, workspace, shapefileName, date, stat);
-			
 			
 			// send back ack with workspace and layer names
 			sendReply(response, AckBean.ACK_OK, workspace, shapefileName);
 		}
 	}
 	
-	void createColoredMap(File csvFile, String workspace, String layer, Date date, String stat) 
+	void createColoredMap(File csvFile, String workspace, String layer, Date date, String stat, String header) 
 			throws IOException {
 		
-		String sld = createStyle(csvFile, date, stat);
+		String sld = createStyle(csvFile, date, stat, header);
 		
 		if (sld == null) {
 			System.err.println("Could not create map style.");
@@ -288,12 +299,13 @@ public class GeoServerServlet extends HttpServlet {
 				"</featureType>");
 	}
 	
-	String createStyle(File data, Date date, String stat) throws IOException {
+	String createStyle(File data, Date date, String stat, String header) throws IOException {
 		
 		final String fieldSep = ",";
 		DateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
 
 		ArrayList<Float> requestedStats = new ArrayList<Float>();
+		ArrayList<String> headerValues = new ArrayList<String>();
 		
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(data));
@@ -301,20 +313,20 @@ public class GeoServerServlet extends HttpServlet {
 			
 			// Figure out how many values per GRIDCODE there are
 			line = reader.readLine();
-			String GridCodes[] = line.split(fieldSep);
-			if (!"ALL".equals(GridCodes[GridCodes.length - 1])) {
-				System.out.println("ERROR: Last GRIDCODE is not ALL");
+			String dupHeaderValues[] = line.split(fieldSep);
+			if (!"ALL".equals(dupHeaderValues[dupHeaderValues.length - 1])) {
+				System.out.println("ERROR: Last header value is not ALL");
 				return null;
 			}
 			
-			int statsPerGC = 0;
-			String gc = GridCodes[GridCodes.length - 1];
+			int statsPerHeaderValue = 0;
+			String gc = dupHeaderValues[dupHeaderValues.length - 1];
 			while ("ALL".equals(gc)) {
-				statsPerGC++;
-				gc = GridCodes[GridCodes.length - 1 - statsPerGC];
+				statsPerHeaderValue++;
+				gc = dupHeaderValues[dupHeaderValues.length - 1 - statsPerHeaderValue];
 			}
 			
-			System.out.println("Stats per GRIDCODE: " + statsPerGC);
+			System.out.println("Stats per header value: " + statsPerHeaderValue);
 			
 			// Find location of chosen stat
 			line = reader.readLine();
@@ -330,7 +342,7 @@ public class GeoServerServlet extends HttpServlet {
 				firstStatIndex++;
 				val = stats[firstStatIndex];
 				
-				if (firstStatIndex > statsPerGC) {
+				if (firstStatIndex > statsPerHeaderValue) {
 					System.out.println("ERROR: stat doesn't exist");
 					return null;
 				}
@@ -339,9 +351,10 @@ public class GeoServerServlet extends HttpServlet {
 			System.out.println("First stat index: " + firstStatIndex);
 			
 			// Find chosen date
-			line = reader.readLine();
-			String firstValue = line.split(fieldSep)[0];
+			String firstValue;
 			while (reader.ready()) {
+				line = reader.readLine();
+				firstValue = line.split(fieldSep)[0];
 				
 				if ("ALL".equals(firstValue)) {
 					System.out.println("ERROR: date not found");
@@ -351,15 +364,13 @@ public class GeoServerServlet extends HttpServlet {
 				if (df.parse(firstValue).compareTo(date) == 0) {
 					break;
 				}
-				
-				line = reader.readLine();
-				firstValue = line.split(fieldSep)[0];
 			}
 			
 			String values[] = line.split(fieldSep);
 			//							 don't read in totals at end
-			for (int i = firstStatIndex; i < values.length - statsPerGC; i += statsPerGC) {
+			for (int i = firstStatIndex; i < values.length - statsPerHeaderValue; i += statsPerHeaderValue) {
 				requestedStats.add(Float.parseFloat(values[i]));
+				headerValues.add(dupHeaderValues[i]);
 			}
 		}
 		catch (IOException e) {
@@ -391,13 +402,15 @@ public class GeoServerServlet extends HttpServlet {
 				"  <NamedLayer>" +
 				"    <Name>Colors</Name>" +
 				"    <UserStyle>" +
-				"      <Title>Per-GRIDCODE coloring</Title>" +
+				"      <Title>Colors</Title>" +
 				"      <FeatureTypeStyle>");
 		
-		int gridCode = 1;
 		String color;
-		for (Float f : requestedStats) {
-
+		for (int i = 0; i < requestedStats.size(); i++) {
+			float f = requestedStats.get(i);
+			String headerValue = headerValues.get(i);
+			
+			//                                  avoid divide by zero
 			float temp = -(f - minVal) / spread + 1;
 			temp = temp * 200;
 			String blgr = String.format("%02x", (int) temp);
@@ -407,8 +420,8 @@ public class GeoServerServlet extends HttpServlet {
 			style += "   <Rule>" +
 				"          <ogc:Filter>" +
 				"            <ogc:PropertyIsEqualTo>" +
-				"              <ogc:PropertyName>GRIDCODE</ogc:PropertyName>" +
-				"              <ogc:Literal>" + gridCode + "</ogc:Literal>" +
+				"              <ogc:PropertyName>" + header + "</ogc:PropertyName>" +
+				"              <ogc:Literal>" + headerValue + "</ogc:Literal>" +
 				"            </ogc:PropertyIsEqualTo>" +
 				"          </ogc:Filter>" +
 				"          <PolygonSymbolizer>" +
@@ -421,8 +434,6 @@ public class GeoServerServlet extends HttpServlet {
 	            "			 </Stroke>" +
 				"          </PolygonSymbolizer>" +
 				"        </Rule>";
-			
-			gridCode++;
 		}
 		
 		style += "	   </FeatureTypeStyle>" +
