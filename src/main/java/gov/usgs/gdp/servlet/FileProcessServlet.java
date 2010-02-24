@@ -148,7 +148,12 @@ public class FileProcessServlet extends HttpServlet {
 			String baseFilePath = System.getProperty("applicationTempDir");
 	    	baseFilePath = baseFilePath + FileHelper.getSeparator();
 	    	String fullFilePath = baseFilePath + "upload-repository" +FileHelper.getSeparator()+file;
-	    	UploadFileCheckBean ufcb = new UploadFileCheckBean(file, FileHelper.doesDirectoryOrFileExist(fullFilePath));
+	    	boolean fileExists = FileHelper.doesDirectoryOrFileExist(fullFilePath);
+	    	boolean hasBytes = false;
+	    	File tempFile = new File(fullFilePath);
+	    	hasBytes = tempFile.length() > 0;
+	    	boolean fileExistsAndHasBytes = fileExists & hasBytes;
+	    	UploadFileCheckBean ufcb = new UploadFileCheckBean(file, fileExistsAndHasBytes);
 			
 			XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, ufcb);
 			RouterServlet.sendXml(xmlReply, response);
