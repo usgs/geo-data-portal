@@ -1,19 +1,20 @@
 package gov.usgs.gdp.analysis;
 
 import com.google.common.base.Preconditions;
-import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Formatter;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import thredds.catalog.InvAccess;
 import thredds.catalog.InvCatalog;
-import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.InvDataset;
 import thredds.catalog.ServiceType;
+import ucar.nc2.Attribute;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.grid.GeoGrid;
@@ -22,7 +23,6 @@ import ucar.nc2.ft.FeatureCollection;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.StationTimeSeriesFeature;
 import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
 import ucar.nc2.units.DateRange;
@@ -103,6 +103,35 @@ public abstract class NetCDFUtility {
         return variableList;
     }
 
+    public static boolean hasTimeCoordinate(String location) throws IOException {
+        FeatureDataset featureDataset = null;
+        boolean result = false;
+        try {
+            featureDataset = FeatureDatasetFactoryManager.open(null, location, null, new Formatter());
+            result = hasTimeCoordinate(featureDataset);
+        } finally {
+            featureDataset.close();
+        }
+        return result;
+    }
+
+    public static boolean hasTimeCoordinate(FeatureDataset featureDataset) throws IOException {
+        boolean hasTime = false;
+        if (featureDataset.getFeatureType() == FeatureType.ANY_POINT) {
+            Iterator<VariableSimpleIF> variableIterator = featureDataset.getDataVariables().iterator();
+            while (!hasTime && variableIterator.hasNext()) {
+                VariableSimpleIF vairable = variableIterator.next();
+                Iterator<Attribute> attIterator = vairable.getAttributes().iterator();
+                while (!hasTime && attIterator.hasNext()) {
+                    Attribute att = attIterator.next();
+                    hasTime = "_CoordinateAxisType".equalsIgnoreCase(att.getName()) && "Time".equals(att.getStringValue());
+                }
+            }
+        }
+        return hasTime;
+    }
+
+
     /**
      * Retrieves a List of type String which has a date range from the beginning to the end of a FeatureDataSet
      * 
@@ -117,15 +146,13 @@ public abstract class NetCDFUtility {
         Preconditions.checkNotNull(variableName, "variable cannot be null");
 
         FeatureDataset dataset = FeatureDatasetFactoryManager.open(null, threddsURL, null, new Formatter());
+        List<String> dateRange = new ArrayList<String>(2);
         try {
-            List<String> dateRange = new ArrayList<String>(2);
-
             if (dataset.getFeatureType() == FeatureType.GRID) {
                 GeoGrid grid = ((GridDataset) dataset).findGridByName(variableName);
                 if (grid == null) {
                     return dateRange;
                 }
-
                 List<NamedObject> times = grid.getTimes();
                 if (times.isEmpty()) {
                     return dateRange;
@@ -139,58 +166,59 @@ public abstract class NetCDFUtility {
                 String endTime = endTimeNamedObject.getName();
                 dateRange.add(1, endTime);
             } else if (dataset.getFeatureType() == FeatureType.STATION) {
-                DateRange dr = null;
-                List<FeatureCollection> list =
-                        ((FeatureDatasetPoint) dataset).getPointFeatureCollectionList();
-                for (FeatureCollection fc : list) {
-                    if (fc instanceof StationTimeSeriesFeatureCollection) {
-                        StationTimeSeriesFeatureCollection stsfc =
-                                (StationTimeSeriesFeatureCollection) fc;
-                        //stsfc = stsfc.subset(boundingBox);
-                        while (dr == null && stsfc.hasNext()) {
-                            StationTimeSeriesFeature stsf = stsfc.next();
-                            System.out.println(stsf.getName() + "" + stsf.size());
-                            PointFeatureIterator pfi = stsf.getPointFeatureIterator(1 << 20);
-                            while (pfi.hasNext()) {
-                                pfi.next();
+                DateRange dr = dataset.getDateRange();
+                if (dr == null) {
+                    List<FeatureCollection> list =
+                            ((FeatureDatasetPoint) dataset).getPointFeatureCollectionList();
+                    for (FeatureCollection fc : list) {
+                        if (fc instanceof StationTimeSeriesFeatureCollection) {
+                            StationTimeSeriesFeatureCollection stsfc =
+                                    (StationTimeSeriesFeatureCollection) fc;
+                            while (dr == null && stsfc.hasNext()) {
+                                StationTimeSeriesFeature stsf = stsfc.next();
+                                dr = stsf.getDateRange();
                             }
-                        }
-                        while (stsfc.hasNext()) {
-                            dr.extend(stsfc.next().getDateRange());
                         }
                     }
                 }
-                if (dr == null) {
-                    dr = dataset.getDateRange();
-                }
                 if (dr != null) {
-                    dateRange.set(0, dr.getEnd().toString());
-                    dateRange.set(0, dr.getEnd().toString());
+                    dateRange.set(0, dr.getStart().toString());
+                    dateRange.set(1, dr.getEnd().toString());
                 }
             }
-
-            return dateRange;
         } finally {
             dataset.close();
         }
+        return dateRange;
     }
 
     public static void main(String[] args) {
-//        URI catalogURI = URI.create("http://runoff.cr.usgs.gov:8086/thredds/hydrologic_catalog.xml");
-//        URI catalogURI = URI.create("http://runoff:8086/thredds/catalog.xml");
-//        URI catalogURI = URI.create("http://geoport.whoi.edu:8081/thredds/multi_catalog_all.xml");
-        URI catalogURI = new File("C:/Documents and Settings/cwardgar/Desktop/multi_catalog_all.xml").toURI();
-        InvCatalogFactory factory = new InvCatalogFactory("default", true);
-        InvCatalog catalog = factory.readXML(catalogURI);
-
-        StringBuilder buff = new StringBuilder();
-        if (!catalog.check(buff)) {
-            System.err.println(buff.toString());
-        }
-
-        List<InvAccess> handles = getDatasetHandles(catalog, ServiceType.OPENDAP);
-        for (InvAccess handle : handles) {
-            System.out.println(handle.getDataset().getCatalogUrl());
+        try {
+            //        URI catalogURI = URI.create("http://runoff.cr.usgs.gov:8086/thredds/hydrologic_catalog.xml");
+            //        URI catalogURI = URI.create("http://runoff:8086/thredds/catalog.xml");
+            //        URI catalogURI = URI.create("http://geoport.whoi.edu:8081/thredds/multi_catalog_all.xml");
+            //        URI catalogURI = new File("C:/Documents and Settings/cwardgar/Desktop/multi_catalog_all.xml").toURI();
+            //        InvCatalogFactory factory = new InvCatalogFactory("default", true);
+            //        InvCatalog catalog = factory.readXML(catalogURI);
+            //
+            //        StringBuilder buff = new StringBuilder();
+            //        if (!catalog.check(buff)) {
+            //            System.err.println(buff.toString());
+            //        }
+            //
+            //        List<InvAccess> handles = getDatasetHandles(catalog, ServiceType.OPENDAP);
+            //        for (InvAccess handle : handles) {
+            //            System.out.println(handle.getDataset().getCatalogUrl());
+            //        }
+            //
+            for (String s : getDateRange("/Users/tkunicki/Downloads/GSOD/netcdfXX/gsod.nc", "temp")) {
+                System.out.println(s);
+            }
+            System.out.println(hasTimeCoordinate("/Users/tkunicki/Downloads/GSOD/netcdfXX/gsod.nc"));
+        } catch (IOException ex) {
+            Logger.getLogger(NetCDFUtility.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalArgumentException ex) {
+            Logger.getLogger(NetCDFUtility.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }
