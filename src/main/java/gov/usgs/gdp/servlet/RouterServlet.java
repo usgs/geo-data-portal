@@ -40,14 +40,14 @@ public class RouterServlet extends HttpServlet {
 
                 // If the user is attempting to upload files, send them directly to the correct servlet
 		if (ServletFileUpload.isMultipartContent(request)) {
-			log.debug("User is attempting to upload files.");			
+			log.info("User is attempting to upload files.");			
 			RequestDispatcher rd = request.getRequestDispatcher("/UploadFilesServlet?command=upload");
 			rd.forward(request, response);
 			return;
 		}
 		
 		if (!requestParameters.containsKey("command")) {
-			log.debug("User did not send command");
+			log.info("User did not send command");
 			ErrorBean errorBean = new ErrorBean(ErrorBean.ERR_NO_COMMAND);
 			XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, errorBean);
 			RouterServlet.sendXml(xmlReply, response);
@@ -57,7 +57,7 @@ public class RouterServlet extends HttpServlet {
 		String command = request.getParameter("command");
 		
 		if ("listfiles".equals(command)) {
-			log.debug("User is attempting to list files");
+			log.info("User is attempting to list files");
             String userDirectory = request.getParameter("userdirectory");
             String userDirectoryCommand = "";
             if (userDirectory != null && !"".equals(userDirectory)) userDirectoryCommand = "&userdirectory=" + userDirectory;
@@ -67,7 +67,7 @@ public class RouterServlet extends HttpServlet {
 		}
 		
 		if ("listattributes".equals(command)) {
-			log.debug("User is attempting to list attributes");
+			log.info("User is attempting to list attributes");
 			String shapefile = request.getParameter("shapefile");
 			RequestDispatcher rd = request.getRequestDispatcher("/FileAttributeServlet?command=listattributes&shapefile=" + shapefile);
 			rd.forward(request, response);
@@ -75,7 +75,7 @@ public class RouterServlet extends HttpServlet {
 		}
 		
 		if ("listfeatures".equals(command)) {
-			log.debug("User is attempting to list features");
+			log.info("User is attempting to list features");
 			String shapefile = request.getParameter("shapefile");
 			String attribute = request.getParameter("attribute");
 			RequestDispatcher rd = request.getRequestDispatcher("/FileFeatureServlet?command=listfeatures&shapefile=" + shapefile + "&attribute=" + attribute);
@@ -84,14 +84,14 @@ public class RouterServlet extends HttpServlet {
 		}
 		
 		if ("listthredds".equals(command)) {
-			log.debug("User is attempting to list THREDDS servers");
+			log.info("User is attempting to list THREDDS servers");
 			RequestDispatcher rd = request.getRequestDispatcher("/THREDDSCheckServlet?command=listthredds");
 			rd.forward(request, response);
 			return;
 		}
 		
 		if ("checkserver".equals(command)) {
-			log.debug("User is attempting to check server status");
+			log.info("User is attempting to check server status");
 			String hostname = request.getParameter("hostname");
 			String port = request.getParameter("port");
 			String uri = request.getParameter("uri");
@@ -101,7 +101,7 @@ public class RouterServlet extends HttpServlet {
 		}
 		
 		if ("createdatastore".equals(command)) {
-			log.debug("User is attempting to create data store");
+			log.info("User is attempting to create data store");
             String userDirectory = request.getParameter("userdirectory");
             String userDirectoryCommand = "";
             if (userDirectory != null && !"".equals(userDirectory)) userDirectoryCommand = "&userdirectory=" + userDirectory;
@@ -112,7 +112,7 @@ public class RouterServlet extends HttpServlet {
 		}
 		
 		if ("getdatasetlist".equals(command)) {
-			log.debug("User is attempting to list datasets");
+			log.info("User is attempting to list datasets");
 			String hostname = request.getParameter("dataseturl");
 			String port = request.getParameter("port");
 			String uri = request.getParameter("uri");
@@ -122,7 +122,7 @@ public class RouterServlet extends HttpServlet {
 		}
 		
 		if ("getgridlist".equals(command)) {
-			log.debug("User is attempting to get a grid list");
+			log.info("User is attempting to get a grid list");
 			String dataseturl = request.getParameter("dataseturl");
 			RequestDispatcher rd = request.getRequestDispatcher("/THREDDSServlet?command=getgridlist&dataseturl=" + dataseturl);
 			rd.forward(request, response);
@@ -130,7 +130,7 @@ public class RouterServlet extends HttpServlet {
 		}
 		
 		if ("getcatalog".equals(command)) {
-			log.debug("User is attempting to grab catalog from remote THREDDS server");
+			log.info("User is attempting to grab catalog from remote THREDDS server");
 			String url = request.getParameter("url");
 			RequestDispatcher rd = request.getRequestDispatcher("/THREDDSServlet?command=getcatalog&url=" + url);
 			rd.forward(request, response);
@@ -138,6 +138,7 @@ public class RouterServlet extends HttpServlet {
 		}
 		
 		if ("gettimerange".equals(command)) {
+			log.info("User is attempting to get a time range");
 			String datasetUrl = request.getParameter("dataseturl");
 			String gridSelection = request.getParameter("grid");
 			RequestDispatcher rd = request.getRequestDispatcher("/THREDDSServlet?command=gettimerange&dataseturl=" + datasetUrl + "&grid=" + gridSelection);
@@ -146,6 +147,7 @@ public class RouterServlet extends HttpServlet {
 		}
 		
 		if ("submitforprocessing".equals(command)) {
+			log.info("User has submitted a job for processing.");
 			String url = "";			
 			String shapeSet = request.getParameter("shapeset");                        
 			String attribute = request.getParameter("attribute");
@@ -178,12 +180,14 @@ public class RouterServlet extends HttpServlet {
 		}
 		
 		if ("outputtypelist".equals(command)) {
+			log.info("User is attempting to list the output types this application offers.");
 			RequestDispatcher rd = request.getRequestDispatcher("/FileAttributeServlet?command=outputtypelist");
 			rd.forward(request, response);
 			return;
 		}
 		
 		if ("getfile".equals(command)) {
+			log.info("User is attempting to grab a file from the application.");
 			String file = request.getParameter("file");
 			RequestDispatcher rd = request.getRequestDispatcher("/FileProcessServlet?command=getfile&file=" + file);
 			rd.forward(request, response);
@@ -191,6 +195,7 @@ public class RouterServlet extends HttpServlet {
 		}
 		
 		if ("checkuploadfile".equals(command)) {
+			log.info("User is checking to see if a file exists on the server.");
 			String file = request.getParameter("file");
 			RequestDispatcher rd = request.getRequestDispatcher("/FileProcessServlet?command=checkuploadfile&file=" + file);
 			rd.forward(request, response);

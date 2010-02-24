@@ -28,67 +28,71 @@ public class AppInitializationServlet extends HttpServlet {
 	
     @Override
     public void init(ServletConfig config) throws ServletException {
-    	super.init(config);
-    	log.debug("Application is starting");
+    	Date start = new Date();
+    	super.init(config);    	
+    	log.info("Application is starting.");
     	
-
     	// Get the temp directory for the system
     	this.seperator = FileHelper.getSeparator();
     	this.tmpDir = FileHelper.getSystemTemp() + this.seperator + "GDP-APP-TEMP" + this.seperator;
-		log.debug("Current system temp directory is: " + this.tmpDir);
+		log.info("Current application directory is: " + this.tmpDir);
 		
+		// Cleanup code to remove anything from previous application run
     	boolean doesPreviousTempDirExist = FileHelper.doesDirectoryOrFileExist(this.tmpDir);
     	if (doesPreviousTempDirExist) {
     		if(deleteApplicationTempDirs()) {
-    			log.debug("Temporary files from application's previous run have been removed");
+    			log.info("Temporary files from application's previous run have been removed");
     		} else {
-    			log.debug("Application could not delete temp directories created on previous run.");
+    			log.info("Application could not delete temp directories created on previous run.");
     		}
     	}
     	
     	// Now that the previous temp dirs are gone, create application temporary directory
+    	// This will be this.tmpDir + [new Date().toString()]
     	this.applicationTempDir = generateApplicationTempDirName();
-    	boolean dirCreated = createApplicationTempDir(this.applicationTempDir);
+    	boolean dirCreated = FileHelper.createDir(this.applicationTempDir);
     	if (!dirCreated) dirCreated = FileHelper.doesDirectoryOrFileExist(this.applicationTempDir);
 		System.setProperty("applicationTempDir", this.applicationTempDir);
-
     	if (dirCreated) {
-    		log.debug("Current application temp directory is: " + this.applicationTempDir);
+    		log.info("Current application temp directory is: " + this.applicationTempDir);
     	} else {
-    		log.debug("ERROR: Could not create application temp directory: " + this.applicationTempDir);
-    		log.debug("\tIf this directory is not created manually, there may be issues during application run");
+    		log.info("ERROR: Could not create application temp directory: " + this.applicationTempDir);
+    		log.info("\tIf this directory is not created manually, there may be issues during application run");
     	}
+    	
+		// Create the work directory within the app temp dir
+		// This will be used for writing output files before moving them to the upload area
+		if (FileHelper.createDir(this.applicationTempDir + "work" + this.seperator)) {
+			System.setProperty("applicationWorkDir", this.applicationTempDir + "work" + this.seperator);
+			log.info("Current application work directory is: " + System.getProperty("applicationWorkDir"));
+		} else {
+			log.info("ERROR: Could not create application work directory: " + System.getProperty("applicationWorkDir"));
+    		log.info("\tIf this directory is not created manually, there may be issues during application run");
+		}
     	
     	// Place example files in temporary directory 
     	try {
     		ClassLoader cl = Thread.currentThread().getContextClassLoader(); 
 			URL sampleFileLocation = cl.getResource("Sample_Files" + FileHelper.getSeparator());
 			if (sampleFileLocation != null) {
-				log.debug("Saving example files to temp directory.");
 				File sampleFiles = new File(sampleFileLocation.toURI());
 				boolean filesCopied = false;
 				try {
 					filesCopied = FileHelper.copyFileToFile(sampleFiles, this.applicationTempDir);
-				} catch (IOException e) {
-					log.debug(e.getMessage());
-				}
+				} catch (IOException e) { log.error(e.getMessage()); }
 				
-				if (filesCopied) {
-					log.debug("Example files saved to: " + this.applicationTempDir + "Sample_Files/");					
-				} else {
-					log.debug("Sample files were not written to the application temp directory");
-					log.debug("These files will not be available for processing.");
-				}
-				
+				if (filesCopied) log.info("Example files saved to: " + this.applicationTempDir + "Sample_Files/");					
+				else log.info("Sample files were not written to the application temp directory \t These files will not be available for processing.");
 			}
-		}  catch (URISyntaxException e1) {
-			log.debug("Unable to read from src/main/resources/Sample_Files");
-			log.debug("Sample files were not written to the application temp directory");
+		}  catch (URISyntaxException e) {
+			log.error(e);
+			log.info("Unable to read from src/main/resources/Sample_Files");
+			log.info("Sample files were not written to the application temp directory");
 		}
     	
     	Date created = new Date();
     	System.setProperty("tomcatStarted", Long.toString(created.getTime()));
-    	log.debug("Application has started");
+    	log.info("Application has started. Took " + (created.getTime() - start.getTime()) + " milliseconds to complete.");
     }
     
     private String generateApplicationTempDirName() {
@@ -101,25 +105,19 @@ public class AppInitializationServlet extends HttpServlet {
 		return result;
 	}
 
-	private boolean createApplicationTempDir(String directory) {
-		boolean result = false;
-		result = FileHelper.createDir(directory);
-		return result;
-	}
-
 	@Override
     public void destroy() {
     	super.destroy();
-    	log.debug("Application is ending.");
+    	log.info("Application is ending.");
     	boolean result = false;
 		result = deleteApplicationTempDirs();
     	if (result) {
-    		log.debug("Application temp directory " + this.applicationTempDir + " successfully deleted.");
+    		log.info("Application temp directory " + this.applicationTempDir + " successfully deleted.");
     	} else {
-    		log.debug("WARNING: Application temp directory " + this.applicationTempDir + " could not be deleted.");
-    		log.debug("\t If this directory exists, you may want to delete it to free up space on your storage device.");
+    		log.info("WARNING: Application temp directory " + this.applicationTempDir + " could not be deleted.");
+    		log.info("\t If this directory exists, you may want to delete it to free up space on your storage device.");
     	}
-    	log.debug("Application has ended.");
+    	log.info("Application has ended.");
     }
     
 	public boolean deleteApplicationTempDirs() {
@@ -128,12 +126,12 @@ public class AppInitializationServlet extends HttpServlet {
 			String tempDir = FileHelper.getSystemTemp() + FileHelper.getSeparator();
 			result = FileHelper.deleteDirRecursively(tempDir + "GDP-APP-TEMP" + FileHelper.getSeparator());
 			if (result) {
-				log.debug("Temporary files from application's previous run have been removed");
+				log.info("Temporary files from application's previous run have been removed");
 			} else {
-				log.debug("Application could not delete temp directories created on previous run.");
+				log.info("Application could not delete temp directories created on previous run.");
 			}
 		} catch (IOException e) {
-			log.debug("Application did not find or could not delete temp directories created on previous run.");
+			log.info("Application did not find or could not delete temp directories created on previous run.");
 		}
 		return result;
 	}
