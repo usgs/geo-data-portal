@@ -55,6 +55,7 @@ public class GeoServerServlet extends HttpServlet {
 	 */
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Long start = new Date().getTime();
 		String command = (request.getParameter("command") == null) ? "" : request.getParameter("command");
 
 		if ("createdatastore".equals(command)) {
@@ -68,13 +69,13 @@ public class GeoServerServlet extends HttpServlet {
 				afb = AvailableFilesBean.getAvailableFilesBean(appTempDir, userDirectory);
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
-				sendReply(response, AckBean.ACK_FAIL, "Invalid directories.");
+				sendReply(response, AckBean.ACK_FAIL, start, "Invalid directories.");
 				return;
 			}
 			
 			// Couldn't pull any files. Send an error to the caller.
 			if (afb == null) {
-				sendReply(response, AckBean.ACK_FAIL, "Could not find any files to work with.");
+				sendReply(response, AckBean.ACK_FAIL, start, "Could not find any files to work with.");
 				return;
 			}
 			
@@ -96,7 +97,7 @@ public class GeoServerServlet extends HttpServlet {
 			
 			// Couldn't pull any files. Send an error to the caller.
 			if (directory == null) {
-				sendReply(response, AckBean.ACK_FAIL, "Could not find any files to work with.");
+				sendReply(response, AckBean.ACK_FAIL, start, "Could not find any files to work with.");
 				return;
 			}
 			
@@ -156,7 +157,7 @@ public class GeoServerServlet extends HttpServlet {
 			}
 			
 			// send back ack with workspace and layer names
-			sendReply(response, AckBean.ACK_OK, workspace, shapefileName);
+			sendReply(response, AckBean.ACK_OK, start, workspace, shapefileName);
 		}
 	}
 	
@@ -250,9 +251,9 @@ public class GeoServerServlet extends HttpServlet {
 		reader.close();
 	}
 	
-	void sendReply(HttpServletResponse response, int status, String... messages) throws IOException {
+	void sendReply(HttpServletResponse response, int status, Long start, String... messages) throws IOException {
 		XmlReplyBean xmlReply = new XmlReplyBean(status, new MessageBean(messages));
-		RouterServlet.sendXml(xmlReply, response);
+		RouterServlet.sendXml(xmlReply, start, response);
 	}
 	
 	String createWorkspaceXML(String workspace) {

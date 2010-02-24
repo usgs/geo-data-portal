@@ -50,7 +50,6 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.geometry.jts.JTSFactoryFinder;
-import org.omg.CosNaming.IstringHelper;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
@@ -105,31 +104,28 @@ public class FileProcessServlet extends HttpServlet {
 	 */
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Long start = new Date().getTime();
 		String command = request.getParameter("command");
+		
 		if ("submitforprocessing".equals(command)) {
 			File fileForUpload = null;
-			String totalTime = "";
 			try {
-				Date startTime = new Date();				
 				fileForUpload = populateFileUpload(request);
-				Date endTime = new Date();
-				totalTime = "Total time: " + (endTime.getTime() - startTime.getTime()) + " milliseconds";
 			} catch (InvalidRangeException e) {
 				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_BOX_NO_INTERSECT_GRID));
-				RouterServlet.sendXml(xmlOutput, response);
+				RouterServlet.sendXml(xmlOutput, start, response);
 				return;
 			} catch (AddressException e) {
 				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_EMAIL_ERROR_INCORRECT_ADDRESS));
-				RouterServlet.sendXml(xmlOutput, response);
+				RouterServlet.sendXml(xmlOutput, start, response);
 				return;
 			} catch (MessagingException e) {
 				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_EMAIL_ERROR));
-				RouterServlet.sendXml(xmlOutput, response);
+				RouterServlet.sendXml(xmlOutput, start, response);
 				return;
 			}
 
-
-			// We are, for the moment assuming there is a file at this location
+			// We are, for the moment, assuming there is a file at this location
 			// The link is sent out as just the file name. When the user sends the request
 			// back, we go to the directory at String baseFilePath = System.getProperty("applicationTempDir");
 			// + the file specified by the user ((fileForUpload.getName()) and we send that
@@ -137,8 +133,7 @@ public class FileProcessServlet extends HttpServlet {
 			if (!"".equals(fileForUpload.getPath())) {
 				UploadLocationBean uploadLocationBean = new UploadLocationBean(fileForUpload.getName());
 				XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, uploadLocationBean);
-				RouterServlet.sendXml(xmlReply, response); 
-				log.debug(totalTime);
+				RouterServlet.sendXml(xmlReply, start, response); 
 				return;
 	    	}
 		}
@@ -156,7 +151,7 @@ public class FileProcessServlet extends HttpServlet {
 	    	UploadFileCheckBean ufcb = new UploadFileCheckBean(file, fileExistsAndHasBytes);
 			
 			XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, ufcb);
-			RouterServlet.sendXml(xmlReply, response);
+			RouterServlet.sendXml(xmlReply, start, response);
 			return;
 		}
 		
@@ -170,7 +165,7 @@ public class FileProcessServlet extends HttpServlet {
 	    	
 	    	if (!FileHelper.doesDirectoryOrFileExist(fullFilePath)) {
 				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FILE_NOT_FOUND));
-				RouterServlet.sendXml(xmlOutput, response);
+				RouterServlet.sendXml(xmlOutput, start, response);
 				return;
 	    	}
 	    	fileToUpload = new File(fullFilePath);
@@ -453,7 +448,6 @@ public class FileProcessServlet extends HttpServlet {
 			try {
 				attributeFilter = CQL.toFilter(cqlQuery);
 			} catch (CQLException e) {
-				// TODO- Figure out what to do with this exception
 				log.debug(e);
 			}
 			featureCollection = featureSource.getFeatures(
@@ -462,9 +456,7 @@ public class FileProcessServlet extends HttpServlet {
 							attributeFilter
 					)
 			);
-
 		}
-
 
 		String datasetUrl = dataset;
 		Formatter errorLog = new Formatter();
@@ -487,9 +479,9 @@ public class FileProcessServlet extends HttpServlet {
 					}
 	
 				} catch (NumberFormatException e) {
-					log.debug(e.getMessage());
+					log.error(e.getMessage());
 				} catch (InvalidRangeException e) {
-					log.debug(e.getMessage());
+					log.error(e.getMessage());
 				}
 	
 				GridStatistics gs = null;
@@ -509,7 +501,7 @@ public class FileProcessServlet extends HttpServlet {
 				BufferedWriter writer = null;
 				try {
 					// Delete the file there previously
-					writer = new BufferedWriter(new FileWriter(outputPath.getPath() + outputFile));
+					writer = new BufferedWriter(new FileWriter(new File(System.getProperty("applicationWorkDir"), outputFile)));
 					ouputFileWriter.write(writer);
 				} finally {
 					if (writer != null) {
@@ -538,7 +530,7 @@ public class FileProcessServlet extends HttpServlet {
 					
 					BufferedWriter writer = null;
 					try {
-						writer = new BufferedWriter(new FileWriter(new File(outputPath, outputFile)));
+						writer = new BufferedWriter(new FileWriter(new File(System.getProperty("applicationWorkDir"), outputFile)));
 						StationDataCSVWriter.write(
 								featureCollection,
 								stsfc,
@@ -557,6 +549,7 @@ public class FileProcessServlet extends HttpServlet {
 			}
 			
 		}
+		FileHelper.copyFileToFile(new File(System.getProperty("applicationWorkDir") + outputFile), outputPath.getPath(), true);		
 		return new File(outputPath.getPath(), outputFile);
 
 

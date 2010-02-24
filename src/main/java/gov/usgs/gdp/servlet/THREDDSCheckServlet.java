@@ -52,7 +52,7 @@ public class THREDDSCheckServlet extends HttpServlet {
 		this.timer = new Timer(true);
 
 		this.timer.scheduleAtFixedRate(new testTHREDDSServers(paramConfig), 0, FIVE_MINUTES);
-		log.info("Email Users Task: Initialized");
+		log.debug("Email Users Task: Initialized");
 		
 	}	
 
@@ -63,6 +63,7 @@ public class THREDDSCheckServlet extends HttpServlet {
 	
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException{
+		Long start = new Date().getTime();
 		String command = request.getParameter("command");
 		XmlReplyBean xmlReply = null;
 		
@@ -76,7 +77,7 @@ public class THREDDSCheckServlet extends HttpServlet {
 				}
 			} catch (NumberFormatException e) {
 				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean("Port provided is not a number"));
-				RouterServlet.sendXml(xmlReply, response);
+				RouterServlet.sendXml(xmlReply, start, response);
 				return;
 			}
 			log.debug("User is attempting to get server status: " + hostname + ":" + port);
@@ -88,10 +89,10 @@ public class THREDDSCheckServlet extends HttpServlet {
 				tsb.setPort(port);
 				tsb.setLastCheck(new Date());
 				xmlReply = new XmlReplyBean(AckBean.ACK_OK, tsb);
-				RouterServlet.sendXml(xmlReply, response);
+				RouterServlet.sendXml(xmlReply, start, response);
 			} catch (IOException e) {
 				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_ERROR_WHILE_CONNECTING));
-				RouterServlet.sendXml(xmlReply, response);
+				RouterServlet.sendXml(xmlReply, start, response);
 				return;
 			}
 		}
@@ -110,7 +111,7 @@ public class THREDDSCheckServlet extends HttpServlet {
 					// Best naming scheme ever.
 					THREDDSServerBeanList threddsServerBeanListBean = new THREDDSServerBeanList(threddsServerBeanList);
 					xmlReply = new XmlReplyBean(AckBean.ACK_OK, threddsServerBeanListBean);
-					RouterServlet.sendXml(xmlReply, response);
+					RouterServlet.sendXml(xmlReply, start, response);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

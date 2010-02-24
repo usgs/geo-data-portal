@@ -5,13 +5,12 @@ import gov.usgs.gdp.bean.AvailableFilesBean;
 import gov.usgs.gdp.bean.ErrorBean;
 import gov.usgs.gdp.bean.MessageBean;
 import gov.usgs.gdp.bean.XmlReplyBean;
-import gov.usgs.gdp.helper.CookieHelper;
 import gov.usgs.gdp.helper.FileHelper;
 
 import java.io.IOException;
+import java.util.Date;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,7 +26,6 @@ public class FileSelectionServlet extends HttpServlet {
      */
     public FileSelectionServlet() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
 	/**
@@ -43,6 +41,7 @@ public class FileSelectionServlet extends HttpServlet {
 	 */
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Long start = new Date().getTime();
 		String command = (request.getParameter("command") == null) ? "" : request.getParameter("command");
 		XmlReplyBean xmlReply = null;
 		if ("listfiles".equals(command)) {
@@ -64,7 +63,7 @@ public class FileSelectionServlet extends HttpServlet {
 				afb = AvailableFilesBean.getAvailableFilesBean(appTempDir, userDirectory);
 			} catch (IllegalArgumentException e) {
 				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FILE_LIST, e));
-				RouterServlet.sendXml(xmlReply, response);
+				RouterServlet.sendXml(xmlReply, start, response);
 				return;
 			}
 			
@@ -74,12 +73,12 @@ public class FileSelectionServlet extends HttpServlet {
 					|| afb.getShapeSetList() == null
 					|| afb.getShapeSetList().isEmpty()) {
 				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new MessageBean("Could not find any files to work with."));
-				RouterServlet.sendXml(xmlReply, response);
+				RouterServlet.sendXml(xmlReply, start, response);
 				return;
 			}
 			
 			xmlReply = new XmlReplyBean(AckBean.ACK_OK, afb);
-			RouterServlet.sendXml(xmlReply, response);
+			RouterServlet.sendXml(xmlReply, start, response);
 			return;
 			
 		}

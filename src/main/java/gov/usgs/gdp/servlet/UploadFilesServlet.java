@@ -49,6 +49,7 @@ public class UploadFilesServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	Long start = new Date().getTime();
         XmlReplyBean xmlOutput = null;
         String command = request.getParameter("command");
 
@@ -60,13 +61,13 @@ public class UploadFilesServlet extends HttpServlet {
                 userDirectory = uploadFiles(request, applicationTempDir);
             } catch (Exception e) {
                 xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FILE_UPLOAD, e));
-                RouterServlet.sendXml(xmlOutput, response);
+                RouterServlet.sendXml(xmlOutput, start, response);
                 return;
             }
             
             if ("".equals(userDirectory)) { // User directory could not be created
                 xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_USER_DIR_CREATE));
-                RouterServlet.sendXml(xmlOutput, response);
+                RouterServlet.sendXml(xmlOutput, start, response);
                 return;
             }
 

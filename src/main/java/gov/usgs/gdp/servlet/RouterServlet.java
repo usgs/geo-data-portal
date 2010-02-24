@@ -8,6 +8,7 @@ import com.sun.xml.fastinfoset.*;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Date;
 import java.util.Map;
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -36,6 +37,7 @@ public class RouterServlet extends HttpServlet {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Long start = new Date().getTime();
 		Map<String, String> requestParameters = request.getParameterMap();
 
                 // If the user is attempting to upload files, send them directly to the correct servlet
@@ -50,7 +52,7 @@ public class RouterServlet extends HttpServlet {
 			log.info("User did not send command");
 			ErrorBean errorBean = new ErrorBean(ErrorBean.ERR_NO_COMMAND);
 			XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, errorBean);
-			RouterServlet.sendXml(xmlReply, response);
+			RouterServlet.sendXml(xmlReply, start, response);
 			return;
 		}
 		
@@ -203,7 +205,7 @@ public class RouterServlet extends HttpServlet {
 
 	}
 
-	public static void sendXml(String xml, HttpServletResponse response) throws IOException {
+	public static void sendXml(String xml,  Long startTime, HttpServletResponse response) throws IOException {
 		log.debug(xml);
 		Writer writer = response.getWriter();
 		 try {
@@ -221,10 +223,11 @@ public class RouterServlet extends HttpServlet {
 		} finally {
 			if (writer != null) writer.close();
 		}
+		log.info("Process completed in " + (new Date().getTime() - startTime) + " milliseconds.");
 	}
 	
-	public static void sendXml(XmlReplyBean xmlReply, HttpServletResponse response) throws IOException {
-		sendXml(xmlReply.toXml(), response);
+	public static void sendXml(XmlReplyBean xmlReply, Long startTime, HttpServletResponse response) throws IOException {
+		sendXml(xmlReply.toXml(), startTime, response);
 	}
 
 }

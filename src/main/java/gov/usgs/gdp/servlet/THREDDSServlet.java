@@ -10,6 +10,7 @@ import gov.usgs.gdp.helper.THREDDSServerHelper;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -49,8 +50,9 @@ public class THREDDSServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
-	@Override
+	@Override	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Long start = new Date().getTime();
 		String command = request.getParameter("command");
 		XmlReplyBean xmlReply = null;
 		
@@ -58,7 +60,7 @@ public class THREDDSServlet extends HttpServlet {
 			String url = request.getParameter("url");
 			if (url == null || "".equals(url)) {
 				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_MISSING_THREDDS));
-				RouterServlet.sendXml(xmlReply, response);
+				RouterServlet.sendXml(xmlReply, start, response);
 				return;
 			}
 			HttpClient client = new HttpClient();
@@ -75,16 +77,16 @@ public class THREDDSServlet extends HttpServlet {
 				// Use caution: ensure correct character encoding and is not binary data
 				String xmlResponse = new String(responseBody);
 				method.releaseConnection();
-				RouterServlet.sendXml(xmlResponse, response);
+				RouterServlet.sendXml(xmlResponse, start, response);
 				return;
 				
 			} catch (HttpException e) {
 				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_PROTOCOL_VIOLATION));
-				RouterServlet.sendXml(xmlReply, response);
+				RouterServlet.sendXml(xmlReply, start, response);
 				return;
 			} catch (IOException e) {
 				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_TRANSPORT_ERROR));
-				RouterServlet.sendXml(xmlReply, response);
+				RouterServlet.sendXml(xmlReply, start, response);
 				return;
 			} finally {
 				// Release the connection.
@@ -130,7 +132,7 @@ public class THREDDSServlet extends HttpServlet {
 			String datasetUrl = request.getParameter("dataseturl");
 			if (datasetUrl == null || "".equals(datasetUrl)) {
 				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_MISSING_PARAM));
-				RouterServlet.sendXml(xmlReply, response);
+				RouterServlet.sendXml(xmlReply, start, response);
 				return;
 			}
 
@@ -139,11 +141,11 @@ public class THREDDSServlet extends HttpServlet {
 					gridBeanList = THREDDSServerHelper.getGridBeanListFromServer(datasetUrl);
 				} catch (IOException e) {
 					xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_INVALID_URL));
-					RouterServlet.sendXml(xmlReply, response);
+					RouterServlet.sendXml(xmlReply, start, response);
 					return;
 				}
 			XmlReplyBean xrb = new XmlReplyBean(AckBean.ACK_OK, gridBeanList);
-			RouterServlet.sendXml(xrb, response);
+			RouterServlet.sendXml(xrb, start, response);
 			return;
 		}
 		
@@ -155,20 +157,20 @@ public class THREDDSServlet extends HttpServlet {
 				timeBean = THREDDSServerHelper.getTimeBean(datasetUrl, gridSelection);
 			} catch (ParseException e) {
 				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_MISSING_TIMERANGE));
-				RouterServlet.sendXml(xmlReply, response);
+				RouterServlet.sendXml(xmlReply, start, response);
 				return;
 			}
 			
 			if (timeBean == null) {
 				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_MISSING_TIMERANGE));
-				RouterServlet.sendXml(xmlReply, response);
+				RouterServlet.sendXml(xmlReply, start, response);
 				return;
 			} 
 			
 			
 			
 			XmlReplyBean xrb = new XmlReplyBean(AckBean.ACK_OK, timeBean);
-			RouterServlet.sendXml(xrb, response);
+			RouterServlet.sendXml(xrb, start, response);
 			return;
 		}
 		

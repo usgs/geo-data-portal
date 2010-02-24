@@ -22,21 +22,27 @@ import org.geotools.data.FileDataStore;
  */
 public class FileHelper {
 
+	public static  boolean copyFileToFile(final File inFile, final String outFileString) throws IOException {
+		return FileHelper.copyFileToFile(inFile, outFileString, false);
+	}
+	
 	/**
 	 * Copies a File object to a given location
 	 * Is able to handle 
 	 * 
 	 * @param inFile
 	 * @param outFileString
+	 * @param deleteOriginalFile - effectively makes this function as a MOVE command instead of a COPY command
 	 * @return
 	 * @throws IOException 
 	 */
-	public static  boolean copyFileToFile(final File inFile, final String outFileString) throws IOException {
+	public static  boolean copyFileToFile(final File inFile, final String outPath, boolean deleteOriginalFile) throws IOException {
 		if (inFile.isDirectory()) {
-			FileUtils.copyDirectory(inFile, (new File(outFileString + inFile.getName())));
+			FileUtils.copyDirectory(inFile, (new File(outPath + FileHelper.getSeparator() + inFile.getName())));
 		} else {
-			FileUtils.copyFile(inFile, (new File(outFileString + inFile.getName())));
+			FileUtils.copyFile(inFile, (new File(outPath + FileHelper.getSeparator() + inFile.getName())));
 		}
+		FileUtils.deleteQuietly(inFile);
 		return true;
 	}
 	

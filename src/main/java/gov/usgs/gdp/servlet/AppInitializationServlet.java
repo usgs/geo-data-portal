@@ -30,7 +30,7 @@ public class AppInitializationServlet extends HttpServlet {
     public void init(ServletConfig config) throws ServletException {
     	Date start = new Date();
     	super.init(config);    	
-    	log.info("Application is starting.");
+    	log.info("GeoData Portal Server application is starting.");
     	
     	// Get the temp directory for the system
     	this.seperator = FileHelper.getSeparator();
@@ -83,6 +83,8 @@ public class AppInitializationServlet extends HttpServlet {
 				
 				if (filesCopied) log.info("Example files saved to: " + this.applicationTempDir + "Sample_Files/");					
 				else log.info("Sample files were not written to the application temp directory \t These files will not be available for processing.");
+			} else {
+				log.info("Sample files were not written to the application temp directory \t These files will not be available for processing.");
 			}
 		}  catch (URISyntaxException e) {
 			log.error(e);
@@ -92,7 +94,7 @@ public class AppInitializationServlet extends HttpServlet {
     	
     	Date created = new Date();
     	System.setProperty("tomcatStarted", Long.toString(created.getTime()));
-    	log.info("Application has started. Took " + (created.getTime() - start.getTime()) + " milliseconds to complete.");
+    	log.info("GeoData Portal Server application has started. Took " + (created.getTime() - start.getTime()) + " milliseconds to complete.");
     }
     
     private String generateApplicationTempDirName() {

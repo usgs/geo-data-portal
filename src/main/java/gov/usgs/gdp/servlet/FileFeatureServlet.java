@@ -10,6 +10,7 @@ import gov.usgs.gdp.helper.CookieHelper;
 import gov.usgs.gdp.helper.FileHelper;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -44,6 +45,7 @@ public class FileFeatureServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Long start = new Date().getTime();
 		String command = request.getParameter("command");
 		XmlReplyBean xmlReply = null;
 		if ("listfeatures".equals(command)) {
@@ -53,7 +55,7 @@ public class FileFeatureServlet extends HttpServlet {
 			if (attribute == null || "".equals(attribute)
 					|| shapefile == null || "".equals(shapefile)) {
 				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_MISSING_PARAM));
-				RouterServlet.sendXml(xmlReply, response);
+				RouterServlet.sendXml(xmlReply, start, response);
 				return;			
 			}
 			
@@ -68,7 +70,7 @@ public class FileFeatureServlet extends HttpServlet {
 			List<FilesBean> filesBeanList = FilesBean.getFilesBeanSetList(System.getProperty("applicationTempDir"), userDirectory);
 			if (filesBeanList == null) {
 				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FILE_NOT_FOUND));
-				RouterServlet.sendXml(xmlReply, response);
+				RouterServlet.sendXml(xmlReply, start,response);
 				return;
 			}
 			ShapeFileSetBean shapeFileSetBean = ShapeFileSetBean.getShapeFileSetBeanFromFilesBeanList(filesBeanList, shapefile);
@@ -79,7 +81,7 @@ public class FileFeatureServlet extends HttpServlet {
 				features = ShapeFileSetBean.getFeatureListFromBean(shapeFileSetBean);
 			} catch (IOException e) {
 				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FEATURES_NOT_FOUND));
-				RouterServlet.sendXml(xmlReply, response);
+				RouterServlet.sendXml(xmlReply, start,response);
 				return;
 			}
 			
@@ -87,11 +89,11 @@ public class FileFeatureServlet extends HttpServlet {
 				FeatureBean featureBean = new FeatureBean(features);
 				featureBean.setFilesetName(shapefile);
 				xmlReply = new XmlReplyBean(AckBean.ACK_OK, featureBean);
-				RouterServlet.sendXml(xmlReply, response);
+				RouterServlet.sendXml(xmlReply, start,response);
 				return;
 			} else {
 				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FEATURES_NOT_FOUND));
-				RouterServlet.sendXml(xmlReply, response);
+				RouterServlet.sendXml(xmlReply, start,response);
 				return;
 			}
 		}
