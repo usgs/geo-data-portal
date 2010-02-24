@@ -117,7 +117,7 @@ public abstract class NetCDFUtility {
 
     public static boolean hasTimeCoordinate(FeatureDataset featureDataset) throws IOException {
         boolean hasTime = false;
-        if (featureDataset.getFeatureType() == FeatureType.ANY_POINT) {
+        if (featureDataset.getFeatureType() == FeatureType.STATION) {
             Iterator<VariableSimpleIF> variableIterator = featureDataset.getDataVariables().iterator();
             while (!hasTime && variableIterator.hasNext()) {
                 VariableSimpleIF vairable = variableIterator.next();
