@@ -28,8 +28,8 @@ public class TimeBean implements XmlBean{
 	private TimeBreakdown endtime;
 	public TimeBean() {
 		this.time = new ArrayList<String>();
-		this.starttime =new TimeBreakdown();
-		this.endtime =new TimeBreakdown();
+		this.starttime = new TimeBreakdown();
+		this.endtime = new TimeBreakdown();
 	}
 	public TimeBean(GridDataset geoGrid, String gridSelection) {
 		List<String> result = new ArrayList<String>();
@@ -42,6 +42,14 @@ public class TimeBean implements XmlBean{
 
 	public static TimeBean getTimeBean(String location, String gridSelection) throws IOException, ParseException, IllegalArgumentException {
 		List<String> dateRange = NetCDFUtility.getDateRange(location, gridSelection);
+		if (dateRange.isEmpty()) {
+			boolean hasTimeCoord = NetCDFUtility.hasTimeCoordinate(location);
+			if (hasTimeCoord) { // This occurs when there is no date range in the file but has time coords
+				// We want the user to pick dates but don't have a range to give themim like "DUDE  IM GOING 6 
+				dateRange.add("1800-01-01 00:00:00Z");
+				dateRange.add("2100-12-31 00:00:00Z");
+			}
+		}
 		TimeBean result = new TimeBean(dateRange);
 		return result;
 	}

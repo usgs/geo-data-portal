@@ -196,8 +196,8 @@ public class StationDataCSVWriter {
 
         String sfLocation = "src/main/resources/Sample_Files/Shapefiles/Yahara_River_HRUs_geo_WGS84.shp";
         String ncLocation = 
-//                "http://internal.cida.usgs.gov/thredds/dodsC/models/GSODX/gsod.nc";
-                "/Users/tkunicki/Downloads/GSOD/netcdfX/gsod.nc";
+                "http://internal.cida.usgs.gov/thredds/dodsC/models/GSODX/gsod.nc";
+//                "/Users/tkunicki/Downloads/GSOD/netcdfX/gsod.nc";
 
         String variableName = "temp";
 
