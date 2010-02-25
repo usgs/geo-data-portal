@@ -74,7 +74,9 @@ public class AppInitializationServlet extends HttpServlet {
     	try {
     		ClassLoader cl = Thread.currentThread().getContextClassLoader(); 
 			URL sampleFileLocation = cl.getResource("Sample_Files" + FileHelper.getSeparator());
-			if (sampleFileLocation != null) {
+			if (sampleFileLocation == null) {
+				log.info("Sample files were not written to the application temp directory \t These files will not be available for processing.");
+			} else {
 				File sampleFiles = new File(sampleFileLocation.toURI());
 				boolean filesCopied = false;
 				try {
@@ -83,13 +85,11 @@ public class AppInitializationServlet extends HttpServlet {
 				
 				if (filesCopied) log.info("Example files saved to: " + this.applicationTempDir + "Sample_Files/");					
 				else log.info("Sample files were not written to the application temp directory \t These files will not be available for processing.");
-			} else {
-				log.info("Sample files were not written to the application temp directory \t These files will not be available for processing.");
 			}
 		}  catch (URISyntaxException e) {
-			log.error(e);
 			log.info("Unable to read from src/main/resources/Sample_Files");
 			log.info("Sample files were not written to the application temp directory");
+			log.error(e);
 		}
     	
     	Date created = new Date();
@@ -109,7 +109,8 @@ public class AppInitializationServlet extends HttpServlet {
 
 	@Override
     public void destroy() {
-    	super.destroy();
+		Long start = new Date().getTime();
+    	super.destroy();    	
     	log.info("Application is ending.");
     	boolean result = false;
 		result = deleteApplicationTempDirs();
@@ -119,7 +120,7 @@ public class AppInitializationServlet extends HttpServlet {
     		log.info("WARNING: Application temp directory " + this.applicationTempDir + " could not be deleted.");
     		log.info("\t If this directory exists, you may want to delete it to free up space on your storage device.");
     	}
-    	log.info("Application has ended.");
+    	log.info("Application has ended. Took " + (new Date().getTime() - start) + " milliseconds.");
     }
     
 	public boolean deleteApplicationTempDirs() {

@@ -63,6 +63,7 @@ public class THREDDSServlet extends HttpServlet {
 				RouterServlet.sendXml(xmlReply, start, response);
 				return;
 			}
+			
 			HttpClient client = new HttpClient();
 			HttpMethod method = new GetMethod(url);
 			try {
@@ -73,13 +74,13 @@ public class THREDDSServlet extends HttpServlet {
 				}
 				// Read the response body.
 				byte[] responseBody = method.getResponseBody();
+				
 				// Deal with the response.
 				// Use caution: ensure correct character encoding and is not binary data
 				String xmlResponse = new String(responseBody);
 				method.releaseConnection();
 				RouterServlet.sendXml(xmlResponse, start, response);
 				return;
-				
 			} catch (HttpException e) {
 				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_PROTOCOL_VIOLATION));
 				RouterServlet.sendXml(xmlReply, start, response);
@@ -92,39 +93,8 @@ public class THREDDSServlet extends HttpServlet {
 				// Release the connection.
 				method.releaseConnection();
 			}  
-
-
 		}
-/*		
-		if ("getdatasetlist".equals(command)) {
-			log.debug("User has chosen to get datasets from server");
-			
-			// Grab what we need to work with for this request
-			String hostname = request.getParameter("hostname");
-			String portString = request.getParameter("port");
-			String uri = request.getParameter("uri");
-			if (portString == null || "".equals(portString)) portString = "80";
-			int port = 80;
-			if (hostname == null || "".equals(hostname)
-					|| uri == null || "".equals(uri)) {
-				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_MISSING_PARAM));
-				RouterServlet.sendXml(xmlReply, response);
-				return;
-			}
-			
-			// Check that a port was provided and correct			
-			try {
-				if (!"".equals(portString) && !"null".equals(portString)) {
-					port = Integer.parseInt(portString);
-				}
-			} catch (NumberFormatException e) {
-				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_PORT_INCORRECT));
-				RouterServlet.sendXml(xmlReply, response);
-				return;
-			}
-			
-		}
-		*/
+
 		if ("getgridlist".equals(command)) {
 			log.debug("User has chosen to list shapefile attributes");
 			

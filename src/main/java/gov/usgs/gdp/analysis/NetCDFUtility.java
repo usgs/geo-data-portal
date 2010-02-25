@@ -103,7 +103,17 @@ public abstract class NetCDFUtility {
         return variableList;
     }
 
-    public static boolean hasTimeCoordinate(String location) throws IOException {
+    public static String getDatasetType(String datasetUrl) throws IOException {
+    	FeatureDataset featureDataset = null;
+    	try {
+    		featureDataset = FeatureDatasetFactoryManager.open(null, datasetUrl, null, new Formatter());
+    		return featureDataset.getFeatureType().toString();
+    	} finally {
+			featureDataset.close();
+		}
+	}
+
+	public static boolean hasTimeCoordinate(String location) throws IOException {
         FeatureDataset featureDataset = null;
         boolean result = false;
         try {

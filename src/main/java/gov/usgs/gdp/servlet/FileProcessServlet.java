@@ -321,7 +321,7 @@ public class FileProcessServlet extends HttpServlet {
 	    String[] features = request.getParameterValues("feature");
 	    String thredds = request.getParameter("thredds");
 	    String dataset = request.getParameter("dataset");
-	    String grid = request.getParameter("grid");
+	    String[] dataTypes = request.getParameterValues("datatype");
 	    String from = request.getParameter("from");
 	    String to = request.getParameter("to");
 	    String output = request.getParameter("outputtype");
@@ -330,11 +330,11 @@ public class FileProcessServlet extends HttpServlet {
 	    String userDirectory = request.getParameter("userdirectory");
 	    String finalUrlEmail = request.getParameter("finalurlemail");
 	    
-	    return populateFileUpload(shapeSet, attribute, features, thredds, dataset, grid, from, to, output, outputFile,email, userDirectory, finalUrlEmail);
+	    return populateFileUpload(shapeSet, attribute, features, thredds, dataset, dataTypes, from, to, output, outputFile,email, userDirectory, finalUrlEmail);
 	    
 	}
 
-	private File populateFileUpload(String shapeSet, String attribute, String[] features, String thredds, String dataset, String grid, String from, String to, String output, String outputFileName, String email, String userDirectory, String finalUrlEmail) throws IOException, InvalidRangeException, AddressException, MessagingException {
+	private File populateFileUpload(String shapeSet, String attribute, String[] features, String thredds, String dataset, String[] dataTypes, String from, String to, String output, String outputFileName, String email, String userDirectory, String finalUrlEmail) throws IOException, InvalidRangeException, AddressException, MessagingException {
 			String baseFilePath = System.getProperty("applicationTempDir");
 	    	baseFilePath = baseFilePath + FileHelper.getSeparator();
 	    	File uploadDirectory = FileHelper.createFileRepositoryDirectory(baseFilePath);
@@ -342,7 +342,7 @@ public class FileProcessServlet extends HttpServlet {
 
 	    	
 	    	// Create a File Which represents the output we are looking for.
-	    	File uploadFile = populateSummary(shapeSet, attribute, features, thredds, dataset, grid, from, to, output, email,  uploadDirectory, FileHelper.getSeparator() + outputFileName, userDirectory);
+	    	File uploadFile = populateSummary(shapeSet, attribute, features, thredds, dataset, dataTypes, from, to, output, email,  uploadDirectory, FileHelper.getSeparator() + outputFileName, userDirectory);
 			
 	    	// Put that file into the directory represented by uploadDirectory
 	    	if (!uploadFile.exists()) return null;
@@ -370,7 +370,7 @@ public class FileProcessServlet extends HttpServlet {
 			final String[] features, 
 			final String thredds, 
 			final String dataset, 
-			final String grid, // actually (NetCDF) range variable name, 10$ dblodgett wants more than one variable for station data
+			final String[] dataTypes, // actually (NetCDF) range variable name, 10$ dblodgett wants more than one variable for station data
 			final String from, 
 			final String to, 
 			final String output, 
@@ -464,7 +464,7 @@ public class FileProcessServlet extends HttpServlet {
 
 		if (featureDataset.getFeatureType() == FeatureType.GRID && featureDataset instanceof GridDataset) {
 			GridDataset gridDataset = (GridDataset)featureDataset;
-			String gridName = grid;
+			String gridName = dataTypes[0];
 			try {
 				GridDatatype gdt = gridDataset.findGridByName(gridName);
 				Range timeRange = null;
@@ -524,9 +524,15 @@ public class FileProcessServlet extends HttpServlet {
 					StationTimeSeriesFeatureCollection stsfc = 
 						(StationTimeSeriesFeatureCollection)fc;
 					
-					List<VariableSimpleIF> variableList = Arrays.asList(new VariableSimpleIF[] {
-							featureDataset.getDataVariable(grid)
-					});
+					List<VariableSimpleIF> variableList = new ArrayList<VariableSimpleIF>();
+					for(String variableName : dataTypes) {
+						VariableSimpleIF variable = featureDataset.getDataVariable(variableName);
+						if (variable != null) {
+							variableList.add(variable);
+						} else {
+							// do we care?
+						}
+					};
 					
 					BufferedWriter writer = null;
 					try {

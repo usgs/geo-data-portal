@@ -93,20 +93,20 @@ public class RouterServlet extends HttpServlet {
 		}
 		
 		if ("checkserver".equals(command)) {
-			log.info("User is attempting to check server status");
-			String hostname = request.getParameter("hostname");
-			String port = request.getParameter("port");
-			String uri = request.getParameter("uri");
-			RequestDispatcher rd = request.getRequestDispatcher("/THREDDSCheckServlet?command=checkserver&hostname=" + hostname + "&port=" + port + "&uri=" + uri);
-			rd.forward(request, response);
-			return;
+                    log.info("User is attempting to check server status");
+                    String hostname = request.getParameter("hostname");
+                    String port = request.getParameter("port");
+                    String uri = request.getParameter("uri");
+                    RequestDispatcher rd = request.getRequestDispatcher("/THREDDSCheckServlet?command=checkserver&hostname=" + hostname + "&port=" + port + "&uri=" + uri);
+                    rd.forward(request, response);
+                    return;
 		}
 		
 		if ("createdatastore".equals(command)) {
 			log.info("User is attempting to create data store");
-            String userDirectory = request.getParameter("userdirectory");
-            String userDirectoryCommand = "";
-            if (userDirectory != null && !"".equals(userDirectory)) userDirectoryCommand = "&userdirectory=" + userDirectory;
+                        String userDirectory = request.getParameter("userdirectory");
+                        String userDirectoryCommand = "";
+                        if (userDirectory != null && !"".equals(userDirectory)) userDirectoryCommand = "&userdirectory=" + userDirectory;
 			String shapefile = request.getParameter("shapefile");
 			RequestDispatcher rd = request.getRequestDispatcher("/GeoServerServlet?command=createdatastore&shapefile=" + shapefile + userDirectoryCommand);
 			rd.forward(request, response);
@@ -124,7 +124,7 @@ public class RouterServlet extends HttpServlet {
 		}
 		
 		if ("getgridlist".equals(command)) {
-			log.info("User is attempting to get a grid list");
+			log.info("User is attempting to get a list of datatypes");
 			String dataseturl = request.getParameter("dataseturl");
 			RequestDispatcher rd = request.getRequestDispatcher("/THREDDSServlet?command=getgridlist&dataseturl=" + dataseturl);
 			rd.forward(request, response);
@@ -156,7 +156,7 @@ public class RouterServlet extends HttpServlet {
 			String[] features = request.getParameterValues("feature");
 			String thredds = request.getParameter("thredds");
 			String dataset = request.getParameter("dataset");                        
-			String grid = request.getParameter("grid");                        
+			String[] dataTypes = request.getParameterValues("datatype");                        
 			String from = request.getParameter("from");                        
 			String to = request.getParameter("to");                        
 			String output = request.getParameter("outputtype");                        
@@ -169,14 +169,14 @@ public class RouterServlet extends HttpServlet {
 			for (String feature : features) url = url + "&feature=" + feature;
 			url = url + "&thredds=" + thredds;
 			url = url + "&dataset=" + dataset;
-			url = url + "&grid=" + grid;
+			for (String dataType : dataTypes) url = url + "&datatype=" + dataType;
 			if (to != null && "".equals(to)) url = url + "&to=" + to;
 			if (from != null && "".equals(from)) url = url + "&from=" + from;
 			url = url + "&output=" + output;
 			url = url + "&outputfile=" + outputFile;
 			url = url + "&userdirectory=" + userDirectory;
 			if (email != null && "".equals(email))url = url + "&email=" + email;
-			RequestDispatcher rd = request.getRequestDispatcher("/FileProcessServlet?command=submitforprocessing" + url);
+			RequestDispatcher rd = request.getRequestDispatcher("/FileProcessServlet?command=submitforprocessing");
 			rd.forward(request, response);
 			return;
 		}

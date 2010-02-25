@@ -1,7 +1,7 @@
 package gov.usgs.gdp.helper;
 
 import gov.usgs.gdp.analysis.NetCDFUtility;
-import gov.usgs.gdp.bean.GridBean;
+import gov.usgs.gdp.bean.DataTypeCollectionBean;
 import gov.usgs.gdp.bean.TimeBean;
 import gov.usgs.gdp.bean.XmlBean;
 
@@ -136,9 +136,9 @@ public class THREDDSServerHelper {
 		
 		List<XmlBean> result = new ArrayList<XmlBean>();
 		List<VariableSimpleIF> variables = NetCDFUtility.getDataVariableNames(datasetUrl);
-		for (VariableSimpleIF variable : variables) {
-			result.add(new GridBean(variable));
-		}
+		String type = NetCDFUtility.getDatasetType(datasetUrl);
+        DataTypeCollectionBean dtcb = new DataTypeCollectionBean(type,  variables.toArray(new VariableSimpleIF[0]));
+        result.add(dtcb);
 		return result;
 		
 	}
