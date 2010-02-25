@@ -275,7 +275,7 @@ public class GeoServerServlet extends HttpServlet {
 				"    <entry key=\"create spatial index\">true</entry>" +
 				"    <entry key=\"charset\">ISO-8859-1</entry>" +
 				"    <entry key=\"url\">file:" + url + "</entry>" +
-				"    <entry key=\"namespace\">http://" + workspace + "</entry>" +  // default namespace = "http://" + workspace
+				"    <entry key=\"namespace\">http://" + workspace + "</entry>" +
 				"  </connectionParameters>" +
 				"</dataStore>");
 	}
@@ -291,6 +291,7 @@ public class GeoServerServlet extends HttpServlet {
 				"  </namespace>" +
 				"  <title>" + name + "</title>" +
 				"  <enabled>true</enabled>" +
+				"  <srs>EPSG:4326</srs>" +
 				"  <store class=\"dataStore\">" +
 				"    <name>" + name + "</name>" +
 				/*"    <atom:link xmlns:atom=\"http://www.w3.org/2005/Atom\" rel=\"alternate\" " +
