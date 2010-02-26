@@ -42,7 +42,7 @@ public class FileHelper {
 		} else {
 			FileUtils.copyFile(inFile, (new File(outPath + FileHelper.getSeparator() + inFile.getName())));
 		}
-		FileUtils.deleteQuietly(inFile);
+		if (deleteOriginalFile) FileUtils.deleteQuietly(inFile);
 		return true;
 	}
 	
