@@ -370,7 +370,7 @@ public class FileProcessServlet extends HttpServlet {
 			final String[] features, 
 			final String thredds, 
 			final String dataset, 
-			final String[] dataTypes, // actually (NetCDF) range variable name, 10$ dblodgett wants more than one variable for station data
+			final String[] dataTypes, // Tom called it! I owe Tom $10
 			final String from, 
 			final String to, 
 			final String output, 

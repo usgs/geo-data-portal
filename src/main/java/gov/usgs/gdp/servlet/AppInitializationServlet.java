@@ -30,9 +30,32 @@ public class AppInitializationServlet extends HttpServlet {
     public void init(ServletConfig config) throws ServletException {
     	Date start = new Date();
     	super.init(config);    	
-    	log.info("GeoData Portal Server application is starting.");
+    	log.info("GeoData Portal Server application initialization is starting.");
     	
-    	// Get the temp directory for the system
+    	initializeFileSystem();
+    	initializeJMS();
+    	
+    	Date created = new Date();
+    	System.setProperty("tomcatStarted", Long.toString(created.getTime()));
+    	log.info("GeoData Portal Server application has started. Took " + (created.getTime() - start.getTime()) + " milliseconds to complete.");
+    }
+
+    private void initializeJMS() {
+    	Date start = new Date();
+    	log.info("JMS Initialization is starting.");
+    	
+    	// This is not yet implemented
+    	
+    	log.info("JMS Initialized. Took " + (new Date().getTime() - start.getTime()) + " milliseconds to complete.");
+    }
+    
+	/**
+	 * Creates directory structure for application run
+	 */
+	private void initializeFileSystem() {
+		Date start = new Date();
+    	log.info("File System Initialization is starting.");
+		// Get the temp directory for the system
     	this.seperator = FileHelper.getSeparator();
     	this.tmpDir = FileHelper.getSystemTemp() + this.seperator + "GDP-APP-TEMP" + this.seperator;
 		log.info("Current application directory is: " + this.tmpDir);
@@ -91,11 +114,9 @@ public class AppInitializationServlet extends HttpServlet {
 			log.info("Sample files were not written to the application temp directory");
 			log.error(e);
 		}
-    	
-    	Date created = new Date();
-    	System.setProperty("tomcatStarted", Long.toString(created.getTime()));
-    	log.info("GeoData Portal Server application has started. Took " + (created.getTime() - start.getTime()) + " milliseconds to complete.");
-    }
+    	log.info("File System Initialized. Took " + (new Date().getTime() - start.getTime()) + " milliseconds to complete.");
+
+	}
     
     private String generateApplicationTempDirName() {
     	String result = "";
