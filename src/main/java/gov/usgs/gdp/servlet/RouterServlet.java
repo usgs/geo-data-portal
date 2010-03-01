@@ -93,22 +93,24 @@ public class RouterServlet extends HttpServlet {
 		}
 		
 		if ("checkserver".equals(command)) {
-                    log.info("User is attempting to check server status");
-                    String hostname = request.getParameter("hostname");
-                    String port = request.getParameter("port");
-                    String uri = request.getParameter("uri");
-                    RequestDispatcher rd = request.getRequestDispatcher("/THREDDSCheckServlet?command=checkserver&hostname=" + hostname + "&port=" + port + "&uri=" + uri);
-                    rd.forward(request, response);
-                    return;
+            log.info("User is attempting to check server status");
+            String hostname = request.getParameter("hostname");
+            String port = request.getParameter("port");
+            String uri = request.getParameter("uri");
+            RequestDispatcher rd = request.getRequestDispatcher("/THREDDSCheckServlet?command=checkserver&hostname=" + hostname + "&port=" + port + "&uri=" + uri);
+            rd.forward(request, response);
+            return;
 		}
 		
 		if ("createdatastore".equals(command)) {
 			log.info("User is attempting to create data store");
-                        String userDirectory = request.getParameter("userdirectory");
-                        String userDirectoryCommand = "";
-                        if (userDirectory != null && !"".equals(userDirectory)) userDirectoryCommand = "&userdirectory=" + userDirectory;
+            String userDirectory = request.getParameter("userdirectory");
+            String userDirectoryCommand = "";
+            if (userDirectory != null && !"".equals(userDirectory)) userDirectoryCommand = "&userdirectory=" + userDirectory;
 			String shapefile = request.getParameter("shapefile");
-			RequestDispatcher rd = request.getRequestDispatcher("/GeoServerServlet?command=createdatastore&shapefile=" + shapefile + userDirectoryCommand);
+			String csvfile = request.getParameter("csvfile");
+			RequestDispatcher rd = request.getRequestDispatcher("/GeoServerServlet?command=createdatastore&shapefile=" + 
+					shapefile + "&csvfile=" + csvfile + userDirectoryCommand);
 			rd.forward(request, response);
 			return;
 		}

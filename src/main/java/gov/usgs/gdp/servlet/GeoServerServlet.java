@@ -60,113 +60,103 @@ public class GeoServerServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Long start = new Date().getTime();
-		String command = (request.getParameter("command") == null) ? "" : request.getParameter("command");
-
-		if ("createdatastore".equals(command)) {
 			
-			String shapefileName = request.getParameter("shapefile");
-			String userDirectory = request.getParameter("userdirectory");
-			
-			String appTempDir = System.getProperty("applicationTempDir");
-			AvailableFilesBean afb = null;
-			try {
-				afb = AvailableFilesBean.getAvailableFilesBean(appTempDir, userDirectory);
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-				sendReply(response, AckBean.ACK_FAIL, start, "Invalid directories.");
-				return;
-			}
-			
-			// Couldn't pull any files. Send an error to the caller.
-			if (afb == null) {
-				sendReply(response, AckBean.ACK_FAIL, start, "Could not find any files to work with.");
-				return;
-			}
-			
-			
-			// search for the requested shapefile
-			String directory = null;
-			for (FilesBean fb : afb.getUserFileList()) {
-				if (fb.getName().equals(shapefileName))
-					directory = userDirectory;
-			}
-			
-			// if the file wasn't found in the user directory, search the sample files
-			if (directory == null) {
-				for (FilesBean fb : afb.getExampleFileList()) {
-					if (fb.getName().equals(shapefileName))
-						directory = appTempDir + "Sample_Files/Shapefiles/";
-				}
-			}
-			
-			// Couldn't pull any files. Send an error to the caller.
-			if (directory == null) {
-				sendReply(response, AckBean.ACK_FAIL, start, "Could not find any files to work with.");
-				return;
-			}
-			
-			
-			String shapefileLoc = directory + shapefileName + ".shp";
-			
-			String[] dir = appTempDir.split(FileHelper.getSeparator());
-			// set the workspace to the name of the temp directory
-			String workspace = dir[dir.length - 1];
-
-			// create the workspace if it doesn't already exist
-			URL workspacesURL = new URL(geoServerURL + "/rest/workspaces/");
-			if (!workspaceExists(workspace)) {
-				String workspaceXML = createWorkspaceXML(workspace);
-				sendPacket(workspacesURL, "POST", "text/xml", workspaceXML);
-			}
-
-			URL dataStoresURL = new URL(workspacesURL + workspace + "/datastores/");
-			String dataStoreXML = createDataStoreXML(shapefileName, workspace, shapefileLoc);
-			if (!dataStoreExists(workspace, shapefileName)) {
-				// POST the datastore to create it if it doesn't exist
-				sendPacket(dataStoresURL, "POST", "text/xml", dataStoreXML);
-			
-				// create featuretype based on the datastore
-				String featureTypeXML = createFeatureTypeXML(shapefileName, workspace);
-				URL featureTypesURL = new URL(dataStoresURL + shapefileName +  "/featuretypes.xml");
-				sendPacket(featureTypesURL, "POST", "text/xml", featureTypeXML);
-			} else {
-				// otherwise PUT it to make sure the shapefiles exist
-				sendPacket(new URL(dataStoresURL + shapefileName + ".xml"), "PUT", "text/xml", dataStoreXML);
-			}
-			
-			if ("demo_HUCs".equals(shapefileName)) {
-				// create style to color polygons given a date, stat, and data file
-				DateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
-				Date date;
-				try {
-					date = df.parse("15 Sep 1979 00:00:00 GMT");
-				} catch (ParseException e) {
-					e.printStackTrace();
-					System.err.println("ERROR: could not parse requested date.");
-					return;
-				}
-				String stat = "mean (mm/month)";
-				String header = "HUC_8";
-				
-				ClassLoader cl = Thread.currentThread().getContextClassLoader(); 
-				URL csvLocation = cl.getResource("demo.CSV");
-				
-				try {
-					File file = new File(csvLocation.toURI());
-					createColoredMap(file, workspace, shapefileName, date, stat, header);
-				} catch (URISyntaxException e) {
-					System.err.println("ERROR: could not open demo.CSV");
-					e.printStackTrace();
-				}
-			}
-			
-			// send back ack with workspace and layer names
-			sendReply(response, AckBean.ACK_OK, start, workspace, shapefileName);
+		String shapefileName = request.getParameter("shapefile");
+		String csvFileName = request.getParameter("csvfile");
+		String userDirectory = request.getParameter("userdirectory");
+		
+		String appTempDir = System.getProperty("applicationTempDir");
+		AvailableFilesBean afb = null;
+		try {
+			afb = AvailableFilesBean.getAvailableFilesBean(appTempDir, userDirectory);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			sendReply(response, AckBean.ACK_FAIL, start, "Invalid directories.");
+			return;
 		}
+		
+		// Couldn't pull any files. Send an error to the caller.
+		if (afb == null) {
+			sendReply(response, AckBean.ACK_FAIL, start, "Could not find any files to work with.");
+			return;
+		}
+		
+		// search for the requested shapefile
+		String directory = null;
+		for (FilesBean fb : afb.getUserFileList()) {
+			if (fb.getName().equals(shapefileName))
+				directory = userDirectory;
+		}
+		
+		// if the file wasn't found in the user directory, search the sample files
+		if (directory == null) {
+			for (FilesBean fb : afb.getExampleFileList()) {
+				if (fb.getName().equals(shapefileName))
+					directory = appTempDir + "Sample_Files/Shapefiles/";
+			}
+		}
+		
+		// Couldn't pull any files. Send an error to the caller.
+		if (directory == null) {
+			sendReply(response, AckBean.ACK_FAIL, start, "Could not find any files to work with.");
+			return;
+		}
+		
+		
+		String shapefileLoc = directory + shapefileName + ".shp";
+		String csvFileLoc = appTempDir + "upload-repository/" + csvFileName;
+		
+		String[] dir = appTempDir.split(FileHelper.getSeparator());
+		// set the workspace to the name of the temp directory
+		String workspace = dir[dir.length - 1];
+
+		// create the workspace if it doesn't already exist
+		URL workspacesURL = new URL(geoServerURL + "/rest/workspaces/");
+		if (!workspaceExists(workspace)) {
+			String workspaceXML = createWorkspaceXML(workspace);
+			sendPacket(workspacesURL, "POST", "text/xml", workspaceXML);
+		}
+
+		URL dataStoresURL = new URL(workspacesURL + workspace + "/datastores/");
+		String dataStoreXML = createDataStoreXML(shapefileName, workspace, shapefileLoc);
+		if (!dataStoreExists(workspace, shapefileName)) {
+			// POST the datastore to create it if it doesn't exist
+			sendPacket(dataStoresURL, "POST", "text/xml", dataStoreXML);
+		
+			// create featuretype based on the datastore
+			String featureTypeXML = createFeatureTypeXML(shapefileName, workspace);
+			URL featureTypesURL = new URL(dataStoresURL + shapefileName +  "/featuretypes.xml");
+			sendPacket(featureTypesURL, "POST", "text/xml", featureTypeXML);
+		} else {
+			// otherwise PUT it to make sure the shapefiles exist
+			sendPacket(new URL(dataStoresURL + shapefileName + ".xml"), "PUT", "text/xml", dataStoreXML);
+		}
+		
+		//if ("demo_HUCs".equals(shapefileName)) {
+			// create style to color polygons given a date, stat, and data file
+			DateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
+			Date date;
+			try {
+				date = df.parse("15 Sep 1979 00:00:00 GMT");
+			} catch (ParseException e) {
+				e.printStackTrace();
+				System.err.println("ERROR: could not parse requested date.");
+				return;
+			}
+			String stat = "mean (mm/month)";
+			String header = "HUC_8";
+			
+			File file = new File(csvFileLoc);
+			if (file != null)
+				createColoredMap(file, workspace, shapefileName, date, stat, header);
+		//}
+		
+		// send back ack with workspace and layer names
+		sendReply(response, AckBean.ACK_OK, start, workspace, shapefileName);
 	}
 	
-	void createColoredMap(File csvFile, String workspace, String layer, Date date, String stat, String header) 
-			throws IOException {
+	void createColoredMap(File csvFile, String workspace, String layer, 
+						  Date date, String stat, String header) throws IOException {
 		
 		String sld = createStyle(csvFile, date, stat, header);
 		
@@ -318,7 +308,7 @@ public class GeoServerServlet extends HttpServlet {
 			BufferedReader reader = new BufferedReader(new FileReader(data));
 			String line;
 			
-			// Figure out how many values per GRIDCODE there are
+			// Figure out how many stats per header value there are
 			line = reader.readLine();
 			String dupHeaderValues[] = line.split(fieldSep);
 			if (!"ALL".equals(dupHeaderValues[dupHeaderValues.length - 1])) {
@@ -389,6 +379,7 @@ public class GeoServerServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 		
+		// Calculate spread of data
 		float maxVal = Float.NEGATIVE_INFINITY;
 		float minVal = Float.POSITIVE_INFINITY;
 		for (Float f : requestedStats) {
