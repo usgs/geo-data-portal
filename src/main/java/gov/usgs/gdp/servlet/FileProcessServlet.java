@@ -535,7 +535,7 @@ public class FileProcessServlet extends HttpServlet {
 					};
 					
 					BufferedWriter writer = null;
-					try {
+					try {					 
 						writer = new BufferedWriter(new FileWriter(new File(System.getProperty("applicationWorkDir"), outputFile)));
 						StationDataCSVWriter.write(
 								featureCollection,

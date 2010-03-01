@@ -311,7 +311,8 @@ public class FileHelper {
 		return result;
 	}
 
-    public static boolean updateTimestamp(final String path, final boolean recursive) throws IOException {
+    @SuppressWarnings("unchecked")
+	public static boolean updateTimestamp(final String path, final boolean recursive) throws IOException {
         if (path == null || "".equals(path)) return false;
         if (!FileHelper.doesDirectoryOrFileExist(path)) return false;
         FileUtils.touch(new File(path));

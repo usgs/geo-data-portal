@@ -33,6 +33,10 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class GeoServerServlet extends HttpServlet {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final String geoServerURL = new String("http://localhost:8080/geoserver");
        
     /**
@@ -219,6 +223,7 @@ public class GeoServerServlet extends HttpServlet {
 		return true;
 	}
 	
+	@SuppressWarnings("restriction")
 	void sendPacket(URL url, String requestMethod, String contentType, String content, 
 			String... requestProperties) throws IOException {
 		
