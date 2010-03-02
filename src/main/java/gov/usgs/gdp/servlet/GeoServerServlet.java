@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -63,6 +62,7 @@ public class GeoServerServlet extends HttpServlet {
 			
 		String shapefileName = request.getParameter("shapefile");
 		String csvFileName = request.getParameter("csvfile");
+		String attribute = request.getParameter("attribute");
 		String userDirectory = request.getParameter("userdirectory");
 		
 		String appTempDir = System.getProperty("applicationTempDir");
@@ -132,33 +132,36 @@ public class GeoServerServlet extends HttpServlet {
 			sendPacket(new URL(dataStoresURL + shapefileName + ".xml"), "PUT", "text/xml", dataStoreXML);
 		}
 		
-		//if ("demo_HUCs".equals(shapefileName)) {
-			// create style to color polygons given a date, stat, and data file
-			DateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
-			Date date;
-			try {
-				date = df.parse("15 Sep 1979 00:00:00 GMT");
-			} catch (ParseException e) {
-				e.printStackTrace();
-				System.err.println("ERROR: could not parse requested date.");
-				return;
-			}
-			String stat = "mean (mm/month)";
-			String header = "HUC_8";
-			
-			File file = new File(csvFileLoc);
-			if (file != null)
-				createColoredMap(file, workspace, shapefileName, date, stat, header);
-		//}
+		// create style to color polygons given a date, stat, and data file
+		DateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
+		Date date;
+		try {
+			date = df.parse("15 Sep 1979 00:00:00 GMT");
+		} catch (ParseException e) {
+			e.printStackTrace();
+			System.err.println("ERROR: could not parse requested date.");
+			return;
+		}
+		String stat = "mean (mm/month)";
+		
+		File file = new File(csvFileLoc);
+		if (file != null)
+			createColoredMap(file, workspace, shapefileName, date, stat, attribute);
 		
 		// send back ack with workspace and layer names
 		sendReply(response, AckBean.ACK_OK, start, workspace, shapefileName);
 	}
 	
 	void createColoredMap(File csvFile, String workspace, String layer, 
-						  Date date, String stat, String header) throws IOException {
+						  Date date, String stat, String attribute) throws IOException {
 		
-		String sld = createStyle(csvFile, date, stat, header);
+		// these ArrayList's are populated in parseCSV
+		ArrayList<String> attributeValues = new ArrayList<String>();
+		ArrayList<Float> requestedStats = new ArrayList<Float>();
+		
+		ArrayList<Date> dates = parseDates(csvFile);
+		parseCSV(csvFile, date, stat, attributeValues, requestedStats);
+		String sld = createStyle(attributeValues, requestedStats, attribute);
 		
 		if (sld == null) {
 			System.err.println("Could not create map style.");
@@ -296,24 +299,61 @@ public class GeoServerServlet extends HttpServlet {
 				"</featureType>");
 	}
 	
-	String createStyle(File data, Date date, String stat, String header) throws IOException {
+	ArrayList<Date> parseDates(File data) {
+		ArrayList<Date> dates = new ArrayList<Date>();
 		
 		final String fieldSep = ",";
 		DateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
 
-		ArrayList<Float> requestedStats = new ArrayList<Float>();
-		ArrayList<String> headerValues = new ArrayList<String>();
-		
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(data));
 			String line;
 			
-			// Figure out how many stats per header value there are
+			line = reader.readLine();
+			
+			// Find chosen date
+			String firstValue;
+			while (reader.ready()) {
+				line = reader.readLine();
+				firstValue = line.split(fieldSep)[0];
+				
+				if ("ALL".equals(firstValue)) {
+					break;
+				}
+
+				dates.add(df.parse(firstValue));
+			}
+		}
+		catch (IOException e) {
+			System.err.println("Error parsing file");
+			e.printStackTrace();
+		}
+		catch (ParseException e) {
+			System.err.println("Error parsing date");
+			e.printStackTrace();
+		}
+		
+		return dates;
+	}
+	
+	void parseCSV(File data, Date date, String stat, 
+			ArrayList<String> attributeValues, // 
+			ArrayList<Float> requestedStats)   // 
+	throws IOException {
+		
+		final String fieldSep = ",";
+		DateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
+
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(data));
+			String line;
+			
+			// Count number of stats per attribute
 			line = reader.readLine();
 			String dupHeaderValues[] = line.split(fieldSep);
 			if (!"ALL".equals(dupHeaderValues[dupHeaderValues.length - 1])) {
 				System.out.println("ERROR: Last header value is not ALL");
-				return null;
+				return;
 			}
 			
 			int statsPerHeaderValue = 0;
@@ -330,7 +370,7 @@ public class GeoServerServlet extends HttpServlet {
 			String stats[] = line.split(fieldSep);
 			if (!"timestep".equals(stats[0])) {
 				System.out.println("ERROR: First value is not timestep");
-				return null;
+				return;
 			}
 			
 			int firstStatIndex = 1;
@@ -341,7 +381,7 @@ public class GeoServerServlet extends HttpServlet {
 				
 				if (firstStatIndex > statsPerHeaderValue) {
 					System.out.println("ERROR: stat doesn't exist");
-					return null;
+					return;
 				}
 			}
 			
@@ -355,7 +395,7 @@ public class GeoServerServlet extends HttpServlet {
 				
 				if ("ALL".equals(firstValue)) {
 					System.out.println("ERROR: date not found");
-					return null;
+					return;
 				}
 
 				if (df.parse(firstValue).compareTo(date) == 0) {
@@ -367,7 +407,7 @@ public class GeoServerServlet extends HttpServlet {
 			//							 don't read in totals at end
 			for (int i = firstStatIndex; i < values.length - statsPerHeaderValue; i += statsPerHeaderValue) {
 				requestedStats.add(Float.parseFloat(values[i]));
-				headerValues.add(dupHeaderValues[i]);
+				attributeValues.add(dupHeaderValues[i]);
 			}
 		}
 		catch (IOException e) {
@@ -378,7 +418,9 @@ public class GeoServerServlet extends HttpServlet {
 			System.err.println("Error parsing date");
 			e.printStackTrace();
 		}
-		
+	}
+	
+	String createStyle(ArrayList<String> attributeValues, ArrayList<Float> requestedStats, String attribute) {
 		// Calculate spread of data
 		float maxVal = Float.NEGATIVE_INFINITY;
 		float minVal = Float.POSITIVE_INFINITY;
@@ -406,7 +448,7 @@ public class GeoServerServlet extends HttpServlet {
 		String color;
 		for (int i = 0; i < requestedStats.size(); i++) {
 			float f = requestedStats.get(i);
-			String headerValue = headerValues.get(i);
+			String attributeValue = attributeValues.get(i);
 			
 			//                                  avoid divide by zero
 			float temp = -(f - minVal) / spread + 1;
@@ -418,8 +460,8 @@ public class GeoServerServlet extends HttpServlet {
 			style += "   <Rule>" +
 				"          <ogc:Filter>" +
 				"            <ogc:PropertyIsEqualTo>" +
-				"              <ogc:PropertyName>" + header + "</ogc:PropertyName>" +
-				"              <ogc:Literal>" + headerValue + "</ogc:Literal>" +
+				"              <ogc:PropertyName>" + attribute + "</ogc:PropertyName>" +
+				"              <ogc:Literal>" + attributeValue + "</ogc:Literal>" +
 				"            </ogc:PropertyIsEqualTo>" +
 				"          </ogc:Filter>" +
 				"          <PolygonSymbolizer>" +
