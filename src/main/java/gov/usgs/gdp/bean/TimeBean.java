@@ -28,8 +28,8 @@ public class TimeBean implements XmlBean{
 	private TimeBreakdown endtime;
 	public TimeBean() {
 		this.time = new ArrayList<String>();
-		this.starttime = new TimeBreakdown();
-		this.endtime = new TimeBreakdown();
+		this.setStarttime(new TimeBreakdown());
+		this.setEndtime(new TimeBreakdown());
 	}
 	public TimeBean(GridDataset geoGrid, String gridSelection) {
 		List<String> result = new ArrayList<String>();
@@ -58,11 +58,11 @@ public class TimeBean implements XmlBean{
 		this.time = dateRange;
 
 		if (this.time.isEmpty()) {
-			this.starttime = new TimeBreakdown();
-			this.endtime = new TimeBreakdown();
+			this.setStarttime(new TimeBreakdown());
+			this.setEndtime(new TimeBreakdown());
 		} else {
-			this.starttime = new TimeBreakdown(dateRange.get(0));
-			this.endtime = new TimeBreakdown(dateRange.get(1));
+			this.setStarttime(new TimeBreakdown(dateRange.get(0)));
+			this.setEndtime(new TimeBreakdown(dateRange.get(1)));
 		}
 	}
 	
@@ -83,6 +83,20 @@ public class TimeBean implements XmlBean{
 
 	public List<String> getTime() {
 		return time;
+	}
+
+	public void setStarttime(TimeBreakdown starttime) {
+		this.starttime = starttime;
+	}
+	public TimeBreakdown getStarttime() {
+		return starttime;
+	}
+
+	public void setEndtime(TimeBreakdown endtime) {
+		this.endtime = endtime;
+	}
+	public TimeBreakdown getEndtime() {
+		return endtime;
 	}
 
 	static class TimeBreakdown implements XmlBean{

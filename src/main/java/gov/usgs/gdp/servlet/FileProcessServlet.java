@@ -123,6 +123,10 @@ public class FileProcessServlet extends HttpServlet {
 				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_EMAIL_ERROR));
 				RouterServlet.sendXml(xmlOutput, start, response);
 				return;
+			} catch (IOException e) {
+				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(e.getMessage()));
+				RouterServlet.sendXml(xmlOutput, start, response);
+				return;
 			}
 
 			// We are, for the moment, assuming there is a file at this location

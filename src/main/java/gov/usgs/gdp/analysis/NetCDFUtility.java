@@ -126,19 +126,20 @@ public abstract class NetCDFUtility {
     }
 
     public static boolean hasTimeCoordinate(FeatureDataset featureDataset) throws IOException {
-        boolean hasTime = false;
-        if (featureDataset.getFeatureType() == FeatureType.STATION) {
-            Iterator<VariableSimpleIF> variableIterator = featureDataset.getDataVariables().iterator();
-            while (!hasTime && variableIterator.hasNext()) {
-                VariableSimpleIF vairable = variableIterator.next();
-                Iterator<Attribute> attIterator = vairable.getAttributes().iterator();
-                while (!hasTime && attIterator.hasNext()) {
-                    Attribute att = attIterator.next();
-                    hasTime = "_CoordinateAxisType".equalsIgnoreCase(att.getName()) && "Time".equals(att.getStringValue());
-                }
-            }
-        }
-        return hasTime;
+//        boolean hasTime = false;
+//        if (featureDataset.getFeatureType() == FeatureType.STATION) {
+//            Iterator<VariableSimpleIF> variableIterator = featureDataset.getDataVariables().iterator();
+//            while (!hasTime && variableIterator.hasNext()) {
+//                VariableSimpleIF vairable = variableIterator.next();
+//                Iterator<Attribute> attIterator = vairable.getAttributes().iterator();
+//                while (!hasTime && attIterator.hasNext()) {
+//                    Attribute att = attIterator.next();
+//                    hasTime = "_CoordinateAxisType".equalsIgnoreCase(att.getName()) && "Time".equals(att.getStringValue());
+//                }
+//            }
+//        }
+//        return hasTime;
+    	return featureDataset.getFeatureType() == FeatureType.STATION;
     }
 
 
