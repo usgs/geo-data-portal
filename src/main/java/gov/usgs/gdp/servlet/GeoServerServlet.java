@@ -58,12 +58,14 @@ public class GeoServerServlet extends HttpServlet {
 	 */
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Long start = new Date().getTime();
-			
+		String command = request.getParameter("command");
+		
 		String shapefileName = request.getParameter("shapefile");
-		String csvFileName = request.getParameter("csvfile");
+		String dataFileName = request.getParameter("datafile");
 		String attribute = request.getParameter("attribute");
 		String userDirectory = request.getParameter("userdirectory");
+		
+		Long start = new Date().getTime();
 		
 		String appTempDir = System.getProperty("applicationTempDir");
 		AvailableFilesBean afb = null;
@@ -102,65 +104,69 @@ public class GeoServerServlet extends HttpServlet {
 			return;
 		}
 		
-		
 		String shapefileLoc = directory + shapefileName + ".shp";
-		String csvFileLoc = appTempDir + "upload-repository/" + csvFileName;
+		String dataFileLoc = appTempDir + "upload-repository/" + dataFileName;
 		
-		String[] dir = appTempDir.split(FileHelper.getSeparator());
-		// set the workspace to the name of the temp directory
-		String workspace = dir[dir.length - 1];
-
-		// create the workspace if it doesn't already exist
-		URL workspacesURL = new URL(geoServerURL + "/rest/workspaces/");
-		if (!workspaceExists(workspace)) {
-			String workspaceXML = createWorkspaceXML(workspace);
-			sendPacket(workspacesURL, "POST", "text/xml", workspaceXML);
+		if ("createdatastore".equals(command)) {
+			
+			String[] dir = appTempDir.split(FileHelper.getSeparator());
+			// set the workspace to the name of the temp directory
+			String workspace = dir[dir.length - 1];
+	
+			// create the workspace if it doesn't already exist
+			URL workspacesURL = new URL(geoServerURL + "/rest/workspaces/");
+			if (!workspaceExists(workspace)) {
+				String workspaceXML = createWorkspaceXML(workspace);
+				sendPacket(workspacesURL, "POST", "text/xml", workspaceXML);
+			}
+	
+			URL dataStoresURL = new URL(workspacesURL + workspace + "/datastores/");
+			String dataStoreXML = createDataStoreXML(shapefileName, workspace, shapefileLoc);
+			if (!dataStoreExists(workspace, shapefileName)) {
+				// POST the datastore to create it if it doesn't exist
+				sendPacket(dataStoresURL, "POST", "text/xml", dataStoreXML);
+			
+				// create featuretype based on the datastore
+				String featureTypeXML = createFeatureTypeXML(shapefileName, workspace);
+				URL featureTypesURL = new URL(dataStoresURL + shapefileName +  "/featuretypes.xml");
+				sendPacket(featureTypesURL, "POST", "text/xml", featureTypeXML);
+			} else {
+				// otherwise PUT it to make sure the shapefiles exist
+				sendPacket(new URL(dataStoresURL + shapefileName + ".xml"), "PUT", "text/xml", dataStoreXML);
+			}
+			
+			// create style to color polygons given a date, stat, and data file
+			DateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
+			Date date;
+			try {
+				date = df.parse("15 Sep 1979 00:00:00 GMT");
+			} catch (ParseException e) {
+				e.printStackTrace();
+				System.err.println("ERROR: could not parse requested date.");
+				return;
+			}
+			String stat = "mean (mm/month)";
+			
+			File file = new File(dataFileLoc);
+			if (file != null)
+				createColoredMap(file, workspace, shapefileName, date, stat, attribute);
+			
+			// send back ack with workspace and layer names
+			sendReply(response, AckBean.ACK_OK, start, workspace, shapefileName);
+		} else if ("getdatafileselectables".equals(command)) {
+			ArrayList<Date> dates = parseDates(new File(dataFileLoc));
+			//sendReply(response, AckBean.ACK_OK, shapefileName);
 		}
-
-		URL dataStoresURL = new URL(workspacesURL + workspace + "/datastores/");
-		String dataStoreXML = createDataStoreXML(shapefileName, workspace, shapefileLoc);
-		if (!dataStoreExists(workspace, shapefileName)) {
-			// POST the datastore to create it if it doesn't exist
-			sendPacket(dataStoresURL, "POST", "text/xml", dataStoreXML);
-		
-			// create featuretype based on the datastore
-			String featureTypeXML = createFeatureTypeXML(shapefileName, workspace);
-			URL featureTypesURL = new URL(dataStoresURL + shapefileName +  "/featuretypes.xml");
-			sendPacket(featureTypesURL, "POST", "text/xml", featureTypeXML);
-		} else {
-			// otherwise PUT it to make sure the shapefiles exist
-			sendPacket(new URL(dataStoresURL + shapefileName + ".xml"), "PUT", "text/xml", dataStoreXML);
-		}
-		
-		// create style to color polygons given a date, stat, and data file
-		DateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
-		Date date;
-		try {
-			date = df.parse("15 Sep 1979 00:00:00 GMT");
-		} catch (ParseException e) {
-			e.printStackTrace();
-			System.err.println("ERROR: could not parse requested date.");
-			return;
-		}
-		String stat = "mean (mm/month)";
-		
-		File file = new File(csvFileLoc);
-		if (file != null)
-			createColoredMap(file, workspace, shapefileName, date, stat, attribute);
-		
-		// send back ack with workspace and layer names
-		sendReply(response, AckBean.ACK_OK, start, workspace, shapefileName);
 	}
 	
-	void createColoredMap(File csvFile, String workspace, String layer, 
+	void createColoredMap(File dataFile, String workspace, String layer, 
 						  Date date, String stat, String attribute) throws IOException {
 		
 		// these ArrayList's are populated in parseCSV
 		ArrayList<String> attributeValues = new ArrayList<String>();
 		ArrayList<Float> requestedStats = new ArrayList<Float>();
 		
-		ArrayList<Date> dates = parseDates(csvFile);
-		parseCSV(csvFile, date, stat, attributeValues, requestedStats);
+		parseCSV(dataFile, date, stat, attributeValues, requestedStats);
 		String sld = createStyle(attributeValues, requestedStats, attribute);
 		
 		if (sld == null) {
@@ -421,6 +427,10 @@ public class GeoServerServlet extends HttpServlet {
 	}
 	
 	String createStyle(ArrayList<String> attributeValues, ArrayList<Float> requestedStats, String attribute) {
+		
+		if (attributeValues.size() == 0 || requestedStats.size() == 0)
+			return null;
+		
 		// Calculate spread of data
 		float maxVal = Float.NEGATIVE_INFINITY;
 		float minVal = Float.POSITIVE_INFINITY;

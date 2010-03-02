@@ -106,10 +106,19 @@ public class RouterServlet extends HttpServlet {
 			log.info("User is attempting to create data store");
             String userDirectory = request.getParameter("userdirectory");
 			String shapefile = request.getParameter("shapefile");
-			String csvfile = request.getParameter("csvfile");
+			String datafile = request.getParameter("datafile");
 			String attribute = request.getParameter("attribute");
 			RequestDispatcher rd = request.getRequestDispatcher("/GeoServerServlet?command=createdatastore&shapefile=" + 
-					shapefile + "&csvfile=" + csvfile + "&attribute" + attribute + "&userdirectory" + userDirectory);
+					shapefile + "&csvfile=" + datafile + "&attribute" + attribute + "&userdirectory" + userDirectory);
+			rd.forward(request, response);
+			return;
+		}
+		
+		if ("getdatafileselectables".equals(command)) {
+			log.info("User is attempting to get data file information");
+			String datafile = request.getParameter("datafile");
+			RequestDispatcher rd = request.getRequestDispatcher("/GeoServerServlet?command=getdatafileselectables" +
+					"&csvfile=" + datafile);
 			rd.forward(request, response);
 			return;
 		}
