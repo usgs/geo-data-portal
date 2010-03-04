@@ -3,6 +3,7 @@ package gov.usgs.gdp.servlet;
 import gov.usgs.gdp.bean.AckBean;
 import gov.usgs.gdp.bean.AvailableFilesBean;
 import gov.usgs.gdp.bean.FilesBean;
+import gov.usgs.gdp.bean.ListBean;
 import gov.usgs.gdp.bean.MessageBean;
 import gov.usgs.gdp.bean.XmlReplyBean;
 import gov.usgs.gdp.helper.FileHelper;
@@ -62,57 +63,22 @@ public class GeoServerServlet extends HttpServlet {
 		
 		String shapefileName = request.getParameter("shapefile");
 		String dataFileName = request.getParameter("datafile");
-		String attribute = request.getParameter("attribute");
-		String userDirectory = request.getParameter("userdirectory");
-		
-		Long start = new Date().getTime();
 		
 		String appTempDir = System.getProperty("applicationTempDir");
-		AvailableFilesBean afb = null;
-		try {
-			afb = AvailableFilesBean.getAvailableFilesBean(appTempDir, userDirectory);
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-			sendReply(response, AckBean.ACK_FAIL, start, "Invalid directories.");
-			return;
-		}
-		
-		// Couldn't pull any files. Send an error to the caller.
-		if (afb == null) {
-			sendReply(response, AckBean.ACK_FAIL, start, "Could not find any files to work with.");
-			return;
-		}
-		
-		// search for the requested shapefile
-		String directory = null;
-		for (FilesBean fb : afb.getUserFileList()) {
-			if (fb.getName().equals(shapefileName))
-				directory = userDirectory;
-		}
-		
-		// if the file wasn't found in the user directory, search the sample files
-		if (directory == null) {
-			for (FilesBean fb : afb.getExampleFileList()) {
-				if (fb.getName().equals(shapefileName))
-					directory = appTempDir + "Sample_Files/Shapefiles/";
-			}
-		}
-		
-		// Couldn't pull any files. Send an error to the caller.
-		if (directory == null) {
-			sendReply(response, AckBean.ACK_FAIL, start, "Could not find any files to work with.");
-			return;
-		}
-		
-		String shapefileLoc = directory + shapefileName + ".shp";
 		String dataFileLoc = appTempDir + "upload-repository/" + dataFileName;
 		
+		String[] dir = appTempDir.split(FileHelper.getSeparator());
+		// set the workspace to the name of the temp directory
+		String workspace = dir[dir.length - 1];
+		
 		if ("createdatastore".equals(command)) {
+			String userDirectory = request.getParameter("userdirectory");
 			
-			String[] dir = appTempDir.split(FileHelper.getSeparator());
-			// set the workspace to the name of the temp directory
-			String workspace = dir[dir.length - 1];
-	
+			String directory = getFileDirectory(appTempDir, userDirectory, shapefileName);
+			if (directory == null) sendReply(response, AckBean.ACK_FAIL, "Could not find file's directory.");
+			
+			String shapefileLoc = directory + shapefileName + ".shp";
+			
 			// create the workspace if it doesn't already exist
 			URL workspacesURL = new URL(geoServerURL + "/rest/workspaces/");
 			if (!workspaceExists(workspace)) {
@@ -135,28 +101,61 @@ public class GeoServerServlet extends HttpServlet {
 				sendPacket(new URL(dataStoresURL + shapefileName + ".xml"), "PUT", "text/xml", dataStoreXML);
 			}
 			
+			// send back ack with workspace and layer names
+			sendReply(response, AckBean.ACK_OK, workspace, shapefileName);
+			
+		} else if ("getdatafileselectables".equals(command)) {
+
+			ArrayList<String> dates = parseDates(new File(dataFileLoc));
+			XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, new ListBean(dates));
+			RouterServlet.sendXml(xmlReply, new Date().getTime(), response);
+			
+		} else if ("createcoloredmap".equals(command)) {
+			
+			String dateString = request.getParameter("date");
+			String attribute = request.getParameter("attribute");
+			String stat = "mean (mm/month)";
+			
 			// create style to color polygons given a date, stat, and data file
 			DateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
 			Date date;
 			try {
-				date = df.parse("15 Sep 1979 00:00:00 GMT");
+				date = df.parse(dateString);
 			} catch (ParseException e) {
-				e.printStackTrace();
 				System.err.println("ERROR: could not parse requested date.");
 				return;
 			}
-			String stat = "mean (mm/month)";
 			
 			File file = new File(dataFileLoc);
 			if (file != null)
 				createColoredMap(file, workspace, shapefileName, date, stat, attribute);
 			
-			// send back ack with workspace and layer names
-			sendReply(response, AckBean.ACK_OK, start, workspace, shapefileName);
-		} else if ("getdatafileselectables".equals(command)) {
-			ArrayList<Date> dates = parseDates(new File(dataFileLoc));
-			//sendReply(response, AckBean.ACK_OK, shapefileName);
+			sendReply(response, AckBean.ACK_OK);
+		} else if ("clearchache".equals(command)) {
+			
 		}
+	}
+	
+	String getFileDirectory(String appTempDir, String userDirectory, String shapefileName) {
+		AvailableFilesBean afb = AvailableFilesBean.getAvailableFilesBean(appTempDir, userDirectory);
+		if (afb == null) return null;
+		
+		// search for the requested shapefile
+		for (FilesBean fb : afb.getUserFileList()) {
+			if (fb.getName().equals(shapefileName)) {
+				return userDirectory;
+			}
+		}
+		
+		// if the file wasn't found in the user directory, search the sample files
+		for (FilesBean fb : afb.getExampleFileList()) {
+			if (fb.getName().equals(shapefileName)) {
+				return appTempDir + "Sample_Files/Shapefiles/";
+			}
+		}
+		
+		// Couldn't find the file.
+		return null;
 	}
 	
 	void createColoredMap(File dataFile, String workspace, String layer, 
@@ -255,9 +254,9 @@ public class GeoServerServlet extends HttpServlet {
 		reader.close();
 	}
 	
-	void sendReply(HttpServletResponse response, int status, Long start, String... messages) throws IOException {
+	void sendReply(HttpServletResponse response, int status, String... messages) throws IOException {
 		XmlReplyBean xmlReply = new XmlReplyBean(status, new MessageBean(messages));
-		RouterServlet.sendXml(xmlReply, start, response);
+		RouterServlet.sendXml(xmlReply, new Date().getTime(), response);
 	}
 	
 	String createWorkspaceXML(String workspace) {
@@ -305,20 +304,19 @@ public class GeoServerServlet extends HttpServlet {
 				"</featureType>");
 	}
 	
-	ArrayList<Date> parseDates(File data) {
-		ArrayList<Date> dates = new ArrayList<Date>();
-		
+	ArrayList<String> parseDates(File data) {
+		ArrayList<String> dates = new ArrayList<String>();
 		final String fieldSep = ",";
-		DateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
 
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(data));
 			String line;
 			
 			line = reader.readLine();
+			line = reader.readLine(); // skip past column labels
 			
-			// Find chosen date
 			String firstValue;
+		
 			while (reader.ready()) {
 				line = reader.readLine();
 				firstValue = line.split(fieldSep)[0];
@@ -327,15 +325,11 @@ public class GeoServerServlet extends HttpServlet {
 					break;
 				}
 
-				dates.add(df.parse(firstValue));
+				dates.add(firstValue);
 			}
 		}
 		catch (IOException e) {
 			System.err.println("Error parsing file");
-			e.printStackTrace();
-		}
-		catch (ParseException e) {
-			System.err.println("Error parsing date");
 			e.printStackTrace();
 		}
 		
