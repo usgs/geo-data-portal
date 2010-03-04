@@ -333,12 +333,13 @@ public class FileProcessServlet extends HttpServlet {
 	    String email = request.getParameter("email");
 	    String userDirectory = request.getParameter("userdirectory");
 	    String finalUrlEmail = request.getParameter("finalurlemail");
+	    String sortBy	= request.getParameter("sortby");
 	    
-	    return populateFileUpload(shapeSet, attribute, features, thredds, dataset, dataTypes, from, to, output, outputFile,email, userDirectory, finalUrlEmail);
+	    return populateFileUpload(shapeSet, attribute, features, thredds, dataset, dataTypes, sortBy, from, to, output, outputFile,email, userDirectory, finalUrlEmail);
 	    
 	}
 
-	private File populateFileUpload(String shapeSet, String attribute, String[] features, String thredds, String dataset, String[] dataTypes, String from, String to, String output, String outputFileName, String email, String userDirectory, String finalUrlEmail) throws IOException, InvalidRangeException, AddressException, MessagingException {
+	private File populateFileUpload(String shapeSet, String attribute, String[] features, String thredds, String dataset, String[] dataTypes, String sortBy, String from, String to, String output, String outputFileName, String email, String userDirectory, String finalUrlEmail) throws IOException, InvalidRangeException, AddressException, MessagingException {
 			String baseFilePath = System.getProperty("applicationTempDir");
 	    	baseFilePath = baseFilePath + FileHelper.getSeparator();
 	    	File uploadDirectory = FileHelper.createFileRepositoryDirectory(baseFilePath);
@@ -346,7 +347,7 @@ public class FileProcessServlet extends HttpServlet {
 
 	    	
 	    	// Create a File Which represents the output we are looking for.
-	    	File uploadFile = populateSummary(shapeSet, attribute, features, thredds, dataset, dataTypes, from, to, output, email,  uploadDirectory, FileHelper.getSeparator() + outputFileName, userDirectory);
+	    	File uploadFile = populateSummary(shapeSet, attribute, features, thredds, dataset, dataTypes, sortBy, from, to, output, email,  uploadDirectory, FileHelper.getSeparator() + outputFileName, userDirectory);
 			
 	    	// Put that file into the directory represented by uploadDirectory
 	    	if (!uploadFile.exists()) return null;
@@ -375,6 +376,7 @@ public class FileProcessServlet extends HttpServlet {
 			final String thredds, 
 			final String dataset, 
 			final String[] dataTypes, // Tom called it! I owe Tom $10
+			final String sortBy,
 			final String from, 
 			final String to, 
 			final String output, 

@@ -104,11 +104,12 @@ public class UploadFilesServlet extends HttpServlet {
         // Utility method that determines whether the request contains multipart content (files)
         boolean isMultiPart = ServletFileUpload.isMultipartContent(request);
         
-        
-        if (!isMultiPart) {
-            log.debug("ServletFileUpload.isMultipartContent(request) was false. Could not upload files.");
-            return "";
-        }
+        // This never happens. The only reason we're here is because the previous function checked
+//        if (!isMultiPart) {
+//            log.debug("ServletFileUpload.isMultipartContent(request) was false. Could not upload files.");
+//            return "";
+//            //TODO- Fix this
+//        }
 
         String userDirectory = "";
         
