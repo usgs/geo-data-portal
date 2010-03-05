@@ -334,12 +334,15 @@ public class FileProcessServlet extends HttpServlet {
 	    String userDirectory = request.getParameter("userdirectory");
 	    String finalUrlEmail = request.getParameter("finalurlemail");
 	    String sortBy	= request.getParameter("sortby");
+	    String delim	= request.getParameter("delim");
 	    
-	    return populateFileUpload(shapeSet, attribute, features, thredds, dataset, dataTypes, sortBy, from, to, output, outputFile,email, userDirectory, finalUrlEmail);
+	    if (delim == null) delim = ",";
+	    
+	    return populateFileUpload(shapeSet, attribute, features, thredds, dataset, dataTypes, sortBy, from, to, output, outputFile, delim, email, userDirectory, finalUrlEmail);
 	    
 	}
 
-	private File populateFileUpload(String shapeSet, String attribute, String[] features, String thredds, String dataset, String[] dataTypes, String sortBy, String from, String to, String output, String outputFileName, String email, String userDirectory, String finalUrlEmail) throws IOException, InvalidRangeException, AddressException, MessagingException {
+	private File populateFileUpload(String shapeSet, String attribute, String[] features, String thredds, String dataset, String[] dataTypes, String sortBy, String from, String to, String output, String outputFileName, String delim, String email, String userDirectory, String finalUrlEmail) throws IOException, InvalidRangeException, AddressException, MessagingException {
 			String baseFilePath = System.getProperty("applicationTempDir");
 	    	baseFilePath = baseFilePath + FileHelper.getSeparator();
 	    	File uploadDirectory = FileHelper.createFileRepositoryDirectory(baseFilePath);
@@ -347,7 +350,7 @@ public class FileProcessServlet extends HttpServlet {
 
 	    	
 	    	// Create a File Which represents the output we are looking for.
-	    	File uploadFile = populateSummary(shapeSet, attribute, features, thredds, dataset, dataTypes, sortBy, from, to, output, email,  uploadDirectory, FileHelper.getSeparator() + outputFileName, userDirectory);
+	    	File uploadFile = populateSummary(shapeSet, attribute, features, thredds, dataset, dataTypes, sortBy, from, to, output, email,  delim, uploadDirectory,  FileHelper.getSeparator() + outputFileName, userDirectory);
 			
 	    	// Put that file into the directory represented by uploadDirectory
 	    	if (!uploadFile.exists()) return null;
@@ -381,6 +384,7 @@ public class FileProcessServlet extends HttpServlet {
 			final String to, 
 			final String output, 
 			final String email, 
+			final String delim, 
 			final File outputPath, 
 			final String outputFile,
 			final String userDirectory) throws IOException, InvalidRangeException {
@@ -500,7 +504,7 @@ public class FileProcessServlet extends HttpServlet {
 						timeRange);
 				GridStatisticsWriter ouputFileWriter = null;
 	
-				if ("csv".equals(output.toLowerCase())) {
+				if ("char".equals(output.toLowerCase())) {
 					ouputFileWriter = new GridStatisticsCSVWriter(gs);
 				}
 	
