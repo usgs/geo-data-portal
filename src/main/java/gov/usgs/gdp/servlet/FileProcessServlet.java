@@ -10,6 +10,7 @@ import gov.usgs.gdp.bean.AvailableFilesBean;
 import gov.usgs.gdp.bean.EmailMessageBean;
 import gov.usgs.gdp.bean.ErrorBean;
 import gov.usgs.gdp.bean.MessageBean;
+import gov.usgs.gdp.bean.OutputStatisticsBean;
 import gov.usgs.gdp.bean.ShapeFileSetBean;
 import gov.usgs.gdp.bean.THREDDSInfoBean;
 import gov.usgs.gdp.bean.UploadFileCheckBean;
@@ -106,6 +107,13 @@ public class FileProcessServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Long start = new Date().getTime();
 		String command = request.getParameter("command");
+		
+		if ("getoutputstats".equals(command)) {
+			OutputStatisticsBean outputStats = OutputStatisticsBean.getOutputStatisticsBean();
+			XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, outputStats);
+			RouterServlet.sendXml(xmlReply, start, response); 
+			return;
+		}
 		
 		if ("submitforprocessing".equals(command)) {
 			File fileForUpload = null;
@@ -333,16 +341,16 @@ public class FileProcessServlet extends HttpServlet {
 	    String email = request.getParameter("email");
 	    String userDirectory = request.getParameter("userdirectory");
 	    String finalUrlEmail = request.getParameter("finalurlemail");
-	    String sortBy	= request.getParameter("sortby");
+	    String groupBy	= request.getParameter("groupby");
 	    String delim	= request.getParameter("delim");
 	    
 	    if (delim == null) delim = ",";
 	    
-	    return populateFileUpload(shapeSet, attribute, features, thredds, dataset, dataTypes, sortBy, from, to, output, outputFile, delim, email, userDirectory, finalUrlEmail);
+	    return populateFileUpload(shapeSet, attribute, features, thredds, dataset, dataTypes, groupBy, from, to, output, outputFile, delim, email, userDirectory, finalUrlEmail);
 	    
 	}
 
-	private File populateFileUpload(String shapeSet, String attribute, String[] features, String thredds, String dataset, String[] dataTypes, String sortBy, String from, String to, String output, String outputFileName, String delim, String email, String userDirectory, String finalUrlEmail) throws IOException, InvalidRangeException, AddressException, MessagingException {
+	private File populateFileUpload(String shapeSet, String attribute, String[] features, String thredds, String dataset, String[] dataTypes, String groupBy, String from, String to, String output, String outputFileName, String delim, String email, String userDirectory, String finalUrlEmail) throws IOException, InvalidRangeException, AddressException, MessagingException {
 			String baseFilePath = System.getProperty("applicationTempDir");
 	    	baseFilePath = baseFilePath + FileHelper.getSeparator();
 	    	File uploadDirectory = FileHelper.createFileRepositoryDirectory(baseFilePath);
@@ -350,7 +358,7 @@ public class FileProcessServlet extends HttpServlet {
 
 	    	
 	    	// Create a File Which represents the output we are looking for.
-	    	File uploadFile = populateSummary(shapeSet, attribute, features, thredds, dataset, dataTypes, sortBy, from, to, output, email,  delim, uploadDirectory,  FileHelper.getSeparator() + outputFileName, userDirectory);
+	    	File uploadFile = populateSummary(shapeSet, attribute, features, thredds, dataset, dataTypes, groupBy, from, to, output, email,  delim, uploadDirectory,  FileHelper.getSeparator() + outputFileName, userDirectory);
 			
 	    	// Put that file into the directory represented by uploadDirectory
 	    	if (!uploadFile.exists()) return null;
@@ -379,7 +387,7 @@ public class FileProcessServlet extends HttpServlet {
 			final String thredds, 
 			final String dataset, 
 			final String[] dataTypes, // Tom called it! I owe Tom $10
-			final String sortBy,
+			final String groupBy,
 			final String from, 
 			final String to, 
 			final String output, 
@@ -504,7 +512,7 @@ public class FileProcessServlet extends HttpServlet {
 						timeRange);
 				GridStatisticsWriter ouputFileWriter = null;
 	
-				if ("char".equals(output.toLowerCase())) {
+				if ("ascii".equals(output.toLowerCase()) || "xml".equals(output.toLowerCase())) {
 					ouputFileWriter = new GridStatisticsCSVWriter(gs);
 				}
 	

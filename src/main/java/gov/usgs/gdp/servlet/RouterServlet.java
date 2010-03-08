@@ -58,6 +58,13 @@ public class RouterServlet extends HttpServlet {
 		
 		String command = request.getParameter("command");
 		
+		if ("getoutputstats".equals(command)) {
+			log.info("User is attempting to get ouput statistic types.");
+			RequestDispatcher rd = request.getRequestDispatcher("/FileProcessServlet?command=getoutputstats");
+			rd.forward(request, response);
+			return;
+		}
+		
 		if ("listfiles".equals(command)) {
 			log.info("User is attempting to list files");
             String userDirectory = request.getParameter("userdirectory");
