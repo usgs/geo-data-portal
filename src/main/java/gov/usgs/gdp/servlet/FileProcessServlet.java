@@ -98,7 +98,7 @@ import ucar.nc2.util.NamedObject;
  * Servlet implementation class FileProcessServlet
  */
 public class FileProcessServlet extends HttpServlet {
-
+	private static org.apache.log4j.Logger log = Logger.getLogger(FileProcessServlet.class);
     /**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
@@ -324,41 +324,14 @@ public class FileProcessServlet extends HttpServlet {
             return data;
         }
     }
-    private static org.apache.log4j.Logger log = Logger.getLogger(FileProcessServlet.class);
+    
 
-    private File populateFileUpload(HttpServletRequest request) throws IOException, InvalidRangeException, AddressException, MessagingException {
-	    String shapeSet = request.getParameter("shapeset");
-	    String attribute = request.getParameter("attribute");
-	    String[] features = request.getParameterValues("feature");
-	    String[] outputStats = request.getParameterValues("outputstat");
-	    String thredds = request.getParameter("thredds");
-	    String dataset = request.getParameter("dataset");
-	    String[] dataTypes = request.getParameterValues("datatype");
-	    String from = request.getParameter("from");
-	    String to = request.getParameter("to");
-	    String output = request.getParameter("outputtype");
-	    String outputFile = request.getParameter("outputfile");
-	    String email = request.getParameter("email");
-	    String userDirectory = request.getParameter("userdirectory");
-	    String finalUrlEmail = request.getParameter("finalurlemail");
-	    String groupBy	= request.getParameter("groupby");
-	    String delim	= request.getParameter("delim");
-	    
-	    if (delim == null) delim = ",";
-	    
-	    return populateFileUpload(shapeSet, attribute, features, outputStats, thredds, dataset, dataTypes, groupBy, from, to, output, outputFile, delim, email, userDirectory, finalUrlEmail);
-	    
-	}
+	private File populateFileUpload(HttpServletRequest request) throws IOException, InvalidRangeException, AddressException, MessagingException {
+		    String email = request.getParameter("email");
+		    String finalUrlEmail = request.getParameter("finalurlemail");
 
-	private File populateFileUpload(String shapeSet, String attribute, String[] features, String[] outputStats, String thredds, String dataset, String[] dataTypes, String groupBy, String from, String to, String output, String outputFileName, String delim, String email, String userDirectory, String finalUrlEmail) throws IOException, InvalidRangeException, AddressException, MessagingException {
-			String baseFilePath = System.getProperty("applicationTempDir");
-	    	baseFilePath = baseFilePath + FileHelper.getSeparator();
-	    	File uploadDirectory = FileHelper.createFileRepositoryDirectory(baseFilePath);
-	    	if (!uploadDirectory.exists()) return null;
-
-	    	
 	    	// Create a File Which represents the output we are looking for.
-	    	File uploadFile = populateSummary(shapeSet, attribute, features, outputStats, thredds, dataset, dataTypes, groupBy, from, to, output, email,  delim, uploadDirectory,  FileHelper.getSeparator() + outputFileName, userDirectory);
+	    	File uploadFile = populateSummary(request);
 			
 	    	// Put that file into the directory represented by uploadDirectory
 	    	if (!uploadFile.exists()) return null;
@@ -372,33 +345,29 @@ public class FileProcessServlet extends HttpServlet {
 
 	    }
 
-	private boolean sendEmail(String email, String finalUrlEmail) throws AddressException, MessagingException {
-		String content = "Your file is ready: " + finalUrlEmail;
-		String subject = "Your file is ready";
-		String from = "gdp_data@usgs.gov";
-		EmailMessageBean emBean = new EmailMessageBean(from, email, new ArrayList<String>(), subject, content);
-		EmailHandler emh = new EmailHandler();
-		return emh.sendMessage(emBean);		
-	}
-
-	private File populateSummary(final String shapeSet, 
-			final String attribute, 
-			final String[] features, 
-			final String[] outputStats,
-			final String thredds, 
-			final String dataset, 
-			final String[] dataTypes, // Tom called it! I owe Tom $10
-			final String groupBy,
-			final String from, 
-			final String to, 
-			final String output, 
-			final String email, 
-			final String delim, 
-			final File outputPath, 
-			final String outputFile,
-			final String userDirectory) throws IOException, InvalidRangeException {
-
-		FileHelper.deleteFile(outputPath.getPath() + outputFile);
+	private File populateSummary(HttpServletRequest request) throws IOException, InvalidRangeException {
+		
+	    String shapeSet = request.getParameter("shapeset");
+	    String attribute = request.getParameter("attribute");
+	    String[] features = request.getParameterValues("feature");
+	    String[] outputStats = request.getParameterValues("outputstat");
+	    String dataset = request.getParameter("dataset");
+	    String[] dataTypes = request.getParameterValues("datatype");
+	    String from = request.getParameter("from");
+	    String to = request.getParameter("to");
+	    String output = request.getParameter("outputtype");
+	    String outputFile = request.getParameter("outputfile");
+	    String userDirectory = request.getParameter("userdirectory");
+	    String groupBy	= request.getParameter("groupby");
+	    String delim	= request.getParameter("delim");
+	    
+	    if (delim == null) delim = ",";
+		String baseFilePath = System.getProperty("applicationTempDir");
+    	baseFilePath = baseFilePath + FileHelper.getSeparator();
+    	File uploadDirectory = FileHelper.createFileRepositoryDirectory(baseFilePath);
+    	if (!uploadDirectory.exists()) return null;
+    	
+		FileHelper.deleteFile(uploadDirectory.getPath() + outputFile);
 		String fromTime = from;
 		String toTime = to;
 
@@ -574,8 +543,8 @@ public class FileProcessServlet extends HttpServlet {
 			}
 			
 		}
-		FileHelper.copyFileToFile(new File(System.getProperty("applicationWorkDir") + outputFile), outputPath.getPath(), true);		
-		return new File(outputPath.getPath(), outputFile);
+		FileHelper.copyFileToFile(new File(System.getProperty("applicationWorkDir") + outputFile), uploadDirectory.getPath(), true);		
+		return new File(uploadDirectory.getPath(), outputFile);
 
 
 	}
@@ -936,5 +905,14 @@ public class FileProcessServlet extends HttpServlet {
         request.setAttribute("errorBean", errorBean);
         return "/jsp/DataSetSelection.jsp";
     }
+
+	private boolean sendEmail(String email, String finalUrlEmail) throws AddressException, MessagingException {
+		String content = "Your file is ready: " + finalUrlEmail;
+		String subject = "Your file is ready";
+		String from = "gdp_data@usgs.gov";
+		EmailMessageBean emBean = new EmailMessageBean(from, email, new ArrayList<String>(), subject, content);
+		EmailHandler emh = new EmailHandler();
+		return emh.sendMessage(emBean);		
+	}
 }
 
