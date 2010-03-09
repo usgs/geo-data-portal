@@ -89,7 +89,7 @@ public class GeoServerServlet extends HttpServlet {
 			URL dataStoresURL = new URL(workspacesURL + workspace + "/datastores/");
 			String dataStoreXML = createDataStoreXML(shapefileName, workspace, shapefileLoc);
 			if (!dataStoreExists(workspace, shapefileName)) {
-				// POST the datastore to create it if it doesn't exist
+				// send POST to create the datastore if it doesn't exist
 				sendPacket(dataStoresURL, "POST", "text/xml", dataStoreXML);
 			
 				// create featuretype based on the datastore
@@ -97,7 +97,7 @@ public class GeoServerServlet extends HttpServlet {
 				URL featureTypesURL = new URL(dataStoresURL + shapefileName +  "/featuretypes.xml");
 				sendPacket(featureTypesURL, "POST", "text/xml", featureTypeXML);
 			} else {
-				// otherwise PUT it to make sure the shapefiles exist
+				// otherwise send PUT to insure that it's pointing to the correct shapefile
 				sendPacket(new URL(dataStoresURL + shapefileName + ".xml"), "PUT", "text/xml", dataStoreXML);
 			}
 			
@@ -105,7 +105,7 @@ public class GeoServerServlet extends HttpServlet {
 			sendReply(response, AckBean.ACK_OK, workspace, shapefileName);
 			
 		} else if ("getdatafileselectables".equals(command)) {
-
+			// return list of dates in data file
 			ArrayList<String> dates = parseDates(new File(dataFileLoc));
 			XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, new ListBean(dates));
 			RouterServlet.sendXml(xmlReply, new Date().getTime(), response);
@@ -329,7 +329,7 @@ public class GeoServerServlet extends HttpServlet {
 			}
 		}
 		catch (IOException e) {
-			System.err.println("Error parsing file");
+			System.err.println("Error retrieving dates");
 			e.printStackTrace();
 		}
 		
@@ -411,7 +411,7 @@ public class GeoServerServlet extends HttpServlet {
 			}
 		}
 		catch (IOException e) {
-			System.err.println("Error parsing file");
+			System.err.println("Error reading file");
 			e.printStackTrace();
 		}
 		catch (ParseException e) {
