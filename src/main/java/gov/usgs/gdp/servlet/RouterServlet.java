@@ -132,11 +132,13 @@ public class RouterServlet extends HttpServlet {
 			log.info("User is attempting to create colored map");
 			String dataFile = request.getParameter("datafile");
 			String attribute = request.getParameter("attribute");
-			String date = request.getParameter("date");
+			String fromdate = request.getParameter("fromdate");
+			String todate = request.getParameter("todate");
+			String stat = request.getParameter("stat");
 			String shapefileName = request.getParameter("shapefileName");
 			RequestDispatcher rd = request.getRequestDispatcher("/GeoServerServlet?command=createcoloredmap" +
-					"&datafile=" + dataFile + "&attribute=" + attribute + "&date=" + date + 
-					"&shapefile=" + shapefileName);
+					"&datafile=" + dataFile + "&attribute=" + attribute + "&fromdate=" + fromdate + 
+					"&todate=" + todate + "&stat=" + stat + "&shapefile=" + shapefileName);
 			rd.forward(request, response);
 			return;
 		}
