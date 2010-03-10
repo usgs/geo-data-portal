@@ -412,6 +412,8 @@ public class GeoServerServlet extends HttpServlet {
 				attributeValues.add(dupHeaderValues[i]);
 			}
 			
+			ArrayList<Float> rangeStats = new ArrayList<Float>();
+			
 			if (toDate != null) {
 				while(reader.ready()) {
 					line = reader.readLine();
@@ -424,12 +426,16 @@ public class GeoServerServlet extends HttpServlet {
 					
 					values = line.split(fieldSep);
 					for (int i = firstStatIndex, j = 0; i < values.length - statsPerHeaderValue; i += statsPerHeaderValue, j++) {
-						requestedStats.set(j, requestedStats.get(j) + Float.parseFloat(values[i]));
+						rangeStats.add(Float.parseFloat(values[i]));
 					}
 	
 					if (df.parse(firstValue).compareTo(toDate) == 0) {
 						break;
 					}
+				}
+				
+				for (int i = 0; i < requestedStats.size(); i++) {
+					requestedStats.set(i, requestedStats.get(i) + rangeStats.get(i));
 				}
 			}
 		}
