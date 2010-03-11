@@ -12,7 +12,8 @@ public class XmlReplyBean implements XmlBean {
 	private static org.apache.log4j.Logger log = Logger.getLogger(XmlReplyBean.class);
 	
 	private AckBean acknowledgment;
-	private ErrorBean error;
+	private ErrorBean errorBean;
+        private ErrorEnum errorEnum;
 	private MessageBean message;
 	private XmlBean[] content;
 		
@@ -51,24 +52,45 @@ public class XmlReplyBean implements XmlBean {
 	public XmlReplyBean(int status, ErrorBean error) throws IllegalArgumentException {
 		try {
 			this.acknowledgment = new AckBean(status);
-			this.error = error;
+			this.errorBean = error;
 		} catch (IllegalArgumentException e) {
 			log.debug(e.getMessage());
 			throw e;
 		}
 	}
-	
+
+	public XmlReplyBean(int status, ErrorEnum errorEnum) throws IllegalArgumentException {
+		try {
+			this.acknowledgment = new AckBean(status);
+			this.errorEnum = errorEnum;
+		} catch (IllegalArgumentException e) {
+			log.debug(e.getMessage());
+			throw e;
+		}
+	}
+
 	public XmlReplyBean(int status, ErrorBean error, MessageBean messageBean) throws IllegalArgumentException {
 		try {
 			this.acknowledgment = new AckBean(status);
-			this.error = error;
+			this.errorBean = error;
 			this.message = messageBean;
 		} catch (IllegalArgumentException e) {
 			log.debug(e.getMessage());
 			throw e;
 		}
 	}
-	
+
+        public XmlReplyBean(int status, ErrorEnum errorEnum, MessageBean messageBean) throws IllegalArgumentException {
+		try {
+			this.acknowledgment = new AckBean(status);
+			this.errorEnum = errorEnum;
+			this.message = messageBean;
+		} catch (IllegalArgumentException e) {
+			log.debug(e.getMessage());
+			throw e;
+		}
+	}
+
 	public XmlReplyBean(int status, MessageBean messageBean) throws IllegalArgumentException {
 		try {
 			this.acknowledgment = new AckBean(status);
@@ -129,5 +151,19 @@ public class XmlReplyBean implements XmlBean {
 	public MessageBean getMessage() {
 		return message;
 	}
+
+    /**
+     * @return the errorEnum
+     */
+    public ErrorEnum getErrorEnum() {
+        return errorEnum;
+    }
+
+    /**
+     * @param errorEnum the errorEnum to set
+     */
+    public void setErrorEnum(ErrorEnum errorEnum) {
+        this.errorEnum = errorEnum;
+    }
 	
 }

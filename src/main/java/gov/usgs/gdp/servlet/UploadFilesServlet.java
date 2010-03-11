@@ -11,10 +11,9 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 
-import org.apache.commons.fileupload.DiskFileUpload;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.MultipartStream;
+import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
@@ -49,14 +48,14 @@ public class UploadFilesServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	Long start = new Date().getTime();
+        Long start = new Date().getTime();
         XmlReplyBean xmlOutput = null;
         String command = request.getParameter("command");
 
         if ("upload".equals(command)) {
-        	String applicationTempDir = System.getProperty("applicationTempDir") + FileHelper.getSeparator();
+            String applicationTempDir = System.getProperty("applicationTempDir") + FileHelper.getSeparator();
             String userDirectory = "";
-            
+
             try {
                 userDirectory = uploadFiles(request, applicationTempDir);
             } catch (Exception e) {
@@ -64,7 +63,7 @@ public class UploadFilesServlet extends HttpServlet {
                 RouterServlet.sendXml(xmlOutput, start, response);
                 return;
             }
-            
+
             if ("".equals(userDirectory)) { // User directory could not be created
                 xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_USER_DIR_CREATE));
                 RouterServlet.sendXml(xmlOutput, start, response);
@@ -78,19 +77,6 @@ public class UploadFilesServlet extends HttpServlet {
     }
 
     /**
-     * Scans the upload directory to build a List of type FilesBean
-     * @param userDirectory
-     * @return
-     */
-    @SuppressWarnings("unused")
-    private List<FilesBean> populateUploadedFilesBean(String userDirectory) {
-        List<FilesBean> result = new ArrayList<FilesBean>();
-        Collection<File> uploadedFiles = FileHelper.getFileCollection(userDirectory, true);
-        result = FilesBean.getFilesBeanSetList(uploadedFiles);
-        return result;
-    }
-
-    /**
      * Save the uploaded files to a specified directory
      * @param request
      * @param directory
@@ -98,28 +84,17 @@ public class UploadFilesServlet extends HttpServlet {
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
-    private String uploadFiles(HttpServletRequest request, String applicationTempDir) throws Exception {
+    private String uploadFiles(HttpServletRequest request, String applicationTempDir) throws FileUploadException, Exception  {
         log.debug("User uploading file(s).");
-        
-        // Utility method that determines whether the request contains multipart content (files)
-        boolean isMultiPart = ServletFileUpload.isMultipartContent(request);
-        
-        // This never happens. The only reason we're here is because the previous function checked
-//        if (!isMultiPart) {
-//            log.debug("ServletFileUpload.isMultipartContent(request) was false. Could not upload files.");
-//            return "";
-//            //TODO- Fix this
-//        }
-
         String userDirectory = "";
-        
+
         // Create a factory for disk-based file items
         FileItemFactory factory = new DiskFileItemFactory();
 
         // Constructs an instance of this class which
         // uses the supplied factory to create FileItem instances.
         ServletFileUpload upload = new ServletFileUpload(factory);
-        
+
         List<FileItem> items = null;
 
         Object interimItems = upload.parseRequest(request);
@@ -127,40 +102,53 @@ public class UploadFilesServlet extends HttpServlet {
         if (interimItems instanceof List<?>) {
             items = (List<FileItem>) interimItems;
             for (FileItem fileItem : items) {
-            	if(fileItem.getFieldName().equals("userdirectory")) {
-            		userDirectory = fileItem.getString();
-            	}
+                if (fileItem.getFieldName().equals("userdirectory")) {
+                    userDirectory = fileItem.getString();
+                }
             }
         }
 
         // Check for user subdirectory - Create the user directory.
         if (userDirectory == null || "".equals(userDirectory)) {
-        	userDirectory = createUserDirectory();
+            userDirectory = createUserDirectory();
         } else if (!FileHelper.doesDirectoryOrFileExist(applicationTempDir + userDirectory)) {
-        	userDirectory = createUserDirectory(userDirectory);
+            userDirectory = createUserDirectory(userDirectory);
         }
-        
-        if (FileHelper.saveFileItems(applicationTempDir + userDirectory, items)) return userDirectory;
+
+        if (FileHelper.saveFileItems(applicationTempDir + userDirectory, items)) {
+            return userDirectory;
+        }
         return "";
     }
 
+    /**
+     * Creates a directory for the user at a specified path
+     *
+     * @param path The path the user directory should have
+     * @return The user directory created
+     */
     private String createUserDirectory(String path) {
-    	String applicationTempDir = System.getProperty("applicationTempDir");
-        String seperator = FileHelper.getSeparator();        
+        String applicationTempDir = System.getProperty("applicationTempDir");
+        String seperator = FileHelper.getSeparator();
         String userTempDir = applicationTempDir + seperator + path;
-    	 boolean wasCreated = FileHelper.createDir(userTempDir);
-         if (wasCreated) {
-             log.debug("User subdirectory created at: " + userTempDir);
-             return path;
-         }
+        boolean wasCreated = FileHelper.createDir(userTempDir);
+        if (wasCreated) {
+            log.debug("User subdirectory created at: " + userTempDir);
+            return path;
+        }
 
-         log.debug("User subdirectory could not be created at: " + path);
-         log.debug("User will be unable to upload files for this session.");
-         return "";
+        log.debug("User subdirectory could not be created at: " + path);
+        log.debug("User will be unable to upload files for this session.");
+        return "";
     }
-    
+
+    /**
+     * Creates a unique user directory
+     *
+     * @return The user directory created
+     */
     private String createUserDirectory() {
-    	String userSubDir = Long.toString(new Date().getTime());
-        return createUserDirectory(userSubDir);       
+        String userSubDir = Long.toString(new Date().getTime());
+        return createUserDirectory(userSubDir);
     }
 }

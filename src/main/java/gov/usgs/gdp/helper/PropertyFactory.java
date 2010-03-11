@@ -39,8 +39,7 @@ public class PropertyFactory {
 	/**
 	 * Get a property from the factory
 	 * 
-	 * @param key
-	 *            A key for the property
+	 * @param key A key for the property
 	 * @return a property based on key given, "" if not found
 	 */
 	static public String getProperty(String key) {
