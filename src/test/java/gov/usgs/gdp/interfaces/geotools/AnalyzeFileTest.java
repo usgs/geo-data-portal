@@ -21,6 +21,9 @@ import org.junit.Test;
 
 
 public class AnalyzeFileTest {
+	
+	private static final String testFile = "demo_HUCs";
+	
 	private static org.apache.log4j.Logger log = Logger.getLogger(AnalyzeFileTest.class);
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -82,14 +85,15 @@ public class AnalyzeFileTest {
 		+ this.seperator
 		+ "Shapefiles" 
 		+ this.seperator
-		+ "hru20VSR.SHP";
+		+ testFile + ".shp";
+		
 		String dbfFile = this.tempDir 		
 		+ this.seperator 
 		+ "Sample_Files" 
 		+ this.seperator
 		+ "Shapefiles" 
 		+ this.seperator
-		+ "hru20VSR.DBF";
+		+ testFile + ".dbf";
 		
 		List<String> result = null;
 		
@@ -155,7 +159,7 @@ public class AnalyzeFileTest {
 		+ this.seperator
 		+ "Shapefiles" 
 		+ this.seperator
-		+ "hru20VSR.SHP";
+		+ testFile + ".shp";
 		
 		String dbfFile = this.tempDir 		
 		+ this.seperator 
@@ -163,7 +167,7 @@ public class AnalyzeFileTest {
 		+ this.seperator
 		+ "Shapefiles" 
 		+ this.seperator
-		+ "hru20VSR.DBF";
+		+ testFile + ".dbf";
 		
 		File DBFFILE = new File(dbfFile);
 		File SHPFILE = new File(shpFile);

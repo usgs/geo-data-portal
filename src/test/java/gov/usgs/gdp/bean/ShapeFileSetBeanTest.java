@@ -21,6 +21,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class ShapeFileSetBeanTest {
+	
+	private static final String testFile = "demo_HUCs";
+	
     private static org.apache.log4j.Logger log = Logger.getLogger(ShapeFileSetBeanTest.class);
 
     @BeforeClass
@@ -86,7 +89,7 @@ public class ShapeFileSetBeanTest {
                 + this.seperator
                 + "Shapefiles"
                 + this.seperator
-                + "hru20VSR.SHP";
+                + testFile + ".shp";
 
         String prjFile = this.tempDir
                 + this.seperator
@@ -94,7 +97,7 @@ public class ShapeFileSetBeanTest {
                 + this.seperator
                 + "Shapefiles"
                 + this.seperator
-                + "hru20VSR.PRJ";
+                + testFile + ".prj";
 
         String dbfFile = this.tempDir
                 + this.seperator
@@ -102,7 +105,7 @@ public class ShapeFileSetBeanTest {
                 + this.seperator
                 + "Shapefiles"
                 + this.seperator
-                + "hru20VSR.DBF";
+                + testFile + ".dbf";
 
         FilesBean filesBean = new FilesBean();
         Collection<File> files = new ArrayList<File>();
@@ -133,7 +136,7 @@ public class ShapeFileSetBeanTest {
                 + this.seperator
                 + "Shapefiles"
                 + this.seperator
-                + "hru20VSR.SHP";
+                + testFile + ".shp";
 
         String prjFile = this.tempDir
                 + this.seperator
@@ -141,7 +144,7 @@ public class ShapeFileSetBeanTest {
                 + this.seperator
                 + "Shapefiles"
                 + this.seperator
-                + "hru20VSR.PRJ";
+                + testFile + ".prj";
 
         String dbfFile = this.tempDir
                 + this.seperator
@@ -149,7 +152,7 @@ public class ShapeFileSetBeanTest {
                 + this.seperator
                 + "Shapefiles"
                 + this.seperator
-                + "hru20VSR.DBF";
+                + testFile + ".dbf";
 
         FilesBean filesBean = new FilesBean();
         Collection<File> files = new ArrayList<File>();
@@ -158,7 +161,7 @@ public class ShapeFileSetBeanTest {
         files.add(new File(dbfFile));
         filesBean.setFiles(files);
         ShapeFileSetBean shapeFileSetBean = filesBean.getShapeFileSetBean();
-        shapeFileSetBean.setChosenAttribute("AREA");
+        shapeFileSetBean.setChosenAttribute("HUC_8");
         List<String> result = null;
         try {
             result = ShapeFileSetBean.getFeatureListFromBean(shapeFileSetBean);
@@ -177,7 +180,7 @@ public class ShapeFileSetBeanTest {
                 + this.seperator
                 + "Shapefiles"
                 + this.seperator
-                + "hru20VSR.SHP";
+                + testFile + ".shp";
 
         String prjFile = this.tempDir
                 + this.seperator
@@ -185,7 +188,7 @@ public class ShapeFileSetBeanTest {
                 + this.seperator
                 + "Shapefiles"
                 + this.seperator
-                + "hru20VSR.PRJ";
+                + testFile + ".prj";
 
         String dbfFile = this.tempDir
                 + this.seperator
@@ -193,7 +196,7 @@ public class ShapeFileSetBeanTest {
                 + this.seperator
                 + "Shapefiles"
                 + this.seperator
-                + "hru20VSR.DBF";
+                + testFile + ".dbf";
 
         String shxFile = this.tempDir
                 + this.seperator
@@ -201,7 +204,7 @@ public class ShapeFileSetBeanTest {
                 + this.seperator
                 + "Shapefiles"
                 + this.seperator
-                + "hru20VSR.SHX";
+                + testFile + ".shx";
 
         ShapeFileSetBean result = null;
         FilesBean filesBean = new FilesBean();

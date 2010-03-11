@@ -23,6 +23,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class FileHelperTest {
+	
+	private static final String testFile = "demo_HUCs";
+	private static final String secondTestFile = "Yahara_River_HRUs_geo_WGS84";
+	
 	private static org.apache.log4j.Logger log = Logger.getLogger(FileHelperTest.class);
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -90,7 +94,7 @@ public class FileHelperTest {
 		+ this.seperator
 		+ "Shapefiles" 
 		+ this.seperator
-		+ "hru20VSR.SHX";
+		+ testFile + ".shx";
 		
 		String directoryToCheckFor = this.tempDir 
 		+ this.seperator 
@@ -115,7 +119,7 @@ public class FileHelperTest {
 		+ this.seperator
 		+ "Shapefiles" 
 		+ this.seperator
-		+ "hru20VSR.SHX");
+		+ testFile + ".shx");
 		
 		String fileToCopyTo = this.tempDir 
 		+ this.seperator 
@@ -123,7 +127,7 @@ public class FileHelperTest {
 		+ this.seperator
 		+ "Shapefiles" 
 		+ this.seperator
-		+ "hru20VSR.COPY";
+		+ testFile + ".COPY";
 		
 		boolean result = false;
 		try {
@@ -151,7 +155,7 @@ public class FileHelperTest {
 		+ this.seperator
 		+ "Shapefiles" 
 		+ this.seperator
-		+ "hru20VSR.SHX";
+		+ testFile + ".shx";
 		
 		boolean result = FileHelper.deleteFileQuietly("File/That/Doesnt/Exist");
 		assertFalse(result);
@@ -168,7 +172,7 @@ public class FileHelperTest {
 		+ this.seperator
 		+ "Shapefiles" 
 		+ this.seperator
-		+ "hru20VSR.SHX";
+		+ testFile + ".shx";
 		
 		boolean result = false;
 		try {
@@ -189,7 +193,7 @@ public class FileHelperTest {
 		+ this.seperator
 		+ "Shapefiles" 
 		+ this.seperator
-		+ "hru20VSR.SHX");
+		+ testFile + ".shx");
 		lockedFile.setWritable(false);
 		
 		String dirToDelete = this.tempDir 
@@ -253,7 +257,7 @@ public class FileHelperTest {
 
 	@Test
 	public void testFindFile() {
-		String fileToLoad = "hru20VSR.SHX";
+		String fileToLoad = testFile + ".shx";
 		String rootDir = this.tempDir + this.seperator;
 		File result = FileHelper.findFile(fileToLoad, rootDir);
 		assertNotNull("FineFile did not find the file " + fileToLoad + " within " + rootDir, result);
@@ -312,7 +316,7 @@ public class FileHelperTest {
 			+ this.seperator
 			+ "Shapefiles" 
 			+ this.seperator
-			+ "hru20VSR.SHX";
+			+ testFile + ".shx";
 		
 		File result = FileHelper.loadFile(fileToLoad);
 		assertNotNull("File came back null", result);
@@ -347,7 +351,7 @@ public class FileHelperTest {
 		+ this.seperator
 		+ "Shapefiles" 
 		+ this.seperator
-		+ "hru20VSR.SHP";
+		+ testFile + ".shp";
 		
 		String secondFileToLoad = this.tempDir 
 		+ this.seperator 
@@ -355,7 +359,7 @@ public class FileHelperTest {
 		+ this.seperator
 		+ "Shapefiles" 
 		+ this.seperator
-		+ "Yahara_River_HRUs_geo_WGS84.shp";
+		+ secondTestFile + ".shp";
 		
 		List<String> fileList = new ArrayList<String>();
 		

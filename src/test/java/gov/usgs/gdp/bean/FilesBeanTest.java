@@ -21,6 +21,9 @@ import org.junit.Test;
 
 
 public class FilesBeanTest {
+	
+	private static final String testFile = "demo_HUCs";
+	
 	private static org.apache.log4j.Logger log = Logger.getLogger(FilesBeanTest.class);
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -74,7 +77,7 @@ public class FilesBeanTest {
 		+ this.seperator
 		+ "Shapefiles" 
 		+ this.seperator
-		+ "hru20VSR.SHP";
+		+ testFile + ".shp";
 		
 		String prjFile = this.tempDir 
 		+ this.seperator 
@@ -82,7 +85,7 @@ public class FilesBeanTest {
 		+ this.seperator
 		+ "Shapefiles" 
 		+ this.seperator
-		+ "hru20VSR.PRJ";
+		+ testFile + ".prj";
 		
 		String dbfFile = this.tempDir 
 		+ this.seperator 
@@ -90,7 +93,7 @@ public class FilesBeanTest {
 		+ this.seperator
 		+ "Shapefiles" 
 		+ this.seperator
-		+ "hru20VSR.DBF";
+		+ testFile + ".dbf";
 		
 		FilesBean filesBean = new FilesBean();
 		Collection<File> files = new ArrayList<File>();
