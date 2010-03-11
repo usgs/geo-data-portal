@@ -72,7 +72,7 @@ public class GeoToolsFileAnalysisTest {
 			+ this.seperator
 			+ "Shapefiles" 
 			+ this.seperator
-			+ "hru20VSR.DBF";
+			+ "demo_HUCs.dbf";
 		String nullString = null;
 		File loadedFile = new File(fileToLoad);
 		
@@ -139,7 +139,7 @@ public class GeoToolsFileAnalysisTest {
 		+ this.seperator
 		+ "Shapefiles" 
 		+ this.seperator
-		+ "statesp020.shp";
+		+ "demo_HUCs.shp";
 		
 		ShapefileReader result = null;
 		try {
@@ -173,7 +173,7 @@ public class GeoToolsFileAnalysisTest {
 		+ this.seperator
 		+ "Shapefiles" 
 		+ this.seperator
-		+ "hru20VSR.SHP";
+		+ "demo_HUCs.shp";
 		
 		String nullString= null;
 		ShapefileReader result;
@@ -226,7 +226,7 @@ public class GeoToolsFileAnalysisTest {
 		+ this.seperator
 		+ "Shapefiles" 
 		+ this.seperator
-		+ "hru20VSR.SHP";
+		+ "demo_HUCs.shp";
 		
 		String nullString = null;
 		ShapefileReader reader;
@@ -279,7 +279,7 @@ public class GeoToolsFileAnalysisTest {
 		+ this.seperator
 		+ "Shapefiles" 
 		+ this.seperator
-		+ "hru20VSR.SHP";
+		+ "demo_HUCs.shp";
 		
 		try {
 			result = GeoToolsFileAnalysis.getShapeFileHeaderSummary(new File(fileToLoad));
@@ -300,7 +300,7 @@ public class GeoToolsFileAnalysisTest {
 			+ this.seperator
 			+ "Shapefiles" 
 			+ this.seperator
-			+ "hru20VSR.SHP";
+			+ "demo_HUCs.shp";
 		String nullString = null;
 		
 		GeoToolsFileAnalysis subject = new GeoToolsFileAnalysis();
@@ -380,7 +380,7 @@ public class GeoToolsFileAnalysisTest {
 		+ this.seperator
 		+ "Shapefiles" 
 		+ this.seperator
-		+ "hru20VSR.SHP";
+		+ "demo_HUCs.shp";
 		ShapefileReader shpFileReader;
 		try {
 			shpFileReader = GeoToolsFileAnalysis.getShapeFileReader(fileToLoad);
@@ -409,7 +409,7 @@ public class GeoToolsFileAnalysisTest {
 		+ this.seperator
 		+ "Shapefiles" 
 		+ this.seperator
-		+ "hru20VSR.DBF";
+		+ "demo_HUCs.dbf";
 		String fakeFileToLoad = fileToLoad + "xxx";
 		String nonDbaseFileToLoad = this.tempDir 
 		+ this.seperator 
@@ -417,7 +417,7 @@ public class GeoToolsFileAnalysisTest {
 		+ this.seperator
 		+ "Shapefiles" 
 		+ this.seperator
-		+ "hru20VSR.SHP";
+		+ "demo_HUCs.shp";
 		
 		File file = FileHelper.loadFile(fileToLoad);
 		File fakeFile = FileHelper.loadFile(fakeFileToLoad);
@@ -458,7 +458,7 @@ public class GeoToolsFileAnalysisTest {
 		+ this.seperator
 		+ "Shapefiles" 
 		+ this.seperator
-		+ "hru20VSR.DBF";
+		+ "demo_HUCs.dbf";
 		GeoToolsFileAnalysis subject = new GeoToolsFileAnalysis();
 		DbaseFileHeader result = subject.getDBaseFileHeader();
 		assertNull(result);
@@ -483,7 +483,7 @@ public class GeoToolsFileAnalysisTest {
 		+ this.seperator
 		+ "Shapefiles" 
 		+ this.seperator
-		+ "hru20VSR.SHP";
+		+ "demo_HUCs.shp";
 		
 		FileDataStore result = null;
 		try {
