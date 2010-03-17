@@ -18,6 +18,7 @@ import gov.usgs.gdp.bean.UploadLocationBean;
 import gov.usgs.gdp.bean.XmlReplyBean;
 import gov.usgs.gdp.helper.EmailHandler;
 import gov.usgs.gdp.helper.FileHelper;
+import gov.usgs.gdp.servlet.FileProcessServlet.GroupBy.StationOption;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -59,6 +60,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.util.TimeZone;
 
 import thredds.catalog.InvAccess;
 import thredds.catalog.InvCatalog;
@@ -345,6 +347,47 @@ public class FileProcessServlet extends HttpServlet {
 
 	    }
 
+	////  START - MOVEME
+	// IVAN, move this out where ever you see fit... values in this enum should
+	// be reported-to/used-by front end in some manner...  right now, too much loose
+	// coupling.
+	public enum DelimiterOption {
+	    c("[comma]", ","),
+        t("[tab]", "\t"),
+        s("[space]", " ");
+	    public final String description;
+	    public final String value;
+	    private DelimiterOption(String description, String value) {
+	        this.description = description;
+	        this.value = value;
+	    }
+	    public static DelimiterOption getDefault() { return c; }
+	    @Override public String toString() { return description; }
+	}
+	
+	public static class GroupBy {
+	    public enum StationOption {
+	        station("Station"),
+	        variable("Variable");
+	        public final String description;
+	        private StationOption(String description) {
+	            this.description = description;
+	        }
+	        @Override public String toString() { return description; }
+	        public static StationOption getDefault() { return station; } 
+	    }
+	    public enum GridOption {
+	        attributes("Attributes"),
+	        statistics("Statistics");
+	        public final String description;
+	        private GridOption(String description) {
+                this.description = description;
+            }
+            public static GridOption getDefault() { return attributes; } 
+	    }
+	}
+    ////  START - MOVEME
+	
 	private File populateSummary(HttpServletRequest request) throws IOException, InvalidRangeException {
 		
 	    String shapeSet = request.getParameter("shapeset");
@@ -358,10 +401,19 @@ public class FileProcessServlet extends HttpServlet {
 	    String output = request.getParameter("outputtype");
 	    String outputFile = request.getParameter("outputfile");
 	    String userDirectory = request.getParameter("userdirectory");
-	    String groupBy	= request.getParameter("groupby");
-	    String delim	= request.getParameter("delim");
+	    String groupById	= request.getParameter("groupby");
+	    String delimId	= request.getParameter("delim");
+	   
+	    DelimiterOption delimiter = null;
+	    if (delimId != null) {
+	        try {
+	            delimiter = DelimiterOption.valueOf(delimId);
+	        } catch (IllegalArgumentException e) { /* failure handled below */}
+	    }
+	    if (delimiter == null) {
+	        delimiter = DelimiterOption.getDefault();
+	    }
 	    
-	    if (delim == null) delim = ",";
 		String baseFilePath = System.getProperty("applicationTempDir");
     	baseFilePath = baseFilePath + FileHelper.getSeparator();
     	File uploadDirectory = FileHelper.createFileRepositoryDirectory(baseFilePath);
@@ -372,6 +424,7 @@ public class FileProcessServlet extends HttpServlet {
 		String toTime = to;
 
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        df.setTimeZone(TimeZone.getTimeZone("UTC"));
 		Date toDate = new Date();
 		Date fromDate = new Date();
 		boolean parsedDates = false;
@@ -472,6 +525,16 @@ public class FileProcessServlet extends HttpServlet {
 					log.error(e.getMessage());
 				}
 	
+		        GroupBy.GridOption groupBy = null;
+		        if (groupById != null) {
+		            try {
+		                groupBy = GroupBy.GridOption.valueOf(groupById);
+	                } catch (IllegalArgumentException e) { /* failure handled below */}
+		        }
+		        if (groupBy == null) {
+		            groupBy = GroupBy.GridOption.getDefault();
+		        }
+				
 				GridStatistics gs = null;
 				// *** long running task ***
 				gs = GridStatistics.generate(
@@ -522,6 +585,16 @@ public class FileProcessServlet extends HttpServlet {
 						}
 					};
 					
+	                GroupBy.StationOption groupBy = null;
+	                if (groupById != null) {
+	                    try {
+	                        groupBy = GroupBy.StationOption.valueOf(groupById);
+	                    } catch (IllegalArgumentException e) { /* failure handled below */}
+	                }
+	                if (groupBy == null) {
+	                    groupBy = GroupBy.StationOption.getDefault();
+	                }
+					
 					BufferedWriter writer = null;
 					try {					 
 						writer = new BufferedWriter(new FileWriter(new File(System.getProperty("applicationWorkDir"), outputFile)));
@@ -530,7 +603,9 @@ public class FileProcessServlet extends HttpServlet {
 								stsfc,
 								variableList,
 								new DateRange(fromDate, toDate),
-								writer);
+								writer,
+                                groupBy == StationOption.variable,
+                                delimiter.value);
 					} finally {
 						if (writer != null) { try { writer.close(); } catch (IOException e) { /* swallow, don't mask exception */ } }
 					}
