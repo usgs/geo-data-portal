@@ -5,10 +5,10 @@ import java.util.List;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
-@XStreamAlias("threddsbeans")
+@XStreamAlias("thredds-servers")
 public class THREDDSServerBeanList implements XmlBean {
 
-	@XStreamImplicit(itemFieldName="threddsbean")
+	@XStreamImplicit(itemFieldName="server")
 	private List<THREDDSServerBean> beans;
 
 	public THREDDSServerBeanList(List<THREDDSServerBean> threddsServerBeanList) {
