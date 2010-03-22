@@ -5,11 +5,7 @@
 
 package gov.usgs.gdp.servlet;
 
-import javax.servlet.GenericServlet;
 import javax.servlet.ServletConfig;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

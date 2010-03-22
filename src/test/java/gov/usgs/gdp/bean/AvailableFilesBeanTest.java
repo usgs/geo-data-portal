@@ -71,8 +71,8 @@ public class AvailableFilesBeanTest {
 		
 		assertNull(result);
 	}
-	
-	@Test
+
+        @Test
 	public void testGetAvailableFilesBeanWithPopulatedExamplesDirectory() {
 		AvailableFilesBean result = 
 			AvailableFilesBean.getAvailableFilesBean(this.tempDir, null);
@@ -106,7 +106,29 @@ public class AvailableFilesBeanTest {
 		
 		
 	}
-	
+
+        @Test
+	public void testGetAvailableFilesBeanWithBogusUserDirectory() {
+		AvailableFilesBean result =
+			AvailableFilesBean.getAvailableFilesBean(this.tempDir,
+					this.tempDir
+						+ "user_dir"
+						+ this.seperator
+						+ "Sample_Files"
+						+ this.seperator
+						+ "test"
+						+ this.seperator);
+
+		assertNotNull(result);
+		assertNotNull(result.getExampleFileList());
+		assertFalse(result.getExampleFileList().isEmpty());
+		assertNotNull(result.getExampleFileList());
+		assertFalse(result.getShapeSetList().isEmpty());
+		assertFalse(result.getUserFileList().isEmpty());
+
+
+	}
+
 	@Test
 	public void testGetXmlWithEverythingPopulated() {
 		AvailableFilesBean filesBean = 
@@ -122,6 +144,5 @@ public class AvailableFilesBeanTest {
 		
 		assertNotNull(result);
 		assertNotSame(0, result.length());
-	
 	}
 }

@@ -26,7 +26,16 @@ public class AckBeanTest {
 		String result = ackBean.toXml();
 		assertNotNull(result);
 	}
-	
+
+        @Test
+        public void testSetStatus() {
+            AckBean ackBean = new AckBean(1);
+            assertEquals("OK", ackBean.getStatus());
+            ackBean.setStatus("FAIL");
+            assertEquals("FAIL", ackBean.getStatus());
+
+        }
+
 	@Test
 	public void testInvalidStatus() {
 		try {
