@@ -61,6 +61,8 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.util.TimeZone;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.operation.TransformException;
 
 import thredds.catalog.InvAccess;
 import thredds.catalog.InvCatalog;
@@ -136,7 +138,15 @@ public class FileProcessServlet extends HttpServlet {
 				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(e.getMessage()));
 				RouterServlet.sendXml(xmlOutput, start, response);
 				return;
-			}
+			} catch (FactoryException e) {
+				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(e.getMessage()));
+				RouterServlet.sendXml(xmlOutput, start, response);
+				return;
+            } catch (TransformException e) {
+				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(e.getMessage()));
+				RouterServlet.sendXml(xmlOutput, start, response);
+				return;
+            }
 
 			// We are, for the moment, assuming there is a file at this location
 			// The link is sent out as just the file name. When the user sends the request
@@ -328,24 +338,25 @@ public class FileProcessServlet extends HttpServlet {
     }
     
 
-	private File populateFileUpload(HttpServletRequest request) throws IOException, InvalidRangeException, AddressException, MessagingException {
-		    String email = request.getParameter("email");
-		    String finalUrlEmail = request.getParameter("finalurlemail");
+	private File populateFileUpload(HttpServletRequest request)
+            throws IOException, InvalidRangeException, AddressException,
+            MessagingException, FactoryException, TransformException {
+        String email = request.getParameter("email");
+        String finalUrlEmail = request.getParameter("finalurlemail");
 
-	    	// Create a File Which represents the output we are looking for.
-	    	File uploadFile = populateSummary(request);
-			
-	    	// Put that file into the directory represented by uploadDirectory
-	    	if (!uploadFile.exists()) return null;
-	    	
-			// If user specified an E-Mail address, send an E-Mail to the user with the provided link 
-	    	if (email != null && !"".equals(email)) sendEmail(email, finalUrlEmail);
-	    	
-	    	// Set that file as the result to be returned to the calling function
-	    	// switch uploadDirectory return statement with the file we are looking for
-			return uploadFile;
+        // Create a File Which represents the output we are looking for.
+        File uploadFile = populateSummary(request);
 
-	    }
+        // Put that file into the directory represented by uploadDirectory
+        if (!uploadFile.exists()) return null;
+
+        // If user specified an E-Mail address, send an E-Mail to the user with the provided link
+        if (email != null && !"".equals(email)) sendEmail(email, finalUrlEmail);
+
+        // Set that file as the result to be returned to the calling function
+        // switch uploadDirectory return statement with the file we are looking for
+        return uploadFile;
+    }
 
 	////  START - MOVEME
 	// IVAN, move this out where ever you see fit... values in this enum should
@@ -388,7 +399,7 @@ public class FileProcessServlet extends HttpServlet {
 	}
     ////  START - MOVEME
 	
-	private File populateSummary(HttpServletRequest request) throws IOException, InvalidRangeException {
+	private File populateSummary(HttpServletRequest request) throws IOException, InvalidRangeException, FactoryException, TransformException {
 		
 	    String shapeSet = request.getParameter("shapeset");
 	    String attribute = request.getParameter("attribute");

@@ -28,6 +28,8 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.AttributeType;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.operation.TransformException;
 
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
@@ -42,6 +44,11 @@ import ucar.unidata.geoloc.LatLonRect;
 
 import com.google.common.base.Preconditions;
 import com.vividsolutions.jts.geom.Geometry;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.opengis.geometry.BoundingBox;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import ucar.ma2.Array;
+import ucar.ma2.Index;
 
 public class GridStatistics {
 
@@ -112,13 +119,14 @@ public class GridStatistics {
             GridDataset gridDataset,
             String variableName,
             Range timeRange)
-            throws IOException, InvalidRangeException 
+            throws IOException, InvalidRangeException, FactoryException, TransformException
     {
         
         ReferencedEnvelope envelope = featureCollection.getBounds();
+        BoundingBox latLonBoundingBox = envelope.toBounds(DefaultGeographicCRS.WGS84);
         LatLonRect llr = new LatLonRect(
-                new LatLonPointImpl(envelope.getMinY(), envelope.getMinX()),
-                new LatLonPointImpl(envelope.getMaxY(), envelope.getMaxX()));
+                new LatLonPointImpl(latLonBoundingBox.getMinY(), latLonBoundingBox.getMinX()),
+                new LatLonPointImpl(latLonBoundingBox.getMaxY(), latLonBoundingBox.getMaxX()));
 
 
         GridDatatype gdt = gridDataset.findGridDatatype(variableName);
@@ -133,7 +141,8 @@ public class GridStatistics {
         
         // verify attribute exists in featureCollection. 
         AttributeDescriptor attributeDescriptor = featureCollection.getSchema().getDescriptor(attributeName);
-        Preconditions.checkNotNull(attributeDescriptor, "Attibute named %s not found in featureCollection", attributeName);
+        Preconditions.checkNotNull(
+                attributeDescriptor, "Attibute named %s not found in featureCollection", attributeName);
 
         // check attribute type binding, if possible we want to sort it's values
         AttributeType attributeType = attributeDescriptor.getType();
@@ -141,6 +150,7 @@ public class GridStatistics {
         Map<Object, Geometry> attributeValueToGeometryMap = isAttributeValueComparable ?
                 new TreeMap<Object, Geometry>() :     // rely on on Comparable to sort
                 new LinkedHashMap<Object, Geometry>(); // use order from featureCollection.iterator();
+
         Iterator<SimpleFeature> fi = featureCollection.iterator();
         while (fi.hasNext()) {
             SimpleFeature sf = fi.next();
@@ -158,14 +168,23 @@ public class GridStatistics {
         }
 
         int attributeValueMapSize = (int) Math.ceil( (float) attributeValueToGeometryMap.size() / 0.75f);
-        
-        Map<Object, GridCoverage> attributeValueToCoverageMap = new LinkedHashMap<Object, GridCoverage>(attributeValueMapSize);
+        Map<Object, GridCoverage> attributeValueToCoverageMap =
+                new LinkedHashMap<Object, GridCoverage>(attributeValueMapSize);
+        CoordinateReferenceSystem geometryCRS = featureCollection.getSchema().getCoordinateReferenceSystem();
+
         for(Map.Entry<Object, Geometry> entry : attributeValueToGeometryMap.entrySet()) {
-            attributeValueToCoverageMap.put(entry.getKey(), new GridCoverage(entry.getValue(), gdt));
+            attributeValueToCoverageMap.put(entry.getKey(), new GridCoverage(entry.getValue(), geometryCRS, gdt));
         }
         
         GridCoordSystem gcs = gdt.getCoordinateSystem();
-        
+        if (gcs.getCoordinateAxes().size() != 3) {
+            // FIXME: In the future, we ought to be able to handle other grid types, especially t-z-y-x and y-x.
+            // Until then, we should actively reject them because types like t-z-y-x will actually run without error
+            // in the code below, but will produce incomplete results (e.g. only for z=0).
+            throw new IllegalArgumentException("\"" + variableName  + "\" is not a t-y-x grid.");
+        }
+
+        // Theset statements will throw a NullPointerException if gdt's 3 coordinate axes are not t-y-x.
         int tCount = (int) gcs.getTimeAxis().getSize();
         int yCount = (int) gcs.getYHorizAxis().getSize();
         int xCount = (int) gcs.getXHorizAxis().getSize();
@@ -180,7 +199,8 @@ public class GridStatistics {
         
         gs.allTimestepAllAttributeValueStatistics = new WeightedStatisticsAccumulator1D() ;
         
-        gs.perAttributeValueAllTimestepStatistics = new LinkedHashMap<Object, WeightedStatisticsAccumulator1D>(attributeValueMapSize);
+        gs.perAttributeValueAllTimestepStatistics =
+                new LinkedHashMap<Object, WeightedStatisticsAccumulator1D>(attributeValueMapSize);
         for (Object attributeValue : gs.attributeValues) {
             gs.perAttributeValueAllTimestepStatistics.put(attributeValue, new WeightedStatisticsAccumulator1D());
         }
@@ -190,25 +210,26 @@ public class GridStatistics {
         
         int tBase = timeRange.first();
         for (int tIndex = 0; tIndex < tCount; ++tIndex) {
-            ucar.ma2.Array array = gdt.readVolumeData(tIndex);
-           
-            Map<Object, WeightedStatisticsAccumulator1D> timeStepAttributeValueStatisticsMap =  new LinkedHashMap<Object, WeightedStatisticsAccumulator1D>(attributeValueMapSize);
+            Map<Object, WeightedStatisticsAccumulator1D> timeStepAttributeValueStatisticsMap =
+                    new LinkedHashMap<Object, WeightedStatisticsAccumulator1D>(attributeValueMapSize);
             for (Object attributeValue : gs.attributeValues) {
                 timeStepAttributeValueStatisticsMap.put(attributeValue, new WeightedStatisticsAccumulator1D());
             }
-            
+
+            Array array = gdt.readVolumeData(tIndex);
+            Index arrayIndex = array.getIndex();
             WeightedStatisticsAccumulator1D timeStepStatistics = new WeightedStatisticsAccumulator1D();
             
             for (int yIndex = 0; yIndex < yCount; ++yIndex) {
-                int yOffset = yIndex * xCount;
                 for (int xIndex = 0; xIndex < xCount; ++xIndex) {
-                    int yxIndex = yOffset + xIndex;
                     double cellCoverageFractionTotal = 0;
-                    double value = array.getDouble(yxIndex);
+                    double value = array.getDouble(arrayIndex.set(yIndex, xIndex));
+
                     for (Map.Entry<Object, GridCoverage> entry : attributeValueToCoverageMap.entrySet()) {
                         Object av = entry.getKey();
                         GridCoverage gc = entry.getValue();
-                        double cellCoverageFraction = gc.getCellCoverageFraction(yxIndex);
+                        double cellCoverageFraction = gc.getCellCoverageFraction(yIndex, xIndex);
+
                         if(cellCoverageFraction > 0d) {
                             gs.perAttributeValueAllTimestepStatistics.get(av).accumulate(value, cellCoverageFraction);
                             timeStepAttributeValueStatisticsMap.get(av).accumulate(value, cellCoverageFraction);
@@ -247,7 +268,8 @@ public class GridStatistics {
             String attributeName = "GRIDCODE";
             FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = featureSource.getFeatures();
             
-            GridStatistics gs = GridStatistics.generate(featureCollection, attributeName, (GridDataset)dataset, "Tavg", new Range(0, 1000));
+            GridStatistics gs = GridStatistics.generate(
+                    featureCollection, attributeName, (GridDataset)dataset, "Tavg", new Range(0, 1000));
             
             // example csv dump...
             BufferedWriter writer = null;
@@ -285,4 +307,3 @@ public class GridStatistics {
         System.out.println("Completed in " + (System.currentTimeMillis() - start) + " ms.");
     }
 }
-    
