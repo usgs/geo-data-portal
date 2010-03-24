@@ -55,7 +55,7 @@ public class AvailableFilesBean implements XmlBean{
 		// Create the user file bean list (if calling method decides)
 		if (userDirectory != null && !"".equals(userDirectory)) {
 			//userFileBeanList = FilesBean.getFilesBeanSetList(userDirectory, false);			
-            allFilesBeanList = FilesBean.getFilesBeanSetList(exampleDirectory, userDirectory);
+            allFilesBeanList = FilesBean.getFilesBeanSetList(exampleDirectory, baseDirectory + userDirectory);
 		} else {
             allFilesBeanList = FilesBean.getFilesBeanSetList(exampleDirectory, true);
         }

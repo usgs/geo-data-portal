@@ -45,37 +45,37 @@ public class FileSelectionServlet extends HttpServlet {
 		String command = (request.getParameter("command") == null) ? "" : request.getParameter("command");
 		XmlReplyBean xmlReply = null;
 		if ("listfiles".equals(command)) {
-            String userDirectory = request.getParameter("userdirectory");
-			String appTempDir = System.getProperty("applicationTempDir");
+		    String userDirectory = request.getParameter("userdirectory");
+		    String appTempDir = System.getProperty("applicationTempDir");
                         
-            // Test to see if the directory does exist. If so,
-            // update the time on those files to today to escape the
-            // timed deletion process
-            if (userDirectory != null && !"".equals(appTempDir + userDirectory)) {
-                if (FileHelper.doesDirectoryOrFileExist(appTempDir + userDirectory)) {
-                    FileHelper.updateTimestamp(appTempDir + userDirectory, false); // Update the timestamp
-                } else {
-                	userDirectory = "";
-                }
-            }
-			AvailableFilesBean afb = null;
-			try {
-				afb = AvailableFilesBean.getAvailableFilesBean(appTempDir, userDirectory);
-			} catch (IllegalArgumentException e) {
-				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FILE_LIST, e));
-				RouterServlet.sendXml(xmlReply, start, response);
-				return;
-			}
+                    // Test to see if the directory does exist. If so,
+                    // update the time on those files to today to escape the
+                    // timed deletion process
+                    if (userDirectory != null && !"".equals(appTempDir + userDirectory)) {
+                        if (FileHelper.doesDirectoryOrFileExist(appTempDir + userDirectory)) {
+                            FileHelper.updateTimestamp(appTempDir + userDirectory, false); // Update the timestamp
+                        } else {
+                        	userDirectory = "";
+                        }
+                    }
+                    AvailableFilesBean afb = null;
+                    try {
+			afb = AvailableFilesBean.getAvailableFilesBean(appTempDir, userDirectory);
+                    } catch (IllegalArgumentException e) {
+			xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FILE_LIST, e));
+			RouterServlet.sendXml(xmlReply, start, response);
+			return;
+                    }
 			
-			// Couldn't pull any files. Send an error to the caller.
-			if (afb == null || afb.getExampleFileList() == null 
-					|| afb.getExampleFileList().isEmpty()
-					|| afb.getShapeSetList() == null
-					|| afb.getShapeSetList().isEmpty()) {
-				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new MessageBean("Could not find any files to work with."));
-				RouterServlet.sendXml(xmlReply, start, response);
-				return;
-			}
+                    // Couldn't pull any files. Send an error to the caller.
+                    if (afb == null || afb.getExampleFileList() == null 
+                	    || afb.getExampleFileList().isEmpty()
+                	    || afb.getShapeSetList() == null
+                	    || afb.getShapeSetList().isEmpty()) {
+        				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new MessageBean("Could not find any files to work with."));
+        				RouterServlet.sendXml(xmlReply, start, response);
+        				return;
+				}
 			
 			xmlReply = new XmlReplyBean(AckBean.ACK_OK, afb);
 			RouterServlet.sendXml(xmlReply, start, response);
