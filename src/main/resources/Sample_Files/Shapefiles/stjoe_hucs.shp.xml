@@ -1,0 +1,877 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE metadata SYSTEM "http://www.fgdc.gov/metadata/fgdc-std-001-1998.dtd">
+<metadata>
+	<idinfo>
+		<citation>
+			<citeinfo>
+				<origin>U.S. Department of Agriculture, Natural Resources Conservation Service, National Cartography and Geospatial Center</origin>
+				<pubdate>2009</pubdate>
+				<pubtime>Unknown</pubtime>
+				<title>HU12_polygon</title>
+				<geoform Sync="TRUE">vector digital data</geoform>
+				<pubinfo>
+					<pubplace>Fort Worth, Texas</pubplace>
+					<publish>U.S. Department of Agriculture, Natural Resources Conservation Service, National Cartography and Geospatial Center</publish>
+				</pubinfo>
+				<ftname Sync="TRUE">hucs</ftname><onlink Sync="TRUE">\\IGSARMEWWSORQ\D\ORQData\GDP_demo\saint_joe\hucs.shp</onlink></citeinfo>
+		</citation>
+		<descript>
+			<abstract>This data set is a complete digital hydrologic unit boundary layer to the Subwatershed (12-digit) 6th level for the entire United States. This data set consists of geo-referenced digital data and associated attributes created in accordance with the "Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3" (04/01/2009). http://www.ncgc.nrcs.usda.gov/products/datasets/watershed/index.html . Polygons are attributed with hydrologic unit codes for 4th level sub-basins, 5th level watersheds, 6th level subwatersheds, name, size, downstream hydrologic unit, type of watershed, non-contributing areas and flow modification.</abstract>
+			<purpose>The Watershed and Subwatershed hydrologic unit boundaries provide a uniquely identified and uniform method of subdividing large drainage areas. The smaller sized 6th level sub-watersheds (up to 250,000 acres) are useful for numerous application programs supported by a variety of local, State, and Federal Agencies. This data set is intended to be used as a tool for water-resource management and planning activities, particularly for site-specific and localized studies requiring a level of detail provided by large-scale map information. The dataset is seamless and, for the most part, a nationally consistant geospatial database.</purpose>
+			<langdata Sync="TRUE">en</langdata></descript>
+		<timeperd>
+			<timeinfo>
+				<rngdates>
+					<begdate>1980</begdate>
+					<enddate>unknown</enddate>
+				</rngdates>
+			</timeinfo>
+			<current>publication date</current>
+		</timeperd>
+		<status>
+			<progress>Complete</progress>
+			<update>As needed</update>
+		</status>
+		<spdom>
+			<bounding>
+				<westbc Sync="TRUE">-160.247041</westbc>
+				<eastbc Sync="TRUE">-64.565191</eastbc>
+				<northbc Sync="TRUE">49.384479</northbc>
+				<southbc Sync="TRUE">17.673736</southbc>
+			</bounding>
+			<lboundng><leftbc Sync="TRUE">-160.247041</leftbc><rightbc Sync="TRUE">-64.565191</rightbc><bottombc Sync="TRUE">17.673736</bottombc><topbc Sync="TRUE">49.384479</topbc></lboundng></spdom>
+		<keywords>
+			<theme>
+				<themekt>None</themekt>
+				<themekey>HUC</themekey>
+				<themekey>Hydrologic Units</themekey>
+				<themekey>Hydrologic Unit Code</themekey>
+				<themekey>Region</themekey>
+				<themekey>Sub-region</themekey>
+				<themekey>Basin</themekey>
+				<themekey>Sub-basin</themekey>
+				<themekey>Watershed</themekey>
+				<themekey>Watershed Boundaries</themekey>
+				<themekey>boundaries</themekey>
+				<themekey>Subwatershed</themekey>
+				<themekey>WBD</themekey>
+				<themekey>Watershed Boundary Dataset</themekey>
+				<themekey>HUC12</themekey>
+			</theme>
+			<place>
+				<placekt>None</placekt>
+				<placekey>USA</placekey>
+				<placekey>United States of America</placekey>
+				<placekey>United States</placekey>
+			</place>
+		</keywords>
+		<accconst>None</accconst>
+		<useconst>The distributor shall not be held liable for improper or incorrect use of this data, based on the description of appropriate/inappropriate uses described in this metadata document. It is strongly recommended that this data is directly acquired from the distributor and not indirectly through other sources which may have changed the data in some way. These data should not be used at scales greater than 1:24,000 for the purpose of identifying hydrographic watershed boundary feature locations in the U.S.A. The NRCS should be acknowledged as the data source in products derived from these data. The Watershed Boundary Dataset is public information and may be interpreted by all organizations, agencies, units of government, or others based on needs; however, they are responsible for the appropriate application of the data. Federal, State, or local regulatory bodies are not to reassign to the Natural Resources Conservation Service any authority for the decisions they make.  The Natural Resources Conservation Service will not perform any evaluations of these maps or purposes related solely to State or local regulatory programs. Photographic or digital enlargement of these maps to scales greater than that at which they were originally delineated can result in misrepresentation of the data.  If enlarged, the maps will not include the fine detail that would be appropriate for mapping at the small scale.  Digital data files are periodically updated. Files are dated, and users are responsible for obtaining the latest version of the data from the source distributor.</useconst>
+		<ptcontac>
+			<cntinfo>
+				<cntorgp>
+					<cntorg>U.S. Department of Agriculture, Natural Resources Conservation Service, National Cartography and Geospatial Center</cntorg>
+					<cntper>Steve Nechero</cntper>
+				</cntorgp>
+				<cntpos>Cartographer, Technology Applications Team Lead</cntpos>
+				<cntaddr>
+					<addrtype>mailing address</addrtype>
+					<address>501 W. Felix St., Bldg. 23</address>
+					<city>Fort Worth</city>
+					<state>Texas</state>
+					<postal>76115</postal>
+				</cntaddr>
+				<cntvoice>(817) 509-3366</cntvoice>
+				<cntemail>Steven.Nechero@ftw.usda.gov</cntemail>
+				<cntinst>Please email questions and requests.</cntinst>
+			</cntinfo>
+		</ptcontac>
+		<datacred>Funding and support for the Watershed Boundary Dataset (WBD) were provided by the Natural Resources Conservation Service, the Environmental Protection Agency, and the United States Geological Survey. Representatives from the U.S. Geological Survey and Environmental Protection Agency contributed a substantial amount of time and salary towards quality review and updating of the dataset in order to meet the Federal Standards for Delineation of Hydrologic Unit Boundaries.</datacred>
+		<native Sync="TRUE">Microsoft Windows XP Version 5.1 (Build 2600) Service Pack 3; ESRI ArcCatalog 9.3.1.1850</native>
+		<natvform Sync="TRUE">Shapefile</natvform></idinfo>
+	<dataqual>
+		<attracc>
+			<attraccr>10% of the attributes were visually reviewed. The accuracy of this data is dependent on the level of detail of the source material and the interpretation procedures for capturing that source.</attraccr>
+		</attracc>
+		<logic>There are no unclosed polygons, intersections without nodes, or polygons without labels or with more than one label. The ArcGIS geodatabase topology tools were used to make corrections using 11 rules including no gaps, no overlaps, identify cooresponding linework for every polygon boundary, and remove duplicate lines with the same beginning and ending nodes.</logic>
+		<complete>All fields for all polygons are attributed. Some polygons in the Ncontrb_a field might have a 0 value.</complete>
+		<posacc>
+			<horizpa>
+				<horizpar>The WBD was produced using Digital Raster Graphics (DRG's) as the source map. Data completeness for DRG files reflects content of the source graphic and may therefore be reflected in the completeness and accuracy of the WBD. The map was digitized from USGS 1:24,000-scale digital raster graphic base maps, with an inherited error of +/- 40 feet according to the USGS National Map Accuracy Standards.
+It is estimated that any errors detected were less than 10%. It should also be noted that while general rules of hydrology were used (i.e. natural water flow is downhill), the locations of boundaries is still somewhat subjective as the 1:24,000-scale DRG's do not always provide enough information for identifying the location of the boundaries.</horizpar>
+			</horizpa>
+			<vertacc>
+				<vertaccr>N/A</vertaccr>
+			</vertacc>
+		</posacc>
+		<lineage>
+			<srcinfo>
+				<srccite>
+					<citeinfo>
+						<origin>U.S. Geological Survey</origin>
+						<pubdate>Unknown</pubdate>
+						<title>USGS 7.5 Minute Topographic Quadrangle Sheets</title>
+						<geoform>map</geoform>
+					</citeinfo>
+				</srccite>
+				<srcscale>24000</srcscale>
+				<typesrc>paper</typesrc>
+				<srctime>
+					<timeinfo>
+						<sngdate>
+							<caldate>unknown</caldate>
+						</sngdate>
+					</timeinfo>
+					<srccurr>map delineation</srccurr>
+				</srctime>
+				<srccitea>USGS1</srccitea>
+				<srccontr>hydrologic unit map delineation and digitize map</srccontr>
+			</srcinfo>
+			<srcinfo>
+				<srccite>
+					<citeinfo>
+						<origin>U.S. Geological Survey</origin>
+						<pubdate>Unknown</pubdate>
+						<title>Digital Raster Graphic</title>
+						<onlink>http://datagateway.nrcs.usda.gov</onlink>
+					</citeinfo>
+				</srccite>
+				<srcscale>24000</srcscale>
+				<typesrc>online</typesrc>
+				<srctime>
+					<timeinfo>
+						<sngdate>
+							<caldate>1999</caldate>
+						</sngdate>
+					</timeinfo>
+					<srccurr>map delineation</srccurr>
+				</srctime>
+				<srccitea>USGSDRG</srccitea>
+				<srccontr>hydrologic unit map delineation and digitize map</srccontr>
+			</srcinfo>
+			<srcinfo>
+				<srccite>
+					<citeinfo>
+						<origin>U.S. Geological Survey</origin>
+						<pubdate>Unknown</pubdate>
+						<title>Digital Orthophoto Quads</title>
+						<geoform>raster digital data</geoform>
+						<onlink>http://datagateway.nrcs.usda.gov</onlink>
+					</citeinfo>
+				</srccite>
+				<srcscale>24000</srcscale>
+				<typesrc>online</typesrc>
+				<srctime>
+					<timeinfo>
+						<sngdate>
+							<caldate>unknown</caldate>
+						</sngdate>
+					</timeinfo>
+					<srccurr>publication date</srccurr>
+				</srctime>
+				<srccitea>USGSDOQ</srccitea>
+				<srccontr>GIS raster coverage used for reference in watershed boundary delineation</srccontr>
+			</srcinfo>
+			<srcinfo>
+				<srccite>
+					<citeinfo>
+						<origin>U.S. Geological Survey</origin>
+						<pubdate>Unknown</pubdate>
+						<title>250K Hydrologic Unit Boundaries</title>
+					</citeinfo>
+				</srccite>
+				<srcscale>250000</srcscale>
+				<typesrc>online</typesrc>
+				<srctime>
+					<timeinfo>
+						<sngdate>
+							<caldate>unknown</caldate>
+						</sngdate>
+					</timeinfo>
+					<srccurr>ground condition</srccurr>
+				</srctime>
+				<srccitea>USGS2</srccitea>
+				<srccontr>Reference for 8-digit watershed delineation</srccontr>
+			</srcinfo>
+			<srcinfo>
+				<srccite>
+					<citeinfo>
+						<origin>U.S. Geological Survey</origin>
+						<pubdate>Unknown</pubdate>
+						<title>National Hydrography Dataset</title>
+						<onlink>http://nhd.usgs.gov/data.html</onlink>
+					</citeinfo>
+				</srccite>
+				<srcscale>24000</srcscale>
+				<typesrc>online</typesrc>
+				<srctime>
+					<timeinfo>
+						<sngdate>
+							<caldate>unknown</caldate>
+						</sngdate>
+					</timeinfo>
+					<srccurr>map delineation</srccurr>
+				</srctime>
+				<srccitea>NHD</srccitea>
+				<srccontr>GIS coverage used for reference in watershed boundary delineation</srccontr>
+			</srcinfo>
+			<procstep>
+				<procdesc>The original hydrologic unit boundaries were hand-digitized on a tablet from the USGS 7.5 minute quadrangles. This process occurred over a span of approximately 20 years.</procdesc>
+				<srcused>USGS1</srcused>
+				<procdate>2009</procdate>
+			</procstep>
+			<procstep>
+				<procdesc>The original dataset was reviewed by USGS personnel using on-screen techniques with DRG's as the base map. All hydrologic units within the dataset that were under 3,000 acres were dissolved out.</procdesc>
+				<srcused>USGSDRG</srcused>
+				<procdate>2003</procdate>
+			</procstep>
+			<procstep>
+				<procdesc>The new WBD dataset was reviewed on-screen by USGS, EPA, or NRCS personnel using DRG's and DOQ?s as base maps. Hydrologic Units that were under 10,000 acres (for the 12-digit units) and 40,000 acres (for the 10-digit units) were reviewed and if possible were dissolved out. Along the coastal areas classic watersheds that fell within the federal guidelines size criteria (12-digit: 10,000-40,000 acres, 10-digit: 40,000-250,000 acres) were broken out. If possible the remaining frontals were left as their own units. Frontals that did not meet the size criteria were grouped together with other frontals within the overall 8-digit or 10-digit unit.
+Hydrologic units what were greater than 40,000 acres (12-digit units) and 250,000 acres (10-digit units) were reviewed. If possible these unit where then broken down into smaller units that met the size criteria. In some cases additional breaks within the unit would not have made sense or have been very useful (example: When the majority of the unit was made up by a major waterbody feature such as a lake or reservoir and the surrounding tributaries were too small to break out as their own unit). In these instances the unit was left big. 	 Source_Used_Citation_Abbreviation: USGSDRG</procdesc>
+				<srcused>USGSDOQ</srcused>
+				<procdate>2005</procdate>
+			</procstep>
+			<procstep>
+				<procdesc>Hydrologic units from surrounding states were used to edgematch watershed boundaries.</procdesc>
+				<srcused>NA</srcused>
+				<procdate>2005</procdate>
+			</procstep>
+			<procstep>
+				<procdesc>Original dataset attribution was reviewed and revised to reflect the updates and changes made to the dataset. These revisions to the attribution were also made to ensure that the dataset met the Federal Standards for Delineation of Hydrologic Unit Boundaries. The NHD was used during this process to help with the naming and downstream coding of each unit. In some instances there were name hydrologic unit name discrepancies between the NHD and what was printed on the DRG's. In these instances the DRG's were used instead of the NHD.</procdesc>
+				<srcused>NHD</srcused>
+				<srcused>USGSDRG</srcused>
+				<procdate>2005</procdate>
+				<srcprod>WBD12</srcprod></procstep>
+			<procstep>
+				<procdesc>First draft of metadata created by Laura Davenport using
+METADATA Editor in ArcCatalog ver. 9.1 sp.1.</procdesc>
+				<procdate>20070124</procdate>
+			</procstep>
+			<procstep>
+				<procdesc>Second draft of metadata created by Laura Davenport using
+METADATA Editor in ArcCatalog ver. 9.2 sp.6.</procdesc>
+				<procdate>20090817</procdate>
+			</procstep>
+			<procstep><procdesc Sync="TRUE">Dataset copied.</procdesc><srcused Sync="TRUE">Server=soilmart1; Service=5153; Database=base; User=base; Version=sde.DEFAULT</srcused><date Sync="TRUE">20100127</date><time Sync="TRUE">16162000</time></procstep></lineage>
+	</dataqual>
+	<spdoinfo>
+		<direct Sync="TRUE">Vector</direct>
+		<ptvctinf>
+			<sdtsterm Name="hucs">
+				<sdtstype Sync="TRUE">G-polygon</sdtstype>
+				<ptvctcnt Sync="TRUE">0</ptvctcnt>
+			</sdtsterm>
+			<esriterm Name="hucs"><efeatyp Sync="TRUE">Simple</efeatyp><efeageom Sync="TRUE">Polygon</efeageom><esritopo Sync="TRUE">FALSE</esritopo><efeacnt Sync="TRUE">0</efeacnt><spindex Sync="TRUE">FALSE</spindex><linrefer Sync="TRUE">FALSE</linrefer><XYRank Sync="TRUE">1</XYRank><ZRank Sync="TRUE">1</ZRank><topoWeight Sync="TRUE">5.000000</topoWeight><validateEvents Sync="TRUE">FALSE</validateEvents><partTopoRules><topoRuleID Sync="TRUE">2</topoRuleID></partTopoRules><partTopoRules><topoRuleID Sync="TRUE">7</topoRuleID></partTopoRules><partTopoRules><topoRuleID Sync="TRUE">9</topoRuleID></partTopoRules><partTopoRules><topoRuleID Sync="TRUE">11</topoRuleID></partTopoRules></esriterm></ptvctinf>
+	</spdoinfo>
+	<spref>
+		<horizsys>
+			<geograph>
+				<latres>0.000000001</latres>
+				<longres>0.000000001</longres>
+				<geogunit Sync="TRUE">Decimal degrees</geogunit>
+			</geograph>
+			<geodetic>
+				<horizdn Sync="TRUE">North American Datum of 1983</horizdn>
+				<ellips Sync="TRUE">Geodetic Reference System 80</ellips>
+				<semiaxis Sync="TRUE">6378137.000000</semiaxis>
+				<denflat Sync="TRUE">298.257222</denflat>
+			</geodetic>
+			<cordsysn><geogcsn Sync="TRUE">GCS_North_American_1983</geogcsn></cordsysn></horizsys>
+		<vertdef>
+			<altsys>
+				<altdatum>not applicable</altdatum>
+				<altres Sync="TRUE">1.000000</altres>
+				<altunits>not applicable</altunits>
+				<altenc>Implicit coordinate</altenc>
+			</altsys>
+			<depthsys>
+				<depthdn>
+not applicable</depthdn>
+				<depthres>1.000000</depthres>
+				<depthdu>not applicable</depthdu>
+				<depthem>Implicit coordinate</depthem>
+			</depthsys>
+		</vertdef>
+	</spref>
+	<eainfo>
+		<detailed Name="hucs">
+			<enttyp>
+				<enttypl>HU12_polygon</enttypl>
+				<enttypd>identifies watershed boundaries (as polygons)</enttypd>
+				<enttypds>n/a</enttypds>
+				<enttypt Sync="TRUE">Feature Class</enttypt><enttypc Sync="TRUE">0</enttypc></enttyp>
+			<attr><attrlabl Sync="TRUE">FID</attrlabl><attalias Sync="TRUE">FID</attalias><attrtype Sync="TRUE">OID</attrtype><attwidth Sync="TRUE">4</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale><attrdef Sync="TRUE">Internal feature number.</attrdef><attrdefs Sync="TRUE">ESRI</attrdefs><attrdomv><udom Sync="TRUE">Sequential unique whole numbers that are automatically generated.</udom></attrdomv></attr><attr>
+				<attrlabl>HUC_8</attrlabl>
+				<attrdef>Eight Digit Hydrologic Unit Code: A unique 8-digit code from the USGS map series "Hydrologic Unit Maps".  The same number was used in every record that pertains to a subwatershed that resides within the same 8-digit sub-basin.Numbers were assigned in an upstream to downstream fashion. Where no downstream/upstream relationship could be determined numbers were assigned in a clockwise fashion.</attrdef>
+				<attrdefs>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3.</attrdefs>
+				<attrdomv>
+					<rdom>
+						<rdommin>01000000</rdommin>
+						<rdommax>99999999</rdommax>
+					</rdom>
+				</attrdomv>
+				<attalias Sync="TRUE">HUC_8</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">8</attwidth></attr>
+			<attr>
+				<attrlabl>HUC_10</attrlabl>
+				<attrdef>Ten Digit Hydrologic Unit Code: This field provides a unique 10-digit code for each watershed.  This same number was used in every record that pertains to a subwatershed that resides within the same 10-digit watershed. Numbers were assigned in an upstream to downstream fashion. Where no downstream/upstream relationship could be determined numbers were assigned in a clockwise fashion.</attrdef>
+				<attrdefs>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3.</attrdefs>
+				<attrdomv>
+					<rdom>
+						<rdommin>0100000000</rdommin>
+						<rdommax>9999999999</rdommax>
+					</rdom>
+				</attrdomv>
+				<attalias Sync="TRUE">HUC_10</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">10</attwidth></attr>
+			<attr>
+				<attrlabl>HUC_12</attrlabl>
+				<attrdef>Twelve Digit Hydrologic Unit Code: This field provides a unique 12-digit code for each subwatershed.  Numbers were assigned in an upstream to downstream fashion. Where no downstream/upstream relationship could be determined numbers were assigned in a clockwise fashion.</attrdef>
+				<attrdefs>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3.</attrdefs>
+				<attrdomv>
+					<rdom>
+						<rdommin>010000000000</rdommin>
+						<rdommax>999999999999</rdommax>
+					</rdom>
+				</attrdomv>
+				<attalias Sync="TRUE">HUC_12</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">12</attwidth></attr>
+			<attr>
+				<attrlabl>ACRES</attrlabl>
+				<attrdef>Area of subwatershed including non-contributing areas calculated to acres as a whole number, no decimals.  The "Acres" field was calculated from the "Area" field.</attrdef>
+				<attrdefs>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3.</attrdefs>
+				<attrdomv>
+					<rdom>
+						<rdommin>0</rdommin>
+						<rdommax>2500000</rdommax>
+					</rdom>
+				</attrdomv>
+				<attalias Sync="TRUE">ACRES</attalias><attrtype Sync="TRUE">Float</attrtype><attwidth Sync="TRUE">19</attwidth><atnumdec Sync="TRUE">11</atnumdec></attr>
+			<attr>
+				<attrlabl>NCONTRB_A</attrlabl>
+				<attrdef>Non-Contributing Area: Drainage areas that do not flow toward the outlet of any hydrologic unit are considered non-contributing.  If a non-contributing area is on the boundary between two or more hydrologic units, the non-contributing area is associated with the hydrologic unit adjacent to the low point on the boundary. This attribute should be the total of the non-contributing areas within a hydrologic unit calculated in acres.</attrdef>
+				<attrdefs>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3.</attrdefs>
+				<attrdomv>
+					<rdom>
+						<rdommin>0</rdommin>
+						<rdommax>2500000</rdommax>
+					</rdom>
+				</attrdomv>
+				<attalias Sync="TRUE">NCONTRB_A</attalias><attrtype Sync="TRUE">Float</attrtype><attwidth Sync="TRUE">19</attwidth><atnumdec Sync="TRUE">11</atnumdec></attr>
+			<attr>
+				<attrlabl>HU_10_GNIS</attrlabl>
+				<attrdef>The Watershed GNIS Feature Identification Number attribute is the 6- or 7-digit Feature Identification Number from the Geographic Names Information System (GNIS) that correspond to the official names used in the hydrologic unit name. Each officially recognized name in the country has a unique Feature Identification Number. If a hydrologic unit name includes two or more feature names, this field contains two GNIS feature numbers separated by a space.</attrdef>
+				<attrdefs>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3.</attrdefs>
+				<attrdomv>
+					<rdom>
+						<rdommin>000001</rdommin>
+						<rdommax>9999999</rdommax>
+					</rdom>
+				</attrdomv>
+				<attalias Sync="TRUE">HU_10_GNIS</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">23</attwidth></attr>
+			<attr>
+				<attrlabl>HU_12_GNIS</attrlabl>
+				<attrdef>The Subwatershed GNIS Feature Identification Number attribute is the 6- or 7-digit Feature Identification Number from the Geographic Names Information System (GNIS) that corresponds to the official names used in the hydrologic unit name. Each officially recognized name in the country has a unique Feature Identification Number. If a hydrologic unit name includes two or more feature names, this field contains two GNIS feature numbers separated by a space.</attrdef>
+				<attrdefs>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3.</attrdefs>
+				<attrdomv>
+					<rdom>
+						<rdommin>000001</rdommin>
+						<rdommax>9999999</rdommax>
+					</rdom>
+				</attrdomv>
+				<attalias Sync="TRUE">HU_12_GNIS</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">23</attwidth></attr>
+			<attr>
+				<attrlabl>HU_10_DS</attrlabl>
+				<attrdef>Fifth Level Downstream Hydrologic Unit Code: This field has the 10-digit code of the 5th level hydrologic unit that is receiving the majority of the flow from the watershed that the 6th level HU falls within.  Outlets created by ditching or other artificial drainage were not considered for this field. If an HU flows into an ocean or the Gulf of Mexico, this field was populated with "OCEAN" and if a HU flows into one of the Great Lakes the term "LAKE" was used.  If a HU flows across international borders, "CANADA" or "MEXICO" was used depending on which country the HU drains into.  If an HU is  a closed basin, then the term "CLOSED BASIN"was used.</attrdef>
+				<attrdefs>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3.</attrdefs>
+				<attrdomv>
+					<rdom>
+						<rdommin>0100000000</rdommin>
+						<rdommax>9999999999</rdommax>
+					</rdom>
+				</attrdomv>
+				<attalias Sync="TRUE">HU_10_DS</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">10</attwidth></attr>
+			<attr>
+				<attrlabl>HU_10_NAME</attrlabl>
+				<attrdef>Fifth Level Hydrologic Unit Name: This field used officially recognized names only.  This field was populated by following the directions in subsection 6.3 "Watershed and Subwatershed Naming Protocol".  The name used to attribute the watershed was used only once within a 4th level unit.</attrdef>
+				<attrdefs>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3.</attrdefs>
+				<attrdomv>
+					<udom>Character String</udom>
+				</attrdomv>
+				<attalias Sync="TRUE">HU_10_NAME</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">80</attwidth></attr>
+			<attr>
+				<attrlabl>HU_10_MOD</attrlabl>
+				<attrdef>Fifth Level Hydrologic Unit Modifications: This field identifies any type of modifications to natural overland flow that alters the location of the hydrologic unit boundary for a 10-digit watershed.  This field shows the most significant to least significant modification(s) to the watershed boundary.  One or more of the following abbreviations was used.</attrdef>
+				<attrdefs>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3.</attrdefs>
+				<attrdomv>
+					<edom>
+						<edomv>SC</edomv>
+						<edomvd>Stormwater Canal or Drainage Canal</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>ID</edomv>
+						<edomvd>Irrigation Ditch</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>IT</edomv>
+						<edomvd>Interbasin Transfer</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>BC</edomv>
+						<edomvd>Barge Canal or Navigation Canal</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>SD</edomv>
+						<edomvd>Stormwater Ditch</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>PD</edomv>
+						<edomvd>Pipe Diversion</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>CD</edomv>
+						<edomvd>Channel Diversion</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>NC</edomv>
+						<edomvd>Noncontributing Area</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>KA</edomv>
+						<edomvd>Karst</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>LE</edomv>
+						<edomvd>Levee</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>NM</edomv>
+						<edomvd>No Modifications</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>OC</edomv>
+						<edomvd>Overflow Channel or Flume</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>DM</edomv>
+						<edomvd>Dam at outlet or HU boundary</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>GC</edomv>
+						<edomvd>General Canal/Ditch</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>PS</edomv>
+						<edomvd>Pumping Station</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>DD</edomv>
+						<edomvd>Drainage Ditch</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>SI</edomv>
+						<edomvd>Siphon</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>AD</edomv>
+						<edomvd>Aqueduct</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>RS</edomv>
+						<edomvd>Reservoir</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>TF</edomv>
+						<edomvd>Transportation Feature (road, railroad, docks etc.)</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>GF</edomv>
+						<edomvd>Ground-Water Flow</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>MA</edomv>
+						<edomvd>Mining Activity</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>UA</edomv>
+						<edomvd>Urban Area</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>GL</edomv>
+						<edomvd>Glacier</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>IF</edomv>
+						<edomvd>Ice Field</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>OF</edomv>
+						<edomvd>Overbank Flow</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>OT</edomv>
+						<edomvd>Other</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+				</attrdomv>
+				<attalias Sync="TRUE">HU_10_MOD</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">20</attwidth></attr>
+			<attr>
+				<attrlabl>HU_10_TYPE</attrlabl>
+				<attrdef>Fifth Level Hydrologic Unit Type: This field was populated with the hydrologic unit type from the list provided that most closely identifies the watershed.</attrdef>
+				<attrdefs>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3.</attrdefs>
+				<attrdomv>
+					<edom>
+						<edomv>S</edomv>
+						<edomvd>"Standard" hydrologic unit - Any land HU with drainage flowing to a single outlet point, excluding non-contributing areas. This includes areas or small triangular wedges between adjacent HU's that remain after classic hydrologic units are delineated.  Some examples include "true", "classic", "composite", and "remnant" hydrologic units.</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>C</edomv>
+						<edomvd>"Closed Basin" hydrologic unit - A drainage area that is 100% non-contributing. This means all surface flow is internal, no overland flow leaves the hydrologic unit through the outlet point.</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>F</edomv>
+						<edomvd>"Frontal" hydrologic unit - Areas along the coastline of lakes, oceans, bays, etc. that have more than one outlet.  These HU's are predominantly land with some water areas at or near the outlet(s).</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>W</edomv>
+						<edomvd>"Water" hydrologic unit - Hydrologic units that are predominantly water with adjacent land areas, ex. lake, easturies, harbors.</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>I</edomv>
+						<edomvd>"Island" hydrologic unit - A hydrologic unit that is one or more islands and adjacent water out to the toe of the shore face.</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>U</edomv>
+						<edomvd>"Unclassified" hydrologic unit - A hydrologic unit that can't be defined or doesn't fit into one of the types that have been listed.</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+				</attrdomv>
+				<attalias Sync="TRUE">HU_10_TYPE</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">1</attwidth></attr>
+			<attr>
+				<attrlabl>HU_12_DS</attrlabl>
+				<attrdef>Sixth Level Downstream Hydrologic Unit Code: This field was populated with the 12-digit code of the 6th level hydrologic unit that is receiving the majority of the flow from the subwatershed.  Outlets created by ditching or other artificial drainage were not considered for this field.  If a HU flows into an ocean or the Gulf of Mexico it was populate with "OCEAN" and if a HU flows into one of the Great Lakes the term "LAKE" was used.  If a HU flows across international borders, "CANADA" or "MEXICO" was used depending on which country the HU drains into.  If an HU is a closed basin, this field was populated with the term "CLOSED BASIN".</attrdef>
+				<attrdefs>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3.</attrdefs>
+				<attrdomv>
+					<rdom>
+						<rdommin>010000000000</rdommin>
+						<rdommax>999999999999</rdommax>
+					</rdom>
+				</attrdomv>
+				<attalias Sync="TRUE">HU_12_DS</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">12</attwidth></attr>
+			<attr>
+				<attrlabl>HU_12_NAME</attrlabl>
+				<attrdef>Sixth Level Hydrologic Unit Name: Officially recognized names were used in this field.  This field was populated by following the directions in subsection 6.3 "Watershed and Subwatershed Naming Protocol".  The name used to attribute the subwatershed was used only once within a 4th level unit.</attrdef>
+				<attrdefs>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3.</attrdefs>
+				<attrdomv>
+					<udom>Character String</udom>
+				</attrdomv>
+				<attalias Sync="TRUE">HU_12_NAME</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">80</attwidth></attr>
+			<attr>
+				<attrlabl>HU_12_MOD</attrlabl>
+				<attrdef>Sixth Level Hydrologic Unit Modifications: This field identifies any type of man-made modification(s) to natural overland flow that alters the location of the hydrologic unit boundary for a 12-digit subwatershed.  One or more of the following abbreviations was chosen for this field.</attrdef>
+				<attrdefs>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3.</attrdefs>
+				<attrdomv>
+					<edom>
+						<edomv>SC</edomv>
+						<edomvd>Stormwater Canal or Drainage Canal</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>ID</edomv>
+						<edomvd>Irrigation Ditch</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>IT</edomv>
+						<edomvd>Interbasin Transfer</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>BC</edomv>
+						<edomvd>Barge Canal or Navigation Canal</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>SD</edomv>
+						<edomvd>Stormwater Ditch</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>PD</edomv>
+						<edomvd>Pipe Diversion</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>CD</edomv>
+						<edomvd>Channel Diversion</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>NC</edomv>
+						<edomvd>Noncontributing Area</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>KA</edomv>
+						<edomvd>Karst</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>LE</edomv>
+						<edomvd>Levee</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>NM</edomv>
+						<edomvd>No Modifications</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>OC</edomv>
+						<edomvd>Overflow Channel or Flume</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>DM</edomv>
+						<edomvd>Dam at outlet or HU boundary</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>GC</edomv>
+						<edomvd>General Canal/Ditch</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>PS</edomv>
+						<edomvd>Pumping Station</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>DD</edomv>
+						<edomvd>Drainage Ditch</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>SI</edomv>
+						<edomvd>Siphon</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>AD</edomv>
+						<edomvd>Aqueduct</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>RS</edomv>
+						<edomvd>Reservoir</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>TF</edomv>
+						<edomvd>Transportation Feature (road, railroad, docks etc.)</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>GF</edomv>
+						<edomvd>Ground-Water Flow</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>MA</edomv>
+						<edomvd>Mining Activity</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>UA</edomv>
+						<edomvd>Urban Area</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>GL</edomv>
+						<edomvd>Glacier</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>IF</edomv>
+						<edomvd>Ice Field</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>OF</edomv>
+						<edomvd>Overbank Flow</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>OT</edomv>
+						<edomvd>Other</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+				</attrdomv>
+				<attalias Sync="TRUE">HU_12_MOD</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">20</attwidth></attr>
+			<attr>
+				<attrlabl>HU_12_TYPE</attrlabl>
+				<attrdef>Sixth Level Hydrologic Unit Type: This field was populated with the hydrologic unit type from the list provided that most closely identifies the subwatershed.</attrdef>
+				<attrdefs>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3.</attrdefs>
+				<attrdomv>
+					<edom>
+						<edomv>S</edomv>
+						<edomvd>"Standard" hydrologic unit - Any land HU with drainage flowing to a single outlet point, excluding non-contributing areas. This includes areas or small triangular wedges between adjacent HU's that remain after classic hydrologic units are delineated.  Some examples include "true", "classic", "composite", and "remnant" hydrologic units.</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3.</edomvds>
+					</edom>
+					<edom>
+						<edomv>C</edomv>
+						<edomvd>"Closed Basin" hydrologic unit - A drainage area that is 100% non-contributing. This means all surface flow is internal, no overland flow leaves the hydrologic unit through the outlet point.</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>F</edomv>
+						<edomvd>"Frontal" hydrologic unit - Areas along the coastline of lakes, oceans, bays, etc. that have more than one outlet.  These HU's are predominantly land with some water areas at or near the outlet(s).</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>W</edomv>
+						<edomvd>"Water" hydrologic unit - Hydrologic units that are predominantly water with adjacent land areas, ex. lake, easturies, harbors.</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>I</edomv>
+						<edomvd>"Island" hydrologic unit - A hydrologic unit that is one or more islands and adjacent water out to the toe of the shore face.</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+					<edom>
+						<edomv>U</edomv>
+						<edomvd>"Unclassified" hydrologic unit - A hydrologic unit that can't be defined or doesn't fit into one of the types that have been listed.</edomvd>
+						<edomvds>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3</edomvds>
+					</edom>
+				</attrdomv>
+				<attalias Sync="TRUE">HU_12_TYPE</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">1</attwidth></attr>
+			<attr>
+				<attrlabl>META_ID</attrlabl>
+				<attrdef>Metadata ID Number: The Metadata ID is a code that identifies which metadata file applies to the line or polygon. In most cases there is only one metadata file. However, in some cases more than one metadata file was used to identify different groups and/or procedures used to produce the lines or polygons. The metadata ID is a 4-character code starting with the 2-letter state postal code, followed by a 2-digit sequence number. For example "OK01", "ID02", etc.</attrdef>
+				<attrdefs>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3.</attrdefs>
+				<attrdomv>
+					<udom>Character String</udom>
+				</attrdomv>
+				<attalias Sync="TRUE">META_ID</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">4</attwidth></attr>
+			<attr>
+				<attrlabl>STATES</attrlabl>
+				<attrdef>The "States" field includes the names of all state(s) that the subwatershed falls within.  The 2-digit postal abbreviation in upper case and in alphabetical order was used, separated with a comma.</attrdef>
+				<attrdefs>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3.</attrdefs>
+				<attrdomv>
+					<udom>Character String</udom>
+				</attrdomv>
+				<attalias Sync="TRUE">STATES</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">20</attwidth></attr>
+			<attr><attrlabl Sync="TRUE">SHAPE</attrlabl><attalias Sync="TRUE">Shape</attalias><attrtype Sync="TRUE">Geometry</attrtype><attwidth Sync="TRUE">0</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale><attrdef Sync="TRUE">Feature geometry.</attrdef><attrdefs Sync="TRUE">ESRI</attrdefs><attrdomv><udom Sync="TRUE">Coordinates defining the features.</udom></attrdomv></attr><attr><attrlabl Sync="TRUE">SHAPE_Leng</attrlabl><attalias Sync="TRUE">SHAPE_Leng</attalias><attrtype Sync="TRUE">Float</attrtype><attwidth Sync="TRUE">19</attwidth><atnumdec Sync="TRUE">11</atnumdec></attr><attr><attrlabl Sync="TRUE">SHAPE_Area</attrlabl><attalias Sync="TRUE">SHAPE_Area</attalias><attrtype Sync="TRUE">Float</attrtype><attwidth Sync="TRUE">19</attwidth><attrdef Sync="TRUE">Area of feature in internal units squared.</attrdef><attrdefs Sync="TRUE">ESRI</attrdefs><attrdomv><udom Sync="TRUE">Positive real numbers that are automatically generated.</udom></attrdomv><atnumdec Sync="TRUE">11</atnumdec></attr></detailed>
+		<overview>
+			<eaover>Each hydrologic unit polygon has associated attributes stored in 
+tabular format. An attribute, also called a field or column, is defined by 
+name, type, size, and valid values.  For this layer, these attributes are
+the Hydrologic Unit Codes, Names, Acreage, States crossed, non-contributing 
+area, Downstream unit code, Type, and Modification.                                
+ftp://ftp-fc.sc.egov.usda.gov/NCGC/products/watershed/hu-standards.pdf</eaover>
+			<eadetcit>Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3.</eadetcit>
+		</overview>
+	</eainfo>
+	<distinfo>
+		<distrib>
+			<cntinfo>
+				<cntperp>
+					<cntper>Steve Nechero</cntper>
+					<cntorg>U.S. Department of Agriculture, Natural Resources Conservation Service,  National Cartography and Geospatial Center</cntorg>
+				</cntperp>
+				<cntpos>Cartographer, Technology Applications Team Lead</cntpos>
+				<cntaddr>
+					<addrtype>mailing address</addrtype>
+					<address>501 W. Felix St., Bldg. 23</address>
+					<city>Fort Worth</city>
+					<state>Texas</state>
+					<postal>76115</postal>
+					<country>USA</country>
+				</cntaddr>
+				<cntvoice>(817) 509-3366</cntvoice>
+				<cntemail>Steven.Nechero@ftw.usda.gov</cntemail>
+				<cntinst>please e-mail with data requests.</cntinst>
+			</cntinfo>
+		</distrib>
+		<resdesc>Downloadable Data</resdesc>
+		<distliab>The distributor shall not be held liable for improper or incorrect use of this data, based on the description of appropriate/inappropriate uses described in this metadata document. It is strongly recommended that this data is directly acquired from the distributor and not indirectly through other sources which may have changed the data in some way. These data should not be used at scales greater than 1:24,000 for the purpose of identifying hydrographic watershed boundary feature locations in the U.S.A.  The U.S. Department of Agriculture makes no claims for the data's suitability for other purposes. U.S. Department of Agriculture should be acknowledged as the data source in products derived from these data. The Watershed Boundary Dataset is public information and may be interpreted by all organizations, agencies, units of government, or others based on needs; however, they are responsible for the appropriate application of the data. Federal, State, or local regulatory bodies are not to reassign to the U.S. Department of Agriculture or the Natural Resources Conservation Service any authority for the decisions they make.  The Natural Resources Conservation Service will not perform any evaluations of these maps or purposes related solely to State or local regulatory programs. Photographic or digital enlargement of these maps to scales greater than that at which they were originally delineated can result in misrepresentation of the data.  If enlarged, the maps will not include the fine detail that would be appropriate for mapping at the small scale.  Digital data files are periodically updated. Files are dated, and users are responsible for obtaining the latest version of the data from the source distributor.</distliab>
+		<stdorder>
+			<digform>
+				<digtinfo>
+					<formname>ARC Export</formname>
+					<formverd>20050801</formverd>
+					<filedec>no compression applies</filedec>
+					<transize>19.156</transize>
+					<dssize Sync="TRUE">0.000</dssize></digtinfo>
+				<digtopt>
+					<onlinopt>
+						<computer>
+							<networka>
+								<networkr>http://datagateway.nrcs.usda.gov</networkr>
+							</networka>
+						</computer>
+					</onlinopt>
+				</digtopt>
+			</digform>
+			<fees>none</fees>
+		</stdorder>
+	</distinfo>
+	<metainfo>
+		<metd Sync="TRUE">20100326</metd>
+		<metc>
+			<cntinfo>
+				<cntperp>
+					<cntper>Steve Nechero</cntper>
+					<cntorg>U.S. Department of Agriculture, Natural Resources Conservation Service, National Cartography and Geospatial Center</cntorg>
+				</cntperp>
+				<cntpos>Cartographer, Technology Applications Team Lead</cntpos>
+				<cntaddr>
+					<addrtype>mailing address</addrtype>
+					<address>501 W. Felix St., Bldg. 23</address>
+					<city>Fort Worth</city>
+					<state>TX</state>
+					<postal>76115</postal>
+					<country>USA</country>
+				</cntaddr>
+				<cntvoice>817-509-3366</cntvoice>
+				<cntfax>817-509-3469</cntfax>
+				<cntemail>Steve.Nechero@ftw.usda.gov</cntemail>
+			</cntinfo>
+		</metc>
+		<metstdn Sync="TRUE">FGDC Content Standards for Digital Geospatial Metadata</metstdn>
+		<metstdv Sync="TRUE">FGDC-STD-001-1998</metstdv>
+		<mettc Sync="TRUE">local time</mettc>
+		<metextns>
+			<onlink>http://www.esri.com/metadata/esriprof80.html</onlink>
+			<metprof>ESRI Metadata Profile</metprof>
+		</metextns>
+		<langmeta Sync="TRUE">en</langmeta><metextns><onlink Sync="TRUE">http://www.esri.com/metadata/esriprof80.html</onlink><metprof Sync="TRUE">ESRI Metadata Profile</metprof></metextns></metainfo>
+	<Esri><CreaDate>20100127</CreaDate><CreaTime>16162000</CreaTime><SyncOnce>FALSE</SyncOnce><SyncDate>20100326</SyncDate><SyncTime>14300900</SyncTime><ModDate>20100326</ModDate><ModTime>14300900</ModTime><MetaID>{942C5B41-981F-481C-81E2-C7F714441DDA}</MetaID><DataProperties><lineage><Process ToolSource="C:\ArcGIS\ArcToolbox\Toolboxes\Conversion Tools.tbx\FeatureClassToFeatureClass" Date="20100326" Time="143123">FeatureClassToFeatureClass "C:\Documents and Settings\dblodgett\Desktop\GIS\WBD_archive_27Jan2010_ArcGIS9.2_File.gdb\WBDHU12\HU12_polygon" D:\ORQData\GDP_demo\saint_joe hucs.shp # "HUC_8 'HUC_8' true true false 8 Text 0 0 ,First,#,C:\Documents and Settings\dblodgett\Desktop\GIS\WBD_archive_27Jan2010_ArcGIS9.2_File.gdb\WBDHU12\HU12_polygon,HUC_8,-1,-1;HUC_10 'HUC_10' true true false 10 Text 0 0 ,First,#,C:\Documents and Settings\dblodgett\Desktop\GIS\WBD_archive_27Jan2010_ArcGIS9.2_File.gdb\WBDHU12\HU12_polygon,HUC_10,-1,-1;HUC_12 'HUC_12' true true false 12 Text 0 0 ,First,#,C:\Documents and Settings\dblodgett\Desktop\GIS\WBD_archive_27Jan2010_ArcGIS9.2_File.gdb\WBDHU12\HU12_polygon,HUC_12,-1,-1;ACRES 'ACRES' true true false 8 Double 0 0 ,First,#,C:\Documents and Settings\dblodgett\Desktop\GIS\WBD_archive_27Jan2010_ArcGIS9.2_File.gdb\WBDHU12\HU12_polygon,ACRES,-1,-1;NCONTRB_A 'NCONTRB_A' true true false 8 Double 0 0 ,First,#,C:\Documents and Settings\dblodgett\Desktop\GIS\WBD_archive_27Jan2010_ArcGIS9.2_File.gdb\WBDHU12\HU12_polygon,NCONTRB_A,-1,-1;HU_10_GNIS 'HU_10_GNIS' true true false 23 Text 0 0 ,First,#,C:\Documents and Settings\dblodgett\Desktop\GIS\WBD_archive_27Jan2010_ArcGIS9.2_File.gdb\WBDHU12\HU12_polygon,HU_10_GNIS,-1,-1;HU_12_GNIS 'HU_12_GNIS' true true false 23 Text 0 0 ,First,#,C:\Documents and Settings\dblodgett\Desktop\GIS\WBD_archive_27Jan2010_ArcGIS9.2_File.gdb\WBDHU12\HU12_polygon,HU_12_GNIS,-1,-1;HU_10_DS 'HU_10_DS' true true false 10 Text 0 0 ,First,#,C:\Documents and Settings\dblodgett\Desktop\GIS\WBD_archive_27Jan2010_ArcGIS9.2_File.gdb\WBDHU12\HU12_polygon,HU_10_DS,-1,-1;HU_10_NAME 'HU_10_NAME' true true false 80 Text 0 0 ,First,#,C:\Documents and Settings\dblodgett\Desktop\GIS\WBD_archive_27Jan2010_ArcGIS9.2_File.gdb\WBDHU12\HU12_polygon,HU_10_NAME,-1,-1;HU_10_MOD 'HU_10_MOD' true true false 20 Text 0 0 ,First,#,C:\Documents and Settings\dblodgett\Desktop\GIS\WBD_archive_27Jan2010_ArcGIS9.2_File.gdb\WBDHU12\HU12_polygon,HU_10_MOD,-1,-1;HU_10_TYPE 'HU_10_TYPE' true true false 1 Text 0 0 ,First,#,C:\Documents and Settings\dblodgett\Desktop\GIS\WBD_archive_27Jan2010_ArcGIS9.2_File.gdb\WBDHU12\HU12_polygon,HU_10_TYPE,-1,-1;HU_12_DS 'HU_12_DS' true true false 12 Text 0 0 ,First,#,C:\Documents and Settings\dblodgett\Desktop\GIS\WBD_archive_27Jan2010_ArcGIS9.2_File.gdb\WBDHU12\HU12_polygon,HU_12_DS,-1,-1;HU_12_NAME 'HU_12_NAME' true true false 80 Text 0 0 ,First,#,C:\Documents and Settings\dblodgett\Desktop\GIS\WBD_archive_27Jan2010_ArcGIS9.2_File.gdb\WBDHU12\HU12_polygon,HU_12_NAME,-1,-1;HU_12_MOD 'HU_12_MOD' true true false 20 Text 0 0 ,First,#,C:\Documents and Settings\dblodgett\Desktop\GIS\WBD_archive_27Jan2010_ArcGIS9.2_File.gdb\WBDHU12\HU12_polygon,HU_12_MOD,-1,-1;HU_12_TYPE 'HU_12_TYPE' true true false 1 Text 0 0 ,First,#,C:\Documents and Settings\dblodgett\Desktop\GIS\WBD_archive_27Jan2010_ArcGIS9.2_File.gdb\WBDHU12\HU12_polygon,HU_12_TYPE,-1,-1;META_ID 'META_ID' true true false 4 Text 0 0 ,First,#,C:\Documents and Settings\dblodgett\Desktop\GIS\WBD_archive_27Jan2010_ArcGIS9.2_File.gdb\WBDHU12\HU12_polygon,META_ID,-1,-1;STATES 'STATES' true true false 20 Text 0 0 ,First,#,C:\Documents and Settings\dblodgett\Desktop\GIS\WBD_archive_27Jan2010_ArcGIS9.2_File.gdb\WBDHU12\HU12_polygon,STATES,-1,-1;SHAPE_Leng 'SHAPE_Length' false true true 8 Double 0 0 ,First,#,C:\Documents and Settings\dblodgett\Desktop\GIS\WBD_archive_27Jan2010_ArcGIS9.2_File.gdb\WBDHU12\HU12_polygon,SHAPE_Length,-1,-1;SHAPE_Area 'SHAPE_Area' false true true 8 Double 0 0 ,First,#,C:\Documents and Settings\dblodgett\Desktop\GIS\WBD_archive_27Jan2010_ArcGIS9.2_File.gdb\WBDHU12\HU12_polygon,SHAPE_Area,-1,-1" # D:\ORQData\GDP_demo\saint_joe\hucs.shp</Process></lineage></DataProperties></Esri><dataIdInfo><envirDesc Sync="TRUE">Microsoft Windows XP Version 5.1 (Build 2600) Service Pack 3; ESRI ArcCatalog 9.3.1.1850</envirDesc><dataLang><languageCode Sync="TRUE" value="en"></languageCode></dataLang><idCitation><resTitle Sync="TRUE">hucs</resTitle><presForm><PresFormCd Sync="TRUE" value="005"></PresFormCd></presForm></idCitation><spatRpType><SpatRepTypCd Sync="TRUE" value="001"></SpatRepTypCd></spatRpType><dataExt><geoEle><GeoBndBox esriExtentType="native"><westBL Sync="TRUE">-160.247041</westBL><eastBL Sync="TRUE">-64.565191</eastBL><northBL Sync="TRUE">49.384479</northBL><southBL Sync="TRUE">17.673736</southBL><exTypeCode Sync="TRUE">1</exTypeCode></GeoBndBox></geoEle></dataExt><geoBox esriExtentType="decdegrees"><westBL Sync="TRUE">-160.247041</westBL><eastBL Sync="TRUE">-64.565191</eastBL><northBL Sync="TRUE">49.384479</northBL><southBL Sync="TRUE">17.673736</southBL><exTypeCode Sync="TRUE">1</exTypeCode></geoBox></dataIdInfo><mdLang><languageCode Sync="TRUE" value="en"></languageCode></mdLang><mdStanName Sync="TRUE">ISO 19115 Geographic Information - Metadata</mdStanName><mdStanVer Sync="TRUE">DIS_ESRI1.0</mdStanVer><mdChar><CharSetCd Sync="TRUE" value="004"></CharSetCd></mdChar><mdHrLv><ScopeCd Sync="TRUE" value="005"></ScopeCd></mdHrLv><mdHrLvName Sync="TRUE">dataset</mdHrLvName><distInfo><distributor><distorTran><onLineSrc><orDesc Sync="TRUE">002</orDesc><linkage Sync="TRUE">file://\\IGSARMEWWSORQ\D\ORQData\GDP_demo\saint_joe\hucs.shp</linkage><protocol Sync="TRUE">Local Area Network</protocol></onLineSrc><transSize Sync="TRUE">0.000</transSize></distorTran><distorFormat><formatName Sync="TRUE">Shapefile</formatName></distorFormat></distributor></distInfo><refSysInfo><RefSystem><refSysID><identCode Sync="TRUE">GCS_North_American_1983</identCode></refSysID></RefSystem></refSysInfo><spatRepInfo><VectSpatRep><topLvl><TopoLevCd Sync="TRUE" value="001"></TopoLevCd></topLvl><geometObjs Name="hucs"><geoObjTyp><GeoObjTypCd Sync="TRUE" value="001"></GeoObjTypCd></geoObjTyp><geoObjCnt Sync="TRUE">0</geoObjCnt></geometObjs></VectSpatRep></spatRepInfo><mdDateSt Sync="TRUE">20100326</mdDateSt></metadata>

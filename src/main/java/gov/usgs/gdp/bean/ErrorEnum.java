@@ -10,9 +10,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import gov.usgs.gdp.helper.PropertyFactory;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  *
