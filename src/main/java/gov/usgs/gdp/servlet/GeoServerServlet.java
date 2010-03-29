@@ -63,6 +63,19 @@ public class GeoServerServlet extends HttpServlet {
 		
 		String shapefileName = request.getParameter("shapefile");
 		String dataFileName = request.getParameter("datafile");
+
+		String delimChar = request.getParameter("delim");
+		
+		String delim;
+		if ("c".equals(delimChar)) delim = ",";
+		else if ("s".equals(delimChar)) delim = " ";
+		else if ("t".equals(delimChar)) delim = "\t";
+		else if (delimChar == null) delim = "";  // if command doesn't require a delim
+		else {
+			sendReply(response, AckBean.ACK_FAIL, "Invalid delimiter.");
+			System.err.println("ERROR: invalid delimiter: " + delimChar);
+			return;
+		}
 		
 		String appTempDir = System.getProperty("applicationTempDir");
 		String dataFileLoc = appTempDir + "upload-repository/" + dataFileName;
@@ -74,122 +87,66 @@ public class GeoServerServlet extends HttpServlet {
 		if ("createdatastore".equals(command)) {
 			String userDirectory = request.getParameter("userdirectory");
 			
-			String directory = getFileDirectory(appTempDir, userDirectory, shapefileName);
-			if (directory == null) sendReply(response, AckBean.ACK_FAIL, "Could not find file's directory.");
-			
-			String shapefileLoc = directory + shapefileName + ".shp";
-			
-			// create the workspace if it doesn't already exist
-			URL workspacesURL = new URL(geoServerURL + "/rest/workspaces/");
-			if (!workspaceExists(workspace)) {
-				String workspaceXML = createWorkspaceXML(workspace);
-				sendPacket(workspacesURL, "POST", "text/xml", workspaceXML);
-			}
-	
-			URL dataStoresURL = new URL(workspacesURL + workspace + "/datastores/");
-			String dataStoreXML = createDataStoreXML(shapefileName, workspace, shapefileLoc);
-			if (!dataStoreExists(workspace, shapefileName)) {
-				// send POST to create the datastore if it doesn't exist
-				sendPacket(dataStoresURL, "POST", "text/xml", dataStoreXML);
-			
-				// create featuretype based on the datastore
-				String featureTypeXML = createFeatureTypeXML(shapefileName, workspace);
-				URL featureTypesURL = new URL(dataStoresURL + shapefileName +  "/featuretypes.xml");
-				sendPacket(featureTypesURL, "POST", "text/xml", featureTypeXML);
+			if (!createDataStore(appTempDir, userDirectory, shapefileName, workspace)) {
+				sendReply(response, AckBean.ACK_FAIL, "Could not create data store.");
 			} else {
-				// otherwise send PUT to insure that it's pointing to the correct shapefile
-				sendPacket(new URL(dataStoresURL + shapefileName + ".xml"), "PUT", "text/xml", dataStoreXML);
+				// send back ack with workspace and layer names
+				sendReply(response, AckBean.ACK_OK, workspace, shapefileName);
 			}
-			
-			// send back ack with workspace and layer names
-			sendReply(response, AckBean.ACK_OK, workspace, shapefileName);
 			
 		} else if ("getdatafileselectables".equals(command)) {
 			// return list of dates in data file
-			ArrayList<String> dates = parseDates(new File(dataFileLoc));
+			ArrayList<String> dates = parseDates(new File(dataFileLoc), delim);
+			
 			XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, new ListBean(dates));
 			RouterServlet.sendXml(xmlReply, new Date().getTime(), response);
 			
 		} else if ("createcoloredmap".equals(command)) {
-			
-			String fromDateString = request.getParameter("fromdate");
-			String toDateString = request.getParameter("todate");
+			// create style to color polygons given a date, stat, and data file
+			String fromDate = request.getParameter("fromdate");
+			String toDate = request.getParameter("todate");
 			String attribute = request.getParameter("attribute");
 			String stat = request.getParameter("stat");
 			
-			// create style to color polygons given a date, stat, and data file
-			DateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
-			Date fromDate, toDate = null;
-			try {
-				fromDate = df.parse(fromDateString);
-				if (!toDateString.equals("")) toDate = df.parse(toDateString);
-			} catch (ParseException e) {
-				System.err.println("ERROR: could not parse requested date.");
-				return;
-			}
-			
-			File file = new File(dataFileLoc);
-			if (file != null)
-				createColoredMap(file, workspace, shapefileName, fromDate, toDate, stat, attribute);
+			createColoredMap(dataFileLoc, workspace, shapefileName, fromDate, toDate, stat, attribute, delim);
 			
 			sendReply(response, AckBean.ACK_OK);
-		} else if ("clearchache".equals(command)) {
-			
+		} else if ("clearcache".equals(command)) {
+			clearCache();
 		}
 	}
 	
-	String getFileDirectory(String appTempDir, String userDirectory, String shapefileName) {
-		AvailableFilesBean afb = AvailableFilesBean.getAvailableFilesBean(appTempDir, userDirectory);
-		if (afb == null) return null;
+	boolean createDataStore(String appTempDir, String userDirectory, String shapefileName, String workspace)
+				throws IOException {
 		
-		// search for the requested shapefile
-		for (FilesBean fb : afb.getUserFileList()) {
-			if (fb.getName().equals(shapefileName)) {
-				return userDirectory;
-			}
+		String directory = getFileDirectory(appTempDir, userDirectory, shapefileName);
+		if (directory == null) return false;
+		
+		String shapefileLoc = directory + shapefileName + ".shp";
+		
+		// create the workspace if it doesn't already exist
+		URL workspacesURL = new URL(geoServerURL + "/rest/workspaces/");
+		if (!workspaceExists(workspace)) {
+			String workspaceXML = createWorkspaceXML(workspace);
+			sendPacket(workspacesURL, "POST", "text/xml", workspaceXML);
 		}
+
+		URL dataStoresURL = new URL(workspacesURL + workspace + "/datastores/");
+		String dataStoreXML = createDataStoreXML(shapefileName, workspace, shapefileLoc);
+		if (!dataStoreExists(workspace, shapefileName)) {
+			// send POST to create the datastore if it doesn't exist
+			sendPacket(dataStoresURL, "POST", "text/xml", dataStoreXML);
 		
-		// if the file wasn't found in the user directory, search the sample files
-		for (FilesBean fb : afb.getExampleFileList()) {
-			if (fb.getName().equals(shapefileName)) {
-				return appTempDir + "Sample_Files/Shapefiles/";
-			}
-		}
-		
-		// Couldn't find the file.
-		return null;
-	}
-	
-	void createColoredMap(File dataFile, String workspace, String layer, Date fromDate, Date toDate, 
-						  String stat, String attribute) throws IOException {
-		
-		// these ArrayList's are populated in parseCSV
-		ArrayList<String> attributeValues = new ArrayList<String>();
-		ArrayList<Float> requestedStats = new ArrayList<Float>();
-		
-		parseCSV(dataFile, fromDate, toDate, stat, attributeValues, requestedStats);
-		String sld = createStyle(attributeValues, requestedStats, attribute);
-		
-		if (sld == null) {
-			System.err.println("Could not create map style.");
-			return;
-		}
-		
-		String styleName = "colors" + workspace;
-		
-		// create style in geoserver
-		if (!styleExists(styleName)) {
-			sendPacket(new URL(geoServerURL + "/rest/styles?name=" + styleName), 
-					"POST", "application/vnd.ogc.sld+xml", sld);
+			// create featuretype based on the datastore
+			String featureTypeXML = createFeatureTypeXML(shapefileName, workspace);
+			URL featureTypesURL = new URL(dataStoresURL + shapefileName +  "/featuretypes.xml");
+			sendPacket(featureTypesURL, "POST", "text/xml", featureTypeXML);
 		} else {
-			sendPacket(new URL(geoServerURL + "/rest/styles/" + styleName), 
-					"PUT", "application/vnd.ogc.sld+xml", sld);
+			// otherwise send PUT to insure that it's pointing to the correct shapefile
+			sendPacket(new URL(dataStoresURL + shapefileName + ".xml"), "PUT", "text/xml", dataStoreXML);
 		}
 		
-		// set layer to use the new style
-		sendPacket(new URL(geoServerURL + "/rest/layers/" + workspace + ":" + layer), "PUT", "text/xml",
-				"<layer><defaultStyle><name>" + styleName + "</name></defaultStyle>" +
-				"<enabled>true</enabled></layer>");
+		return true;
 	}
 	
 	boolean workspaceExists(String workspace) throws IOException {
@@ -221,6 +178,77 @@ public class GeoServerServlet extends HttpServlet {
 		}
 		
 		return true;
+	}
+	
+	String getFileDirectory(String appTempDir, String userDirectory, String shapefileName) {
+		AvailableFilesBean afb = AvailableFilesBean.getAvailableFilesBean(appTempDir, userDirectory);
+		if (afb == null) return null;
+		
+		// search for the requested shapefile
+		for (FilesBean fb : afb.getUserFileList()) {
+			if (fb.getName().equals(shapefileName)) {
+				return userDirectory;
+			}
+		}
+		
+		// if the file wasn't found in the user directory, search the sample files
+		for (FilesBean fb : afb.getExampleFileList()) {
+			if (fb.getName().equals(shapefileName)) {
+				return appTempDir + "Sample_Files/Shapefiles/";
+			}
+		}
+		
+		// Couldn't find the file.
+		return null;
+	}
+	
+	void clearCache() {
+		
+	}
+	
+	void createColoredMap(String dataFileLoc, String workspace, String layer, String fromDateString, 
+						  String toDateString, String stat, String attribute, String delim) throws IOException {
+		
+		File dataFile = new File(dataFileLoc);
+		if (dataFile == null) return;
+		
+		DateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
+		Date fromDate, toDate = null;
+		try {
+			fromDate = df.parse(fromDateString);
+			if (!toDateString.equals("")) toDate = df.parse(toDateString);
+		} catch (ParseException e) {
+			System.err.println("ERROR: could not parse requested date.");
+			return;
+		}
+		
+		// these ArrayList's are populated in parseCSV
+		ArrayList<String> attributeValues = new ArrayList<String>();
+		ArrayList<Float> requestedStats = new ArrayList<Float>();
+		
+		parseCSV(dataFile, fromDate, toDate, stat, delim, attributeValues, requestedStats);
+		String sld = createStyle(attributeValues, requestedStats, attribute);
+		
+		if (sld == null) {
+			System.err.println("Could not create map style.");
+			return;
+		}
+		
+		String styleName = "colors" + workspace;
+		
+		// create style in geoserver
+		if (!styleExists(styleName)) {
+			sendPacket(new URL(geoServerURL + "/rest/styles?name=" + styleName), 
+					"POST", "application/vnd.ogc.sld+xml", sld);
+		} else {
+			sendPacket(new URL(geoServerURL + "/rest/styles/" + styleName), 
+					"PUT", "application/vnd.ogc.sld+xml", sld);
+		}
+		
+		// set layer to use the new style
+		sendPacket(new URL(geoServerURL + "/rest/layers/" + workspace + ":" + layer), "PUT", "text/xml",
+				"<layer><defaultStyle><name>" + styleName + "</name></defaultStyle>" +
+				"<enabled>true</enabled></layer>");
 	}
 	
 	@SuppressWarnings("restriction")
@@ -299,16 +327,12 @@ public class GeoServerServlet extends HttpServlet {
 				"  <srs>EPSG:4326</srs>" +
 				"  <store class=\"dataStore\">" +
 				"    <name>" + name + "</name>" +
-				/*"    <atom:link xmlns:atom=\"http://www.w3.org/2005/Atom\" rel=\"alternate\" " +
-				"			href=\"http://localhost:8080/geoserver/rest/workspaces/usgs/datastores/counties.xml\" " +
-				"			type=\"application/xml\"/>" +*/
 				"  </store>" +
 				"</featureType>");
 	}
 	
-	ArrayList<String> parseDates(File data) {
+	ArrayList<String> parseDates(File data, String delim) {
 		ArrayList<String> dates = new ArrayList<String>();
-		final String fieldSep = ",";
 
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(data));
@@ -321,7 +345,7 @@ public class GeoServerServlet extends HttpServlet {
 		
 			while (reader.ready()) {
 				line = reader.readLine();
-				firstValue = line.split(fieldSep)[0];
+				firstValue = line.split(delim)[0];
 				
 				if ("ALL".equals(firstValue)) {
 					break;
@@ -338,12 +362,11 @@ public class GeoServerServlet extends HttpServlet {
 		return dates;
 	}
 	
-	void parseCSV(File data, Date fromDate, Date toDate, String stat, 
+	void parseCSV(File data, Date fromDate, Date toDate, String stat, String delim,
 			ArrayList<String> attributeValues, // 
 			ArrayList<Float> requestedStats)   // 
 	throws IOException {
 		
-		final String fieldSep = ",";
 		DateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
 
 		try {
@@ -352,7 +375,7 @@ public class GeoServerServlet extends HttpServlet {
 			
 			// Count number of stats per attribute
 			line = reader.readLine();
-			String dupHeaderValues[] = line.split(fieldSep);
+			String dupHeaderValues[] = line.split(delim);
 			if (!"ALL".equals(dupHeaderValues[dupHeaderValues.length - 1])) {
 				System.out.println("ERROR: Last header value is not ALL");
 				return;
@@ -369,7 +392,7 @@ public class GeoServerServlet extends HttpServlet {
 			
 			// Find location of chosen stat
 			line = reader.readLine();
-			String stats[] = line.split(fieldSep);
+			String stats[] = line.split(delim);
 			if (!"timestep".equals(stats[0])) {
 				System.out.println("ERROR: First value is not timestep");
 				return;
@@ -393,7 +416,7 @@ public class GeoServerServlet extends HttpServlet {
 			String firstValue;
 			while (reader.ready()) {
 				line = reader.readLine();
-				firstValue = line.split(fieldSep)[0];
+				firstValue = line.split(delim)[0];
 				
 				if ("ALL".equals(firstValue)) {
 					System.out.println("ERROR: from date not found");
@@ -405,7 +428,7 @@ public class GeoServerServlet extends HttpServlet {
 				}
 			}
 			
-			String values[] = line.split(fieldSep);
+			String values[] = line.split(delim);
 			//							 don't read in totals at end
 			for (int i = firstStatIndex; i < values.length - statsPerHeaderValue; i += statsPerHeaderValue) {
 				requestedStats.add(Float.parseFloat(values[i]));
@@ -417,14 +440,14 @@ public class GeoServerServlet extends HttpServlet {
 			if (toDate != null) {
 				while(reader.ready()) {
 					line = reader.readLine();
-					firstValue = line.split(fieldSep)[0];
+					firstValue = line.split(delim)[0];
 					
 					if ("ALL".equals(firstValue)) {
 						System.out.println("ERROR: to date not found");
 						return;
 					}
 					
-					values = line.split(fieldSep);
+					values = line.split(delim);
 					for (int i = firstStatIndex, j = 0; i < values.length - statsPerHeaderValue; i += statsPerHeaderValue, j++) {
 						rangeStats[j] += Float.parseFloat(values[i]);
 					}

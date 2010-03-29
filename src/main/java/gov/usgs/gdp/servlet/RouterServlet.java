@@ -126,8 +126,9 @@ public class RouterServlet extends HttpServlet {
         if ("getdatafileselectables".equals(command)) {
             log.info("User is attempting to get data file information");
             String dataFile = request.getParameter("datafile");
+            String delim = request.getParameter("delim");
             RequestDispatcher rd = request.getRequestDispatcher("/GeoServerServlet?command=getdatafileselectables"
-                    + "&datafile=" + dataFile);
+                    + "&datafile=" + dataFile + "&delim=" + delim);
             rd.forward(request, response);
             return;
         }
@@ -139,10 +140,11 @@ public class RouterServlet extends HttpServlet {
             String fromdate = request.getParameter("fromdate");
             String todate = request.getParameter("todate");
             String stat = request.getParameter("stat");
+            String delim = request.getParameter("delim");
             String shapefileName = request.getParameter("shapefileName");
             RequestDispatcher rd = request.getRequestDispatcher("/GeoServerServlet?command=createcoloredmap"
                     + "&datafile=" + dataFile + "&attribute=" + attribute + "&fromdate=" + fromdate
-                    + "&todate=" + todate + "&stat=" + stat + "&shapefile=" + shapefileName);
+                    + "&todate=" + todate + "&stat=" + stat + "&shapefile=" + shapefileName + "&delim=" + delim);
             rd.forward(request, response);
             return;
         }
