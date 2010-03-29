@@ -400,7 +400,7 @@ public class GeoServerServlet extends HttpServlet {
 			
 			int firstStatIndex = 1;
 			String val = stats[firstStatIndex];
-			while (!stat.equals(val)) {
+			while (!val.startsWith(stat)) {
 				firstStatIndex++;
 				val = stats[firstStatIndex];
 				
