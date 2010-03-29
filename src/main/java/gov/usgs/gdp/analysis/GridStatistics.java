@@ -168,13 +168,8 @@ public class GridStatistics {
         }
 
         int attributeValueMapSize = (int) Math.ceil( (float) attributeValueToGeometryMap.size() / 0.75f);
-        Map<Object, GridCoverage> attributeValueToCoverageMap =
-                new LinkedHashMap<Object, GridCoverage>(attributeValueMapSize);
-        CoordinateReferenceSystem geometryCRS = featureCollection.getSchema().getCoordinateReferenceSystem();
-
-        for(Map.Entry<Object, Geometry> entry : attributeValueToGeometryMap.entrySet()) {
-            attributeValueToCoverageMap.put(entry.getKey(), new GridCoverage(entry.getValue(), geometryCRS, gdt));
-        }
+        Map<Object, GridCellCoverage> attributeValueToCoverageMap =
+                new LinkedHashMap<Object, GridCellCoverage>(attributeValueMapSize);
         
         GridCoordSystem gcs = gdt.getCoordinateSystem();
         if (gcs.getCoordinateAxes().size() != 3) {
@@ -182,6 +177,12 @@ public class GridStatistics {
             // Until then, we should actively reject them because types like t-z-y-x will actually run without error
             // in the code below, but will produce incomplete results (e.g. only for z=0).
             throw new IllegalArgumentException("\"" + variableName  + "\" is not a t-y-x grid.");
+        }
+        
+        CoordinateReferenceSystem crs = featureCollection.getSchema().getCoordinateReferenceSystem();
+        GridCellGeometry gcc = new GridCellGeometry(gcs);
+        for(Map.Entry<Object, Geometry> entry : attributeValueToGeometryMap.entrySet()) {
+            attributeValueToCoverageMap.put(entry.getKey(), new GridCellCoverage(entry.getValue(), crs, gcc));
         }
 
         // Theset statements will throw a NullPointerException if gdt's 3 coordinate axes are not t-y-x.
@@ -225,9 +226,9 @@ public class GridStatistics {
                     double cellCoverageFractionTotal = 0;
                     double value = array.getDouble(arrayIndex.set(yIndex, xIndex));
 
-                    for (Map.Entry<Object, GridCoverage> entry : attributeValueToCoverageMap.entrySet()) {
+                    for (Map.Entry<Object, GridCellCoverage> entry : attributeValueToCoverageMap.entrySet()) {
                         Object av = entry.getKey();
-                        GridCoverage gc = entry.getValue();
+                        GridCellCoverage gc = entry.getValue();
                         double cellCoverageFraction = gc.getCellCoverageFraction(yIndex, xIndex);
 
                         if(cellCoverageFraction > 0d) {
@@ -255,8 +256,10 @@ public class GridStatistics {
     // SIMPLE inline testing only, need unit tests...
     public static void main(String[] args) {
 //        String ncLocation = "http://runoff.cr.usgs.gov:8086/thredds/dodsC/hydro/national/2.5arcmin";
-      String ncLocation = "http://internal.cida.usgs.gov/thredds/dodsC/models/us_gfdl.A1.monthly.Tavg.1960-2099.nc";
-        String sfLocation = "src/main/resources/Sample_Files/Shapefiles/Yahara_River_HRUs_geo_WGS84.shp";
+//        String ncLocation = "http://internal.cida.usgs.gov/thredds/dodsC/models/us_gfdl.A1.monthly.Tavg.1960-2099.nc";
+//        String ncLocation = "http://localhost:18080/thredds/dodsC/ncml/gridded_obs.daily.Wind.ncml";
+        String ncLocation = "/Users/tkunicki/Downloads/thredds-data/CONUS_2001-2010.ncml";
+        String sfLocation = "src/main/resources/Sample_Files/Shapefiles/serap_hru_239.shp";
     
         FeatureDataset dataset = null;
         FileDataStore dataStore = null;
@@ -265,17 +268,17 @@ public class GridStatistics {
             dataset = FeatureDatasetFactoryManager.open(null, ncLocation, null, new Formatter());
             dataStore = FileDataStoreFinder.getDataStore(new File(sfLocation));
             FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = dataStore.getFeatureSource();
-            String attributeName = "GRIDCODE";
+            String attributeName = "GRID_CODE";
             FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = featureSource.getFeatures();
-            
+
             GridStatistics gs = GridStatistics.generate(
-                    featureCollection, attributeName, (GridDataset)dataset, "Tavg", new Range(0, 1000));
-            
+                    featureCollection, attributeName, (GridDataset)dataset, "P06M_NONE", new Range(0, 10));
+
             // example csv dump...
             BufferedWriter writer = null;
             try {
                 writer = new BufferedWriter(new FileWriter("temp0.csv"));
-                
+
                GridStatisticsCSVWriter csv = new GridStatisticsCSVWriter(gs);
                csv.write(writer);
             } catch (IOException ex) {
@@ -289,7 +292,7 @@ public class GridStatistics {
                     }
                 }
             }
-        
+
         } catch (Exception ex) {
             Logger.getLogger(SimpleStatistics.class.getName()).log(Level.SEVERE, null, ex);
         }finally {
