@@ -80,14 +80,12 @@ public class GridCellGeometry {
         // NOTE, these 2 for loops can be consolidated... later when I have more time
         for (int yCellEdgeIndex = 0; yCellEdgeIndex < yCellEdgeCount; ++yCellEdgeIndex) {
             int yCellEdgeOffset = yCellEdgeIndex * xCellCount;
-            System.out.println(" *** " + yCellEdgeIndex);
             for (int xCellEdgeIndex = 0; xCellEdgeIndex < xCellEdgeCount; ++xCellEdgeIndex) {
                 int yxCellEdgeIndex = yCellEdgeOffset + xCellEdgeIndex;
                 cellEdgeCoorindate[yxCellEdgeIndex] =
                         coordinateBuilder.getCoordinate(
                             xCellEdges[xCellEdgeIndex],
                             yCellEdges[yCellEdgeIndex]);
-                System.out.println(cellEdgeCoorindate[yxCellEdgeIndex]);
             }
         }
 
