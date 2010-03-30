@@ -229,7 +229,7 @@ public class GridStatistics {
                     for (Map.Entry<Object, GridCellCoverage> entry : attributeValueToCoverageMap.entrySet()) {
                         Object av = entry.getKey();
                         GridCellCoverage gc = entry.getValue();
-                        double cellCoverageFraction = gc.getCellCoverageFraction(yIndex, xIndex);
+                        double cellCoverageFraction = gc.getCellCoverageFraction(xIndex, yIndex);
 
                         if(cellCoverageFraction > 0d) {
                             gs.perAttributeValueAllTimestepStatistics.get(av).accumulate(value, cellCoverageFraction);
@@ -256,9 +256,10 @@ public class GridStatistics {
     // SIMPLE inline testing only, need unit tests...
     public static void main(String[] args) {
 //        String ncLocation = "http://runoff.cr.usgs.gov:8086/thredds/dodsC/hydro/national/2.5arcmin";
-//        String ncLocation = "http://internal.cida.usgs.gov/thredds/dodsC/models/us_gfdl.A1.monthly.Tavg.1960-2099.nc";
+//        String ncLocation = "http://internal.cida.usgs.gov/thredds/dodsC/misc/us_gfdl.A1.monthly.Tavg.1960-2099.nc";
 //        String ncLocation = "http://localhost:18080/thredds/dodsC/ncml/gridded_obs.daily.Wind.ncml";
-        String ncLocation = "/Users/tkunicki/Downloads/thredds-data/CONUS_2001-2010.ncml";
+//        String ncLocation = "/Users/tkunicki/Downloads/thredds-data/CONUS_2001-2010.ncml";
+        String ncLocation = "/Users/tkunicki/Downloads/thredds-data/gridded_obs.daily.Wind.ncml";
         String sfLocation = "src/main/resources/Sample_Files/Shapefiles/serap_hru_239.shp";
     
         FeatureDataset dataset = null;
@@ -272,7 +273,7 @@ public class GridStatistics {
             FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = featureSource.getFeatures();
 
             GridStatistics gs = GridStatistics.generate(
-                    featureCollection, attributeName, (GridDataset)dataset, "P06M_NONE", new Range(0, 10));
+                    featureCollection, attributeName, (GridDataset)dataset, "Wind", new Range(0, 10));
 
             // example csv dump...
             BufferedWriter writer = null;

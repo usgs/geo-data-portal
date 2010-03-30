@@ -60,29 +60,27 @@ public class GridCellGeometry {
 
         GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory(null);
 
-        CoordinateAxis1D yAxis = (CoordinateAxis1D) gridCoordSystem.getYHorizAxis();
         CoordinateAxis1D xAxis = (CoordinateAxis1D) gridCoordSystem.getXHorizAxis();
+        CoordinateAxis1D yAxis = (CoordinateAxis1D) gridCoordSystem.getYHorizAxis();
 
-        double[] yCellEdges = yAxis.getCoordEdges();
         double[] xCellEdges = xAxis.getCoordEdges();
+        double[] yCellEdges = yAxis.getCoordEdges();
 
         int xCellEdgeCount = xCellEdges.length;
         int yCellEdgeCount = yCellEdges.length;
-        int cellEdgeCount = xCellEdgeCount * yCellEdgeCount;
 
-        Coordinate[] cellEdgeCoorindate = new Coordinate[cellEdgeCount];
+        Coordinate[] cellEdgeCoordindate = new Coordinate[xCellEdgeCount * yCellEdgeCount];
         Geometry[] cellGeometry = new Geometry[cellCount];
 
         final CoordinateBuilder coordinateBuilder = gridCoordSystem.isLatLon()
                 ? new CoordinateBuilder()
                 : new ProjectedCoordinatebuilder();
 
-        // NOTE, these 2 for loops can be consolidated... later when I have more time
         for (int yCellEdgeIndex = 0; yCellEdgeIndex < yCellEdgeCount; ++yCellEdgeIndex) {
             int yCellEdgeOffset = yCellEdgeIndex * xCellCount;
             for (int xCellEdgeIndex = 0; xCellEdgeIndex < xCellEdgeCount; ++xCellEdgeIndex) {
                 int yxCellEdgeIndex = yCellEdgeOffset + xCellEdgeIndex;
-                cellEdgeCoorindate[yxCellEdgeIndex] =
+                cellEdgeCoordindate[yxCellEdgeIndex] =
                         coordinateBuilder.getCoordinate(
                             xCellEdges[xCellEdgeIndex],
                             yCellEdges[yCellEdgeIndex]);
@@ -90,13 +88,13 @@ public class GridCellGeometry {
         }
 
         for (int yCellIndex = 0; yCellIndex < yCellCount; ++yCellIndex) {
-            int yCellOffset = yCellIndex * xCellCount;
+            int yCellOffset0 = yCellIndex * xCellCount;
             int yCellOffset1 = (yCellIndex + 1) * xCellCount;
             for (int xCellIndex = 0; xCellIndex < xCellCount; ++xCellIndex) {
                 Envelope cellEnvelope = new Envelope(
-                        cellEdgeCoorindate[yCellOffset + xCellIndex],
-                        cellEdgeCoorindate[yCellOffset1 + (xCellIndex + 1)]);
-                cellGeometry[yCellOffset + xCellIndex] =
+                        cellEdgeCoordindate[yCellOffset0 + xCellIndex],
+                        cellEdgeCoordindate[yCellOffset1 + (xCellIndex + 1)]);
+                cellGeometry[yCellOffset0 + xCellIndex] =
                         geometryFactory.toGeometry(cellEnvelope);
             }
         }
