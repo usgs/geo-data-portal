@@ -74,7 +74,7 @@ public class GridCellGeometry {
 
         final CoordinateBuilder coordinateBuilder = gridCoordSystem.isLatLon()
                 ? new CoordinateBuilder()
-                : new ProjectedCoordinatebuilder();
+                : new ProjectedCoordinateBuilder();
 
         for (int yCellEdgeIndex = 0; yCellEdgeIndex < yCellEdgeCount; ++yCellEdgeIndex) {
             int yCellEdgeOffset = yCellEdgeIndex * xCellCount;
@@ -109,13 +109,13 @@ public class GridCellGeometry {
         }
     }
 
-    private class ProjectedCoordinatebuilder extends CoordinateBuilder {
+    private class ProjectedCoordinateBuilder extends CoordinateBuilder {
 
         private Projection projection;
         private ProjectionPointImpl projectionPoint;
         private LatLonPointImpl latLonPoint;
 
-        public ProjectedCoordinatebuilder() {
+        public ProjectedCoordinateBuilder() {
             projection = gridCoordSystem.getProjection();
             projectionPoint = new ProjectionPointImpl();
             latLonPoint = new LatLonPointImpl();
