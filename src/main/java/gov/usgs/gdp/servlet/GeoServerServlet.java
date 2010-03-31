@@ -146,6 +146,12 @@ public class GeoServerServlet extends HttpServlet {
 			sendPacket(new URL(dataStoresURL + shapefileName + ".xml"), "PUT", "text/xml", dataStoreXML);
 		}
 		
+		// Make sure we render using the default polygon style, and not whatever 
+		// colored style might have been used before
+		sendPacket(new URL(geoServerURL + "/rest/layers/" + workspace + ":" + shapefileName), "PUT", "text/xml",
+				"<layer><defaultStyle><name>polygon</name></defaultStyle>" +
+				"<enabled>true</enabled></layer>");
+		
 		return true;
 	}
 	
