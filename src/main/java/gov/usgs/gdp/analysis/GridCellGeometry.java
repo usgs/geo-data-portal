@@ -33,7 +33,7 @@ public class GridCellGeometry {
         yCellCount = (int) gridCoordSystem.getYHorizAxis().getSize();
         cellCount = xCellCount * yCellCount;
 
-        cellGeometrys = buildGeometrys();
+        cellGeometrys = buildGeometries();
     }
 
     public GridCoordSystem getGridCoordSystem() {
@@ -56,7 +56,7 @@ public class GridCellGeometry {
         return cellGeometrys[xIndex + yIndex * xCellCount];
     }
 
-    private Geometry[] buildGeometrys() {
+    private Geometry[] buildGeometries() {
 
         GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory(null);
 
@@ -67,35 +67,37 @@ public class GridCellGeometry {
         double[] yCellEdges = yAxis.getCoordEdges();
 
         int xCellEdgeCount = xCellEdges.length;
-        int yCellEdgeCount = yCellEdges.length;
 
-        Coordinate[] cellEdgeCoordindate = new Coordinate[xCellEdgeCount * yCellEdgeCount];
         Geometry[] cellGeometry = new Geometry[cellCount];
 
         final CoordinateBuilder coordinateBuilder = gridCoordSystem.isLatLon()
                 ? new CoordinateBuilder()
                 : new ProjectedCoordinateBuilder();
 
-        for (int yCellEdgeIndex = 0; yCellEdgeIndex < yCellEdgeCount; ++yCellEdgeIndex) {
-            int yCellEdgeOffset = yCellEdgeIndex * xCellCount;
-            for (int xCellEdgeIndex = 0; xCellEdgeIndex < xCellEdgeCount; ++xCellEdgeIndex) {
-                int yxCellEdgeIndex = yCellEdgeOffset + xCellEdgeIndex;
-                cellEdgeCoordindate[yxCellEdgeIndex] =
-                        coordinateBuilder.getCoordinate(
-                            xCellEdges[xCellEdgeIndex],
-                            yCellEdges[yCellEdgeIndex]);
-            }
+        Coordinate[] lowerCorner = null;
+        Coordinate[] upperCorner = new Coordinate[xCellEdgeCount];
+
+        // prime data storage for algorithm below...
+        for (int xCellIndex = 1; xCellIndex < xCellEdgeCount; ++xCellIndex) {
+            upperCorner[xCellIndex] = coordinateBuilder.getCoordinate(
+                    xCellEdges[xCellIndex], yCellEdges[0]);
         }
 
-        for (int yCellIndex = 0; yCellIndex < yCellCount; ++yCellIndex) {
-            int yCellOffset0 = yCellIndex * xCellCount;
-            int yCellOffset1 = (yCellIndex + 1) * xCellCount;
-            for (int xCellIndex = 0; xCellIndex < xCellCount; ++xCellIndex) {
+        for (int yIndexLower = 0; yIndexLower < yCellCount; ++yIndexLower) {
+            int yOffset = xCellCount * yIndexLower;
+            int yIndexUpper = yIndexLower + 1;
+            lowerCorner = upperCorner;
+            upperCorner = new Coordinate[xCellEdgeCount];
+            lowerCorner[0] = coordinateBuilder.getCoordinate(xCellEdges[0], yCellEdges[yIndexLower]);
+            for (int xCellLower = 0; xCellLower < xCellCount; ++xCellLower) {
+                int xCellUpper = xCellLower + 1;
+                upperCorner[xCellUpper] = coordinateBuilder.getCoordinate(
+                        xCellEdges[xCellUpper],
+                        yCellEdges[yIndexUpper]);
                 Envelope cellEnvelope = new Envelope(
-                        cellEdgeCoordindate[yCellOffset0 + xCellIndex],
-                        cellEdgeCoordindate[yCellOffset1 + (xCellIndex + 1)]);
-                cellGeometry[yCellOffset0 + xCellIndex] =
-                        geometryFactory.toGeometry(cellEnvelope);
+                        lowerCorner[xCellLower],
+                        upperCorner[xCellUpper]);
+                cellGeometry[yOffset + xCellLower] = geometryFactory.toGeometry(cellEnvelope);
             }
         }
 
