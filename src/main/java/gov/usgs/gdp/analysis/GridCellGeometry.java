@@ -89,15 +89,15 @@ public class GridCellGeometry {
             lowerCorner = upperCorner;
             upperCorner = new Coordinate[xCellEdgeCount];
             lowerCorner[0] = coordinateBuilder.getCoordinate(xCellEdges[0], yCellEdges[yIndexLower]);
-            for (int xCellLower = 0; xCellLower < xCellCount; ++xCellLower) {
-                int xCellUpper = xCellLower + 1;
-                upperCorner[xCellUpper] = coordinateBuilder.getCoordinate(
-                        xCellEdges[xCellUpper],
+            for (int xIndexLower = 0; xIndexLower < xCellCount; ++xIndexLower) {
+                int xIndexUpper = xIndexLower + 1;
+                upperCorner[xIndexUpper] = coordinateBuilder.getCoordinate(
+                        xCellEdges[xIndexUpper],
                         yCellEdges[yIndexUpper]);
                 Envelope cellEnvelope = new Envelope(
-                        lowerCorner[xCellLower],
-                        upperCorner[xCellUpper]);
-                cellGeometry[yOffset + xCellLower] = geometryFactory.toGeometry(cellEnvelope);
+                        lowerCorner[xIndexLower],
+                        upperCorner[xIndexUpper]);
+                cellGeometry[yOffset + xIndexLower] = geometryFactory.toGeometry(cellEnvelope);
             }
         }
 
