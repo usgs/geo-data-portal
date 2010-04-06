@@ -21,7 +21,6 @@ public class CommandListBeanTest {
 	String result = instance.toXml();
 	assertNotNull(result);
 	assertNotSame("", result);
-	System.out.println(result);
     }
 
 }

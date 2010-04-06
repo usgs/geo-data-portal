@@ -89,8 +89,7 @@ public class AvailableFilesBeanTest {
 	public void testGetAvailableFilesBeanWithPopulatedUserDirectory() {
 		AvailableFilesBean result = 
 			AvailableFilesBean.getAvailableFilesBean(this.tempDir, 
-					this.tempDir 
-						+ "user_dir" 
+						"user_dir" 
 						+ this.seperator
 						+ "Sample_Files"
 						+ this.seperator
@@ -109,32 +108,26 @@ public class AvailableFilesBeanTest {
 
         @Test
 	public void testGetAvailableFilesBeanWithBogusUserDirectory() {
+            try {
 		AvailableFilesBean result =
 			AvailableFilesBean.getAvailableFilesBean(this.tempDir,
-					this.tempDir
-						+ "user_dir"
+						"user_dir"
 						+ this.seperator
 						+ "Sample_Files"
 						+ this.seperator
 						+ "test"
 						+ this.seperator);
+            } catch (Exception e) {
+        	assertTrue(e instanceof IllegalArgumentException);
 
-		assertNotNull(result);
-		assertNotNull(result.getExampleFileList());
-		assertFalse(result.getExampleFileList().isEmpty());
-		assertNotNull(result.getExampleFileList());
-		assertFalse(result.getShapeSetList().isEmpty());
-		assertFalse(result.getUserFileList().isEmpty());
-
-
+            }
 	}
 
 	@Test
 	public void testGetXmlWithEverythingPopulated() {
 		AvailableFilesBean filesBean = 
 			AvailableFilesBean.getAvailableFilesBean(this.tempDir, 
-					this.tempDir 
-						+ "user_dir" 
+						"user_dir" 
 						+ this.seperator
 						+ "Sample_Files"
 						+ this.seperator
