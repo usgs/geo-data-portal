@@ -43,6 +43,7 @@ public class FileSelectionServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Long start = new Date().getTime();
 		String command = (request.getParameter("command") == null) ? "" : request.getParameter("command");
+		
 		XmlReplyBean xmlReply = null;
 		if ("listfiles".equals(command)) {
 		    String userDirectory = request.getParameter("userdirectory");

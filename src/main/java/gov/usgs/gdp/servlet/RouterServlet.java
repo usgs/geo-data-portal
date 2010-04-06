@@ -212,6 +212,13 @@ public class RouterServlet extends HttpServlet {
             RequestDispatcher rd = request.getRequestDispatcher("/FileProcessServlet?command=checkuploadfile&file=" + file);
             rd.forward(request, response);
         }
+        
+        if ("commandlist".equals(command)) {
+            log.info("User is attempting to get a list of commands available.");
+            RequestDispatcher rd = request.getRequestDispatcher("/SummaryServlet");
+            rd.forward(request, response);
+        }
+        
 
     }
 

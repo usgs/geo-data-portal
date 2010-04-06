@@ -1,12 +1,16 @@
 package gov.usgs.gdp.servlet;
 
+import gov.usgs.gdp.bean.AckBean;
+import gov.usgs.gdp.bean.CommandListBean;
 import gov.usgs.gdp.bean.MessageBean;
 import gov.usgs.gdp.bean.ShapeFileSetBean;
 import gov.usgs.gdp.bean.SummaryBean;
+import gov.usgs.gdp.bean.XmlReplyBean;
 import gov.usgs.gdp.interfaces.geotools.AnalyzeFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -44,9 +48,11 @@ public class SummaryServlet extends HttpServlet {
 	 */
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String action	= (request.getParameter("action") == null) ? "" : request.getParameter("action").toLowerCase();		
+	    	Long start = new Date().getTime();
+		String action	= (request.getParameter("action") == null) ? "" : request.getParameter("action").toLowerCase();
+		String command	= (request.getParameter("command") == null) ? "" : request.getParameter("command").toLowerCase();		
 		MessageBean errorBean = new MessageBean();
-	    MessageBean messageBean = new MessageBean();
+		MessageBean messageBean = new MessageBean();
 		    
 		List<SummaryBean> summaryResults = null; 
 		if ("summarize".equals(action)) {
@@ -59,6 +65,15 @@ public class SummaryServlet extends HttpServlet {
 				errorBean.addMessage("Unable to summarize selected files");
 			}
 		} 
+		
+		if ("commandlist".equals(command)) {
+		    XmlReplyBean xmlReply = null;
+		    CommandListBean commandList = CommandListBean.getCommandListBean();
+		    xmlReply = new XmlReplyBean(AckBean.ACK_OK, commandList);
+		    RouterServlet.sendXml(xmlReply, start, response);
+		    return;
+	        }
+		
 		request.setAttribute("errorBean", errorBean);
 		request.setAttribute("messageBean", messageBean);
 		log.debug("Summary result");
