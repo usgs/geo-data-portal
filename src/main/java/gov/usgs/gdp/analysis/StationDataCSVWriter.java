@@ -277,7 +277,7 @@ public class StationDataCSVWriter {
                             cacheOutputStream.writeLong(pf.getNominalTimeAsDate().getTime());
                             for (VariableSimpleIF variable : variables) {
                                 String shortName = variable.getShortName();
-                                cacheOutputStream.writeFloat(pf.getData().getScalarFloat(shortName));
+                                cacheOutputStream.writeFloat(pf.getData().convertScalarFloat(shortName));
                             }
                             ++featureCount;
                         }
@@ -363,8 +363,8 @@ public class StationDataCSVWriter {
 
 
         String sfLocation =
-//                "src/main/resources/Sample_Files/Shapefiles/Yahara_River_HRUs_geo_WGS84.shp"
-                "/Users/tkunicki/Downloads/blob_2/blob.shp"
+                "src/main/resources/Sample_Files/Shapefiles/Yahara_River_HRUs_geo_WGS84.shp"
+//                "/Users/tkunicki/Downloads/blob_2/blob.shp"
                 ;
         String ncLocation = 
 //                "cdmremote:http://internal.cida.usgs.gov/thredds/cdmremote/gsod/gsod.nc"
@@ -402,6 +402,7 @@ public class StationDataCSVWriter {
                 dataset.getDataVariable("min"),
                 dataset.getDataVariable("max"),
                 dataset.getDataVariable("prcp"),
+                dataset.getDataVariable("frshtt"),
             });
 
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
