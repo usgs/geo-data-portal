@@ -107,10 +107,9 @@ public class GridStatistics {
         return perAttributeValueAllTimestepStatistics;
     }
     
-    public WeightedStatisticsAccumulator1D allTimestepAllAttributeValueStatistics() {
+    public WeightedStatisticsAccumulator1D getAllTimestepAllAttributeValueStatistics() {
         return allTimestepAllAttributeValueStatistics;
     }
-    
     
     // TODO: docs and error handling
     public static GridStatistics generate(
@@ -135,7 +134,7 @@ public class GridStatistics {
         try {
             gdt = gdt.makeSubset(timeRange, null, llr, 1, 1, 1);
         } catch (InvalidRangeException ex) {
-            Logger.getLogger(SimpleStatistics.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(GridStatistics.class.getName()).log(Level.SEVERE, null, ex);
             throw ex;  // rethrow requested by IS
         }
         
@@ -279,29 +278,98 @@ public class GridStatistics {
             BufferedWriter writer = null;
             try {
                 writer = new BufferedWriter(new FileWriter("temp0.csv"));
-
-               GridStatisticsCSVWriter csv = new GridStatisticsCSVWriter(gs);
-               csv.write(writer);
+                GridStatisticsCSVWriter csv = new GridStatisticsCSVWriter(
+                        gs,
+                        Arrays.asList(new GridStatisticsCSVWriter.Statistic[] {
+                            GridStatisticsCSVWriter.Statistic.mean,
+                            GridStatisticsCSVWriter.Statistic.maximum, }),
+                        false,
+                        ",");
+                csv.write(writer);
             } catch (IOException ex) {
-                Logger.getLogger(SimpleStatistics.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(GridStatistics.class.getName()).log(Level.SEVERE, null, ex);
             } finally {
                 if (writer != null) {
                     try {
                         writer.close();
                     } catch (IOException ex) {
-                        Logger.getLogger(SimpleStatistics.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(GridStatistics.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+
+            try {
+                writer = new BufferedWriter(new FileWriter("temp1.csv"));
+                GridStatisticsCSVWriter csv = new GridStatisticsCSVWriter(
+                        gs,
+                        Arrays.asList(new GridStatisticsCSVWriter.Statistic[] {
+                            GridStatisticsCSVWriter.Statistic.mean,
+                            GridStatisticsCSVWriter.Statistic.maximum, }),
+                        true,
+                        ",");
+                csv.write(writer);
+            } catch (IOException ex) {
+                Logger.getLogger(GridStatistics.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+                if (writer != null) {
+                    try {
+                        writer.close();
+                    } catch (IOException ex) {
+                        Logger.getLogger(GridStatistics.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+
+            try {
+                writer = new BufferedWriter(new FileWriter("temp2.csv"));
+                GridStatisticsCSVWriter csv = new GridStatisticsCSVWriter(
+                        gs,
+                        Arrays.asList(GridStatisticsCSVWriter.Statistic.values()),
+                        true,
+                        ",");
+                csv.write(writer);
+            } catch (IOException ex) {
+                Logger.getLogger(GridStatistics.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+                if (writer != null) {
+                    try {
+                        writer.close();
+                    } catch (IOException ex) {
+                        Logger.getLogger(GridStatistics.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+
+
+
+            try {
+                writer = new BufferedWriter(new FileWriter("temp3.csv"));
+                GridStatisticsCSVWriter csv = new GridStatisticsCSVWriter(
+                        gs,
+                        Arrays.asList(GridStatisticsCSVWriter.Statistic.values()),
+                        false,
+                        ",");
+                csv.write(writer);
+            } catch (IOException ex) {
+                Logger.getLogger(GridStatistics.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+                if (writer != null) {
+                    try {
+                        writer.close();
+                    } catch (IOException ex) {
+                        Logger.getLogger(GridStatistics.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             }
 
         } catch (Exception ex) {
-            Logger.getLogger(SimpleStatistics.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(GridStatistics.class.getName()).log(Level.SEVERE, null, ex);
         }finally {
             if (dataset != null) {
                 try {
                     dataset.close();
                 } catch (IOException ex) {
-                    Logger.getLogger(SimpleStatistics.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(GridStatistics.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
             if (dataStore != null) {

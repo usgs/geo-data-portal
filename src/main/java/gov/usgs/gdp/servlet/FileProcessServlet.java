@@ -2,6 +2,7 @@ package gov.usgs.gdp.servlet;
 
 import gov.usgs.gdp.analysis.GridStatistics;
 import gov.usgs.gdp.analysis.GridStatisticsCSVWriter;
+import gov.usgs.gdp.analysis.GridStatisticsCSVWriter.Statistic;
 import gov.usgs.gdp.analysis.GridStatisticsWriter;
 import gov.usgs.gdp.analysis.NetCDFUtility;
 import gov.usgs.gdp.analysis.StationDataCSVWriter;
@@ -372,10 +373,10 @@ public class FileProcessServlet extends HttpServlet {
         t("[tab]", "\t"),
         s("[space]", " ");
 	    public final String description;
-	    public final String value;
+	    public final String delimiter;
 	    private DelimiterOption(String description, String value) {
 	        this.description = description;
-	        this.value = value;
+	        this.delimiter = value;
 	    }
 	    public static DelimiterOption getDefault() { return c; }
 	    @Override public String toString() { return description; }
@@ -402,7 +403,7 @@ public class FileProcessServlet extends HttpServlet {
             public static GridOption getDefault() { return attributes; } 
 	    }
 	}
-    ////  START - MOVEME
+    ////  END - MOVEME
 	
 	private File populateSummary(HttpServletRequest request) throws IOException, InvalidRangeException, FactoryException, TransformException {
 		
@@ -420,14 +421,14 @@ public class FileProcessServlet extends HttpServlet {
 	    String groupById	= request.getParameter("groupby");
 	    String delimId	= request.getParameter("delim");
 	   
-	    DelimiterOption delimiter = null;
+	    DelimiterOption delimiterOption = null;
 	    if (delimId != null) {
 	        try {
-	            delimiter = DelimiterOption.valueOf(delimId);
+	            delimiterOption = DelimiterOption.valueOf(delimId);
 	        } catch (IllegalArgumentException e) { /* failure handled below */}
 	    }
-	    if (delimiter == null) {
-	        delimiter = DelimiterOption.getDefault();
+	    if (delimiterOption == null) {
+	        delimiterOption = DelimiterOption.getDefault();
 	    }
 	    
 		String baseFilePath = System.getProperty("applicationTempDir");
@@ -550,6 +551,19 @@ public class FileProcessServlet extends HttpServlet {
 		        if (groupBy == null) {
 		            groupBy = GroupBy.GridOption.getDefault();
 		        }
+
+                List<Statistic> statisticList = new ArrayList<Statistic>();
+                if (outputStats != null && outputStats.length > 0) {
+                    for(int i = 0; i < outputStats.length; ++i) {
+                        // may throw exception if outputStats value doesn't
+                        // map to Statistic enum value, ivan says let percolate up.
+                        statisticList.add(Statistic.valueOf(outputStats[i]));
+                    }
+                }
+
+                if (statisticList.size() == 0) {
+                    throw new IllegalArgumentException("no output statistics selected");
+                }
 				
 				GridStatistics gs = null;
 				// *** long running task ***
@@ -562,7 +576,11 @@ public class FileProcessServlet extends HttpServlet {
 				GridStatisticsWriter ouputFileWriter = null;
 	
 				if ("ascii".equals(output.toLowerCase()) || "xml".equals(output.toLowerCase())) {
-					ouputFileWriter = new GridStatisticsCSVWriter(gs);
+					ouputFileWriter = new GridStatisticsCSVWriter(
+                            gs,
+                            statisticList,
+                            groupBy == GroupBy.GridOption.statistics,
+                            delimiterOption.delimiter);
 				}
 	
 				BufferedWriter writer = null;
@@ -599,7 +617,7 @@ public class FileProcessServlet extends HttpServlet {
 						} else {
 							// do we care?
 						}
-					};
+					}
 					
 	                GroupBy.StationOption groupBy = null;
 	                if (groupById != null) {
@@ -621,7 +639,7 @@ public class FileProcessServlet extends HttpServlet {
 								new DateRange(fromDate, toDate),
 								writer,
                                 groupBy == StationOption.variable,
-                                delimiter.value);
+                                delimiterOption.delimiter);
 					} finally {
 						if (writer != null) { try { writer.close(); } catch (IOException e) { /* swallow, don't mask exception */ } }
 					}
