@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Formatter;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -15,6 +14,7 @@ import thredds.catalog.InvCatalog;
 import thredds.catalog.InvDataset;
 import thredds.catalog.ServiceType;
 import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.grid.GeoGrid;
@@ -85,20 +85,92 @@ public abstract class NetCDFUtility {
             throw new IllegalArgumentException("location can't be null");
         }
 
-        List<VariableSimpleIF> variableList = new ArrayList<VariableSimpleIF>();
+        List<VariableSimpleIF> variableList = null;
         FeatureDataset dataset = null;
         try {
             dataset = FeatureDatasetFactoryManager.open(
                     null, location, null, new Formatter());
-            for (VariableSimpleIF variable : dataset.getDataVariables()) {
-                if (variable.findAttributeIgnoreCase("_CoordinateAxisType") == null) {
-                	variableList.add(variable);
-                }
+            switch (dataset.getFeatureType()) {
+                case POINT:
+                case PROFILE:
+                case SECTION:
+                case STATION:
+                case STATION_PROFILE:
+                case STATION_RADIAL:
+                case TRAJECTORY:
+
+                    variableList = new ArrayList<VariableSimpleIF>();
+
+                    // Try Unidata Observation Dataset convention where observation
+                    // dimension is declared as global attribute...
+                    Attribute convAtt = dataset.findGlobalAttributeIgnoreCase("Conventions");
+                    if (convAtt != null && convAtt.isString()) {
+                        String convName = convAtt.getStringValue();
+
+                        //// Unidata Observation Dataset Convention
+                        //   http://www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html
+                        if (convName.contains("Unidata Observation Dataset")) {
+                            Attribute obsDimAtt = dataset.findGlobalAttributeIgnoreCase("observationDimension");
+                            String obsDimName = (obsDimAtt != null && obsDimAtt.isString()) ?
+                                    obsDimAtt.getStringValue() : null;
+                            if (obsDimName != null && obsDimName.length() > 0) {
+                                String psuedoRecordPrefix = obsDimName + '.';
+                                for (VariableSimpleIF var : dataset.getDataVariables()) {
+                                    if (var.findAttributeIgnoreCase("_CoordinateAxisType") == null) {
+                                        if (var.getName().startsWith(psuedoRecordPrefix)) {
+                                            // doesn't appear to be documented, this
+                                            // is observed behavior...
+                                            variableList.add(var);
+                                        } else {
+                                            for (Dimension dim : var.getDimensions()) {
+                                                if (obsDimName.equalsIgnoreCase(dim.getName())) {
+                                                    variableList.add(var);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (variableList.size() == 0) {
+                                // no explicit observation dimension found? look for
+                                // variables with unlimited dimension
+                                for (VariableSimpleIF var : dataset.getDataVariables()) {
+                                    for (Dimension dim : var.getDimensions()) {
+                                        if (dim.isUnlimited()) {
+                                            variableList.add(var);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    //// CF Conventions
+                    //   https://cf-pcmdi.llnl.gov/trac/wiki/PointObservationConventions
+                    // 
+                    //  Don't try explicit :Conventions attribute check since this
+                    //  doesnt seem to be coming through TDS with cdmremote when
+                    //  CF conventions are used (?!)
+                    if (variableList.size() == 0) {
+                        // Try CF convention where range variable has coordinate attribute
+                        for (VariableSimpleIF variable : dataset.getDataVariables()) {
+                            if (variable.findAttributeIgnoreCase("coordinates") != null) {
+                                variableList.add(variable);
+                            }
+                        }
+                    }
+                    break;
+                default:
+                    variableList = dataset.getDataVariables();
+                    break;
             }
         } finally {
             if (dataset != null) {
                 dataset.close();
             }
+        }
+        if (variableList == null) {
+            variableList = Collections.emptyList();
         }
         return variableList;
     }
@@ -222,10 +294,29 @@ public abstract class NetCDFUtility {
             //            System.out.println(handle.getDataset().getCatalogUrl());
             //        }
             //
-            for (String s : getDateRange("/Users/tkunicki/Downloads/GSOD/netcdfXX/gsod.nc", "temp")) {
-                System.out.println(s);
+            for (VariableSimpleIF v : getDataVariableNames("/Users/tkunicki/Downloads/GSOD/netcdf/gsod.c.uod.nc")) {
+                System.out.println(v.getShortName());
             }
-            System.out.println(hasTimeCoordinate("/Users/tkunicki/Downloads/GSOD/netcdfXX/gsod.nc"));
+            System.out.println("***");
+            for (VariableSimpleIF v : getDataVariableNames("dods://localhost:18080/thredds/dodsC/gsod/gsod.c.uod.nc")) {
+                System.out.println(v.getShortName());
+            }
+            System.out.println("***");
+            for (VariableSimpleIF v : getDataVariableNames("cdmremote:http://localhost:18080/thredds/cdmremote/gsod/gsod.c.uod.nc")) {
+                System.out.println(v.getShortName());
+            }
+            System.out.println("***");
+            for (VariableSimpleIF v : getDataVariableNames("/Users/tkunicki/Downloads/GSOD/netcdf/gsod.c.cf.nc")) {
+                System.out.println(v.getShortName());
+            }
+            System.out.println("***");
+            for (VariableSimpleIF v : getDataVariableNames("dods://localhost:18080/thredds/dodsC/gsod/gsod.c.cf.nc")) {
+                System.out.println(v.getShortName());
+            }
+            System.out.println("***");
+            for (VariableSimpleIF v : getDataVariableNames("cdmremote:http://localhost:18080/thredds/cdmremote/gsod/gsod.c.cf.nc")) {
+                System.out.println(v.getShortName());
+            }
         } catch (IOException ex) {
             Logger.getLogger(NetCDFUtility.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IllegalArgumentException ex) {
