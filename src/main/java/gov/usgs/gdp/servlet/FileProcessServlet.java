@@ -49,6 +49,7 @@ import org.geotools.data.FeatureSource;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.SchemaException;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.geometry.jts.JTSFactoryFinder;
@@ -135,19 +136,7 @@ public class FileProcessServlet extends HttpServlet {
 				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_EMAIL_ERROR));
 				RouterServlet.sendXml(xmlOutput, start, response);
 				return;
-			} catch (IOException e) {
-				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(e.getMessage()));
-				RouterServlet.sendXml(xmlOutput, start, response);
-				return;
-			} catch (FactoryException e) {
-				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(e.getMessage()));
-				RouterServlet.sendXml(xmlOutput, start, response);
-				return;
-            } catch (TransformException e) {
-				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(e.getMessage()));
-				RouterServlet.sendXml(xmlOutput, start, response);
-				return;
-            } catch (Exception e) {
+			} catch (Exception e) {
 				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(e.getMessage()));
 				RouterServlet.sendXml(xmlOutput, start, response);
                 e.printStackTrace();
@@ -346,7 +335,8 @@ public class FileProcessServlet extends HttpServlet {
 
 	private File populateFileUpload(HttpServletRequest request)
             throws IOException, InvalidRangeException, AddressException,
-            MessagingException, FactoryException, TransformException {
+            MessagingException, FactoryException, TransformException,
+            org.opengis.coverage.grid.InvalidRangeException, SchemaException {
         String email = request.getParameter("email");
         String finalUrlEmail = request.getParameter("finalurlemail");
 
@@ -405,7 +395,7 @@ public class FileProcessServlet extends HttpServlet {
 	}
     ////  END - MOVEME
 	
-	private File populateSummary(HttpServletRequest request) throws IOException, InvalidRangeException, FactoryException, TransformException {
+	private File populateSummary(HttpServletRequest request) throws IOException, InvalidRangeException, FactoryException, TransformException, org.opengis.coverage.grid.InvalidRangeException, SchemaException {
 		
 	    String shapeSet = request.getParameter("shapeset");
 	    String attribute = request.getParameter("attribute");
