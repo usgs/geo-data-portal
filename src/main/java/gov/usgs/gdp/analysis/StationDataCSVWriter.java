@@ -6,7 +6,6 @@ package gov.usgs.gdp.analysis;
 
 import com.google.common.base.Preconditions;
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import java.io.BufferedInputStream;
@@ -33,11 +32,22 @@ import java.util.TimeZone;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
+import org.geotools.data.crs.ReprojectFeatureResults;
+import org.geotools.data.store.ReprojectingFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.feature.SchemaException;
+import org.geotools.geometry.jts.JTS;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.coverage.grid.InvalidRangeException;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDataset;
@@ -48,7 +58,6 @@ import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.StationTimeSeriesFeature;
 import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
 import ucar.nc2.units.DateRange;
-import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 
@@ -70,7 +79,7 @@ public class StationDataCSVWriter {
             BufferedWriter writer,
             boolean groupByVariable,
             String delimitter)
-            throws IOException, InvalidRangeException {
+            throws IOException, InvalidRangeException, TransformException, FactoryException, SchemaException {
 
         Preconditions.checkNotNull(featureCollection, "featureCollection may not be null");
         Preconditions.checkNotNull(stationTimeSeriesFeatureCollection, "stationTimeSeriesFeatureCollection may not be null");
@@ -88,12 +97,12 @@ public class StationDataCSVWriter {
         GregorianCalendar end = new GregorianCalendar(timeZone);
         end.setTime(dateRange.getEnd().getDate());
 
-        Envelope envelope = featureCollection.getBounds();
-
-        LatLonRect latLonRect = new LatLonRect(
-                new LatLonPointImpl(envelope.getMinY(),envelope.getMinX()),
-                new LatLonPointImpl(envelope.getMaxY(),envelope.getMaxX()));
-
+        LatLonRect latLonRect = GeoToolsNetCDFUtility.getLatLonRectFromEnvelope(
+                featureCollection.getBounds(),
+                DefaultGeographicCRS.WGS84);
+        featureCollection = new ReprojectFeatureResults(
+                featureCollection,
+                DefaultGeographicCRS.WGS84);
 
         List<PointFeatureCache> pointFeatureCacheList = new ArrayList<PointFeatureCache>();
         for (Station station : stationTimeSeriesFeatureCollection.getStations(latLonRect)) {
@@ -363,8 +372,10 @@ public class StationDataCSVWriter {
 
 
         String sfLocation =
-                "src/main/resources/Sample_Files/Shapefiles/Yahara_River_HRUs_geo_WGS84.shp"
+//                "src/main/resources/Sample_Files/Shapefiles/Yahara_River_HRUs_geo_WGS84.shp"
+//                "src/main/resources/Sample_Files/Shapefiles/serap_hru_239.shp"
 //                "/Users/tkunicki/Downloads/blob_2/blob.shp"
+                "/Users/tkunicki/Downloads/Archive/catchment0403_SimplifyPolygo.shp"
                 ;
         String ncLocation = 
 //                "cdmremote:http://internal.cida.usgs.gov/thredds/cdmremote/gsod/gsod.nc"

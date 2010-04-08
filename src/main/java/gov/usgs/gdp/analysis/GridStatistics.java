@@ -122,11 +122,7 @@ public class GridStatistics {
     {
         
         ReferencedEnvelope envelope = featureCollection.getBounds();
-        BoundingBox latLonBoundingBox = envelope.toBounds(DefaultGeographicCRS.WGS84);
-        LatLonRect llr = new LatLonRect(
-                new LatLonPointImpl(latLonBoundingBox.getMinY(), latLonBoundingBox.getMinX()),
-                new LatLonPointImpl(latLonBoundingBox.getMaxY(), latLonBoundingBox.getMaxX()));
-
+        LatLonRect llr = GeoToolsNetCDFUtility.getLatLonRectFromEnvelope(envelope);
 
         GridDatatype gdt = gridDataset.findGridDatatype(variableName);
         Preconditions.checkNotNull(gdt, "Variable named %s not found in gridDataset", variableName);
