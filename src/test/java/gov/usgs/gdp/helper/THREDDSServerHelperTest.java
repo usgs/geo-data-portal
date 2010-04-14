@@ -1,14 +1,11 @@
 package gov.usgs.gdp.helper;
 
-import gov.usgs.gdp.bean.TimeBean;
 import static org.junit.Assert.*;
-
 
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.text.ParseException;
 import java.util.List;
 
 import org.junit.Test;

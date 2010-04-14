@@ -95,6 +95,7 @@ public class EmailMessageBeanTest {
     /**
      * Test of getCc method, of class EmailMessageBean.
      */
+    @SuppressWarnings("unchecked")
     @Test
     public void testGetCc() {
         EmailMessageBean instance = new EmailMessageBean();
@@ -158,6 +159,7 @@ public class EmailMessageBeanTest {
     /**
      * Test of getBcc method, of class EmailMessageBean.
      */
+    @SuppressWarnings("unchecked")
     @Test
     public void testGetBcc() {
         EmailMessageBean instance = new EmailMessageBean();

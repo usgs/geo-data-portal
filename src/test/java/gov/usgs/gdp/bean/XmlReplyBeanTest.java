@@ -84,12 +84,14 @@ public class XmlReplyBeanTest {
     @Test
     public void testXmlReplyBeanConstructorWithInStatusAndErrorEnumAndMessageBeanWithIllegalArgumentException() {
         try {
-            XmlReplyBean result = new XmlReplyBean(-1, ErrorEnum.ERR_ATTRIBUTES_NOT_FOUND, new MessageBean());
+            @SuppressWarnings("unused")
+	    XmlReplyBean result = new XmlReplyBean(-1, ErrorEnum.ERR_ATTRIBUTES_NOT_FOUND, new MessageBean());
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testXmlReplyBeanConstructorWithIntAndXmlBeanList() {
         List content = new ArrayList();
@@ -114,7 +116,8 @@ public class XmlReplyBeanTest {
     @Test
     public void testXmlReplyBeanConstructorWithStatusIntWithIllegalArgumentException() {
         try {
-            XmlReplyBean result = new XmlReplyBean(-1);
+            @SuppressWarnings("unused")
+	    XmlReplyBean result = new XmlReplyBean(-1);
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
         }
@@ -129,7 +132,8 @@ public class XmlReplyBeanTest {
     @Test
     public void testXmlReplyBeanConstructorWithStatusIntAndErrorBeanWithIllegalArgumentException() {
         try {
-            XmlReplyBean result = new XmlReplyBean(-1, new ErrorBean());
+            @SuppressWarnings("unused")
+	    XmlReplyBean result = new XmlReplyBean(-1, new ErrorBean());
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
         }
@@ -144,7 +148,8 @@ public class XmlReplyBeanTest {
     @Test
     public void testXmlReplyBeanConstructorWithStatusIntAndErrorEnumWithIllegalArgumentException() {
         try {
-            XmlReplyBean result = new XmlReplyBean(-1, ErrorEnum.ERR_ATTRIBUTES_NOT_FOUND);
+            @SuppressWarnings("unused")
+	    XmlReplyBean result = new XmlReplyBean(-1, ErrorEnum.ERR_ATTRIBUTES_NOT_FOUND);
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
         }
@@ -159,7 +164,8 @@ public class XmlReplyBeanTest {
     @Test
     public void testXmlReplyBeanConstructorWithStatusIntAndErrorEnumAndMessageBeanWithIllegalArgumentException() {
         try {
-            XmlReplyBean result = new XmlReplyBean(-1, ErrorEnum.ERR_ATTRIBUTES_NOT_FOUND, new MessageBean());
+            @SuppressWarnings("unused")
+	    XmlReplyBean result = new XmlReplyBean(-1, ErrorEnum.ERR_ATTRIBUTES_NOT_FOUND, new MessageBean());
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
         }
@@ -174,7 +180,8 @@ public class XmlReplyBeanTest {
     @Test
     public void testXmlReplyBeanConstructorWithStatusIntAndErrorBeanAndMessageBeanWithIllegalArgumentException() {
         try {
-            XmlReplyBean result = new XmlReplyBean(-1, new ErrorBean(), new MessageBean());
+            @SuppressWarnings("unused")
+	    XmlReplyBean result = new XmlReplyBean(-1, new ErrorBean(), new MessageBean());
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
         }

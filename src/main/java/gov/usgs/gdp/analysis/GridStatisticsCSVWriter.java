@@ -155,6 +155,7 @@ public class GridStatisticsCSVWriter implements GridStatisticsWriter {
         writer.newLine();
     }
 
+    @SuppressWarnings("deprecation")
     private void writerBody(BufferedWriter writer) throws IOException {
 
         StringBuilder lineSB = new StringBuilder();

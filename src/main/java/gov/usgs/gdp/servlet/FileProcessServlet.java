@@ -224,6 +224,7 @@ public class FileProcessServlet extends HttpServlet {
 	    doGet(request, response);
 	}
 
+	@SuppressWarnings("unused")
 	private final static class ShapedGridReader implements ProxyReader {
 
         private GeoGrid grid;
@@ -233,7 +234,7 @@ public class FileProcessServlet extends HttpServlet {
         private CoordinateAxis1D yAxis;
         private double[][] percentOfShapeOverlappingCells;
 
-        public ShapedGridReader(GeoGrid gridParam, Geometry shapeParam) {
+	public ShapedGridReader(GeoGrid gridParam, Geometry shapeParam) {
             this.grid = gridParam;
             this.shape = shapeParam;
             this.geometryFactory = JTSFactoryFinder.getGeometryFactory(null);
@@ -741,7 +742,7 @@ public class FileProcessServlet extends HttpServlet {
      * @param request
      * @return
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "unused" })
     private String populateAttributeList(HttpServletRequest request) {
         String fileSelection = request.getParameter("fileName");
         List<ShapeFileSetBean> shapeFileSetBeanList = (List<ShapeFileSetBean>) request.getSession().getAttribute("shapeFileSetBeanList");
@@ -784,6 +785,7 @@ public class FileProcessServlet extends HttpServlet {
         return "/jsp/attributeSelection.jsp";
     }
 
+    @SuppressWarnings("unused")
     private String populateDataSet(HttpServletRequest request) {
         MessageBean errorBean = new MessageBean();
 
@@ -831,6 +833,7 @@ public class FileProcessServlet extends HttpServlet {
      * @param request
      * @return
      */
+    @SuppressWarnings("unused")
     private String populateFeatureList(HttpServletRequest request) {
         // Attribute chosen, set up feature list
         String attributeSelection = request.getParameter("attributeSelection");
@@ -857,6 +860,7 @@ public class FileProcessServlet extends HttpServlet {
         return "/jsp/featureSelection.jsp";
     }
 
+    @SuppressWarnings("unused")
     private String populateGrid(HttpServletRequest request) {
         THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");
         MessageBean errorBean = new MessageBean();
@@ -927,6 +931,7 @@ public class FileProcessServlet extends HttpServlet {
      * @param request
      * @return
      */
+    @SuppressWarnings("unused")
     private String populateTHREDDSSelections(HttpServletRequest request) {
         ShapeFileSetBean shpFileSetBean = (ShapeFileSetBean) request.getSession().getAttribute("shapeFileSetBean");
 
@@ -946,6 +951,7 @@ public class FileProcessServlet extends HttpServlet {
         return "/jsp/THREDDSSelection.jsp";
     }
 
+    @SuppressWarnings("unused")
     private String populateTimeSelection(HttpServletRequest request) {
         // Set up time selection
         THREDDSInfoBean threddsInfoBean = (THREDDSInfoBean) request.getSession().getAttribute("threddsInfoBean");

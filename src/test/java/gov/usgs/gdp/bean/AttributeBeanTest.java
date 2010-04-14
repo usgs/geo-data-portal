@@ -8,6 +8,7 @@ import org.junit.Test;
 
 public class AttributeBeanTest {
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testSetAttribute() {
         AttributeBean attBean = new AttributeBean(new ArrayList());
@@ -19,6 +20,7 @@ public class AttributeBeanTest {
         assertTrue(!attBean.getAttribute().isEmpty());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testGetAttribute() {
         AttributeBean attBean = new AttributeBean(new ArrayList());
@@ -30,6 +32,7 @@ public class AttributeBeanTest {
         assertEquals(result, list);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testGetFilesetName() {
         AttributeBean attBean = new AttributeBean(new ArrayList());
@@ -38,6 +41,7 @@ public class AttributeBeanTest {
         assertEquals(result, result);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testSetFilesetName() {
         AttributeBean attBean = new AttributeBean(new ArrayList());

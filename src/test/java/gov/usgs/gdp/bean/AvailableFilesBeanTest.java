@@ -2,13 +2,11 @@ package gov.usgs.gdp.bean;
 
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertTrue;
 import gov.usgs.gdp.helper.FileHelper;
 
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Date;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
@@ -109,6 +107,7 @@ public class AvailableFilesBeanTest {
         @Test
 	public void testGetAvailableFilesBeanWithBogusUserDirectory() {
             try {
+		@SuppressWarnings("unused")
 		AvailableFilesBean result =
 			AvailableFilesBean.getAvailableFilesBean(this.tempDir,
 						"user_dir"

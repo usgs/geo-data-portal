@@ -19,7 +19,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 @XStreamAlias("availabletimes")
-public class TimeBean implements XmlBean{
+public class TimeBean implements XmlBean {
 
 	@XStreamAlias("times")
 	@XStreamImplicit(itemFieldName="time")

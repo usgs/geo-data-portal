@@ -3,7 +3,6 @@ package gov.usgs.gdp.servlet;
 import gov.usgs.gdp.bean.*;
 import gov.usgs.gdp.helper.FileHelper;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 

@@ -12,6 +12,7 @@ public class XmlReplyBean implements XmlBean {
 	private static org.apache.log4j.Logger log = Logger.getLogger(XmlReplyBean.class);
 	
 	private AckBean acknowledgment;
+	@SuppressWarnings("unused")
 	private ErrorBean errorBean;
         private ErrorEnum errorEnum;
 	private MessageBean message;

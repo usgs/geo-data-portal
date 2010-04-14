@@ -19,10 +19,6 @@ public class CommandBean implements XmlBean {
     private String example;
     private String description;
     
-    
-    private CommandBean() {
-        //
-    }
 
     public CommandBean(String command, String useage, String requiredParameters, String optionalParameters, String example, String description) {
         this.command = command;

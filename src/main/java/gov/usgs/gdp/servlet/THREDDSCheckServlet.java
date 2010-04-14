@@ -61,6 +61,7 @@ public class THREDDSCheckServlet extends HttpServlet {
 		doPost(request, response);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException{
 		Long start = new Date().getTime();
@@ -129,6 +130,7 @@ public class THREDDSCheckServlet extends HttpServlet {
 			setParamConfig(paramConfig);
 		}
 		
+		@SuppressWarnings("unchecked")
 		@Override
 		public void run() {
 			Map<String, THREDDSServerBean> threddsServerBeanMap = (Map<String, THREDDSServerBean>) paramConfig.getServletContext().getAttribute("threddsServerBeanMap");

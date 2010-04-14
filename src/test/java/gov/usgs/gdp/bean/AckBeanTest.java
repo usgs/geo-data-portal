@@ -2,7 +2,6 @@ package gov.usgs.gdp.bean;
 
 import static org.junit.Assert.*;
 
-import java.util.Date;
 
 import org.junit.Test;
 
@@ -39,6 +38,7 @@ public class AckBeanTest {
 	@Test
 	public void testInvalidStatus() {
 		try {
+			@SuppressWarnings("unused")
 			AckBean ackBean = new AckBean(3);
 		} catch (IllegalArgumentException e) {
 			return;

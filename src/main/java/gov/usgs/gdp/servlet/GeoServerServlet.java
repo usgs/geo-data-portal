@@ -283,6 +283,7 @@ public class GeoServerServlet extends HttpServlet {
 		
 		// For some reason this has to be here for the packet above to be sent //
 		BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
+		@SuppressWarnings("unused") //remove warning from IDE
 		String line;
 		while ((line = reader.readLine()) != null) {
 			//System.out.println(line);

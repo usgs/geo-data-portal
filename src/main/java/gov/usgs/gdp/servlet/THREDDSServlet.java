@@ -9,7 +9,6 @@ import gov.usgs.gdp.helper.THREDDSServerHelper;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 

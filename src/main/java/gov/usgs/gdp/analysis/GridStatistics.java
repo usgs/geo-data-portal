@@ -39,13 +39,10 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.units.DateRange;
-import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 
 import com.google.common.base.Preconditions;
 import com.vividsolutions.jts.geom.Geometry;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.opengis.geometry.BoundingBox;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import ucar.ma2.Array;
 import ucar.ma2.Index;

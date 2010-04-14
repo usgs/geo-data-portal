@@ -5,7 +5,6 @@ import gov.usgs.gdp.bean.ErrorBean;
 import gov.usgs.gdp.bean.XmlReplyBean;
 
 import com.sun.xml.fastinfoset.*;
-import gov.usgs.gdp.bean.ErrorEnum;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -36,6 +35,7 @@ public class RouterServlet extends HttpServlet {
     /**
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
+    @SuppressWarnings("unchecked")
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Long start = new Date().getTime();
