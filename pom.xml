@@ -255,6 +255,28 @@
             <artifactId>protobuf-java</artifactId>
             <version>2.1.0</version>
         </dependency>
+        <dependency>
+        	<groupId>jackson</groupId>
+        	<artifactId>jackson-asl</artifactId>
+        	<version>0.9.3</version>
+        	<type>jar</type>
+        	<scope>compile</scope>
+        </dependency>
+        <dependency>
+        	<groupId>org.geotools</groupId>
+        	<artifactId>gt-xml</artifactId>
+        	<version>${geotools.version}</version>
+        </dependency>
+        <dependency>
+        	<groupId>org.geotools</groupId>
+        	<artifactId>gt-xsd-core</artifactId>
+        	<version>${geotools.version}</version>
+        </dependency>
+        <dependency>
+        	<groupId>org.geotools</groupId>
+        	<artifactId>gt-xsd-gml2</artifactId>
+        	<version>${geotools.version}</version>
+        </dependency>
     </dependencies>
 </project>
 

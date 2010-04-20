@@ -2,10 +2,10 @@ package gov.usgs.gdp.servlet;
 
 import gov.usgs.gdp.analysis.GridStatistics;
 import gov.usgs.gdp.analysis.GridStatisticsCSVWriter;
-import gov.usgs.gdp.analysis.GridStatisticsCSVWriter.Statistic;
 import gov.usgs.gdp.analysis.GridStatisticsWriter;
 import gov.usgs.gdp.analysis.NetCDFUtility;
 import gov.usgs.gdp.analysis.StationDataCSVWriter;
+import gov.usgs.gdp.analysis.GridStatisticsCSVWriter.Statistic;
 import gov.usgs.gdp.bean.AckBean;
 import gov.usgs.gdp.bean.AvailableFilesBean;
 import gov.usgs.gdp.bean.EmailMessageBean;
@@ -22,10 +22,20 @@ import gov.usgs.gdp.helper.FileHelper;
 import gov.usgs.gdp.servlet.FileProcessServlet.GroupBy.StationOption;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.StringReader;
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -34,6 +44,7 @@ import java.util.Date;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
@@ -42,29 +53,31 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.JsonToken;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.DefaultQuery;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureCollections;
 import org.geotools.feature.SchemaException;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
-
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.util.TimeZone;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
+import org.xml.sax.SAXException;
 
 import thredds.catalog.InvAccess;
 import thredds.catalog.InvCatalog;
@@ -99,6 +112,11 @@ import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.NamedObject;
+
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.MultiPolygon;
 
 /**
  * Servlet implementation class FileProcessServlet
@@ -411,6 +429,88 @@ public class FileProcessServlet extends HttpServlet {
 	    String userDirectory = request.getParameter("userdirectory");
 	    String groupById	= request.getParameter("groupby");
 	    String delimId	= request.getParameter("delim");
+	    String reachCode = request.getParameter("reachCode");
+	    
+	    
+	    FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = null;
+	    
+	    String baseFilePath = System.getProperty("applicationTempDir");
+    	baseFilePath = baseFilePath + FileHelper.getSeparator();
+    	File uploadDirectory = FileHelper.createFileRepositoryDirectory(baseFilePath);
+    	if (!uploadDirectory.exists()) return null;
+    	
+    	String attributeName = attribute;
+    	
+	    if (reachCode != null)  {
+    		String json = sendPacket(new URL("http://iaspub.epa.gov/waters10/waters_services.navigationDelineationService?" +
+    				"pNavigationType=UM&pStartReachCode=" + reachCode + "&optOutGeomFormat=GEOGML"),
+    				"GET", null, null, new String[]{});// "pNavigationType", "UM", "pStartReachcode", reachCode, "optOutGeomFormat", "GEOGML");
+    		
+    		String gml = parseJSON(json);
+    		
+    		try {
+    			featureCollection = parseGML(gml);
+			} catch (SAXException e) {
+				e.printStackTrace();
+			} catch (ParserConfigurationException e) {
+				e.printStackTrace();
+			}
+    		
+    	} else {
+        	
+    		FileHelper.deleteFile(uploadDirectory.getPath() + outputFile);
+    		
+    		
+    		FileDataStore shapeFileDataStore;
+    		FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = null;
+    		
+    		// Set up the shapefile
+    		String appTempDir = System.getProperty("applicationTempDir");
+    		String userDir = userDirectory;
+    		if (userDir != null && !"".equals(appTempDir + userDir)) {
+    			if (FileHelper.doesDirectoryOrFileExist(appTempDir + userDir)) {
+    				FileHelper.updateTimestamp(appTempDir + userDir, false); // Update the timestamp
+    			} else {
+    				userDir = "";
+    			}
+    		}
+    		AvailableFilesBean afb = AvailableFilesBean.getAvailableFilesBean(appTempDir, userDir);
+    		List<ShapeFileSetBean> shapeBeanList = afb.getShapeSetList();
+    		File shapeFile = null;
+    		for (ShapeFileSetBean sfsb : shapeBeanList) {
+    			if (shapeSet.equals(sfsb.getName())) {
+    				shapeFile = sfsb.getShapeFile();
+    			}
+    		}
+
+    		shapeFileDataStore = FileDataStoreFinder.getDataStore(shapeFile);
+    		featureSource = shapeFileDataStore.getFeatureSource();
+
+    		if (features[0].equals("*")) {
+    			featureCollection = featureSource.getFeatures();
+    		} else {
+    			//Implementing a filter using the CQL language
+    			// http://docs.codehaus.org/display/GEOTOOLS/CQL+Parser+Design
+    			String cqlQuery = attribute + " == '" + features[0] + "'";
+    			Filter attributeFilter = null;
+    			for (int index = 1;index < features.length;index++) {
+    				cqlQuery = cqlQuery + " OR " + attribute + " == '" + features[index] + "'";
+    			}
+
+    			try {
+    				attributeFilter = CQL.toFilter(cqlQuery);
+    			} catch (CQLException e) {
+    				log.debug(e);
+    			}
+    			featureCollection = featureSource.getFeatures(
+    					new DefaultQuery(
+    							featureSource.getSchema().getTypeName(), 
+    							attributeFilter
+    					)
+    			);
+    		}
+    	}
+	    
 	   
 	    DelimiterOption delimiterOption = null;
 	    if (delimId != null) {
@@ -422,15 +522,10 @@ public class FileProcessServlet extends HttpServlet {
 	        delimiterOption = DelimiterOption.getDefault();
 	    }
 	    
-		String baseFilePath = System.getProperty("applicationTempDir");
-    	baseFilePath = baseFilePath + FileHelper.getSeparator();
-    	File uploadDirectory = FileHelper.createFileRepositoryDirectory(baseFilePath);
-    	if (!uploadDirectory.exists()) return null;
-    	
-		FileHelper.deleteFile(uploadDirectory.getPath() + outputFile);
-		String fromTime = from;
+		
+	    String fromTime = from;
 		String toTime = to;
-
+		
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
 		Date toDate = new Date();
@@ -455,57 +550,6 @@ public class FileProcessServlet extends HttpServlet {
 			// return some sort of error
 		}
 
-		FileDataStore shapeFileDataStore;
-		FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = null;
-		
-		// Set up the shapefile
-		String appTempDir = System.getProperty("applicationTempDir");
-		String userDir = userDirectory;
-		if (userDir != null && !"".equals(appTempDir + userDir)) {
-			if (FileHelper.doesDirectoryOrFileExist(appTempDir + userDir)) {
-				FileHelper.updateTimestamp(appTempDir + userDir, false); // Update the timestamp
-			} else {
-				userDir = "";
-			}
-		}
-		AvailableFilesBean afb = AvailableFilesBean.getAvailableFilesBean(appTempDir, userDir);
-		List<ShapeFileSetBean> shapeBeanList = afb.getShapeSetList();
-		File shapeFile = null;
-		for (ShapeFileSetBean sfsb : shapeBeanList) {
-			if (shapeSet.equals(sfsb.getName())) {
-				shapeFile = sfsb.getShapeFile();
-			}
-		}
-
-		shapeFileDataStore = FileDataStoreFinder.getDataStore(shapeFile);
-		featureSource = shapeFileDataStore.getFeatureSource();
-
-		String attributeName = attribute;
-
-		FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = null;
-		if (features[0].equals("*")) {
-			featureCollection = featureSource.getFeatures();
-		} else {
-			//Implementing a filter using the CQL language
-			// http://docs.codehaus.org/display/GEOTOOLS/CQL+Parser+Design
-			String cqlQuery = attribute + " == '" + features[0] + "'";
-			Filter attributeFilter = null;
-			for (int index = 1;index < features.length;index++) {
-				cqlQuery = cqlQuery + " OR " + attribute + " == '" + features[index] + "'";
-			}
-
-			try {
-				attributeFilter = CQL.toFilter(cqlQuery);
-			} catch (CQLException e) {
-				log.debug(e);
-			}
-			featureCollection = featureSource.getFeatures(
-					new DefaultQuery(
-							featureSource.getSchema().getTypeName(), 
-							attributeFilter
-					)
-			);
-		}
 
 		String datasetUrl = dataset;
 		Formatter errorLog = new Formatter();
@@ -647,6 +691,105 @@ public class FileProcessServlet extends HttpServlet {
 		return new File(uploadDirectory.getPath(), outputFile);
 
 
+	}
+	
+	static String sendPacket(URL url, String requestMethod, String contentType, String content, 
+			String... requestProperties) throws IOException {
+		
+		HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
+		httpConnection.setDoOutput(true);
+		httpConnection.setRequestMethod(requestMethod);
+		
+		if (contentType != null)
+			httpConnection.addRequestProperty("Content-Type", contentType);
+		
+		for (int i = 0; i < requestProperties.length; i += 2) {
+			httpConnection.addRequestProperty(requestProperties[i], requestProperties[i+1]);
+		}
+		
+		if (content != null) {
+			OutputStreamWriter workspacesWriter = new OutputStreamWriter(httpConnection.getOutputStream());
+			workspacesWriter.write(content);
+			workspacesWriter.close();
+		}
+		
+		BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
+		StringBuilder sb = new StringBuilder();
+		String line = null;
+		while ((line = reader.readLine()) != null) {
+			sb.append(line + "\n");
+		}
+		reader.close();
+		
+		return sb.toString();
+	}
+	
+	private static String parseJSON(String json)
+	throws JsonParseException, IOException {
+		
+		JsonFactory f = new JsonFactory();
+		JsonParser jp = f.createJsonParser(new StringReader(json));
+		
+		while (true) {
+			JsonToken jt = jp.nextToken();
+			
+			if ("shape".equals(jp.getCurrentName())) {
+				jp.nextToken();
+				return jp.getText();
+			}
+			
+			if (jt == JsonToken.END_OBJECT) {
+				System.out.println("Geometry not found.");
+				return null;
+			}
+		}
+	}
+
+	private static FeatureCollection parseGML(String gml) 
+	throws SchemaException, IOException, SAXException, ParserConfigurationException {
+		
+		//create the parser with the gml 2.0 configuration
+		org.geotools.xml.Configuration configuration = new org.geotools.gml2.GMLConfiguration();
+		org.geotools.xml.Parser parser = new org.geotools.xml.Parser( configuration );
+
+		//the xml instance document above
+		InputStreamReader xml = null;
+		try {
+			xml = new FileReader("/Users/razoerb/test.gml");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		//parse
+		MultiPolygon mp = null;
+		mp = (MultiPolygon) parser.parse( xml );
+
+		
+		FeatureCollection<SimpleFeatureType, SimpleFeature> fc = FeatureCollections.newCollection();
+		
+		for (int i = 0; i < mp.getNumGeometries(); i++) {
+			Geometry g = mp.getGeometryN(i).getBoundary();
+			
+			SimpleFeatureType type = DataUtilities.createType("blah", "geom:Geometry");
+			
+//			GeometryFactory geomFactory = new GeometryFactory();
+			SimpleFeatureBuilder build = new SimpleFeatureBuilder( type );
+			
+//			for (Coordinate c : g.getCoordinates()) {
+//				System.out.println(c.x + ", " + c.y);
+//				build.add( geomFactory.createPoint( c ));
+//			}
+			
+			build.add(g);
+			
+			SimpleFeature sf = build.buildFeature(null);
+			
+//			SimpleFeature sf = SimpleFeatureBuilder.build(type, g.getCoordinates(), null);
+			
+			fc.add(sf);
+		}
+		
+		return fc;
 	}
 
 	private static final long serialVersionUID = 1L;
