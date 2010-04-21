@@ -315,7 +315,10 @@ public class FileHelper {
         while (iter.hasNext()) {
             FileItem item = iter.next();
 
-            String fileName = item.getName();
+            // This substring process is a fix for Windows uploaders
+            // This gets only the filename from a full pathname. For some reason, Windows uploads includes the entire pathname (C:\something\something\filename)
+            String fileName = (item.getName() != null && item.getName().contains("\\")) ? item.getName().substring(item.getName().lastIndexOf("\\") + 1) : item.getName();
+            
             String tempFile = directory + java.io.File.separator + fileName;
             if (fileName != null && !"".equals(fileName)) {
                 File uploadedFile = new File(tempFile);

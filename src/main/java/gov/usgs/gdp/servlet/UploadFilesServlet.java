@@ -98,6 +98,7 @@ public class UploadFilesServlet extends HttpServlet {
 
         Object interimItems = upload.parseRequest(request);
 
+        // Ges the user directory name if one exists
         if (interimItems instanceof List<?>) {
             items = (List<FileItem>) interimItems;
             for (FileItem fileItem : items) {
@@ -108,12 +109,13 @@ public class UploadFilesServlet extends HttpServlet {
         }
 
         // Check for user subdirectory - Create the user directory.
-        if (userDirectory == null || "".equals(userDirectory)) {
+        if (userDirectory == null || "".equals(userDirectory) || "null".equals(userDirectory)) {
             userDirectory = createUserDirectory();
         } else if (!FileHelper.doesDirectoryOrFileExist(applicationTempDir + userDirectory)) {
             userDirectory = createUserDirectory(userDirectory);
         }
 
+        // Save the file(s) to the user directory
         if (FileHelper.saveFileItems(applicationTempDir + userDirectory, items)) {
             return userDirectory;
         }

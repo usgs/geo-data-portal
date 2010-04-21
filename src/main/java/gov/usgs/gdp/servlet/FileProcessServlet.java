@@ -139,7 +139,7 @@ public class FileProcessServlet extends HttpServlet {
 			} catch (Exception e) {
 				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(e.getMessage()));
 				RouterServlet.sendXml(xmlOutput, start, response);
-                e.printStackTrace();
+				e.printStackTrace();
 				return;
             }
 
