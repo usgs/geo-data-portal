@@ -448,6 +448,8 @@ public class FileProcessServlet extends HttpServlet {
     		
     		String gml = parseJSON(json);
     		
+    		attributeName = "blah";
+    		
     		try {
     			featureCollection = parseGML(gml);
 			} catch (SAXException e) {
@@ -745,7 +747,7 @@ public class FileProcessServlet extends HttpServlet {
 		}
 	}
 
-	private static FeatureCollection parseGML(String gml) 
+	private static FeatureCollection<SimpleFeatureType, SimpleFeature> parseGML(String gml) 
 	throws SchemaException, IOException, SAXException, ParserConfigurationException {
 		
 		//create the parser with the gml 2.0 configuration
@@ -783,6 +785,7 @@ public class FileProcessServlet extends HttpServlet {
 			build.add(g);
 			
 			SimpleFeature sf = build.buildFeature(null);
+			sf.setAttribute("blah", 3);
 			
 //			SimpleFeature sf = SimpleFeatureBuilder.build(type, g.getCoordinates(), null);
 			
