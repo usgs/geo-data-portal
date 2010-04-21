@@ -1,16 +1,24 @@
 package gov.usgs.gdp.helper;
 
 import gov.usgs.gdp.analysis.GeoToolsFileAnalysis;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 import org.geotools.data.FileDataStore;
 
 /**
@@ -20,6 +28,8 @@ import org.geotools.data.FileDataStore;
  *
  */
 public class FileHelper {
+
+    private static org.apache.log4j.Logger log = Logger.getLogger(FileHelper.class);
 
     public static boolean copyFileToFile(final File inFile, final String outFileString) throws IOException {
         return FileHelper.copyFileToFile(inFile, outFileString, false);
@@ -323,8 +333,35 @@ public class FileHelper {
             if (fileName != null && !"".equals(fileName)) {
                 File uploadedFile = new File(tempFile);
                 item.write(uploadedFile);
+                if (fileName.toLowerCase().contains(".zip")) {
+                    unzipFile(directory, uploadedFile);
+                    uploadedFile.delete();
+                }
             }
         }
+        return true;
+    }
+
+    public static boolean unzipFile(String directory, File zipFile) throws FileNotFoundException, IOException {
+        FileInputStream fis = new FileInputStream(zipFile);
+        ZipInputStream zis = new ZipInputStream(new BufferedInputStream(fis));
+        ZipEntry entry = null;
+        BufferedOutputStream dest = null;
+
+        final int BUFFER = 2048;
+        while ((entry = zis.getNextEntry()) != null) {
+            log.debug("Unzipping: " + entry.getName());
+            int count = 0;
+            byte data[] = new byte[BUFFER];
+            FileOutputStream fos = new FileOutputStream(directory + java.io.File.separator + entry.getName());
+            dest = new BufferedOutputStream(fos, BUFFER);
+            while ((count = zis.read(data, 0, BUFFER)) != -1) {
+                dest.write(data, 0, count);
+            }
+            dest.flush();
+            dest.close();
+        }
+        zis.close();        
         return true;
     }
 
