@@ -40,10 +40,12 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 
 import javax.mail.MessagingException;
@@ -69,14 +71,23 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureCollections;
 import org.geotools.feature.SchemaException;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.geometry.jts.JTSFactoryFinder;
+import org.geotools.referencing.CRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
+import org.opengis.metadata.extent.Extent;
 import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
+import org.opengis.referencing.ReferenceIdentifier;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.cs.CoordinateSystem;
 import org.opengis.referencing.operation.TransformException;
+import org.opengis.util.GenericName;
+import org.opengis.util.InternationalString;
 import org.xml.sax.SAXException;
 
 import thredds.catalog.InvAccess;
@@ -748,7 +759,7 @@ public class FileProcessServlet extends HttpServlet {
 	}
 
 	private static FeatureCollection<SimpleFeatureType, SimpleFeature> parseGML(String gml) 
-	throws SchemaException, IOException, SAXException, ParserConfigurationException {
+	throws SchemaException, IOException, SAXException, ParserConfigurationException, NoSuchAuthorityCodeException, FactoryException {
 		
 		//create the parser with the gml 2.0 configuration
 		org.geotools.xml.Configuration configuration = new org.geotools.gml2.GMLConfiguration();
@@ -771,8 +782,17 @@ public class FileProcessServlet extends HttpServlet {
 		
 		for (int i = 0; i < mp.getNumGeometries(); i++) {
 			Geometry g = mp.getGeometryN(i).getBoundary();
+			g.setSRID(4326);
 			
-			SimpleFeatureType type = DataUtilities.createType("blah", "geom:Geometry");
+			SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
+			typeBuilder.setName("testType");
+			typeBuilder.setCRS(CRS.decode("EPSG:4326"));
+			typeBuilder.add("blah", Integer.class);
+			typeBuilder.add("geom", Geometry.class);
+			typeBuilder.setDefaultGeometry("geom");
+			
+			SimpleFeatureType type = typeBuilder.buildFeatureType();
+			
 			
 //			GeometryFactory geomFactory = new GeometryFactory();
 			SimpleFeatureBuilder build = new SimpleFeatureBuilder( type );
@@ -782,10 +802,11 @@ public class FileProcessServlet extends HttpServlet {
 //				build.add( geomFactory.createPoint( c ));
 //			}
 			
-			build.add(g);
+			build.set("geom", g);
+			build.set("blah", i);
 			
 			SimpleFeature sf = build.buildFeature(null);
-			sf.setAttribute("blah", 3);
+			sf.getBounds();
 			
 //			SimpleFeature sf = SimpleFeatureBuilder.build(type, g.getCoordinates(), null);
 			

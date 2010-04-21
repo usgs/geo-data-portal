@@ -277,6 +277,20 @@
         	<artifactId>gt-xsd-gml2</artifactId>
         	<version>${geotools.version}</version>
         </dependency>
+        <dependency>
+        	<groupId>org.geoserver</groupId>
+        	<artifactId>wfs</artifactId>
+        	<version>1.7.0</version>
+        	<type>jar</type>
+        	<scope>compile</scope>
+        </dependency>
+        <dependency>
+        	<groupId>org.codehaus.jackson</groupId>
+        	<artifactId>jackson-asl</artifactId>
+        	<version>0.9.5</version>
+        	<type>jar</type>
+        	<scope>compile</scope>
+        </dependency>
     </dependencies>
 </project>
 
