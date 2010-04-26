@@ -22,14 +22,12 @@ import gov.usgs.gdp.helper.FileHelper;
 import gov.usgs.gdp.servlet.FileProcessServlet.GroupBy.StationOption;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
@@ -40,12 +38,10 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TimeZone;
 
 import javax.mail.MessagingException;
@@ -62,7 +58,6 @@ import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
-import org.geotools.data.DataUtilities;
 import org.geotools.data.DefaultQuery;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FileDataStore;
@@ -79,15 +74,9 @@ import org.geotools.referencing.CRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
-import org.opengis.metadata.extent.Extent;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
-import org.opengis.referencing.ReferenceIdentifier;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.cs.CoordinateSystem;
 import org.opengis.referencing.operation.TransformException;
-import org.opengis.util.GenericName;
-import org.opengis.util.InternationalString;
 import org.xml.sax.SAXException;
 
 import thredds.catalog.InvAccess;
@@ -128,6 +117,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * Servlet implementation class FileProcessServlet
@@ -440,7 +430,8 @@ public class FileProcessServlet extends HttpServlet {
 	    String userDirectory = request.getParameter("userdirectory");
 	    String groupById	= request.getParameter("groupby");
 	    String delimId	= request.getParameter("delim");
-	    String reachCode = request.getParameter("reachCode");
+	    String lat = request.getParameter("lat");
+	    String lon = request.getParameter("lon");
 	    
 	    
 	    FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = null;
@@ -452,12 +443,24 @@ public class FileProcessServlet extends HttpServlet {
     	
     	String attributeName = attribute;
     	
-	    if (reachCode != null)  {
-    		String json = sendPacket(new URL("http://iaspub.epa.gov/waters10/waters_services.navigationDelineationService?" +
-    				"pNavigationType=UM&pStartReachCode=" + reachCode + "&optOutGeomFormat=GEOGML"),
+	    if (lat != null && lon != null)  {
+	    	
+	    	InputStream reachJson = sendPacket(new URL("http://iaspub.epa.gov/waters10/waters_services.PointIndexingService?" +
+	    			"pGeometry=POINT(" + lon + "%20" + lat + ")" + "&pGeometryMod=WKT,SRID=8307" +
+	                "&pPointIndexingMethod=RAINDROP" + "&pPointIndexingRaindropDist=25"),
+    				"GET", null, null, new String[]{});
+	    	
+	    	String reachCode = parseJSON(reachJson, "reachcode");
+	    	
+	    	System.out.println(reachCode);
+	    	
+    		InputStream json = sendPacket(new URL("http://iaspub.epa.gov/waters10/waters_services.navigationDelineationService?" +
+    				"pNavigationType=UT&pStartReachCode=" + reachCode + "&optOutGeomFormat=GEOGML&pFeatureType=CATCHMENT_TOPO&pMaxDistance=999999999"),
     				"GET", null, null, new String[]{});// "pNavigationType", "UM", "pStartReachcode", reachCode, "optOutGeomFormat", "GEOGML");
     		
-    		String gml = parseJSON(json);
+    		String gml = parseJSON(json, "shape");
+    		
+    		System.out.println(gml);
     		
     		attributeName = "blah";
     		
@@ -706,7 +709,7 @@ public class FileProcessServlet extends HttpServlet {
 
 	}
 	
-	static String sendPacket(URL url, String requestMethod, String contentType, String content, 
+	static InputStream sendPacket(URL url, String requestMethod, String contentType, String content, 
 			String... requestProperties) throws IOException {
 		
 		HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
@@ -726,63 +729,62 @@ public class FileProcessServlet extends HttpServlet {
 			workspacesWriter.close();
 		}
 		
-		BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
-		StringBuilder sb = new StringBuilder();
-		String line = null;
-		while ((line = reader.readLine()) != null) {
-			sb.append(line + "\n");
-		}
-		reader.close();
+		return httpConnection.getInputStream();
 		
-		return sb.toString();
+//		BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
+//		StringBuilder sb = new StringBuilder();
+//		String line = null;
+//		while ((line = reader.readLine()) != null) {
+//			sb.append(line + "\n");
+//		}
+//		reader.close();
+		
+//		return sb.toString();
 	}
 	
-	private static String parseJSON(String json)
+	private static String parseJSON(InputStream json, String element)
 	throws JsonParseException, IOException {
 		
 		JsonFactory f = new JsonFactory();
-		JsonParser jp = f.createJsonParser(new StringReader(json));
+		JsonParser jp = f.createJsonParser(new InputStreamReader(json));
 		
 		while (true) {
-			JsonToken jt = jp.nextToken();
+			jp.nextToken();
 			
-			if ("shape".equals(jp.getCurrentName())) {
+			if (!jp.hasCurrentToken())
+				break;
+			
+			if (element.equals(jp.getCurrentName())) {
 				jp.nextToken();
 				return jp.getText();
 			}
-			
-			if (jt == JsonToken.END_OBJECT) {
-				System.out.println("Geometry not found.");
-				return null;
-			}
 		}
+		
+		System.out.println("\"" + element + "\" not found.");
+		return null;
 	}
 
 	private static FeatureCollection<SimpleFeatureType, SimpleFeature> parseGML(String gml) 
-	throws SchemaException, IOException, SAXException, ParserConfigurationException, NoSuchAuthorityCodeException, FactoryException {
+	throws SchemaException, IOException, SAXException, ParserConfigurationException, 
+			NoSuchAuthorityCodeException, FactoryException {
+		
+		if (gml == null)
+			throw new IOException();
 		
 		//create the parser with the gml 2.0 configuration
 		org.geotools.xml.Configuration configuration = new org.geotools.gml2.GMLConfiguration();
 		org.geotools.xml.Parser parser = new org.geotools.xml.Parser( configuration );
+		
 
-		//the xml instance document above
-		InputStreamReader xml = null;
-		try {
-			xml = new FileReader("/Users/razoerb/test.gml");
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-
+		// TODO: parse fails with when gml is only a single polygon with "Authority "SDO" is unknown".
 		//parse
-		MultiPolygon mp = null;
-		mp = (MultiPolygon) parser.parse( xml );
-
+		Geometry geom = (Geometry) parser.parse( new StringReader(gml) );
+		
 		
 		FeatureCollection<SimpleFeatureType, SimpleFeature> fc = FeatureCollections.newCollection();
 		
-		for (int i = 0; i < mp.getNumGeometries(); i++) {
-			Geometry g = mp.getGeometryN(i).getBoundary();
-			g.setSRID(4326);
+		for (int i = 0; i < geom.getNumGeometries(); i++) {
+			Geometry g = geom.getGeometryN(i);
 			
 			SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
 			typeBuilder.setName("testType");
