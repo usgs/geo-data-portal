@@ -64,7 +64,7 @@ public class GridStatistics {
     public WeightedStatisticsAccumulator1D allTimestepAllAttributeValueStatistics;
     
     private GridStatistics() {
-        
+        //
     }
     
     public String getAttributeName() {
