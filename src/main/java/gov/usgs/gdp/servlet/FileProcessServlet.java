@@ -2,10 +2,10 @@ package gov.usgs.gdp.servlet;
 
 import gov.usgs.gdp.analysis.GridStatistics;
 import gov.usgs.gdp.analysis.GridStatisticsCSVWriter;
-import gov.usgs.gdp.analysis.GridStatisticsCSVWriter.Statistic;
 import gov.usgs.gdp.analysis.GridStatisticsWriter;
 import gov.usgs.gdp.analysis.NetCDFUtility;
 import gov.usgs.gdp.analysis.StationDataCSVWriter;
+import gov.usgs.gdp.analysis.GridStatisticsCSVWriter.Statistic;
 import gov.usgs.gdp.bean.AckBean;
 import gov.usgs.gdp.bean.AvailableFilesBean;
 import gov.usgs.gdp.bean.EmailMessageBean;
@@ -22,10 +22,18 @@ import gov.usgs.gdp.helper.FileHelper;
 import gov.usgs.gdp.servlet.FileProcessServlet.GroupBy.StationOption;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.StringReader;
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -34,6 +42,7 @@ import java.util.Date;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
@@ -42,29 +51,33 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.JsonToken;
 import org.geotools.data.DefaultQuery;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureCollections;
 import org.geotools.feature.SchemaException;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.geometry.jts.JTSFactoryFinder;
+import org.geotools.referencing.CRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
-
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.util.TimeZone;
 import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.operation.TransformException;
+import org.xml.sax.SAXException;
 
 import thredds.catalog.InvAccess;
 import thredds.catalog.InvCatalog;
@@ -100,139 +113,138 @@ import ucar.nc2.units.DateRange;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.NamedObject;
 
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Polygon;
+
 /**
  * Servlet implementation class FileProcessServlet
  */
 public class FileProcessServlet extends HttpServlet {
-
-    private static org.apache.log4j.Logger log = Logger.getLogger(FileProcessServlet.class);
-
+	private static org.apache.log4j.Logger log = Logger.getLogger(FileProcessServlet.class);
     /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Long start = new Date().getTime();
-        String command = request.getParameter("command");
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Long start = new Date().getTime();
+		String command = request.getParameter("command");
 
-        if ("getoutputstats".equals(command)) {
-            OutputStatisticsBean outputStats = OutputStatisticsBean.getOutputStatisticsBean();
-            XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, outputStats);
-            RouterServlet.sendXml(xmlReply, start, response);
-            return;
-        }
+		if ("getoutputstats".equals(command)) {
+			OutputStatisticsBean outputStats = OutputStatisticsBean.getOutputStatisticsBean();
+			XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, outputStats);
+			RouterServlet.sendXml(xmlReply, start, response);
+			return;
+		}
 
-        if ("submitforprocessing".equals(command)) {
-            File fileForUpload = null;
-            try {
-                fileForUpload = populateFileUpload(request);
-            } catch (InvalidRangeException e) {
-                XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_BOX_NO_INTERSECT_GRID));
-                RouterServlet.sendXml(xmlOutput, start, response);
-                return;
-            } catch (AddressException e) {
-                XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_EMAIL_ERROR_INCORRECT_ADDRESS));
-                RouterServlet.sendXml(xmlOutput, start, response);
-                return;
-            } catch (MessagingException e) {
-                XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_EMAIL_ERROR));
-                RouterServlet.sendXml(xmlOutput, start, response);
-                return;
-            } catch (Exception e) {
-
-                XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(e.getMessage()));
-                RouterServlet.sendXml(xmlOutput, start, response);
+		if ("submitforprocessing".equals(command)) {
+			File fileForUpload = null;
+			try {
+				fileForUpload = populateFileUpload(request);
+			} catch (InvalidRangeException e) {
+				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_BOX_NO_INTERSECT_GRID));
+				RouterServlet.sendXml(xmlOutput, start, response);
+				return;
+			} catch (AddressException e) {
+				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_EMAIL_ERROR_INCORRECT_ADDRESS));
+				RouterServlet.sendXml(xmlOutput, start, response);
+				return;
+			} catch (MessagingException e) {
+				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_EMAIL_ERROR));
+				RouterServlet.sendXml(xmlOutput, start, response);
+				return;
+			} catch (Exception e) {
+				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(e.getMessage()));
+				RouterServlet.sendXml(xmlOutput, start, response);
                 e.printStackTrace();
-                return;
+				return;
             }
 
-            // We are, for the moment, assuming there is a file at this location
-            // The link is sent out as just the file name. When the user sends the request
-            // back, we go to the directory at String baseFilePath = System.getProperty("applicationTempDir");
-            // + the file specified by the user ((fileForUpload.getName()) and we send that
-            // back to the user
-            if (!"".equals(fileForUpload.getPath())) {
-                UploadLocationBean uploadLocationBean = new UploadLocationBean(fileForUpload.getName());
-                XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, uploadLocationBean);
-                RouterServlet.sendXml(xmlReply, start, response);
-                return;
-            }
-        }
+			// We are, for the moment, assuming there is a file at this location
+			// The link is sent out as just the file name. When the user sends the request
+			// back, we go to the directory at String baseFilePath = System.getProperty("applicationTempDir");
+			// + the file specified by the user ((fileForUpload.getName()) and we send that
+			// back to the user
+			if (!"".equals(fileForUpload.getPath())) {
+				UploadLocationBean uploadLocationBean = new UploadLocationBean(fileForUpload.getName());
+				XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, uploadLocationBean);
+				RouterServlet.sendXml(xmlReply, start, response);
+				return;
+	    	}
+		}
 
-        if ("checkuploadfile".equals(command)) {
-            String file = request.getParameter("file");
-            String baseFilePath = System.getProperty("applicationTempDir");
-            baseFilePath = baseFilePath + FileHelper.getSeparator();
-            String fullFilePath = baseFilePath + "upload-repository" + FileHelper.getSeparator() + file;
-            boolean fileExists = FileHelper.doesDirectoryOrFileExist(fullFilePath);
-            boolean hasBytes = false;
-            File tempFile = new File(fullFilePath);
-            hasBytes = tempFile.length() > 0;
-            boolean fileExistsAndHasBytes = fileExists & hasBytes;
-            UploadFileCheckBean ufcb = new UploadFileCheckBean(file, fileExistsAndHasBytes);
+		if ("checkuploadfile".equals(command)) {
+			String file = request.getParameter("file");
+			String baseFilePath = System.getProperty("applicationTempDir");
+	    	baseFilePath = baseFilePath + FileHelper.getSeparator();
+	    	String fullFilePath = baseFilePath + "upload-repository" +FileHelper.getSeparator()+file;
+	    	boolean fileExists = FileHelper.doesDirectoryOrFileExist(fullFilePath);
+	    	boolean hasBytes = false;
+	    	File tempFile = new File(fullFilePath);
+	    	hasBytes = tempFile.length() > 0;
+	    	boolean fileExistsAndHasBytes = fileExists & hasBytes;
+	    	UploadFileCheckBean ufcb = new UploadFileCheckBean(file, fileExistsAndHasBytes);
 
-            XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, ufcb);
-            RouterServlet.sendXml(xmlReply, start, response);
-            return;
-        }
+			XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, ufcb);
+			RouterServlet.sendXml(xmlReply, start, response);
+			return;
+		}
 
-        // User wishes to grab a file. Send this file if available.
-        if ("getfile".equals(command)) {
-            String file = request.getParameter("file");
-            String baseFilePath = System.getProperty("applicationTempDir");
-            baseFilePath = baseFilePath + FileHelper.getSeparator();
-            String fullFilePath = baseFilePath + "upload-repository" + FileHelper.getSeparator() + file;
-            File fileToUpload = null;
+		// User wishes to grab a file. Send this file if available.
+		if ("getfile".equals(command)) {
+			String file = request.getParameter("file");
+			String baseFilePath = System.getProperty("applicationTempDir");
+	    	baseFilePath = baseFilePath + FileHelper.getSeparator();
+	    	String fullFilePath = baseFilePath + "upload-repository" +FileHelper.getSeparator()+file;
+	    	File fileToUpload = null;
 
-            if (!FileHelper.doesDirectoryOrFileExist(fullFilePath)) {
-                XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FILE_NOT_FOUND));
-                RouterServlet.sendXml(xmlOutput, start, response);
-                return;
-            }
-            fileToUpload = new File(fullFilePath);
+	    	if (!FileHelper.doesDirectoryOrFileExist(fullFilePath)) {
+				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FILE_NOT_FOUND));
+				RouterServlet.sendXml(xmlOutput, start, response);
+				return;
+	    	}
+	    	fileToUpload = new File(fullFilePath);
 
-            // Set the headers.
-            response.setContentType("application/x-download");
-            response.setHeader("Content-Disposition", "attachment; filename=" + fileToUpload.getName());
-            response.setCharacterEncoding("UTF-8");
+	    	// Set the headers.
+	    	response.setContentType("application/x-download");
+	    	response.setHeader("Content-Disposition", "attachment; filename=" + fileToUpload.getName());
+	    	response.setCharacterEncoding("UTF-8");
 
-            // Send the file.
-            ServletOutputStream out = null;
-            BufferedInputStream buf = null;
-            try {
-                out = response.getOutputStream();
-                response.setContentLength((int) fileToUpload.length());
-                FileInputStream input = new FileInputStream(fileToUpload);
-                buf = new BufferedInputStream(input);
-                int readBytes = 0;
-                while ((readBytes = buf.read()) != -1) {
-                    out.write(readBytes);
-                }
-                out.close();
-                buf.close();
-            } catch (IOException ioe) {
-                throw new ServletException(ioe.getMessage());
-            } finally {
-                if (out != null) {
-                    out.close();
-                }
-                if (buf != null) {
-                    buf.close();
-                }
-            }
-        }
-    }
+	    	// Send the file.
+	    	ServletOutputStream out = null;
+	    	BufferedInputStream buf = null;
+	    	try {
+		    	out = response.getOutputStream();
+		    	response.setContentLength((int) fileToUpload.length());
+		    	FileInputStream input = new FileInputStream(fileToUpload);
+		    	buf = new BufferedInputStream(input);
+		    	int readBytes = 0;
+		    	while ((readBytes = buf.read()) != -1) out.write(readBytes);
+		    	out.close();
+		    	buf.close();
+	    	} catch (IOException ioe) {
+	    	      throw new ServletException(ioe.getMessage());
+	    	} finally {
+	    		if (out != null)
+	    			out.close();
+	    	      if (buf != null)
+	    	    	  buf.close();
+	    	}
+		}
+	}
 
-    /**
-     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doGet(request, response);
-    }
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	    doGet(request, response);
+	}
 
-    @SuppressWarnings("unused")
-    private final static class ShapedGridReader implements ProxyReader {
+	@SuppressWarnings("unused")
+	private final static class ShapedGridReader implements ProxyReader {
 
         private GeoGrid grid;
         private Geometry shape;
@@ -241,7 +253,7 @@ public class FileProcessServlet extends HttpServlet {
         private CoordinateAxis1D yAxis;
         private double[][] percentOfShapeOverlappingCells;
 
-        public ShapedGridReader(GeoGrid gridParam, Geometry shapeParam) {
+	public ShapedGridReader(GeoGrid gridParam, Geometry shapeParam) {
             this.grid = gridParam;
             this.shape = shapeParam;
             this.geometryFactory = JTSFactoryFinder.getGeometryFactory(null);
@@ -340,7 +352,8 @@ public class FileProcessServlet extends HttpServlet {
         }
     }
 
-    private File populateFileUpload(HttpServletRequest request)
+
+	private File populateFileUpload(HttpServletRequest request)
             throws IOException, InvalidRangeException, AddressException,
             MessagingException, FactoryException, TransformException,
             org.opengis.coverage.grid.InvalidRangeException, SchemaException {
@@ -351,240 +364,248 @@ public class FileProcessServlet extends HttpServlet {
         File uploadFile = populateSummary(request);
 
         // Put that file into the directory represented by uploadDirectory
-        if (!uploadFile.exists()) {
-            return null;
-        }
+        if (!uploadFile.exists()) return null;
 
         // If user specified an E-Mail address, send an E-Mail to the user with the provided link
-        if (email != null && !"".equals(email)) {
-            sendEmail(email, finalUrlEmail);
-        }
+        if (email != null && !"".equals(email)) sendEmail(email, finalUrlEmail);
 
         // Set that file as the result to be returned to the calling function
         // switch uploadDirectory return statement with the file we are looking for
         return uploadFile;
     }
 
-    ////  START - MOVEME
-    // IVAN, move this out where ever you see fit... values in this enum should
-    // be reported-to/used-by front end in some manner...  right now, too much loose
-    // coupling.
-    public enum DelimiterOption {
-
-        c("[comma]", ","),
+	////  START - MOVEME
+	// IVAN, move this out where ever you see fit... values in this enum should
+	// be reported-to/used-by front end in some manner...  right now, too much loose
+	// coupling.
+	public enum DelimiterOption {
+	    c("[comma]", ","),
         t("[tab]", "\t"),
         s("[space]", " ");
-        public final String description;
-        public final String delimiter;
+	    public final String description;
+	    public final String delimiter;
+	    private DelimiterOption(String description, String value) {
+	        this.description = description;
+	        this.delimiter = value;
+	    }
+	    public static DelimiterOption getDefault() { return c; }
+	    @Override public String toString() { return description; }
+	}
 
-        private DelimiterOption(String description, String value) {
-            this.description = description;
-            this.delimiter = value;
-        }
-
-        public static DelimiterOption getDefault() {
-            return c;
-        }
-
-        @Override
-        public String toString() {
-            return description;
-        }
-    }
-
-    public static class GroupBy {
-
-        public enum StationOption {
-
-            station("Station"),
-            variable("Variable");
-            public final String description;
-
-            private StationOption(String description) {
+	public static class GroupBy {
+	    public enum StationOption {
+	        station("Station"),
+	        variable("Variable");
+	        public final String description;
+	        private StationOption(String description) {
+	            this.description = description;
+	        }
+	        @Override public String toString() { return description; }
+	        public static StationOption getDefault() { return station; }
+	    }
+	    public enum GridOption {
+	        attributes("Attributes"),
+	        statistics("Statistics");
+	        public final String description;
+	        private GridOption(String description) {
                 this.description = description;
             }
-
-            @Override
-            public String toString() {
-                return description;
-            }
-
-            public static StationOption getDefault() {
-                return station;
-            }
-        }
-
-        public enum GridOption {
-
-            attributes("Attributes"),
-            statistics("Statistics");
-            public final String description;
-
-            private GridOption(String description) {
-                this.description = description;
-            }
-
-            public static GridOption getDefault() {
-                return attributes;
-            }
-        }
-    }
+            public static GridOption getDefault() { return attributes; }
+	    }
+	}
     ////  END - MOVEME
 
-    private File populateSummary(HttpServletRequest request) throws IOException, InvalidRangeException, FactoryException, TransformException, org.opengis.coverage.grid.InvalidRangeException, SchemaException {
+	private File populateSummary(HttpServletRequest request) throws IOException, InvalidRangeException, FactoryException, TransformException, org.opengis.coverage.grid.InvalidRangeException, SchemaException {
 
-        String shapeSet = request.getParameter("shapeset");
-        String attribute = request.getParameter("attribute");
-        String[] features = request.getParameterValues("feature");
-        String[] outputStats = request.getParameterValues("outputstat");
-        String dataset = request.getParameter("dataset");
-        String[] dataTypes = request.getParameterValues("datatype");
-        String from = request.getParameter("from");
-        String to = request.getParameter("to");
-        String output = request.getParameter("outputtype");
-        String outputFile = request.getParameter("outputfile");
-        String userDirectory = request.getParameter("userdirectory");
-        String groupById = request.getParameter("groupby");
-        String delimId = request.getParameter("delim");
+	    String shapeSet = request.getParameter("shapeset");
+	    String attribute = request.getParameter("attribute");
+	    String[] features = request.getParameterValues("feature");
+	    String[] outputStats = request.getParameterValues("outputstat");
+	    String dataset = request.getParameter("dataset");
+	    String[] dataTypes = request.getParameterValues("datatype");
+	    String from = request.getParameter("from");
+	    String to = request.getParameter("to");
+	    String output = request.getParameter("outputtype");
+	    String outputFile = request.getParameter("outputfile");
+	    String userDirectory = request.getParameter("userdirectory");
+	    String groupById	= request.getParameter("groupby");
+	    String delimId	= request.getParameter("delim");
+	    String lat = request.getParameter("lat");
+	    String lon = request.getParameter("lon");
 
-        DelimiterOption delimiterOption = null;
-        if (delimId != null) {
-            try {
-                delimiterOption = DelimiterOption.valueOf(delimId);
-            } catch (IllegalArgumentException e) { /* failure handled below */
 
-            }
-        }
-        if (delimiterOption == null) {
-            delimiterOption = DelimiterOption.getDefault();
-        }
+	    FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = null;
 
-        String baseFilePath = System.getProperty("applicationTempDir");
-        baseFilePath = baseFilePath + FileHelper.getSeparator();
-        File uploadDirectory = FileHelper.createFileRepositoryDirectory(baseFilePath);
-        if (!uploadDirectory.exists()) {
-            return null;
-        }
+	    String baseFilePath = System.getProperty("applicationTempDir");
+    	baseFilePath = baseFilePath + FileHelper.getSeparator();
+    	File uploadDirectory = FileHelper.createFileRepositoryDirectory(baseFilePath);
+    	if (!uploadDirectory.exists()) return null;
 
-        FileHelper.deleteFile(uploadDirectory.getPath() + outputFile);
-        String fromTime = from;
-        String toTime = to;
+    	String attributeName = attribute;
 
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+	    if (lat != null && lon != null)  {
+
+	    	InputStream reachJson = sendPacket(new URL("http://iaspub.epa.gov/waters10/waters_services.PointIndexingService?" +
+	    			"pGeometry=POINT(" + lon + "%20" + lat + ")" + "&pGeometryMod=WKT,SRID=8307" +
+	                "&pPointIndexingMethod=RAINDROP" + "&pPointIndexingRaindropDist=25"),
+    				"GET", null, null, new String[]{});
+
+	    	String reachCode = parseJSON(reachJson, "reachcode");
+
+	    	System.out.println(reachCode);
+
+    		InputStream json = sendPacket(new URL("http://iaspub.epa.gov/waters10/waters_services.navigationDelineationService?" +
+    				"pNavigationType=UT&pStartReachCode=" + reachCode + "&optOutGeomFormat=GEOGML&pFeatureType=CATCHMENT_TOPO&pMaxDistance=999999999"),
+    				"GET", null, null, new String[]{});// "pNavigationType", "UM", "pStartReachcode", reachCode, "optOutGeomFormat", "GEOGML");
+
+    		String gml = parseJSON(json, "shape");
+
+    		System.out.println(gml);
+
+    		attributeName = "blah";
+
+    		try {
+    			featureCollection = parseGML(gml);
+			} catch (SAXException e) {
+				e.printStackTrace();
+			} catch (ParserConfigurationException e) {
+				e.printStackTrace();
+			}
+
+    	} else {
+
+    		FileHelper.deleteFile(uploadDirectory.getPath() + outputFile);
+
+
+    		FileDataStore shapeFileDataStore;
+    		FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = null;
+
+    		// Set up the shapefile
+    		String appTempDir = System.getProperty("applicationTempDir");
+    		String userDir = userDirectory;
+    		if (userDir != null && !"".equals(appTempDir + userDir)) {
+    			if (FileHelper.doesDirectoryOrFileExist(appTempDir + userDir)) {
+    				FileHelper.updateTimestamp(appTempDir + userDir, false); // Update the timestamp
+    			} else {
+    				userDir = "";
+    			}
+    		}
+    		AvailableFilesBean afb = AvailableFilesBean.getAvailableFilesBean(appTempDir, userDir);
+    		List<ShapeFileSetBean> shapeBeanList = afb.getShapeSetList();
+    		File shapeFile = null;
+    		for (ShapeFileSetBean sfsb : shapeBeanList) {
+    			if (shapeSet.equals(sfsb.getName())) {
+    				shapeFile = sfsb.getShapeFile();
+    			}
+    		}
+
+    		shapeFileDataStore = FileDataStoreFinder.getDataStore(shapeFile);
+    		featureSource = shapeFileDataStore.getFeatureSource();
+
+    		if (features[0].equals("*")) {
+    			featureCollection = featureSource.getFeatures();
+    		} else {
+    			//Implementing a filter using the CQL language
+    			// http://docs.codehaus.org/display/GEOTOOLS/CQL+Parser+Design
+    			String cqlQuery = attribute + " == '" + features[0] + "'";
+    			Filter attributeFilter = null;
+    			for (int index = 1;index < features.length;index++) {
+    				cqlQuery = cqlQuery + " OR " + attribute + " == '" + features[index] + "'";
+    			}
+
+    			try {
+    				attributeFilter = CQL.toFilter(cqlQuery);
+    			} catch (CQLException e) {
+    				log.debug(e);
+    			}
+    			featureCollection = featureSource.getFeatures(
+    					new DefaultQuery(
+    							featureSource.getSchema().getTypeName(),
+    							attributeFilter
+    					)
+    			);
+    		}
+    	}
+
+
+	    DelimiterOption delimiterOption = null;
+	    if (delimId != null) {
+	        try {
+	            delimiterOption = DelimiterOption.valueOf(delimId);
+	        } catch (IllegalArgumentException e) { /* failure handled below */}
+	    }
+	    if (delimiterOption == null) {
+	        delimiterOption = DelimiterOption.getDefault();
+	    }
+
+
+	    String fromTime = from;
+		String toTime = to;
+
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
-        Date toDate = new Date();
-        Date fromDate = new Date();
-        boolean parsedDates = false;
-        if (toTime == null || fromTime == null) {
-            toDate = null;
-            fromDate = null;
-            parsedDates = true;
-        } else {
-            try {
-                toDate = df.parse(toTime);
-                fromDate = df.parse(fromTime);
-                parsedDates = true;
-            } catch (ParseException e1) {
-                parsedDates = false;
-                log.debug(e1.getMessage());
-            }
-        }
+		Date toDate = new Date();
+		Date fromDate = new Date();
+		boolean parsedDates = false;
+		if (toTime == null || fromTime == null) {
+			toDate = null;
+			fromDate = null;
+			parsedDates = true;
+		} else {
+			try {
+				toDate = df.parse(toTime);
+				fromDate = df.parse(fromTime);
+				parsedDates = true;
+			} catch (ParseException e1) {
+				parsedDates = false;
+				log.debug(e1.getMessage());
+			}
+		}
 
-        if (!parsedDates) {
-            // return some sort of error
-        }
+		if (!parsedDates) {
+			// return some sort of error
+		}
 
-        FileDataStore shapeFileDataStore;
-        FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = null;
 
-        // Set up the shapefile
-        String appTempDir = System.getProperty("applicationTempDir");
-        String userDir = userDirectory;
-        if (userDir != null && !"".equals(appTempDir + userDir)) {
-            if (FileHelper.doesDirectoryOrFileExist(appTempDir + userDir)) {
-                FileHelper.updateTimestamp(appTempDir + userDir, false); // Update the timestamp
-            } else {
-                userDir = "";
-            }
-        }
-        AvailableFilesBean afb = AvailableFilesBean.getAvailableFilesBean(appTempDir, userDir);
-        List<ShapeFileSetBean> shapeBeanList = afb.getShapeSetList();
-        File shapeFile = null;
-        for (ShapeFileSetBean sfsb : shapeBeanList) {
-            if (shapeSet.equals(sfsb.getName())) {
-                shapeFile = sfsb.getShapeFile();
-            }
-        }
+		String datasetUrl = dataset;
+		Formatter errorLog = new Formatter();
+		FeatureDataset featureDataset = FeatureDatasetFactoryManager.open(FeatureType.ANY, datasetUrl, null, errorLog);
 
-        shapeFileDataStore = FileDataStoreFinder.getDataStore(shapeFile);
-        featureSource = shapeFileDataStore.getFeatureSource();
+		if (featureDataset.getFeatureType() == FeatureType.GRID && featureDataset instanceof GridDataset) {
+			GridDataset gridDataset = (GridDataset)featureDataset;
+			String gridName = dataTypes[0];
+			try {
+				GridDatatype gdt = gridDataset.findGridByName(gridName);
+				Range timeRange = null;
+				try {
+					CoordinateAxis1DTime timeAxis = gdt.getCoordinateSystem().getTimeAxis1D();
+					int timeIndexMin = 0;
+					int timeIndexMax = 0;
+					if (fromDate != null && toDate != null) {
+						timeIndexMin = timeAxis.findTimeIndexFromDate(fromDate);
+						timeIndexMax = timeAxis.findTimeIndexFromDate(toDate);
+						timeRange = new Range(timeIndexMin, timeIndexMax);
+					}
 
-        String attributeName = attribute;
+				} catch (NumberFormatException e) {
+					log.error(e.getMessage());
+				} catch (InvalidRangeException e) {
+					log.error(e.getMessage());
+				}
 
-        FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = null;
-        if (features[0].equals("*")) {
-            featureCollection = featureSource.getFeatures();
-        } else {
-            //Implementing a filter using the CQL language
-            // http://docs.codehaus.org/display/GEOTOOLS/CQL+Parser+Design
-            String cqlQuery = attribute + " == '" + features[0] + "'";
-            Filter attributeFilter = null;
-            for (int index = 1; index < features.length; index++) {
-                cqlQuery = cqlQuery + " OR " + attribute + " == '" + features[index] + "'";
-            }
-
-            try {
-                attributeFilter = CQL.toFilter(cqlQuery);
-            } catch (CQLException e) {
-                log.debug(e);
-            }
-            featureCollection = featureSource.getFeatures(
-                    new DefaultQuery(
-                    featureSource.getSchema().getTypeName(),
-                    attributeFilter));
-        }
-
-        String datasetUrl = dataset;
-        Formatter errorLog = new Formatter();
-        FeatureDataset featureDataset = FeatureDatasetFactoryManager.open(FeatureType.ANY, datasetUrl, null, errorLog);
-
-        if (featureDataset.getFeatureType() == FeatureType.GRID && featureDataset instanceof GridDataset) {
-            GridDataset gridDataset = (GridDataset) featureDataset;
-            String gridName = dataTypes[0];
-            try {
-                GridDatatype gdt = gridDataset.findGridByName(gridName);
-                Range timeRange = null;
-                try {
-                    CoordinateAxis1DTime timeAxis = gdt.getCoordinateSystem().getTimeAxis1D();
-                    int timeIndexMin = 0;
-                    int timeIndexMax = 0;
-                    if (fromDate != null && toDate != null) {
-                        timeIndexMin = timeAxis.findTimeIndexFromDate(fromDate);
-                        timeIndexMax = timeAxis.findTimeIndexFromDate(toDate);
-                        timeRange = new Range(timeIndexMin, timeIndexMax);
-                    }
-
-                } catch (NumberFormatException e) {
-                    log.error(e.getMessage());
-                } catch (InvalidRangeException e) {
-                    log.error(e.getMessage());
-                }
-
-                GroupBy.GridOption groupBy = null;
-                if (groupById != null) {
-                    try {
-                        groupBy = GroupBy.GridOption.valueOf(groupById);
-                    } catch (IllegalArgumentException e) { /* failure handled below */
-
-                    }
-                }
-                if (groupBy == null) {
-                    groupBy = GroupBy.GridOption.getDefault();
-                }
+		        GroupBy.GridOption groupBy = null;
+		        if (groupById != null) {
+		            try {
+		                groupBy = GroupBy.GridOption.valueOf(groupById);
+	                } catch (IllegalArgumentException e) { /* failure handled below */}
+		        }
+		        if (groupBy == null) {
+		            groupBy = GroupBy.GridOption.getDefault();
+		        }
 
                 List<Statistic> statisticList = new ArrayList<Statistic>();
                 if (outputStats != null && outputStats.length > 0) {
-                    for (int i = 0; i < outputStats.length; ++i) {
+                    for(int i = 0; i < outputStats.length; ++i) {
                         // may throw exception if outputStats value doesn't
                         // map to Statistic enum value, ivan says let percolate up.
                         statisticList.add(Statistic.valueOf(outputStats[i]));
@@ -595,109 +616,209 @@ public class FileProcessServlet extends HttpServlet {
                     throw new IllegalArgumentException("no output statistics selected");
                 }
 
-                GridStatistics gs = null;
-                // *** long running task ***
-                gs = GridStatistics.generate(
-                        featureCollection,
-                        attributeName,
-                        gridDataset,
-                        gridName,
-                        timeRange);
-                GridStatisticsWriter ouputFileWriter = null;
+				GridStatistics gs = null;
+				// *** long running task ***
+				gs = GridStatistics.generate(
+						featureCollection,
+						attributeName,
+						gridDataset,
+						gridName,
+						timeRange);
+				GridStatisticsWriter ouputFileWriter = null;
 
-                if ("ascii".equals(output.toLowerCase()) || "xml".equals(output.toLowerCase())) {
-                    ouputFileWriter = new GridStatisticsCSVWriter(
+				if ("ascii".equals(output.toLowerCase()) || "xml".equals(output.toLowerCase())) {
+					ouputFileWriter = new GridStatisticsCSVWriter(
                             gs,
                             statisticList,
                             groupBy == GroupBy.GridOption.statistics,
                             delimiterOption.delimiter);
-                }
+				}
 
-                BufferedWriter writer = null;
-                try {
-                    // Delete the file there previously
-                    writer = new BufferedWriter(new FileWriter(new File(System.getProperty("applicationWorkDir"), outputFile)));
-                    ouputFileWriter.write(writer);
-                } finally {
-                    if (writer != null) {
-                        try {
-                            writer.close();
-                        } catch (IOException e) { /* get bent */ }
-                    }
-                }
+				BufferedWriter writer = null;
+				try {
+					// Delete the file there previously
+					writer = new BufferedWriter(new FileWriter(new File(System.getProperty("applicationWorkDir"), outputFile)));
+					ouputFileWriter.write(writer);
+				} finally {
+					if (writer != null) {
+						try { writer.close(); } catch (IOException e) { /* get bent */ }
+					}
+				}
 
-            } finally {
-                try {
-                    if (gridDataset != null) {
-                        gridDataset.close();
-                    }
-                } catch (IOException e) { /* get bent */ }
-            }
-        } else if (featureDataset.getFeatureType() == FeatureType.STATION && featureDataset instanceof FeatureDatasetPoint) {
-            FeatureDatasetPoint fdp = (FeatureDatasetPoint) featureDataset;
-            List<ucar.nc2.ft.FeatureCollection> fcl = fdp.getPointFeatureCollectionList();
-            if (fcl != null && fcl.size() == 1) {
-                ucar.nc2.ft.FeatureCollection fc = fcl.get(0);
-                if (fc != null && fc instanceof StationTimeSeriesFeatureCollection) {
+			} finally {
+				try {
+					if (gridDataset != null) gridDataset.close();
+				} catch (IOException e) { /* get bent */ }
+			}
+		} else if (featureDataset.getFeatureType() == FeatureType.STATION && featureDataset instanceof FeatureDatasetPoint) {
+			FeatureDatasetPoint fdp = (FeatureDatasetPoint)featureDataset;
+			List<ucar.nc2.ft.FeatureCollection> fcl = fdp.getPointFeatureCollectionList();
+			if (fcl != null && fcl.size() == 1) {
+				ucar.nc2.ft.FeatureCollection fc = fcl.get(0);
+				if (fc != null && fc instanceof StationTimeSeriesFeatureCollection) {
 
-                    StationTimeSeriesFeatureCollection stsfc =
-                            (StationTimeSeriesFeatureCollection) fc;
+					StationTimeSeriesFeatureCollection stsfc =
+						(StationTimeSeriesFeatureCollection)fc;
 
-                    List<VariableSimpleIF> variableList = new ArrayList<VariableSimpleIF>();
-                    for (String variableName : dataTypes) {
-                        VariableSimpleIF variable = featureDataset.getDataVariable(variableName);
-                        if (variable != null) {
-                            variableList.add(variable);
-                        } else {
-                            // do we care?
-                        }
-                    }
+					List<VariableSimpleIF> variableList = new ArrayList<VariableSimpleIF>();
+					for(String variableName : dataTypes) {
+						VariableSimpleIF variable = featureDataset.getDataVariable(variableName);
+						if (variable != null) {
+							variableList.add(variable);
+						} else {
+							// do we care?
+						}
+					}
 
-                    GroupBy.StationOption groupBy = null;
-                    if (groupById != null) {
-                        try {
-                            groupBy = GroupBy.StationOption.valueOf(groupById);
-                        } catch (IllegalArgumentException e) { /* failure handled below */
+	                GroupBy.StationOption groupBy = null;
+	                if (groupById != null) {
+	                    try {
+	                        groupBy = GroupBy.StationOption.valueOf(groupById);
+	                    } catch (IllegalArgumentException e) { /* failure handled below */}
+	                }
+	                if (groupBy == null) {
+	                    groupBy = GroupBy.StationOption.getDefault();
+	                }
 
-                        }
-                    }
-                    if (groupBy == null) {
-                        groupBy = GroupBy.StationOption.getDefault();
-                    }
-
-                    BufferedWriter writer = null;
-                    try {
-                        writer = new BufferedWriter(new FileWriter(new File(System.getProperty("applicationWorkDir"), outputFile)));
-                        StationDataCSVWriter.write(
-                                featureCollection,
-                                stsfc,
-                                variableList,
-                                new DateRange(fromDate, toDate),
-                                writer,
+					BufferedWriter writer = null;
+					try {
+						writer = new BufferedWriter(new FileWriter(new File(System.getProperty("applicationWorkDir"), outputFile)));
+						StationDataCSVWriter.write(
+								featureCollection,
+								stsfc,
+								variableList,
+								new DateRange(fromDate, toDate),
+								writer,
                                 groupBy == StationOption.variable,
                                 delimiterOption.delimiter);
-                    } finally {
-                        if (writer != null) {
-                            try {
-                                writer.close();
-                            } catch (IOException e) { /* swallow, don't mask exception */ }
-                        }
-                    }
+					} finally {
+						if (writer != null) { try { writer.close(); } catch (IOException e) { /* swallow, don't mask exception */ } }
+					}
 
-                } else {
-                    // wtf?  I am gonna punch Ivan...
-                }
-            } else {
-                // error, what do we do when more than one FeatureCollection?  does this happen?  If yes, punch Ivan.
-            }
+				} else {
+					// wtf?  I am gonna punch Ivan...
+				}
+			} else {
+				// error, what do we do when more than one FeatureCollection?  does this happen?  If yes, punch Ivan.
+			}
 
-        }
-        FileHelper.copyFileToFile(new File(System.getProperty("applicationWorkDir") + outputFile), uploadDirectory.getPath(), true);
-        return new File(uploadDirectory.getPath(), outputFile);
+		}
+		FileHelper.copyFileToFile(new File(System.getProperty("applicationWorkDir") + outputFile), uploadDirectory.getPath(), true);
+		return new File(uploadDirectory.getPath(), outputFile);
 
 
-    }
-    private static final long serialVersionUID = 1L;
+	}
+
+	static InputStream sendPacket(URL url, String requestMethod, String contentType, String content,
+			String... requestProperties) throws IOException {
+
+		HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
+		httpConnection.setDoOutput(true);
+		httpConnection.setRequestMethod(requestMethod);
+
+		if (contentType != null)
+			httpConnection.addRequestProperty("Content-Type", contentType);
+
+		for (int i = 0; i < requestProperties.length; i += 2) {
+			httpConnection.addRequestProperty(requestProperties[i], requestProperties[i+1]);
+		}
+
+		if (content != null) {
+			OutputStreamWriter workspacesWriter = new OutputStreamWriter(httpConnection.getOutputStream());
+			workspacesWriter.write(content);
+			workspacesWriter.close();
+		}
+
+		return httpConnection.getInputStream();
+
+//		BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
+//		StringBuilder sb = new StringBuilder();
+//		String line = null;
+//		while ((line = reader.readLine()) != null) {
+//			sb.append(line + "\n");
+//		}
+//		reader.close();
+
+//		return sb.toString();
+	}
+
+	private static String parseJSON(InputStream json, String element)
+	throws JsonParseException, IOException {
+
+		JsonFactory f = new JsonFactory();
+		JsonParser jp = f.createJsonParser(new InputStreamReader(json));
+
+		while (true) {
+			jp.nextToken();
+
+			if (!jp.hasCurrentToken())
+				break;
+
+			if (element.equals(jp.getCurrentName())) {
+				jp.nextToken();
+				return jp.getText();
+			}
+		}
+
+		System.out.println("\"" + element + "\" not found.");
+		return null;
+	}
+
+	private static FeatureCollection<SimpleFeatureType, SimpleFeature> parseGML(String gml)
+	throws SchemaException, IOException, SAXException, ParserConfigurationException,
+			NoSuchAuthorityCodeException, FactoryException {
+
+		if (gml == null)
+			throw new IOException();
+
+		//create the parser with the gml 2.0 configuration
+		org.geotools.xml.Configuration configuration = new org.geotools.gml2.GMLConfiguration();
+		org.geotools.xml.Parser parser = new org.geotools.xml.Parser( configuration );
+
+
+		// TODO: parse fails with when gml is only a single polygon with "Authority "SDO" is unknown".
+		//parse
+		Geometry geom = (Geometry) parser.parse( new StringReader(gml) );
+
+
+		FeatureCollection<SimpleFeatureType, SimpleFeature> fc = FeatureCollections.newCollection();
+
+		for (int i = 0; i < geom.getNumGeometries(); i++) {
+			Geometry g = geom.getGeometryN(i);
+
+			SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
+			typeBuilder.setName("testType");
+			typeBuilder.setCRS(CRS.decode("EPSG:4326"));
+			typeBuilder.add("blah", Integer.class);
+			typeBuilder.add("geom", Geometry.class);
+			typeBuilder.setDefaultGeometry("geom");
+
+			SimpleFeatureType type = typeBuilder.buildFeatureType();
+
+
+//			GeometryFactory geomFactory = new GeometryFactory();
+			SimpleFeatureBuilder build = new SimpleFeatureBuilder( type );
+
+//			for (Coordinate c : g.getCoordinates()) {
+//				System.out.println(c.x + ", " + c.y);
+//				build.add( geomFactory.createPoint( c ));
+//			}
+
+			build.set("geom", g);
+			build.set("blah", i);
+
+			SimpleFeature sf = build.buildFeature(null);
+			sf.getBounds();
+
+//			SimpleFeature sf = SimpleFeatureBuilder.build(type, g.getCoordinates(), null);
+
+			fc.add(sf);
+		}
+
+		return fc;
+	}
+
+	private static final long serialVersionUID = 1L;
 
     /**
      * Writes a collection of {@link PointFeature}s to a file in CSV format. PointFeatures are written one per line
@@ -767,6 +888,8 @@ public class FileProcessServlet extends HttpServlet {
         return result;
     }
 
+
+
     @SuppressWarnings("unused")
     private List<ShapeFileSetBean> getShapeFilesSetSubList(String[] checkboxItems, List<ShapeFileSetBean> shapeFileSetBeanList) {
         List<ShapeFileSetBean> result = new ArrayList<ShapeFileSetBean>();
@@ -784,11 +907,11 @@ public class FileProcessServlet extends HttpServlet {
 
     /**
      * Gets called after user has chosen a ShapeFile set to work with
-     * 
+     *
      * @param request
      * @return
      */
-    @SuppressWarnings({"unchecked", "unused"})
+    @SuppressWarnings({ "unchecked", "unused" })
     private String populateAttributeList(HttpServletRequest request) {
         String fileSelection = request.getParameter("fileName");
         List<ShapeFileSetBean> shapeFileSetBeanList = (List<ShapeFileSetBean>) request.getSession().getAttribute("shapeFileSetBeanList");
@@ -875,7 +998,7 @@ public class FileProcessServlet extends HttpServlet {
 
     /**
      * Set up a feature list
-     * 
+     *
      * @param request
      * @return
      */
@@ -973,7 +1096,7 @@ public class FileProcessServlet extends HttpServlet {
 
     /**
      * Populates the ShapeFileSetbean with the THREDDS servers
-     * 
+     *
      * @param request
      * @return
      */
@@ -1057,12 +1180,13 @@ public class FileProcessServlet extends HttpServlet {
         return "/jsp/DataSetSelection.jsp";
     }
 
-    private boolean sendEmail(String email, String finalUrlEmail) throws AddressException, MessagingException {
-        String content = "Your file is ready: " + finalUrlEmail;
-        String subject = "Your file is ready";
-        String from = "gdp_data@usgs.gov";
-        EmailMessageBean emBean = new EmailMessageBean(from, email, new ArrayList<String>(), subject, content);
-        EmailHandler emh = new EmailHandler();
-        return emh.sendMessage(emBean);
-    }
+	private boolean sendEmail(String email, String finalUrlEmail) throws AddressException, MessagingException {
+		String content = "Your file is ready: " + finalUrlEmail;
+		String subject = "Your file is ready";
+		String from = "gdp_data@usgs.gov";
+		EmailMessageBean emBean = new EmailMessageBean(from, email, new ArrayList<String>(), subject, content);
+		EmailHandler emh = new EmailHandler();
+		return emh.sendMessage(emBean);
+	}
 }
+
