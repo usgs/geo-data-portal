@@ -3,12 +3,14 @@ package gov.usgs.gdp.servlet;
 import gov.usgs.gdp.bean.AckBean;
 import gov.usgs.gdp.bean.AvailableFilesBean;
 import gov.usgs.gdp.bean.ErrorBean;
+import gov.usgs.gdp.bean.FilesBean;
 import gov.usgs.gdp.bean.MessageBean;
 import gov.usgs.gdp.bean.XmlReplyBean;
 import gov.usgs.gdp.helper.FileHelper;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -62,6 +64,16 @@ public class FileSelectionServlet extends HttpServlet {
                     AvailableFilesBean afb = null;
                     try {
 			afb = AvailableFilesBean.getAvailableFilesBean(appTempDir, userDirectory);
+                        List<FilesBean> shapesetList = afb.getExampleFileList();
+                        for (int listIndex = 0;listIndex < shapesetList.size();listIndex++) {
+                            if (shapesetList.get(listIndex).getName().contains(".shp") ||
+                                    shapesetList.get(listIndex).getName().contains(".dbf") ||
+                                    shapesetList.get(listIndex).getName().contains(".shx") ||
+                                    shapesetList.get(listIndex).getName().contains(".prj") ) {
+                                shapesetList.remove(listIndex);
+                                afb.setExampleFileList(shapesetList);
+                            }
+                        }
                     } catch (IllegalArgumentException e) {
 			xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FILE_LIST, e));
 			RouterServlet.sendXml(xmlReply, start, response);
