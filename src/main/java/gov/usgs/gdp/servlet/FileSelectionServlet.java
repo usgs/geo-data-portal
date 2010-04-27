@@ -71,9 +71,9 @@ public class FileSelectionServlet extends HttpServlet {
                                     shapesetList.get(listIndex).getName().contains(".shx") ||
                                     shapesetList.get(listIndex).getName().contains(".prj") ) {
                                 shapesetList.remove(listIndex);
-                                afb.setExampleFileList(shapesetList);
                             }
                         }
+                        afb.setExampleFileList(shapesetList);
                     } catch (IllegalArgumentException e) {
 			xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FILE_LIST, e));
 			RouterServlet.sendXml(xmlReply, start, response);
