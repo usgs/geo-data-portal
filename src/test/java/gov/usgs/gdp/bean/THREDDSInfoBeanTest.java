@@ -36,7 +36,7 @@ public class THREDDSInfoBeanTest {
 	public final void testGetTHREDDSUrlMap() {
 		Map<String, String> result = THREDDSInfoBean.getTHREDDSUrlMap();
 		assertFalse(result.isEmpty());
-		assertEquals(result.get("RUNOFF"),"http://runoff.cr.usgs.gov:8086/thredds/hydrologic_catalog.xml");
+		assertEquals(result.get("NARR (North American Regional Reanalysis)"),"http://nomads.ncdc.noaa.gov/thredds/catalog.html");
 	}
 	
 	@Test
