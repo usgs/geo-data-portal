@@ -18,6 +18,7 @@ public class THREDDSServerBean implements XmlBean{
 	private String uri;
 	private boolean active;
 	private Date lastCheck;
+        private String fullUrl;
 	
 	public static org.apache.log4j.Logger getLog() {
 		return log;
@@ -71,5 +72,19 @@ public class THREDDSServerBean implements XmlBean{
 	public String getProtocol() {
 		return protocol;
 	}
+
+    /**
+     * @return the fullUrl
+     */
+    public String getFullUrl() {
+        return fullUrl;
+    }
+
+    /**
+     * @param fullUrl the fullUrl to set
+     */
+    public void setFullUrl(String fullUrl) {
+        this.fullUrl = fullUrl;
+    }
 	
 }

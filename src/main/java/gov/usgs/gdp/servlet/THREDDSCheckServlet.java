@@ -222,6 +222,7 @@ public class THREDDSCheckServlet extends HttpServlet {
 				threddsServerBean.setProtocol(protocol);
 				threddsServerBean.setHostname(hostname);
 				threddsServerBean.setPort(Integer.parseInt(port));
+                                threddsServerBean.setFullUrl(serverUrl);
 				result.put(key, threddsServerBean);
 			}
 			
