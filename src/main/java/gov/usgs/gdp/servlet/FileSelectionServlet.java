@@ -7,8 +7,11 @@ import gov.usgs.gdp.bean.FilesBean;
 import gov.usgs.gdp.bean.MessageBean;
 import gov.usgs.gdp.bean.XmlReplyBean;
 import gov.usgs.gdp.helper.FileHelper;
+import java.io.File;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -38,6 +41,8 @@ public class FileSelectionServlet extends HttpServlet {
 		doPost(request, response);
 	}
 
+
+
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
@@ -49,31 +54,22 @@ public class FileSelectionServlet extends HttpServlet {
 		XmlReplyBean xmlReply = null;
 		if ("listfiles".equals(command)) {
 		    String userDirectory = request.getParameter("userdirectory");
-		    String appTempDir = System.getProperty("applicationTempDir");
-                        
+		    String userSpaceDir = System.getProperty("applicationUserSpaceDir");
+                    String tempDir  = System.getProperty("applicationTempDir");
                     // Test to see if the directory does exist. If so,
                     // update the time on those files to today to escape the
                     // timed deletion process
-                    if (userDirectory != null && !"".equals(appTempDir + userDirectory)) {
-                        if (FileHelper.doesDirectoryOrFileExist(appTempDir + userDirectory)) {
-                            FileHelper.updateTimestamp(appTempDir + userDirectory, false); // Update the timestamp
+                    if (userDirectory != null && !"".equals(userSpaceDir + userDirectory)) {
+                        if (FileHelper.doesDirectoryOrFileExist(userSpaceDir + userDirectory)) {
+                            FileHelper.updateTimestamp(userSpaceDir + userDirectory, false); // Update the timestamp
                         } else {
                         	userDirectory = "";
                         }
                     }
                     AvailableFilesBean afb = null;
                     try {
-			afb = AvailableFilesBean.getAvailableFilesBean(appTempDir, userDirectory);
-                        List<FilesBean> shapesetList = afb.getExampleFileList();
-                        for (int listIndex = 0;listIndex < shapesetList.size();listIndex++) {
-                            if (shapesetList.get(listIndex).getName().contains(".shp") ||
-                                    shapesetList.get(listIndex).getName().contains(".dbf") ||
-                                    shapesetList.get(listIndex).getName().contains(".shx") ||
-                                    shapesetList.get(listIndex).getName().contains(".prj") ) {
-                                shapesetList.remove(listIndex);
-                            }
-                        }
-                        afb.setExampleFileList(shapesetList);
+			afb = AvailableFilesBean.getAvailableFilesBean(tempDir, userSpaceDir + userDirectory);
+
                     } catch (IllegalArgumentException e) {
 			xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FILE_LIST, e));
 			RouterServlet.sendXml(xmlReply, start, response);

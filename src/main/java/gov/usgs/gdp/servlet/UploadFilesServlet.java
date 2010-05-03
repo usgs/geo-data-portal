@@ -52,11 +52,11 @@ public class UploadFilesServlet extends HttpServlet {
         String command = request.getParameter("command");
 
         if ("upload".equals(command)) {
-            String applicationTempDir = System.getProperty("applicationTempDir") + FileHelper.getSeparator();
+            String applicationUserspaceDir = System.getProperty("applicationUserSpaceDir");
             String userDirectory = "";
 
             try {
-                userDirectory = uploadFiles(request, applicationTempDir);
+                userDirectory = uploadFiles(request, applicationUserspaceDir);
             } catch (Exception e) {
                 xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FILE_UPLOAD, e));
                 RouterServlet.sendXml(xmlOutput, start, response);
@@ -129,9 +129,9 @@ public class UploadFilesServlet extends HttpServlet {
      * @return The user directory created
      */
     private String createUserDirectory(String path) {
-        String applicationTempDir = System.getProperty("applicationTempDir");
+        String applicationUserSpaceDir = System.getProperty("applicationUserSpaceDir");
         String seperator = FileHelper.getSeparator();
-        String userTempDir = applicationTempDir + seperator + path;
+        String userTempDir = applicationUserSpaceDir + seperator + path;
         boolean wasCreated = FileHelper.createDir(userTempDir);
         if (wasCreated) {
             log.debug("User subdirectory created at: " + userTempDir);

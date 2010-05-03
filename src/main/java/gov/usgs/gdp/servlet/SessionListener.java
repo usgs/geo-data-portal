@@ -27,6 +27,7 @@ public class SessionListener implements HttpSessionListener {
 	/**
      * @see HttpSessionListener#sessionCreated(HttpSessionEvent)
      */
+    @Override
     public void sessionCreated(HttpSessionEvent arg0) {
     	log.debug("Session is starting. Initializing.");
         String applicationTempDir = System.getProperty("applicationTempDir");
@@ -47,6 +48,7 @@ public class SessionListener implements HttpSessionListener {
 	/**
      * @see HttpSessionListener#sessionDestroyed(HttpSessionEvent)
      */
+    @Override
     public void sessionDestroyed(HttpSessionEvent arg0) {
     	log.debug("Session is dying. Cleaning up.");
     	String userTempDir = (String) arg0.getSession().getAttribute("userTempDir");

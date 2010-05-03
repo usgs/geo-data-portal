@@ -21,6 +21,7 @@ public class GDPServletContextListener implements ServletContextListener {
     /**
      * @see ServletContextListener#contextInitialized(ServletContextEvent)
      */
+    @Override
     public void contextInitialized(ServletContextEvent sre) {
         // TODO Clean up temp files from previous application instance
         // (unexpected JVM exit)
@@ -29,6 +30,7 @@ public class GDPServletContextListener implements ServletContextListener {
     /**
      * @see ServletContextListener#contextDestroyed(ServletContextEvent)
      */
+    @Override
     public void contextDestroyed(ServletContextEvent sre) {
         // TODO Clean up temp files from this application instance (unexpected
         // JVM exit)

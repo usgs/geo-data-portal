@@ -1,12 +1,17 @@
 package gov.usgs.gdp.servlet;
 
 import gov.usgs.gdp.helper.FileHelper;
+import gov.usgs.gdp.helper.PropertyFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -33,6 +38,7 @@ public class AppInitializationServlet extends HttpServlet {
 
         initializeFileSystem();
         //initializeJMS();
+        initializeFilewipeTimer();
 
         Date created = new Date();
         System.setProperty("tomcatStarted", Long.toString(created.getTime()));
@@ -97,6 +103,16 @@ public class AppInitializationServlet extends HttpServlet {
             log.info("Current application work directory is: " + System.getProperty("applicationWorkDir"));
         } else {
             log.info("ERROR: Could not create application work directory: " + System.getProperty("applicationWorkDir"));
+            log.info("\tIf this directory is not created manually, there may be issues during application run");
+        }
+
+        // Create the userspace directory within the app temp dir
+        // This will be used for storing user's uploads
+        if (FileHelper.createDir(this.applicationTempDir + "userspace" + this.seperator)) {
+            System.setProperty("applicationUserSpaceDir", this.applicationTempDir + "userspace" + this.seperator);
+            log.info("Current application user space directory is: " + System.getProperty("applicationUserSpaceDir"));
+        } else {
+            log.info("ERROR: Could not create application user space directory: " + System.getProperty("applicationUserSpaceDir"));
             log.info("\tIf this directory is not created manually, there may be issues during application run");
         }
 
@@ -179,5 +195,117 @@ public class AppInitializationServlet extends HttpServlet {
     public AppInitializationServlet() {
         super();
     }
+
+    /**
+     * Initializes a timer that will check the file system every hour and wipes any files
+     * over 48 hours long.
+     */
+    private void initializeFilewipeTimer() {
+        Date start = new Date();
+        log.info("File Wipe system starting.");
+
+        String fileAgeInMillisecondsString = PropertyFactory.getProperty("file.age.limit.in.hours");
+        long fileAgeLong = (("").equals(fileAgeInMillisecondsString)) ? 48 * 3600000l : Integer.parseInt(fileAgeInMillisecondsString) * 3600000l;
+        Timer task = new Timer(true);
+
+        String baseFilePath = System.getProperty("applicationTempDir");
+    	baseFilePath = baseFilePath + FileHelper.getSeparator();
+        File uploadDirName = new File(baseFilePath + PropertyFactory.getProperty("upload.directory.name"));
+        File userSpaceDir = new File(System.getProperty("applicationUserSpaceDir"));
+
+        // Set up the tast to run every hour, starting 1 hour from now
+        task.scheduleAtFixedRate(new ScanFileTask(userSpaceDir, uploadDirName, fileAgeLong), 0l, 3600000l);
+        
+        // One minute test timer
+        // task.scheduleAtFixedRate(new ScanFileTask(userSpaceDir, uploadDirName, 60000l), 0l, 60000l);
+        log.info("File Wipe system started.");
+        if (uploadDirName != null) log.info("Will check " + uploadDirName.getPath() + " every " + fileAgeInMillisecondsString + " hour(s).");
+        if (userSpaceDir != null) log.info("Will check " + userSpaceDir.getPath() + " every " + fileAgeInMillisecondsString + " hour(s).");
+
+        Date created = new Date();
+        System.setProperty("tomcatStarted", Long.toString(created.getTime()));
+        log.info("GeoData Portal Server application has started. Took " + (created.getTime() - start.getTime()) + " milliseconds to complete.");
+    }
+
+    class ScanFileTask extends TimerTask {
+        private long hoursToWipe;
+        private File workspaceDir;
+        private File repositoryDir;
+
+        @Override
+        public void run() {
+            log.debug("Running File Wipe Task... ");
+            Collection<File> filesDeleted = new ArrayList<File>();
+            if (getWorkspaceDir() != null && getWorkspaceDir().exists()) {
+                filesDeleted = FileHelper.wipeOldFiles(getWorkspaceDir(), this.hoursToWipe);
+                if (!filesDeleted.isEmpty()) {
+                    log.debug("Finished deleting userspace files. " + filesDeleted.size() + " deleted.");
+                    filesDeleted = new ArrayList<File>();
+                }
+            }
+
+            if (getRepositoryDir() != null && getRepositoryDir().exists()) {
+                filesDeleted = FileHelper.wipeOldFiles(getRepositoryDir(), this.hoursToWipe);
+                if (!filesDeleted.isEmpty()) {
+                    log.debug("Finished deleting repository directory files. " + filesDeleted.size() + " deleted.");
+                }
+            }
+        }
+
+        public ScanFileTask(File workspaceDir, File repositoryDir, long hoursToWipe) {
+            this.workspaceDir = workspaceDir;
+            this.repositoryDir = repositoryDir;
+            this.hoursToWipe = hoursToWipe;
+
+        }
+
+        public ScanFileTask() {
+            this.hoursToWipe = 48l;
+        }
+
+        /**
+         * @return the hoursToWipe
+         */
+        public long getHoursToWipe() {
+            return hoursToWipe;
+        }
+
+        /**
+         * @param hoursToWipe the hoursToWipe to set
+         */
+        public void setHoursToWipe(long hoursToWipe) {
+            this.hoursToWipe = hoursToWipe;
+        }
+
+        /**
+         * @return the workspaceDir
+         */
+        public File getWorkspaceDir() {
+            return workspaceDir;
+        }
+
+        /**
+         * @param workspaceDir the workspaceDir to set
+         */
+        public void setWorkspaceDir(File workspaceDir) {
+            this.workspaceDir = workspaceDir;
+        }
+
+        /**
+         * @return the repositoryDir
+         */
+        public File getRepositoryDir() {
+            return repositoryDir;
+        }
+
+        /**
+         * @param repositoryDir the repositoryDir to set
+         */
+        public void setRepositoryDir(File repositoryDir) {
+            this.repositoryDir = repositoryDir;
+        }
+
+    }
+
 
 }

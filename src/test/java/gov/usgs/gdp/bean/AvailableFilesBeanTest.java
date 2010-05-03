@@ -87,13 +87,12 @@ public class AvailableFilesBeanTest {
 	public void testGetAvailableFilesBeanWithPopulatedUserDirectory() {
 		AvailableFilesBean result = 
 			AvailableFilesBean.getAvailableFilesBean(this.tempDir, 
-						"user_dir" 
+						this.tempDir + "user_dir"
 						+ this.seperator
 						+ "Sample_Files"
 						+ this.seperator
 						+ "Shapefiles"
 						+ this.seperator);
-		
 		assertNotNull(result);
 		assertNotNull(result.getExampleFileList());
 		assertFalse(result.getExampleFileList().isEmpty());
@@ -110,7 +109,7 @@ public class AvailableFilesBeanTest {
 		@SuppressWarnings("unused")
 		AvailableFilesBean result =
 			AvailableFilesBean.getAvailableFilesBean(this.tempDir,
-						"user_dir"
+						this.tempDir + "user_dir"
 						+ this.seperator
 						+ "Sample_Files"
 						+ this.seperator
@@ -126,7 +125,7 @@ public class AvailableFilesBeanTest {
 	public void testGetXmlWithEverythingPopulated() {
 		AvailableFilesBean filesBean = 
 			AvailableFilesBean.getAvailableFilesBean(this.tempDir, 
-						"user_dir" 
+						this.tempDir + "user_dir"
 						+ this.seperator
 						+ "Sample_Files"
 						+ this.seperator

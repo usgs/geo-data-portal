@@ -1,6 +1,7 @@
 package gov.usgs.gdp.helper;
 
 import gov.usgs.gdp.analysis.GeoToolsFileAnalysis;
+import gov.usgs.gdp.bean.FilesBean;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 
@@ -11,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -18,6 +20,7 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.log4j.Logger;
 import org.geotools.data.FileDataStore;
 
@@ -55,6 +58,33 @@ public class FileHelper {
             FileUtils.deleteQuietly(inFile);
         }
         return true;
+    }
+
+    /**
+     * Delete files older than a given Long instance
+     * @param directory directory within which to search. 
+     * @param cutoffTime
+     * @return
+     */
+    public static Collection<File> wipeOldFiles(File directory, Long cutoffTime) {
+        if (directory == null || !directory.exists()) return new ArrayList<File>();
+
+        Collection<File> result = new ArrayList<File>();
+        Collection<File> oldFiles = FileHelper.getFilesOlderThan(directory, cutoffTime, Boolean.TRUE);
+        for (File file : oldFiles) {
+            String logString = "Deleting File: \"" + file.toString() + "\" ... ";
+            if (file.delete()) {
+                logString += "done. ";
+                result.add(file);
+                if (file.getParentFile().isDirectory() && file.getParentFile().delete()) log.debug("Deleting Directory: \"" + file.getParent() + "\" ...  done");
+            } else {
+                logString += "FAILED!";
+            }
+
+            log.debug(logString);
+        }
+
+        return result;
     }
 
     public static File createFileRepositoryDirectory(final String baseFilePath) {
@@ -350,7 +380,17 @@ public class FileHelper {
 
         final int BUFFER = 2048;
         while ((entry = zis.getNextEntry()) != null) {
+            String fileName =  entry.getName();
             log.debug("Unzipping: " + entry.getName());
+
+            // If this file doesn't pertain to a shape file.
+            // Move to next
+            if (!(fileName.toLowerCase().contains("shp") ||
+                    fileName.toLowerCase().contains("dbf") ||
+                    fileName.toLowerCase().contains("shx") ||
+                    fileName.toLowerCase().contains("prj") ||
+                    fileName.toLowerCase().contains("zip")
+                )) continue;
             int count = 0;
             byte data[] = new byte[BUFFER];
             FileOutputStream fos = new FileOutputStream(directory + java.io.File.separator + entry.getName());
@@ -395,5 +435,34 @@ public class FileHelper {
 
         }
         return true;
+    }
+
+    /**
+     * Returns files and directories older that a specified date
+     *
+     * @param filePath System path to the directory
+     * @param msPerDay
+     * @param recursive
+     * @return
+     */
+    static Collection<File> getFilesOlderThan(File filePath, Long age, Boolean recursive) {
+        if (filePath  == null || !filePath.exists()) return new ArrayList<File>();
+        Iterator<File> files = null;
+        
+        if (recursive) files = FileUtils.iterateFiles(filePath, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
+        else files = FileUtils.iterateFiles(filePath, TrueFileFilter.INSTANCE, null);
+
+        Collection<File> result = new ArrayList<File>();
+        Date date = new Date();
+        while (files.hasNext()) 
+        {
+            File file = files.next();
+            
+            if (file.lastModified() <  date.getTime() - age) {
+                result.add(file);
+            }
+        }
+        
+        return result;
     }
 }

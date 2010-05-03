@@ -9,11 +9,14 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.log4j.Logger;
 import org.geotools.data.FileDataStore;
 import org.junit.After;
@@ -26,7 +29,9 @@ public class FileHelperTest {
 	
 	private static final String testFile = "demo_HUCs";
 	private static final String secondTestFile = "Yahara_River_HRUs_geo_WGS84";
-	
+	private String tempDir = "";
+	private String seperator = "";
+
 	private static org.apache.log4j.Logger log = Logger.getLogger(FileHelperTest.class);
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -36,9 +41,7 @@ public class FileHelperTest {
 	public static void tearDownAfterClass() throws Exception {
 		log.debug("Ended testing class");
 	}
-	private String tempDir = "";
-
-	private String seperator = "";
+	
 	
 	@Before
 	public void setUp() throws Exception {
@@ -74,6 +77,20 @@ public class FileHelperTest {
 		FileUtils.deleteDirectory((new File(this.tempDir)));
 	}
 
+        @Test
+        public void testWipeOldFilesWithNoOldFiles() {
+           Collection<File> result = new ArrayList<File>();
+           result = FileHelper.wipeOldFiles(new File(this.tempDir), 1200000l);
+           assertTrue(result.isEmpty());
+        }
+
+        @Test
+        public void testWipeOldFilesWithOldFiles() {
+            Collection<File> result = new ArrayList<File>();
+            result = FileHelper.wipeOldFiles(new File(this.tempDir), 1l);
+            assertTrue(!result.isEmpty());
+        }
+
 	@Test
 	public void testCreateDir() {
 		boolean result = false;
@@ -84,7 +101,7 @@ public class FileHelperTest {
 		assertTrue(result);
 		(new File(testDir)).delete();
 	}
-	
+
 	@Test 
 	public void testDoesDirectoryOrFileExist() {
 		boolean result = false;
