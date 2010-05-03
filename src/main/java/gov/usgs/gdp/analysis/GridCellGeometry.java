@@ -23,7 +23,7 @@ public class GridCellGeometry {
     private final int yCellCount;
     private final int cellCount;
 
-    private Geometry[] cellGeometrys;
+    private Geometry[] cellGeometry;
 
     public GridCellGeometry(GridCoordSystem gridCoordSystem) {
 
@@ -33,7 +33,7 @@ public class GridCellGeometry {
         yCellCount = (int) gridCoordSystem.getYHorizAxis().getSize();
         cellCount = xCellCount * yCellCount;
 
-        cellGeometrys = buildGeometries();
+        generateCellGeometry();
     }
 
     public GridCoordSystem getGridCoordSystem() {
@@ -52,11 +52,15 @@ public class GridCellGeometry {
         return cellCount;
     }
 
-    public Geometry getCellGeometry(int xIndex, int yIndex) {
-        return cellGeometrys[xIndex + yIndex * xCellCount];
+    public Geometry getCellGeometry(int yxIndex) {
+        return cellGeometry[yxIndex];
     }
 
-    private Geometry[] buildGeometries() {
+    public Geometry getCellGeometry(int xIndex, int yIndex) {
+        return cellGeometry[xIndex + yIndex * xCellCount];
+    }
+
+    private void generateCellGeometry() {
 
         GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory(null);
 
@@ -68,7 +72,7 @@ public class GridCellGeometry {
 
         int xCellEdgeCount = xCellEdges.length;
 
-        Geometry[] cellGeometry = new Geometry[cellCount];
+        cellGeometry = new Geometry[cellCount];
 
         final CoordinateBuilder coordinateBuilder = gridCoordSystem.isLatLon()
                 ? new CoordinateBuilder()
@@ -100,8 +104,6 @@ public class GridCellGeometry {
                 cellGeometry[yOffset + xIndexLower] = geometryFactory.toGeometry(cellEnvelope);
             }
         }
-
-        return cellGeometry;
     }
 
     private class CoordinateBuilder {

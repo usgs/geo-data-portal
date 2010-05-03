@@ -23,7 +23,7 @@ import org.geotools.data.FeatureSource;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.feature.FeatureCollection;
-import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.feature.SchemaException;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
@@ -43,6 +43,7 @@ import ucar.unidata.geoloc.LatLonRect;
 
 import com.google.common.base.Preconditions;
 import com.vividsolutions.jts.geom.Geometry;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import ucar.ma2.Array;
 import ucar.ma2.Index;
@@ -115,11 +116,12 @@ public class GridStatistics {
             GridDataset gridDataset,
             String variableName,
             Range timeRange)
-            throws IOException, InvalidRangeException, FactoryException, TransformException
+            throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException
     {
-        
-        ReferencedEnvelope envelope = featureCollection.getBounds();
-        LatLonRect llr = GeoToolsNetCDFUtility.getLatLonRectFromEnvelope(envelope);
+
+        LatLonRect llr = GeoToolsNetCDFUtility.getLatLonRectFromEnvelope(
+                featureCollection.getBounds(),
+                DefaultGeographicCRS.WGS84);
 
         GridDatatype gdt = gridDataset.findGridDatatype(variableName);
         Preconditions.checkNotNull(gdt, "Variable named %s not found in gridDataset", variableName);
@@ -130,7 +132,15 @@ public class GridStatistics {
             Logger.getLogger(GridStatistics.class.getName()).log(Level.SEVERE, null, ex);
             throw ex;  // rethrow requested by IS
         }
-        
+
+        GridCoordSystem gcs = gdt.getCoordinateSystem();
+        if (gcs.getCoordinateAxes().size() != 3) {
+            // FIXME: In the future, we ought to be able to handle other grid types, especially t-z-y-x and y-x.
+            // Until then, we should actively reject them because types like t-z-y-x will actually run without error
+            // in the code below, but will produce incomplete results (e.g. only for z=0).
+            throw new IllegalArgumentException("\"" + variableName  + "\" is not a t-y-x grid.");
+        }
+
         // verify attribute exists in featureCollection. 
         AttributeDescriptor attributeDescriptor = featureCollection.getSchema().getDescriptor(attributeName);
         Preconditions.checkNotNull(
@@ -139,61 +149,53 @@ public class GridStatistics {
         // check attribute type binding, if possible we want to sort it's values
         AttributeType attributeType = attributeDescriptor.getType();
         boolean isAttributeValueComparable = Comparable.class.isAssignableFrom(attributeType.getBinding());
-        Map<Object, Geometry> attributeValueToGeometryMap = isAttributeValueComparable ?
-                new TreeMap<Object, Geometry>() :     // rely on on Comparable to sort
-                new LinkedHashMap<Object, Geometry>(); // use order from featureCollection.iterator();
+        Map<Object, GridCellCoverage> attributeValueToCoverageMap = isAttributeValueComparable ?
+                new TreeMap<Object, GridCellCoverage>() :     // rely on on Comparable to sort
+                new LinkedHashMap<Object, GridCellCoverage>(); // use order from featureCollection.iterator();
 
-        Iterator<SimpleFeature> fi = featureCollection.iterator();
-        while (fi.hasNext()) {
-            SimpleFeature sf = fi.next();
-            Object av = sf.getAttribute(attributeName);
-
-            if (av != null) {
-                Geometry g0 = (Geometry)sf.getDefaultGeometry(); 
-                Geometry g1 = attributeValueToGeometryMap.get(av);
-                if (g1 == null) {
-                    attributeValueToGeometryMap.put(av, g0);
-                } else {
-                    attributeValueToGeometryMap.put(av, g1.union(g0));
-                }
-            } 
-        }
-
-        int attributeValueMapSize = (int) Math.ceil( (float) attributeValueToGeometryMap.size() / 0.75f);
-        Map<Object, GridCellCoverage> attributeValueToCoverageMap =
-                new LinkedHashMap<Object, GridCellCoverage>(attributeValueMapSize);
-        
-        GridCoordSystem gcs = gdt.getCoordinateSystem();
-        if (gcs.getCoordinateAxes().size() != 3) {
-            // FIXME: In the future, we ought to be able to handle other grid types, especially t-z-y-x and y-x.
-            // Until then, we should actively reject them because types like t-z-y-x will actually run without error
-            // in the code below, but will produce incomplete results (e.g. only for z=0).
-            throw new IllegalArgumentException("\"" + variableName  + "\" is not a t-y-x grid.");
-        }
-        
         CoordinateReferenceSystem crs = featureCollection.getSchema().getCoordinateReferenceSystem();
-        GridCellGeometry gcc = new GridCellGeometry(gcs);
-        for(Map.Entry<Object, Geometry> entry : attributeValueToGeometryMap.entrySet()) {
-            attributeValueToCoverageMap.put(entry.getKey(), new GridCellCoverage(entry.getValue(), crs, gcc));
+        GridCellGeometry gcg = new GridCellGeometry(gcs);
+        Iterator<SimpleFeature> fi = featureCollection.iterator();
+        try {
+            while (fi.hasNext()) {
+                SimpleFeature sf = fi.next();
+                Object av = sf.getAttribute(attributeName);
+                if (av != null) {
+                    Geometry g = (Geometry)sf.getDefaultGeometry();
+                    GridCellCoverage gcc = attributeValueToCoverageMap.get(av);
+                    if (gcc == null) {
+                        gcc = new GridCellCoverage(g, crs, gcg);
+                        attributeValueToCoverageMap.put(av, gcc);
+                    } else {
+                        gcc.updateCoverage(g, crs, gcg);
+                    }
+                }
+            }
+        } finally {
+            featureCollection.close(fi);
         }
+        fi = null;
+        gcg = null;
 
         // Theset statements will throw a NullPointerException if gdt's 3 coordinate axes are not t-y-x.
         int tCount = (int) gcs.getTimeAxis().getSize();
         int yCount = (int) gcs.getYHorizAxis().getSize();
         int xCount = (int) gcs.getXHorizAxis().getSize();
+
+        int aCount = (int)(attributeValueToCoverageMap.size() / 0.75) + 1;
         
         GridStatistics gs = new GridStatistics();
         gs.variableName = variableName;
         gs.variableUnits = gdt.getVariable().getUnitsString();
         
-        gs.attributeValues = Collections.unmodifiableList(new ArrayList<Object>(attributeValueToGeometryMap.keySet()));
+        gs.attributeValues = Collections.unmodifiableList(new ArrayList<Object>(attributeValueToCoverageMap.keySet()));
         gs.timeStepValues = Collections.unmodifiableList(Arrays.asList(gcs.getTimeAxis1D().getTimeDates()));
         gs.timeStepRange = gcs.getTimeAxis1D().getDateRange();
         
         gs.allTimestepAllAttributeValueStatistics = new WeightedStatisticsAccumulator1D() ;
         
         gs.perAttributeValueAllTimestepStatistics =
-                new LinkedHashMap<Object, WeightedStatisticsAccumulator1D>(attributeValueMapSize);
+                new LinkedHashMap<Object, WeightedStatisticsAccumulator1D>(aCount);
         for (Object attributeValue : gs.attributeValues) {
             gs.perAttributeValueAllTimestepStatistics.put(attributeValue, new WeightedStatisticsAccumulator1D());
         }
@@ -203,8 +205,9 @@ public class GridStatistics {
         
         int tBase = timeRange.first();
         for (int tIndex = 0; tIndex < tCount; ++tIndex) {
+
             Map<Object, WeightedStatisticsAccumulator1D> timeStepAttributeValueStatisticsMap =
-                    new LinkedHashMap<Object, WeightedStatisticsAccumulator1D>(attributeValueMapSize);
+                    new LinkedHashMap<Object, WeightedStatisticsAccumulator1D>(aCount);
             for (Object attributeValue : gs.attributeValues) {
                 timeStepAttributeValueStatisticsMap.put(attributeValue, new WeightedStatisticsAccumulator1D());
             }
@@ -244,7 +247,7 @@ public class GridStatistics {
         
         return gs;
     }
-    
+
     // SIMPLE inline testing only, need unit tests...
     public static void main(String[] args) {
 //        String ncLocation = "http://runoff.cr.usgs.gov:8086/thredds/dodsC/hydro/national/2.5arcmin";
@@ -252,8 +255,8 @@ public class GridStatistics {
 //        String ncLocation = "http://localhost:18080/thredds/dodsC/ncml/gridded_obs.daily.Wind.ncml";
 //        String ncLocation = "/Users/tkunicki/Downloads/thredds-data/CONUS_2001-2010.ncml";
         String ncLocation = "/Users/tkunicki/Downloads/thredds-data/gridded_obs.daily.Wind.ncml";
-        String sfLocation = "src/main/resources/Sample_Files/Shapefiles/serap_hru_239.shp";
-    
+        String sfLocation = "/Users/tkunicki/Projects/GDP/GDP/src/main/resources/Sample_Files/Shapefiles/serap_hru_239.shp";
+
         FeatureDataset dataset = null;
         FileDataStore dataStore = null;
         long start = System.currentTimeMillis();
@@ -276,70 +279,6 @@ public class GridStatistics {
                         Arrays.asList(new GridStatisticsCSVWriter.Statistic[] {
                             GridStatisticsCSVWriter.Statistic.mean,
                             GridStatisticsCSVWriter.Statistic.maximum, }),
-                        false,
-                        ",");
-                csv.write(writer);
-            } catch (IOException ex) {
-                Logger.getLogger(GridStatistics.class.getName()).log(Level.SEVERE, null, ex);
-            } finally {
-                if (writer != null) {
-                    try {
-                        writer.close();
-                    } catch (IOException ex) {
-                        Logger.getLogger(GridStatistics.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-            }
-
-            try {
-                writer = new BufferedWriter(new FileWriter("temp1.csv"));
-                GridStatisticsCSVWriter csv = new GridStatisticsCSVWriter(
-                        gs,
-                        Arrays.asList(new GridStatisticsCSVWriter.Statistic[] {
-                            GridStatisticsCSVWriter.Statistic.mean,
-                            GridStatisticsCSVWriter.Statistic.maximum, }),
-                        true,
-                        ",");
-                csv.write(writer);
-            } catch (IOException ex) {
-                Logger.getLogger(GridStatistics.class.getName()).log(Level.SEVERE, null, ex);
-            } finally {
-                if (writer != null) {
-                    try {
-                        writer.close();
-                    } catch (IOException ex) {
-                        Logger.getLogger(GridStatistics.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-            }
-
-            try {
-                writer = new BufferedWriter(new FileWriter("temp2.csv"));
-                GridStatisticsCSVWriter csv = new GridStatisticsCSVWriter(
-                        gs,
-                        Arrays.asList(GridStatisticsCSVWriter.Statistic.values()),
-                        true,
-                        ",");
-                csv.write(writer);
-            } catch (IOException ex) {
-                Logger.getLogger(GridStatistics.class.getName()).log(Level.SEVERE, null, ex);
-            } finally {
-                if (writer != null) {
-                    try {
-                        writer.close();
-                    } catch (IOException ex) {
-                        Logger.getLogger(GridStatistics.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-            }
-
-
-
-            try {
-                writer = new BufferedWriter(new FileWriter("temp3.csv"));
-                GridStatisticsCSVWriter csv = new GridStatisticsCSVWriter(
-                        gs,
-                        Arrays.asList(GridStatisticsCSVWriter.Statistic.values()),
                         false,
                         ",");
                 csv.write(writer);
