@@ -54,7 +54,7 @@ public class AvailableFilesBean implements XmlBean {
         String exampleDirectory = baseDirectory
                 + "Sample_Files"
                 + FileHelper.getSeparator();
-        String userDirecotry = baseDirectory + "userspace" + FileHelper.getSeparator();
+        //String userDirecotry = baseDirectory + "userspace" + FileHelper.getSeparator();
         // Create the example file bean list
         //exampleFileBeanList = FilesBean.getFilesBeanSetList(exampleDirectory, true);
 

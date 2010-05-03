@@ -434,6 +434,7 @@ public class FileProcessServlet extends HttpServlet {
 	    FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = null;
 
 	    String baseFilePath = System.getProperty("applicationTempDir");
+            String userspacePath = System.getProperty("applicationUserSpaceDir");
     	baseFilePath = baseFilePath + FileHelper.getSeparator();
     	File uploadDirectory = FileHelper.createFileRepositoryDirectory(baseFilePath);
     	if (!uploadDirectory.exists()) return null;
@@ -480,9 +481,10 @@ public class FileProcessServlet extends HttpServlet {
     		// Set up the shapefile
     		String appTempDir = System.getProperty("applicationTempDir");
     		String userDir = userDirectory;
-    		if (userDir != null && !"".equals(appTempDir + userDir)) {
-    			if (FileHelper.doesDirectoryOrFileExist(appTempDir + userDir)) {
-    				FileHelper.updateTimestamp(appTempDir + userDir, false); // Update the timestamp
+    		if (userDir != null && !"".equals(userspacePath + userDir)) {
+    			if (FileHelper.doesDirectoryOrFileExist(userspacePath + userDir)) {
+    				FileHelper.updateTimestamp(userspacePath + userDir, false); // Update the timestamp
+                                userDir = userspacePath + userDir;
     			} else {
     				userDir = "";
     			}
