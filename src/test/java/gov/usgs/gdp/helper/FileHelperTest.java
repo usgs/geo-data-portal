@@ -80,7 +80,7 @@ public class FileHelperTest {
         @Test
         public void testWipeOldFilesWithNoOldFiles() {
            Collection<File> result = new ArrayList<File>();
-           result = FileHelper.wipeOldFiles(new File(this.tempDir), 1200000l);
+           result = FileHelper.wipeOldFiles(new File(this.tempDir), 12000000l);
            assertTrue(result.isEmpty());
         }
 
