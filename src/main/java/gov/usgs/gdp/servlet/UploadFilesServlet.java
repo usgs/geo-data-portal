@@ -72,6 +72,22 @@ public class UploadFilesServlet extends HttpServlet {
             log.debug("Files successfully uploaded.");
             RequestDispatcher rd = request.getRequestDispatcher("/FileSelectionServlet?command=listfiles&userdirectory=" + userDirectory);
             rd.forward(request, response);
+        } else if ("createuserdirectory".equals(command)) {
+        	String dir = createUserDirectory();
+        	
+        	XmlReplyBean xmlReply;
+        	if ("".equals(dir)) {
+        		xmlReply = new XmlReplyBean(AckBean.ACK_FAIL);
+        	}
+        	else {
+        		Cookie c = new Cookie("gdp-user-directory", dir);
+        		c.setMaxAge(-1); // set cookie to be deleted when web browser exits
+        		c.setPath("/");  // set cookie's visibility to the whole app
+        		response.addCookie(c);
+        		xmlReply = new XmlReplyBean(AckBean.ACK_OK);
+        	}
+        	
+			RouterServlet.sendXml(xmlReply, start, response);
         }
     }
 
@@ -85,7 +101,6 @@ public class UploadFilesServlet extends HttpServlet {
     @SuppressWarnings("unchecked")
     private String uploadFiles(HttpServletRequest request, String applicationTempDir) throws FileUploadException, Exception  {
         log.debug("User uploading file(s).");
-        String userDirectory = "";
 
         // Create a factory for disk-based file items
         FileItemFactory factory = new DiskFileItemFactory();
@@ -93,27 +108,12 @@ public class UploadFilesServlet extends HttpServlet {
         // Constructs an instance of this class which
         // uses the supplied factory to create FileItem instances.
         ServletFileUpload upload = new ServletFileUpload(factory);
-
-        List<FileItem> items = null;
+        
+        // TODO: don't hardcode for second cookie
+        String userDirectory = request.getCookies()[1].getValue();
 
         Object interimItems = upload.parseRequest(request);
-
-        // Ges the user directory name if one exists
-        if (interimItems instanceof List<?>) {
-            items = (List<FileItem>) interimItems;
-            for (FileItem fileItem : items) {
-                if (fileItem.getFieldName().equals("userdirectory")) {
-                    userDirectory = fileItem.getString();
-                }
-            }
-        }
-
-        // Check for user subdirectory - Create the user directory.
-        if (userDirectory == null || "".equals(userDirectory) || "null".equals(userDirectory)) {
-            userDirectory = createUserDirectory();
-        } else if (!FileHelper.doesDirectoryOrFileExist(applicationTempDir + userDirectory)) {
-            userDirectory = createUserDirectory(userDirectory);
-        }
+        List<FileItem> items = (List<FileItem>) interimItems;
 
         // Save the file(s) to the user directory
         if (FileHelper.saveFileItems(applicationTempDir + userDirectory, items)) {
