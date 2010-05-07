@@ -37,6 +37,7 @@ public class ErrorBean implements XmlBean {
     public final static int ERR_BOX_NO_INTERSECT_GRID = 18;
     public final static int ERR_EMAIL_ERROR = 19;
     public final static int ERR_EMAIL_ERROR_INCORRECT_ADDRESS = 20;
+    public final static int ERR_USER_DIRECTORY_DOES_NOT_EXIST = 21;
     public final static Map<Integer, String> ERROR_MESSAGES;
     @XStreamAlias("code")
     @XStreamAsAttribute
