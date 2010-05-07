@@ -25,6 +25,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -141,7 +142,7 @@ public class FileProcessServlet extends HttpServlet {
 		
 		if ("submitforprocessing".equals(command)) {
 			
-			// Check to see if they're user directory is still around.
+			// Check to see if their user directory is still around.
 			if (!FileHelper.doesDirectoryOrFileExist(System.getProperty("applicationUserSpaceDir") + 
 					request.getParameter("userdirectory"))) {
 				
@@ -475,7 +476,7 @@ public class FileProcessServlet extends HttpServlet {
     		attributeName = "blah";
     		
     		String fullUserDir = System.getProperty("applicationUserSpaceDir") +
-    				userDirectory + FileHelper.getSystemPathSeparator();
+    				userDirectory + FileHelper.getSeparator();
     		
     		
     		try {
@@ -483,9 +484,20 @@ public class FileProcessServlet extends HttpServlet {
     			
     			// Write to a shapefile so GeoServer can load the geometry
     			String fileName = outputFile.substring(0, outputFile.lastIndexOf('.'));
-    			FileInputStream shpFile = new FileInputStream(fullUserDir + fileName + ".shp");
-    			FileInputStream shxFile = new FileInputStream(fullUserDir + fileName + ".shx");
-    			ShapefileWriter sw = new ShapefileWriter(shpFile.getChannel(), shxFile.getChannel());
+    			
+    			File shpFile = new File(fullUserDir + fileName + ".shp");
+    			File shxFile = new File(fullUserDir + fileName + ".shx");
+    			
+    			if (shpFile.exists()) shpFile.delete();
+    			if (shxFile.exists()) shxFile.delete();
+    			
+    			shpFile.createNewFile();
+    			shxFile.createNewFile();
+    			
+    			FileOutputStream shpFileInputStream = new FileOutputStream(shpFile);
+    			FileOutputStream shxFileInputStream = new FileOutputStream(shxFile);
+    			ShapefileWriter sw = new ShapefileWriter(shpFileInputStream.getChannel(), 
+    					shxFileInputStream.getChannel());
     			sw.write(g, ShapeType.POLYGON);
     			
     			featureCollection = createFeatureCollection(g);
