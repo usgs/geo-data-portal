@@ -61,6 +61,8 @@ import org.geotools.data.DefaultQuery;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
+import org.geotools.data.shapefile.shp.ShapeType;
+import org.geotools.data.shapefile.shp.ShapefileWriter;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureCollections;
 import org.geotools.feature.SchemaException;
@@ -114,6 +116,7 @@ import ucar.nc2.util.NamedObject;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
 /**
@@ -135,8 +138,19 @@ public class FileProcessServlet extends HttpServlet {
 			RouterServlet.sendXml(xmlReply, start, response);
 			return;
 		}
-
+		
 		if ("submitforprocessing".equals(command)) {
+			
+			// Check to see if they're user directory is still around.
+			if (!FileHelper.doesDirectoryOrFileExist(System.getProperty("applicationUserSpaceDir") + 
+					request.getParameter("userdirectory"))) {
+				
+				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_USER_DIRECTORY_DOES_NOT_EXIST)); 
+				RouterServlet.sendXml(xmlOutput, start, response);
+			}
+				
+			FileHelper.createUserDirectory(System.getProperty("applicationUserSpaceDir"));
+			
 			File fileForUpload = null;
 			try {
 				fileForUpload = populateFileUpload(request);
@@ -434,15 +448,16 @@ public class FileProcessServlet extends HttpServlet {
 	    FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = null;
 
 	    String baseFilePath = System.getProperty("applicationTempDir");
-            String userspacePath = System.getProperty("applicationUserSpaceDir");
+        String userspacePath = System.getProperty("applicationUserSpaceDir");
     	baseFilePath = baseFilePath + FileHelper.getSeparator();
     	File uploadDirectory = FileHelper.createFileRepositoryDirectory(baseFilePath);
     	if (!uploadDirectory.exists()) return null;
 
     	String attributeName = attribute;
 
-	    if (lat != null && lon != null)  {
-
+	    if (lat != null && lon != null) {
+	    	
+	    	// Get reachcode containing lat/lon point from the EPA WATERS web service
 	    	InputStream reachJson = sendPacket(new URL("http://iaspub.epa.gov/waters10/waters_services.PointIndexingService?" +
 	    			"pGeometry=POINT(" + lon + "%20" + lat + ")" + "&pGeometryMod=WKT,SRID=8307" +
 	                "&pPointIndexingMethod=RAINDROP" + "&pPointIndexingRaindropDist=25"),
@@ -450,24 +465,37 @@ public class FileProcessServlet extends HttpServlet {
 
 	    	String reachCode = parseJSON(reachJson, "reachcode");
 
-	    	System.out.println(reachCode);
-
+	    	// Get geometry of reachcode
     		InputStream json = sendPacket(new URL("http://iaspub.epa.gov/waters10/waters_services.navigationDelineationService?" +
     				"pNavigationType=UT&pStartReachCode=" + reachCode + "&optOutGeomFormat=GEOGML&pFeatureType=CATCHMENT_TOPO&pMaxDistance=999999999"),
     				"GET", null, null, new String[]{});// "pNavigationType", "UM", "pStartReachcode", reachCode, "optOutGeomFormat", "GEOGML");
 
     		String gml = parseJSON(json, "shape");
 
-    		System.out.println(gml);
-
     		attributeName = "blah";
-
+    		
+    		String fullUserDir = System.getProperty("applicationUserSpaceDir") +
+    				userDirectory + FileHelper.getSystemPathSeparator();
+    		
+    		
     		try {
-    			featureCollection = parseGML(gml);
+    			GeometryCollection g = parseGML(gml);
+    			
+    			// Write to a shapefile so GeoServer can load the geometry
+    			String fileName = outputFile.substring(0, outputFile.lastIndexOf('.'));
+    			FileInputStream shpFile = new FileInputStream(fullUserDir + fileName + ".shp");
+    			FileInputStream shxFile = new FileInputStream(fullUserDir + fileName + ".shx");
+    			ShapefileWriter sw = new ShapefileWriter(shpFile.getChannel(), shxFile.getChannel());
+    			sw.write(g, ShapeType.POLYGON);
+    			
+    			featureCollection = createFeatureCollection(g);
+    			
 			} catch (SAXException e) {
 				e.printStackTrace();
+				return null;
 			} catch (ParserConfigurationException e) {
 				e.printStackTrace();
+				return null;
 			}
 
     	} else {
@@ -763,9 +791,8 @@ public class FileProcessServlet extends HttpServlet {
 		return null;
 	}
 
-	private static FeatureCollection<SimpleFeatureType, SimpleFeature> parseGML(String gml)
-	throws SchemaException, IOException, SAXException, ParserConfigurationException,
-			NoSuchAuthorityCodeException, FactoryException {
+	private static GeometryCollection parseGML(String gml)
+	throws SchemaException, IOException, SAXException, ParserConfigurationException {
 
 		if (gml == null)
 			throw new IOException();
@@ -777,9 +804,15 @@ public class FileProcessServlet extends HttpServlet {
 
 		// TODO: parse fails with when gml is only a single polygon with "Authority "SDO" is unknown".
 		//parse
-		Geometry geom = (Geometry) parser.parse( new StringReader(gml) );
+		GeometryCollection geom = (GeometryCollection) parser.parse( new StringReader(gml) );
 
-
+		return geom;
+	}
+	
+	private static FeatureCollection<SimpleFeatureType, SimpleFeature> 
+	createFeatureCollection(GeometryCollection geom)
+	throws NoSuchAuthorityCodeException, FactoryException {
+		
 		FeatureCollection<SimpleFeatureType, SimpleFeature> fc = FeatureCollections.newCollection();
 
 		for (int i = 0; i < geom.getNumGeometries(); i++) {
