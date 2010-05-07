@@ -416,6 +416,29 @@ public class FileHelper {
         }
         return result;
     }
+    
+
+    /**
+     * Creates a unique user directory
+     *
+     * @return The user directory created
+     */
+    public static String createUserDirectory(String applicationUserSpaceDir) {
+        String userSubDir = Long.toString(new Date().getTime());
+        
+        //String applicationUserSpaceDir = System.getProperty("applicationUserSpaceDir");
+        String seperator = FileHelper.getSeparator();
+        String userTempDir = applicationUserSpaceDir + seperator + userSubDir;
+        boolean wasCreated = FileHelper.createDir(userTempDir);
+        if (wasCreated) {
+            log.debug("User subdirectory created at: " + userTempDir);
+            return userSubDir;
+        }
+
+        log.debug("User subdirectory could not be created at: " + userSubDir);
+        log.debug("User will be unable to upload files for this session.");
+        return "";
+    }
 
     @SuppressWarnings("unchecked")
     public static boolean updateTimestamp(final String path, final boolean recursive) throws IOException {

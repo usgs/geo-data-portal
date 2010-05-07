@@ -73,7 +73,7 @@ public class UploadFilesServlet extends HttpServlet {
             RequestDispatcher rd = request.getRequestDispatcher("/FileSelectionServlet?command=listfiles&userdirectory=" + userDirectory);
             rd.forward(request, response);
         } else if ("createuserdirectory".equals(command)) {
-        	String dir = createUserDirectory();
+        	String dir = FileHelper.createUserDirectory(System.getProperty("applicationUserSpaceDir"));
         	
         	XmlReplyBean xmlReply;
         	if ("".equals(dir)) {
@@ -120,36 +120,5 @@ public class UploadFilesServlet extends HttpServlet {
             return userDirectory;
         }
         return "";
-    }
-
-    /**
-     * Creates a directory for the user at a specified path
-     *
-     * @param path The path the user directory should have
-     * @return The user directory created
-     */
-    private String createUserDirectory(String path) {
-        String applicationUserSpaceDir = System.getProperty("applicationUserSpaceDir");
-        String seperator = FileHelper.getSeparator();
-        String userTempDir = applicationUserSpaceDir + seperator + path;
-        boolean wasCreated = FileHelper.createDir(userTempDir);
-        if (wasCreated) {
-            log.debug("User subdirectory created at: " + userTempDir);
-            return path;
-        }
-
-        log.debug("User subdirectory could not be created at: " + path);
-        log.debug("User will be unable to upload files for this session.");
-        return "";
-    }
-
-    /**
-     * Creates a unique user directory
-     *
-     * @return The user directory created
-     */
-    private String createUserDirectory() {
-        String userSubDir = Long.toString(new Date().getTime());
-        return createUserDirectory(userSubDir);
     }
 }
