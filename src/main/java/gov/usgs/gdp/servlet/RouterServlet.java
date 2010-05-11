@@ -8,6 +8,7 @@ import com.sun.xml.fastinfoset.*;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.Map;
 import javax.servlet.*;
@@ -115,10 +116,11 @@ public class RouterServlet extends HttpServlet {
 
         if ("createdatastore".equals(command)) {
             log.info("User is attempting to create data store");
-            String file = request.getParameter("file");
-            String type = request.getParameter("type");
-            RequestDispatcher rd = request.getRequestDispatcher("/GeoServerServlet?command=createdatastore" +
-            		"&type=" + type + "&file=" + file);
+            String shapefilePath = URLEncoder.encode(request.getParameter("shapefilepath"), "UTF-8");
+            String workspace = request.getParameter("workspace");
+            RequestDispatcher rd = request.getRequestDispatcher("/GeoServerServlet?" +
+            		"command=createdatastore" + "&shapefilepath=" + shapefilePath +
+            		"&workspace" + workspace);
             rd.forward(request, response);
             return;
         }
@@ -148,10 +150,12 @@ public class RouterServlet extends HttpServlet {
             String todate = request.getParameter("todate");
             String stat = request.getParameter("stat");
             String delim = request.getParameter("delim");
-            String shapefileName = request.getParameter("shapefileName");
+            String workspace = request.getParameter("workspace");
+            String shapefileName = request.getParameter("shapefilename");
             RequestDispatcher rd = request.getRequestDispatcher("/GeoServerServlet?command=createcoloredmap"
                     + "&datafile=" + dataFile + "&attribute=" + attribute + "&fromdate=" + fromdate
-                    + "&todate=" + todate + "&stat=" + stat + "&shapefile=" + shapefileName + "&delim=" + delim);
+                    + "&todate=" + todate + "&stat=" + stat + "&shapefilename=" + shapefileName
+                    + "&workspace=" + workspace + "&delim=" + delim);
             rd.forward(request, response);
             return;
         }

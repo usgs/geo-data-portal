@@ -1,8 +1,6 @@
 package gov.usgs.gdp.servlet;
 
 import gov.usgs.gdp.bean.AckBean;
-import gov.usgs.gdp.bean.AvailableFilesBean;
-import gov.usgs.gdp.bean.FilesBean;
 import gov.usgs.gdp.bean.ListBean;
 import gov.usgs.gdp.bean.MessageBean;
 import gov.usgs.gdp.bean.XmlReplyBean;
@@ -61,9 +59,12 @@ public class GeoServerServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String command = request.getParameter("command");
 		
-		String shapefileName = request.getParameter("shapefile");
+		String workspace = request.getParameter("workspace");
+		
 		String dataFileName = request.getParameter("datafile");
-
+		String appTempDir = System.getProperty("applicationTempDir");
+		String dataFileLoc = appTempDir + "upload-repository/" + dataFileName;
+		
 		String delimChar = request.getParameter("delim");
 		
 		String delim;
@@ -77,17 +78,13 @@ public class GeoServerServlet extends HttpServlet {
 			return;
 		}
 		
-		String appTempDir = System.getProperty("applicationTempDir");
-		String dataFileLoc = appTempDir + "upload-repository/" + dataFileName;
-		
-		String[] dir = appTempDir.split(FileHelper.getSeparator());
-		// set the workspace to the name of the temp directory
-		String workspace = dir[dir.length - 1];
-		
 		if ("createdatastore".equals(command)) {
-			String userDirectory = request.getParameter("userdirectory");
+			String shapefilePath = request.getParameter("shapefilepath");
+			String shapefileName = shapefilePath.substring(
+					shapefilePath.lastIndexOf(FileHelper.getSeparator()) + 1,
+					shapefilePath.lastIndexOf("."));
 			
-			if (!createDataStore(appTempDir, userDirectory, shapefileName, workspace)) {
+			if (!createDataStore(shapefilePath, shapefileName, workspace)) {
 				sendReply(response, AckBean.ACK_FAIL, "Could not create data store.");
 			} else {
 				// send back ack with workspace and layer names
@@ -103,6 +100,7 @@ public class GeoServerServlet extends HttpServlet {
 			
 		} else if ("createcoloredmap".equals(command)) {
 			// create style to color polygons given a date, stat, and data file
+			String shapefileName = request.getParameter("shapefilename");
 			String fromDate = request.getParameter("fromdate");
 			String toDate = request.getParameter("todate");
 			String attribute = request.getParameter("attribute");
@@ -116,13 +114,8 @@ public class GeoServerServlet extends HttpServlet {
 		}
 	}
 	
-	boolean createDataStore(String appTempDir, String userDirectory, String shapefileName, String workspace)
-				throws IOException {
-		
-		String directory = getFileDirectory(appTempDir, userDirectory, shapefileName);
-		if (directory == null) return false;
-		
-		String shapefileLoc = directory + shapefileName + ".shp";
+	boolean createDataStore(String shapefilePath, String shapefileName, String workspace)
+			throws IOException {
 		
 		// create the workspace if it doesn't already exist
 		URL workspacesURL = new URL(geoServerURL + "/rest/workspaces/");
@@ -132,7 +125,7 @@ public class GeoServerServlet extends HttpServlet {
 		}
 
 		URL dataStoresURL = new URL(workspacesURL + workspace + "/datastores/");
-		String dataStoreXML = createDataStoreXML(shapefileName, workspace, shapefileLoc);
+		String dataStoreXML = createDataStoreXML(shapefileName, workspace, shapefilePath);
 		if (!dataStoreExists(workspace, shapefileName)) {
 			// send POST to create the datastore if it doesn't exist
 			sendPacket(dataStoresURL, "POST", "text/xml", dataStoreXML);
@@ -184,28 +177,6 @@ public class GeoServerServlet extends HttpServlet {
 		}
 		
 		return true;
-	}
-	
-	String getFileDirectory(String appTempDir, String userDirectory, String shapefileName) {
-		AvailableFilesBean afb = AvailableFilesBean.getAvailableFilesBean(appTempDir, userDirectory);
-		if (afb == null) return null;
-		
-		// search for the requested shapefile
-		for (FilesBean fb : afb.getUserFileList()) {
-			if (fb.getName().equals(shapefileName)) {
-				return userDirectory;
-			}
-		}
-		
-		// if the file wasn't found in the user directory, search the sample files
-		for (FilesBean fb : afb.getExampleFileList()) {
-			if (fb.getName().equals(shapefileName)) {
-				return appTempDir + "Sample_Files/Shapefiles/";
-			}
-		}
-		
-		// Couldn't find the file.
-		return null;
 	}
 	
 	void clearCache() {

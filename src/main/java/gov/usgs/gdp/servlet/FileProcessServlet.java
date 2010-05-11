@@ -15,7 +15,7 @@ import gov.usgs.gdp.bean.OutputStatisticsBean;
 import gov.usgs.gdp.bean.ShapeFileSetBean;
 import gov.usgs.gdp.bean.THREDDSInfoBean;
 import gov.usgs.gdp.bean.UploadFileCheckBean;
-import gov.usgs.gdp.bean.UploadLocationBean;
+import gov.usgs.gdp.bean.FileLocationBean;
 import gov.usgs.gdp.bean.XmlReplyBean;
 import gov.usgs.gdp.helper.EmailHandler;
 import gov.usgs.gdp.helper.FileHelper;
@@ -152,9 +152,9 @@ public class FileProcessServlet extends HttpServlet {
 				
 			FileHelper.createUserDirectory(System.getProperty("applicationUserSpaceDir"));
 			
-			File fileForUpload = null;
+			FileLocationBean fileLocations = null;
 			try {
-				fileForUpload = populateFileUpload(request);
+				fileLocations = populateFileUpload(request);
 			} catch (InvalidRangeException e) {
 				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_BOX_NO_INTERSECT_GRID));
 				RouterServlet.sendXml(xmlOutput, start, response);
@@ -179,12 +179,9 @@ public class FileProcessServlet extends HttpServlet {
 			// back, we go to the directory at String baseFilePath = System.getProperty("applicationTempDir");
 			// + the file specified by the user ((fileForUpload.getName()) and we send that
 			// back to the user
-			if (!"".equals(fileForUpload.getPath())) {
-				UploadLocationBean uploadLocationBean = new UploadLocationBean(fileForUpload.getName());
-				XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, uploadLocationBean);
-				RouterServlet.sendXml(xmlReply, start, response);
-				return;
-	    	}
+			XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, fileLocations);
+			RouterServlet.sendXml(xmlReply, start, response);
+			return;
 		}
 
 		if ("checkuploadfile".equals(command)) {
@@ -365,7 +362,7 @@ public class FileProcessServlet extends HttpServlet {
     }
 
 
-	private File populateFileUpload(HttpServletRequest request)
+	private FileLocationBean populateFileUpload(HttpServletRequest request)
             throws IOException, InvalidRangeException, AddressException,
             MessagingException, FactoryException, TransformException,
             org.opengis.coverage.grid.InvalidRangeException, SchemaException {
@@ -373,17 +370,14 @@ public class FileProcessServlet extends HttpServlet {
         String finalUrlEmail = request.getParameter("finalurlemail");
 
         // Create a File Which represents the output we are looking for.
-        File uploadFile = populateSummary(request);
-
-        // Put that file into the directory represented by uploadDirectory
-        if (!uploadFile.exists()) return null;
+        FileLocationBean uploadFiles = populateSummary(request);
 
         // If user specified an E-Mail address, send an E-Mail to the user with the provided link
         if (email != null && !"".equals(email)) sendEmail(email, finalUrlEmail);
 
         // Set that file as the result to be returned to the calling function
         // switch uploadDirectory return statement with the file we are looking for
-        return uploadFile;
+        return uploadFiles;
     }
 
 	////  START - MOVEME
@@ -427,7 +421,7 @@ public class FileProcessServlet extends HttpServlet {
 	}
     ////  END - MOVEME
 
-	private File populateSummary(HttpServletRequest request) throws IOException, InvalidRangeException, FactoryException, TransformException, org.opengis.coverage.grid.InvalidRangeException, SchemaException {
+	private FileLocationBean populateSummary(HttpServletRequest request) throws IOException, InvalidRangeException, FactoryException, TransformException, org.opengis.coverage.grid.InvalidRangeException, SchemaException {
 
 	    String shapeSet = request.getParameter("shapeset");
 	    String attribute = request.getParameter("attribute");
@@ -453,8 +447,11 @@ public class FileProcessServlet extends HttpServlet {
     	baseFilePath = baseFilePath + FileHelper.getSeparator();
     	File uploadDirectory = FileHelper.createFileRepositoryDirectory(baseFilePath);
     	if (!uploadDirectory.exists()) return null;
+    	
 
     	String attributeName = attribute;
+    	
+    	String shapefilePath = null;
 
 	    if (lat != null && lon != null) {
 	    	
@@ -483,10 +480,10 @@ public class FileProcessServlet extends HttpServlet {
     			GeometryCollection g = parseGML(gml);
     			
     			// Write to a shapefile so GeoServer can load the geometry
-    			String fileName = outputFile.substring(0, outputFile.lastIndexOf('.'));
+    			shapefilePath = fullUserDir + "latlon.shp";
     			
-    			File shpFile = new File(fullUserDir + fileName + ".shp");
-    			File shxFile = new File(fullUserDir + fileName + ".shx");
+    			File shpFile = new File(shapefilePath);
+    			File shxFile = new File(fullUserDir + "latlon.shx");
     			
     			if (shpFile.exists()) shpFile.delete();
     			if (shxFile.exists()) shxFile.delete();
@@ -535,6 +532,7 @@ public class FileProcessServlet extends HttpServlet {
     		for (ShapeFileSetBean sfsb : shapeBeanList) {
     			if (shapeSet.equals(sfsb.getName())) {
     				shapeFile = sfsb.getShapeFile();
+    				shapefilePath = shapeFile.getAbsolutePath();
     			}
     		}
 
@@ -743,9 +741,13 @@ public class FileProcessServlet extends HttpServlet {
 
 		}
 		FileHelper.copyFileToFile(new File(System.getProperty("applicationWorkDir") + outputFile), uploadDirectory.getPath(), true);
-		return new File(uploadDirectory.getPath(), outputFile);
-
-
+		
+    	File outputDataFile = new File(uploadDirectory.getPath(), outputFile);
+    	if (!outputDataFile.exists()) return null;
+    	
+    	FileLocationBean flb = new FileLocationBean(outputDataFile.getName(), shapefilePath);
+    	
+		return flb;
 	}
 
 	static InputStream sendPacket(URL url, String requestMethod, String contentType, String content,
