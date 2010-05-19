@@ -2,8 +2,6 @@ package gov.usgs.gdp.helper;
 
 import static org.junit.Assert.*;
 
-import gov.usgs.gdp.helper.FileHelper;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -75,9 +73,12 @@ public class FileHelperTest {
 	}
 
         @Test
+        /**
+         * If this fails, try cleaning/building the project and re-run
+         */
         public void testWipeOldFilesWithNoOldFiles() {
            Collection<File> result = new ArrayList<File>();
-           result = FileHelper.wipeOldFiles(new File(this.tempDir), 12000000l);
+           result = FileHelper.wipeOldFiles(new File(this.tempDir), 3600000l);           
            assertTrue(result.isEmpty());
         }
 
