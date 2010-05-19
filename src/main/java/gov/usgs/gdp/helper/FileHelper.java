@@ -1,7 +1,6 @@
 package gov.usgs.gdp.helper;
 
 import gov.usgs.gdp.analysis.GeoToolsFileAnalysis;
-import gov.usgs.gdp.bean.FilesBean;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 
@@ -468,6 +467,7 @@ public class FileHelper {
      * @param recursive
      * @return
      */
+    @SuppressWarnings("unchecked")
     static Collection<File> getFilesOlderThan(File filePath, Long age, Boolean recursive) {
         if (filePath  == null || !filePath.exists()) return new ArrayList<File>();
         Iterator<File> files = null;
