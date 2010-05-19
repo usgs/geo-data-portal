@@ -75,7 +75,7 @@ public class FileHelper {
             if (file.delete()) {
                 logString += "done. ";
                 result.add(file);
-                if (file.getParentFile().isDirectory() && file.getParentFile().delete()) log.debug("Deleting Directory: \"" + file.getParent() + "\" ...  done");
+                if (file.getParentFile().isDirectory() && file.getParentFile().delete()) log.info("Deleting Directory: \"" + file.getParent() + "\" ...  done");
             } else {
                 logString += "FAILED!";
             }
