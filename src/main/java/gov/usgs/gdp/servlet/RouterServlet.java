@@ -106,10 +106,7 @@ public class RouterServlet extends HttpServlet {
 
         if ("checkserver".equals(command)) {
             log.info("User is attempting to check server status");
-            String hostname = request.getParameter("hostname");
-            String port = request.getParameter("port");
-            String uri = request.getParameter("uri");
-            RequestDispatcher rd = request.getRequestDispatcher("/THREDDSCheckServlet?command=checkserver&hostname=" + hostname + "&port=" + port + "&uri=" + uri);
+            RequestDispatcher rd = request.getRequestDispatcher("/THREDDSCheckServlet");
             rd.forward(request, response);
             return;
         }

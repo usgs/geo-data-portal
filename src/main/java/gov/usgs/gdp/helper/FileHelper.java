@@ -80,7 +80,7 @@ public class FileHelper {
                 logString += "FAILED!";
             }
 
-            log.debug(logString);
+            log.info(logString);
         }
 
         return result;
