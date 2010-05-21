@@ -12,6 +12,7 @@ public class ServerBean implements XmlBean{
 
 	private static org.apache.log4j.Logger log = Logger.getLogger(ServerBean.class);
 	
+        private String name;
 	private String protocol;
 	private String hostname;
 	private int port;
@@ -85,6 +86,20 @@ public class ServerBean implements XmlBean{
      */
     public void setFullUrl(String fullUrl) {
         this.fullUrl = fullUrl;
+    }
+
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 	
 }

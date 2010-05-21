@@ -104,7 +104,7 @@ public class THREDDSCheckServlet extends HttpServlet {
 
 
         }
-        if ("listthredds".equals(command)) {
+        if ("listservers".equals(command)) {
             log.debug("User is attempting to retrieve a list of THREDDS servers");
 
             Map<String, ServerBean> threddsServerBeanMap = (Map<String, ServerBean>) this.getServletContext().getAttribute("threddsServerBeanMap");
@@ -191,6 +191,7 @@ public class THREDDSCheckServlet extends HttpServlet {
             Iterator<String> threddsUrlMapKeySetIterator = threddsUrlMapKeySet.iterator();
             while (threddsUrlMapKeySetIterator.hasNext()) {
                 String key = threddsUrlMapKeySetIterator.next();
+                String name = key;
                 String serverUrl = threddsUrlMap.get(key);
                 String protocol;
                 ServerBean threddsServerBean = new ServerBean();
@@ -224,6 +225,7 @@ public class THREDDSCheckServlet extends HttpServlet {
                 String uri = "";
 
                 uri = serverUrl.substring(startAt);
+                threddsServerBean.setName(name);
                 threddsServerBean.setUri(uri);
                 threddsServerBean.setProtocol(protocol);
                 threddsServerBean.setHostname(hostname);

@@ -86,7 +86,7 @@ public class THREDDSInfoBean implements Serializable {
 		int urlCounter = 0;
 		String urlProperty = "";
 		do {
-			urlProperty = PropertyFactory.getProperty("thredds.url." + urlCounter);
+			urlProperty = PropertyFactory.getProperty("server.url." + urlCounter);
 			urlCounter++;
 			if (!"".equals(urlProperty)) {
 				String key = urlProperty.substring(0,urlProperty.indexOf(";"));
