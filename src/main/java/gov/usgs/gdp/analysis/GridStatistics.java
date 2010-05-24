@@ -202,7 +202,7 @@ public class GridStatistics {
         
         gs.perTimestepPerAttributeValueStatistics = new LinkedHashMap<Date, Map<Object, WeightedStatisticsAccumulator1D>>();
         gs.perTimestepAllAttributeValueStatistics = new LinkedHashMap<Date,WeightedStatisticsAccumulator1D>();
-        
+
         int tBase = timeRange.first();
         for (int tIndex = 0; tIndex < tCount; ++tIndex) {
 
@@ -250,12 +250,29 @@ public class GridStatistics {
 
     // SIMPLE inline testing only, need unit tests...
     public static void main(String[] args) {
-//        String ncLocation = "http://runoff.cr.usgs.gov:8086/thredds/dodsC/hydro/national/2.5arcmin";
-//        String ncLocation = "http://internal.cida.usgs.gov/thredds/dodsC/misc/us_gfdl.A1.monthly.Tavg.1960-2099.nc";
-//        String ncLocation = "http://localhost:18080/thredds/dodsC/ncml/gridded_obs.daily.Wind.ncml";
-//        String ncLocation = "/Users/tkunicki/Downloads/thredds-data/CONUS_2001-2010.ncml";
-        String ncLocation = "/Users/tkunicki/Downloads/thredds-data/gridded_obs.daily.Wind.ncml";
-        String sfLocation = "/Users/tkunicki/Projects/GDP/GDP/src/main/resources/Sample_Files/Shapefiles/serap_hru_239.shp";
+        String ncLocation =
+//                "http://runoff.cr.usgs.gov:8086/thredds/dodsC/hydro/national/2.5arcmin";
+//                "http://internal.cida.usgs.gov/thredds/dodsC/misc/us_gfdl.A1.monthly.Tavg.1960-2099.nc";
+//                "http://localhost:18080/thredds/dodsC/ncml/gridded_obs.daily.Wind.ncml";
+//                "/Users/tkunicki/Downloads/thredds-data/CONUS_2001-2010.ncml";
+//                "/Users/tkunicki/Downloads/thredds-data/gridded_obs.daily.Wind.ncml";
+//                "dods://igsarm-cida-javadev1.er.usgs.gov/thredds/dodsC/qpe/ncrfc.ncml";
+                "dods://internal.cida.usgs.gov/thredds/dodsC/qpe/GRID.0530/200006_ncrfc_240ss.grd.P06M_NONE.nc";
+//                "dods://michigan.glin.net:8080/thredds/dodsC/glos/all/GLCFS/Forecast/m201010900.out1.nc";
+
+        String sfLocation =
+//                "/Users/tkunicki/Projects/GDP/GDP/src/main/resources/Sample_Files/Shapefiles/serap_hru_239.shp";
+//                "/Users/tkunicki/Downloads/lkm_hru/lkm_hru.shp";
+                "/Users/tkunicki/Downloads/HUC12LM/lake_mich_12_alb_NAD83.shp";
+
+        String attributeName =
+//                "GRID_CODE";
+//                "GRIDCODE";
+                "OBJECTID";
+
+        String variableName =
+                "P06M_NONE";
+//                "eta";
 
         FeatureDataset dataset = null;
         FileDataStore dataStore = null;
@@ -264,11 +281,10 @@ public class GridStatistics {
             dataset = FeatureDatasetFactoryManager.open(null, ncLocation, null, new Formatter());
             dataStore = FileDataStoreFinder.getDataStore(new File(sfLocation));
             FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = dataStore.getFeatureSource();
-            String attributeName = "GRID_CODE";
             FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = featureSource.getFeatures();
 
             GridStatistics gs = GridStatistics.generate(
-                    featureCollection, attributeName, (GridDataset)dataset, "Wind", new Range(0, 10));
+                    featureCollection, attributeName, (GridDataset)dataset, variableName, new Range(0, 10));
 
             // example csv dump...
             BufferedWriter writer = null;
