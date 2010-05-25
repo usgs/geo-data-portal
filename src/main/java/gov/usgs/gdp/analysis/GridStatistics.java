@@ -47,6 +47,8 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import ucar.ma2.Array;
 import ucar.ma2.Index;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis1D;
 
 public class GridStatistics {
 
@@ -134,7 +136,7 @@ public class GridStatistics {
         }
 
         GridCoordSystem gcs = gdt.getCoordinateSystem();
-        if (gcs.getCoordinateAxes().size() != 3) {
+        if (gcs.getCoordinateAxes().size() != 3 || !gcs.hasTimeAxis1D()) {
             // FIXME: In the future, we ought to be able to handle other grid types, especially t-z-y-x and y-x.
             // Until then, we should actively reject them because types like t-z-y-x will actually run without error
             // in the code below, but will produce incomplete results (e.g. only for z=0).
@@ -177,13 +179,19 @@ public class GridStatistics {
         fi = null;
         gcg = null;
 
-        // Theset statements will throw a NullPointerException if gdt's 3 coordinate axes are not t-y-x.
-        int tCount = (int) gcs.getTimeAxis().getSize();
-        int yCount = (int) gcs.getYHorizAxis().getSize();
-        int xCount = (int) gcs.getXHorizAxis().getSize();
+        int tCount = (int) gcs.getTimeAxis1D().getSize();
+
+        // will work for CoordinateAxis1D or CoordinateAxis2D
+        int yCount = gcs.getYHorizAxis().getShape(0);
+
+        // for CoordinateAxis1D, rank is 1 and x dimension of grid is at shape index 0
+        // for CoordinateAxis2D, rank is 2 and x dimension of grid is at shape index 1
+        CoordinateAxis xAxis = gcs.getXHorizAxis();
+        int xCount = xAxis.getShape(xAxis.getRank() - 1);
 
         int aCount = (int)(attributeValueToCoverageMap.size() / 0.75) + 1;
-        
+
+
         GridStatistics gs = new GridStatistics();
         gs.variableName = variableName;
         gs.variableUnits = gdt.getVariable().getUnitsString();
@@ -257,22 +265,25 @@ public class GridStatistics {
 //                "/Users/tkunicki/Downloads/thredds-data/CONUS_2001-2010.ncml";
 //                "/Users/tkunicki/Downloads/thredds-data/gridded_obs.daily.Wind.ncml";
 //                "dods://igsarm-cida-javadev1.er.usgs.gov/thredds/dodsC/qpe/ncrfc.ncml";
-                "dods://internal.cida.usgs.gov/thredds/dodsC/qpe/GRID.0530/200006_ncrfc_240ss.grd.P06M_NONE.nc";
+//                "dods://internal.cida.usgs.gov/thredds/dodsC/qpe/GRID.0530/200006_ncrfc_240ss.grd.P06M_NONE.nc";
 //                "dods://michigan.glin.net:8080/thredds/dodsC/glos/all/GLCFS/Forecast/m201010900.out1.nc";
+                "dods://michigan.glin.net:8080/thredds/dodsC/glos/glcfs/michigan/ncas_his2d";
 
         String sfLocation =
 //                "/Users/tkunicki/Projects/GDP/GDP/src/main/resources/Sample_Files/Shapefiles/serap_hru_239.shp";
 //                "/Users/tkunicki/Downloads/lkm_hru/lkm_hru.shp";
-                "/Users/tkunicki/Downloads/HUC12LM/lake_mich_12_alb_NAD83.shp";
+//                "/Users/tkunicki/Downloads/HUC12LM/lake_mich_12_alb_NAD83.shp";
+                "/Users/tkunicki/Downloads/dbshapefiles/lk_mich.shp";
 
         String attributeName =
 //                "GRID_CODE";
 //                "GRIDCODE";
-                "OBJECTID";
+//                "OBJECTID";
+                "Id";
 
         String variableName =
-                "P06M_NONE";
-//                "eta";
+//                "P06M_NONE";
+                "eta";
 
         FeatureDataset dataset = null;
         FileDataStore dataStore = null;

@@ -34,23 +34,8 @@ public class GridCellGeometry {
         CoordinateAxis xAxis = gridCoordSystem.getXHorizAxis();
         CoordinateAxis yAxis = gridCoordSystem.getYHorizAxis();
 
-        if (xAxis instanceof CoordinateAxis1D && yAxis instanceof CoordinateAxis1D) {
-            xCellCount = (int) xAxis.getSize();
-            yCellCount = (int) yAxis.getSize();
-        } else if (xAxis instanceof CoordinateAxis2D && yAxis instanceof CoordinateAxis2D) {
-            CoordinateAxis2D xAxis2D = (CoordinateAxis2D) xAxis;
-            CoordinateAxis2D yAxis2D = (CoordinateAxis2D) yAxis;
-            int[] xShape = xAxis2D.getShape();
-            int[] yShape = xAxis2D.getShape();
-            if (xShape[0] == yShape[0] && xShape[1] == yShape[1]) {
-                xCellCount = xShape[1];
-                yCellCount = xShape[0];
-            } else {
-                throw new IllegalStateException("Inconsistent coordinate axis definititions.");
-            }
-        } else {
-            throw new IllegalStateException("Incompatible coordinate axes.");
-        }
+        xCellCount = xAxis.getShape(xAxis.getRank() - 1);
+        yCellCount = yAxis.getShape(0);
         cellCount = xCellCount * yCellCount;
 
         generateCellGeometry();
@@ -130,6 +115,7 @@ public class GridCellGeometry {
                     lowerCoordinates[xIndexUpper],
                     upperCoordinates[xIndexUpper],
                     upperCoordinates[xIndexLower],
+                    // same as first entry, required for LinearRing
                     lowerCoordinates[xIndexLower]
                 };
 
@@ -176,7 +162,7 @@ public class GridCellGeometry {
         }
     }
 
-    private class ProjectedCoordinateBuilder extends CoordinateBuilder {
+    protected class ProjectedCoordinateBuilder extends CoordinateBuilder {
 
         private Projection projection;
         private ProjectionPointImpl projectionPoint;
@@ -201,7 +187,7 @@ public class GridCellGeometry {
         public double getCellEdge(int xCellIndex, int yCellIndex);
     }
 
-    private class GridCellEdgeProviderAxis1DX implements GridCellEdgeProvider {
+    protected class GridCellEdgeProviderAxis1DX implements GridCellEdgeProvider {
 
         private double[] cellEdges;
 
@@ -220,7 +206,7 @@ public class GridCellGeometry {
         }
     }
 
-    private class GridCellEdgeProviderAxis1DY implements GridCellEdgeProvider {
+    protected class GridCellEdgeProviderAxis1DY implements GridCellEdgeProvider {
 
         private double[] cellEdges;
 
