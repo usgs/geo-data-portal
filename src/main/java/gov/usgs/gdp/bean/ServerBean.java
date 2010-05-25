@@ -8,10 +8,11 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("server")
-public class THREDDSServerBean implements XmlBean{
+public class ServerBean implements XmlBean{
 
-	private static org.apache.log4j.Logger log = Logger.getLogger(THREDDSServerBean.class);
+	private static org.apache.log4j.Logger log = Logger.getLogger(ServerBean.class);
 	
+        private String name;
 	private String protocol;
 	private String hostname;
 	private int port;
@@ -24,7 +25,7 @@ public class THREDDSServerBean implements XmlBean{
 		return log;
 	}
 	public static void setLog(org.apache.log4j.Logger log) {
-		THREDDSServerBean.log = log;
+		ServerBean.log = log;
 	}
 	public String getHostname() {
 		return hostname;
@@ -85,6 +86,20 @@ public class THREDDSServerBean implements XmlBean{
      */
     public void setFullUrl(String fullUrl) {
         this.fullUrl = fullUrl;
+    }
+
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 	
 }

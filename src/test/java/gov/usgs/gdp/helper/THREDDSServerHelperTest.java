@@ -70,7 +70,7 @@ public class THREDDSServerHelperTest {
     	THREDDSServerHelper.getCatalogFromServer(host, port, uri);
     }
     
-    @Test 
+//    @Test
     public void testGetAvailableTimeBeanList() {
         // This test is taking at least 5 minutes on my box (I didn't have the patience to let it complete), so
         // I commented it out. The problem lies somewhere in gov.usgs.gdp.analysis.NetCDFUtility.getDateRange.

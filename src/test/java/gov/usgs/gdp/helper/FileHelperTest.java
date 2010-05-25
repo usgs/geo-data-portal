@@ -2,21 +2,16 @@ package gov.usgs.gdp.helper;
 
 import static org.junit.Assert.*;
 
-import gov.usgs.gdp.helper.FileHelper;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.log4j.Logger;
 import org.geotools.data.FileDataStore;
 import org.junit.After;
@@ -78,9 +73,12 @@ public class FileHelperTest {
 	}
 
         @Test
+        /**
+         * If this fails, try cleaning/building the project and re-run
+         */
         public void testWipeOldFilesWithNoOldFiles() {
            Collection<File> result = new ArrayList<File>();
-           result = FileHelper.wipeOldFiles(new File(this.tempDir), 12000000l);
+           result = FileHelper.wipeOldFiles(new File(this.tempDir), 3600000l);           
            assertTrue(result.isEmpty());
         }
 
