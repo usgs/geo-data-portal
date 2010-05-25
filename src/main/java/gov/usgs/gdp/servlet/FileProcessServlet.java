@@ -145,9 +145,8 @@ public class FileProcessServlet extends HttpServlet {
 			// Check to see if their user directory is still around.
 			if (!FileHelper.doesDirectoryOrFileExist(System.getProperty("applicationUserSpaceDir") + 
 					request.getParameter("userdirectory"))) {
-				
-				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_USER_DIRECTORY_DOES_NOT_EXIST)); 
-				RouterServlet.sendXml(xmlOutput, start, response);
+			    FileHelper.createDir(System.getProperty("applicationUserSpaceDir") + 
+					request.getParameter("userdirectory"));
 			}
 				
 			FileHelper.createUserDirectory(System.getProperty("applicationUserSpaceDir"));
