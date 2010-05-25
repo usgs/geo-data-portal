@@ -118,6 +118,7 @@ public class FileHelper {
      */
     public static boolean createDir(String directory) {
         boolean result = false;
+        if (FileHelper.doesDirectoryOrFileExist(directory)) return true;
         result = new File(directory).mkdirs();
         return result;
     }
@@ -351,6 +352,10 @@ public class FileHelper {
     public static boolean saveFileItems(String directory, List<FileItem> items) throws Exception {
         // Process the uploaded items
         Iterator<FileItem> iter = items.iterator();
+        
+        // Check for upload directory existence. Create if it does not exist. 
+        FileHelper.createDir(directory);
+        
         while (iter.hasNext()) {
             FileItem item = iter.next();
 
