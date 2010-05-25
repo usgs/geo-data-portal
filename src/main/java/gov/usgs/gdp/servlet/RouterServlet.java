@@ -39,7 +39,7 @@ public class RouterServlet extends HttpServlet {
     @SuppressWarnings("unchecked")
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Long start = new Date().getTime();
+        Long start = Long.valueOf(new Date().getTime());
         Map<String, String> requestParameters = request.getParameterMap();
 
         // If the user is attempting to upload files, send them directly to the correct servlet
@@ -97,19 +97,16 @@ public class RouterServlet extends HttpServlet {
             return;
         }
 
-        if ("listthredds".equals(command)) {
+        if ("listservers".equals(command)) {
             log.info("User is attempting to list THREDDS servers");
-            RequestDispatcher rd = request.getRequestDispatcher("/THREDDSCheckServlet?command=listthredds");
+            RequestDispatcher rd = request.getRequestDispatcher("/THREDDSCheckServlet?command=listservers");
             rd.forward(request, response);
             return;
         }
 
         if ("checkserver".equals(command)) {
             log.info("User is attempting to check server status");
-            String hostname = request.getParameter("hostname");
-            String port = request.getParameter("port");
-            String uri = request.getParameter("uri");
-            RequestDispatcher rd = request.getRequestDispatcher("/THREDDSCheckServlet?command=checkserver&hostname=" + hostname + "&port=" + port + "&uri=" + uri);
+            RequestDispatcher rd = request.getRequestDispatcher("/THREDDSCheckServlet");
             rd.forward(request, response);
             return;
         }
@@ -180,8 +177,7 @@ public class RouterServlet extends HttpServlet {
 
         if ("getcatalog".equals(command)) {
             log.info("User is attempting to grab catalog from remote THREDDS server");
-            String url = request.getParameter("url");
-            RequestDispatcher rd = request.getRequestDispatcher("/THREDDSServlet?command=getcatalog&url=" + url);
+            RequestDispatcher rd = request.getRequestDispatcher("/THREDDSServlet");
             rd.forward(request, response);
             return;
         }

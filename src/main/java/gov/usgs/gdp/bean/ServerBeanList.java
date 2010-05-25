@@ -6,12 +6,12 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @XStreamAlias("thredds-servers")
-public class THREDDSServerBeanList implements XmlBean {
+public class ServerBeanList implements XmlBean {
 
 	@XStreamImplicit(itemFieldName="server")
-	private List<THREDDSServerBean> beans;
+	private List<ServerBean> beans;
 
-	public THREDDSServerBeanList(List<THREDDSServerBean> threddsServerBeanList) {
+	public ServerBeanList(List<ServerBean> threddsServerBeanList) {
 		this.beans = threddsServerBeanList;
 	}
 
@@ -26,11 +26,11 @@ public class THREDDSServerBeanList implements XmlBean {
 		return result;
 	}
 
-	public void setBeans(List<THREDDSServerBean> beans) {
+	public void setBeans(List<ServerBean> beans) {
 		this.beans = beans;
 	}
 
-	public List<THREDDSServerBean> getBeans() {
+	public List<ServerBean> getBeans() {
 		return beans;
 	} 
 }

@@ -1,7 +1,6 @@
 package gov.usgs.gdp.helper;
 
 import gov.usgs.gdp.analysis.GeoToolsFileAnalysis;
-import gov.usgs.gdp.bean.FilesBean;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 
@@ -76,12 +75,12 @@ public class FileHelper {
             if (file.delete()) {
                 logString += "done. ";
                 result.add(file);
-                if (file.getParentFile().isDirectory() && file.getParentFile().delete()) log.debug("Deleting Directory: \"" + file.getParent() + "\" ...  done");
+                if (file.getParentFile().isDirectory() && file.getParentFile().delete()) log.info("Deleting Directory: \"" + file.getParent() + "\" ...  done");
             } else {
                 logString += "FAILED!";
             }
 
-            log.debug(logString);
+            log.info(logString);
         }
 
         return result;
@@ -468,6 +467,7 @@ public class FileHelper {
      * @param recursive
      * @return
      */
+    @SuppressWarnings("unchecked")
     static Collection<File> getFilesOlderThan(File filePath, Long age, Boolean recursive) {
         if (filePath  == null || !filePath.exists()) return new ArrayList<File>();
         Iterator<File> files = null;

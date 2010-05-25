@@ -44,28 +44,29 @@ public class THREDDSServerHelper {
 
         return result;
     }
-    
 
-    public static TimeBean getTimeBean(String datasetUrl, String gridSelection) throws IOException, ParseException{
-    	Formatter errorLog = new Formatter();
-    	FeatureDataset featureDataset = null;
-    	featureDataset = 
-    		FeatureDatasetFactoryManager.open(null, datasetUrl, null, errorLog);
+    public static TimeBean getTimeBean(String datasetUrl, String gridSelection) throws IOException, ParseException {
+        Formatter errorLog = new Formatter();
+        FeatureDataset featureDataset = null;
+        featureDataset =
+                FeatureDatasetFactoryManager.open(null, datasetUrl, null, errorLog);
 
-    	if (featureDataset != null) {
-    		try {
-    			
-    			TimeBean timeBean = TimeBean.getTimeBean(datasetUrl, gridSelection);
-    			if (timeBean != null /*&& !timeBean.getTime().isEmpty()*/) return timeBean;
-    			return null;
-    		} finally {
-    			featureDataset.close();
-    		}
-    	}
-    	return null;
+        if (featureDataset != null) {
+            try {
+
+                TimeBean timeBean = TimeBean.getTimeBean(datasetUrl, gridSelection);
+                if (timeBean != null /*&& !timeBean.getTime().isEmpty()*/) {
+                    return timeBean;
+                }
+                return null;
+            } finally {
+                featureDataset.close();
+            }
+        }
+        return null;
     }
 
-	/**
+    /**
      * Returns a list of dataset handles from the specified server.
      * 
      * @param hostname
@@ -85,19 +86,19 @@ public class THREDDSServerHelper {
     }
 
     public static InvCatalog getCatalogFromServer(String hostname, int port, String uri) throws IOException {
-    	String ThreddsURL = "http://" + hostname + ":" + port + uri;
-    	URI catalogURI = URI.create(ThreddsURL);
-    	InvCatalogFactory factory = new InvCatalogFactory("default", true);
-    	InvCatalog catalog = factory.readXML(catalogURI);
+        String ThreddsURL = "http://" + hostname + ":" + port + uri;
+        URI catalogURI = URI.create(ThreddsURL);
+        InvCatalogFactory factory = new InvCatalogFactory("default", true);
+        InvCatalog catalog = factory.readXML(catalogURI);
 
-    	StringBuilder buff = new StringBuilder();
-    	if (!catalog.check(buff)) {
+        StringBuilder buff = new StringBuilder();
+        if (!catalog.check(buff)) {
             throw new IOException(buff.toString());
         }
 
-    	return catalog;
+        return catalog;
     }
-    
+
     /**
      * Returns a List<XmlBean> which is actually a List<DataSetBean>
      * 
@@ -107,40 +108,40 @@ public class THREDDSServerHelper {
      * @return
      * @throws IllegalArgumentException
      */
-	/*public static List<XmlBean> getDatasetListFromServer(String hostname,
-			int port, String uri) throws IllegalArgumentException {
-		
-		if (hostname == null || "".equals(hostname)) throw new IllegalArgumentException("Hostname invalid or null");
-		if (uri == null || "".equals(uri)) throw new IllegalArgumentException("URI invalid or null");
-		if (port == 0) port = 80;
-		
-		List<XmlBean> result = new ArrayList<XmlBean>();
-		List<InvAccess> invAccessList = THREDDSServerHelper.getDatasetHandlesFromServer(hostname, port, uri);
-		
-		if (invAccessList == null) return result;
-		for (InvAccess invAccess : invAccessList) {
-			
-			InvDataset ds = invAccess.getDataset();
-			List<InvPropertyBean> = ds.getP 
-			DataSetBean dsb = new DataSetBean(ds);			
-			result.add(dsb);
-		}
-		
-		
-		return result;
-	}*/
-	
-	public static List<XmlBean> getGridBeanListFromServer(String datasetUrl) throws IllegalArgumentException, IOException{
-		
-		if (datasetUrl == null || "".equals(datasetUrl)) throw new IllegalArgumentException("DataSet URL invalid or null");
-		
-		List<XmlBean> result = new ArrayList<XmlBean>();
-		List<VariableSimpleIF> variables = NetCDFUtility.getDataVariableNames(datasetUrl);
-		String type = NetCDFUtility.getDatasetType(datasetUrl);
-        DataTypeCollectionBean dtcb = new DataTypeCollectionBean(type,  variables.toArray(new VariableSimpleIF[0]));
+    /*public static List<XmlBean> getDatasetListFromServer(String hostname,
+    int port, String uri) throws IllegalArgumentException {
+
+    if (hostname == null || "".equals(hostname)) throw new IllegalArgumentException("Hostname invalid or null");
+    if (uri == null || "".equals(uri)) throw new IllegalArgumentException("URI invalid or null");
+    if (port == 0) port = 80;
+
+    List<XmlBean> result = new ArrayList<XmlBean>();
+    List<InvAccess> invAccessList = THREDDSServerHelper.getDatasetHandlesFromServer(hostname, port, uri);
+
+    if (invAccessList == null) return result;
+    for (InvAccess invAccess : invAccessList) {
+
+    InvDataset ds = invAccess.getDataset();
+    List<InvPropertyBean> = ds.getP
+    DataSetBean dsb = new DataSetBean(ds);
+    result.add(dsb);
+    }
+
+
+    return result;
+    }*/
+    public static List<XmlBean> getGridBeanListFromServer(String datasetUrl) throws IllegalArgumentException, IOException {
+
+        if (datasetUrl == null || "".equals(datasetUrl)) {
+            throw new IllegalArgumentException("DataSet URL invalid or null");
+        }
+
+        List<XmlBean> result = new ArrayList<XmlBean>();
+        List<VariableSimpleIF> variables = NetCDFUtility.getDataVariableNames(datasetUrl);
+        String type = NetCDFUtility.getDatasetType(datasetUrl);
+        DataTypeCollectionBean dtcb = new DataTypeCollectionBean(type, variables.toArray(new VariableSimpleIF[0]));
         result.add(dtcb);
-		return result;
-		
-	}
-	
+        return result;
+
+    }
 }

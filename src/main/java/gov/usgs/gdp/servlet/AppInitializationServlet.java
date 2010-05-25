@@ -234,12 +234,12 @@ public class AppInitializationServlet extends HttpServlet {
 
         @Override
         public void run() {
-            log.debug("Running File Wipe Task... ");
+            log.info("Running File Wipe Task... ");
             Collection<File> filesDeleted = new ArrayList<File>();
             if (getWorkspaceDir() != null && getWorkspaceDir().exists()) {
                 filesDeleted = FileHelper.wipeOldFiles(getWorkspaceDir(), this.hoursToWipe);
                 if (!filesDeleted.isEmpty()) {
-                    log.debug("Finished deleting userspace files. " + filesDeleted.size() + " deleted.");
+                    log.info("Finished deleting userspace files. " + filesDeleted.size() + " deleted.");
                     filesDeleted = new ArrayList<File>();
                 }
             }
@@ -247,7 +247,7 @@ public class AppInitializationServlet extends HttpServlet {
             if (getRepositoryDir() != null && getRepositoryDir().exists()) {
                 filesDeleted = FileHelper.wipeOldFiles(getRepositoryDir(), this.hoursToWipe);
                 if (!filesDeleted.isEmpty()) {
-                    log.debug("Finished deleting repository directory files. " + filesDeleted.size() + " deleted.");
+                    log.info("Finished deleting repository directory files. " + filesDeleted.size() + " deleted.");
                 }
             }
         }
