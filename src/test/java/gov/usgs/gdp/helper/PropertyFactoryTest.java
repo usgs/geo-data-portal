@@ -36,7 +36,7 @@ public class PropertyFactoryTest {
 	@Test
 	public final void testGetValueList() {
 		List<String> result = null;
-		result = PropertyFactory.getValueList("thredds.url");
+		result = PropertyFactory.getValueList("server.url");
 		assertNotNull(result);
 		assertTrue(result.size() > 1);
 	}
