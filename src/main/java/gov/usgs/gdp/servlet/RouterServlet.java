@@ -124,7 +124,7 @@ public class RouterServlet extends HttpServlet {
         
         if ("createuserdirectory".equals(command)) {
             log.info("Attempting to create a user directory");
-            RequestDispatcher rd = request.getRequestDispatcher("/UploadFilesServlet?command=createuserdirectory");
+            RequestDispatcher rd = request.getRequestDispatcher("/UploadFilesServlet");
             rd.forward(request, response);
             return;
         }
