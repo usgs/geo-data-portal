@@ -181,6 +181,22 @@ public class RouterServlet extends HttpServlet {
             rd.forward(request, response);
             return;
         }
+        
+        if ("calculatewcscoverageinfo".equals(command)) {
+        	log.info("User is attempting to check WCS coverage info");
+        	String shapefile = request.getParameter("shapefile");
+            String crs = request.getParameter("crs");
+            String lowerCorner = request.getParameter("lowercorner");
+            String upperCorner = request.getParameter("uppercorner");
+            String gridOffsets = request.getParameter("gridoffsets");
+            String dataType = request.getParameter("datatype");
+        	RequestDispatcher rd = request.getRequestDispatcher("/WCSServlet?" +
+        			"command=calculatewcscoverageinfo" + "&shapefile=" + shapefile +
+        			"&crs=" + crs + "&lowercorner=" + lowerCorner + "&uppercorner=" + 
+        			upperCorner + "&gridoffsets=" + gridOffsets + "&datatype=" + dataType);
+            rd.forward(request, response);
+            return;
+        }
 
         if ("gettimerange".equals(command)) {
             log.info("User is attempting to get a time range");
