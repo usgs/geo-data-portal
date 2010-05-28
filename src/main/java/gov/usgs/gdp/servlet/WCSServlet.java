@@ -1,7 +1,7 @@
 package gov.usgs.gdp.servlet;
 
 import gov.usgs.gdp.bean.AckBean;
-import gov.usgs.gdp.bean.MessageBean;
+import gov.usgs.gdp.bean.ErrorBean;
 import gov.usgs.gdp.bean.XmlReplyBean;
 import gov.usgs.gdp.helper.CookieHelper;
 
@@ -100,20 +100,17 @@ public class WCSServlet extends HttpServlet {
 				transformedShapefileBounds = 
 					featureSource.getBounds().transform(gridCRS, false);
 			} catch (TransformException e1) {
-				sendReply(response, AckBean.ACK_FAIL, 
-						"Unable to compare grid and geometry bounds");
+				sendFailReply(response, "Unable to compare grid and geometry bounds");
 				return;
 			} catch (FactoryException e1) {
-				sendReply(response, AckBean.ACK_FAIL, 
-						"Unable to compare grid and geometry bounds");
+				sendFailReply(response, "Unable to compare grid and geometry bounds");
 				return;
 			}
     		
     		// Explicitly cast to BoundingBox because there are 
 			// ambiguous 'contains' methods
     		if (!gridBounds.contains((BoundingBox) transformedShapefileBounds)) {
-    			sendReply(response, AckBean.ACK_FAIL, 
-    					"Grid does not fully cover geometry");
+    			sendFailReply(response, "Grid does not fully cover geometry");
     			return;
     		}
     		
@@ -145,17 +142,21 @@ public class WCSServlet extends HttpServlet {
 				float percent = (float) size / MAX_COVERAGE_SIZE * 100 - 100;
 				String percentString = String.format("%1$.1f", percent);
 				
-				sendReply(response, AckBean.ACK_FAIL, 
-						"Coverage exceeds size limit by " + percentString + "%");
+				sendFailReply(response, "Coverage exceeds size limit by " + 
+						percentString + "%");
 			}
-				
+			
+			sendOkReply(response);
 		}
 	}
 	
-	void sendReply(HttpServletResponse response, int status, String... messages) 
-			throws IOException {
-		
-		XmlReplyBean xmlReply = new XmlReplyBean(status, new MessageBean(messages));
+	void sendFailReply(HttpServletResponse response, String message) throws IOException {
+		XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(message));
+		RouterServlet.sendXml(xmlReply, new Date().getTime(), response);
+	}
+	
+	void sendOkReply(HttpServletResponse response) throws IOException {
+		XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK);
 		RouterServlet.sendXml(xmlReply, new Date().getTime(), response);
 	}
 }
