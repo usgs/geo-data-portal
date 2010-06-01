@@ -37,7 +37,7 @@ public class WCSServlet extends HttpServlet {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static final int MAX_COVERAGE_SIZE = 100000000; // 100 MiB
+	private static final int MAX_COVERAGE_SIZE = 128 << 20; // 128 MB
 	
 	private static org.apache.log4j.Logger log = Logger.getLogger(WCSServlet.class);
        
@@ -128,7 +128,8 @@ public class WCSServlet extends HttpServlet {
 			// we have to check, and default to the max size (8) if we come
 			// across an unrecognized type
 			if      ("Float32".equals(dataType)) dataTypeSize = 4;
-			//else if () {}
+			else if ("Byte".equals(dataType))    dataTypeSize = 1;
+			//else if ("".equals(dataType))        dataTypeSize = ;
 			else {
 				log.info("Unrecognized wcs data type: " + dataType);
 				dataTypeSize = 8;
