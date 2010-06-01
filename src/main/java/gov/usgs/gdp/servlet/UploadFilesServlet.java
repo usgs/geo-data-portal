@@ -83,8 +83,10 @@ public class UploadFilesServlet extends HttpServlet {
         		Cookie c = new Cookie("gdp-user-directory", dir);
         		c.setMaxAge(-1); // set cookie to be deleted when web browser exits
         		c.setPath("/");  // set cookie's visibility to the whole app
-        		response.addCookie(c);
-        		xmlReply = new XmlReplyBean(AckBean.ACK_OK);
+        		response.addCookie(c); // add cookie to the response for the client browser to consume
+                        UserDirectoryBean udb = new UserDirectoryBean();
+                        udb.setDirectory(dir);
+        		xmlReply = new XmlReplyBean(AckBean.ACK_OK, udb);
         	}
         	
 			RouterServlet.sendXml(xmlReply, start, response);

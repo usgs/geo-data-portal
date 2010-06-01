@@ -113,6 +113,13 @@
         </servlet-class>
     </servlet>
     <servlet>
+        <display-name>WCSServlet</display-name>
+        <servlet-name>WCSServlet</servlet-name>
+        <servlet-class>
+            gov.usgs.gdp.servlet.WCSServlet
+        </servlet-class>
+    </servlet>
+    <servlet>
     	<description>
     	</description>
     	<display-name>THREDDSServlet</display-name>
@@ -165,6 +172,10 @@
     <servlet-mapping>
     	<servlet-name>GeoServerServlet</servlet-name>
     	<url-pattern>/GeoServerServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+    	<servlet-name>WCSServlet</servlet-name>
+    	<url-pattern>/WCSServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
     	<servlet-name>THREDDSServlet</servlet-name>

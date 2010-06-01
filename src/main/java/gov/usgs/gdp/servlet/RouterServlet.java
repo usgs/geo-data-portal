@@ -4,18 +4,22 @@ import gov.usgs.gdp.bean.AckBean;
 import gov.usgs.gdp.bean.ErrorBean;
 import gov.usgs.gdp.bean.XmlReplyBean;
 
-import com.sun.xml.fastinfoset.*;
-
 import java.io.IOException;
 import java.io.Writer;
-import java.net.URLEncoder;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.*;
-import javax.servlet.http.*;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
+
+import com.sun.xml.fastinfoset.DecoderStateTables;
 
 /**
  * Servlet implementation class RouterServlet
@@ -24,6 +28,30 @@ public class RouterServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     private static org.apache.log4j.Logger log = Logger.getLogger(RouterServlet.class);
+    
+    private static final Map<String, String> servletCommandMappings = new HashMap<String, String>();
+    static {
+    	servletCommandMappings.put("getoutputstats", "/FileProcessServlet");
+    	servletCommandMappings.put("listfiles", "/FileSelectionServlet");
+    	servletCommandMappings.put("listattributes", "/FileAttributeServlet");
+    	servletCommandMappings.put("listfeatures", "/FileFeatureServlet");
+    	servletCommandMappings.put("listservers", "/THREDDSCheckServlet");
+    	servletCommandMappings.put("checkserver", "/THREDDSCheckServlet");
+    	servletCommandMappings.put("createdatastore", "/GeoServerServlet");
+    	servletCommandMappings.put("createuserdirectory", "/UploadFilesServlet");
+    	servletCommandMappings.put("getdatafileselectables", "/GeoServerServlet");
+    	servletCommandMappings.put("createcoloredmap", "/GeoServerServlet");
+    	servletCommandMappings.put("getdatasetlist", "/THREDDSServlet");
+    	servletCommandMappings.put("getgridlist", "/THREDDSServlet");
+    	servletCommandMappings.put("getcatalog", "/THREDDSServlet");
+    	servletCommandMappings.put("calculatewcscoverageinfo", "/WCSServlet");
+    	servletCommandMappings.put("gettimerange", "/THREDDSServlet");
+    	servletCommandMappings.put("submitforprocessing", "/FileProcessServlet");
+    	servletCommandMappings.put("outputtypelist", "/FileAttributeServlet");
+    	servletCommandMappings.put("getfile", "/FileProcessServlet");
+    	servletCommandMappings.put("checkuploadfile", "/FileProcessServlet");
+    	servletCommandMappings.put("commandlist", "/SummaryServlet");
+    };
 
     /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -60,173 +88,19 @@ public class RouterServlet extends HttpServlet {
         }
 
         String command = request.getParameter("command");
-
-        if ("getoutputstats".equals(command)) {
-            log.info("User is attempting to get ouput statistic types.");
-            RequestDispatcher rd = request.getRequestDispatcher("/FileProcessServlet?command=getoutputstats");
-            rd.forward(request, response);
-            return;
-        }
-
-        if ("listfiles".equals(command)) {
-            log.info("User is attempting to list files");
-            String userDirectory = request.getParameter("userdirectory");
-            String userDirectoryCommand = "";
-            if (userDirectory != null && !"".equals(userDirectory)) {
-                userDirectoryCommand = "&userdirectory=" + userDirectory;
-            }
-            RequestDispatcher rd = request.getRequestDispatcher("/FileSelectionServlet?command=listfiles" + userDirectoryCommand);
-            rd.forward(request, response);
-            return;
-        }
-
-        if ("listattributes".equals(command)) {
-            log.info("User is attempting to list attributes");
-            String shapefile = request.getParameter("shapefile");
-            RequestDispatcher rd = request.getRequestDispatcher("/FileAttributeServlet?command=listattributes&shapefile=" + shapefile);
-            rd.forward(request, response);
-            return;
-        }
-
-        if ("listfeatures".equals(command)) {
-            log.info("User is attempting to list features");
-            String shapefile = request.getParameter("shapefile");
-            String attribute = request.getParameter("attribute");
-            RequestDispatcher rd = request.getRequestDispatcher("/FileFeatureServlet?command=listfeatures&shapefile=" + shapefile + "&attribute=" + attribute);
-            rd.forward(request, response);
-            return;
-        }
-
-        if ("listservers".equals(command)) {
-            log.info("User is attempting to list THREDDS servers");
-            RequestDispatcher rd = request.getRequestDispatcher("/THREDDSCheckServlet?command=listservers");
-            rd.forward(request, response);
-            return;
-        }
-
-        if ("checkserver".equals(command)) {
-            log.info("User is attempting to check server status");
-            RequestDispatcher rd = request.getRequestDispatcher("/THREDDSCheckServlet");
-            rd.forward(request, response);
-            return;
-        }
-
-        if ("createdatastore".equals(command)) {
-            log.info("User is attempting to create data store");
-            String shapefilePath = URLEncoder.encode(request.getParameter("shapefilepath"), "UTF-8");
-            String workspace = request.getParameter("workspace");
-            RequestDispatcher rd = request.getRequestDispatcher("/GeoServerServlet?" +
-            		"command=createdatastore" + "&shapefilepath=" + shapefilePath +
-            		"&workspace" + workspace);
-            rd.forward(request, response);
-            return;
-        }
         
-        if ("createuserdirectory".equals(command)) {
-            log.info("Attempting to create a user directory");
-            RequestDispatcher rd = request.getRequestDispatcher("/UploadFilesServlet?command=createuserdirectory");
-            rd.forward(request, response);
-            return;
+        String forwardToServlet = servletCommandMappings.get(command);
+        if (!(forwardToServlet == null)) {
+        	log.info(command);
+        	RequestDispatcher rd = request.getRequestDispatcher(forwardToServlet);
+        	rd.forward(request, response);
+        } else {
+        	log.info("No such command");
+        	ErrorBean errorBean = new ErrorBean(ErrorBean.ERR_NO_COMMAND);
+            XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, errorBean);
+            RouterServlet.sendXml(xmlReply, start, response);
+        	return;
         }
-
-        if ("getdatafileselectables".equals(command)) {
-            log.info("User is attempting to get data file information");
-            String dataFile = request.getParameter("datafile");
-            String delim = request.getParameter("delim");
-            RequestDispatcher rd = request.getRequestDispatcher("/GeoServerServlet?command=getdatafileselectables"
-                    + "&datafile=" + dataFile + "&delim=" + delim);
-            rd.forward(request, response);
-            return;
-        }
-
-        if ("createcoloredmap".equals(command)) {
-            log.info("User is attempting to create colored map");
-            String dataFile = request.getParameter("datafile");
-            String attribute = request.getParameter("attribute");
-            String fromdate = request.getParameter("fromdate");
-            String todate = request.getParameter("todate");
-            String stat = request.getParameter("stat");
-            String delim = request.getParameter("delim");
-            String workspace = request.getParameter("workspace");
-            String shapefileName = request.getParameter("shapefilename");
-            RequestDispatcher rd = request.getRequestDispatcher("/GeoServerServlet?command=createcoloredmap"
-                    + "&datafile=" + dataFile + "&attribute=" + attribute + "&fromdate=" + fromdate
-                    + "&todate=" + todate + "&stat=" + stat + "&shapefilename=" + shapefileName
-                    + "&workspace=" + workspace + "&delim=" + delim);
-            rd.forward(request, response);
-            return;
-        }
-
-        if ("getdatasetlist".equals(command)) {
-            log.info("User is attempting to list datasets");
-            String hostname = request.getParameter("dataseturl");
-            String port = request.getParameter("port");
-            String uri = request.getParameter("uri");
-            RequestDispatcher rd = request.getRequestDispatcher("/THREDDSServlet?command=getdatasetlist&hostname=" + hostname + "&port=" + port + "&uri=" + uri);
-            rd.forward(request, response);
-            return;
-        }
-
-        if ("getgridlist".equals(command)) {
-            log.info("User is attempting to get a list of datatypes");
-            String dataseturl = request.getParameter("dataseturl");
-            RequestDispatcher rd = request.getRequestDispatcher("/THREDDSServlet?command=getgridlist&dataseturl=" + dataseturl);
-            rd.forward(request, response);
-            return;
-        }
-
-        if ("getcatalog".equals(command)) {
-            log.info("User is attempting to grab catalog from remote THREDDS server");
-            RequestDispatcher rd = request.getRequestDispatcher("/THREDDSServlet");
-            rd.forward(request, response);
-            return;
-        }
-
-        if ("gettimerange".equals(command)) {
-            log.info("User is attempting to get a time range");
-            String datasetUrl = request.getParameter("dataseturl");
-            String gridSelection = request.getParameter("grid");
-            RequestDispatcher rd = request.getRequestDispatcher("/THREDDSServlet?command=gettimerange&dataseturl=" + datasetUrl + "&grid=" + gridSelection);
-            rd.forward(request, response);
-            return;
-        }
-
-        if ("submitforprocessing".equals(command)) {
-            log.info("User has submitted a job for processing.");
-            RequestDispatcher rd = request.getRequestDispatcher("/FileProcessServlet");
-            rd.forward(request, response);
-            return;
-        }
-
-        if ("outputtypelist".equals(command)) {
-            log.info("User is attempting to list the output types this application offers.");
-            RequestDispatcher rd = request.getRequestDispatcher("/FileAttributeServlet?command=outputtypelist");
-            rd.forward(request, response);
-            return;
-        }
-
-        if ("getfile".equals(command)) {
-            log.info("User is attempting to grab a file from the application.");
-            String file = request.getParameter("file");
-            RequestDispatcher rd = request.getRequestDispatcher("/FileProcessServlet?command=getfile&file=" + file);
-            rd.forward(request, response);
-            return;
-        }
-
-        if ("checkuploadfile".equals(command)) {
-            log.info("User is checking to see if a file exists on the server.");
-            String file = request.getParameter("file");
-            RequestDispatcher rd = request.getRequestDispatcher("/FileProcessServlet?command=checkuploadfile&file=" + file);
-            rd.forward(request, response);
-        }
-        
-        if ("commandlist".equals(command)) {
-            log.info("User is attempting to get a list of commands available.");
-            RequestDispatcher rd = request.getRequestDispatcher("/SummaryServlet");
-            rd.forward(request, response);
-        }
-        
-
     }
 
     public static void sendXml(String xml, Long startTime, HttpServletResponse response) throws IOException {
