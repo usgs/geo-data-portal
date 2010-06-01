@@ -128,7 +128,12 @@ public class THREDDSServlet extends HttpServlet {
 
         if ("gettimerange".equals(command)) {
             String datasetUrl = request.getParameter("dataseturl");
-            String gridSelection = request.getParameter("grid");
+            
+            // FIXME: properly handle multiple datatypes
+            String[] gridSelections = request.getParameterValues("grid[]");
+            String gridSelection = gridSelections[0];
+            /////////////////////////////////////////////
+            
             TimeBean timeBean = null;
             try {
                 timeBean = THREDDSServerHelper.getTimeBean(datasetUrl, gridSelection);
