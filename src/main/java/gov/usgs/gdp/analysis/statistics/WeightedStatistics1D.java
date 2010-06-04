@@ -63,13 +63,14 @@ public class WeightedStatistics1D {
         if (wsa != null && wsa.count > 0) {
             if (count > 0) {
                 throw new UnsupportedOperationException();
-            }
+            } else {
 			count = wsa.count;
 			weightSum = wsa.weightSum;
 			mean = wsa.mean;
 			S = wsa.S;
 			minimum = wsa.minimum;
 			maximum = wsa.maximum;
+            }
         }
     }
 
