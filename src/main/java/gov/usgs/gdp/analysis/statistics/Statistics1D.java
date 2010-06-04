@@ -50,30 +50,30 @@ public class Statistics1D {
         double n = (double) count;
         double n_inverse = 1d / n;
 
-        double delta = value - this.mean;
+        double delta = value - mean;
 
         double A = delta * n_inverse;
-        this.mean += A;
-        this.m4 += A * (A * A * delta * r * ( n * ( n - 3d ) + 3d ) + 6d * A * this.m2 - 4d * this.m3);
+        mean += A;
+        m4 += A * (A * A * delta * r * ( n * ( n - 3d ) + 3d ) + 6d * A * m2 - 4d * m3);
 
-        double B = value - this.mean;
-        this.m3 += A * ( B * delta * ( n - 2d ) - 3d * this.m2);
-        this.m2 += delta * B;
+        double B = value - mean;
+        m3 += A * ( B * delta * ( n - 2d ) - 3d * m2);
+        m2 += delta * B;
 
-        if(value < this.minimum) {
-        	this.minimum = value;
+        if(value < minimum) {
+        	minimum = value;
         }
 
-        if(value > this.maximum) {
-        	this.maximum = value;
+        if(value > maximum) {
+        	maximum = value;
         }
     }
 
     public void accumulate(Statistics1D sa) {
         if(sa != null && sa.count > 0) {
-            if (this.count > 0) {
+            if (count > 0) {
 
-                double n1 = (double) this.count;
+                double n1 = (double) count;
                 double n2 = (double) sa.count;
 
                 double n1_squared = n1 * n1;
@@ -87,63 +87,63 @@ public class Statistics1D {
                 double A = delta / N;
                 double A_squared =  A * A;
 
-                this.m4 += sa.m4
+                m4 += sa.m4
                         + n_product * ( n1_squared - n_product + n2_squared ) * delta * A * A_squared
-                        + 6d * ( n1_squared * sa.m2 + n2_squared * this.m2) * A_squared
-                        + 4d * ( n1 * sa.m3 - n2 * this.m3) * A;
+                        + 6d * ( n1_squared * sa.m2 + n2_squared * m2) * A_squared
+                        + 4d * ( n1 * sa.m3 - n2 * m3) * A;
 
-                this.m3 += sa.m3
+                m3 += sa.m3
                         + n_product * ( n1 - n2 ) * delta * A_squared
-                        + 3d * ( n1 * sa.m2 - n2 * this.m2 ) * A;
+                        + 3d * ( n1 * sa.m2 - n2 * m2 ) * A;
 
-                this.m2 += sa.m2
+                m2 += sa.m2
                         + n_product * delta * A;
 
-                this.mean += n2 * A;
+                mean += n2 * A;
 
-                if(sa.minimum < this.minimum) {
-                	this.minimum = sa.minimum;
+                if(sa.minimum < minimum) {
+                	minimum = sa.minimum;
                 }
 
-                if(sa.maximum > this.maximum) {
-                	this.maximum = sa.maximum;
+                if(sa.maximum > maximum) {
+                	maximum = sa.maximum;
                 }
             } else {
-            	this.count = sa.count;
-            	this.mean = sa.mean;
-            	this.m2 = sa.m2;
-            	this.m3 = sa.m3;
-            	this. m4 = sa.m4;
-            	this.minimum = sa.minimum;
-            	this.maximum = sa.maximum;
+            	count = sa.count;
+            	mean = sa.mean;
+            	m2 = sa.m2;
+            	m3 = sa.m3;
+            	m4 = sa.m4;
+            	minimum = sa.minimum;
+            	maximum = sa.maximum;
             }
 
         }
     }
 
     public long getCount() {
-        return this.count;
+        return count;
     }
 
     public double getMean() {
-        return this.mean;
+        return mean;
     }
 
     public double getM2() {
-        return this.m2;
+        return m2;
     }
 
     public double getM3() {
-        return this.m3;
+        return m3;
     }
 
     public double getM4() {
-        return this.m4;
+        return m4;
     }
 
 
     public double getSampleVariance() {
-        return this.count > 1 ?  m2 / (double) (this.count - 1) : 0d;
+        return count > 1 ?  m2 / (double) (count - 1) : 0d;
     }
 
     public double getSampleStandardDeviation() {
@@ -151,7 +151,7 @@ public class Statistics1D {
     }
 
     public double getPopulationVariance() {
-        return this.count > 1 ? this.m2 / (double) this.count : 0d;
+        return count > 1 ? m2 / (double) count : 0d;
     }
 
     public double getPopulationStandardDeviation() {
@@ -159,11 +159,11 @@ public class Statistics1D {
     }
 
     public double getMinimum() {
-        return this.minimum;
+        return minimum;
     }
 
     public double getMaximum() {
-        return this.maximum;
+        return maximum;
     }
 
     @Override
