@@ -298,7 +298,7 @@ public class AppInitializationServlet extends HttpServlet {
          * @return the repositoryDir
          */
         public File getRepositoryDir() {
-            return getRepositoryDir();
+            return this.repositoryDir;
         }
 
         /**
