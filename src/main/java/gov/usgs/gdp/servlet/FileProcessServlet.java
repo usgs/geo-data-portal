@@ -1,11 +1,9 @@
 package gov.usgs.gdp.servlet;
 
-import gov.usgs.gdp.analysis.GridStatistics;
-import gov.usgs.gdp.analysis.GridStatisticsCSVWriter;
-import gov.usgs.gdp.analysis.GridStatisticsWriter;
+import gov.usgs.gdp.analysis.grid.FeatureCoverageWeightedGridStatistics;
 import gov.usgs.gdp.analysis.NetCDFUtility;
 import gov.usgs.gdp.analysis.StationDataCSVWriter;
-import gov.usgs.gdp.analysis.GridStatisticsCSVWriter.Statistic;
+import gov.usgs.gdp.analysis.grid.FeatureCoverageWeightedGridStatisticsWriter.Statistic;
 import gov.usgs.gdp.bean.AckBean;
 import gov.usgs.gdp.bean.AvailableFilesBean;
 import gov.usgs.gdp.bean.EmailMessageBean;
@@ -648,33 +646,27 @@ public class FileProcessServlet extends HttpServlet {
                     }
                 }
 
-                if (statisticList.size() == 0) {
+                if (statisticList.isEmpty()) {
                     throw new IllegalArgumentException("no output statistics selected");
                 }
 
-				GridStatistics gs = null;
-				// *** long running task ***
-				gs = GridStatistics.generate(
-						featureCollection,
-						attributeName,
-						gridDataset,
-						gridName,
-						timeRange);
-				GridStatisticsWriter ouputFileWriter = null;
+                BufferedWriter writer = null;
+				try {
 
-				if ("ascii".equals(output.toLowerCase()) || "xml".equals(output.toLowerCase())) {
-					ouputFileWriter = new GridStatisticsCSVWriter(
-                            gs,
+					writer = new BufferedWriter(new FileWriter(new File(System.getProperty("applicationWorkDir"), outputFile)));
+
+                    // *** long running task ***
+                    FeatureCoverageWeightedGridStatistics.generate(
+                            featureCollection,
+                            attributeName,
+                            gridDataset,
+                            gridName,
+                            timeRange,
                             statisticList,
+                            writer,
                             groupBy == GroupBy.GridOption.statistics,
                             delimiterOption.delimiter);
-				}
 
-				BufferedWriter writer = null;
-				try {
-					// Delete the file there previously
-					writer = new BufferedWriter(new FileWriter(new File(System.getProperty("applicationWorkDir"), outputFile)));
-					ouputFileWriter.write(writer);
 				} finally {
 					if (writer != null) {
 						try { writer.close(); } catch (IOException e) { /* get bent */ }
