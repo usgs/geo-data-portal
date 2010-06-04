@@ -397,7 +397,7 @@ public class FileHelper {
                 )) continue;
             int count = 0;
             byte data[] = new byte[BUFFER];
-            FileOutputStream fos = new FileOutputStream(directory + java.io.File.separator + entry.getName());
+            FileOutputStream fos = new FileOutputStream(directory + java.io.File.separator + entry.getName().substring(entry.getName().lastIndexOf('/')));
             dest = new BufferedOutputStream(fos, BUFFER);
             while ((count = zis.read(data, 0, BUFFER)) != -1) {
                 dest.write(data, 0, count);

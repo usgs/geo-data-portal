@@ -51,7 +51,7 @@ public class RouterServlet extends HttpServlet {
     	servletCommandMappings.put("getfile", "/FileProcessServlet");
     	servletCommandMappings.put("checkuploadfile", "/FileProcessServlet");
     	servletCommandMappings.put("commandlist", "/SummaryServlet");
-    };
+    }
 
     /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -90,7 +90,7 @@ public class RouterServlet extends HttpServlet {
         String command = request.getParameter("command");
         
         String forwardToServlet = servletCommandMappings.get(command);
-        if (!(forwardToServlet == null)) {
+        if (forwardToServlet != null) {
         	log.info(command);
         	RequestDispatcher rd = request.getRequestDispatcher(forwardToServlet);
         	rd.forward(request, response);

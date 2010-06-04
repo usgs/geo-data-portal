@@ -47,7 +47,8 @@ public class UploadFilesServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Long start = new Date().getTime();
+        Long start = Long.valueOf(new Date().getTime());
+
         XmlReplyBean xmlOutput = null;
         String command = request.getParameter("command");
 
@@ -73,23 +74,22 @@ public class UploadFilesServlet extends HttpServlet {
             RequestDispatcher rd = request.getRequestDispatcher("/FileSelectionServlet?command=listfiles&userdirectory=" + userDirectory);
             rd.forward(request, response);
         } else if ("createuserdirectory".equals(command)) {
-        	String dir = FileHelper.createUserDirectory(System.getProperty("applicationUserSpaceDir"));
-        	
-        	XmlReplyBean xmlReply;
-        	if ("".equals(dir)) {
-        		xmlReply = new XmlReplyBean(AckBean.ACK_FAIL);
-        	}
-        	else {
-        		Cookie c = new Cookie("gdp-user-directory", dir);
-        		c.setMaxAge(-1); // set cookie to be deleted when web browser exits
-        		c.setPath("/");  // set cookie's visibility to the whole app
-        		response.addCookie(c); // add cookie to the response for the client browser to consume
-                        UserDirectoryBean udb = new UserDirectoryBean();
-                        udb.setDirectory(dir);
-        		xmlReply = new XmlReplyBean(AckBean.ACK_OK, udb);
-        	}
-        	
-			RouterServlet.sendXml(xmlReply, start, response);
+            String dir = FileHelper.createUserDirectory(System.getProperty("applicationUserSpaceDir"));
+
+            XmlReplyBean xmlReply;
+            if ("".equals(dir)) {
+                xmlReply = new XmlReplyBean(AckBean.ACK_FAIL);
+            } else {
+                Cookie c = new Cookie("gdp-user-directory", dir);
+                c.setMaxAge(-1); // set cookie to be deleted when web browser exits
+                c.setPath("/");  // set cookie's visibility to the whole app
+                response.addCookie(c); // add cookie to the response for the client browser to consume
+                UserDirectoryBean udb = new UserDirectoryBean();
+                udb.setDirectory(dir);
+                xmlReply = new XmlReplyBean(AckBean.ACK_OK, udb);
+            }
+
+            RouterServlet.sendXml(xmlReply, start, response);
         }
     }
 
@@ -100,8 +100,7 @@ public class UploadFilesServlet extends HttpServlet {
      * @return
      * @throws Exception
      */
-    @SuppressWarnings("unchecked")
-    private String uploadFiles(HttpServletRequest request, String applicationTempDir) throws FileUploadException, Exception  {
+    private String uploadFiles(HttpServletRequest request, String applicationTempDir) throws FileUploadException, Exception {
         log.debug("User uploading file(s).");
 
         // Create a factory for disk-based file items
@@ -110,11 +109,17 @@ public class UploadFilesServlet extends HttpServlet {
         // Constructs an instance of this class which
         // uses the supplied factory to create FileItem instances.
         ServletFileUpload upload = new ServletFileUpload(factory);
-        
-        // TODO: don't hardcode for second cookie
-        String userDirectory = request.getCookies()[1].getValue();
+
+        Cookie[] cookies = request.getCookies();
+        String userDirectory = "";
+        for (int cookieIndex = 0;cookieIndex < cookies.length;cookieIndex++) {
+        	if ("gdp-user-directory".equals(cookies[cookieIndex].getName().toLowerCase())) {
+        		userDirectory = cookies[cookieIndex].getValue();
+        	}
+        }
 
         Object interimItems = upload.parseRequest(request);
+        @SuppressWarnings("unchecked")
         List<FileItem> items = (List<FileItem>) interimItems;
 
         // Save the file(s) to the user directory
