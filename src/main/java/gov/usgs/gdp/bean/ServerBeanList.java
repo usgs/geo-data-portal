@@ -5,7 +5,7 @@ import java.util.List;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
-@XStreamAlias("thredds-servers")
+@XStreamAlias("servers")
 public class ServerBeanList implements XmlBean {
 
 	@XStreamImplicit(itemFieldName="server")
