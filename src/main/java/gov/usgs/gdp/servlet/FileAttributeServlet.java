@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
  * Servlet implementation class FileAttributeServlet
  */
 public class FileAttributeServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 645580927568288244L;
 	private static org.apache.log4j.Logger log = Logger.getLogger(FileAttributeServlet.class);
        
     /**
@@ -34,12 +34,12 @@ public class FileAttributeServlet extends HttpServlet {
      */
     public FileAttributeServlet() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request,response);
 	}
@@ -49,7 +49,7 @@ public class FileAttributeServlet extends HttpServlet {
 	 */
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Long start = new Date().getTime();
+		Long start = Long.valueOf(new Date().getTime());
 		String command = request.getParameter("command");
 		XmlReplyBean xmlReply = null;
 		
@@ -71,13 +71,8 @@ public class FileAttributeServlet extends HttpServlet {
 		if ("listattributes".equals(command)) {
 			log.debug("User has chosen to list shapefile attributes");
 			String shapefile = request.getParameter("shapefile");
-			Cookie userDirectoryCookie = CookieHelper.getCookie(request, "userDirectory");			
-			String userDirectory = "";
-			if (userDirectoryCookie != null) {
-				if (FileHelper.doesDirectoryOrFileExist(userDirectoryCookie.getValue())) {
-					userDirectory = userDirectoryCookie.getValue();
-				}
-			}
+			String userDirectory = request.getParameter("userdirectory");
+			if (userDirectory == null || !FileHelper.doesDirectoryOrFileExist(userDirectory)) userDirectory = ""; 
 			
 			List<FilesBean> filesBeanList = FilesBean.getFilesBeanSetList(System.getProperty("applicationTempDir"), userDirectory);
 			if (filesBeanList == null) {

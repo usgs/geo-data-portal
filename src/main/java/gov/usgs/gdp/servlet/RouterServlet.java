@@ -104,7 +104,6 @@ public class RouterServlet extends HttpServlet {
     }
 
     public static void sendXml(String xml, Long startTime, HttpServletResponse response) throws IOException {
-        log.debug(xml);
         Writer writer = response.getWriter();
         try {
             response.setContentType("text/xml");
@@ -123,7 +122,8 @@ public class RouterServlet extends HttpServlet {
                 writer.close();
             }
         }
-        log.info("Process completed in " + (new Date().getTime() - startTime) + " milliseconds.");
+        log.debug(xml);
+        log.info("Process completed in " + (new Date().getTime() - startTime.longValue()) + " milliseconds.");
     }
 
     public static void sendXml(XmlReplyBean xmlReply, Long startTime, HttpServletResponse response) throws IOException {

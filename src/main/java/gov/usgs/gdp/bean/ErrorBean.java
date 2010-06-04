@@ -98,10 +98,8 @@ public class ErrorBean implements XmlBean {
         XStream xstream = new XStream();
         xstream.processAnnotations(ErrorBean.class);
         StringBuffer sb = new StringBuffer();
-        String result = "";
         sb.append(xstream.toXML(this));
-        result = sb.toString();
-        return result;
+        return sb.toString();
     }
 
     public void setErrorMessage(String errorMessageParam) {

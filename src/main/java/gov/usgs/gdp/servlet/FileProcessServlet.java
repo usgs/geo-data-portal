@@ -4,6 +4,7 @@ import gov.usgs.gdp.analysis.grid.FeatureCoverageWeightedGridStatistics;
 import gov.usgs.gdp.analysis.NetCDFUtility;
 import gov.usgs.gdp.analysis.StationDataCSVWriter;
 import gov.usgs.gdp.analysis.grid.FeatureCoverageWeightedGridStatisticsWriter.Statistic;
+
 import gov.usgs.gdp.bean.AckBean;
 import gov.usgs.gdp.bean.AvailableFilesBean;
 import gov.usgs.gdp.bean.EmailMessageBean;
@@ -15,8 +16,10 @@ import gov.usgs.gdp.bean.THREDDSInfoBean;
 import gov.usgs.gdp.bean.UploadFileCheckBean;
 import gov.usgs.gdp.bean.FileLocationBean;
 import gov.usgs.gdp.bean.XmlReplyBean;
+
 import gov.usgs.gdp.helper.EmailHandler;
 import gov.usgs.gdp.helper.FileHelper;
+
 import gov.usgs.gdp.servlet.FileProcessServlet.GroupBy.StationOption;
 
 import java.io.BufferedInputStream;
@@ -128,7 +131,8 @@ public class FileProcessServlet extends HttpServlet {
 	 */
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Long start = new Date().getTime();
+		Long start = Long.valueOf(new Date().getTime());
+		
 		String command = request.getParameter("command");
 
 		if ("getoutputstats".equals(command)) {

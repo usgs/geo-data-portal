@@ -128,8 +128,7 @@ public class FileHelper {
      * @return
      */
     public static List<String> getOutputFileTypesAvailable() {
-        List<String> fileTypes = PropertyFactory.getValueList("out.file.type");
-        return fileTypes;
+        return PropertyFactory.getValueList("out.file.type");
     }
 
     /**
@@ -202,11 +201,15 @@ public class FileHelper {
         return file.delete();
     }
 
+    /**
+     * Tests whether or not a directory or file exists given the passed String
+     * representing a file/directory location
+     * 
+     * @param filePath
+     * @return
+     */
     public static boolean doesDirectoryOrFileExist(String filePath) {
-        boolean result = false;
-        File testFile = new File(filePath);
-        result = testFile.exists();
-        return result;
+        return new File(filePath).exists();
     }
 
     @SuppressWarnings("unchecked")
@@ -347,9 +350,9 @@ public class FileHelper {
      * @param directory
      * @param items
      * @return
-     * @throws Exception
+     * @throws Exception 
      */
-    public static boolean saveFileItems(String directory, List<FileItem> items) throws Exception {
+    public static boolean saveFileItems(String directory, List<FileItem> items) throws Exception  {
         // Process the uploaded items
         Iterator<FileItem> iter = items.iterator();
         
@@ -376,6 +379,15 @@ public class FileHelper {
         return true;
     }
 
+    /**
+     * Takes a zip file and unzips it to a directory
+     * 
+     * @param directory
+     * @param zipFile
+     * @return
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
     public static boolean unzipFile(String directory, File zipFile) throws FileNotFoundException, IOException {
         FileInputStream fis = new FileInputStream(zipFile);
         ZipInputStream zis = new ZipInputStream(new BufferedInputStream(fis));
@@ -397,7 +409,9 @@ public class FileHelper {
                 )) continue;
             int count = 0;
             byte data[] = new byte[BUFFER];
-            FileOutputStream fos = new FileOutputStream(directory + java.io.File.separator + entry.getName().substring(entry.getName().lastIndexOf('/')));
+            // Get the final filename (even if it's within directories in the ZIP file)
+            String destinationFileName = entry.getName().substring(entry.getName().lastIndexOf('/'));
+            FileOutputStream fos = new FileOutputStream(directory + java.io.File.separator + destinationFileName);
             dest = new BufferedOutputStream(fos, BUFFER);
             while ((count = zis.read(data, 0, BUFFER)) != -1) {
                 dest.write(data, 0, count);
@@ -444,22 +458,19 @@ public class FileHelper {
         return "";
     }
 
-    @SuppressWarnings("unchecked")
-    public static boolean updateTimestamp(final String path, final boolean recursive) throws IOException {
-        if (path == null || "".equals(path)) {
-            return false;
-        }
-        if (!FileHelper.doesDirectoryOrFileExist(path)) {
-            return false;
-        }
+    
+	public static boolean updateTimestamp(final String path, final boolean recursive) throws IOException {
+        if (path == null || "".equals(path)) return false;
+        if (!FileHelper.doesDirectoryOrFileExist(path)) return false;
+        
         FileUtils.touch(new File(path));
         if (recursive) {
-            Iterator<File> files = FileUtils.iterateFiles(new File(path), null, true);
+        	@SuppressWarnings("unchecked")
+            Iterator<File> files =  FileUtils.iterateFiles(new File(path), null, true);
             while (files.hasNext()) {
                 File file = files.next();
-                FileUtils.touch(file);
+                FileUtils.touch(file); // update date on file
             }
-
         }
         return true;
     }
@@ -472,12 +483,12 @@ public class FileHelper {
      * @param recursive
      * @return
      */
-    @SuppressWarnings("unchecked")
-    static Collection<File> getFilesOlderThan(File filePath, Long age, Boolean recursive) {
+	@SuppressWarnings("unchecked")
+	static Collection<File> getFilesOlderThan(File filePath, Long age, Boolean recursive) {
         if (filePath  == null || !filePath.exists()) return new ArrayList<File>();
         Iterator<File> files = null;
         
-        if (recursive) files = FileUtils.iterateFiles(filePath, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
+        if (recursive.booleanValue()) files = FileUtils.iterateFiles(filePath, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
         else files = FileUtils.iterateFiles(filePath, TrueFileFilter.INSTANCE, null);
 
         Collection<File> result = new ArrayList<File>();
@@ -486,7 +497,7 @@ public class FileHelper {
         {
             File file = files.next();
             
-            if (file.lastModified() <  date.getTime() - age) {
+            if (file.lastModified() <  date.getTime() - age.longValue()) {
                 result.add(file);
             }
         }

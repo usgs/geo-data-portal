@@ -98,9 +98,9 @@ public class UploadFilesServlet extends HttpServlet {
      * @param request
      * @param directory
      * @return
-     * @throws Exception
+     * @throws Exception 
      */
-    private String uploadFiles(HttpServletRequest request, String applicationTempDir) throws FileUploadException, Exception {
+    private String uploadFiles(HttpServletRequest request, String applicationTempDir) throws Exception {
         log.debug("User uploading file(s).");
 
         // Create a factory for disk-based file items

@@ -41,12 +41,8 @@ public class AvailableFilesBean implements XmlBean {
      * @return
      */
     static public AvailableFilesBean getAvailableFilesBean(String baseDirectory, String userDirectory) throws IllegalArgumentException {
-        if (baseDirectory == null) {
-            return null;
-        }
-        if ("".equals(baseDirectory)) {
-            return null;
-        }
+        if (baseDirectory == null) return null;
+        if ("".equals(baseDirectory)) return null;
 
         AvailableFilesBean result = new AvailableFilesBean();
         List<FilesBean> allFilesBeanList = new ArrayList<FilesBean>();
@@ -54,13 +50,9 @@ public class AvailableFilesBean implements XmlBean {
         String exampleDirectory = baseDirectory
                 + "Sample_Files"
                 + FileHelper.getSeparator();
-        //String userDirecotry = baseDirectory + "userspace" + FileHelper.getSeparator();
-        // Create the example file bean list
-        //exampleFileBeanList = FilesBean.getFilesBeanSetList(exampleDirectory, true);
 
         // Create the user file bean list (if calling method decides)
         if (userDirectory != null && !"".equals(userDirectory)) {
-            //userFileBeanList = FilesBean.getFilesBeanSetList(userDirectory, false);
             allFilesBeanList = FilesBean.getFilesBeanSetList(exampleDirectory, userDirectory);
         } else {
             allFilesBeanList = FilesBean.getFilesBeanSetList(exampleDirectory, true);
