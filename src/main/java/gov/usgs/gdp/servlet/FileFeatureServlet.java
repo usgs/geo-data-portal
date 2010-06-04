@@ -37,6 +37,7 @@ public class FileFeatureServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
 	}
@@ -44,8 +45,9 @@ public class FileFeatureServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Long start = new Date().getTime();
+		Long start = Long.valueOf(new Date().getTime());
 		String command = request.getParameter("command");
 		XmlReplyBean xmlReply = null;
 		if ("listfeatures".equals(command)) {
@@ -91,11 +93,10 @@ public class FileFeatureServlet extends HttpServlet {
 				xmlReply = new XmlReplyBean(AckBean.ACK_OK, featureBean);
 				RouterServlet.sendXml(xmlReply, start,response);
 				return;
-			} else {
-				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FEATURES_NOT_FOUND));
-				RouterServlet.sendXml(xmlReply, start,response);
-				return;
 			}
+			xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FEATURES_NOT_FOUND));
+			RouterServlet.sendXml(xmlReply, start,response);
+			return;
 		}
 	}
 

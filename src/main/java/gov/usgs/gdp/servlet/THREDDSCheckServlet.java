@@ -67,7 +67,7 @@ public class THREDDSCheckServlet extends HttpServlet {
     @SuppressWarnings("unchecked")
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        Long start = new Date().getTime();
+        Long start = Long.valueOf(new Date().getTime());
         String command = request.getParameter("command");
         XmlReplyBean xmlReply = null;
 
@@ -131,7 +131,7 @@ public class THREDDSCheckServlet extends HttpServlet {
 
         private ServletConfig paramConfig;
 
-        public testTHREDDSServers(ServletConfig paramConfig) {
+        public testTHREDDSServers(@SuppressWarnings("hiding") ServletConfig paramConfig) {
             super();
             setParamConfig(paramConfig);
         }
@@ -139,7 +139,7 @@ public class THREDDSCheckServlet extends HttpServlet {
         @SuppressWarnings("unchecked")
 	@Override
         public void run() {
-            Map<String, ServerBean> threddsServerBeanMap = (Map<String, ServerBean>) paramConfig.getServletContext().getAttribute("threddsServerBeanMap");
+            Map<String, ServerBean> threddsServerBeanMap = (Map<String, ServerBean>) this.paramConfig.getServletContext().getAttribute("threddsServerBeanMap");
             if (threddsServerBeanMap == null) {
                 threddsServerBeanMap = getTHREDDSServerBeanMap();
             }
@@ -237,15 +237,11 @@ public class THREDDSCheckServlet extends HttpServlet {
             return result;
         }
 
-        public void setThreddsServerBeanMap(
-                Map<String, ServerBean> threddsServerBeanMap) {
-        }
-
         public ServletConfig getParamConfig() {
-            return paramConfig;
+            return this.paramConfig;
         }
 
-        public void setParamConfig(ServletConfig paramConfig) {
+        public void setParamConfig(@SuppressWarnings("hiding") ServletConfig paramConfig) {
             this.paramConfig = paramConfig;
         }
     }

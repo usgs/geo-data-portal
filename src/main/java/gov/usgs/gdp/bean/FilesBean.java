@@ -69,6 +69,13 @@ public class FilesBean implements XmlBean {
 		this.name = localName;
 	}
 	
+	/**
+	 * Gets sets of FileBeans from the exampleDir and optionally userDir
+	 * 
+	 * @param exampleDir
+	 * @param userDir
+	 * @return
+	 */
 	public static List<FilesBean> getFilesBeanSetList(String exampleDir, String userDir) {
 		List<FilesBean> result = new ArrayList<FilesBean>();
 		result.addAll(FilesBean.getFilesBeanSetList(exampleDir, true));

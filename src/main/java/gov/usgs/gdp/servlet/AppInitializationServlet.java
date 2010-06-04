@@ -24,7 +24,7 @@ import org.apache.log4j.Logger;
  */
 public class AppInitializationServlet extends HttpServlet {
 
-    private static org.apache.log4j.Logger log = Logger.getLogger(AppInitializationServlet.class);
+    static org.apache.log4j.Logger log = Logger.getLogger(AppInitializationServlet.class);
     private static final long serialVersionUID = 1L;
     private String tmpDir = "";
     private String seperator = "";
@@ -159,7 +159,7 @@ public class AppInitializationServlet extends HttpServlet {
 
     @Override
     public void destroy() {
-        Long start = new Date().getTime();
+        Long start = Long.valueOf(new Date().getTime());
         super.destroy();
         log.info("Application is ending.");
         boolean result = false;
@@ -170,7 +170,7 @@ public class AppInitializationServlet extends HttpServlet {
             log.info("WARNING: Application temp directory " + this.applicationTempDir + " could not be deleted.");
             log.info("\t If this directory exists, you may want to delete it to free up space on your storage device.");
         }
-        log.info("Application has ended. Took " + (new Date().getTime() - start) + " milliseconds.");
+        log.info("Application has ended. Took " + (new Date().getTime() - start.longValue()) + " milliseconds.");
     }
 
     public boolean deleteApplicationTempDirs() {
@@ -219,8 +219,8 @@ public class AppInitializationServlet extends HttpServlet {
         // One minute test timer
         // task.scheduleAtFixedRate(new ScanFileTask(userSpaceDir, uploadDirName, 60000l), 0l, 60000l);
         log.info("File Wipe system started.");
-        if (uploadDirName != null) log.info("Will check " + uploadDirName.getPath() + " every " + fileAgeInMillisecondsString + " hour(s).");
-        if (userSpaceDir != null) log.info("Will check " + userSpaceDir.getPath() + " every " + fileAgeInMillisecondsString + " hour(s).");
+        log.info("Will check " + uploadDirName.getPath() + " every " + fileAgeInMillisecondsString + " hour(s).");
+        log.info("Will check " + userSpaceDir.getPath() + " every " + fileAgeInMillisecondsString + " hour(s).");
 
         Date created = new Date();
         System.setProperty("tomcatStarted", Long.toString(created.getTime()));
@@ -230,14 +230,15 @@ public class AppInitializationServlet extends HttpServlet {
     class ScanFileTask extends TimerTask {
         private long hoursToWipe;
         private File workspaceDir;
-        private File repositoryDir;
+        @SuppressWarnings("unused")
+		private File repositoryDir;
 
         @Override
         public void run() {
             log.info("Running File Wipe Task... ");
             Collection<File> filesDeleted = new ArrayList<File>();
             if (getWorkspaceDir() != null && getWorkspaceDir().exists()) {
-                filesDeleted = FileHelper.wipeOldFiles(getWorkspaceDir(), this.hoursToWipe);
+                filesDeleted = FileHelper.wipeOldFiles(getWorkspaceDir(), Long.valueOf(this.hoursToWipe));
                 if (!filesDeleted.isEmpty()) {
                     log.info("Finished deleting userspace files. " + filesDeleted.size() + " deleted.");
                     filesDeleted = new ArrayList<File>();
@@ -245,14 +246,16 @@ public class AppInitializationServlet extends HttpServlet {
             }
 
             if (getRepositoryDir() != null && getRepositoryDir().exists()) {
-                filesDeleted = FileHelper.wipeOldFiles(getRepositoryDir(), this.hoursToWipe);
+                filesDeleted = FileHelper.wipeOldFiles(getRepositoryDir(), Long.valueOf(this.hoursToWipe));
                 if (!filesDeleted.isEmpty()) {
                     log.info("Finished deleting repository directory files. " + filesDeleted.size() + " deleted.");
                 }
             }
         }
 
-        public ScanFileTask(File workspaceDir, File repositoryDir, long hoursToWipe) {
+        public ScanFileTask(@SuppressWarnings("hiding") File workspaceDir, 
+        		@SuppressWarnings("hiding") File repositoryDir, 
+        		@SuppressWarnings("hiding") long hoursToWipe) {
             this.workspaceDir = workspaceDir;
             this.repositoryDir = repositoryDir;
             this.hoursToWipe = hoursToWipe;
@@ -267,13 +270,13 @@ public class AppInitializationServlet extends HttpServlet {
          * @return the hoursToWipe
          */
         public long getHoursToWipe() {
-            return hoursToWipe;
+            return this.hoursToWipe;
         }
 
         /**
          * @param hoursToWipe the hoursToWipe to set
          */
-        public void setHoursToWipe(long hoursToWipe) {
+        public void setHoursToWipe(@SuppressWarnings("hiding") long hoursToWipe) {
             this.hoursToWipe = hoursToWipe;
         }
 
@@ -281,13 +284,13 @@ public class AppInitializationServlet extends HttpServlet {
          * @return the workspaceDir
          */
         public File getWorkspaceDir() {
-            return workspaceDir;
+            return this.workspaceDir;
         }
 
         /**
          * @param workspaceDir the workspaceDir to set
          */
-        public void setWorkspaceDir(File workspaceDir) {
+        public void setWorkspaceDir(@SuppressWarnings("hiding") File workspaceDir) {
             this.workspaceDir = workspaceDir;
         }
 
@@ -295,13 +298,13 @@ public class AppInitializationServlet extends HttpServlet {
          * @return the repositoryDir
          */
         public File getRepositoryDir() {
-            return repositoryDir;
+            return getRepositoryDir();
         }
 
         /**
          * @param repositoryDir the repositoryDir to set
          */
-        public void setRepositoryDir(File repositoryDir) {
+        public void setRepositoryDir(@SuppressWarnings("hiding") File repositoryDir) {
             this.repositoryDir = repositoryDir;
         }
 

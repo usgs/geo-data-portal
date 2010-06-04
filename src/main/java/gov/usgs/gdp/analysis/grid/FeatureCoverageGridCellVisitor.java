@@ -6,14 +6,14 @@ public abstract class FeatureCoverageGridCellVisitor extends GridCellVisitor {
 
     protected Map<Object, GridCellCoverage> attributeCoverageMap;
 
-    public FeatureCoverageGridCellVisitor(Map<Object, GridCellCoverage> attributeCoverageMap) {
+    public FeatureCoverageGridCellVisitor(@SuppressWarnings("hiding") Map<Object, GridCellCoverage> attributeCoverageMap) {
         this.attributeCoverageMap = attributeCoverageMap;
     }
 
     @Override
     public void processGridCell(int xCellIndex, int yCellIndex, double value) {
         double coverageTotal = 0;
-        for (Map.Entry<Object, GridCellCoverage> entry : attributeCoverageMap.entrySet()) {
+        for (Map.Entry<Object, GridCellCoverage> entry : this.attributeCoverageMap.entrySet()) {
             Object attribute = entry.getKey();
             GridCellCoverage gridCellCoverage = entry.getValue();
             double coverage = gridCellCoverage.getCellCoverageFraction(xCellIndex, yCellIndex);

@@ -96,7 +96,7 @@ public class GeoServerServlet extends HttpServlet {
 			ArrayList<String> dates = parseDates(new File(dataFileLoc), delim);
 			
 			XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, new ListBean(dates));
-			RouterServlet.sendXml(xmlReply, new Date().getTime(), response);
+			RouterServlet.sendXml(xmlReply, Long.valueOf(new Date().getTime()), response);
 			
 		} else if ("createcoloredmap".equals(command)) {
 			// create style to color polygons given a date, stat, and data file
@@ -110,7 +110,7 @@ public class GeoServerServlet extends HttpServlet {
 			
 			sendReply(response, AckBean.ACK_OK);
 		} else if ("clearcache".equals(command)) {
-			clearCache();
+			//clearCache();
 		}
 	}
 	
@@ -179,16 +179,10 @@ public class GeoServerServlet extends HttpServlet {
 		return true;
 	}
 	
-	void clearCache() {
-		
-	}
-	
 	void createColoredMap(String dataFileLoc, String workspace, String layer, String fromDateString, 
 						  String toDateString, String stat, String attribute, String delim) throws IOException {
 		
 		File dataFile = new File(dataFileLoc);
-		if (dataFile == null) return;
-		
 		DateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
 		Date fromDate, toDate = null;
 		try {
@@ -264,7 +258,7 @@ public class GeoServerServlet extends HttpServlet {
 	
 	void sendReply(HttpServletResponse response, int status, String... messages) throws IOException {
 		XmlReplyBean xmlReply = new XmlReplyBean(status, new MessageBean(messages));
-		RouterServlet.sendXml(xmlReply, new Date().getTime(), response);
+		RouterServlet.sendXml(xmlReply, Long.valueOf(new Date().getTime()), response);
 	}
 	
 	String createWorkspaceXML(String workspace) {
@@ -343,7 +337,7 @@ public class GeoServerServlet extends HttpServlet {
 	void parseCSV(File data, Date fromDate, Date toDate, String stat, String delim,
 			ArrayList<String> attributeValues, // 
 			ArrayList<Float> requestedStats)   // 
-	throws IOException {
+	 {
 		
 		DateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
 
@@ -409,7 +403,7 @@ public class GeoServerServlet extends HttpServlet {
 			String values[] = line.split(delim);
 			//							 don't read in totals at end
 			for (int i = firstStatIndex; i < values.length - statsPerHeaderValue; i += statsPerHeaderValue) {
-				requestedStats.add(Float.parseFloat(values[i]));
+				requestedStats.add(Float.valueOf(values[i]));
 				attributeValues.add(dupHeaderValues[i]);
 			}
 			
@@ -436,7 +430,7 @@ public class GeoServerServlet extends HttpServlet {
 				}
 				
 				for (int i = 0; i < requestedStats.size(); i++) {
-					requestedStats.set(i, requestedStats.get(i) + rangeStats[i]);
+					requestedStats.set(i, Float.valueOf(requestedStats.get(i).floatValue() + rangeStats[i]));
 				}
 			}
 		}
@@ -459,8 +453,8 @@ public class GeoServerServlet extends HttpServlet {
 		float maxVal = Float.NEGATIVE_INFINITY;
 		float minVal = Float.POSITIVE_INFINITY;
 		for (Float f : requestedStats) {
-			if (f < minVal) minVal = f;
-			if (f > maxVal) maxVal = f;
+			if (f.floatValue() < minVal) minVal = f.floatValue();
+			if (f.floatValue() > maxVal) maxVal = f.floatValue();
 		}
 		float spread = maxVal - minVal;
 		if (spread == 0) spread = 1;
@@ -481,13 +475,13 @@ public class GeoServerServlet extends HttpServlet {
 		
 		String color;
 		for (int i = 0; i < requestedStats.size(); i++) {
-			float f = requestedStats.get(i);
+			float f = requestedStats.get(i).floatValue();
 			String attributeValue = attributeValues.get(i);
 			
 			//                                  avoid divide by zero
 			float temp = -(f - minVal) / spread + 1;
 			temp = temp * 200;
-			String blgr = String.format("%02x", (int) temp);
+			String blgr = String.format("%02x",  Float.valueOf(temp));
 
 			color = "FF" + blgr + blgr;
 			

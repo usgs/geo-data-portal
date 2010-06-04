@@ -7,7 +7,6 @@ import gov.usgs.gdp.bean.FilesBean;
 import gov.usgs.gdp.bean.OutputFileTypeBean;
 import gov.usgs.gdp.bean.ShapeFileSetBean;
 import gov.usgs.gdp.bean.XmlReplyBean;
-import gov.usgs.gdp.helper.CookieHelper;
 import gov.usgs.gdp.helper.FileHelper;
 
 import java.io.IOException;
@@ -15,7 +14,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -72,6 +70,7 @@ public class FileAttributeServlet extends HttpServlet {
 			log.debug("User has chosen to list shapefile attributes");
 			String shapefile = request.getParameter("shapefile");
 			String userDirectory = request.getParameter("userdirectory");
+			
 			if (userDirectory == null || !FileHelper.doesDirectoryOrFileExist(userDirectory)) userDirectory = ""; 
 			
 			List<FilesBean> filesBeanList = FilesBean.getFilesBeanSetList(System.getProperty("applicationTempDir"), userDirectory);

@@ -64,10 +64,10 @@ public class RouterServlet extends HttpServlet {
     /**
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
-    @SuppressWarnings("unchecked")
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Long start = Long.valueOf(new Date().getTime());
+        @SuppressWarnings("unchecked")
         Map<String, String> requestParameters = request.getParameterMap();
 
         // If the user is attempting to upload files, send them directly to the correct servlet
@@ -111,16 +111,12 @@ public class RouterServlet extends HttpServlet {
             char[] characters = xml.toCharArray();
             for (int index = 0; index < characters.length; ++index) {
                 char current = characters[index];
-                if (DecoderStateTables.UTF8(current) == DecoderStateTables.STATE_ILLEGAL) {
-                    current = '\u00BF';
-                }
+                if (DecoderStateTables.UTF8(current) == DecoderStateTables.STATE_ILLEGAL) current = '\u00BF';
                 writer.write(current);
             }
             writer.flush();
         } finally {
-            if (writer != null) {
-                writer.close();
-            }
+            if (writer != null) writer.close();
         }
         log.debug(xml);
         log.info("Process completed in " + (new Date().getTime() - startTime.longValue()) + " milliseconds.");

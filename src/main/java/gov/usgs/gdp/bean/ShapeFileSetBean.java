@@ -65,26 +65,17 @@ public class ShapeFileSetBean implements XmlBean {
             List<AttributeType> attribTypes = featureType.getTypes();
 
             List<String> result = new ArrayList<String>();
-            for (AttributeType attribType : attribTypes) {
-                result.add(attribType.getName().toString());
-            }
+            for (AttributeType attribType : attribTypes) result.add(attribType.getName().toString());
 
             // Iterate over the features in the shape file set so that the FileDataStore releases its lock on it.
             // If this is not done, some operating systems (namely Windows) will not be able to delete the PRJ file of
             // the shape file set until the JVM terminates.
             // TODO: File a Geotools bug report about this.
-            while (featureReader.hasNext()) {
-                featureReader.next();
-            }
-
+            while (featureReader.hasNext()) featureReader.next();
             return result;
         } finally {
-            if (featureReader != null) {
-                featureReader.close();
-            }
-            if (shapeFileDataStore != null) {
-                shapeFileDataStore.dispose();
-            }
+            if (featureReader != null) featureReader.close();
+            if (shapeFileDataStore != null) shapeFileDataStore.dispose();
         }
 	}
 	
@@ -274,9 +265,7 @@ public class ShapeFileSetBean implements XmlBean {
 		XStream xstream = new XStream();
 		xstream.processAnnotations(ShapeFileSetBean.class);
 		StringBuffer sb = new StringBuffer();
-		String result = "";
 		sb.append(xstream.toXML(this));
-		result = sb.toString();
-		return result;
+		return sb.toString();
 	}
 }

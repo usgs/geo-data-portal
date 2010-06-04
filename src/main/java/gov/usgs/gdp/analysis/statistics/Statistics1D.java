@@ -19,7 +19,7 @@ public class Statistics1D {
 
     public Statistics1D() {
 
-        count = 0;
+        this.count = 0;
 
         // initialize values as required by incremental and pairwise
         // mean, M2, M3, M4 and C2 algorithm specified by:
@@ -31,13 +31,13 @@ public class Statistics1D {
         // NOTE: C2 isn't used here as it's a term for covariance calculation
         //       on multidimenstional data..
         //
-        mean = 1d;
-        m2 = 0d;
-        m3 = 0d;
-        m4 = 0d;
+        this.mean = 1d;
+        this.m2 = 0d;
+        this.m3 = 0d;
+        this.m4 = 0d;
 
-        minimum = Double.MAX_VALUE;
-        maximum = -Double.MAX_VALUE;
+        this.minimum = Double.MAX_VALUE;
+        this.maximum = -Double.MAX_VALUE;
     }
 
     public void accumulate(double value) {
@@ -50,30 +50,30 @@ public class Statistics1D {
         double n = (double) count;
         double n_inverse = 1d / n;
 
-        double delta = value - mean;
+        double delta = value - this.mean;
 
         double A = delta * n_inverse;
-        mean += A;
-        m4 += A * (A * A * delta * r * ( n * ( n - 3d ) + 3d ) + 6d * A * m2 - 4d * m3);
+        this.mean += A;
+        this.m4 += A * (A * A * delta * r * ( n * ( n - 3d ) + 3d ) + 6d * A * this.m2 - 4d * this.m3);
 
-        double B = value - mean;
-        m3 += A * ( B * delta * ( n - 2d ) - 3d * m2);
-        m2 += delta * B;
+        double B = value - this.mean;
+        this.m3 += A * ( B * delta * ( n - 2d ) - 3d * this.m2);
+        this.m2 += delta * B;
 
-        if(value < minimum) {
-            minimum = value;
+        if(value < this.minimum) {
+        	this.minimum = value;
         }
 
-        if(value > maximum) {
-            maximum = value;
+        if(value > this.maximum) {
+        	this.maximum = value;
         }
     }
 
     public void accumulate(Statistics1D sa) {
         if(sa != null && sa.count > 0) {
-            if (count > 0) {
+            if (this.count > 0) {
 
-                double n1 = (double) count;
+                double n1 = (double) this.count;
                 double n2 = (double) sa.count;
 
                 double n1_squared = n1 * n1;
@@ -83,67 +83,67 @@ public class Statistics1D {
 
                 double N = n1 + n2;
 
-                double delta = sa.mean - mean;
+                double delta = sa.mean - this.mean;
                 double A = delta / N;
                 double A_squared =  A * A;
 
-                m4 += sa.m4
+                this.m4 += sa.m4
                         + n_product * ( n1_squared - n_product + n2_squared ) * delta * A * A_squared
-                        + 6d * ( n1_squared * sa.m2 + n2_squared * m2) * A_squared
-                        + 4d * ( n1 * sa.m3 - n2 * m3) * A;
+                        + 6d * ( n1_squared * sa.m2 + n2_squared * this.m2) * A_squared
+                        + 4d * ( n1 * sa.m3 - n2 * this.m3) * A;
 
-                m3 += sa.m3
+                this.m3 += sa.m3
                         + n_product * ( n1 - n2 ) * delta * A_squared
-                        + 3d * ( n1 * sa.m2 - n2 * m2 ) * A;
+                        + 3d * ( n1 * sa.m2 - n2 * this.m2 ) * A;
 
-                m2 += sa.m2
+                this.m2 += sa.m2
                         + n_product * delta * A;
 
-                mean += n2 * A;
+                this.mean += n2 * A;
 
-                if(sa.minimum < minimum) {
-                    minimum = sa.minimum;
+                if(sa.minimum < this.minimum) {
+                	this.minimum = sa.minimum;
                 }
 
-                if(sa.maximum > maximum) {
-                    maximum = sa.maximum;
+                if(sa.maximum > this.maximum) {
+                	this.maximum = sa.maximum;
                 }
             } else {
-                count = sa.count;
-                mean = sa.mean;
-                m2 = sa.m2;
-                m3 = sa.m3;
-                m4 = sa.m4;
-                minimum = sa.minimum;
-                maximum = sa.maximum;
+            	this.count = sa.count;
+            	this.mean = sa.mean;
+            	this.m2 = sa.m2;
+            	this.m3 = sa.m3;
+            	this. m4 = sa.m4;
+            	this.minimum = sa.minimum;
+            	this.maximum = sa.maximum;
             }
 
         }
     }
 
     public long getCount() {
-        return count;
+        return this.count;
     }
 
     public double getMean() {
-        return mean;
+        return this.mean;
     }
 
     public double getM2() {
-        return m2;
+        return this.m2;
     }
 
     public double getM3() {
-        return m3;
+        return this.m3;
     }
 
     public double getM4() {
-        return m4;
+        return this.m4;
     }
 
 
     public double getSampleVariance() {
-        return count > 1 ?  m2 / (double) (count - 1) : 0d;
+        return this.count > 1 ?  m2 / (double) (this.count - 1) : 0d;
     }
 
     public double getSampleStandardDeviation() {
@@ -151,7 +151,7 @@ public class Statistics1D {
     }
 
     public double getPopulationVariance() {
-        return count > 1 ? m2 / (double) count : 0d;
+        return this.count > 1 ? this.m2 / (double) this.count : 0d;
     }
 
     public double getPopulationStandardDeviation() {
@@ -159,11 +159,11 @@ public class Statistics1D {
     }
 
     public double getMinimum() {
-        return minimum;
+        return this.minimum;
     }
 
     public double getMaximum() {
-        return maximum;
+        return this.maximum;
     }
 
     @Override

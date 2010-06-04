@@ -141,7 +141,7 @@ public class WCSServlet extends HttpServlet {
 			
 			if (size > MAX_COVERAGE_SIZE) {
 				float percent = (float) size / MAX_COVERAGE_SIZE * 100 - 100;
-				String percentString = String.format("%1$.1f", percent);
+				String percentString = String.format("%1$.1f", Float.valueOf(percent));
 				
 				sendFailReply(response, "Coverage exceeds size limit by " + 
 						percentString + "%");
@@ -153,11 +153,11 @@ public class WCSServlet extends HttpServlet {
 	
 	void sendFailReply(HttpServletResponse response, String message) throws IOException {
 		XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(message));
-		RouterServlet.sendXml(xmlReply, new Date().getTime(), response);
+		RouterServlet.sendXml(xmlReply, Long.valueOf(new Date().getTime()), response);
 	}
 	
 	void sendOkReply(HttpServletResponse response) throws IOException {
 		XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK);
-		RouterServlet.sendXml(xmlReply, new Date().getTime(), response);
+		RouterServlet.sendXml(xmlReply,Long.valueOf(new Date().getTime()), response);
 	}
 }

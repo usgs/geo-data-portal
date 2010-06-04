@@ -18,10 +18,7 @@ public class CookieHelper {
 		Cookie result = null;
 		Cookie[] cookies = request.getCookies();
 		
-		for (Cookie cookie : cookies) {
-			if (name.equals(cookie.getName())) result = cookie;
-		}
-		
+		for (Cookie cookie : cookies) if (name.equals(cookie.getName())) result = cookie;
 		return result;
 	}
 	

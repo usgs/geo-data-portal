@@ -12,7 +12,6 @@ import javax.servlet.http.*;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
@@ -24,8 +23,8 @@ import org.apache.log4j.Logger;
  */
 public class UploadFilesServlet extends HttpServlet {
 
-    private static org.apache.log4j.Logger log = Logger.getLogger(UploadFilesServlet.class);
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 6766229674722132238L;
+	private static org.apache.log4j.Logger log = Logger.getLogger(UploadFilesServlet.class);
 
     /**
      * @see HttpServlet#HttpServlet()
@@ -70,6 +69,8 @@ public class UploadFilesServlet extends HttpServlet {
                 return;
             }
 
+            // Work directly into another webservice to list the files available
+            // including the file the user just uploaded
             log.debug("Files successfully uploaded.");
             RequestDispatcher rd = request.getRequestDispatcher("/FileSelectionServlet?command=listfiles&userdirectory=" + userDirectory);
             rd.forward(request, response);
