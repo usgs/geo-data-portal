@@ -410,7 +410,7 @@ public class FileHelper {
             int count = 0;
             byte data[] = new byte[BUFFER];
             // Get the final filename (even if it's within directories in the ZIP file)
-            String destinationFileName = entry.getName().substring(entry.getName().lastIndexOf('/'));
+            String destinationFileName = entry.getName().contains("/") ? entry.getName().substring(entry.getName().lastIndexOf('/')) : entry.getName();
             FileOutputStream fos = new FileOutputStream(directory + java.io.File.separator + destinationFileName);
             dest = new BufferedOutputStream(fos, BUFFER);
             while ((count = zis.read(data, 0, BUFFER)) != -1) {

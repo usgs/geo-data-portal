@@ -61,12 +61,9 @@ public class FileFeatureServlet extends HttpServlet {
 				return;			
 			}
 			
-			Cookie userDirectoryCookie = CookieHelper.getCookie(request, "userDirectory");			
-			String userDirectory = "";
-			if (userDirectoryCookie != null) {
-				if (FileHelper.doesDirectoryOrFileExist(userDirectoryCookie.getValue())) {
-					userDirectory = userDirectoryCookie.getValue();
-				}
+			String userDirectory = request.getParameter("userdirectory");
+			if (userDirectory != null && !"".equals(userDirectory)) {
+				if (!FileHelper.doesDirectoryOrFileExist(userDirectory)) userDirectory = "";
 			}
 			
 			List<FilesBean> filesBeanList = FilesBean.getFilesBeanSetList(System.getProperty("applicationTempDir"), userDirectory);

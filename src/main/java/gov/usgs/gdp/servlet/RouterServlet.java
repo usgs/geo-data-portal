@@ -20,6 +20,8 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
 
 import com.sun.xml.fastinfoset.DecoderStateTables;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Servlet implementation class RouterServlet
@@ -69,6 +71,15 @@ public class RouterServlet extends HttpServlet {
         Long start = Long.valueOf(new Date().getTime());
         @SuppressWarnings("unchecked")
         Map<String, String> requestParameters = request.getParameterMap();
+
+        // For debugging purposes
+        Iterator<String> keys = requestParameters.keySet().iterator();
+        log.debug("Submitted KVP: ( K : V ) ");
+        while (keys.hasNext()) {
+            String key = keys.next();
+            String command = request.getParameter(key);
+            if (command != null) log.debug(key + " : " + command);
+        }
 
         // If the user is attempting to upload files, send them directly to the correct servlet
         if (ServletFileUpload.isMultipartContent(request)) {
