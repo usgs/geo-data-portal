@@ -319,7 +319,7 @@ public class GeoServerServlet extends HttpServlet {
 				line = reader.readLine();
 				firstValue = line.split(delim)[0];
 				
-				if ("ALL".equals(firstValue)) {
+				if ("ALL TIMESTEPS".equals(firstValue)) {
 					break;
 				}
 
@@ -334,6 +334,7 @@ public class GeoServerServlet extends HttpServlet {
 		return dates;
 	}
 	
+	// TODO: need to get this info some way other than parsing the csv
 	void parseCSV(File data, Date fromDate, Date toDate, String stat, String delim,
 			ArrayList<String> attributeValues, // 
 			ArrayList<Float> requestedStats)   // 
@@ -348,14 +349,14 @@ public class GeoServerServlet extends HttpServlet {
 			// Count number of stats per attribute
 			line = reader.readLine();
 			String dupHeaderValues[] = line.split(delim);
-			if (!"ALL".equals(dupHeaderValues[dupHeaderValues.length - 1])) {
-				System.out.println("ERROR: Last header value is not ALL");
+			if (!"ALL ATTRIBUTES".equals(dupHeaderValues[dupHeaderValues.length - 1])) {
+				System.out.println("ERROR: Last header value is not ALL ATTRIBUTES");
 				return;
 			}
 			
 			int statsPerHeaderValue = 0;
 			String gc = dupHeaderValues[dupHeaderValues.length - 1];
-			while ("ALL".equals(gc)) {
+			while ("ALL ATTRIBUTES".equals(gc)) {
 				statsPerHeaderValue++;
 				gc = dupHeaderValues[dupHeaderValues.length - 1 - statsPerHeaderValue];
 			}
@@ -365,8 +366,8 @@ public class GeoServerServlet extends HttpServlet {
 			// Find location of chosen stat
 			line = reader.readLine();
 			String stats[] = line.split(delim);
-			if (!"timestep".equals(stats[0])) {
-				System.out.println("ERROR: First value is not timestep");
+			if (!"TIMESTEP".equals(stats[0])) {
+				System.out.println("ERROR: First value is not TIMESTEP");
 				return;
 			}
 			
@@ -390,7 +391,7 @@ public class GeoServerServlet extends HttpServlet {
 				line = reader.readLine();
 				firstValue = line.split(delim)[0];
 				
-				if ("ALL".equals(firstValue)) {
+				if ("ALL TIMESTEPS".equals(firstValue)) {
 					System.out.println("ERROR: from date not found");
 					return;
 				}
@@ -481,7 +482,7 @@ public class GeoServerServlet extends HttpServlet {
 			//                                  avoid divide by zero
 			float temp = -(f - minVal) / spread + 1;
 			temp = temp * 200;
-			String blgr = String.format("%02x",  Float.valueOf(temp));
+			String blgr = String.format("%02x", (int) temp);
 
 			color = "FF" + blgr + blgr;
 			
