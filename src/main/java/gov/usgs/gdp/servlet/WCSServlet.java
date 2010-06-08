@@ -2,6 +2,7 @@ package gov.usgs.gdp.servlet;
 
 import gov.usgs.gdp.bean.AckBean;
 import gov.usgs.gdp.bean.ErrorBean;
+import gov.usgs.gdp.bean.WCSCoverageInfoBean;
 import gov.usgs.gdp.bean.XmlReplyBean;
 import gov.usgs.gdp.helper.CookieHelper;
 
@@ -37,7 +38,7 @@ public class WCSServlet extends HttpServlet {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static final int MAX_COVERAGE_SIZE = 128 << 20; // 128 MB
+	private static final int MAX_COVERAGE_SIZE = 1 << 30; // 1 GB
 	
 	private static org.apache.log4j.Logger log = Logger.getLogger(WCSServlet.class);
        
@@ -100,18 +101,23 @@ public class WCSServlet extends HttpServlet {
 				transformedShapefileBounds = 
 					featureSource.getBounds().transform(gridCRS, false);
 			} catch (TransformException e1) {
-				sendFailReply(response, "Unable to compare grid and geometry bounds");
+				sendErrorReply(response, ErrorBean.ERR_CANNOT_COMPARE_GRID_AND_GEOM);
 				return;
 			} catch (FactoryException e1) {
-				sendFailReply(response, "Unable to compare grid and geometry bounds");
+				sendErrorReply(response, ErrorBean.ERR_CANNOT_COMPARE_GRID_AND_GEOM);
 				return;
 			}
+			
+			boolean fullyCovers;
+			int minResamplingFactor;
+			String units, boundingBox;
     		
     		// Explicitly cast to BoundingBox because there are 
 			// ambiguous 'contains' methods
     		if (!gridBounds.contains((BoundingBox) transformedShapefileBounds)) {
-    			sendFailReply(response, "Grid does not fully cover geometry");
-    			return;
+    			fullyCovers = false;
+    		} else {
+    			fullyCovers = true;
     		}
     		
 
@@ -140,24 +146,34 @@ public class WCSServlet extends HttpServlet {
 						  dataTypeSize;
 			
 			if (size > MAX_COVERAGE_SIZE) {
-				float percent = (float) size / MAX_COVERAGE_SIZE * 100 - 100;
-				String percentString = String.format("%1$.1f", Float.valueOf(percent));
+				float factor = (float) size / MAX_COVERAGE_SIZE;
 				
-				sendFailReply(response, "Coverage exceeds size limit by " + 
-						percentString + "%");
+				minResamplingFactor = (int) Math.round(Math.ceil(factor));
+			} else {
+				minResamplingFactor = 1; // Coverage size is ok as is
 			}
 			
-			sendOkReply(response);
+			units = "blah";
+			boundingBox = Double.toString(transformedShapefileBounds.getMinX()) + "," +
+						  Double.toString(transformedShapefileBounds.getMinY()) + "," +
+						  Double.toString(transformedShapefileBounds.getMaxX()) + "," +
+						  Double.toString(transformedShapefileBounds.getMaxY());
+			
+			
+			WCSCoverageInfoBean bean = new WCSCoverageInfoBean(minResamplingFactor,
+					fullyCovers, units, boundingBox);
+			
+			sendWCSInfoReply(response, bean);
 		}
 	}
 	
-	void sendFailReply(HttpServletResponse response, String message) throws IOException {
-		XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(message));
-		RouterServlet.sendXml(xmlReply, Long.valueOf(new Date().getTime()), response);
+	void sendErrorReply(HttpServletResponse response, int error) throws IOException {
+		XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(error));
+		RouterServlet.sendXml(xmlReply, new Date().getTime(), response);
 	}
 	
-	void sendOkReply(HttpServletResponse response) throws IOException {
-		XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK);
-		RouterServlet.sendXml(xmlReply,Long.valueOf(new Date().getTime()), response);
+	void sendWCSInfoReply(HttpServletResponse response, WCSCoverageInfoBean bean) throws IOException {
+		XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, bean);
+		RouterServlet.sendXml(xmlReply, new Date().getTime(), response);
 	}
 }
