@@ -49,9 +49,9 @@ public class ErrorBean implements XmlBean {
     private String errorMessage;
     @XStreamAlias("exception")
     private Exception exception;
-    @XStreamAlias("error-created")
+    @XStreamAlias("errorCreated")
     private Date errorCreated;
-    @XStreamAlias("error-class")
+    @XStreamAlias("errorClass")
     private String errorClass;
 
     static {

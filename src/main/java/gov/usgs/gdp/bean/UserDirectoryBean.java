@@ -11,7 +11,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  *
  * @author isuftin
  */
-@XStreamAlias("user-directory")
+@XStreamAlias("userDirectory")
 public class UserDirectoryBean implements XmlBean {
 
     private String directory;

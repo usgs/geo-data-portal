@@ -20,23 +20,23 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
-@XStreamAlias("shape-set")
+@XStreamAlias("shapeSet")
 public class ShapeFileSetBean implements XmlBean {
 	
-	@XStreamAlias("shape-set-name")
+	@XStreamAlias("shapeSetName")
 	@XStreamAsAttribute
 	private String name;
 	
-	@XStreamAlias("prj-file")
+	@XStreamAlias("prjFile")
 	private File projectionFile;
 	
-	@XStreamAlias("shp-file")
+	@XStreamAlias("shpFile")
 	private File shapeFile;
 	
-	@XStreamAlias("db-file")
+	@XStreamAlias("dbFile")
 	private File dbfFile;
 	
-	@XStreamAlias("idx-file")
+	@XStreamAlias("idxFile")
 	private File shapeFileIndexFile;
 	
 	@XStreamAlias("attributes")

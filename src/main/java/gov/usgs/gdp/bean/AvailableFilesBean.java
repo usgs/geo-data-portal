@@ -11,11 +11,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("files")
 public class AvailableFilesBean implements XmlBean {
 
-    @XStreamAlias("shape-sets")
+    @XStreamAlias("shapeSets")
     private List<ShapeFileSetBean> shapeSetList;
-    @XStreamAlias("example-files")
+    @XStreamAlias("exampleFiles")
     private List<FilesBean> exampleFileList;
-    @XStreamAlias("user-files")
+    @XStreamAlias("userFiles")
     private List<FilesBean> userFileList;
 
     @Override

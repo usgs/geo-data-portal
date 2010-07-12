@@ -15,13 +15,13 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
-@XStreamAlias("file-set")
+@XStreamAlias("fileSet")
 public class FilesBean implements XmlBean {
 
-    @XStreamAlias("file-set-name")
+    @XStreamAlias("fileSetName")
     @XStreamAsAttribute
     private String name;
-    @XStreamAlias("user-directory")
+    @XStreamAlias("userDirectory")
     @XStreamAsAttribute
     private String userDirectory;
     private static final long serialVersionUID = 1L;

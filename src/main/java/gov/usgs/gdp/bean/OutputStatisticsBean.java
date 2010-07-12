@@ -9,7 +9,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
-@XStreamAlias("output-statistics")
+@XStreamAlias("outputStatistics")
 public class OutputStatisticsBean implements XmlBean {
 
 	@XStreamAlias("statistics")

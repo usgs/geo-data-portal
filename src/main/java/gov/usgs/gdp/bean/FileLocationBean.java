@@ -3,7 +3,7 @@ package gov.usgs.gdp.bean;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
-@XStreamAlias("file-location")
+@XStreamAlias("fileLocation")
 public class FileLocationBean implements XmlBean {
 
 	@XStreamAlias("link")

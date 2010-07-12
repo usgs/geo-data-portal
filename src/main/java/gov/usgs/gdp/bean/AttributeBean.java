@@ -9,7 +9,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @XStreamAlias("attributes")
 public class AttributeBean implements XmlBean {
 	
-	@XStreamAlias("fileset-name")
+	@XStreamAlias("fileSetName")
 	private String filesetName;
 	
 	@XStreamAlias("attributes")

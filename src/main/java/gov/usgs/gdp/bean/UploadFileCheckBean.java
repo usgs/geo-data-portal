@@ -3,7 +3,7 @@ package gov.usgs.gdp.bean;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
-@XStreamAlias("upload-file-check")
+@XStreamAlias("uploadFileCheck")
 public class UploadFileCheckBean implements XmlBean {
 
     private boolean exists;
