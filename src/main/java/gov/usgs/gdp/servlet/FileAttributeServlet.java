@@ -51,7 +51,7 @@ public class FileAttributeServlet extends HttpServlet {
 		String command = request.getParameter("command");
 		XmlReplyBean xmlReply = null;
 		
-		if ("outputtypelist".equals(command)) {
+		if ("getoutputtypelist".equals(command)) {
 			log.debug("User has chosen to get output file type list");
 			List<String> availableFileTypes = FileHelper.getOutputFileTypesAvailable();
 			if (availableFileTypes == null || availableFileTypes.isEmpty()) {

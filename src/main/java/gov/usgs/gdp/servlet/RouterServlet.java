@@ -49,7 +49,7 @@ public class RouterServlet extends HttpServlet {
     	servletCommandMappings.put("calculatewcscoverageinfo", "/WCSServlet");
     	servletCommandMappings.put("gettimerange", "/THREDDSServlet");
     	servletCommandMappings.put("submitforprocessing", "/FileProcessServlet");
-    	servletCommandMappings.put("outputtypelist", "/FileAttributeServlet");
+    	servletCommandMappings.put("getoutputtypelist", "/FileAttributeServlet");
     	servletCommandMappings.put("getfile", "/FileProcessServlet");
     	servletCommandMappings.put("checkuploadfile", "/FileProcessServlet");
     	servletCommandMappings.put("commandlist", "/SummaryServlet");

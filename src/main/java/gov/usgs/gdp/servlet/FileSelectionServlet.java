@@ -51,7 +51,7 @@ public class FileSelectionServlet extends HttpServlet {
 		XmlReplyBean xmlReply = null;
 
 		if ("listfiles".equals(command)) {
-			String userDirectory = request.getParameter("userdirectory");
+			String userDirectory = request.getParameter("userdirectory") == null ? "": request.getParameter("userdirectory");
 			String userSpaceDir = System.getProperty("applicationUserSpaceDir");
 			String tempDir = System.getProperty("applicationTempDir");
 			// Test to see if the directory does exist. If so,
