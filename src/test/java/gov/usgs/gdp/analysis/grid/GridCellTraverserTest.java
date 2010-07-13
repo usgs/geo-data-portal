@@ -1,10 +1,12 @@
 package gov.usgs.gdp.analysis.grid;
 
+import static gov.usgs.gdp.analysis.grid.GridCellHelper.*;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.util.Formatter;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ucar.nc2.dt.GridDatatype;
@@ -12,11 +14,15 @@ import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 
-public class GridCellTraverserTest extends GridCellVisitorHelper {
+public class GridCellTraverserTest {
 
+	@BeforeClass
+	public static void setUpAll() {
+		setupResourceDir();
+	}
 	@Test
 	public void testYXTraversal() throws IOException {
-		String datasetUrl = "/home/jordan/ncml/testSimpleYXGrid.ncml";
+		String datasetUrl = RESOURCE_PATH + "testSimpleYXGrid.ncml";
 		FeatureDataset fd = FeatureDatasetFactoryManager.open(null, datasetUrl, null, new Formatter(System.err));
 		GridDataset dataset = (GridDataset)fd;
 		GridDatatype gdt = dataset.findGridDatatype(GridTypeTest.DATATYPE_RH);
@@ -29,7 +35,7 @@ public class GridCellTraverserTest extends GridCellVisitorHelper {
 	
 	@Test
 	public void testZYXTraversal() throws IOException {
-		String datasetUrl = "/home/jordan/ncml/testSimpleZYXGrid.ncml";
+		String datasetUrl = RESOURCE_PATH + "testSimpleZYXGrid.ncml";
 		FeatureDataset fd = FeatureDatasetFactoryManager.open(null, datasetUrl, null, new Formatter(System.err));
 		GridDataset dataset = (GridDataset)fd;
 		GridDatatype gdt = dataset.findGridDatatype(GridTypeTest.DATATYPE_RH);
@@ -42,7 +48,7 @@ public class GridCellTraverserTest extends GridCellVisitorHelper {
 	
 	@Test
 	public void testTYXTraversal() throws IOException {
-		String datasetUrl = "/home/jordan/ncml/testSimpleTYXGrid.ncml";
+		String datasetUrl = RESOURCE_PATH + "testSimpleTYXGrid.ncml";
 		FeatureDataset fd = FeatureDatasetFactoryManager.open(null, datasetUrl, null, new Formatter(System.err));
 		GridDataset dataset = (GridDataset)fd;
 		GridDatatype gdt = dataset.findGridDatatype(GridTypeTest.DATATYPE_RH);
@@ -55,7 +61,7 @@ public class GridCellTraverserTest extends GridCellVisitorHelper {
 	
 	@Test
 	public void testTZYXTraversal() throws IOException {
-		String datasetUrl = "/home/jordan/ncml/testSimpleTZYXGrid.ncml";
+		String datasetUrl = RESOURCE_PATH + "testSimpleTZYXGrid.ncml";
 		FeatureDataset fd = FeatureDatasetFactoryManager.open(null, datasetUrl, null, new Formatter(System.err));
 		GridDataset dataset = (GridDataset)fd;
 		GridDatatype gdt = dataset.findGridDatatype(GridTypeTest.DATATYPE_RH);

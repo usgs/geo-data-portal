@@ -1,10 +1,12 @@
 package gov.usgs.gdp.analysis.grid;
 
 import static org.junit.Assert.fail;
+import static gov.usgs.gdp.analysis.grid.GridCellHelper.*;
 
 import java.io.IOException;
 import java.util.Formatter;
 
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -23,9 +25,14 @@ public class GridTypeTest {
 	//private String netCDFFile = "http://internal.cida.usgs.gov/thredds/fileServer/misc/us_gfdl.A1.monthly.Tavg.1960-2099.nc";
 	public static final String DATATYPE_RH = "rh";
 	
+	@BeforeClass
+	public static void setUpAll() {
+		setupResourceDir();
+	}
+	
 	@Test
 	public void testSimpleTYXGrid() throws IOException {
-		String datasetUrl = "/home/jordan/ncml/testSimpleTYXGrid.ncml";
+		String datasetUrl = RESOURCE_PATH + "testSimpleTYXGrid.ncml";
 		if (getGridType(datasetUrl, DATATYPE_RH) != GridType.TYX) {
 			fail("Should be TYX dataset.");
 		}
@@ -33,7 +40,7 @@ public class GridTypeTest {
 	
 	@Test
 	public void testSimpleTZYXGrid() throws IOException {
-		String datasetUrl = "/home/jordan/ncml/testSimpleTZYXGrid.ncml";
+		String datasetUrl = RESOURCE_PATH + "testSimpleTZYXGrid.ncml";
 		if (getGridType(datasetUrl, DATATYPE_RH) != GridType.TZYX) {
 			fail("Should be TZYX dataset.");
 		}
@@ -41,7 +48,7 @@ public class GridTypeTest {
 	
 	@Test
 	public void testSimpleYXGrid() throws IOException {
-		String datasetUrl = "/home/jordan/ncml/testSimpleYXGrid.ncml";
+		String datasetUrl = RESOURCE_PATH + "testSimpleYXGrid.ncml";
 		if (getGridType(datasetUrl, DATATYPE_RH) != GridType.YX) {
 			fail("Should be YX dataset.");
 		}
@@ -49,7 +56,7 @@ public class GridTypeTest {
 	
 	@Test
 	public void testSimpleZYXGrid() throws IOException {
-		String datasetUrl = "/home/jordan/ncml/testSimpleZYXGrid.ncml";
+		String datasetUrl = RESOURCE_PATH + "testSimpleZYXGrid.ncml";
 		if (getGridType(datasetUrl, DATATYPE_RH) != GridType.ZYX) {
 			fail("Should be ZYX dataset");
 		}
@@ -63,7 +70,7 @@ public class GridTypeTest {
 	@Test
 	@Ignore // throws null pointer exception // cannot find dataset
 	public void testSimpleOtherGrid() throws IOException {
-		String datasetUrl = "/home/jordan/ncml/testSimpleOtherGrid.ncml";
+		String datasetUrl = RESOURCE_PATH + "testSimpleOtherGrid.ncml";
 		GridType gt = getGridType(datasetUrl, DATATYPE_RH);
 		if (gt != GridType.OTHER) {
 			fail("Should be OTHER dataset not " + gt.toString());
