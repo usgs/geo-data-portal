@@ -39,7 +39,9 @@ import gov.usgs.gdp.analysis.GeoToolsNetCDFUtility;
 import gov.usgs.gdp.analysis.grid.FeatureCoverageWeightedGridStatisticsWriter.Statistic;
 import java.io.OutputStreamWriter;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
+import ucar.nc2.iosp.geotiff.GeoTiffIOServiceProvider;
 
 public class FeatureCoverageWeightedGridStatistics {
 
@@ -68,6 +70,8 @@ public class FeatureCoverageWeightedGridStatistics {
         try {
             gdt = gdt.makeSubset(timeRange, null, llr, 1, 1, 1);
         } catch (InvalidRangeException ex) {
+            System.out.println(gdt.getCoordinateSystem().getLatLonBoundingBox());
+            System.out.println(llr);
             Logger.getLogger(FeatureCoverageWeightedGridStatistics.class.getName()).log(Level.SEVERE, null, ex);
             throw ex;  // rethrow requested by IS
         }
@@ -252,16 +256,20 @@ public class FeatureCoverageWeightedGridStatistics {
 
     // SIMPLE inline testing only, need unit tests...
     public static void main(String[] args) throws Exception {
+
+        NetcdfFile.registerIOProvider(GeoTiffIOServiceProvider.class);
+        
         String ncLocation =
 //                "http://runoff.cr.usgs.gov:8086/thredds/dodsC/hydro/national/2.5arcmin";
 //                "http://internal.cida.usgs.gov/thredds/dodsC/misc/us_gfdl.A1.monthly.Tavg.1960-2099.nc";
 //                "http://localhost:18080/thredds/dodsC/ncml/gridded_obs.daily.Wind.ncml";
 //                "/Users/tkunicki/Downloads/thredds-data/CONUS_2001-2010.ncml";
 //                "/Users/tkunicki/Downloads/thredds-data/gridded_obs.daily.Wind.ncml";
-                "dods://igsarm-cida-javadev1.er.usgs.gov:8081/thredds/dodsC/qpe/ncrfc.ncml";
+//                "dods://igsarm-cida-javadev1.er.usgs.gov:8081/thredds/dodsC/qpe/ncrfc.ncml";
 //                "dods://internal.cida.usgs.gov/thredds/dodsC/qpe/GRID.0530/200006_ncrfc_240ss.grd";
 //                "dods://michigan.glin.net:8080/thredds/dodsC/glos/all/GLCFS/Forecast/m201010900.out1.nc";
 //                "dods://michigan.glin.net:8080/thredds/dodsC/glos/glcfs/michigan/ncas_his2d";
+                "/Users/tkunicki/x.tiff";
 
         String sfLocation =
 //                "/Users/tkunicki/Projects/GDP/GDP/src/main/resources/Sample_Files/Shapefiles/serap_hru_239.shp";
@@ -277,9 +285,10 @@ public class FeatureCoverageWeightedGridStatistics {
 
         String variableName =
 //                "Wind";
-                "P06M_NONE";
+//                "P06M_NONE";
 //                "eta";
 //                "depth";
+                "I0B0";
 
         Range timeRange =
                 new Range(30, 39);

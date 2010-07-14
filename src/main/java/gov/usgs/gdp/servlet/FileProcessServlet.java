@@ -70,7 +70,6 @@ import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
-import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.referencing.CRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -84,22 +83,13 @@ import thredds.catalog.InvAccess;
 import thredds.catalog.InvCatalog;
 import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.ServiceType;
-import ucar.ma2.Array;
-import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
-import ucar.ma2.Section;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
-import ucar.nc2.Dimension;
-import ucar.nc2.ProxyReader;
-import ucar.nc2.Variable;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
-import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
@@ -111,19 +101,24 @@ import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
 import ucar.nc2.units.DateRange;
-import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.NamedObject;
 
-import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.GeometryFactory;
+import ucar.nc2.NetcdfFile;
 
 /**
  * Servlet implementation class FileProcessServlet
  */
 public class FileProcessServlet extends HttpServlet {
 	private static org.apache.log4j.Logger log = Logger.getLogger(FileProcessServlet.class);
+
+    static {
+        try {
+            NetcdfFile.registerIOProvider(ucar.nc2.iosp.geotiff.GeoTiffIOServiceProvider.class);
+        } catch (Exception e) { }
+    }
+
     /**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
@@ -250,116 +245,6 @@ public class FileProcessServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	    doGet(request, response);
 	}
-
-	@SuppressWarnings("unused")
-	private final static class ShapedGridReader implements ProxyReader {
-
-        private GeoGrid grid;
-        private Geometry shape;
-        private GeometryFactory geometryFactory;
-        private CoordinateAxis1D xAxis;
-        private CoordinateAxis1D yAxis;
-        private double[][] percentOfShapeOverlappingCells;
-
-	public ShapedGridReader(GeoGrid gridParam, Geometry shapeParam) {
-            this.grid = gridParam;
-            this.shape = shapeParam;
-            this.geometryFactory = JTSFactoryFinder.getGeometryFactory(null);
-
-            GridCoordSystem gcs = this.grid.getCoordinateSystem();
-            this.xAxis = (CoordinateAxis1D) gcs.getXHorizAxis();
-            this.yAxis = (CoordinateAxis1D) gcs.getYHorizAxis();
-
-            this.percentOfShapeOverlappingCells = new double[(int) this.xAxis.getSize()][(int) this.yAxis.getSize()];
-            for (int x = 0; x < this.xAxis.getSize(); ++x) {
-                for (int y = 0; y < this.yAxis.getSize(); ++y) {
-                    this.percentOfShapeOverlappingCells[x][y] = Double.NaN;
-                }
-            }
-        }
-
-        private double getPercentOfShapeOverlappingCell(int xIndex, int yIndex) {
-            if (!Double.isNaN(this.percentOfShapeOverlappingCells[xIndex][yIndex])) {
-                return this.percentOfShapeOverlappingCells[xIndex][yIndex];
-            }
-
-            double[] xCellEdges = this.xAxis.getCoordEdges(xIndex);
-            double[] yCellEdges = this.yAxis.getCoordEdges(yIndex);
-
-            Envelope envelope = new Envelope(xCellEdges[0], xCellEdges[1], yCellEdges[0], yCellEdges[1]);
-            Geometry cellRectangle = this.geometryFactory.toGeometry(envelope);
-
-            Geometry intersection = cellRectangle.intersection(this.shape);
-            this.percentOfShapeOverlappingCells[xIndex][yIndex] = intersection.getArea() / this.shape.getArea();
-            return this.percentOfShapeOverlappingCells[xIndex][yIndex];
-        }
-
-        @Override
-        public Array read(Variable mainv, CancelTask cancelTask) throws IOException {
-            if (!(mainv instanceof VariableDS) || ((VariableDS) mainv).getOriginalVariable() != this.grid.getVariable()) {
-                throw new RuntimeException("mainv is not a proxy for the grid's underlying Variable.");
-            }
-
-            Array data = this.grid.getVariable().read();
-
-            Dimension xDim = this.grid.getXDimension();
-            Dimension yDim = this.grid.getYDimension();
-            List<Dimension> varDims = this.grid.getDimensions();
-
-            int xDimIndex = varDims.indexOf(xDim);  // The index of the X dimension in grid's list of dimensions.
-            int yDimIndex = varDims.indexOf(yDim);  // The index of the Y dimension in grid's list of dimensions.
-
-            for (IndexIterator indexIter = data.getIndexIterator(); indexIter.hasNext();) {
-                indexIter.next();
-                int[] iterPos = indexIter.getCurrentCounter();  // The position of indexIter in data.
-                int xDimPos = iterPos[xDimIndex];               // The X component of iterPos.
-                int yDimPos = iterPos[yDimIndex];               // The Y component of iterPos.
-
-                double percentOfShapeOverlappingCell = getPercentOfShapeOverlappingCell(xDimPos, yDimPos);
-                if (percentOfShapeOverlappingCell == 0) {
-                    indexIter.setDoubleCurrent(-999.0);
-                }
-            }
-
-            return data;
-        }
-
-        @Override
-        public Array read(Variable mainv, Section section, CancelTask cancelTask)
-                throws IOException, InvalidRangeException {
-            if (!(mainv instanceof VariableDS) || ((VariableDS) mainv).getOriginalVariable() != this.grid.getVariable()) {
-                throw new RuntimeException("mainv is not a proxy for the grid's underlying Variable.");
-            }
-
-            Array data = this.grid.getVariable().read(section);
-
-            Dimension xDim = this.grid.getXDimension();
-            Dimension yDim = this.grid.getYDimension();
-            List<Dimension> varDims = this.grid.getDimensions();
-
-            int xDimIndex = varDims.indexOf(xDim);  // The index of the X dimension in grid's list of dimensions.
-            int yDimIndex = varDims.indexOf(yDim);  // The index of the Y dimension in grid's list of dimensions.
-
-            int[] origin = section.getOrigin();
-            int xDimOffset = origin[xDimIndex];
-            int yDimOffset = origin[yDimIndex];
-
-            for (IndexIterator indexIter = data.getIndexIterator(); indexIter.hasNext();) {
-                indexIter.next();
-                int[] iterPos = indexIter.getCurrentCounter();  // The position of indexIter in data.
-                int xDimPos = xDimOffset + iterPos[xDimIndex];  // The X component of iterPos.
-                int yDimPos = yDimOffset + iterPos[yDimIndex];  // The Y component of iterPos.
-
-                double percentOfShapeOverlappingCell = getPercentOfShapeOverlappingCell(xDimPos, yDimPos);
-                if (percentOfShapeOverlappingCell == 0) {
-                    indexIter.setFloatCurrent(-999f);
-                }
-            }
-
-            return data;
-        }
-    }
-
 
 	private FileLocationBean populateFileUpload(HttpServletRequest request)
             throws IOException, InvalidRangeException, AddressException,
@@ -593,254 +478,282 @@ public class FileProcessServlet extends HttpServlet {
 	        delimiterOption = DelimiterOption.getDefault();
 	    }
 
+        if ("WCS".equals(dataSetInterface)) {
+
+            int wcsRequestHashCode = 7;
+            wcsRequestHashCode = 31 * wcsRequestHashCode + (wcsServer == null ? 0 : wcsServer.hashCode());
+            wcsRequestHashCode = 31 * wcsRequestHashCode + (wcsCoverage == null ? 0 : wcsCoverage.hashCode());
+            wcsRequestHashCode = 31 * wcsRequestHashCode + (wcsBoundingBox == null ? 0 : wcsBoundingBox.hashCode());
+            wcsRequestHashCode = 31 * wcsRequestHashCode + (wcsGridCRS == null ? 0 : wcsGridCRS.hashCode());
+            wcsRequestHashCode = 31 * wcsRequestHashCode + (wcsGridOffsets == null ? 0 : wcsGridOffsets.hashCode());
+            wcsRequestHashCode = 31 * wcsRequestHashCode + (wcsResmapleFilter == null ? 0 : wcsResmapleFilter.hashCode());
+            wcsRequestHashCode = 31 * wcsRequestHashCode + (wcsResampleFactor == null ? 0 : wcsResampleFactor.hashCode());
+
+
+            File wcsRequestOutputFile =
+                    new File(System.getProperty("applicationWorkDir"),
+                            Integer.toHexString(wcsRequestHashCode) + ".tiff");
+
+            FileOutputStream fos = null;
+            InputStream coverageIStream = null;
+
+            try {
+
+                // Create WCS request
+                String getCoverageRequest = wcsServer +
+                    "?service=WCS" +
+                    "&version=1.1.1" +
+                    "&request=GetCoverage" +
+                    "&identifier=" + wcsCoverage +
+                    "&boundingBox=" + wcsBoundingBox + "," + wcsGridCRS +
+                    "&gridBaseCRS=" + wcsGridCRS +
+                    "&gridOffsets=" + wcsGridOffsets +
+                    "&format=image/GeoTIFF";
+
+                // Call getCoverage
+                HttpURLConnection httpConnection =
+                    openHttpConnection(new URL(getCoverageRequest), "GET");
+
+                coverageIStream =
+                    getHttpConnectionInputStream(httpConnection);
+
+                Map<String, List<String>> headerFields =
+                    getHttpConnectionHeaderFields(httpConnection);
+
+
+                String boundaryString = null;
+
+                String contentType[] = headerFields.get("Content-Type").get(0).split(" *; *");
+                for (int i = 0; i < contentType.length; i++) {
+                    String field[] = contentType[i].split("=");
+                    if ("boundary".equals(field[0])) {
+                        boundaryString = field[1].substring(1, field[1].length() - 1); // remove quotes
+                    }
+                }
+
+                if (boundaryString == null) throw new IOException(); // TODO: probably change exception thrown
+
+                int part = 0;
+
+                // find second part (coverage) of multi-part response
+                while (part < 2) {
+
+                    String s = readLine(coverageIStream);
+                    if (s == null) throw new IOException();
+
+                    if (("--" + boundaryString).equals(s)) {
+                        part++;
+                    }
+                }
+
+                // actual coverage starts immediately after blank line
+                String line;
+                do {
+                    line = readLine(coverageIStream);
+                } while (!"".equals(line));
+
+
+                // write coverage bytes to file
+                fos = new FileOutputStream(wcsRequestOutputFile);
+
+                String closeTag = "--" + boundaryString + "--\n";
+
+                byte b[] = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = coverageIStream.read(b, 0, 1024)) > 0) {
+
+                    String endString = new String(
+                            Arrays.copyOfRange(b, bytesRead - closeTag.length(),
+                                                  bytesRead));
+
+                    if (closeTag.equals(endString)) {
+                        // Don't write close tag to file
+                        fos.write(b, 0, bytesRead - closeTag.length());
+                        break;
+                    }
+
+                    fos.write(b, 0, bytesRead);
+                }
+
+            } finally {
+                if (fos != null) {
+                    try { fos.close(); }
+                    catch (IOException e) { /* don't care, unrecoverable */ }
+                }
+                if ( coverageIStream != null) {
+                    try { coverageIStream.close(); }
+                    catch (IOException e) { /* don't care, unrecoverable */ }
+                }
+            }
+
+            dataset = wcsRequestOutputFile.toURI().toURL().toString();
+            dataTypes = new String[] { "I0B0" };
+		}
+
 		if ("THREDDS".equals(dataSetInterface)) {
 
-		    String fromTime = from;
-			String toTime = to;
+        } else {
 
-			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-	        df.setTimeZone(TimeZone.getTimeZone("UTC"));
-			Date toDate = new Date();
-			Date fromDate = new Date();
-			boolean parsedDates = false;
-			if (toTime == null || fromTime == null) {
-				toDate = null;
-				fromDate = null;
-				parsedDates = true;
-			} else {
-				try {
-					toDate = df.parse(toTime);
-					fromDate = df.parse(fromTime);
-					parsedDates = true;
-				} catch (ParseException e1) {
-					parsedDates = false;
-					log.debug(e1.getMessage());
-				}
-			}
+        }
 
-			if (!parsedDates) {
-				// return some sort of error
-			}
-			
-				
-			String datasetUrl = dataset;
-			Formatter errorLog = new Formatter();
-			FeatureDataset featureDataset = FeatureDatasetFactoryManager.open(FeatureType.ANY, datasetUrl, null, errorLog);
-	
-			if (featureDataset.getFeatureType() == FeatureType.GRID && featureDataset instanceof GridDataset) {
-				GridDataset gridDataset = (GridDataset)featureDataset;
-				String gridName = dataTypes[0];
-				try {
-					GridDatatype gdt = gridDataset.findGridByName(gridName);
-					Range timeRange = null;
-					try {
-						CoordinateAxis1DTime timeAxis = gdt.getCoordinateSystem().getTimeAxis1D();
-						int timeIndexMin = 0;
-						int timeIndexMax = 0;
-						if (fromDate != null && toDate != null) {
-							timeIndexMin = timeAxis.findTimeIndexFromDate(fromDate);
-							timeIndexMax = timeAxis.findTimeIndexFromDate(toDate);
-							timeRange = new Range(timeIndexMin, timeIndexMax);
-						}
-	
-					} catch (NumberFormatException e) {
-						log.error(e.getMessage());
-					} catch (InvalidRangeException e) {
-						log.error(e.getMessage());
-					}
-	
-			        GroupBy.GridOption groupBy = null;
-			        if (groupById != null) {
-			            try {
-			                groupBy = GroupBy.GridOption.valueOf(groupById);
-		                } catch (IllegalArgumentException e) { /* failure handled below */}
-			        }
-			        if (groupBy == null) {
-			            groupBy = GroupBy.GridOption.getDefault();
-			        }
-	
-	                List<Statistic> statisticList = new ArrayList<Statistic>();
-	                if (outputStats != null && outputStats.length > 0) {
-	                    for(int i = 0; i < outputStats.length; ++i) {
-	                        // may throw exception if outputStats value doesn't
-	                        // map to Statistic enum value, ivan says let percolate up.
-	                        statisticList.add(Statistic.valueOf(outputStats[i]));
-	                    }
-	                }
-	
-                    if (statisticList.isEmpty()) {
-	                    throw new IllegalArgumentException("no output statistics selected");
-	                }
-	
+        String fromTime = from;
+        String toTime = to;
+
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        df.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date toDate = new Date();
+        Date fromDate = new Date();
+        boolean parsedDates = false;
+        if (toTime == null || fromTime == null) {
+            toDate = null;
+            fromDate = null;
+            parsedDates = true;
+        } else {
+            try {
+                toDate = df.parse(toTime);
+                fromDate = df.parse(fromTime);
+                parsedDates = true;
+            } catch (ParseException e1) {
+                parsedDates = false;
+                log.debug(e1.getMessage());
+            }
+        }
+
+        if (!parsedDates) {
+            // return some sort of error
+        }
+
+
+        String datasetUrl = dataset;
+        Formatter errorLog = new Formatter();
+        FeatureDataset featureDataset = FeatureDatasetFactoryManager.open(FeatureType.ANY, datasetUrl, null, errorLog);
+
+        if (featureDataset.getFeatureType() == FeatureType.GRID && featureDataset instanceof GridDataset) {
+            GridDataset gridDataset = (GridDataset)featureDataset;
+            String gridName = dataTypes[0];
+            try {
+                GridDatatype gdt = gridDataset.findGridByName(gridName);
+                Range timeRange = null;
+                try {
+                    CoordinateAxis1DTime timeAxis = gdt.getCoordinateSystem().getTimeAxis1D();
+                    int timeIndexMin = 0;
+                    int timeIndexMax = 0;
+                    if (fromDate != null && toDate != null) {
+                        timeIndexMin = timeAxis.findTimeIndexFromDate(fromDate);
+                        timeIndexMax = timeAxis.findTimeIndexFromDate(toDate);
+                        timeRange = new Range(timeIndexMin, timeIndexMax);
+                    }
+
+                } catch (NumberFormatException e) {
+                    log.error(e.getMessage());
+                } catch (InvalidRangeException e) {
+                    log.error(e.getMessage());
+                }
+
+                GroupBy.GridOption groupBy = null;
+                if (groupById != null) {
+                    try {
+                        groupBy = GroupBy.GridOption.valueOf(groupById);
+                    } catch (IllegalArgumentException e) { /* failure handled below */}
+                }
+                if (groupBy == null) {
+                    groupBy = GroupBy.GridOption.getDefault();
+                }
+
+                List<Statistic> statisticList = new ArrayList<Statistic>();
+                if (outputStats != null && outputStats.length > 0) {
+                    for(int i = 0; i < outputStats.length; ++i) {
+                        // may throw exception if outputStats value doesn't
+                        // map to Statistic enum value, ivan says let percolate up.
+                        statisticList.add(Statistic.valueOf(outputStats[i]));
+                    }
+                }
+
+                if (statisticList.isEmpty()) {
+                    throw new IllegalArgumentException("no output statistics selected");
+                }
+
+                BufferedWriter writer = null;
+                try {
+
+                    writer = new BufferedWriter(new FileWriter(new File(System.getProperty("applicationWorkDir"), outputFile)));
+
+                    // *** long running task ***
+                    FeatureCoverageWeightedGridStatistics.generate(
+                            featureCollection,
+                            attributeName,
+                            gridDataset,
+                            gridName,
+                            timeRange,
+                            statisticList,
+                            writer,
+                            groupBy == GroupBy.GridOption.statistics,
+                            delimiterOption.delimiter);
+
+                } finally {
+                    if (writer != null) {
+                        try { writer.close(); } catch (IOException e) { /* get bent */ }
+                    }
+                }
+
+            } finally {
+                try {
+                    if (gridDataset != null) gridDataset.close();
+                } catch (IOException e) { /* get bent */ }
+            }
+        } else if (featureDataset.getFeatureType() == FeatureType.STATION && featureDataset instanceof FeatureDatasetPoint) {
+            FeatureDatasetPoint fdp = (FeatureDatasetPoint)featureDataset;
+            List<ucar.nc2.ft.FeatureCollection> fcl = fdp.getPointFeatureCollectionList();
+            if (fcl != null && fcl.size() == 1) {
+                ucar.nc2.ft.FeatureCollection fc = fcl.get(0);
+                if (fc != null && fc instanceof StationTimeSeriesFeatureCollection) {
+
+                    StationTimeSeriesFeatureCollection stsfc =
+                        (StationTimeSeriesFeatureCollection)fc;
+
+                    List<VariableSimpleIF> variableList = new ArrayList<VariableSimpleIF>();
+                    for(String variableName : dataTypes) {
+                        VariableSimpleIF variable = featureDataset.getDataVariable(variableName);
+                        if (variable != null) {
+                            variableList.add(variable);
+                        } else {
+                            // do we care?
+                        }
+                    }
+
+                    GroupBy.StationOption groupBy = null;
+                    if (groupById != null) {
+                        try {
+                            groupBy = GroupBy.StationOption.valueOf(groupById);
+                        } catch (IllegalArgumentException e) { /* failure handled below */}
+                    }
+                    if (groupBy == null) {
+                        groupBy = GroupBy.StationOption.getDefault();
+                    }
+
                     BufferedWriter writer = null;
                     try {
-    
                         writer = new BufferedWriter(new FileWriter(new File(System.getProperty("applicationWorkDir"), outputFile)));
-
-                        // *** long running task ***
-                        FeatureCoverageWeightedGridStatistics.generate(
+                        StationDataCSVWriter.write(
                                 featureCollection,
-                                attributeName,
-                                gridDataset,
-                                gridName,
-                                timeRange,
-	                            statisticList,
+                                stsfc,
+                                variableList,
+                                new DateRange(fromDate, toDate),
                                 writer,
-	                            groupBy == GroupBy.GridOption.statistics,
-	                            delimiterOption.delimiter);
-	
-					} finally {
-						if (writer != null) {
-							try { writer.close(); } catch (IOException e) { /* get bent */ }
-						}
-					}
-	
-				} finally {
-					try {
-						if (gridDataset != null) gridDataset.close();
-					} catch (IOException e) { /* get bent */ }
-				}
-			} else if (featureDataset.getFeatureType() == FeatureType.STATION && featureDataset instanceof FeatureDatasetPoint) {
-				FeatureDatasetPoint fdp = (FeatureDatasetPoint)featureDataset;
-				List<ucar.nc2.ft.FeatureCollection> fcl = fdp.getPointFeatureCollectionList();
-				if (fcl != null && fcl.size() == 1) {
-					ucar.nc2.ft.FeatureCollection fc = fcl.get(0);
-					if (fc != null && fc instanceof StationTimeSeriesFeatureCollection) {
-	
-						StationTimeSeriesFeatureCollection stsfc =
-							(StationTimeSeriesFeatureCollection)fc;
-	
-						List<VariableSimpleIF> variableList = new ArrayList<VariableSimpleIF>();
-						for(String variableName : dataTypes) {
-							VariableSimpleIF variable = featureDataset.getDataVariable(variableName);
-							if (variable != null) {
-								variableList.add(variable);
-							} else {
-								// do we care?
-							}
-						}
-	
-		                GroupBy.StationOption groupBy = null;
-		                if (groupById != null) {
-		                    try {
-		                        groupBy = GroupBy.StationOption.valueOf(groupById);
-		                    } catch (IllegalArgumentException e) { /* failure handled below */}
-		                }
-		                if (groupBy == null) {
-		                    groupBy = GroupBy.StationOption.getDefault();
-		                }
-	
-						BufferedWriter writer = null;
-						try {
-							writer = new BufferedWriter(new FileWriter(new File(System.getProperty("applicationWorkDir"), outputFile)));
-							StationDataCSVWriter.write(
-									featureCollection,
-									stsfc,
-									variableList,
-									new DateRange(fromDate, toDate),
-									writer,
-	                                groupBy == StationOption.variable,
-	                                delimiterOption.delimiter);
-						} finally {
-							if (writer != null) { try { writer.close(); } catch (IOException e) { /* swallow, don't mask exception */ } }
-						}
-	
-					} else {
-						// wtf?  I am gonna punch Ivan...
-					}
-				} else {
-					// error, what do we do when more than one FeatureCollection?  does this happen?  If yes, punch Ivan.
-				}
-	
-			}
-		} else if ("WCS".equals(dataSetInterface)) {
-	
-			// Create WCS request
-			String getCoverageRequest = wcsServer + 
-				"?service=WCS" +
-				"&version=1.1.1" +
-				"&request=GetCoverage" +
-				"&identifier=" + wcsCoverage +
-				"&boundingBox=" + wcsBoundingBox + "," + wcsGridCRS +
-				"&gridBaseCRS=" + wcsGridCRS +
-				"&gridOffsets=0.1,-0.1" +
-				"&format=image/GeoTIFF";
-			
-			// Call getCoverage
-			HttpURLConnection httpConnection = 
-				openHttpConnection(new URL(getCoverageRequest), "GET");
-			
-			InputStream coverageIStream = 
-				getHttpConnectionInputStream(httpConnection);
-			
-			Map<String, List<String>> headerFields = 
-				getHttpConnectionHeaderFields(httpConnection);
-			
-			
-			String boundaryString = null;
-			
-			String contentType[] = headerFields.get("Content-Type").get(0).split(" *; *");
-			for (int i = 0; i < contentType.length; i++) {
-				String field[] = contentType[i].split("=");
-				if ("boundary".equals(field[0])) {
-					boundaryString = field[1].substring(1, field[1].length() - 1); // remove quotes
-				}
-			}
-			
-			if (boundaryString == null) throw new IOException(); // TODO: probably change exception thrown
-			
-			int part = 0;
-			
-			// find second part (coverage) of multi-part response
-			while (part < 2) {
-				
-				String s = readLine(coverageIStream);
-				if (s == null) throw new IOException();
-				
-				if (("--" + boundaryString).equals(s)) {
-					part++;
-				}
-			}
-			
-			// actual coverage starts immediately after blank line
-			String line;
-			do {
-				line = readLine(coverageIStream);
-			} while (!"".equals(line));
-			
-			
-			// write coverage bytes to file
-			//File f = new File(System.getProperty("applicationUserSpaceDir") 
-			//		+ FileHelper.getSeparator() + userDirectory + "/coverage.tiff");
-			File f = new File("/Users/razoerb/Desktop/blah.tiff");
-			FileOutputStream fos = new FileOutputStream(f);
-			
-			String closeTag = "--" + boundaryString + "--\n";
-			
-			byte b[] = new byte[1024];
-			int bytesRead;
-			while ((bytesRead = coverageIStream.read(b, 0, 1024)) > 0) {
-				
-				String endString = new String(
-						Arrays.copyOfRange(b, bytesRead - closeTag.length(),
-										      bytesRead));
-				
-				if (closeTag.equals(endString)) {
-					// Don't write close tag to file
-					fos.write(b, 0, bytesRead - closeTag.length());
-					break;
-				}
+                                groupBy == StationOption.variable,
+                                delimiterOption.delimiter);
+                    } finally {
+                        if (writer != null) { try { writer.close(); } catch (IOException e) { /* swallow, don't mask exception */ } }
+                    }
 
-				fos.write(b, 0, bytesRead);
-			}
-			
-			fos.close();
-			coverageIStream.close();
-			
-			
-			// Process
-			// send file reference to processing code
-		}
+                } else {
+                    // wtf?  I am gonna punch Ivan...
+                }
+            } else {
+                // error, what do we do when more than one FeatureCollection?  does this happen?  If yes, punch Ivan.
+            }
+
+        }
 		
 		FileHelper.copyFileToFile(new File(System.getProperty("applicationWorkDir") + outputFile), uploadDirectory.getPath(), true);
 		

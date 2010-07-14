@@ -257,13 +257,6 @@
             <version>2.1.0</version>
         </dependency>
         <dependency>
-        	<groupId>jackson</groupId>
-        	<artifactId>jackson-asl</artifactId>
-        	<version>0.9.3</version>
-        	<type>jar</type>
-        	<scope>compile</scope>
-        </dependency>
-        <dependency>
         	<groupId>org.geotools</groupId>
         	<artifactId>gt-xml</artifactId>
         	<version>${geotools.version}</version>
@@ -291,6 +284,16 @@
         	<version>0.9.5</version>
         	<type>jar</type>
         	<scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-tiff</artifactId>
+            <version>1.0.4</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>2.2</version>
         </dependency>
     </dependencies>
 </project>

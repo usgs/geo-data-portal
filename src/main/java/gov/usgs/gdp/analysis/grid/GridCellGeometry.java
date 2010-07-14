@@ -72,7 +72,7 @@ public class GridCellGeometry {
                 new PrecisionModel(PrecisionModel.FLOATING),
                 8307);
 
-        final CoordinateBuilder coordinateBuilder = generateCoordinateBuider();
+        final CoordinateBuilder coordinateBuilder = generateCoordinateBuilder();
         final GridCellEdgeProvider cellEdgeProviderX = generateGridCellEdgeProviderX();
         final GridCellEdgeProvider cellEdgeProviderY = generateGridCellEdgeProviderY();
         
@@ -127,13 +127,25 @@ public class GridCellGeometry {
         }
     }
 
-    protected CoordinateBuilder generateCoordinateBuider() {
-        return gridCoordSystem.isLatLon()
-                ? new CoordinateBuilder()
-                : new ProjectedCoordinateBuilder();
+    public CoordinateBuilder generateCoordinateBuilder() {
+        return generateCoordinateBuider(gridCoordSystem);
     }
 
-    protected GridCellEdgeProvider generateGridCellEdgeProviderX() {
+    public GridCellEdgeProvider generateGridCellEdgeProviderX() {
+        return generateGridCellEdgeProviderX(gridCoordSystem);
+    }
+
+    public GridCellEdgeProvider generateGridCellEdgeProviderY() {
+        return generateGridCellEdgeProviderY(gridCoordSystem);
+    }
+
+    public static CoordinateBuilder generateCoordinateBuider(GridCoordSystem gridCoordSystem) {
+        return gridCoordSystem.isLatLon()
+                ? new CoordinateBuilder()
+                : new ProjectedCoordinateBuilder(gridCoordSystem);
+    }
+
+    public static GridCellEdgeProvider generateGridCellEdgeProviderX(GridCoordSystem gridCoordSystem) {
         CoordinateAxis axis = gridCoordSystem.getXHorizAxis();
         if (axis instanceof CoordinateAxis1D) {
             return new GridCellEdgeProviderAxis1DX((CoordinateAxis1D)axis);
@@ -144,7 +156,7 @@ public class GridCellGeometry {
         }
     }
 
-    protected GridCellEdgeProvider generateGridCellEdgeProviderY() {
+    public static GridCellEdgeProvider generateGridCellEdgeProviderY(GridCoordSystem gridCoordSystem) {
         CoordinateAxis axis = gridCoordSystem.getYHorizAxis();
         if (axis instanceof CoordinateAxis1D) {
             return new GridCellEdgeProviderAxis1DY((CoordinateAxis1D)axis);
@@ -155,20 +167,20 @@ public class GridCellGeometry {
         }
     }
 
-    protected class CoordinateBuilder {
+    public static class CoordinateBuilder {
 
         public Coordinate getCoordinate(double x, double y) {
             return new Coordinate(x, y);
         }
     }
 
-    protected class ProjectedCoordinateBuilder extends CoordinateBuilder {
+    public static class ProjectedCoordinateBuilder extends CoordinateBuilder {
 
         private Projection projection;
         private ProjectionPointImpl projectionPoint;
         private LatLonPointImpl latLonPoint;
 
-        public ProjectedCoordinateBuilder() {
+        public ProjectedCoordinateBuilder(GridCoordSystem gridCoordSystem) {
             projection = gridCoordSystem.getProjection();
             projectionPoint = new ProjectionPointImpl();
             latLonPoint = new LatLonPointImpl();
@@ -182,12 +194,12 @@ public class GridCellGeometry {
         }
     }
 
-    protected interface GridCellEdgeProvider {
+    public interface GridCellEdgeProvider {
         public int getCellEdgeCount();
         public double getCellEdge(int xCellIndex, int yCellIndex);
     }
 
-    protected class GridCellEdgeProviderAxis1DX implements GridCellEdgeProvider {
+    public static class GridCellEdgeProviderAxis1DX implements GridCellEdgeProvider {
 
         private double[] cellEdges;
 
@@ -206,7 +218,7 @@ public class GridCellGeometry {
         }
     }
 
-    protected class GridCellEdgeProviderAxis1DY implements GridCellEdgeProvider {
+    public static class GridCellEdgeProviderAxis1DY implements GridCellEdgeProvider {
 
         private double[] cellEdges;
 
@@ -225,7 +237,7 @@ public class GridCellGeometry {
         }
     }
 
-    private class GridCellEdgeProviderAxis2DX implements GridCellEdgeProvider {
+    public static class GridCellEdgeProviderAxis2DX implements GridCellEdgeProvider {
 
         private ArrayDouble.D2 cellEdges;
 
@@ -245,7 +257,7 @@ public class GridCellGeometry {
         }
     }
 
-    private class GridCellEdgeProviderAxis2DY implements GridCellEdgeProvider {
+    public static class GridCellEdgeProviderAxis2DY implements GridCellEdgeProvider {
 
         private ArrayDouble.D2 cellEdges;
 

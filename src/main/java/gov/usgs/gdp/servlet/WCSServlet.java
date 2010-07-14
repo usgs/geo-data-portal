@@ -1,5 +1,7 @@
 package gov.usgs.gdp.servlet;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
 import gov.usgs.gdp.bean.AckBean;
 import gov.usgs.gdp.bean.ErrorBean;
 import gov.usgs.gdp.bean.WCSCoverageInfoBean;
@@ -19,13 +21,16 @@ import org.apache.log4j.Logger;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
+import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.geometry.BoundingBox;
+import org.opengis.geometry.DirectPosition;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
 /**
@@ -38,7 +43,7 @@ public class WCSServlet extends HttpServlet {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static final int MAX_COVERAGE_SIZE = 1 << 30; // 1 GB
+	private static final int MAX_COVERAGE_SIZE = 64 << 20; // 64 MB
 	
 	private static org.apache.log4j.Logger log = Logger.getLogger(WCSServlet.class);
        
@@ -91,15 +96,35 @@ public class WCSServlet extends HttpServlet {
 			double x2 = Double.parseDouble(upperCornerNums[0]);
 			double y2 = Double.parseDouble(upperCornerNums[1]);
 
-    		ReferencedEnvelope gridBounds, transformedShapefileBounds;
+    		ReferencedEnvelope gridBounds, featureXBounds;
     		CoordinateReferenceSystem gridCRS;
     		
 			try {
 				gridCRS = CRS.decode(crs);
-	    		gridBounds = new ReferencedEnvelope(y1, y2, x1, x2, gridCRS);
+	    		gridBounds = new ReferencedEnvelope(x1, x2, y1, y2, gridCRS);
+
+                MathTransform transform = CRS.findMathTransform(
+                        featureSource.getBounds().getCoordinateReferenceSystem(),
+                        gridCRS,
+                        true);
+
+                ReferencedEnvelope featureBounds = featureSource.getBounds();
+                DirectPosition lowerDirectPostion = featureBounds.getLowerCorner();
+                DirectPosition upperDirectPostion = featureBounds.getUpperCorner();
+
+                Coordinate lowerXCorner = new Coordinate();
+                Coordinate upperXCorner = new Coordinate();
+                JTS.transform(new Coordinate(
+                        lowerDirectPostion.getOrdinate(1),
+                        lowerDirectPostion.getOrdinate(0)),
+                        lowerXCorner, transform);
+                JTS.transform(new Coordinate(
+                        upperDirectPostion.getOrdinate(1),
+                        upperDirectPostion.getOrdinate(0)),
+                        upperXCorner, transform);
 				
-				transformedShapefileBounds = 
-					featureSource.getBounds().transform(gridCRS, false);
+				featureXBounds = new ReferencedEnvelope(new Envelope(lowerXCorner, upperXCorner), gridCRS);
+
 			} catch (TransformException e1) {
 				sendErrorReply(response, ErrorBean.ERR_CANNOT_COMPARE_GRID_AND_GEOM);
 				return;
@@ -112,9 +137,9 @@ public class WCSServlet extends HttpServlet {
 			int minResamplingFactor;
 			String units, boundingBox;
     		
-    		// Explicitly cast to BoundingBox because there are 
+    		// Explicitly cast to BoundingBox because there are
 			// ambiguous 'contains' methods
-    		if (!gridBounds.contains((BoundingBox) transformedShapefileBounds)) {
+    		if (!gridBounds.contains((BoundingBox) featureXBounds)) {
     			fullyCovers = false;
     		} else {
     			fullyCovers = true;
@@ -141,8 +166,8 @@ public class WCSServlet extends HttpServlet {
 				dataTypeSize = 8;
 			}
     		
-			double size = (transformedShapefileBounds.getHeight() / yOffset) *
-						  (transformedShapefileBounds.getWidth()  / xOffset) *
+			double size = (featureXBounds.getHeight() / yOffset) *
+						  (featureXBounds.getWidth()  / xOffset) *
 						  dataTypeSize;
 			
 			if (size > MAX_COVERAGE_SIZE) {
@@ -154,10 +179,10 @@ public class WCSServlet extends HttpServlet {
 			}
 			
 			units = "blah";
-			boundingBox = Double.toString(transformedShapefileBounds.getMinX()) + "," +
-						  Double.toString(transformedShapefileBounds.getMinY()) + "," +
-						  Double.toString(transformedShapefileBounds.getMaxX()) + "," +
-						  Double.toString(transformedShapefileBounds.getMaxY());
+			boundingBox = Double.toString(featureXBounds.getMinX()) + "," +
+						  Double.toString(featureXBounds.getMinY()) + "," +
+						  Double.toString(featureXBounds.getMaxX()) + "," +
+						  Double.toString(featureXBounds.getMaxY());
 			
 			
 			WCSCoverageInfoBean bean = new WCSCoverageInfoBean(minResamplingFactor,
