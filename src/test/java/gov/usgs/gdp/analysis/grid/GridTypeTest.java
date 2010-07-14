@@ -22,7 +22,6 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
  */
 public class GridTypeTest {
 
-	//private String netCDFFile = "http://internal.cida.usgs.gov/thredds/fileServer/misc/us_gfdl.A1.monthly.Tavg.1960-2099.nc";
 	public static final String DATATYPE_RH = "rh";
 	
 	@BeforeClass
