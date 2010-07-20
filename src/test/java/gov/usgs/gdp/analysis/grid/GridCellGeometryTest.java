@@ -8,6 +8,7 @@ import java.util.Formatter;
 import org.junit.Before;
 import org.junit.Test;
 
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
@@ -74,8 +75,10 @@ public class GridCellGeometryTest {
 	@Test
 	public void testProjectionGeometry() throws IOException {
 		String datasetUrl = getResourceDir() + FileHelper.getSeparator() + "testProjectedTYXGrid.ncml";
-		FeatureDataset fd = FeatureDatasetFactoryManager.open(null, datasetUrl, null, new Formatter(System.err));
+		FeatureDataset fd = FeatureDatasetFactoryManager.open(FeatureType.GRID, datasetUrl, null, new Formatter(System.err));
+		if (fd == null) fail("Feature dataset didn't return anything");
 		GridDataset dataset = (GridDataset)fd;
+		if (dataset == null) fail("Cannot access dataset");
 		GridDatatype gdt = dataset.findGridDatatype(GridTypeTest.DATATYPE_RH);
 		gcs = gdt.getCoordinateSystem();
 		gcg = new GridCellGeometry(gcs);
