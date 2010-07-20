@@ -14,7 +14,7 @@ public class GridCellHelper {
 
 	public static void setupResourceDir() {
 		ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        URL sampleFileLocation = cl.getResource("Sample_ncmls" + FileHelper.getSeparator());
+        URL sampleFileLocation = cl.getResource("Sample_files" + FileHelper.getSeparator());
         RESOURCE_PATH = sampleFileLocation.getPath();
 	}
 }

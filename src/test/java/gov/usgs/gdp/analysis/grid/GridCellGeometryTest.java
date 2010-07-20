@@ -62,6 +62,7 @@ public class GridCellGeometryTest {
 	@Test
 	public void testGeometryIndexOOB() {
 		try {
+			// maybe assertNull?
 			assertNotNull("Out of bounds should return proper error", gcg.getCellGeometry(X_SIZE * Y_SIZE));
 		}
 		catch (IndexOutOfBoundsException ioobe) {
