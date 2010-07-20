@@ -12,6 +12,7 @@ import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import java.util.Arrays;
 import javax.imageio.metadata.IIOMetadata;
+import ucar.ma2.Index;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -138,7 +139,7 @@ public class GeoTIFFIIOCoordSys {
 
         modelType = toInt(metadataAdapter.getGeoKey(GTModelTypeGeoKey));
         geographicType = toInt(metadataAdapter.getGeoKey(GeographicTypeGeoKey));
-        rasterType = toInt(metadataAdapter.getGeoKey(GTRasterTypeGeoKey));        
+        rasterType = toInt(metadataAdapter.getGeoKey(GTRasterTypeGeoKey));
 
         if (modelType != ModelTypeGeocentric) {
             GeogCSHandler geogCSHandler = generateGeogCSHandler(metadataAdapter);
@@ -185,11 +186,11 @@ public class GeoTIFFIIOCoordSys {
         }
         return pcsh;
     }
-    
+
     private ProjCSHandler generateProjCSHandlerFromProjectedCSType(
             GeoTiffIIOMetadataAdapter metadata,
             GeogCSHandler geogCSHandler) {
-        
+
         int projectedCSType = toInt(metadata.getGeoKey(ProjectedCSTypeGeoKey));
 
         String gridMappingName = null;
@@ -548,91 +549,158 @@ public class GeoTIFFIIOCoordSys {
             this.ncFile = ncFile;
         }
 
-        public void generate(int index) {
-            if (!generated) {
-
-                Dimension xDim = ncFile.addDimension(
-                        null,new Dimension("x" + index, width));
-                Dimension yDim = ncFile.addDimension(
-                        null, new Dimension("y" + index, height));
-
-                double tiePointX = rasterType == RasterPixelIsPoint ?
-                    tiePoints[3] : tiePoints[3] + pixelScales [0] / 2d;
-                double tiePointY = rasterType == RasterPixelIsPoint ?
-                    tiePoints[4] : tiePoints[4] - pixelScales [1] / 2d;
-
-                String xName = null;
-                String yName = null;
-                String xUnits = null;
-                String yUnits = null;
-                String xStandardName = null;
-                String yStandardName = null;
-                if (modelType == ModelTypeProjected) {
-                    xName = "geoX" + index;
-                    yName = "geoY" + index;
-                    xUnits = "m";
-                    yUnits = "m";
-                    xStandardName = "projection_x_coordinate";
-                    yStandardName = "projection_y_coordinate";
-                } else {
-                    xName = "lon" + index;
-                    yName = "lat" + index;
-                    xUnits = "degrees_east";
-                    yUnits = "degrees_north";
-                }
-
-                Variable xVar = new Variable(ncFile, null, null, xName);
-                xVar.setDataType(DataType.DOUBLE);
-                xVar.setDimensions(xDim.getName());
-                xVar.addAttribute(new Attribute("units", xUnits));
-                if (xStandardName != null) {
-                    xVar.addAttribute(new Attribute("standard_name", xStandardName));
-                }
-                xVar.setCachedData(
-                        Array.makeArray(
-                                DataType.DOUBLE,
-                                width,
-                                tiePointX, pixelScales[0]), false);
-                ncFile.addVariable(null, xVar);
-
-                Variable yVar = new Variable(ncFile, null, null, yName);
-                yVar.setDataType(DataType.DOUBLE);
-                yVar.setDimensions(yDim.getName());
-                yVar.addAttribute(new Attribute("units", yUnits));
-                if (yStandardName != null) {
-                    yVar.addAttribute(new Attribute("standard_name", yStandardName));
-                }
-                yVar.setCachedData(
-                        Array.makeArray(
-                                DataType.DOUBLE,
-                                height,
-                                tiePointY, pixelScales[1]), false);
-                ncFile.addVariable(null, yVar);
-
-
-                dimensionsAsString = yDim.getName() + " " + xDim.getName();
-                coordinatesAsString = yVar.getName() + " " + xVar.getName();
-
-                generated = true;
-
-            } else {
+        public synchronized void generate(int index) {
+            if (generated) {
                 throw new IllegalStateException("Coordinate system already generated for this instance");
             }
+
+            Dimension xDim = ncFile.addDimension(
+                    null,new Dimension("x" + index, width));
+            Dimension yDim = ncFile.addDimension(
+                    null, new Dimension("y" + index, height));
+
+            double tiePointXCenter = rasterType == RasterPixelIsPoint ?
+                    tiePoints[3] :
+                    tiePoints[3] + pixelScales[0] / 2d;
+            double tiePointYCenter = rasterType == RasterPixelIsPoint ?
+                    tiePoints[4] :
+                    tiePoints[4] - pixelScales[1] / 2d;
+
+            String xName = null;
+            String yName = null;
+            String xUnits = null;
+            String yUnits = null;
+            String xStandardName = null;
+            String yStandardName = null;
+            if (modelType == ModelTypeProjected) {
+                xName = "geoX" + index;
+                yName = "geoY" + index;
+                xUnits = "m";
+                yUnits = "m";
+                xStandardName = "projection_x_coordinate";
+                yStandardName = "projection_y_coordinate";
+            } else {
+                xName = "lon" + index;
+                yName = "lat" + index;
+                xUnits = "degrees_east";
+                yUnits = "degrees_north";
+                xStandardName = "longitude";
+                yStandardName = "latitude";
+            }
+
+            Variable xVar = new Variable(ncFile, null, null, xName);
+            xVar.setDataType(DataType.DOUBLE);
+            xVar.setDimensions(xDim.getName());
+            xVar.addAttribute(new Attribute("units", xUnits));
+            xVar.addAttribute(new Attribute("standard_name", xStandardName));
+            xVar.setCachedData(
+                    Array.makeArray(
+                        DataType.DOUBLE,
+                        width,
+                        tiePointXCenter,
+                        pixelScales[0]),
+                    false);
+            ncFile.addVariable(null, xVar);
+
+            Variable yVar = new Variable(ncFile, null, null, yName);
+            yVar.setDataType(DataType.DOUBLE);
+            yVar.setDimensions(yDim.getName());
+            yVar.addAttribute(new Attribute("units", yUnits));
+            yVar.addAttribute(new Attribute("standard_name", yStandardName));
+            yVar.setCachedData(
+                    Array.makeArray(
+                        DataType.DOUBLE,
+                        height,
+                        tiePointYCenter,
+                        -pixelScales[1]),
+                    false);
+            ncFile.addVariable(null, yVar);
+
+            /* code below is functional but appears unneeded */
+//            if (rasterType == RasterPixelIsArea) {
+//                Dimension boundsDim = ncFile.getRootGroup().findDimension("bounds");
+//                if (boundsDim == null) {
+//                    boundsDim = ncFile.addDimension(
+//                        null, new Dimension("bounds", 2));
+//                }
+//
+//                // X Bounds
+//                {
+//                    Variable xBoundsVar = new Variable(ncFile, null, null, xVar.getName() + "_bounds");
+//                    xBoundsVar.setDataType(DataType.DOUBLE);
+//                    xBoundsVar.setDimensions(xDim.getName() + " " + boundsDim.getName());
+//
+//                    xVar.addAttribute(new Attribute("bounds", xBoundsVar.getName()));
+//
+//                    int xBoundsCount = width * 2;
+//                    double[] xBounds = new double[xBoundsCount];
+//                    double xBound = tiePoints[3];
+//                    xBounds[0] = xBound;
+//                    for (int xBoundsIndex = 1; xBoundsIndex < xBoundsCount - 1; /* incremented in body */ ) {
+//                        xBound += pixelScales[0];
+//                        xBounds[xBoundsIndex++] = xBound;
+//                        xBounds[xBoundsIndex++] = xBound;
+//                    }
+//                    xBound += pixelScales[0];
+//                    xBounds[xBoundsCount - 1] = xBound;
+//                    xBoundsVar.setCachedData(
+//                            Array.factory(
+//                                DataType.DOUBLE,
+//                                new int[] { width, 2 },
+//                                xBounds),
+//                            false);
+//                    ncFile.addVariable(null, xBoundsVar);
+//                }
+//
+//                // Y Bounds
+//                {
+//                    Variable yBoundsVar = new Variable(ncFile, null, null, yVar.getName() + "_bounds");
+//                    yBoundsVar.setDataType(DataType.DOUBLE);
+//                    yBoundsVar.setDimensions(yDim.getName() + " " + boundsDim.getName());
+//
+//                    yVar.addAttribute(new Attribute("bounds", yBoundsVar.getName()));
+//
+//                    int yBoundsCount = height * 2;
+//                    double[] yBounds = new double[yBoundsCount];
+//                    double yBound = tiePoints[4];
+//                    yBounds[0] = yBound;
+//                    for (int yBoundsIndex = 1; yBoundsIndex < yBoundsCount - 1; /* incremented in body */ ) {
+//                        yBound -= pixelScales[1];
+//                        yBounds[yBoundsIndex++] = yBound;
+//                        yBounds[yBoundsIndex++] = yBound;
+//                    }
+//                    yBound -= pixelScales[1];
+//                    yBounds[yBoundsCount - 1] = yBound;
+//                    yBoundsVar.setCachedData(
+//                            Array.factory(
+//                                DataType.DOUBLE,
+//                                new int[] { height, 2 },
+//                                yBounds),
+//                            false);
+//                    ncFile.addVariable(null, yBoundsVar);
+//                }
+//            }
+
+            dimensionsAsString = yDim.getName() + " " + xDim.getName();
+            coordinatesAsString = yVar.getName() + " " + xVar.getName();
+
+            generated = true;
         }
 
-        public String getDimensionsAsString() {
+        public synchronized String getDimensionsAsString() {
             if (!generated) {
                 throw new IllegalStateException("Coordinate system not generated for this instance");
             }
             return dimensionsAsString;
         }
 
-        public String getCoordinatesAsString() {
+        public synchronized String getCoordinatesAsString() {
             if (!generated) {
                 throw new IllegalStateException("Coordinate system not generated for this instance");
             }
             return coordinatesAsString;
         }
+
     }
 
 }
