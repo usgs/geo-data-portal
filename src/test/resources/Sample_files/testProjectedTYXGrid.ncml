@@ -1,36 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
-  <dimension name="time" length="2" isUnlimited="true" />
+  <dimension name="time" length="40" isUnlimited="true" />
   <dimension name="y" length="3" />
   <dimension name="x" length="4" />
-  <coordAxis name="x" shape="x">
-  	<attribute name="units" value="km" />
-  	<attribute name="_coordAxisType" value="GeoX" />
-    <values>-92 -91 -90 -89</values>
-  </coordAxis>
-  <coordAxis name="y" shape="y">
-  	<attribute name="units" value="km" />
-  	<attribute name="_coordAxisType" value="GeoY" />
-    <values>40 41 42</values>
-  </coordAxis>
-  <coordTransform name="LambertConformal" type="String">
-  	<attribute name="name" value="Lambert_Conformal_Conic"/>
-	<attribute name="_coordTransformType" value="Projection"/>
-	<values>LambertConformal Projection</values>
-  </coordTransform>
-  <coordSystem name="XY" type="String">
-  	<attribute name="_coordAxes" value="x y" />
-  	<values>x,y on projection plane</values>
-  </coordSystem>
-  <attribute name="title" value="testSimpleTYXGrid Data" />
+  <attribute name="title" value="testGridCellCoverage Data" />
   <attribute name="Conventions" value="CF-1.4" />
   <variable name="rh" shape="time x y" type="int">
     <attribute name="long_name" value="relative humidity" />
     <attribute name="units" value="percent" />
+    <attribute name="grid_mapping" value="crs" />
     <values start="10" increment="5" />
+  </variable>
+  <variable name="y" shape="y" type="double">
+    <attribute name="units" value="m" />
+    <attribute name="standard_name" value="projection_y_coordinate" />
+    <values start="2266845" increment="100000" />
+  </variable>
+  <variable name="x" shape="x" type="double">
+    <attribute name="units" value="m" />
+    <attribute name="standard_name" value="projection_x_coordinate" />
+    <values start="256035" increment="100000" />
   </variable>
   <variable name="time" shape="time" type="int">
     <attribute name="units" value="hours" />
-    <values>0 1</values>
+    <values start="1" increment="1" />
   </variable>
+  
+  <variable name="crs" type="int">
+    <attribute name="grid_mapping_name" value="albers_conical_equal_area" />
+    <attribute name="standard_parallel" value="29.5 45.5" />
+    <attribute name="longitude_of_central_meridian" value="-96" />
+    <attribute name="latitude_of_projection_origin" value="23" />
+    <attribute name="false_easting" value="0" />
+    <attribute name="false_northing" value="0" />
+    <attribute name="semi_major_axis" value="6378137.0" />
+    <attribute name="inverse_flattening" value="298.257222101" />
+  </variable>
+  
 </netcdf>
