@@ -2,6 +2,8 @@ package gov.usgs.gdp.analysis.grid;
 
 import gov.usgs.gdp.helper.FileHelper;
 
+import java.io.File;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 public class GridCellHelper {
@@ -10,11 +12,19 @@ public class GridCellHelper {
 	public static final int Z_SIZE = 5;
 	public static final int Y_SIZE = 3;
 	public static final int X_SIZE = 4;
-	public static String RESOURCE_PATH = "";
-
-	public static void setupResourceDir() {
-		ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        URL sampleFileLocation = cl.getResource("Sample_files" + FileHelper.getSeparator());
-        RESOURCE_PATH = sampleFileLocation.getPath();
+	
+	private static String RESOURCE_PATH;
+	
+	public synchronized static String getResourceDir() {
+		if (RESOURCE_PATH == null) {
+			ClassLoader cl = GridCellHelper.class.getClassLoader();
+	        URL sampleFileLocation = cl.getResource("Sample_files" + FileHelper.getSeparator());
+	        try {
+	        	RESOURCE_PATH = new File(sampleFileLocation.toURI()).getPath();
+	        } catch (URISyntaxException e) {
+	        	RESOURCE_PATH = new File(sampleFileLocation.getPath()).getPath();
+	        }
+		}
+		return RESOURCE_PATH;
 	}
 }

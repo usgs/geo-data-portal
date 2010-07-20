@@ -1,5 +1,7 @@
 package gov.usgs.gdp.analysis.grid;
 
+import gov.usgs.gdp.helper.FileHelper;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
@@ -14,8 +16,6 @@ import org.geotools.data.FileDataStoreFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.SchemaException;
 
-import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -31,23 +31,22 @@ import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 
 import static gov.usgs.gdp.analysis.grid.GridCellHelper.*;
+import static org.junit.Assert.fail;
 
 public class GridCellCoverageTest {
 	
-	@BeforeClass
-	public static void setUpAll() {
-		setupResourceDir();
-	}
-	
 	@Test
 	public void testWeightedGenerateTYX() throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException {
-		String ncLocation =	RESOURCE_PATH + "testGridCellCoverageTYX.ncml";
-		String sfLocation = RESOURCE_PATH + "Trout_Lake_HRUs_rotated_geo_WGS84.shp";
+		String ncLocation =	getResourceDir() + FileHelper.getSeparator() + "testGridCellCoverageTYX.ncml";
+		String sfLocation = getResourceDir() + FileHelper.getSeparator() + "Trout_Lake_HRUs_rotated_geo_WGS84.shp";
 		String attributeName = "GRIDCODE";
 		String variableName = GridTypeTest.DATATYPE_RH;
 		Range timeRange = new Range(30, 39);
 
 		FeatureDataset dataset = FeatureDatasetFactoryManager.open(null, ncLocation, null, new Formatter());
+		// everything else breaks if dataset is null
+		if (dataset == null) fail("Dataset cannot be loaded");
+		
 		FileDataStore dataStore = FileDataStoreFinder.getDataStore(new File(sfLocation));
 		FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = dataStore.getFeatureSource();
 		FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = featureSource.getFeatures();
@@ -78,8 +77,8 @@ public class GridCellCoverageTest {
 	
 	@Test (expected=InvalidRangeException.class)
 	public void testWeightedGenerateNegativeRange() throws InvalidRangeException, IOException, FactoryException, TransformException, SchemaException {
-		String ncLocation =	RESOURCE_PATH + "testGridCellCoverageTYX.ncml";
-		String sfLocation = RESOURCE_PATH + "Trout_Lake_HRUs_rotated_geo_WGS84.shp";
+		String ncLocation =	getResourceDir() + FileHelper.getSeparator() + "testGridCellCoverageTYX.ncml";
+		String sfLocation = getResourceDir() + FileHelper.getSeparator() + "Trout_Lake_HRUs_rotated_geo_WGS84.shp";
 		String attributeName = "GRIDCODE";
 		String variableName = GridTypeTest.DATATYPE_RH;
 		Range timeRange = new Range(-1, -1);
@@ -115,8 +114,8 @@ public class GridCellCoverageTest {
 	
 	@Test (expected=InvalidRangeException.class)
 	public void testWeightedGenerateFirstBiggerThanSecondRange() throws InvalidRangeException, IOException, FactoryException, TransformException, SchemaException {
-		String ncLocation =	RESOURCE_PATH + "testGridCellCoverageTYX.ncml";
-		String sfLocation = RESOURCE_PATH + "Trout_Lake_HRUs_rotated_geo_WGS84.shp";
+		String ncLocation =	getResourceDir() + FileHelper.getSeparator() + "testGridCellCoverageTYX.ncml";
+		String sfLocation = getResourceDir() + FileHelper.getSeparator() + "Trout_Lake_HRUs_rotated_geo_WGS84.shp";
 		String attributeName = "GRIDCODE";
 		String variableName = GridTypeTest.DATATYPE_RH;
 		Range timeRange = new Range(2, 1);
@@ -152,8 +151,8 @@ public class GridCellCoverageTest {
 	
 	@Test
 	public void testWeightedGenerateYX() throws InvalidRangeException, IOException, FactoryException, TransformException, SchemaException {
-		String ncLocation =	RESOURCE_PATH + "testGridCellCoverageYX.ncml";
-		String sfLocation = RESOURCE_PATH + "Trout_Lake_HRUs_rotated_geo_WGS84.shp";
+		String ncLocation =	getResourceDir() + FileHelper.getSeparator() + "testGridCellCoverageYX.ncml";
+		String sfLocation = getResourceDir() + FileHelper.getSeparator() + "Trout_Lake_HRUs_rotated_geo_WGS84.shp";
 		String attributeName = "GRIDCODE";
 		String variableName = GridTypeTest.DATATYPE_RH;
 		Range timeRange = new Range(0, 0);
@@ -189,8 +188,8 @@ public class GridCellCoverageTest {
 	
 	@Test (expected=IllegalStateException.class)
 	public void testWeightedGenerateTZYXUnsupported() throws InvalidRangeException, IOException, FactoryException, TransformException, SchemaException {
-		String ncLocation =	RESOURCE_PATH + "testGridCellCoverageTZYX.ncml";
-		String sfLocation = RESOURCE_PATH + "Trout_Lake_HRUs_rotated_geo_WGS84.shp";
+		String ncLocation =	getResourceDir() + FileHelper.getSeparator() + "testGridCellCoverageTZYX.ncml";
+		String sfLocation = getResourceDir() + FileHelper.getSeparator() + "Trout_Lake_HRUs_rotated_geo_WGS84.shp";
 		String attributeName = "GRIDCODE";
 		String variableName = GridTypeTest.DATATYPE_RH;
 		Range timeRange = new Range(1, 1);

@@ -2,11 +2,12 @@ package gov.usgs.gdp.analysis.grid;
 
 import static gov.usgs.gdp.analysis.grid.GridCellHelper.*;
 import static org.junit.Assert.assertEquals;
+import gov.usgs.gdp.helper.FileHelper;
+
 import java.io.IOException;
 import java.util.Formatter;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ucar.nc2.dt.GridDatatype;
@@ -18,14 +19,9 @@ public class YXGridCellVisitorTest {
 	
 	private GridCellVisitorMock gcvm = null;
 	
-	@BeforeClass
-	public static void setUpAll() {
-		setupResourceDir();
-	}
-	
 	@Before
 	public void setUp() throws IOException {
-		String datasetUrl = RESOURCE_PATH + "testSimpleYXGrid.ncml";
+		String datasetUrl = getResourceDir() + FileHelper.getSeparator() + "testSimpleYXGrid.ncml";
 		FeatureDataset fd = FeatureDatasetFactoryManager.open(null, datasetUrl, null, new Formatter(System.err));
 		GridDataset dataset = (GridDataset)fd;
 		GridDatatype gdt = dataset.findGridDatatype(GridTypeTest.DATATYPE_RH);

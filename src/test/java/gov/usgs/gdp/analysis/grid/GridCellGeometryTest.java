@@ -1,10 +1,11 @@
 package gov.usgs.gdp.analysis.grid;
 
+import gov.usgs.gdp.helper.FileHelper;
+
 import java.io.IOException;
 import java.util.Formatter;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ucar.nc2.dt.GridCoordSystem;
@@ -23,14 +24,9 @@ public class GridCellGeometryTest {
 	private GridCellGeometry gcg = null;
 	private GridCoordSystem gcs = null;
 	
-	@BeforeClass
-	public static void setUpAll() {
-		setupResourceDir();
-	}
-	
 	@Before
 	public void setUp() throws IOException {
-		String datasetUrl = RESOURCE_PATH + "testSimpleYXGrid.ncml";
+		String datasetUrl = getResourceDir() + FileHelper.getSeparator() + "testSimpleYXGrid.ncml";
 		FeatureDataset fd = FeatureDatasetFactoryManager.open(null, datasetUrl, null, new Formatter(System.err));
 		GridDataset dataset = (GridDataset)fd;
 		GridDatatype gdt = dataset.findGridDatatype(GridTypeTest.DATATYPE_RH);
@@ -72,6 +68,17 @@ public class GridCellGeometryTest {
 	
 	@Test
 	public void testGetGeometryProper() {
+		assertNotNull("Geometry should not be null", gcg.getCellGeometry(0, 0));
+	}
+	
+	@Test
+	public void testProjectionGeometry() throws IOException {
+		String datasetUrl = getResourceDir() + FileHelper.getSeparator() + "testProjectedTYXGrid.ncml";
+		FeatureDataset fd = FeatureDatasetFactoryManager.open(null, datasetUrl, null, new Formatter(System.err));
+		GridDataset dataset = (GridDataset)fd;
+		GridDatatype gdt = dataset.findGridDatatype(GridTypeTest.DATATYPE_RH);
+		gcs = gdt.getCoordinateSystem();
+		gcg = new GridCellGeometry(gcs);
 		assertNotNull("Geometry should not be null", gcg.getCellGeometry(0, 0));
 	}
 }

@@ -3,10 +3,11 @@ package gov.usgs.gdp.analysis.grid;
 import static org.junit.Assert.fail;
 import static gov.usgs.gdp.analysis.grid.GridCellHelper.*;
 
+import gov.usgs.gdp.helper.FileHelper;
+
 import java.io.IOException;
 import java.util.Formatter;
 
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -24,14 +25,9 @@ public class GridTypeTest {
 
 	public static final String DATATYPE_RH = "rh";
 	
-	@BeforeClass
-	public static void setUpAll() {
-		setupResourceDir();
-	}
-	
 	@Test
 	public void testSimpleTYXGrid() throws IOException {
-		String datasetUrl = RESOURCE_PATH + "testSimpleTYXGrid.ncml";
+		String datasetUrl = getResourceDir() + FileHelper.getSeparator() + "testSimpleTYXGrid.ncml";
 		if (getGridType(datasetUrl, DATATYPE_RH) != GridType.TYX) {
 			fail("Should be TYX dataset.");
 		}
@@ -39,7 +35,7 @@ public class GridTypeTest {
 	
 	@Test
 	public void testSimpleTZYXGrid() throws IOException {
-		String datasetUrl = RESOURCE_PATH + "testSimpleTZYXGrid.ncml";
+		String datasetUrl = getResourceDir() + FileHelper.getSeparator() + "testSimpleTZYXGrid.ncml";
 		if (getGridType(datasetUrl, DATATYPE_RH) != GridType.TZYX) {
 			fail("Should be TZYX dataset.");
 		}
@@ -47,7 +43,7 @@ public class GridTypeTest {
 	
 	@Test
 	public void testSimpleYXGrid() throws IOException {
-		String datasetUrl = RESOURCE_PATH + "testSimpleYXGrid.ncml";
+		String datasetUrl = getResourceDir() + FileHelper.getSeparator() + "testSimpleYXGrid.ncml";
 		if (getGridType(datasetUrl, DATATYPE_RH) != GridType.YX) {
 			fail("Should be YX dataset.");
 		}
@@ -55,7 +51,7 @@ public class GridTypeTest {
 	
 	@Test
 	public void testSimpleZYXGrid() throws IOException {
-		String datasetUrl = RESOURCE_PATH + "testSimpleZYXGrid.ncml";
+		String datasetUrl = getResourceDir() + FileHelper.getSeparator() + "testSimpleZYXGrid.ncml";
 		if (getGridType(datasetUrl, DATATYPE_RH) != GridType.ZYX) {
 			fail("Should be ZYX dataset");
 		}
@@ -69,7 +65,7 @@ public class GridTypeTest {
 	@Test
 	@Ignore // throws null pointer exception // cannot find dataset
 	public void testSimpleOtherGrid() throws IOException {
-		String datasetUrl = RESOURCE_PATH + "testSimpleOtherGrid.ncml";
+		String datasetUrl = getResourceDir() + FileHelper.getSeparator() + "testSimpleOtherGrid.ncml";
 		GridType gt = getGridType(datasetUrl, DATATYPE_RH);
 		if (gt != GridType.OTHER) {
 			fail("Should be OTHER dataset not " + gt.toString());

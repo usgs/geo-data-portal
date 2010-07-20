@@ -3,10 +3,11 @@ package gov.usgs.gdp.analysis.grid;
 import static gov.usgs.gdp.analysis.grid.GridCellHelper.*;
 import static org.junit.Assert.assertEquals;
 
+import gov.usgs.gdp.helper.FileHelper;
+
 import java.io.IOException;
 import java.util.Formatter;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ucar.nc2.dt.GridDatatype;
@@ -16,13 +17,9 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
 
 public class GridCellVisitorTest {
 
-	@BeforeClass
-	public static void setUpAll() {
-		setupResourceDir();
-	}
 	@Test
 	public void testTZYXVisitor() throws IOException {
-		String datasetUrl = RESOURCE_PATH + "testSimpleTZYXGrid.ncml";
+		String datasetUrl = getResourceDir() + FileHelper.getSeparator() + "testSimpleTZYXGrid.ncml";
 		FeatureDataset fd = FeatureDatasetFactoryManager.open(null, datasetUrl, null, new Formatter(System.err));
 		GridDataset dataset = (GridDataset)fd;
 		GridDatatype gdt = dataset.findGridDatatype(GridTypeTest.DATATYPE_RH);
