@@ -59,12 +59,17 @@ public class FeatureCoverageWeightedGridStatistics {
             throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException
     {
 
+        GridDatatype gdt = gridDataset.findGridDatatype(variableName);
+        Preconditions.checkNotNull(gdt, "Variable named %s not found in gridDataset", variableName);
+
+        GridType gt = GridType.findGridType(gdt.getCoordinateSystem());
+        if( !(gt == GridType.YX || gt == GridType.TYX) ) {
+            throw new IllegalStateException("Currently require y-x or t-y-x grid for this operation");
+        }
+
         LatLonRect llr = GeoToolsNetCDFUtility.getLatLonRectFromEnvelope(
                 featureCollection.getBounds(),
                 DefaultGeographicCRS.WGS84);
-
-        GridDatatype gdt = gridDataset.findGridDatatype(variableName);
-        Preconditions.checkNotNull(gdt, "Variable named %s not found in gridDataset", variableName);
 
         try {
             Range[] ranges = getRangesFromLatLonRect(llr, gdt.getCoordinateSystem());
@@ -82,7 +87,7 @@ public class FeatureCoverageWeightedGridStatistics {
                 GridCellCoverageFactory.generateByFeatureAttribute(
                     featureCollection,
                     attributeName,
-                    gcs);
+                    gdt.getCoordinateSystem());
 
         String variableUnits = gdt.getVariable().getUnitsString();
 
@@ -99,7 +104,7 @@ public class FeatureCoverageWeightedGridStatistics {
                     writer);
 
         WeightedGridStatisticsVisitor v = null;
-        switch (GridType.findGridType(gcs)) {
+        switch (gt) {
             case YX:
                 v = new WeightedGridStatisticsVisitor_YX(attributeCoverageMap, writerX);
             break;
@@ -160,7 +165,7 @@ public class FeatureCoverageWeightedGridStatistics {
         if (deltaX < 2) {
             CoordinateAxis xAxis = gcs.getXHorizAxis();
             int maxX = xAxis.getShape(xAxis.getRank() - 1) - 1; // inclusive
-            if (maxX < 3) {
+            if (maxX < 2) {
                 throw new InvalidRangeException("Source grid too small");
             }
             if (deltaX == 0) {
@@ -190,7 +195,7 @@ public class FeatureCoverageWeightedGridStatistics {
         if (deltaY < 1) {
             CoordinateAxis yAxis = gcs.getYHorizAxis();
             int maxY = yAxis.getShape(0)  - 1 ; // inclusive
-            if (maxY < 3) {
+            if (maxY < 2) {
                 throw new InvalidRangeException("Source grid too small");
             }
             if (deltaY == 0) {
