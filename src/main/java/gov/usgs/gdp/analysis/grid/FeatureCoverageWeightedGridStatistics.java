@@ -40,6 +40,7 @@ import gov.usgs.gdp.analysis.grid.FeatureCoverageWeightedGridStatisticsWriter.St
 import java.io.OutputStreamWriter;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.iosp.geotiff.GeoTiffIOServiceProvider;
 
@@ -65,10 +66,9 @@ public class FeatureCoverageWeightedGridStatistics {
         GridDatatype gdt = gridDataset.findGridDatatype(variableName);
         Preconditions.checkNotNull(gdt, "Variable named %s not found in gridDataset", variableName);
 
-
-
         try {
-            gdt = gdt.makeSubset(timeRange, null, llr, 1, 1, 1);
+            Range[] ranges = getRangesFromLatLonRect(llr, gdt.getCoordinateSystem());
+            gdt = gdt.makeSubset(null, null, timeRange, null, ranges[1], ranges[0]);
         } catch (InvalidRangeException ex) {
             System.out.println(gdt.getCoordinateSystem().getLatLonBoundingBox());
             System.out.println(llr);
@@ -113,6 +113,111 @@ public class FeatureCoverageWeightedGridStatistics {
         GridCellTraverser gct = new GridCellTraverser(gdt);
 
         gct.traverse(v);
+    }
+
+
+    // Handle bugs in NetCDF 4.1 for X and Y CoordinateAxis2D (c2d) with
+    // shapefile bound (LatLonRect) that doesn't interect any grid center
+    // (aka midpoint) *and* issue calculating edges for c2d axes with  < 3
+    // grid cells in any dimension.
+    private static Range[] getRangesFromLatLonRect(LatLonRect llr, GridCoordSystem gcs)
+            throws InvalidRangeException
+    {
+
+        int[] lowerCornerIndices = new int[2];
+        int[] upperCornerIndices = new int[2];
+
+        gcs.findXYindexFromLatLon(llr.getLatMin(), llr.getLonMin(), lowerCornerIndices);
+        gcs.findXYindexFromLatLon(llr.getLatMax(), llr.getLonMax(), upperCornerIndices);
+
+        if (lowerCornerIndices[0] < 0 || lowerCornerIndices[1] < 0 ||
+            upperCornerIndices[0] < 0 || upperCornerIndices[1] < 0) {
+            throw new InvalidRangeException();
+        }
+
+        int lowerX;
+        int upperX;
+        int lowerY;
+        int upperY;
+        if(lowerCornerIndices[0] < upperCornerIndices[0]) {
+            lowerX = lowerCornerIndices[0];
+            upperX = upperCornerIndices[0];
+        } else {
+            upperX = lowerCornerIndices[0];
+            lowerX = upperCornerIndices[0];
+        }
+        if(lowerCornerIndices[1] < upperCornerIndices[1]) {
+            lowerY = lowerCornerIndices[1];
+            upperY = upperCornerIndices[1];
+        } else {
+            upperY = lowerCornerIndices[1];
+            lowerY = upperCornerIndices[1];
+        }
+
+        // Buffer X dimension to width of 3, otherwise grid cell width calc fails.
+        // NOTE: NetCDF ranges are upper edge inclusive
+        int deltaX = upperX - lowerX;
+        if (deltaX < 2) {
+            CoordinateAxis xAxis = gcs.getXHorizAxis();
+            int maxX = xAxis.getShape(xAxis.getRank() - 1) - 1; // inclusive
+            if (maxX < 3) {
+                throw new InvalidRangeException("Source grid too small");
+            }
+            if (deltaX == 0) {
+                if (lowerX > 0 && upperX < maxX) {
+                    --lowerX;
+                    ++upperX;
+                } else {
+                    // we're on an border cell
+                    if (lowerX == 0) {
+                        upperX = 2;
+                    } else {
+                        lowerX = maxX - 2;
+                    }
+                }
+            } else if (deltaX == 1) {
+                if (lowerX == 0) {
+                    ++upperX;
+                } else {
+                    --lowerX;
+                }
+            }
+        }
+
+        // Buffer Y dimension to width of 3, otherwise grid cell width calc fails.
+        // NOTE: NetCDF ranges are upper edge inclusive
+        int deltaY = upperY - lowerY;
+        if (deltaY < 1) {
+            CoordinateAxis yAxis = gcs.getYHorizAxis();
+            int maxY = yAxis.getShape(0)  - 1 ; // inclusive
+            if (maxY < 3) {
+                throw new InvalidRangeException("Source grid too small");
+            }
+            if (deltaY == 0) {
+                if (lowerY > 0 && upperY < maxY) {
+                    --lowerY;
+                    ++upperY;
+                } else {
+                    // we're on an border cell
+                    if (lowerY == 0) {
+                        upperY = 2;
+                    } else {
+                        lowerY = maxY - 2;
+                    }
+                }
+            } else if (deltaY == 1) {
+                if (lowerY == 0) {
+                    ++upperY;
+                } else {
+                    --lowerY;
+                }
+            }
+        }
+
+        return new Range[] {
+            new Range(lowerX, upperX),
+            new Range(lowerY, upperY),
+        };
     }
 
     protected static abstract class WeightedGridStatisticsVisitor extends FeatureCoverageGridCellVisitor {
@@ -268,27 +373,28 @@ public class FeatureCoverageWeightedGridStatistics {
 //                "dods://igsarm-cida-javadev1.er.usgs.gov:8081/thredds/dodsC/qpe/ncrfc.ncml";
 //                "dods://internal.cida.usgs.gov/thredds/dodsC/qpe/GRID.0530/200006_ncrfc_240ss.grd";
 //                "dods://michigan.glin.net:8080/thredds/dodsC/glos/all/GLCFS/Forecast/m201010900.out1.nc";
-//                "dods://michigan.glin.net:8080/thredds/dodsC/glos/glcfs/michigan/ncas_his2d";
-                "/Users/tkunicki/x.tiff";
+                "dods://michigan.glin.net:8080/thredds/dodsC/glos/glcfs/michigan/ncas_his2d";
+//                "/Users/tkunicki/x.tiff";
 
         String sfLocation =
 //                "/Users/tkunicki/Projects/GDP/GDP/src/main/resources/Sample_Files/Shapefiles/serap_hru_239.shp";
 //                "/Users/tkunicki/Downloads/lkm_hru/lkm_hru.shp";
-                "/Users/tkunicki/Downloads/HUC12LM/lake_mich_12_alb_NAD83.shp";
+//                "/Users/tkunicki/Downloads/HUC12LM/lake_mich_12_alb_NAD83.shp";
 //                "/Users/tkunicki/Downloads/dbshapefiles/lk_mich.shp";
+                "/Users/tkunicki/Downloads/lk_mich/test.shp";
 
         String attributeName =
 //                "GRID_CODE";
 //                "GRIDCODE";
-                "OBJECTID";
-//                "Id";
+//                "OBJECTID";
+                "Id";
 
         String variableName =
 //                "Wind";
 //                "P06M_NONE";
-//                "eta";
+                "eta";
 //                "depth";
-                "I0B0";
+//                "I0B0";
 
         Range timeRange =
                 new Range(30, 39);
