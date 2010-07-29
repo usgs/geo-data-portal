@@ -59,7 +59,7 @@ public class GridCellCoverage {
             int yOffset = yIndex * xCellCount;
             for (int xIndex = 0; xIndex < xCellCount; ++xIndex) {
                 int yxIndex = yOffset + xIndex;
-                Geometry cellGeometry = gridCellGeometry.getCellGeometry(yxIndex);
+                Geometry cellGeometry = gridCellGeometry.getCellGeometryQuick(yxIndex);
                 if (preparedGeometry.intersects(cellGeometry)) {
                     if (preparedGeometry.containsProperly(cellGeometry)) {
                         cellCoverageFraction[yxIndex] = 1d;

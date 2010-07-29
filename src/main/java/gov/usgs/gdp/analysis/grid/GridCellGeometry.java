@@ -57,12 +57,20 @@ public class GridCellGeometry {
         return cellCount;
     }
 
-    public Geometry getCellGeometry(int yxIndex) {
-        return cellGeometry[yxIndex];
+    public Geometry getCellGeometry(int xIndex, int yIndex) {
+        if (xIndex < 0 || xIndex >= xCellCount ||
+            yIndex < 0 || yIndex >= yCellCount) {
+            throw new IndexOutOfBoundsException();
+        }
+        return getCellGeometryQuick(xIndex, yIndex);
     }
 
-    public Geometry getCellGeometry(int xIndex, int yIndex) {
+    Geometry getCellGeometryQuick(int xIndex, int yIndex) {
         return cellGeometry[xIndex + yIndex * xCellCount];
+    }
+
+    Geometry getCellGeometryQuick(int yxIndex) {
+        return cellGeometry[yxIndex];
     }
 
     private void generateCellGeometry() {
