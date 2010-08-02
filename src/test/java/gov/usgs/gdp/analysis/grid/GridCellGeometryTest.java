@@ -28,11 +28,7 @@ public class GridCellGeometryTest {
 	@Before
 	public void setUp() throws IOException {
 		String datasetUrl = getResourceDir() + FileHelper.getSeparator() + "testSimpleYXGrid.ncml";
-		FeatureDataset fd = FeatureDatasetFactoryManager.open(null, datasetUrl, null, new Formatter(System.err));
-		GridDataset dataset = (GridDataset)fd;
-		GridDatatype gdt = dataset.findGridDatatype(GridTypeTest.DATATYPE_RH);
-		gcs = gdt.getCoordinateSystem();
-		gcg = new GridCellGeometry(gcs);
+		assignGridCellGeometryAndGridCoordSystem(datasetUrl);
 	}
 	
 	@Test
@@ -85,24 +81,23 @@ public class GridCellGeometryTest {
 	@Test
 	public void testProjectionGeometry() throws IOException {
 		String datasetUrl = getResourceDir() + FileHelper.getSeparator() + "testProjectedTYXGrid.ncml";
-		FeatureDataset fd = FeatureDatasetFactoryManager.open(FeatureType.GRID, datasetUrl, null, new Formatter(System.err));
-		if (fd == null) fail("Feature dataset didn't return anything");
-		GridDataset dataset = (GridDataset)fd;
-		GridDatatype gdt = dataset.findGridDatatype(GridTypeTest.DATATYPE_RH);
-		gcs = gdt.getCoordinateSystem();
-		gcg = new GridCellGeometry(gcs);
+		assignGridCellGeometryAndGridCoordSystem(datasetUrl);
 		assertNotNull("Geometry should not be null", gcg.getCellGeometry(0, 0));
 	}
 	
 	@Test
 	public void testRotatedGeometry() throws IOException {
 		String datasetUrl = getResourceDir() + FileHelper.getSeparator() + "testRotatedTYXGrid.ncml";
+		assignGridCellGeometryAndGridCoordSystem(datasetUrl);
+		assertNotNull("Geometry should not be null", gcg.getCellGeometry(0, 0));
+	}
+	
+	private void assignGridCellGeometryAndGridCoordSystem(String datasetUrl) throws IOException {
 		FeatureDataset fd = FeatureDatasetFactoryManager.open(FeatureType.GRID, datasetUrl, null, new Formatter(System.err));
 		if (fd == null) fail("Feature dataset didn't return anything");
 		GridDataset dataset = (GridDataset)fd;
 		GridDatatype gdt = dataset.findGridDatatype(GridTypeTest.DATATYPE_RH);
 		gcs = gdt.getCoordinateSystem();
 		gcg = new GridCellGeometry(gcs);
-		assertNotNull("Geometry should not be null", gcg.getCellGeometry(0, 0));
 	}
 }

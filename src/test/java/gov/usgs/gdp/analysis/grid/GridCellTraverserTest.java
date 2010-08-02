@@ -20,10 +20,7 @@ public class GridCellTraverserTest {
 	@Test
 	public void testYXTraversal() throws IOException {
 		String datasetUrl = getResourceDir() + FileHelper.getSeparator() + "testSimpleYXGrid.ncml";
-		FeatureDataset fd = FeatureDatasetFactoryManager.open(null, datasetUrl, null, new Formatter(System.err));
-		GridDataset dataset = (GridDataset)fd;
-		GridDatatype gdt = dataset.findGridDatatype(GridTypeTest.DATATYPE_RH);
-		GridCellTraverserHelper gct = new GridCellTraverserHelper(gdt);
+		GridCellTraverserHelper gct = getGridCellTraverserHelper(datasetUrl);
 		assertEquals("X cell count should match ncml", gct.getXCellCount(), X_SIZE);
 		assertEquals("Y cell count should match ncml", gct.getYCellCount(), Y_SIZE);
 		assertEquals("Z cell count should match ncml", gct.getZCellCount(), 0);
@@ -33,10 +30,7 @@ public class GridCellTraverserTest {
 	@Test
 	public void testZYXTraversal() throws IOException {
 		String datasetUrl = getResourceDir() + FileHelper.getSeparator() + "testSimpleZYXGrid.ncml";
-		FeatureDataset fd = FeatureDatasetFactoryManager.open(null, datasetUrl, null, new Formatter(System.err));
-		GridDataset dataset = (GridDataset)fd;
-		GridDatatype gdt = dataset.findGridDatatype(GridTypeTest.DATATYPE_RH);
-		GridCellTraverserHelper gct = new GridCellTraverserHelper(gdt);
+		GridCellTraverserHelper gct = getGridCellTraverserHelper(datasetUrl);
 		assertEquals("X cell count should match ncml", gct.getXCellCount(), X_SIZE);
 		assertEquals("Y cell count should match ncml", gct.getYCellCount(), Y_SIZE);
 		assertEquals("Z cell count should match ncml", gct.getZCellCount(), Z_SIZE);
@@ -46,10 +40,7 @@ public class GridCellTraverserTest {
 	@Test
 	public void testTYXTraversal() throws IOException {
 		String datasetUrl = getResourceDir() + FileHelper.getSeparator() + "testSimpleTYXGrid.ncml";
-		FeatureDataset fd = FeatureDatasetFactoryManager.open(null, datasetUrl, null, new Formatter(System.err));
-		GridDataset dataset = (GridDataset)fd;
-		GridDatatype gdt = dataset.findGridDatatype(GridTypeTest.DATATYPE_RH);
-		GridCellTraverserHelper gct = new GridCellTraverserHelper(gdt);
+		GridCellTraverserHelper gct = getGridCellTraverserHelper(datasetUrl);
 		assertEquals("X cell count should match ncml", gct.getXCellCount(), X_SIZE);
 		assertEquals("Y cell count should match ncml", gct.getYCellCount(), Y_SIZE);
 		assertEquals("Z cell count should match ncml", gct.getZCellCount(), 0);
@@ -59,13 +50,17 @@ public class GridCellTraverserTest {
 	@Test
 	public void testTZYXTraversal() throws IOException {
 		String datasetUrl = getResourceDir() + FileHelper.getSeparator() + "testSimpleTZYXGrid.ncml";
-		FeatureDataset fd = FeatureDatasetFactoryManager.open(null, datasetUrl, null, new Formatter(System.err));
-		GridDataset dataset = (GridDataset)fd;
-		GridDatatype gdt = dataset.findGridDatatype(GridTypeTest.DATATYPE_RH);
-		GridCellTraverserHelper gct = new GridCellTraverserHelper(gdt);
+		GridCellTraverserHelper gct = getGridCellTraverserHelper(datasetUrl);
 		assertEquals("X cell count should match ncml", gct.getXCellCount(), X_SIZE);
 		assertEquals("Y cell count should match ncml", gct.getYCellCount(), Y_SIZE);
 		assertEquals("Z cell count should match ncml", gct.getZCellCount(), Z_SIZE);
 		assertEquals("T cell count should match ncml", gct.getTCellCount(), T_SIZE);
+	}
+	
+	private GridCellTraverserHelper getGridCellTraverserHelper(String datasetUrl) throws IOException {
+		FeatureDataset fd = FeatureDatasetFactoryManager.open(null, datasetUrl, null, new Formatter(System.err));
+		GridDataset dataset = (GridDataset)fd;
+		GridDatatype gdt = dataset.findGridDatatype(GridTypeTest.DATATYPE_RH);
+		return new GridCellTraverserHelper(gdt);
 	}
 }
