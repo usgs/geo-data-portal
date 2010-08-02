@@ -125,7 +125,7 @@ public class FeatureCoverageWeightedGridStatistics {
     // shapefile bound (LatLonRect) that doesn't interect any grid center
     // (aka midpoint) *and* issue calculating edges for c2d axes with  < 3
     // grid cells in any dimension.
-    private static Range[] getRangesFromLatLonRect(LatLonRect llr, GridCoordSystem gcs)
+    public static Range[] getRangesFromLatLonRect(LatLonRect llr, GridCoordSystem gcs)
             throws InvalidRangeException
     {
 
@@ -192,7 +192,7 @@ public class FeatureCoverageWeightedGridStatistics {
         // Buffer Y dimension to width of 3, otherwise grid cell width calc fails.
         // NOTE: NetCDF ranges are upper edge inclusive
         int deltaY = upperY - lowerY;
-        if (deltaY < 1) {
+        if (deltaY < 2) {
             CoordinateAxis yAxis = gcs.getYHorizAxis();
             int maxY = yAxis.getShape(0)  - 1 ; // inclusive
             if (maxY < 2) {
