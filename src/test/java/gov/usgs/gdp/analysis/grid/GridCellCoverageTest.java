@@ -20,6 +20,7 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -42,6 +43,7 @@ import visad.GridCoordinateSystem;
 import static gov.usgs.gdp.analysis.grid.GridCellHelper.*;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class GridCellCoverageTest {
 	
@@ -212,26 +214,6 @@ public class GridCellCoverageTest {
 	}
 	
 	@Test
-	public void testRangesFromLatLonRect_Lower1LessThan() throws InvalidRangeException, IOException {
-		getFeatureCollection(ncLocation);
-		LatLonRect llr =new LatLonRect(
-                new LatLonPointImpl(42, -89),
-                new LatLonPointImpl(43, -88));
-		GridCoordSystem gcs = getGridCoordinateSystem();
-		FeatureCoverageWeightedGridStatistics.getRangesFromLatLonRect(llr, gcs);
-	}
-	
-	@Test
-	public void testRangesFromLatLonRect_Lower0LessThan() throws InvalidRangeException, IOException {
-		getFeatureCollection(ncLocation);
-		LatLonRect llr =new LatLonRect(
-                new LatLonPointImpl(42, -89),
-                new LatLonPointImpl(43, -90));
-		GridCoordSystem gcs = getGridCoordinateSystem();
-		FeatureCoverageWeightedGridStatistics.getRangesFromLatLonRect(llr, gcs);
-	}
-	
-	@Test
 	public void testTopOfGrid() throws IOException, InvalidRangeException {
 		ncLocation = getResourceDir() + FileHelper.getSeparator() + "testCoverageTYXSmallestValid.ncml";
 		getFeatureCollection(ncLocation);
@@ -239,7 +221,8 @@ public class GridCellCoverageTest {
                 new LatLonPointImpl(42, -91),
                 new LatLonPointImpl(42, -89));
 		GridCoordSystem gcs = getGridCoordinateSystem();
-		FeatureCoverageWeightedGridStatistics.getRangesFromLatLonRect(llr, gcs);
+		Range[] range = FeatureCoverageWeightedGridStatistics.getRangesFromLatLonRect(llr, gcs);
+		assertTrue("Range should be 3x3 since they are buffered", (range[0].length()==3 && range[1].length()==3));
 	}
 	
 	@Test
@@ -250,7 +233,8 @@ public class GridCellCoverageTest {
                 new LatLonPointImpl(40, -91),
                 new LatLonPointImpl(40, -89));
 		GridCoordSystem gcs = getGridCoordinateSystem();
-		FeatureCoverageWeightedGridStatistics.getRangesFromLatLonRect(llr, gcs);
+		Range[] range = FeatureCoverageWeightedGridStatistics.getRangesFromLatLonRect(llr, gcs);
+		assertTrue("Range should be 3x3 since they are buffered", (range[0].length()==3 && range[1].length()==3));
 	}
 	
 	@Test
@@ -261,7 +245,8 @@ public class GridCellCoverageTest {
                 new LatLonPointImpl(40, -91),
                 new LatLonPointImpl(42, -91));
 		GridCoordSystem gcs = getGridCoordinateSystem();
-		FeatureCoverageWeightedGridStatistics.getRangesFromLatLonRect(llr, gcs);
+		Range[] range = FeatureCoverageWeightedGridStatistics.getRangesFromLatLonRect(llr, gcs);
+		assertTrue("Range should be 3x3 since they are buffered", (range[0].length()==3 && range[1].length()==3));
 	}
 	
 	@Test
@@ -272,7 +257,8 @@ public class GridCellCoverageTest {
                 new LatLonPointImpl(41, -90),
                 new LatLonPointImpl(41, -90));
 		GridCoordSystem gcs = getGridCoordinateSystem();
-		FeatureCoverageWeightedGridStatistics.getRangesFromLatLonRect(llr, gcs);
+		Range[] range = FeatureCoverageWeightedGridStatistics.getRangesFromLatLonRect(llr, gcs);
+		assertTrue("Range should be 3x3 since they are buffered", (range[0].length()==3 && range[1].length()==3));
 	}
 	
 	@Test
@@ -283,7 +269,8 @@ public class GridCellCoverageTest {
                 new LatLonPointImpl(41, -90),
                 new LatLonPointImpl(42, -89));
 		GridCoordSystem gcs = getGridCoordinateSystem();
-		FeatureCoverageWeightedGridStatistics.getRangesFromLatLonRect(llr, gcs);
+		Range[] range = FeatureCoverageWeightedGridStatistics.getRangesFromLatLonRect(llr, gcs);
+		assertTrue("Range should be 3x3 since they are buffered", (range[0].length()==3 && range[1].length()==3));
 	}
 	
 	@Test
@@ -294,7 +281,20 @@ public class GridCellCoverageTest {
                 new LatLonPointImpl(43, -90),
                 new LatLonPointImpl(42, -89));
 		GridCoordSystem gcs = getGridCoordinateSystem();
-		FeatureCoverageWeightedGridStatistics.getRangesFromLatLonRect(llr, gcs);
+		Range[] range = FeatureCoverageWeightedGridStatistics.getRangesFromLatLonRect(llr, gcs);
+		assertTrue("Range should be 3x3 since they are buffered", (range[0].length()==3 && range[1].length()==3));
+	}
+	
+	@Test
+	public void testBottomMiddleOfBiggerGrid() throws IOException, InvalidRangeException {
+		ncLocation = getResourceDir() + FileHelper.getSeparator() + "testCoverageTYXFourByFour.ncml";
+		getFeatureCollection(ncLocation);
+		LatLonRect llr =new LatLonRect(
+                new LatLonPointImpl(41, -90),
+                new LatLonPointImpl(40, -89));
+		GridCoordSystem gcs = getGridCoordinateSystem();
+		Range[] range = FeatureCoverageWeightedGridStatistics.getRangesFromLatLonRect(llr, gcs);
+		assertTrue("Range should be 3x3 since they are buffered", (range[0].length()==3 && range[1].length()==3));
 	}
 	
 	@Test
@@ -305,7 +305,8 @@ public class GridCellCoverageTest {
                 new LatLonPointImpl(41, -91),
                 new LatLonPointImpl(42, -90));
 		GridCoordSystem gcs = getGridCoordinateSystem();
-		FeatureCoverageWeightedGridStatistics.getRangesFromLatLonRect(llr, gcs);
+		Range[] range = FeatureCoverageWeightedGridStatistics.getRangesFromLatLonRect(llr, gcs);
+		assertTrue("Range should be 3x3 since they are buffered", (range[0].length()==3 && range[1].length()==3));
 	}
 	
 	private FeatureCollection<SimpleFeatureType, SimpleFeature> getFeatureCollection(String ncLocation) throws IOException {
