@@ -46,7 +46,7 @@ import ucar.nc2.iosp.geotiff.GeoTiffIOServiceProvider;
 
 public class FeatureCoverageWeightedGridStatistics {
 
-    public static void generate(
+    public static void execute(
             FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection,
             String attributeName,
             GridDataset gridDataset,
@@ -72,11 +72,10 @@ public class FeatureCoverageWeightedGridStatistics {
                 DefaultGeographicCRS.WGS84);
 
         try {
-            Range[] ranges = getRangesFromLatLonRect(llr, gdt.getCoordinateSystem());
+            Range[] ranges = GridUtility.getRangesFromLatLonRect(
+                    llr, gdt.getCoordinateSystem());
             gdt = gdt.makeSubset(null, null, timeRange, null, ranges[1], ranges[0]);
         } catch (InvalidRangeException ex) {
-            System.out.println(gdt.getCoordinateSystem().getLatLonBoundingBox());
-            System.out.println(llr);
             Logger.getLogger(FeatureCoverageWeightedGridStatistics.class.getName()).log(Level.SEVERE, null, ex);
             throw ex;  // rethrow requested by IS
         }
@@ -225,6 +224,38 @@ public class FeatureCoverageWeightedGridStatistics {
         };
     }
 
+    public static abstract class FeatureCoverageGridCellVisitor extends GridCellVisitor {
+
+        final protected Map<Object, GridCellCoverage> attributeCoverageMap;
+
+        public FeatureCoverageGridCellVisitor(Map<Object, GridCellCoverage> attributeCoverageMap) {
+            this.attributeCoverageMap = attributeCoverageMap;
+        }
+
+        @Override
+        public void processGridCell(int xCellIndex, int yCellIndex, double value) {
+            double coverageTotal = 0;
+            for (Map.Entry<Object, GridCellCoverage> entry : this.attributeCoverageMap.entrySet()) {
+                Object attribute = entry.getKey();
+                GridCellCoverage gridCellCoverage = entry.getValue();
+                double coverage = gridCellCoverage.getCellCoverageFraction(xCellIndex, yCellIndex);
+                if (coverage > 0.0) {
+                    processPerAttributeGridCellCoverage(value, coverage, attribute);
+                }
+                coverageTotal += coverage;
+            }
+            if (coverageTotal > 0.0) {
+                processAllAttributeGridCellCoverage(value, coverageTotal);
+            }
+        }
+
+        public abstract void processPerAttributeGridCellCoverage(double value, double coverage, Object attribute);
+
+        public abstract void processAllAttributeGridCellCoverage(double value, double coverage);
+
+    }
+
+
     protected static abstract class WeightedGridStatisticsVisitor extends FeatureCoverageGridCellVisitor {
 
         protected Map<Object, WeightedStatistics1D> perAttributeStatistics;
@@ -271,7 +302,7 @@ public class FeatureCoverageWeightedGridStatistics {
         }
 
         @Override
-        public void traverseStart() {
+        public void traverseStart(GridCoordSystem gridCoordSystem) {
             try {
                 writer.writerHeader(null);
             } catch (IOException ex) {
@@ -315,7 +346,8 @@ public class FeatureCoverageWeightedGridStatistics {
         }
 
         @Override
-        public void traverseStart() {
+        public void traverseStart(GridCoordSystem gridCoordSystem) {
+            
             try {
                 writer.writerHeader(FeatureCoverageWeightedGridStatisticsWriter.TIMESTEPS_LABEL);
             } catch (IOException ex) {
@@ -419,7 +451,7 @@ public class FeatureCoverageWeightedGridStatistics {
             try {
                 writer = new BufferedWriter(new OutputStreamWriter(System.out));
 
-            FeatureCoverageWeightedGridStatistics.generate(
+            FeatureCoverageWeightedGridStatistics.execute(
                     featureCollection,
                     attributeName,
                     (GridDataset)dataset,

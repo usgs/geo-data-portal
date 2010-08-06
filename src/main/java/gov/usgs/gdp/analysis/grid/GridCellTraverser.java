@@ -27,11 +27,9 @@ public class GridCellTraverser {
     // an exception to be thrown...
     private final static int INVALID_INDEX = Integer.MAX_VALUE;
     
-    private GridDatatype gridDataType;
+    private final GridDatatype gridDataType;
 
-    protected final GridType gridType;
-
-    protected final CoordinateAxis1DTime tAxis;
+    private final GridType gridType;
 
     protected final int xCellCount;
     protected final int yCellCount;
@@ -53,7 +51,7 @@ public class GridCellTraverser {
         CoordinateAxis xAxis = gridCoordSystem.getXHorizAxis();
         CoordinateAxis yAxis = gridCoordSystem.getYHorizAxis();
         CoordinateAxis zAxis = gridCoordSystem.getVerticalAxis();
-        tAxis = gridCoordSystem.getTimeAxis1D();
+        CoordinateAxis1DTime tAxis = gridCoordSystem.getTimeAxis1D();
 
         // will handle both CoordinateAxis1D or CoordinateAxis2D for x and y
         xCellCount = xAxis.getShape(xAxis.getRank() - 1);
@@ -68,31 +66,25 @@ public class GridCellTraverser {
             throw new IllegalStateException("Unable to traverse this grid type.");
         }
 
+        visitor.traverseStart(gridDataType.getCoordinateSystem());
         if (gridType == GridType.YX) {
             Array array = gridDataType.readDataSlice(Integer.MAX_VALUE, INVALID_INDEX, -1, -1);
-            visitor.traverseStart();
             doTraverseXY(visitor, array);
-            visitor.traverseEnd();
         } else if (gridType == GridType.ZYX) {
-            visitor.traverseStart();
             for (int zCellIndex = 0; zCellIndex < zCellCount; ++zCellIndex) {
                 visitor.zStart(zCellIndex);
                 Array array = gridDataType.readDataSlice(INVALID_INDEX, zCellIndex, -1, -1);
                 doTraverseXY(visitor, array);
                 visitor.zEnd(zCellIndex);
             }
-            visitor.traverseEnd();
         } else if (gridType == GridType.TYX) {
-            visitor.traverseStart();
             for (int tCellIndex = 0; tCellIndex < tCellCount; ++tCellIndex) {
                 visitor.tStart(tCellIndex);
                 Array array = gridDataType.readDataSlice(tCellIndex, INVALID_INDEX, -1, -1);
                 doTraverseXY(visitor, array);
                 visitor.tEnd(tCellIndex);
             }
-            visitor.traverseEnd();
         } else if (gridType == GridType.TZYX) {
-            visitor.traverseStart();
             for (int tCellIndex = 0; tCellIndex < tCellCount; ++tCellIndex) {
                 visitor.tStart(tCellIndex);
                 for (int zCellIndex = 0; zCellIndex < zCellCount; ++zCellIndex) {
@@ -103,8 +95,8 @@ public class GridCellTraverser {
                 }
                 visitor.tEnd(tCellIndex);
             }
-            visitor.traverseEnd();
         }
+        visitor.traverseEnd();
 
     }
     

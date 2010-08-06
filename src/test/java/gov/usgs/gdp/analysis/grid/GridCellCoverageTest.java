@@ -79,7 +79,7 @@ public class GridCellCoverageTest {
 	
 	@Test
 	public void testWeightedGenerateTYX() throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException {
-		FeatureCoverageWeightedGridStatistics.generate(
+		FeatureCoverageWeightedGridStatistics.execute(
 				getFeatureCollection(ncLocation),
 				attributeName,
 				(GridDataset)dataset,
@@ -99,7 +99,7 @@ public class GridCellCoverageTest {
 	public void testWeightedGenerateYX() throws InvalidRangeException, IOException, FactoryException, TransformException, SchemaException {
 		ncLocation =	getResourceDir() + FileHelper.getSeparator() + "testGridCellCoverageYX.ncml";
 		
-		FeatureCoverageWeightedGridStatistics.generate(
+		FeatureCoverageWeightedGridStatistics.execute(
 				getFeatureCollection(ncLocation),
 				attributeName,
 				(GridDataset)dataset,
@@ -118,7 +118,7 @@ public class GridCellCoverageTest {
 	public void testWeightedGenerateSmallX() throws InvalidRangeException, IOException, FactoryException, TransformException, SchemaException {
 		ncLocation =	getResourceDir() + FileHelper.getSeparator() + "testCoverageTYXSmallX.ncml";
 		
-		FeatureCoverageWeightedGridStatistics.generate(
+		FeatureCoverageWeightedGridStatistics.execute(
 				getFeatureCollection(ncLocation),
 				attributeName,
 				(GridDataset)dataset,
@@ -137,7 +137,7 @@ public class GridCellCoverageTest {
 	public void testWeightedGenerateSmallY() throws InvalidRangeException, IOException, FactoryException, TransformException, SchemaException {
 		ncLocation =	getResourceDir() + FileHelper.getSeparator() + "testCoverageTYXSmallY.ncml";
 		
-		FeatureCoverageWeightedGridStatistics.generate(
+		FeatureCoverageWeightedGridStatistics.execute(
 				getFeatureCollection(ncLocation),
 				attributeName,
 				(GridDataset)dataset,
@@ -157,7 +157,7 @@ public class GridCellCoverageTest {
 		ncLocation = getResourceDir() + FileHelper.getSeparator() + "testGridCellCoverageTZYX.ncml";
 		timeRange = new Range(0, 0);
 
-		FeatureCoverageWeightedGridStatistics.generate(
+		FeatureCoverageWeightedGridStatistics.execute(
 				getFeatureCollection(ncLocation),
 				attributeName,
 				(GridDataset)dataset,
@@ -174,7 +174,7 @@ public class GridCellCoverageTest {
 	
 	@Test
 	public void testWeightedGenerateAllStats() throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException {
-		FeatureCoverageWeightedGridStatistics.generate(
+		FeatureCoverageWeightedGridStatistics.execute(
 				getFeatureCollection(ncLocation),
 				attributeName,
 				(GridDataset)dataset,

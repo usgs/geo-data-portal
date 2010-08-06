@@ -1,12 +1,11 @@
 package gov.usgs.gdp.servlet;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
 import gov.usgs.gdp.bean.AckBean;
 import gov.usgs.gdp.bean.ErrorBean;
 import gov.usgs.gdp.bean.WCSCoverageInfoBean;
 import gov.usgs.gdp.bean.XmlReplyBean;
 import gov.usgs.gdp.helper.CookieHelper;
+import gov.usgs.gdp.wcs.CoverageMetaData;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,16 +20,16 @@ import org.apache.log4j.Logger;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
-import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.geometry.BoundingBox;
-import org.opengis.geometry.DirectPosition;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.cs.AxisDirection;
+import org.opengis.referencing.cs.CoordinateSystemAxis;
 import org.opengis.referencing.operation.TransformException;
 
 /**
@@ -79,7 +78,7 @@ public class WCSServlet extends HttpServlet {
             String lowerCorner = request.getParameter("lowercorner");
             String upperCorner = request.getParameter("uppercorner");
             String gridOffsets = request.getParameter("gridoffsets");
-            String dataType = request.getParameter("datatype");
+            String dataTypeString = request.getParameter("datatype");
             
             String shapefilePath = CookieHelper.getShapefilePath(request, shapefileName);
             
@@ -100,30 +99,20 @@ public class WCSServlet extends HttpServlet {
     		CoordinateReferenceSystem gridCRS;
     		
 			try {
+
 				gridCRS = CRS.decode(crs);
-	    		gridBounds = new ReferencedEnvelope(x1, x2, y1, y2, gridCRS);
+                AxisDirection ad0 = gridCRS.getCoordinateSystem().getAxis(0).getDirection();
+                AxisDirection ad1 = gridCRS.getCoordinateSystem().getAxis(1).getDirection();
+                boolean swapXY =
+                        (ad0 == AxisDirection.NORTH || ad0 == AxisDirection.SOUTH) &&
+                        (ad1 == AxisDirection.EAST  || ad1 == AxisDirection.WEST);
 
-                MathTransform transform = CRS.findMathTransform(
-                        featureSource.getBounds().getCoordinateReferenceSystem(),
-                        gridCRS,
-                        true);
+                gridBounds = swapXY ?
+                    new ReferencedEnvelope(y1, y2, x1, x2, gridCRS) :
+                    new ReferencedEnvelope(x1, x2, y1, y2, gridCRS);
 
-                ReferencedEnvelope featureBounds = featureSource.getBounds();
-                DirectPosition lowerDirectPostion = featureBounds.getLowerCorner();
-                DirectPosition upperDirectPostion = featureBounds.getUpperCorner();
-
-                Coordinate lowerXCorner = new Coordinate();
-                Coordinate upperXCorner = new Coordinate();
-                JTS.transform(new Coordinate(
-                        lowerDirectPostion.getOrdinate(1),
-                        lowerDirectPostion.getOrdinate(0)),
-                        lowerXCorner, transform);
-                JTS.transform(new Coordinate(
-                        upperDirectPostion.getOrdinate(1),
-                        upperDirectPostion.getOrdinate(0)),
-                        upperXCorner, transform);
-				
-				featureXBounds = new ReferencedEnvelope(new Envelope(lowerXCorner, upperXCorner), gridCRS);
+                featureXBounds =
+					featureSource.getBounds().transform(gridCRS, true);
 
 			} catch (TransformException e1) {
 				sendErrorReply(response, ErrorBean.ERR_CANNOT_COMPARE_GRID_AND_GEOM);
@@ -158,13 +147,13 @@ public class WCSServlet extends HttpServlet {
 			// We can't find the spec for what possible data types exist, so...
 			// we have to check, and default to the max size (8) if we come
 			// across an unrecognized type
-			if      ("Float32".equals(dataType)) dataTypeSize = 4;
-			else if ("Byte".equals(dataType))    dataTypeSize = 1;
-			//else if ("".equals(dataType))        dataTypeSize = ;
-			else {
+            CoverageMetaData.DataType dataType = CoverageMetaData.findCoverageDataType(dataTypeString);
+            if (dataType == CoverageMetaData.UnknownDataType) {
 				log.info("Unrecognized wcs data type: " + dataType);
 				dataTypeSize = 8;
-			}
+            } else {
+                dataTypeSize = dataType.getSizeBytes();
+            }
     		
 			double size = (featureXBounds.getHeight() / yOffset) *
 						  (featureXBounds.getWidth()  / xOffset) *

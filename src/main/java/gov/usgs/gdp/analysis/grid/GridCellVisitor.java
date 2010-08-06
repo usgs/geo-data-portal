@@ -1,12 +1,14 @@
 package gov.usgs.gdp.analysis.grid;
 
+import ucar.nc2.dt.GridCoordSystem;
+
 /**
  *
  * @author tkunicki
  */
 public abstract class GridCellVisitor {
 
-    public void traverseStart() {}
+    public void traverseStart(GridCoordSystem gridCoordSystem) {}
     public void traverseEnd() {}
 
     public void tStart(int tIndex) {}
