@@ -3,7 +3,7 @@ package gov.usgs.gdp.servlet;
 import java.io.IOException;
 import java.util.Date;
 
-import gov.usgs.gdp.helper.FileHelper;
+import gov.usgs.cida.gdp.utilities.FileHelper;
 
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;

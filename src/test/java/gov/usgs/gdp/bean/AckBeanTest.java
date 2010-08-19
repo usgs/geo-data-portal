@@ -1,5 +1,6 @@
 package gov.usgs.gdp.bean;
 
+import gov.usgs.cida.gdp.webapp.bean.AckBean;
 import static org.junit.Assert.*;
 
 

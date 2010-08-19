@@ -2,7 +2,7 @@ package gov.usgs.gdp.interfaces.geotools;
 
 import static org.junit.Assert.*;
 import gov.usgs.gdp.bean.ShapeFileSetBean;
-import gov.usgs.gdp.helper.FileHelper;
+import gov.usgs.cida.gdp.utilities.FileHelper;
 
 import java.io.File;
 import java.io.IOException;

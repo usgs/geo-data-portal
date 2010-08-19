@@ -3,7 +3,7 @@ package gov.usgs.gdp.helper;
 import gov.usgs.gdp.analysis.NetCDFUtility;
 import gov.usgs.gdp.bean.DataTypeCollectionBean;
 import gov.usgs.gdp.bean.TimeBean;
-import gov.usgs.gdp.bean.XmlBean;
+import gov.usgs.cida.gdp.utilities.bean.XmlBean;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

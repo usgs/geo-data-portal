@@ -1,6 +1,7 @@
 package gov.usgs.gdp.bean;
 
 
+import gov.usgs.cida.gdp.utilities.bean.XmlBean;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 

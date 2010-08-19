@@ -1,5 +1,6 @@
 package gov.usgs.gdp.bean;
 
+import gov.usgs.cida.gdp.utilities.bean.XmlBean;
 import java.util.Date;
 
 import org.apache.log4j.Logger;

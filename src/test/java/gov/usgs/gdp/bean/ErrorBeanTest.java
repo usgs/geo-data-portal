@@ -1,5 +1,6 @@
 package gov.usgs.gdp.bean;
 
+import gov.usgs.cida.gdp.webapp.bean.ErrorBean;
 import static org.junit.Assert.*;
 
 import java.util.Date;

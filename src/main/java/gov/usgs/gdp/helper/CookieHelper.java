@@ -1,5 +1,6 @@
 package gov.usgs.gdp.helper;
 
+import gov.usgs.cida.gdp.utilities.FileHelper;
 import gov.usgs.gdp.bean.AvailableFilesBean;
 import gov.usgs.gdp.bean.ShapeFileSetBean;
 

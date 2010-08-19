@@ -1,6 +1,6 @@
 package gov.usgs.gdp.analysis.grid;
 
-import gov.usgs.gdp.helper.FileHelper;
+import gov.usgs.cida.gdp.utilities.FileHelper;
 
 import java.io.File;
 import java.net.URISyntaxException;

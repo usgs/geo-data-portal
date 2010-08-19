@@ -1,6 +1,7 @@
 package gov.usgs.gdp.bean;
 
-import gov.usgs.gdp.helper.PropertyFactory;
+import gov.usgs.cida.gdp.utilities.bean.XmlBean;
+import gov.usgs.cida.gdp.utilities.PropertyFactory;
 
 import java.util.ArrayList;
 import java.util.List;

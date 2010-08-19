@@ -4,6 +4,12 @@
  */
 package gov.usgs.gdp.bean;
 
+import gov.usgs.cida.gdp.webapp.bean.MessageBean;
+import gov.usgs.cida.gdp.webapp.bean.AckBean;
+import gov.usgs.cida.gdp.webapp.bean.ErrorBean;
+import gov.usgs.cida.gdp.webapp.bean.ErrorEnum;
+import gov.usgs.cida.gdp.webapp.bean.XmlReplyBean;
+import gov.usgs.cida.gdp.utilities.bean.XmlBean;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;

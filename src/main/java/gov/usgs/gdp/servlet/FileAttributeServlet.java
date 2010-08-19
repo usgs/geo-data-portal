@@ -1,13 +1,14 @@
 package gov.usgs.gdp.servlet;
 
-import gov.usgs.gdp.bean.AckBean;
+import gov.usgs.cida.gdp.webapp.RouterServlet;
+import gov.usgs.cida.gdp.webapp.bean.AckBean;
 import gov.usgs.gdp.bean.AttributeBean;
-import gov.usgs.gdp.bean.ErrorBean;
+import gov.usgs.cida.gdp.webapp.bean.ErrorBean;
 import gov.usgs.gdp.bean.FilesBean;
 import gov.usgs.gdp.bean.OutputFileTypeBean;
 import gov.usgs.gdp.bean.ShapeFileSetBean;
-import gov.usgs.gdp.bean.XmlReplyBean;
-import gov.usgs.gdp.helper.FileHelper;
+import gov.usgs.cida.gdp.webapp.bean.XmlReplyBean;
+import gov.usgs.cida.gdp.utilities.FileHelper;
 
 import java.io.IOException;
 import java.util.Date;

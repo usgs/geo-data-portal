@@ -5,6 +5,7 @@
 
 package gov.usgs.gdp.servlet;
 
+import gov.usgs.cida.gdp.webapp.AppInitializationServlet;
 import javax.servlet.ServletConfig;
 import org.junit.After;
 import org.junit.AfterClass;

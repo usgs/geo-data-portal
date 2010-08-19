@@ -1,5 +1,6 @@
 package gov.usgs.gdp.bean;
 
+import gov.usgs.cida.gdp.utilities.bean.XmlBean;
 import gov.usgs.gdp.analysis.NetCDFUtility;
 
 import java.io.IOException;

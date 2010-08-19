@@ -1,19 +1,20 @@
 package gov.usgs.gdp.servlet;
 
+import gov.usgs.cida.gdp.webapp.RouterServlet;
 import gov.usgs.gdp.analysis.StationDataCSVWriter;
 import gov.usgs.gdp.analysis.grid.FeatureCoverageWeightedGridStatistics;
 import gov.usgs.gdp.analysis.grid.FeatureCoverageWeightedGridStatisticsWriter.Statistic;
-import gov.usgs.gdp.bean.AckBean;
+import gov.usgs.cida.gdp.webapp.bean.AckBean;
 import gov.usgs.gdp.bean.AvailableFilesBean;
-import gov.usgs.gdp.bean.EmailMessageBean;
-import gov.usgs.gdp.bean.ErrorBean;
+import gov.usgs.cida.gdp.communication.bean.EmailMessageBean;
+import gov.usgs.cida.gdp.webapp.bean.ErrorBean;
 import gov.usgs.gdp.bean.FileLocationBean;
 import gov.usgs.gdp.bean.OutputStatisticsBean;
 import gov.usgs.gdp.bean.ShapeFileSetBean;
 import gov.usgs.gdp.bean.UploadFileCheckBean;
-import gov.usgs.gdp.bean.XmlReplyBean;
-import gov.usgs.gdp.helper.EmailHandler;
-import gov.usgs.gdp.helper.FileHelper;
+import gov.usgs.cida.gdp.webapp.bean.XmlReplyBean;
+import gov.usgs.cida.gdp.communication.EmailHandler;
+import gov.usgs.cida.gdp.utilities.FileHelper;
 import gov.usgs.gdp.servlet.FileProcessServlet.GroupBy.StationOption;
 
 import java.io.BufferedInputStream;

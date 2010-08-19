@@ -1,9 +1,10 @@
 package gov.usgs.gdp.servlet;
 
-import gov.usgs.gdp.bean.AckBean;
-import gov.usgs.gdp.bean.ErrorBean;
+import gov.usgs.cida.gdp.webapp.RouterServlet;
+import gov.usgs.cida.gdp.webapp.bean.AckBean;
+import gov.usgs.cida.gdp.webapp.bean.ErrorBean;
 import gov.usgs.gdp.bean.WCSCoverageInfoBean;
-import gov.usgs.gdp.bean.XmlReplyBean;
+import gov.usgs.cida.gdp.webapp.bean.XmlReplyBean;
 import gov.usgs.gdp.helper.CookieHelper;
 import gov.usgs.gdp.wcs.CoverageMetaData;
 

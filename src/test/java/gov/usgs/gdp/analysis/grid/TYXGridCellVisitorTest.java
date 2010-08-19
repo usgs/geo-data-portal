@@ -2,7 +2,7 @@ package gov.usgs.gdp.analysis.grid;
 
 import static org.junit.Assert.assertEquals;
 import static gov.usgs.gdp.analysis.grid.GridCellHelper.*;
-import gov.usgs.gdp.helper.FileHelper;
+import gov.usgs.cida.gdp.utilities.FileHelper;
 
 import java.io.IOException;
 import java.util.Formatter;
