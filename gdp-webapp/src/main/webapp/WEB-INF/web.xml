@@ -6,9 +6,6 @@
             30
         </session-timeout>
     </session-config>
-    <welcome-file-list>
-        <welcome-file>index.jsp</welcome-file>
-    </welcome-file-list>
     <servlet>
         <description>
         Runs application initialization tasks at beginning of app and at end of app</description>
@@ -19,4 +16,20 @@
         </servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
+
+    <servlet>
+        <description>
+        </description>
+        <display-name>RouterServlet</display-name>
+        <servlet-name>RouterServlet</servlet-name>
+        <servlet-class>
+            gov.usgs.gdp.servlet.RouterServlet
+        </servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>RouterServlet</servlet-name>
+        <url-pattern>/Router</url-pattern>
+        <url-pattern>/router</url-pattern>
+    </servlet-mapping>
+
 </web-app>

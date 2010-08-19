@@ -1,5 +1,6 @@
 package gov.usgs.cida.gdp.webapp.servlet;
 
+import gov.usgs.cida.gdp.utilities.XmlUtils;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Date;
@@ -15,10 +16,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
 
-import com.sun.xml.fastinfoset.DecoderStateTables;
-import gov.usgs.cida.gdp.webapp.bean.AckBean;
-import gov.usgs.cida.gdp.webapp.bean.ErrorBean;
-import gov.usgs.cida.gdp.webapp.bean.XmlReplyBean;
+import gov.usgs.cida.gdp.utilities.bean.AckBean;
+import gov.usgs.cida.gdp.utilities.bean.ErrorBean;
+import gov.usgs.cida.gdp.utilities.bean.XmlReplyBean;
 import java.util.Iterator;
 
 /**
@@ -92,7 +92,7 @@ public class RouterServlet extends HttpServlet {
             log.info("User did not send command");
             ErrorBean errorBean = new ErrorBean(ErrorBean.ERR_NO_COMMAND);
             XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, errorBean);
-            RouterServlet.sendXml(xmlReply, start, response);
+            XmlUtils.sendXml(xmlReply, start, response);
             return;
         }
 
@@ -107,31 +107,11 @@ public class RouterServlet extends HttpServlet {
         	log.info("No such command");
         	ErrorBean errorBean = new ErrorBean(ErrorBean.ERR_NO_COMMAND);
             XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, errorBean);
-            RouterServlet.sendXml(xmlReply, start, response);
+
+            XmlUtils.sendXml(xmlReply, start, response);
+            
         	return;
         }
     }
 
-    public static void sendXml(String xml, Long startTime, HttpServletResponse response) throws IOException {
-        Writer writer = response.getWriter();
-        try {
-            response.setContentType("text/xml");
-            response.setCharacterEncoding("utf-8");
-            char[] characters = xml.toCharArray();
-            for (int index = 0; index < characters.length; ++index) {
-                char current = characters[index];
-                if (DecoderStateTables.UTF8(current) == DecoderStateTables.STATE_ILLEGAL) current = '\u00BF';
-                writer.write(current);
-            }
-            writer.flush();
-        } finally {
-            if (writer != null) writer.close();
-        }
-        log.debug(xml);
-        log.info("Process completed in " + (new Date().getTime() - startTime.longValue()) + " milliseconds.");
-    }
-
-    public static void sendXml(XmlReplyBean xmlReply, Long startTime, HttpServletResponse response) throws IOException {
-        sendXml(xmlReply.toXml(), startTime, response);
-    }
 }
