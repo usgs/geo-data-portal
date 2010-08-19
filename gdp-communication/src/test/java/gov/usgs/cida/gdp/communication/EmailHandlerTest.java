@@ -54,7 +54,6 @@ public class EmailHandlerTest {
         boolean expResult = true;
         boolean result = instance.sendMessage(message);
         assertEquals(expResult, result);
-
     }
 
     /**
@@ -71,5 +70,4 @@ public class EmailHandlerTest {
         boolean result = instance.sendMessage(message);
         assertEquals(expResult, result);
     }
-
 }

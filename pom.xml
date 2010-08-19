@@ -29,7 +29,8 @@
         <module>gdp-common-utilities</module>
         <module>gdp-communication</module>
         <module>gdp-webapp</module>
-    </modules>
+        <module>gdp-file-management</module>
+  </modules>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>

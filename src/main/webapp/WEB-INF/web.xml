@@ -33,15 +33,7 @@
         </servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
-    <servlet>
-        <description>
-        </description>
-        <display-name>RouterServlet</display-name>
-        <servlet-name>RouterServlet</servlet-name>
-        <servlet-class>
-            gov.usgs.gdp.servlet.RouterServlet
-        </servlet-class>
-    </servlet>
+    
     <servlet>
         <description>
         </description>
@@ -136,11 +128,7 @@
         <servlet-name>AppInitializationServlet</servlet-name>
         <url-pattern>/AppInitializationServlet</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>RouterServlet</servlet-name>
-        <url-pattern>/Router</url-pattern>
-        <url-pattern>/router</url-pattern>
-    </servlet-mapping>
+    
     <servlet-mapping>
         <servlet-name>SummaryServlet</servlet-name>
         <url-pattern>/SummaryServlet</url-pattern>
