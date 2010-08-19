@@ -4,7 +4,7 @@ import java.util.*;
 
 /**
  * Represents and E-Mail message
- * 
+ *
  * @author isuftin
  *
  */

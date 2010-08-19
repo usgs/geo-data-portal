@@ -5,7 +5,6 @@
 
 package gov.usgs.cida.gdp.communication.bean;
 
-import gov.usgs.cida.gdp.communication.bean.EmailMessageBean;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;

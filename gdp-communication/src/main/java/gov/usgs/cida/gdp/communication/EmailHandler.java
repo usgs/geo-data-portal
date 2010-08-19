@@ -1,9 +1,10 @@
 package gov.usgs.cida.gdp.communication;
 
-import gov.usgs.gdp.bean.EmailMessageBean;
-import gov.usgs.gdp.helper.PropertyFactory;
+import gov.usgs.cida.gdp.communication.bean.EmailMessageBean;
 
 import java.util.Properties;
+
+import gov.usgs.cida.gdp.utilities.PropertyFactory;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -17,10 +18,10 @@ import org.apache.log4j.Logger;
 
 public class EmailHandler {
 	private static org.apache.log4j.Logger log = Logger.getLogger(EmailHandler.class);
-	
+
 	public boolean sendMessage(EmailMessageBean message) throws AddressException, MessagingException {
 		Properties properties = System.getProperties();
-		
+
 //		if (Boolean.parseBoolean(PropertyFactory.getProperty("development"))) {
 			properties.put("mail.smtp.host", PropertyFactory.getProperty("development.mail.smtp.host"));
 			properties.put("mail.smtp.port", PropertyFactory.getProperty("development.mail.smtp.port"));
@@ -28,11 +29,11 @@ public class EmailHandler {
 //			properties.put("mail.smtp.host", PropertyFactory.getProperty("production.mail.smtp.host"));
 //			properties.put("mail.smtp.port", PropertyFactory.getProperty("production.mail.smtp.port"));
 //		}
-		
+
 		Session session = Session.getInstance(properties, null);
 		session.setDebug(true);
-		
-		
+
+
 		Message msg = new MimeMessage(session);
 
 		InternetAddress[] bccList = new InternetAddress[message.getBcc().size()];
@@ -42,17 +43,17 @@ public class EmailHandler {
 			bccList[counter] = email;
 		}
 		msg.setRecipient(Message.RecipientType.TO, new InternetAddress(message.getTo()));
-		msg.setRecipients(Message.RecipientType.BCC, bccList);		
+		msg.setRecipients(Message.RecipientType.BCC, bccList);
 		msg.setFrom(new InternetAddress(message.getFrom()));
 		msg.setSubject(message.getSubject());
 		msg.setContent(message.getContent(), "text/plain");
-		
+
 		Transport.send(msg);
 		log.info("Sent E-Mail From " + message.getFrom() + " to " + message.getTo());
 		return true;
 
-		
+
 	}
 
-	
+
 }

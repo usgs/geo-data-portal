@@ -5,8 +5,8 @@
 
 package gov.usgs.cida.gdp.communication;
 
-import gov.usgs.cida.gdp.communication.EmailHandler;
 import gov.usgs.cida.gdp.communication.bean.EmailMessageBean;
+import gov.usgs.cida.gdp.utilities.PropertyFactory;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
