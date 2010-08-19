@@ -26,7 +26,7 @@ public class MessageBean implements XmlBean {
 			message.add(singleMessage);
 		}
 	}
-	
+
 	@Override
 	public String toXml() {
 		XStream xstream = new XStream();
@@ -37,7 +37,7 @@ public class MessageBean implements XmlBean {
 		result = sb.toString();
 		return result;
 	}
-	
+
 	public List<String> getMessages() {
 		if (this.message == null) this.message = new ArrayList<String>();
 		return this.message;
@@ -46,7 +46,7 @@ public class MessageBean implements XmlBean {
 	public void setMessages(List<String> localMessages) {
 		this.message = localMessages;
 	}
-	
+
 	public boolean addMessage(String message) {
 		if (this.message == null) this.message = new ArrayList<String>();
 		return this.message.add(message);

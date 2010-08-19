@@ -1,7 +1,6 @@
 package gov.usgs.cida.gdp.webapp.bean;
 
 import gov.usgs.cida.gdp.utilities.bean.XmlBean;
-import gov.usgs.cida.gdp.utilities.PropertyFactory;
 
 import java.security.InvalidParameterException;
 import java.util.Date;
@@ -12,6 +11,7 @@ import java.util.TreeMap;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
+import gov.usgs.cida.gdp.utilities.PropertyFactory;
 
 @XStreamAlias("error")
 public class ErrorBean implements XmlBean {
@@ -41,7 +41,7 @@ public class ErrorBean implements XmlBean {
     public final static int ERR_USER_DIRECTORY_DOES_NOT_EXIST = 21;
     public final static int INCORRECT_SERVER_TYPE = 22;
     public final static int ERR_CANNOT_COMPARE_GRID_AND_GEOM = 23;
-    
+
     public final static Map<Integer, String> ERROR_MESSAGES;
     @XStreamAlias("code")
     @XStreamAsAttribute

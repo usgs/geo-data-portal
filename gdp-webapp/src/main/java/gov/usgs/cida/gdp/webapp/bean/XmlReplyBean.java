@@ -1,48 +1,48 @@
 package gov.usgs.cida.gdp.webapp.bean;
 
-import gov.usgs.cida.gdp.utilities.bean.XmlBean;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import gov.usgs.gdp.bean.MessageBean;
+import gov.usgs.cida.gdp.utilities.bean.XmlBean;
 
 @XStreamAlias("reply")
 public class XmlReplyBean implements XmlBean {
 
 	private static org.apache.log4j.Logger log = Logger.getLogger(XmlReplyBean.class);
-	
+
 	private AckBean acknowledgment;
 	@SuppressWarnings("unused")
 	private ErrorBean errorBean;
         private ErrorEnum errorEnum;
 	private MessageBean message;
 	private XmlBean[] content;
-		
+
 	public XmlReplyBean() {
 		this.acknowledgment = new AckBean(AckBean.ACK_OK);
 	}
-	
+
 	public XmlReplyBean(XmlBean... contentArray) {
 		this.acknowledgment = new AckBean(AckBean.ACK_OK);
 		this.content = contentArray;
 	}
-	
+
 	public XmlReplyBean(int result, List<XmlBean> xmlBeanList) {
 		this.acknowledgment = new AckBean(result);
 		XmlBean[] xmlBeanArray = new XmlBean[0];
 		xmlBeanArray = xmlBeanList.toArray(xmlBeanArray);
 		this.content = xmlBeanArray;
-		
+
 	}
-	
+
 	public XmlReplyBean(MessageBean messageBean, XmlBean... contentArray) {
 		this.acknowledgment = new AckBean(AckBean.ACK_OK);
 		this.message = messageBean;
 		this.content = contentArray;
 	}
-	
+
 	public XmlReplyBean(int status) throws IllegalArgumentException {
 		try {
 			this.acknowledgment = new AckBean(status);
@@ -51,7 +51,7 @@ public class XmlReplyBean implements XmlBean {
 			throw e;
 		}
 	}
-	
+
 	public XmlReplyBean(int status, ErrorBean error) throws IllegalArgumentException {
 		try {
 			this.acknowledgment = new AckBean(status);
@@ -103,7 +103,7 @@ public class XmlReplyBean implements XmlBean {
 			throw e;
 		}
 	}
-	
+
 	public XmlReplyBean(int status, XmlBean... contentArray) throws IllegalArgumentException {
 		try {
 			this.acknowledgment = new AckBean(status);
@@ -113,10 +113,10 @@ public class XmlReplyBean implements XmlBean {
 			throw e;
 		}
 	}
-	
+
 	@Override
 	public String toXml() {
-		XStream xstream = new XStream();		
+		XStream xstream = new XStream();
 		xstream.autodetectAnnotations(true);
 
 		StringBuffer sb = new StringBuffer();
@@ -168,5 +168,5 @@ public class XmlReplyBean implements XmlBean {
     public void setErrorEnum(ErrorEnum errorEnum) {
         this.errorEnum = errorEnum;
     }
-	
+
 }

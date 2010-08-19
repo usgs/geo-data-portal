@@ -1,9 +1,5 @@
 package gov.usgs.cida.gdp.webapp.servlet;
 
-import gov.usgs.cida.gdp.webapp.bean.AckBean;
-import gov.usgs.cida.gdp.webapp.bean.ErrorBean;
-import gov.usgs.cida.gdp.webapp.bean.XmlReplyBean;
-
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Date;
@@ -20,8 +16,10 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
 
 import com.sun.xml.fastinfoset.DecoderStateTables;
+import gov.usgs.cida.gdp.webapp.bean.AckBean;
+import gov.usgs.cida.gdp.webapp.bean.ErrorBean;
+import gov.usgs.cida.gdp.webapp.bean.XmlReplyBean;
 import java.util.Iterator;
-import java.util.Set;
 
 /**
  * Servlet implementation class RouterServlet
@@ -30,7 +28,7 @@ public class RouterServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     private static org.apache.log4j.Logger log = Logger.getLogger(RouterServlet.class);
-    
+
     private static final Map<String, String> servletCommandMappings = new HashMap<String, String>();
     static {
     	servletCommandMappings.put("getoutputstats", "/FileProcessServlet");
@@ -99,7 +97,7 @@ public class RouterServlet extends HttpServlet {
         }
 
         String command = request.getParameter("command");
-        
+
         String forwardToServlet = servletCommandMappings.get(command);
         if (forwardToServlet != null) {
         	log.info(command);

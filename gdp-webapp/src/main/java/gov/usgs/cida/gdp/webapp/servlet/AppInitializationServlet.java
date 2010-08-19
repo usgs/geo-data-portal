@@ -1,8 +1,10 @@
 package gov.usgs.cida.gdp.webapp.servlet;
 
+//import gov.usgs.gdp.helper.FileHelper;
+//import gov.usgs.gdp.helper.PropertyFactory;
+
 import gov.usgs.cida.gdp.utilities.FileHelper;
 import gov.usgs.cida.gdp.utilities.PropertyFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -215,7 +217,7 @@ public class AppInitializationServlet extends HttpServlet {
 
         // Set up the tast to run every hour, starting 1 hour from now
         task.scheduleAtFixedRate(new ScanFileTask(userSpaceDir, uploadDirName, fileAgeLong), 0l, 3600000l);
-        
+
         // One minute test timer
         // task.scheduleAtFixedRate(new ScanFileTask(userSpaceDir, uploadDirName, 60000l), 0l, 60000l);
         log.info("File Wipe system started.");
@@ -253,8 +255,8 @@ public class AppInitializationServlet extends HttpServlet {
             }
         }
 
-        public ScanFileTask(@SuppressWarnings("hiding") File workspaceDir, 
-        		@SuppressWarnings("hiding") File repositoryDir, 
+        public ScanFileTask(@SuppressWarnings("hiding") File workspaceDir,
+        		@SuppressWarnings("hiding") File repositoryDir,
         		@SuppressWarnings("hiding") long hoursToWipe) {
             this.workspaceDir = workspaceDir;
             this.repositoryDir = repositoryDir;

@@ -3,13 +3,12 @@ package gov.usgs.cida.gdp.webapp.bean;
 import gov.usgs.cida.gdp.utilities.bean.XmlBean;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import gov.usgs.gdp.bean.MessageBean;
 
 @XStreamAlias("acknowledgment")
 public class AckBean implements XmlBean {
 	public static final int ACK_OK = 1;
 	public static final int ACK_FAIL = 2;
-	
+
 	private String status;
 
 	public AckBean(int status) throws IllegalArgumentException {
@@ -24,7 +23,7 @@ public class AckBean implements XmlBean {
 				throw new IllegalArgumentException("AckBean does not have a status of: " + status);
 		}
 	}
-	
+
 	public void setStatus(String status) {
 		this.status = status;
 	}
@@ -43,5 +42,5 @@ public class AckBean implements XmlBean {
 		result = sb.toString();
 		return result;
 	}
-	
+
 }
