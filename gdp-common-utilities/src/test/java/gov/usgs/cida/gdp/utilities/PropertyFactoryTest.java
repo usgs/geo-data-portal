@@ -1,6 +1,5 @@
 package gov.usgs.cida.gdp.utilities;
 
-import gov.usgs.cida.gdp.utilities.PropertyFactory;
 import static org.junit.Assert.*;
 import java.util.Enumeration;
 import java.util.List;
@@ -20,7 +19,7 @@ public class PropertyFactoryTest {
 	public final void testGetProperty() {
 		String result = PropertyFactory.getProperty("does.not.exist");
 		assertEquals("", result);
-		
+
 		result = PropertyFactory.getProperty("server.url.0");
 		assertEquals("RUNOFF;http://runoff.cr.usgs.gov:8086/thredds/hydrologic_catalog.xml", result);
 	}

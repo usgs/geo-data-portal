@@ -1,6 +1,6 @@
 package gov.usgs.cida.gdp.utilities;
 
-import gov.usgs.gdp.analysis.GeoToolsFileAnalysis;
+//import gov.usgs.gdp.analysis.GeoToolsFileAnalysis;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 
@@ -21,7 +21,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.log4j.Logger;
-import org.geotools.data.FileDataStore;
+//import org.geotools.data.FileDataStore;
 
 /**
  * Utility class that helps with multiple FileIO operations
@@ -423,17 +423,17 @@ public class FileHelper {
         return true;
     }
 
-    public static List<FileDataStore> getShapeFileDataStores(
-            List<String> shpFiles) throws IOException {
-        List<FileDataStore> result = new ArrayList<FileDataStore>();
-        for (String file : shpFiles) {
-            FileDataStore fds = GeoToolsFileAnalysis.getFileDataStore(new File(file.trim()));
-            if (fds != null) {
-                result.add(fds);
-            }
-        }
-        return result;
-    }
+//    public static List<FileDataStore> getShapeFileDataStores(
+//            List<String> shpFiles) throws IOException {
+//        List<FileDataStore> result = new ArrayList<FileDataStore>();
+//        for (String file : shpFiles) {
+//            FileDataStore fds = GeoToolsFileAnalysis.getFileDataStore(new File(file.trim()));
+//            if (fds != null) {
+//                result.add(fds);
+//            }
+//        }
+//        return result;
+//    }
     
 
     /**
