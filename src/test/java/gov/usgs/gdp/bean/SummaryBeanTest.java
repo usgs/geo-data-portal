@@ -5,6 +5,7 @@
 
 package gov.usgs.gdp.bean;
 
+import gov.usgs.cida.gdp.filemanagement.bean.SummaryBean;
 import gov.usgs.cida.gdp.utilities.FileHelper;
 
 import java.io.File;

@@ -1,5 +1,6 @@
 package gov.usgs.gdp.bean;
 
+import gov.usgs.cida.gdp.filemanagement.bean.AttributeBean;
 import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;

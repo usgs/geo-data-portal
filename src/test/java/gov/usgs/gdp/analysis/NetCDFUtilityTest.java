@@ -1,5 +1,6 @@
 package gov.usgs.gdp.analysis;
 
+import gov.usgs.cida.gdp.dataaccess.helper.NetCDFUtility;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;

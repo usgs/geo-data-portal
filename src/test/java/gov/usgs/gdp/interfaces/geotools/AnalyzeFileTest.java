@@ -1,7 +1,8 @@
 package gov.usgs.gdp.interfaces.geotools;
 
+import gov.usgs.cida.gdp.filemanagement.interfaces.geotools.AnalyzeFile;
 import static org.junit.Assert.*;
-import gov.usgs.gdp.bean.ShapeFileSetBean;
+import gov.usgs.cida.gdp.utilities.bean.ShapeFileSetBean;
 import gov.usgs.cida.gdp.utilities.FileHelper;
 
 import java.io.File;

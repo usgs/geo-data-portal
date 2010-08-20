@@ -1,5 +1,6 @@
 package gov.usgs.gdp.bean;
 
+import gov.usgs.cida.gdp.dataaccess.bean.THREDDSInfoBean;
 import static org.junit.Assert.*;
 
 import java.text.ParseException;

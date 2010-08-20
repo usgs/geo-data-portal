@@ -4,10 +4,9 @@ import gov.usgs.cida.gdp.webapp.RouterServlet;
 import gov.usgs.cida.gdp.webapp.bean.AckBean;
 import gov.usgs.cida.gdp.webapp.bean.ErrorBean;
 import gov.usgs.gdp.bean.FeatureBean;
-import gov.usgs.gdp.bean.FilesBean;
-import gov.usgs.gdp.bean.ShapeFileSetBean;
+import gov.usgs.cida.gdp.utilities.bean.FilesBean;
+import gov.usgs.cida.gdp.utilities.bean.ShapeFileSetBean;
 import gov.usgs.cida.gdp.webapp.bean.XmlReplyBean;
-import gov.usgs.gdp.helper.CookieHelper;
 import gov.usgs.cida.gdp.utilities.FileHelper;
 
 import java.io.IOException;
