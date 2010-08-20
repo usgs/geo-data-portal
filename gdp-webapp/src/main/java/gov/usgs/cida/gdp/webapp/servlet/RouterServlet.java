@@ -2,7 +2,6 @@ package gov.usgs.cida.gdp.webapp.servlet;
 
 import gov.usgs.cida.gdp.utilities.XmlUtils;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +32,7 @@ public class RouterServlet extends HttpServlet {
     static {
     	servletCommandMappings.put("getoutputstats", "/FileProcessServlet");
     	servletCommandMappings.put("listfiles", "/FileSelectionServlet");
-    	servletCommandMappings.put("listattributes", "/FileAttributeServlet");
+    	servletCommandMappings.put("listattributes", "/FileSelectionServlet");
     	servletCommandMappings.put("listfeatures", "/FileFeatureServlet");
     	servletCommandMappings.put("listservers", "/THREDDSCheckServlet");
     	servletCommandMappings.put("checkserver", "/THREDDSCheckServlet");
@@ -47,7 +46,7 @@ public class RouterServlet extends HttpServlet {
     	servletCommandMappings.put("calculatewcscoverageinfo", "/WCSServlet");
     	servletCommandMappings.put("gettimerange", "/THREDDSServlet");
     	servletCommandMappings.put("submitforprocessing", "/FileProcessServlet");
-    	servletCommandMappings.put("getoutputtypelist", "/FileAttributeServlet");
+    	servletCommandMappings.put("getoutputtypelist", "/OutputTypeServlet");
     	servletCommandMappings.put("getfile", "/FileProcessServlet");
     	servletCommandMappings.put("checkuploadfile", "/FileProcessServlet");
     	servletCommandMappings.put("commandlist", "/SummaryServlet");
