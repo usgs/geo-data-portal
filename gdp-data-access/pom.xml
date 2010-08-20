@@ -35,8 +35,21 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>gdp-common-utilities</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <type>jar</type>
-            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <version>3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>edu.ucar.unidata</groupId>
+            <artifactId>netcdf-all</artifactId>
+            <version>4.1.20100220.0007</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.collections</groupId>
+            <artifactId>google-collections</artifactId>
+            <version>1.0</version>
         </dependency>
     </dependencies>
 </project>
