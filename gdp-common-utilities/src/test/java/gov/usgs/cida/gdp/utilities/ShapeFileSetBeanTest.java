@@ -3,7 +3,6 @@ package gov.usgs.cida.gdp.utilities;
 import gov.usgs.cida.gdp.utilities.bean.FilesBean;
 import gov.usgs.cida.gdp.utilities.bean.ShapeFileSetBean;
 import static org.junit.Assert.*;
-import gov.usgs.cida.gdp.utilities.FileHelper;
 
 import java.io.File;
 import java.io.IOException;
