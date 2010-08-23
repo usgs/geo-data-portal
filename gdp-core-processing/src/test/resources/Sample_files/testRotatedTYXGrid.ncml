@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+  <dimension name="y" length="3" />
+  <dimension name="x" length="4" />
+  <attribute name="title" value="testGridCellCoverage Data" />
+  <attribute name="Conventions" value="CF-1.4" />
+  <variable name="rh" shape="x y" type="int">
+    <attribute name="long_name" value="relative humidity" />
+    <attribute name="units" value="percent" />
+    <attribute name="coordinates" value="lon lat" />
+    <values start="10" increment="5" />
+  </variable>
+  <variable name="x" shape="x" type="double">
+  	<attribute name="axis" value="X" />
+  	<attribute name="units" value="degrees" />
+  </variable>
+  <variable name="y" shape="y" type="double">
+  	<attribute name="axis" value="Y" />
+  	<attribute name="units" value="degrees" />
+  </variable>
+  <variable name="lat" shape="x y" type="double">
+    <attribute name="units" value="degrees_north" />
+    <values>39 39.5 40 40 40.5 41 41 41.5 42 42 42.5 43</values>
+  </variable>
+  <variable name="lon" shape="x y" type="double">
+    <attribute name="units" value="degrees_east" />
+    <values>-89 -90 -91 -89.5 -90.5 -91.5 -90 -91 -92 -90.5 -91.5 -92.5</values>
+  </variable>
+</netcdf>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+  <attribute name="title" value="testSimpleYXGrid Data" />
+  <attribute name="Conventions" value="CF-1.4" />
+  <aggregation dimName="ensemble" type="joinNew">
+		  <netcdf coordValue="0">
+			<dimension name="lat" length="2" />
+			<dimension name="lon" length="3" />
+			<dimension name="time" length="4" />
+			<variable name="time" shape="time" type="int">
+				<attribute name="units" value="hours" />
+				<values start="1" increment="1" />
+			</variable>
+			<variable name="rh" shape="time lat lon" type="int">
+				<attribute name="long_name" value="relative humidity" />
+				<attribute name="units" value="percent" />
+				<attribute name="coordinates" value="lat lon" />
+				<values start="10" increment="10" />
+			</variable>
+			<variable name="lat" shape="lat" type="float">
+				<attribute name="units" value="degrees_north" />
+				<values start="42" increment="1" />
+			</variable>
+			<variable name="lon" shape="lon" type="float">
+				<attribute name="units" value="degrees_east" />
+				<values start="-90" increment="1" />
+			</variable>
+		  </netcdf>
+		  <netcdf coordValue="1">
+			<dimension name="lat" length="2" />
+			<dimension name="lon" length="3" />
+			<dimension name="time" length="4" />
+			<variable name="time" shape="time" type="int">
+				<attribute name="units" value="hours" />
+				<values start="1" increment="1" />
+			</variable>
+			<variable name="rh" shape="time lat lon" type="int">
+				<attribute name="long_name" value="relative humidity" />
+				<attribute name="units" value="percent" />
+				<attribute name="coordinates" value="lat lon" />
+				<values start="20" increment="5" />
+			</variable>
+			<variable name="lat" shape="lat" type="float">
+				<attribute name="units" value="degrees_north" />
+				<values start="42" increment="1" />
+			</variable>
+			<variable name="lon" shape="lon" type="float">
+				<attribute name="units" value="degrees_east" />
+				<values start="-90" increment="1" />
+			</variable>
+		  </netcdf>
+  </aggregation>
+</netcdf>
