@@ -87,5 +87,8 @@
         </dependency>
 
     </dependencies>
-
+    <properties>
+        <netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
+    </properties>
 </project>
+
