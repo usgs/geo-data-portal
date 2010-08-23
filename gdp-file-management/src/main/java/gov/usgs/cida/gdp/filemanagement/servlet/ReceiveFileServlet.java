@@ -21,19 +21,19 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
 
 /**
- * Servlet implementation class UploadFilesServlet
+ * Servlet implementation class ReceiveFileServlet
  * @author isuftin
  *
  */
-public class UploadFilesServlet extends HttpServlet {
+public class ReceiveFileServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 6766229674722132238L;
-	private static org.apache.log4j.Logger log = Logger.getLogger(UploadFilesServlet.class);
+	private static org.apache.log4j.Logger log = Logger.getLogger(ReceiveFileServlet.class);
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public UploadFilesServlet() {
+    public ReceiveFileServlet() {
         super();
     }
 

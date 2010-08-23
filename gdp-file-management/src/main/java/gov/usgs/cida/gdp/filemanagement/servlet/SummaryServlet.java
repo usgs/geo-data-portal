@@ -80,7 +80,6 @@ public class SummaryServlet extends HttpServlet {
 	 * @param request
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	private List<SummaryBean> summarize(HttpServletRequest request) {
 		List<SummaryBean> result = new ArrayList<SummaryBean>();
 		List<ShapeFileSetBean> shapeFileSetBeanList = new ArrayList<ShapeFileSetBean>();
