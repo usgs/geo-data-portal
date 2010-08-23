@@ -11,8 +11,8 @@ import gov.usgs.cida.gdp.utilities.bean.AckBean;
 import gov.usgs.cida.gdp.utilities.bean.ErrorBean;
 import gov.usgs.cida.gdp.utilities.bean.XmlReplyBean;
 import gov.usgs.cida.gdp.webapp.bean.OutputFileTypeBean;
+import gov.usgs.cida.gdp.webapp.bean.OutputStatisticsBean;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Date;
 import java.util.List;
 import javax.servlet.ServletException;
@@ -25,9 +25,9 @@ import org.apache.log4j.Logger;
  *
  * @author admin
  */
-public class OutputTypeServlet extends HttpServlet {
+public class OutputInfoServlet extends HttpServlet {
    private static final long serialVersionUID = 1L;
-    private static org.apache.log4j.Logger log = Logger.getLogger(OutputTypeServlet.class);
+    private static org.apache.log4j.Logger log = Logger.getLogger(OutputInfoServlet.class);
 
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -57,6 +57,13 @@ public class OutputTypeServlet extends HttpServlet {
         Long start = Long.valueOf(new Date().getTime());
 		String command = request.getParameter("command");
 		XmlReplyBean xmlReply = null;
+
+        if ("getoutputstats".equals(command)) {
+			OutputStatisticsBean outputStats = OutputStatisticsBean.getOutputStatisticsBean();
+			xmlReply = new XmlReplyBean(AckBean.ACK_OK, outputStats);
+			XmlUtils.sendXml(xmlReply, start, response);
+			return;
+		}
 
 		if ("getoutputtypelist".equals(command)) {
 			log.debug("User has chosen to get output file type list");

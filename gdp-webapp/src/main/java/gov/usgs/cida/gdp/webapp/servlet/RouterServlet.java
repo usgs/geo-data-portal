@@ -30,14 +30,14 @@ public class RouterServlet extends HttpServlet {
 
     private static final Map<String, String> servletCommandMappings = new HashMap<String, String>();
     static {
-    	servletCommandMappings.put("getoutputstats", "/FileProcessServlet");
+    	servletCommandMappings.put("getoutputstats", "/OutputInfoServlet");
     	servletCommandMappings.put("listfiles", "/FileSelectionServlet");
     	servletCommandMappings.put("listattributes", "/FileSelectionServlet");
     	servletCommandMappings.put("listfeatures", "/FileFeatureServlet");
     	servletCommandMappings.put("listservers", "/THREDDSCheckServlet");
     	servletCommandMappings.put("checkserver", "/THREDDSCheckServlet");
     	servletCommandMappings.put("createdatastore", "/GeoServerServlet");
-    	servletCommandMappings.put("createuserdirectory", "/UploadFilesServlet");
+    	servletCommandMappings.put("createuserdirectory", "/SendFileServlet");
     	servletCommandMappings.put("getdatafileselectables", "/GeoServerServlet");
     	servletCommandMappings.put("createcoloredmap", "/GeoServerServlet");
     	servletCommandMappings.put("getdatasetlist", "/THREDDSServlet");
@@ -46,9 +46,9 @@ public class RouterServlet extends HttpServlet {
     	servletCommandMappings.put("calculatewcscoverageinfo", "/WCSServlet");
     	servletCommandMappings.put("gettimerange", "/THREDDSServlet");
     	servletCommandMappings.put("submitforprocessing", "/FileProcessServlet");
-    	servletCommandMappings.put("getoutputtypelist", "/OutputTypeServlet");
-    	servletCommandMappings.put("getfile", "/FileProcessServlet");
-    	servletCommandMappings.put("checkuploadfile", "/FileProcessServlet");
+    	servletCommandMappings.put("getoutputtypelist", "/OutputInfoServlet");
+    	servletCommandMappings.put("getfile", "/SendFileServlet");
+    	servletCommandMappings.put("checkuploadfile", "/SendFileServlet");
     	servletCommandMappings.put("commandlist", "/SummaryServlet");
     }
 

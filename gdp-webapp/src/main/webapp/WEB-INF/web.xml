@@ -26,16 +26,22 @@
         <display-name>RouterServlet</display-name>
         <servlet-name>RouterServlet</servlet-name>
         <servlet-class>
-            gov.usgs.gdp.servlet.RouterServlet
+            gov.usgs.cida.gdp.webapp.servlet.RouterServlet
         </servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>OutputTypeServlet</servlet-name>
-        <servlet-class>gov.usgs.cida.gdp.webapp.servlet.OutputTypeServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>RouterServlet</servlet-name>
         <url-pattern>/Router</url-pattern>
         <url-pattern>/router</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>OutputInfoServlet</servlet-name>
+        <servlet-class>gov.usgs.cida.gdp.webapp.servlet.OutputInfoServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>OutputInfoServlet</servlet-name>
+        <url-pattern>/OutputInfoServlet</url-pattern>
+        <url-pattern>/OutputInfoServlet</url-pattern>
     </servlet-mapping>
 </web-app>
