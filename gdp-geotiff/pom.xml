@@ -1,0 +1,24 @@
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>gdp</artifactId>
+        <groupId>gov.usgs.cida.gdp</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <groupId>gov.usgs.cida.gdp</groupId>
+    <artifactId>gdp-geotiff</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>gdp-geotiff</name>
+    <dependencies>
+        <dependency>
+            <groupId>edu.ucar.unidata</groupId>
+            <artifactId>netcdf-all</artifactId>
+            <version>4.1.20100220.0007</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>2.2</version>
+        </dependency>
+    </dependencies>
+</project>
