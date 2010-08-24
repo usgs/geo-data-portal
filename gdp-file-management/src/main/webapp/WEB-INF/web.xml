@@ -7,7 +7,7 @@
         </description>
         <display-name>ReceiveFileServlet</display-name>
         <servlet-name>ReceiveFileServlet</servlet-name>
-        <servlet-class>gov.usgs.cida.gdp.filemanagement.servlet.ReceiveFileServlet         </servlet-class>
+        <servlet-class>gov.usgs.cida.gdp.filemanagement.servlet.ReceiveFileServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>FileFeatureServlet</servlet-name>
