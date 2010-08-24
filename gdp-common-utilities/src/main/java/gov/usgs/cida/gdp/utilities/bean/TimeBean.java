@@ -38,6 +38,7 @@ public class TimeBean implements XmlBean {
             this.time = result;
         }
     }
+    
 
     public TimeBean(List<String> dateRange) throws ParseException {
         this.time = dateRange;
