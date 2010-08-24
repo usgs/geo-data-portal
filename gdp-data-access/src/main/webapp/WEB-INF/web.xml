@@ -15,5 +15,35 @@
         <servlet-name>WCSServlet</servlet-name>
         <url-pattern>/WCSServlet</url-pattern>
     </servlet-mapping>
+    
+    <servlet>
+        <description>
+            ...
+        </description>
+        <display-name>THREDDSCheckServlet</display-name>
+        <servlet-name>THREDDSCheckServlet</servlet-name>
+        <servlet-class>
+            gov.usgs.cida.gdp.dataaccess.servlet.THREDDSCheckServlet
+        </servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>THREDDSCheckServlet</servlet-name>
+        <url-pattern>/THREDDSCheckServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <description>
+            ...
+        </description>
+        <display-name>THREDDSServlet</display-name>
+        <servlet-name>THREDDSServlet</servlet-name>
+        <servlet-class>
+            gov.usgs.cida.gdp.dataaccess.servlet.THREDDSServlet
+        </servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>THREDDSServlet</servlet-name>
+        <url-pattern>/THREDDSServlet</url-pattern>
+    </servlet-mapping>
 
 </web-app>
