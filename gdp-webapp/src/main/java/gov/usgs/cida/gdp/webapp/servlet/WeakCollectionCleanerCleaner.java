@@ -37,6 +37,7 @@ public class WeakCollectionCleanerCleaner implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         // nothing to do...
+        System.out.println("TEST");
     }
 
     /**

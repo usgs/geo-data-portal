@@ -30,26 +30,26 @@ public class RouterServlet extends HttpServlet {
 
     private static final Map<String, String> servletCommandMappings = new HashMap<String, String>();
     static {
-    	servletCommandMappings.put("getoutputstats", "/OutputInfoServlet");
-    	servletCommandMappings.put("listfiles", "/FileSelectionServlet");
-    	servletCommandMappings.put("listattributes", "/FileSelectionServlet");
-    	servletCommandMappings.put("listfeatures", "/FileFeatureServlet");
-    	servletCommandMappings.put("listservers", "/THREDDSCheckServlet");
-    	servletCommandMappings.put("checkserver", "/THREDDSCheckServlet");
-    	servletCommandMappings.put("createdatastore", "/GeoServerServlet");
-    	servletCommandMappings.put("createuserdirectory", "/SendFileServlet");
-    	servletCommandMappings.put("getdatafileselectables", "/GeoServerServlet");
-    	servletCommandMappings.put("createcoloredmap", "/GeoServerServlet");
-    	servletCommandMappings.put("getdatasetlist", "/THREDDSServlet");
-    	servletCommandMappings.put("getgridlist", "/THREDDSServlet");
-    	servletCommandMappings.put("getcatalog", "/THREDDSServlet");
-    	servletCommandMappings.put("calculatewcscoverageinfo", "/WCSServlet");
-    	servletCommandMappings.put("gettimerange", "/THREDDSServlet");
-    	servletCommandMappings.put("submitforprocessing", "/FileProcessServlet");
-    	servletCommandMappings.put("getoutputtypelist", "/OutputInfoServlet");
-    	servletCommandMappings.put("getfile", "/SendFileServlet");
-    	servletCommandMappings.put("checkuploadfile", "/SendFileServlet");
-    	servletCommandMappings.put("commandlist", "/SummaryServlet");
+        servletCommandMappings.put("getoutputstats", "http://localhost:8080/gdp-webapp/OutputInfoServlet");
+        servletCommandMappings.put("listfiles", "http://localhost:8080/gdp-file-management/FileSelectionServlet");
+        servletCommandMappings.put("listattributes", "http://localhost:8080/gdp-file-management/FileSelectionServlet");
+        servletCommandMappings.put("listfeatures", "http://localhost:8080/gdp-file-management/FileFeatureServlet");
+        servletCommandMappings.put("listservers", "http://localhost:8080/gdp-data-access/THREDDSCheckServlet");
+        servletCommandMappings.put("checkserver", "http://localhost:8080/gdp-data-access/THREDDSCheckServlet");
+        servletCommandMappings.put("createdatastore", "http://localhost:8080/gdp-file-management/GeoServerServlet");
+        servletCommandMappings.put("createuserdirectory", "http://localhost:8080/gdp-file-management/ReceiveFileServlet");
+        servletCommandMappings.put("getdatafileselectables", "http://localhost:8080/gdp-file-management/GeoServerServlet");
+        servletCommandMappings.put("createcoloredmap", "http://localhost:8080/gdp-file-management/GeoServerServlet");
+        servletCommandMappings.put("getdatasetlist", "http://localhost:8080/gdp-data-access/THREDDSServlet");
+        servletCommandMappings.put("getgridlist", "http://localhost:8080/gdp-data-access/THREDDSServlet");
+        servletCommandMappings.put("getcatalog", "http://localhost:8080/gdp-data-access/THREDDSServlet");
+        servletCommandMappings.put("calculatewcscoverageinfo", "http://localhost:8080/gdp-data-access/WCSServlet");
+        servletCommandMappings.put("gettimerange", "http://localhost:8080/gdp-data-access/THREDDSServlet");
+        servletCommandMappings.put("submitforprocessing", "http://localhost:8080/gdp-core-processing/ProcessServlet");
+        servletCommandMappings.put("getoutputtypelist", "http://localhost:8080/gdp-webapp/OutputInfoServlet");
+        servletCommandMappings.put("getfile", "http://localhost:8080/gdp-file-management/SendFileServlet");
+        servletCommandMappings.put("checkuploadfile", "http://localhost:8080/gdp-file-management/SendFileServlet");
+        servletCommandMappings.put("commandlist", "http://localhost:8080/gdp-file-management/SummaryServlet");
     }
 
     /**
@@ -66,17 +66,7 @@ public class RouterServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Long start = Long.valueOf(new Date().getTime());
-        @SuppressWarnings("unchecked")
-        Map<String, String> requestParameters = request.getParameterMap();
-
-        // For debugging purposes
-        Iterator<String> keys = requestParameters.keySet().iterator();
-        log.debug("Submitted KVP: ( K : V ) ");
-        while (keys.hasNext()) {
-            String key = keys.next();
-            String command = request.getParameter(key);
-            if (command != null) log.debug(key + " : " + command);
-        }
+        
 
         // If the user is attempting to upload files, send them directly to the correct servlet
         if (ServletFileUpload.isMultipartContent(request)) {
@@ -86,7 +76,16 @@ public class RouterServlet extends HttpServlet {
             return;
         }
 
-        // Must go after above isMultiPartContent block since that block doesn't contain a command parameter
+        
+
+
+        Map<String, String> requestParameters = request.getParameterMap();
+
+        // For debugging purposes
+        Iterator<String> keys = requestParameters.keySet().iterator();
+        String command = request.getParameter("command");
+
+        // Must go after above isMultiPartContent block since that block doesn't contain a commandKey parameter
         if (!requestParameters.containsKey("command")) {
             log.info("User did not send command");
             ErrorBean errorBean = new ErrorBean(ErrorBean.ERR_NO_COMMAND);
@@ -95,13 +94,19 @@ public class RouterServlet extends HttpServlet {
             return;
         }
 
-        String command = request.getParameter("command");
+        String commandList = "&command=" + command;
+        log.debug("Submitted KVP: ( K : V ) ");
+        while (keys.hasNext()) {
+            String key = keys.next();
+            String commandKey = request.getParameter(key);
+            if (commandKey != null) log.debug(key + " : " + commandKey);
+            commandList += "&" + key + "=" + commandKey;
+        }
 
         String forwardToServlet = servletCommandMappings.get(command);
         if (forwardToServlet != null) {
         	log.info(command);
-        	RequestDispatcher rd = request.getRequestDispatcher(forwardToServlet);
-        	rd.forward(request, response);
+            response.sendRedirect(forwardToServlet + commandList);
         } else {
         	log.info("No such command");
         	ErrorBean errorBean = new ErrorBean(ErrorBean.ERR_NO_COMMAND);
