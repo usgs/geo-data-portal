@@ -7,7 +7,7 @@
         <display-name>ProcessServlet</display-name>
         <servlet-name>ProcessServlet</servlet-name>
         <servlet-class>
-            gov.usgs.cida.gdp.coreprocessing.servlet.RouterServlet
+            gov.usgs.cida.gdp.coreprocessing.servlet.ProcessServlet
         </servlet-class>
     </servlet>
     <servlet-mapping>
