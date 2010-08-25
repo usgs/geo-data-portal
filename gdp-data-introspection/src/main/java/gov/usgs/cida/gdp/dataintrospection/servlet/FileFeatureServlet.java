@@ -1,5 +1,6 @@
 package gov.usgs.cida.gdp.dataintrospection.servlet;
 
+import gov.usgs.cida.gdp.dataintrospection.bean.AttributeBean;
 import gov.usgs.cida.gdp.dataintrospection.bean.FeatureBean;
 import gov.usgs.cida.gdp.utilities.FileHelper;
 import gov.usgs.cida.gdp.utilities.XmlUtils;
@@ -76,6 +77,34 @@ public class FileFeatureServlet extends HttpServlet {
 			}
 			xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FEATURES_NOT_FOUND));
 			XmlUtils.sendXml(xmlReply, start,response);
+			return;
+		}
+        if ("listattributes".equals(command)) {
+			log.debug("User has chosen to list shapefile attributes");
+			String shapefile = request.getParameter("shapefile");
+			String userDirectory = request.getParameter("userdirectory");
+
+			if (userDirectory == null || !FileHelper.doesDirectoryOrFileExist(userDirectory)) userDirectory = "";
+
+			List<FilesBean> filesBeanList = FilesBean.getFilesBeanSetList(System.getProperty("applicationTempDir"), userDirectory);
+			if (filesBeanList == null) {
+				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FILE_NOT_FOUND));
+				XmlUtils.sendXml(xmlReply, start, response);
+				return;
+			}
+			ShapeFileSetBean shapeFileSetBean = ShapeFileSetBean.getShapeFileSetBeanFromFilesBeanList(filesBeanList, shapefile);
+
+			List<String> attributeList = ShapeFileSetBean.getAttributeListFromBean(shapeFileSetBean);
+			if (attributeList == null || attributeList.isEmpty()) {
+				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_ATTRIBUTES_NOT_FOUND));
+				XmlUtils.sendXml(xmlReply,start, response);
+				return;
+			}
+
+			AttributeBean attributeBean = new AttributeBean(attributeList);
+			attributeBean.setFilesetName(shapefile);
+			xmlReply = new XmlReplyBean(AckBean.ACK_OK, attributeBean);
+			XmlUtils.sendXml(xmlReply,start, response);
 			return;
 		}
 	}
