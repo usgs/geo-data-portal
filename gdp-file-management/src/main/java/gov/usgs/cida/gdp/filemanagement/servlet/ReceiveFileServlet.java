@@ -55,7 +55,7 @@ public class ReceiveFileServlet extends HttpServlet {
         XmlReplyBean xmlOutput = null;
         String command = request.getParameter("command");
 
-        if ("upload".equals(command)) {
+        if (ServletFileUpload.isMultipartContent(request)) {
             String applicationUserspaceDir = System.getProperty("applicationUserSpaceDir");
             String userDirectory = "";
 
@@ -78,6 +78,7 @@ public class ReceiveFileServlet extends HttpServlet {
             log.debug("Files successfully uploaded.");
             RequestDispatcher rd = request.getRequestDispatcher("/FileSelectionServlet?command=listfiles&userdirectory=" + userDirectory);
             rd.forward(request, response);
+            return;
         } else if ("createuserdirectory".equals(command)) {
             String dir = FileHelper.createUserDirectory(System.getProperty("applicationUserSpaceDir"));
 
