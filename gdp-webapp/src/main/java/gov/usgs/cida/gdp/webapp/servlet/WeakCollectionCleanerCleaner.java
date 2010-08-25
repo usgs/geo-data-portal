@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import org.slf4j.LoggerFactory;
 
 /**
  * Application Lifecycle Listener implementation class
@@ -17,7 +18,6 @@ public class WeakCollectionCleanerCleaner implements ServletContextListener {
     public final static String CLASS_WeakCollectionCleaner = "org.geotools.util.WeakCollectionCleaner";
     public final static String FIELD_DEFAULT = "DEFAULT";
     public final static String FIELD_referenceQueue = "referenceQueue";
-
     private final static String LOG_MSG_WARNING = "Unable to stop WeakCollectionCleaner thread gracefully";
     private final static String LOG_MSG_SEVERE = "Unable to stop WeakCollectionCleaner thread, probable PermGen leak...";
     private final static String LOG_MSG_INFO_GRACEFUL = "Successfully stopped WeakCollectionCleaner, gracefully";
@@ -73,8 +73,8 @@ public class WeakCollectionCleanerCleaner implements ServletContextListener {
                 // for subsequent app deploys...
                 // 2) If the cleaner isn't associated with this classloader it's
                 // not going to address the PermGen leak so why mess with it...
-                if (cleanerThread.getClass().getClassLoader() ==
-                        Thread.currentThread().getContextClassLoader()) {
+                if (cleanerThread.getClass().getClassLoader()
+                        == Thread.currentThread().getContextClassLoader()) {
 
                     // heavy exception catching so we can attempt a fallback
                     // method
@@ -92,9 +92,9 @@ public class WeakCollectionCleanerCleaner implements ServletContextListener {
                     } catch (InterruptedException ex) {
                         // swallow, we are exiting and need to clean up...
                     } catch (IllegalArgumentException ex) {
-                        Logger.getLogger(getClass().getName()).log(Level.WARNING, LOG_MSG_WARNING, ex);
+                        LoggerFactory.getLogger(getClass().getName()).warn(LOG_MSG_WARNING, ex);
                     } catch (IllegalAccessException ex) {
-                        Logger.getLogger(getClass().getName()).log( Level.WARNING, LOG_MSG_WARNING, ex);
+                        LoggerFactory.getLogger(getClass().getName()).warn(LOG_MSG_WARNING, ex);
                     }
                     if (referenceQueueField.get(cleanerObject) != null || cleanerThread.isAlive()) {
 
@@ -108,31 +108,29 @@ public class WeakCollectionCleanerCleaner implements ServletContextListener {
                         }
 
                         if (cleanerThread.isAlive()) {
-                            Logger.getLogger(getClass().getName()).log(Level.SEVERE, LOG_MSG_SEVERE);
+                            LoggerFactory.getLogger(getClass().getName()).error(LOG_MSG_SEVERE);
                         } else {
-                            Logger.getLogger(getClass().getName()).log(Level.INFO, LOG_MSG_INFO_FORCE);
+                            LoggerFactory.getLogger(getClass().getName()).info(LOG_MSG_INFO_FORCE);
                         }
 
                     } else {
-                        Logger.getLogger(getClass().getName()).log(Level.INFO, LOG_MSG_INFO_GRACEFUL);
+                        LoggerFactory.getLogger(getClass().getName()).info(LOG_MSG_INFO_GRACEFUL);
                     }
                 }
             }
         } catch (IllegalArgumentException ex) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE,
-                    LOG_MSG_SEVERE, ex);
+            LoggerFactory.getLogger(getClass().getName()).error(LOG_MSG_SEVERE, ex);
         } catch (IllegalAccessException ex) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE,
-                    LOG_MSG_SEVERE, ex);
+            LoggerFactory.getLogger(getClass().getName()).error(LOG_MSG_SEVERE, ex);
         } catch (NoSuchFieldException ex) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE,
-                    LOG_MSG_SEVERE, ex);
+            LoggerFactory.getLogger(getClass().getName()).error(LOG_MSG_SEVERE, ex);
+
         } catch (SecurityException ex) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE,
-                    LOG_MSG_SEVERE, ex);
+            LoggerFactory.getLogger(getClass().getName()).error(LOG_MSG_SEVERE, ex);
+
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE,
-                    LOG_MSG_SEVERE, ex);
+            LoggerFactory.getLogger(getClass().getName()).error(LOG_MSG_SEVERE, ex);
+
         }
     }
 

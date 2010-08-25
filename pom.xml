@@ -31,9 +31,9 @@
         <module>gdp-webapp</module>
         <module>gdp-file-management</module>
         <module>gdp-data-access</module>
-    <module>gdp-core-processing</module>
-    <module>gdp-geotiff</module>
-  </modules>
+        <module>gdp-core-processing</module>
+        <module>gdp-geotiff</module>
+    </modules>
     <properties>
         <geotools.version>2.6.0</geotools.version>
         <project.groupid>gov.usgs.cida.gdp</project.groupid>
@@ -46,6 +46,7 @@
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
+        
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
@@ -53,6 +54,13 @@
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.4.2</version>
+        </dependency>
+
         <dependency>
             <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>xstream</artifactId>

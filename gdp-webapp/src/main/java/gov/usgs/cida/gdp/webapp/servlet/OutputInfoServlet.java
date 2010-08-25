@@ -19,7 +19,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
  */
 public class OutputInfoServlet extends HttpServlet {
    private static final long serialVersionUID = 1L;
-    private static org.apache.log4j.Logger log = Logger.getLogger(OutputInfoServlet.class);
+    private static org.slf4j.Logger log = LoggerFactory.getLogger(OutputInfoServlet.class);
 
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

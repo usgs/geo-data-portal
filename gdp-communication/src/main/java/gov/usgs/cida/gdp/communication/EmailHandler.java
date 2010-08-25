@@ -14,10 +14,10 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EmailHandler {
-	private static org.apache.log4j.Logger log = Logger.getLogger(EmailHandler.class);
+	private static org.slf4j.Logger log = LoggerFactory.getLogger(EmailHandler.class);
 
 	public boolean sendMessage(EmailMessageBean message) throws AddressException, MessagingException {
 		Properties properties = System.getProperties();

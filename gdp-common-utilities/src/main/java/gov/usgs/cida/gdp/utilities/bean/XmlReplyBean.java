@@ -2,7 +2,7 @@ package gov.usgs.cida.gdp.utilities.bean;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -11,7 +11,7 @@ import gov.usgs.cida.gdp.utilities.bean.XmlBean;
 @XStreamAlias("reply")
 public class XmlReplyBean implements XmlBean {
 
-	private static org.apache.log4j.Logger log = Logger.getLogger(XmlReplyBean.class);
+	private static org.slf4j.Logger log = LoggerFactory.getLogger(XmlReplyBean.class);
 
 	private AckBean acknowledgment;
 	@SuppressWarnings("unused")

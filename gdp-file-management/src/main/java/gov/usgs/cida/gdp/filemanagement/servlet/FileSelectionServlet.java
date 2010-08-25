@@ -19,14 +19,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Servlet implementation class FileSelectionServlet
  */
 public class FileSelectionServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-    private static org.apache.log4j.Logger log = Logger.getLogger(FileSelectionServlet.class);
+    private static org.slf4j.Logger log = LoggerFactory.getLogger(FileSelectionServlet.class);
 
 
 	/**

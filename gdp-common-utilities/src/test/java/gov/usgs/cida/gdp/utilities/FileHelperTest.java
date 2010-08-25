@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 //import org.geotools.data.FileDataStore;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -31,7 +31,7 @@ public class FileHelperTest {
 	private String tempDir = "";
 	private String seperator = "";
 
-	private static org.apache.log4j.Logger log = Logger.getLogger(FileHelperTest.class);
+	private static org.slf4j.Logger log = LoggerFactory.getLogger(FileHelperTest.class);
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		log.debug("Started testing class");

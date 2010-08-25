@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.catalog.InvAccess;
 import thredds.catalog.InvCatalog;
 import thredds.catalog.InvDataset;
@@ -334,9 +335,9 @@ public abstract class NetCDFUtility {
                 System.out.println(v.getShortName());
             }
         } catch (IOException ex) {
-            Logger.getLogger(NetCDFUtility.class.getName()).log(Level.SEVERE, null, ex);
+            LoggerFactory.getLogger(NetCDFUtility.class.getName()).error(null, ex);
         } catch (IllegalArgumentException ex) {
-            Logger.getLogger(NetCDFUtility.class.getName()).log(Level.SEVERE, null, ex);
+            LoggerFactory.getLogger(NetCDFUtility.class.getName()).error(null, ex);
         }
     }
 }

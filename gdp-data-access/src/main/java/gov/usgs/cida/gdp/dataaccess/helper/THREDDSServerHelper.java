@@ -23,7 +23,7 @@ import java.util.Set;
 import java.util.TimerTask;
 import java.util.TreeMap;
 import javax.servlet.ServletConfig;
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import thredds.catalog.*;
 import ucar.nc2.VariableSimpleIF;
@@ -32,7 +32,7 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
 
 public class THREDDSServerHelper {
 
-    static org.apache.log4j.Logger log = Logger.getLogger(THREDDSServerHelper.class);
+    static org.slf4j.Logger log = LoggerFactory.getLogger(THREDDSServerHelper.class);
 
     /**
      * Tests whether or not a THREDDS server is reachable

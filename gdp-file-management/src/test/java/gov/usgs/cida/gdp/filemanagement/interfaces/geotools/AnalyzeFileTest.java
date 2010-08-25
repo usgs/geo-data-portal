@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -23,7 +23,7 @@ import org.junit.Test;
 public class AnalyzeFileTest {
 
     private static final String testFile = "demo_HUCs";
-    private static org.apache.log4j.Logger log = Logger.getLogger(AnalyzeFileTest.class);
+    private static org.slf4j.Logger log = LoggerFactory.getLogger(AnalyzeFileTest.class);
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {

@@ -18,7 +18,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Servlet implementation class ReceiveFileServlet
@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
 public class ReceiveFileServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 6766229674722132238L;
-	private static org.apache.log4j.Logger log = Logger.getLogger(ReceiveFileServlet.class);
+	private static org.slf4j.Logger log = LoggerFactory.getLogger(ReceiveFileServlet.class);
 
     /**
      * @see HttpServlet#HttpServlet()

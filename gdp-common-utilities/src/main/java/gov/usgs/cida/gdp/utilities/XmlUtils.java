@@ -11,14 +11,14 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Date;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author admin
  */
 public class XmlUtils {
-    private static org.apache.log4j.Logger log = Logger.getLogger(XmlUtils.class);
+    private static org.slf4j.Logger log = LoggerFactory.getLogger(XmlUtils.class);
 
     /**
      * Sends XML back to the client

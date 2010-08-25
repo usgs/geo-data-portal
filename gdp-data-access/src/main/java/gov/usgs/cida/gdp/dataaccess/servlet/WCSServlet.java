@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
@@ -45,7 +45,7 @@ public class WCSServlet extends HttpServlet {
 
 	private static final int MAX_COVERAGE_SIZE = 64 << 20; // 64 MB
 	
-	private static org.apache.log4j.Logger log = Logger.getLogger(WCSServlet.class);
+	private static org.slf4j.Logger log = LoggerFactory.getLogger(WCSServlet.class);
        
     /**
      * @see HttpServlet#HttpServlet()

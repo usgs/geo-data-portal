@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Servlet implementation class THREDDSCheckServlet
@@ -39,7 +39,7 @@ import org.apache.log4j.Logger;
 public class THREDDSCheckServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
-    static org.apache.log4j.Logger log = Logger.getLogger(THREDDSCheckServlet.class);
+    static org.slf4j.Logger log = LoggerFactory.getLogger(THREDDSCheckServlet.class);
     private Timer timer;
     private static final long FIVE_MINUTES = 1000 * 60 * 5; 		// Run every 5 minutes
 

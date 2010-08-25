@@ -25,7 +25,7 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Servlet implementation class THREDDSServlet
@@ -33,7 +33,7 @@ import org.apache.log4j.Logger;
 public class THREDDSServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
-    private static org.apache.log4j.Logger log = Logger.getLogger(THREDDSServlet.class);
+    private static org.slf4j.Logger log = LoggerFactory.getLogger(THREDDSServlet.class);
 
     /**
      * @see HttpServlet#HttpServlet()

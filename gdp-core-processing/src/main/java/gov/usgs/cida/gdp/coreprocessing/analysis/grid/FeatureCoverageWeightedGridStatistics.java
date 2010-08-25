@@ -11,7 +11,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FileDataStore;
@@ -38,12 +37,14 @@ import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCoverageWeightedGri
 import gov.usgs.cida.gdp.coreprocessing.analysis.statistics.WeightedStatistics1D;
 import java.io.OutputStreamWriter;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.iosp.geotiff.GeoTiffIOServiceProvider;
 
 public class FeatureCoverageWeightedGridStatistics {
+	private static org.slf4j.Logger log = LoggerFactory.getLogger(FeatureCoverageWeightedGridStatistics.class);
 
     public static void execute(
             FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection,
@@ -75,7 +76,7 @@ public class FeatureCoverageWeightedGridStatistics {
                     llr, gdt.getCoordinateSystem());
             gdt = gdt.makeSubset(null, null, timeRange, null, ranges[1], ranges[0]);
         } catch (InvalidRangeException ex) {
-            Logger.getLogger(FeatureCoverageWeightedGridStatistics.class.getName()).log(Level.SEVERE, null, ex);
+            log.error(null, ex);
             throw ex;  // rethrow requested by IS
         }
 
@@ -465,25 +466,25 @@ public class FeatureCoverageWeightedGridStatistics {
                     );
 
             } catch (IOException ex) {
-                Logger.getLogger(FeatureCoverageWeightedGridStatistics.class.getName()).log(Level.SEVERE, null, ex);
+                log.error(null, ex);
             } finally {
                 if (writer != null) {
                     try {
                         writer.close();
                     } catch (IOException ex) {
-                        Logger.getLogger(FeatureCoverageWeightedGridStatistics.class.getName()).log(Level.SEVERE, null, ex);
+                        log.error(null, ex);
                     }
                 }
             }
 
         } catch (Exception ex) {
-            Logger.getLogger(FeatureCoverageWeightedGridStatistics.class.getName()).log(Level.SEVERE, null, ex);
+            log.error(null, ex);
         }finally {
             if (dataset != null) {
                 try {
                     dataset.close();
                 } catch (IOException ex) {
-                    Logger.getLogger(FeatureCoverageWeightedGridStatistics.class.getName()).log(Level.SEVERE, null, ex);
+                    log.error(null, ex);
                 }
             }
             if (dataStore != null) {

@@ -13,14 +13,14 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author admin
  */
 public class FileUpload {
-    private static org.apache.log4j.Logger log = Logger.getLogger(FileUpload.class);
+    private static org.slf4j.Logger log = LoggerFactory.getLogger(FileUpload.class);
 
 
     /**

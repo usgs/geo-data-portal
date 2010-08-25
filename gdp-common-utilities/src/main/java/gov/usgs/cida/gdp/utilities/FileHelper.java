@@ -20,7 +20,7 @@ import java.util.zip.ZipInputStream;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 //import org.geotools.data.FileDataStore;
 
 /**
@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
  */
 public class FileHelper {
 
-    private static org.apache.log4j.Logger log = Logger.getLogger(FileHelper.class);
+    private static org.slf4j.Logger log = LoggerFactory.getLogger(FileHelper.class);
 
     public static boolean copyFileToFile(final File inFile, final String outFileString) throws IOException {
         return FileHelper.copyFileToFile(inFile, outFileString, false);

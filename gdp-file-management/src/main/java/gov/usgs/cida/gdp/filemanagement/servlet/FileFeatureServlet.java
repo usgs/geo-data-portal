@@ -16,35 +16,20 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Servlet implementation class FileFeatureServlet
  */
 public class FileFeatureServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private static org.apache.log4j.Logger log = Logger.getLogger(FileFeatureServlet.class);
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public FileFeatureServlet() {
-        super();
-    }
+	private static org.slf4j.Logger log = LoggerFactory.getLogger(FileFeatureServlet.class);
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doPost(request, response);
-	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Long start = Long.valueOf(new Date().getTime());
 		String command = request.getParameter("command");
 		XmlReplyBean xmlReply = null;
@@ -56,14 +41,14 @@ public class FileFeatureServlet extends HttpServlet {
 					|| shapefile == null || "".equals(shapefile)) {
 				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_MISSING_PARAM));
 				XmlUtils.sendXml(xmlReply, start, response);
-				return;			
+				return;
 			}
-			
+
 			String userDirectory = request.getParameter("userdirectory");
 			if (userDirectory != null && !"".equals(userDirectory)) {
 				if (!FileHelper.doesDirectoryOrFileExist(userDirectory)) userDirectory = "";
 			}
-			
+
 			List<FilesBean> filesBeanList = FilesBean.getFilesBeanSetList(System.getProperty("applicationTempDir"), userDirectory);
 			if (filesBeanList == null) {
 				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FILE_NOT_FOUND));
@@ -81,7 +66,7 @@ public class FileFeatureServlet extends HttpServlet {
 				XmlUtils.sendXml(xmlReply, start,response);
 				return;
 			}
-			
+
 			if (features != null && !features.isEmpty()) {
 				FeatureBean featureBean = new FeatureBean(features);
 				featureBean.setFilesetName(shapefile);
@@ -94,5 +79,14 @@ public class FileFeatureServlet extends HttpServlet {
 			return;
 		}
 	}
+
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doGet(request,response);
+    }
 
 }

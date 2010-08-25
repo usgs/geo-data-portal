@@ -40,7 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonParser;
@@ -95,7 +95,7 @@ import ucar.nc2.NetcdfFile;
  * Servlet implementation class ProcessServlet
  */
 public class ProcessServlet extends HttpServlet {
-	private static org.apache.log4j.Logger log = Logger.getLogger(ProcessServlet.class);
+	private static org.slf4j.Logger log = LoggerFactory.getLogger(ProcessServlet.class);
 
     static {
         try {
@@ -377,7 +377,7 @@ public class ProcessServlet extends HttpServlet {
     			try {
     				attributeFilter = CQL.toFilter(cqlQuery);
     			} catch (CQLException e) {
-    				log.debug(e);
+    				log.debug(null, e);
     			}
     			featureCollection = featureSource.getFeatures(
     					new DefaultQuery(

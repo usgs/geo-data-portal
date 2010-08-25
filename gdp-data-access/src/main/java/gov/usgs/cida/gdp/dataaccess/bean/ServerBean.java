@@ -3,7 +3,7 @@ package gov.usgs.cida.gdp.dataaccess.bean;
 import gov.usgs.cida.gdp.utilities.bean.XmlBean;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -11,7 +11,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("server")
 public class ServerBean implements XmlBean{
 
-	private static org.apache.log4j.Logger log = Logger.getLogger(ServerBean.class);
+	private static org.slf4j.Logger log = LoggerFactory.getLogger(ServerBean.class);
 	
         private String name;
 	private String protocol;
@@ -22,10 +22,10 @@ public class ServerBean implements XmlBean{
 	private Date lastCheck;
         private String fullUrl;
 	
-	public static org.apache.log4j.Logger getLog() {
+	public static org.slf4j.Logger getLog() {
 		return log;
 	}
-	public static void setLog(org.apache.log4j.Logger log) {
+	public static void setLog(org.slf4j.Logger log) {
 		ServerBean.log = log;
 	}
 	public String getHostname() {

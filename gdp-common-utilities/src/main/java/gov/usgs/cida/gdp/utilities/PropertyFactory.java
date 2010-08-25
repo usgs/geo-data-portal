@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Factory class for returning String values for given keys
@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
  *
  */
 public class PropertyFactory {
-	private static org.apache.log4j.Logger log = Logger.getLogger(PropertyFactory.class);
+	private static org.slf4j.Logger log = LoggerFactory.getLogger(PropertyFactory.class);
 	private static Properties properties = null;
 
 	// Static class - can not be instantiated

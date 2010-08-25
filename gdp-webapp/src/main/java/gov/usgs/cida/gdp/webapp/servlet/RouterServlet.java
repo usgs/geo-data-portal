@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import gov.usgs.cida.gdp.utilities.bean.AckBean;
 import gov.usgs.cida.gdp.utilities.bean.ErrorBean;
@@ -26,7 +26,7 @@ import java.util.Iterator;
 public class RouterServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
-    private static org.apache.log4j.Logger log = Logger.getLogger(RouterServlet.class);
+    private static org.slf4j.Logger log = LoggerFactory.getLogger(RouterServlet.class);
 
     private static final Map<String, String> servletCommandMappings = new HashMap<String, String>();
     static {

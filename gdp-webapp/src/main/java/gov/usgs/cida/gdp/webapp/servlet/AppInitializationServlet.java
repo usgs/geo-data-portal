@@ -19,14 +19,14 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Servlet implementation class AppInitializationServlet
  */
 public class AppInitializationServlet extends HttpServlet {
 
-    static org.apache.log4j.Logger log = Logger.getLogger(AppInitializationServlet.class);
+    static org.slf4j.Logger log = LoggerFactory.getLogger(AppInitializationServlet.class);
     private static final long serialVersionUID = 1L;
     private String tmpDir = "";
     private String seperator = "";
@@ -142,7 +142,7 @@ public class AppInitializationServlet extends HttpServlet {
         } catch (URISyntaxException e) {
             log.info("Unable to read from src/main/resources/Sample_Files");
             log.info("Sample files were not written to the application temp directory");
-            log.error(e);
+            log.error(null, e);
             return false;
         }
         log.info("File System Initialized. Took " + (new Date().getTime() - start.getTime()) + " milliseconds to complete.");
