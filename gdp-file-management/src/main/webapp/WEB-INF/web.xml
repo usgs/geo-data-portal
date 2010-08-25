@@ -9,10 +9,7 @@
         <servlet-name>ReceiveFileServlet</servlet-name>
         <servlet-class>gov.usgs.cida.gdp.filemanagement.servlet.ReceiveFileServlet</servlet-class>
     </servlet>
-    <servlet>
-        <servlet-name>FileFeatureServlet</servlet-name>
-        <servlet-class>gov.usgs.cida.gdp.filemanagement.servlet.FileFeatureServlet</servlet-class>
-    </servlet>
+    
     <servlet>
         <servlet-name>FileSelectionServlet</servlet-name>
         <servlet-class>gov.usgs.cida.gdp.filemanagement.servlet.FileSelectionServlet</servlet-class>
@@ -41,10 +38,7 @@
         <servlet-name>SendFileServlet</servlet-name>
         <url-pattern>/SendFileServlet</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>FileFeatureServlet</servlet-name>
-        <url-pattern>/FileFeatureServlet</url-pattern>
-    </servlet-mapping>
+    
     <servlet-mapping>
         <servlet-name>FileSelectionServlet</servlet-name>
         <url-pattern>/FileSelectionServlet</url-pattern>

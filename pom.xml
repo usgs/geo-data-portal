@@ -33,10 +33,12 @@
         <module>gdp-data-access</module>
         <module>gdp-core-processing</module>
         <module>gdp-geotiff</module>
-    </modules>
+    <module>gdp-data-introspection</module>
+  </modules>
     <properties>
         <geotools.version>2.6.0</geotools.version>
         <project.groupid>gov.usgs.cida.gdp</project.groupid>
+        <netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
     </properties>
     <dependencies>
         <dependency>
@@ -46,7 +48,7 @@
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>

@@ -223,7 +223,6 @@ public class GeoServerServlet extends HttpServlet {
 				"<enabled>true</enabled></layer>");
 	}
 	
-	@SuppressWarnings("restriction")
 	void sendPacket(URL url, String requestMethod, String contentType, String content, 
 			String... requestProperties) throws IOException {
 		

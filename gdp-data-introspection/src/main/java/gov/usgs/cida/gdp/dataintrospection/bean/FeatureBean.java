@@ -1,4 +1,4 @@
-package gov.usgs.cida.gdp.filemanagement.bean;
+package gov.usgs.cida.gdp.dataintrospection.bean;
 
 import gov.usgs.cida.gdp.utilities.bean.XmlBean;
 import java.util.List;

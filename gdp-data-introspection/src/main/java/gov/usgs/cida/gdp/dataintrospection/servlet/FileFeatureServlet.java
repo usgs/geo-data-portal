@@ -1,6 +1,6 @@
-package gov.usgs.cida.gdp.filemanagement.servlet;
+package gov.usgs.cida.gdp.dataintrospection.servlet;
 
-import gov.usgs.cida.gdp.filemanagement.bean.FeatureBean;
+import gov.usgs.cida.gdp.dataintrospection.bean.FeatureBean;
 import gov.usgs.cida.gdp.utilities.FileHelper;
 import gov.usgs.cida.gdp.utilities.XmlUtils;
 import gov.usgs.cida.gdp.utilities.bean.AckBean;
