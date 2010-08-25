@@ -35,6 +35,7 @@
         <module>gdp-geotiff</module>
         <module>gdp-data-introspection</module>
     <module>gdp-output-processing</module>
+    <module>gdp-mapping</module>
   </modules>
     <properties>
         <geotools.version>2.6.0</geotools.version>
