@@ -6,45 +6,25 @@
         <groupId>gov.usgs.cida.gdp</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>gdp-webapp</artifactId>
+    <groupId>gov.usgs.cida.gdp</groupId>
+    <artifactId>gdp-output-processing</artifactId>
     <packaging>war</packaging>
     <version>1.0-SNAPSHOT</version>
-    <name>gdp-webapp</name>
-
+    <name>gdp-output-processing</name>
     <dependencies>
 
-        <dependency>
+         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <version>2.5</version>
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>javax.servlet.jsp</groupId>
-            <artifactId>jsp-api</artifactId>
-            <version>2.1</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
+         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>gdp-common-utilities</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.sun.xml.fastinfoset</groupId>
-            <artifactId>FastInfoset</artifactId>
-            <version>1.2.7</version>
-            <type>jar</type>
-            <scope>compile</scope>
-        </dependency>
-
     </dependencies>
-    <properties>
-        <netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
-    </properties>
-    
 </project>
-

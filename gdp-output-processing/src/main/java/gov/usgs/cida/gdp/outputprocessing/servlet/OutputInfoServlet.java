@@ -3,15 +3,15 @@
  * and open the template in the editor.
  */
 
-package gov.usgs.cida.gdp.webapp.servlet;
+package gov.usgs.cida.gdp.outputprocessing.servlet;
 
+import gov.usgs.cida.gdp.outputprocessing.bean.OutputFileTypeBean;
+import gov.usgs.cida.gdp.outputprocessing.bean.OutputStatisticsBean;
 import gov.usgs.cida.gdp.utilities.FileHelper;
 import gov.usgs.cida.gdp.utilities.XmlUtils;
 import gov.usgs.cida.gdp.utilities.bean.AckBean;
 import gov.usgs.cida.gdp.utilities.bean.ErrorBean;
 import gov.usgs.cida.gdp.utilities.bean.XmlReplyBean;
-import gov.usgs.cida.gdp.webapp.bean.OutputFileTypeBean;
-import gov.usgs.cida.gdp.webapp.bean.OutputStatisticsBean;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;

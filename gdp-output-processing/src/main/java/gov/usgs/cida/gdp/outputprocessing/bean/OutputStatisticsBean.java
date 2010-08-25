@@ -1,4 +1,4 @@
-package gov.usgs.cida.gdp.webapp.bean;
+package gov.usgs.cida.gdp.outputprocessing.bean;
 
 import gov.usgs.cida.gdp.utilities.bean.XmlBean;
 import gov.usgs.cida.gdp.utilities.PropertyFactory;

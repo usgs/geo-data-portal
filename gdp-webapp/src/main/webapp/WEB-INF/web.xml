@@ -12,7 +12,6 @@
         </servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
-
     <servlet>
         <description>
         </description>
@@ -27,10 +26,9 @@
         <url-pattern>/Router</url-pattern>
         <url-pattern>/router</url-pattern>
     </servlet-mapping>
-
     <servlet>
         <servlet-name>OutputInfoServlet</servlet-name>
-        <servlet-class>gov.usgs.cida.gdp.webapp.servlet.OutputInfoServlet</servlet-class>
+        <servlet-class>gov.usgs.cida.gdp.outputprocessing.servlet.OutputInfoServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>OutputInfoServlet</servlet-name>

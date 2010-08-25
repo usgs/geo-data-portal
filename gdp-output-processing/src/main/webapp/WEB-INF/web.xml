@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+    <display-name>gdp-output-processing</display-name>
+    <servlet>
+        <servlet-name>OutputInfoServlet</servlet-name>
+        <servlet-class>gov.usgs.cida.gdp.outputprocessing.servlet.OutputInfoServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>OutputInfoServlet</servlet-name>
+        <url-pattern>/OutputInfoServlet</url-pattern>
+        <url-pattern>/outputinfoservlet</url-pattern>
+    </servlet-mapping>
+</web-app>
