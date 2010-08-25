@@ -441,6 +441,7 @@ public class ProcessServlet extends HttpServlet {
                 Map<String, List<String>> headerFields =
                     getHttpConnectionHeaderFields(httpConnection);
 
+                // TODO: check for error response from server
 
                 String boundaryString = null;
 
