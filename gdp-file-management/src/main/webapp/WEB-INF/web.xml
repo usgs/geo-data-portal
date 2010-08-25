@@ -9,7 +9,6 @@
         <servlet-name>ReceiveFileServlet</servlet-name>
         <servlet-class>gov.usgs.cida.gdp.filemanagement.servlet.ReceiveFileServlet</servlet-class>
     </servlet>
-    
     <servlet>
         <servlet-name>FileSelectionServlet</servlet-name>
         <servlet-class>gov.usgs.cida.gdp.filemanagement.servlet.FileSelectionServlet</servlet-class>
@@ -17,10 +16,6 @@
     <servlet>
         <servlet-name>GeoServerServlet</servlet-name>
         <servlet-class>gov.usgs.cida.gdp.filemanagement.servlet.GeoServerServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>SummaryServlet</servlet-name>
-        <servlet-class>gov.usgs.cida.gdp.filemanagement.servlet.SummaryServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ReceiveFileServlet</servlet-name>
@@ -38,7 +33,6 @@
         <servlet-name>SendFileServlet</servlet-name>
         <url-pattern>/SendFileServlet</url-pattern>
     </servlet-mapping>
-    
     <servlet-mapping>
         <servlet-name>FileSelectionServlet</servlet-name>
         <url-pattern>/FileSelectionServlet</url-pattern>
@@ -46,9 +40,5 @@
     <servlet-mapping>
         <servlet-name>GeoServerServlet</servlet-name>
         <url-pattern>/GeoServerServlet</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>SummaryServlet</servlet-name>
-        <url-pattern>/SummaryServlet</url-pattern>
     </servlet-mapping>
 </web-app>
