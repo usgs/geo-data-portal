@@ -8,7 +8,6 @@ import com.vividsolutions.jts.geom.Geometry;
 import gov.usgs.cida.gdp.utilities.HTTPUtils;
 
 import com.vividsolutions.jts.geom.GeometryCollection;
-import gov.usgs.cida.gdp.utilities.FileHelper;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -42,7 +41,7 @@ import org.xml.sax.SAXException;
 public class NHDService {
 
     public static FeatureCollection<SimpleFeatureType, SimpleFeature> getGeometry(
-                String lon, String lat, String userDirectory, String shapefilePath
+                String lon, String lat, String shapefilePath, String shxFilePath
             )
             throws MalformedURLException, IOException, SchemaException,
                    NoSuchAuthorityCodeException, FactoryException {
@@ -64,18 +63,13 @@ public class NHDService {
 
         String gml = parseJSON(json, "shape");
 
-        String fullUserDir = System.getProperty("applicationUserSpaceDir")
-                + userDirectory + FileHelper.getSeparator();
-
 
         try {
             GeometryCollection g = parseGML(gml);
 
             // Write to a shapefile so GeoServer can load the geometry
-            shapefilePath = fullUserDir + "latlon.shp";
-
             File shpFile = new File(shapefilePath);
-            File shxFile = new File(fullUserDir + "latlon.shx");
+            File shxFile = new File(shxFilePath);
 
             if (shpFile.exists()) {
                 shpFile.delete();
@@ -125,7 +119,6 @@ public class NHDService {
             }
         }
 
-        System.out.println("\"" + element + "\" not found.");
         return null;
     }
 
