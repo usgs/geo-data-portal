@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package gov.usgs.cida.gdp.webapp;
+package gov.usgs.cida.gdp.webapp.servlet;
 
 import gov.usgs.cida.gdp.webapp.servlet.AppInitializationServlet;
 import javax.servlet.ServletConfig;
