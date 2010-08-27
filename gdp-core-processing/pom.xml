@@ -34,7 +34,7 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>gdp-mapping</artifactId>
+            <artifactId>gdp-geometry</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 

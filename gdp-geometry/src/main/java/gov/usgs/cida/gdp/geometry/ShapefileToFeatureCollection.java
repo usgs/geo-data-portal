@@ -1,4 +1,4 @@
-package gov.usgs.cida.gdp.coreprocessing;
+package gov.usgs.cida.gdp.geometry;
 
 import gov.usgs.cida.gdp.utilities.FileHelper;
 import gov.usgs.cida.gdp.utilities.ShapeFileHelper;

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package gov.usgs.cida.gdp.mapping;
+package gov.usgs.cida.gdp.geometry;
 
 import com.vividsolutions.jts.geom.Geometry;
 import gov.usgs.cida.gdp.utilities.HTTPUtils;

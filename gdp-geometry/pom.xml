@@ -7,39 +7,41 @@
         <groupId>gov.usgs.cida.gdp</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>gdp-mapping</artifactId>
+    <groupId>gov.usgs.cida.gdp</groupId>
+    <artifactId>gdp-geometry</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>gdp-mapping</name>
+    <name>gdp-geometry</name>
+    <url>http://maven.apache.org</url>
     <dependencies>
-
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-main</artifactId>
             <version>${geotools.version}</version>
         </dependency>
-
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>gdp-common-utilities</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-
-        <dependency>
-            <groupId>org.geotools.xsd</groupId>
-            <artifactId>gt-xsd-core</artifactId>
-            <version>${geotools.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>org.geotools</groupId>
-            <artifactId>gt-epsg-hsql</artifactId>
+            <artifactId>gt-cql</artifactId>
             <version>${geotools.version}</version>
+        </dependency>
+        <dependency>
+        	<groupId>org.codehaus.jackson</groupId>
+        	<artifactId>jackson-asl</artifactId>
+        	<version>0.9.5</version>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
-            <artifactId>gt-epsg-extension</artifactId>
+            <artifactId>gt-xml</artifactId>
             <version>${geotools.version}</version>
         </dependency>
-
+        <dependency>
+                <groupId>org.geotools.xsd</groupId>
+                <artifactId>gt-xsd-gml2</artifactId>
+                <version>${geotools.version}</version>
+        </dependency>
     </dependencies>
 </project>
