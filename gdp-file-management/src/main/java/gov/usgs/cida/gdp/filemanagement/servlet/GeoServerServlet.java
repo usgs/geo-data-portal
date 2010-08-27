@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -36,7 +37,7 @@ public class GeoServerServlet extends HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static final String geoServerURL = new String("http://localhost:8080/geoserver");
+	private static final String geoServerURL = new String("http://localhost:8052/geoserver");
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -80,7 +81,7 @@ public class GeoServerServlet extends HttpServlet {
 		}
 		
 		if ("createdatastore".equals(command)) {
-			String shapefilePath = request.getParameter("shapefilepath");
+			String shapefilePath = URLDecoder.decode(request.getParameter("shapefilepath"), "UTF-8");
 			String shapefileName = shapefilePath.substring(
 					shapefilePath.lastIndexOf(FileHelper.getSeparator()) + 1,
 					shapefilePath.lastIndexOf("."));

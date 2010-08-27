@@ -16,7 +16,6 @@ import java.util.List;
 public class ShapeFileHelper {
 
     static public File getShapeFileFromShapeSetName(final String shapeSetName, final List<ShapeFileSetBean> shapeBeanList) {
-        File shapeFile = null;
         for (ShapeFileSetBean sfsb : shapeBeanList) {
             if (shapeSetName.equals(sfsb.getName())) {
                 return sfsb.getShapeFile();
@@ -27,10 +26,9 @@ public class ShapeFileHelper {
     }
 
     static public String getShapeFilePathFromShapeSetName(final String shapeSetName, final List<ShapeFileSetBean> shapeBeanList) {
-        File shapeFile = null;
         for (ShapeFileSetBean sfsb : shapeBeanList) {
             if (shapeSetName.equals(sfsb.getName())) {
-                return shapeFile.getAbsolutePath();
+                return sfsb.getShapeFile().getAbsolutePath();
             }
         }
         return null;

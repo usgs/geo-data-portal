@@ -2,10 +2,13 @@ package gov.usgs.cida.gdp.coreprocessing.servlet;
 
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCategoricalGridCoverage;
 import gov.usgs.cida.gdp.coreprocessing.bean.FileLocationBean;
+import gov.usgs.cida.gdp.coreprocessing.writer.CSVWriter;
 import gov.usgs.cida.gdp.utilities.FileHelper;
 import gov.usgs.cida.gdp.utilities.XmlUtils;
 import gov.usgs.cida.gdp.utilities.bean.AckBean;
+import gov.usgs.cida.gdp.utilities.bean.AvailableFilesBean;
 import gov.usgs.cida.gdp.utilities.bean.ErrorBean;
+import gov.usgs.cida.gdp.utilities.bean.ShapeFileSetBean;
 import gov.usgs.cida.gdp.utilities.bean.XmlReplyBean;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -163,6 +166,16 @@ public class ProcessServlet extends HttpServlet {
             if (lat != null && lon != null) {
                 attributeName = "placeholder";
                 shapefilePath = userspacePath + userDirectory + FileHelper.getSeparator() + "latlon.shp";
+            } else {
+
+            	//TODO- Don't search through all shapefiles.
+                AvailableFilesBean afb = AvailableFilesBean.getAvailableFilesBean(appTempDir, userspacePath + userDirectory);
+                List<ShapeFileSetBean> shapeBeanList = afb.getShapeSetList();
+                for (ShapeFileSetBean sfsb : shapeBeanList) {
+                    if (shapeSet.equals(sfsb.getName())) {
+                        shapefilePath = sfsb.getShapeFile().getAbsolutePath();
+                    }
+                }
             }
 
             DelimiterOption delimiterOption = null;
@@ -194,25 +207,18 @@ public class ProcessServlet extends HttpServlet {
             df.setTimeZone(TimeZone.getTimeZone("UTC"));
             Date toDate = new Date();
             Date fromDate = new Date();
-            boolean parsedDates = false;
             if (toTime == null || fromTime == null) {
                 toDate = null;
                 fromDate = null;
-                parsedDates = true;
             } else {
                 try {
                     toDate = df.parse(toTime);
                     fromDate = df.parse(fromTime);
-                    parsedDates = true;
                 } catch (ParseException e1) {
-                    parsedDates = false;
-                    LoggerFactory.getLogger(ProcessServlet.class).debug(
-                            e1.getMessage());
+                	XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean("Unable to parse parameter dates. Are they in the right format?."));
+                    XmlUtils.sendXml(xmlOutput, start, response);
+                    return;
                 }
-            }
-
-            if (!parsedDates) {
-                // return some sort of error
             }
 
             String datasetUrl = dataset;
@@ -220,33 +226,24 @@ public class ProcessServlet extends HttpServlet {
             FeatureDataset featureDataset = FeatureDatasetFactoryManager.open(
                     FeatureType.ANY, datasetUrl, null, errorLog);
 
-            if (featureDataset.getFeatureType() == FeatureType.GRID
-                    && featureDataset instanceof GridDataset) {
-                try {
-                    boolean categorical = false;
-                    grid(featureDataset, categorical, featureCollection,
-                            attributeName, delimiterOption, fromDate, toDate,
-                            dataTypes, groupById, outputStats, outputFile);
-                } catch (Exception ex) {
-                    XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL,
-                            new ErrorBean(ex.getMessage()));
-                    XmlUtils.sendXml(xmlOutput, start, response);
-                    return;
-                }
+			try {
+				if (featureDataset.getFeatureType() == FeatureType.GRID && featureDataset instanceof GridDataset) {
+					boolean categorical = false;
+					CSVWriter.grid(featureDataset, categorical,
+							featureCollection, attributeName, delimiterOption,
+							fromDate, toDate, dataTypes, groupById,
+							outputStats, outputFile);
 
-            } else if (featureDataset.getFeatureType() == FeatureType.STATION
-                    && featureDataset instanceof FeatureDatasetPoint) {
-                try {
-                    station(featureDataset, featureCollection, fromDate,
-                            toDate, delimiterOption, dataTypes, groupById,
-                            outputFile);
-                } catch (Exception ex) {
-                    XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL,
-                            new ErrorBean(ex.getMessage()));
-                    XmlUtils.sendXml(xmlOutput, start, response);
-                    return;
-                }
-            }
+				} else if (featureDataset.getFeatureType() == FeatureType.STATION && featureDataset instanceof FeatureDatasetPoint) {
+					CSVWriter.station(featureDataset, featureCollection,
+							fromDate, toDate, delimiterOption, dataTypes,
+							groupById, outputFile);
+				}
+			} catch (Exception ex) {
+				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL,	new ErrorBean(ex.getMessage()));
+				XmlUtils.sendXml(xmlOutput, start, response);
+				return;
+			}
 
             // Move completed file to the upload repository
             FileHelper.copyFileToFile(
@@ -262,29 +259,12 @@ public class ProcessServlet extends HttpServlet {
                 return;
             }
 
-            System.out.println(outputDataFile.getAbsolutePath());
-            FileLocationBean fileLocations = new FileLocationBean(
-                    outputDataFile.getName(), shapefilePath);
+            FileLocationBean fileLocations = new FileLocationBean(outputDataFile.getName(), shapefilePath);
 
             // If user specified an E-Mail address, send an E-Mail to the user
-            // with the provided link
-            if (email != null && !"".equals(email)) {
-                try {
-                    sendEmail(email, finalUrlEmail);
-                } catch (AddressException ex) {
-                    XmlReplyBean xmlOutput = new XmlReplyBean(
-                            AckBean.ACK_FAIL,
-                            new ErrorBean(
-                            ErrorBean.ERR_EMAIL_ERROR_INCORRECT_ADDRESS));
-                    XmlUtils.sendXml(xmlOutput, start, response);
-                    return;
-                } catch (MessagingException ex) {
-                    XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL,
-                            new ErrorBean(ErrorBean.ERR_EMAIL_ERROR));
-                    XmlUtils.sendXml(xmlOutput, start, response);
-                    return;
-                }
-            }
+            // with the provided link - currently this is returning true/false
+            // though we are not checking for it on the return - though we should - i.s.
+            sendEmail(email, finalUrlEmail);
 
             // We are, for the moment, assuming there is a file at this location
             // The link is sent out as just the file name. When the user sends
@@ -294,8 +274,7 @@ public class ProcessServlet extends HttpServlet {
             // + the file specified by the user ((fileForUpload.getName()) and
             // we send that
             // back to the user
-            XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK,
-                    fileLocations);
+            XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, fileLocations);
             XmlUtils.sendXml(xmlReply, start, response);
             return;
         }
@@ -312,174 +291,9 @@ public class ProcessServlet extends HttpServlet {
         doGet(request, response);
     }
 
-    private void grid(
-            FeatureDataset featureDataset,
-            boolean categorical,
-            FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection,
-            String attributeName, DelimiterOption delimiterOption,
-            Date fromDate, Date toDate, String[] dataTypes, String groupById,
-            String[] outputStats, String outputFile) throws IOException,
-            SchemaException, TransformException, IllegalArgumentException,
-            FactoryException, InvalidRangeException {
+    
 
-        GridDataset gridDataset = (GridDataset) featureDataset;
-        String gridName = dataTypes[0];
-        GridDatatype gdt = gridDataset.findGridByName(gridName);
-        categorical = gdt.getDataType().isIntegral();
-        if (categorical) {
-            BufferedWriter writer = null;
-            try {
-                writer = new BufferedWriter(new FileWriter(new File(
-                        System.getProperty("applicationWorkDir"), outputFile)));
-                // *** long running task ***
-                FeatureCategoricalGridCoverage.execute(featureCollection,
-                        attributeName, gridDataset, gridName, writer,
-                        delimiterOption.delimiter);
-            } finally {
-                if (writer != null) {
-                    try {
-                        writer.close();
-                    } catch (IOException e) {
-                        /* get bent */
-                    }
-                }
-            }
-        } else {
-            try {
-                Range timeRange = null;
-                try {
-                    CoordinateAxis1DTime timeAxis = gdt.getCoordinateSystem().getTimeAxis1D();
-                    int timeIndexMin = 0;
-                    int timeIndexMax = 0;
-                    if (fromDate != null && toDate != null) {
-                        timeIndexMin = timeAxis.findTimeIndexFromDate(fromDate);
-                        timeIndexMax = timeAxis.findTimeIndexFromDate(toDate);
-                        timeRange = new Range(timeIndexMin, timeIndexMax);
-                    }
-                } catch (NumberFormatException e) {
-                    LoggerFactory.getLogger(ProcessServlet.class).error(
-                            e.getMessage());
-                } catch (InvalidRangeException e) {
-                    LoggerFactory.getLogger(ProcessServlet.class).error(
-                            e.getMessage());
-                }
-                GroupBy.GridOption groupBy = null;
-                if (groupById != null) {
-                    try {
-                        groupBy = GroupBy.GridOption.valueOf(groupById);
-                    } catch (IllegalArgumentException e) {
-                        /* failure handled below */
-                    }
-                }
-                if (groupBy == null) {
-                    groupBy = GroupBy.GridOption.getDefault();
-                }
-                List<Statistic> statisticList = new ArrayList<Statistic>();
-                if (outputStats != null && outputStats.length > 0) {
-                    for (int i = 0; i < outputStats.length; ++i) {
-                        // may throw exception if outputStats value doesn't
-                        // map to Statistic enum value, ivan says let percolate
-                        // up.
-                        statisticList.add(Statistic.valueOf(outputStats[i]));
-                    }
-                }
-                if (statisticList.isEmpty()) {
-                    throw new IllegalArgumentException(
-                            "no output statistics selected");
-                }
-                BufferedWriter writer = null;
-                try {
-                    writer = new BufferedWriter(new FileWriter(new File(
-                            System.getProperty("applicationWorkDir"),
-                            outputFile)));
-                    // *** long running task ***
-                    FeatureCoverageWeightedGridStatistics.execute(
-                            featureCollection, attributeName, gridDataset,
-                            gridName, timeRange, statisticList, writer,
-                            groupBy == GroupBy.GridOption.statistics,
-                            delimiterOption.delimiter);
-                } finally {
-                    if (writer != null) {
-                        try {
-                            writer.close();
-                        } catch (IOException e) {
-                            /* get bent */
-                        }
-                    }
-                }
-            } finally {
-                try {
-                    if (gridDataset != null) {
-                        gridDataset.close();
-                    }
-                } catch (IOException e) {
-                    /* get bent */
-                }
-            }
-        }
-    }
-
-    private void station(
-            FeatureDataset featureDataset,
-            FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection,
-            Date fromDate, Date toDate, DelimiterOption delimiterOption,
-            String[] dataTypes, String groupById, String outputFile)
-            throws FactoryException, SchemaException,
-            org.opengis.coverage.grid.InvalidRangeException,
-            TransformException, IOException {
-
-        FeatureDatasetPoint fdp = (FeatureDatasetPoint) featureDataset;
-        List<ucar.nc2.ft.FeatureCollection> fcl = fdp.getPointFeatureCollectionList();
-        if (fcl != null && fcl.size() == 1) {
-            ucar.nc2.ft.FeatureCollection fc = fcl.get(0);
-            if (fc != null && fc instanceof StationTimeSeriesFeatureCollection) {
-                StationTimeSeriesFeatureCollection stsfc = (StationTimeSeriesFeatureCollection) fc;
-                List<VariableSimpleIF> variableList = new ArrayList<VariableSimpleIF>();
-                for (String variableName : dataTypes) {
-                    VariableSimpleIF variable = featureDataset.getDataVariable(variableName);
-                    if (variable != null) {
-                        variableList.add(variable);
-                    } else {
-                        // do we care?
-                    }
-                }
-                GroupBy.StationOption groupBy = null;
-                if (groupById != null) {
-                    try {
-                        groupBy = GroupBy.StationOption.valueOf(groupById);
-                    } catch (IllegalArgumentException e) {
-                        /* failure handled below */
-                    }
-                }
-                if (groupBy == null) {
-                    groupBy = GroupBy.StationOption.getDefault();
-                }
-                BufferedWriter writer = null;
-                try {
-                    writer = new BufferedWriter(new FileWriter(new File(
-                            System.getProperty("applicationWorkDir"),
-                            outputFile)));
-                    StationDataCSVWriter.write(featureCollection, stsfc,
-                            variableList, new DateRange(fromDate, toDate),
-                            writer, groupBy == StationOption.variable,
-                            delimiterOption.delimiter);
-                } finally {
-                    if (writer != null) {
-                        try {
-                            writer.close();
-                        } catch (IOException e) {
-                            /* swallow, don't mask exception */
-                        }
-                    }
-                }
-            } else {
-                // wtf? I am gonna punch Ivan...
-            }
-        } else {
-            // error, what do we do when more than one FeatureCollection? does
-            // this happen? If yes, punch Ivan.
-        }
-    }
+    
 
     private File wcs(String wcsServer, String wcsCoverage,
             String wcsBoundingBox, String wcsGridCRS, String wcsGridOffsets,
@@ -614,14 +428,22 @@ public class ProcessServlet extends HttpServlet {
         super();
     }
 
-    private boolean sendEmail(String email, String finalUrlEmail)
-            throws AddressException, MessagingException {
-        String content = "Your file is ready: " + finalUrlEmail;
-        String subject = "Your file is ready";
-        String from = "gdp_data@usgs.gov";
-        EmailMessageBean emBean = new EmailMessageBean(from, email,
-                new ArrayList<String>(), subject, content);
-        EmailHandler emh = new EmailHandler();
-        return emh.sendMessage(emBean);
+    private boolean sendEmail(String email, String finalUrlEmail) {
+    	if (email != null && !"".equals(email))  {
+	        String content = "Your file is ready: " + finalUrlEmail;
+	        String subject = "Your file is ready";
+	        String from = "gdp_data@usgs.gov";
+	        EmailMessageBean emBean = new EmailMessageBean(from, email,
+	                new ArrayList<String>(), subject, content);
+	        EmailHandler emh = new EmailHandler();
+	        try {
+				return emh.sendMessage(emBean);
+			} catch (AddressException e) {
+				return false;
+			} catch (MessagingException e) {
+				return false;
+			}
+    	}
+    	return false;
     }
 }
