@@ -1,3 +1,4 @@
+
 <project>
     <parent>
         <groupId>gov.usgs.cida.gdp</groupId>
@@ -11,6 +12,12 @@
     <name>gdp-common-utilities</name>
 
     <dependencies>
+        <dependency>
+            <groupId>com.sun.xml.fastinfoset</groupId>
+            <artifactId>FastInfoset</artifactId>
+            <version>1.2.7</version>
+        </dependency>
+
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
