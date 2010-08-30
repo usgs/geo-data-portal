@@ -38,7 +38,8 @@
         <module>gdp-mapping</module>
         <module>gdp-geometry</module>
         <module>gdp-core-processing-tools</module>
-    </modules>
+    <module>gdp-data-access-tools</module>
+  </modules>
     <properties>
         <geotools.version>2.6.0</geotools.version>
         <project.groupid>gov.usgs.cida.gdp</project.groupid>
@@ -52,14 +53,14 @@
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
-
+<!--
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.13</version>
             <type>jar</type>
             <scope>compile</scope>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>org.slf4j</groupId>
