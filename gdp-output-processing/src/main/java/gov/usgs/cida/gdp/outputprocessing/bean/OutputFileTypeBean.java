@@ -2,6 +2,7 @@ package gov.usgs.cida.gdp.outputprocessing.bean;
 
 import gov.usgs.cida.gdp.utilities.bean.XmlBean;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.thoughtworks.xstream.XStream;
@@ -23,16 +24,14 @@ public class OutputFileTypeBean implements XmlBean{
 	
 	public OutputFileTypeBean(String... types) {
 		this.types = new ArrayList<String>();
-		for (String type : types) {
-			this.types.add(type);
-		}
+        this.types.addAll(Arrays.asList(types));
 	}
 	
 	@Override
 	public String toXml() {
 		XStream xstream = new XStream();
 		xstream.processAnnotations(OutputFileTypeBean.class);
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		String result = "";
 		sb.append(xstream.toXML(this));
 		result = sb.toString();

@@ -44,7 +44,7 @@ public class OutputStatisticsBean implements XmlBean {
 	public String toXml() {
 		XStream xstream = new XStream();
 		xstream.processAnnotations(OutputStatisticsBean.class);
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		String result = "";
 		sb.append(xstream.toXML(this));
 		result = sb.toString();
