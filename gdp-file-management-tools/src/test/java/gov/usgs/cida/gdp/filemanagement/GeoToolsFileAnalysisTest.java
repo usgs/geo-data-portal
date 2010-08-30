@@ -2,7 +2,6 @@ package gov.usgs.cida.gdp.filemanagement;
 
 
 import static org.junit.Assert.*;
-import gov.usgs.cida.gdp.filemanagement.GeoToolsFileAnalysis;
 import gov.usgs.cida.gdp.utilities.FileHelper;
 
 import java.io.File;
