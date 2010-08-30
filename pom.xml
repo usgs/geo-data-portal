@@ -34,10 +34,11 @@
         <module>gdp-core-processing</module>
         <module>gdp-geotiff</module>
         <module>gdp-data-introspection</module>
-    <module>gdp-output-processing</module>
-    <module>gdp-mapping</module>
-    <module>gdp-geometry</module>
-  </modules>
+        <module>gdp-output-processing</module>
+        <module>gdp-mapping</module>
+        <module>gdp-geometry</module>
+        <module>gdp-core-processing-tools</module>
+    </modules>
     <properties>
         <geotools.version>2.6.0</geotools.version>
         <project.groupid>gov.usgs.cida.gdp</project.groupid>
