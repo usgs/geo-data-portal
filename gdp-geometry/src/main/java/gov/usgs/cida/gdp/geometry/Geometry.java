@@ -25,9 +25,9 @@ public class Geometry {
     public static FeatureCollection<SimpleFeatureType, SimpleFeature> getFeatureCollection(
             final String lat, final String lon, final String userspacePath, final String userDirectory,
             final File uploadDirectory, final String appTempDir, final String shapeSet,
-            final String[] features, final String outputFile, final String attribute) 
-        throws MalformedURLException, IOException, SchemaException, NoSuchAuthorityCodeException, FactoryException, CQLException {
-        
+            final String[] features, final String outputFile, final String attribute)
+            throws MalformedURLException, IOException, SchemaException, NoSuchAuthorityCodeException, FactoryException, CQLException {
+
         // Define a feature collection isiong lat/lon or shapefile
         if (lat != null && lon != null) {
 
