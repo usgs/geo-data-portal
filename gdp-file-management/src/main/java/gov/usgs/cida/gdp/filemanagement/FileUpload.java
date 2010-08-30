@@ -30,7 +30,7 @@ public class FileUpload {
      * @return
      * @throws Exception
      */
-    private String uploadFiles(HttpServletRequest request, String applicationTempDir) throws Exception {
+    static public String uploadFiles(HttpServletRequest request, String applicationTempDir) throws Exception {
         log.debug("User uploading file(s).");
 
         // Create a factory for disk-based file items
