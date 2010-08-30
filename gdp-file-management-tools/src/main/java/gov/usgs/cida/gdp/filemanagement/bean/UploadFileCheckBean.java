@@ -15,7 +15,7 @@ public class UploadFileCheckBean implements XmlBean {
     }
 
     public UploadFileCheckBean(boolean exists) {
-        new UploadFileCheckBean(null, exists);
+        this(null, exists);
     }
 
     public UploadFileCheckBean(String file, boolean doesDirectoryOrFileExist) {
