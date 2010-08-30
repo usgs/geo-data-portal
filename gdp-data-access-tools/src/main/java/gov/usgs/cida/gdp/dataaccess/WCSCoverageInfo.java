@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gov.usgs.cida.gdp.dataaccess;
 
 import gov.usgs.cida.gdp.dataaccess.bean.WCSCoverageInfoBean;
@@ -27,13 +23,13 @@ import org.slf4j.LoggerFactory;
  * @author admin
  */
 public class WCSCoverageInfo {
-	private static org.slf4j.Logger log = LoggerFactory.getLogger(WCSCoverageInfo.class);
+
+    private static org.slf4j.Logger log = LoggerFactory.getLogger(WCSCoverageInfo.class);
     private static final int MAX_COVERAGE_SIZE = 64 << 20; // 64 MB
 
     public static WCSCoverageInfoBean calculateWCSCoverageInfo(
-                String shapefilePath, double x1, double y1, double x2,
-                double y2, String crs, String gridOffsets, String dataTypeString
-            ) throws IOException, NoSuchAuthorityCodeException, FactoryException, TransformException {
+            String shapefilePath, double x1, double y1, double x2,
+            double y2, String crs, String gridOffsets, String dataTypeString) throws IOException, NoSuchAuthorityCodeException, FactoryException, TransformException {
 
         FileDataStore shapeFileDataStore;
         FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = null;
@@ -104,7 +100,7 @@ public class WCSCoverageInfo {
             minResamplingFactor = 1; // Coverage size is ok as is
         }
 
-        units = "blah";
+        units = "placeholder";
         boundingBox = Double.toString(featureXBounds.getMinX()) + ","
                 + Double.toString(featureXBounds.getMinY()) + ","
                 + Double.toString(featureXBounds.getMaxX()) + ","

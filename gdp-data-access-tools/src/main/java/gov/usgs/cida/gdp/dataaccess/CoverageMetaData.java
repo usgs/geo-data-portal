@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package gov.usgs.cida.gdp.dataaccess;
 
 /**
@@ -12,15 +11,29 @@ package gov.usgs.cida.gdp.dataaccess;
 public class CoverageMetaData {
 
     public interface DataType {
+
         public int getSizeBytes();
+
         public boolean isIntegerType();
+
         public boolean isFloatingPointType();
     }
-
     public final static DataType UnknownDataType = new DataType() {
-        @Override public int getSizeBytes() { return -1;  }
-        @Override public boolean isIntegerType() { return false; }
-        @Override public boolean isFloatingPointType() { return false; }
+
+        @Override
+        public int getSizeBytes() {
+            return -1;
+        }
+
+        @Override
+        public boolean isIntegerType() {
+            return false;
+        }
+
+        @Override
+        public boolean isFloatingPointType() {
+            return false;
+        }
     };
 
     public enum PrimitiveDataType implements DataType {
@@ -31,7 +44,6 @@ public class CoverageMetaData {
         LONG(8, true),
         FLOAT(4, false),
         DOUBLE(8, false);
-
         private int sizeBytes;
         private boolean integerType;
 
@@ -92,7 +104,7 @@ public class CoverageMetaData {
                 return PrimitiveDataType.LONG;
             }
         }
-        
+
         if (string.contains("INTEGER")) {
             return PrimitiveDataType.INT;
         }
@@ -116,5 +128,4 @@ public class CoverageMetaData {
 
         return UnknownDataType;
     }
-    
 }
