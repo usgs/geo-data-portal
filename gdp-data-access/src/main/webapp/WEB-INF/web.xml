@@ -8,7 +8,7 @@
         <display-name>WCSServlet</display-name>
         <servlet-name>WCSServlet</servlet-name>
         <servlet-class>
-            gov.usgs.cida.gdp.webapp.dataaccess.servlet.WCSServlet
+            gov.usgs.cida.gdp.dataaccess.servlet.WCSServlet
         </servlet-class>
     </servlet>
     <servlet-mapping>
@@ -23,7 +23,7 @@
         <display-name>THREDDSCheckServlet</display-name>
         <servlet-name>THREDDSCheckServlet</servlet-name>
         <servlet-class>
-            gov.usgs.cida.gdp.webapp.dataaccess.servlet.THREDDSCheckServlet
+            gov.usgs.cida.gdp.dataaccess.servlet.THREDDSCheckServlet
         </servlet-class>
     </servlet>
     <servlet-mapping>
@@ -38,7 +38,7 @@
         <display-name>THREDDSServlet</display-name>
         <servlet-name>THREDDSServlet</servlet-name>
         <servlet-class>
-            gov.usgs.cida.gdp.webapp.dataaccess.servlet.THREDDSServlet
+            gov.usgs.cida.gdp.dataaccess.servlet.THREDDSServlet
         </servlet-class>
     </servlet>
     <servlet-mapping>

@@ -8,10 +8,10 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
   <groupId>gov.usgs.cida.gdp</groupId>
-  <artifactId>gdp-core-processing-tools</artifactId>
+  <artifactId>gdp-core-processing</artifactId>
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
-  <name>gdp-core-processing-tools</name>
+  <name>gdp-core-processing</name>
   <dependencies>
 
         <dependency>

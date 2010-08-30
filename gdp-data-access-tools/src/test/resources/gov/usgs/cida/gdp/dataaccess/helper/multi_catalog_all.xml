@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="OPeNDAP Data Server" version="1.0.1">
+  <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
+  <dataset name="NOAA-WW3" ID="waves">
+    <metadata inherited="true">
+      <serviceName>ncdods</serviceName>
+      <documentation xlink:href="http://www.ncep.noaa.gov" xlink:title="NCEP"/>
+    </metadata>
+    <dataset name="NCEP WaveWatch III:  Atlantic (4 min grid)" ID="waves/ww3_multi/at_4m_all" urlPath="waves/ww3_multi/at_4m_all"/>
+    <dataset name="NCEP WaveWatch III:  Atlantic (10 min grid)" ID="waves/ww3_multi/at_10m_all" urlPath="waves/ww3_multi/at_10m_all"/>
+  </dataset>
+</catalog>

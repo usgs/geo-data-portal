@@ -7,10 +7,10 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
     <groupId>gov.usgs.cida.gdp</groupId>
-    <artifactId>gdp-data-introspection</artifactId>
+    <artifactId>gdp-data-introspection-webapp</artifactId>
     <packaging>war</packaging>
     <version>1.0-SNAPSHOT</version>
-    <name>gdp-data-introspection</name>
+    <name>gdp-data-introspection-webapp</name>
 
     <dependencies>
         <dependency>

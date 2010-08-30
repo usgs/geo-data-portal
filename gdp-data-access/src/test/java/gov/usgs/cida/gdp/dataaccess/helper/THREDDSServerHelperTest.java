@@ -1,6 +1,5 @@
 package gov.usgs.cida.gdp.dataaccess.helper;
 
-import gov.usgs.cida.gdp.webapp.dataaccess.helper.THREDDSServerHelper;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
