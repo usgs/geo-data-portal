@@ -15,9 +15,11 @@ import ucar.nc2.dt.GridCoordSystem;
 public class GridCellGeometry {
 
     private final GridCoordSystem gridCoordSystem;
+
     private final int xCellCount;
     private final int yCellCount;
     private final int cellCount;
+
     private Geometry[] cellGeometry;
 
     public GridCellGeometry(GridCoordSystem gridCoordSystem) {
@@ -51,8 +53,8 @@ public class GridCellGeometry {
     }
 
     public Geometry getCellGeometry(int xIndex, int yIndex) {
-        if (xIndex < 0 || xIndex >= xCellCount
-                || yIndex < 0 || yIndex >= yCellCount) {
+        if (xIndex < 0 || xIndex >= xCellCount ||
+            yIndex < 0 || yIndex >= yCellCount) {
             throw new IndexOutOfBoundsException();
         }
         return getCellGeometryQuick(xIndex, yIndex);
@@ -100,14 +102,14 @@ public class GridCellGeometry {
 
             upperCoordinates[0] =
                     indexToCoordinateBuilder.getCoordinate(0, yIndexUpper);
-
+            
             for (int xIndexLower = 0; xIndexLower < xCellCount; ++xIndexLower) {
                 int xIndexUpper = xIndexLower + 1;
 
                 upperCoordinates[xIndexUpper] =
                         indexToCoordinateBuilder.getCoordinate(xIndexUpper, yIndexUpper);
 
-                Coordinate[] ringCoordinates = new Coordinate[]{
+                Coordinate[] ringCoordinates = new Coordinate[] {
                     lowerCoordinates[xIndexLower],
                     lowerCoordinates[xIndexUpper],
                     upperCoordinates[xIndexUpper],
@@ -118,9 +120,10 @@ public class GridCellGeometry {
 
                 cellGeometry[yOffset + xIndexLower] =
                         geometryFactory.createPolygon(
-                        geometryFactory.createLinearRing(ringCoordinates),
-                        null);
+                            geometryFactory.createLinearRing(ringCoordinates),
+                            null);
             }
         }
     }
+    
 }

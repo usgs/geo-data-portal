@@ -1,6 +1,5 @@
-package gov.usgs.cida.gdp.dataaccess.helper;
+package gov.usgs.cida.gdp.dataaccess.bean;
 
-import gov.usgs.cida.gdp.dataaccess.bean.THREDDSInfoBean;
 import gov.usgs.cida.gdp.dataaccess.bean.THREDDSInfoBean;
 import static org.junit.Assert.*;
 

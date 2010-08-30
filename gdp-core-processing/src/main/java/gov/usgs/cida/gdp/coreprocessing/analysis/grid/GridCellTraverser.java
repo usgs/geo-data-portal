@@ -1,3 +1,8 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
 package gov.usgs.cida.gdp.coreprocessing.analysis.grid;
 
 import java.io.IOException;
@@ -21,13 +26,16 @@ public class GridCellTraverser {
     // dimension exists (i.e. we misread grid coordinate system) we force
     // an exception to be thrown...
     private final static int INVALID_INDEX = Integer.MAX_VALUE;
+    
     private final GridDatatype gridDataType;
+
     private final GridType gridType;
+
     protected final int xCellCount;
     protected final int yCellCount;
     protected final int zCellCount;
     protected final int tCellCount;
-
+    
     public GridCellTraverser(GridDatatype gridDatatype) {
 
         this.gridDataType = gridDatatype;
@@ -35,7 +43,7 @@ public class GridCellTraverser {
         GridCoordSystem gridCoordSystem = gridDatatype.getCoordinateSystem();
 
         gridType = GridType.findGridType(gridCoordSystem);
-
+        
         if (gridType == GridType.OTHER) {
             throw new IllegalArgumentException("Unable to traverse this grid type.");
         }
@@ -91,7 +99,7 @@ public class GridCellTraverser {
         visitor.traverseEnd();
 
     }
-
+    
     protected void doTraverseXY(GridCellVisitor visitor, Array array) {
         Index arrayIndex = array.getIndex();
         visitor.yxStart();
@@ -105,4 +113,5 @@ public class GridCellTraverser {
         }
         visitor.yxEnd();
     }
+
 }

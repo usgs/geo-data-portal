@@ -41,10 +41,11 @@ import org.xml.sax.SAXException;
 public class NHDService {
 
     public static FeatureCollection<SimpleFeatureType, SimpleFeature> getGeometry(
-            String lon, String lat, String shapefilePath, String shxFilePath)
+                String lon, String lat, String shapefilePath, String shxFilePath
+            )
             throws MalformedURLException, IOException, SchemaException,
-            NoSuchAuthorityCodeException, FactoryException {
-
+                   NoSuchAuthorityCodeException, FactoryException {
+        
         FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = null;
         // Get reachcode containing lat/lon point from the EPA WATERS web service
         InputStream reachJson =
@@ -140,43 +141,44 @@ public class NHDService {
         return geom;
     }
 
-    private static FeatureCollection<SimpleFeatureType, SimpleFeature> createFeatureCollection(GeometryCollection geom)
+    private static FeatureCollection<SimpleFeatureType, SimpleFeature>
+	createFeatureCollection(GeometryCollection geom)
             throws NoSuchAuthorityCodeException, FactoryException {
 
-        FeatureCollection<SimpleFeatureType, SimpleFeature> fc = FeatureCollections.newCollection();
+		FeatureCollection<SimpleFeatureType, SimpleFeature> fc = FeatureCollections.newCollection();
 
-        for (int i = 0; i < geom.getNumGeometries(); i++) {
-            Geometry g = geom.getGeometryN(i);
+		for (int i = 0; i < geom.getNumGeometries(); i++) {
+			Geometry g = geom.getGeometryN(i);
 
-            SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
-            typeBuilder.setName("testType");
-            typeBuilder.setCRS(CRS.decode("EPSG:4326"));
-            typeBuilder.add("blah", Integer.class);
-            typeBuilder.add("geom", Geometry.class);
-            typeBuilder.setDefaultGeometry("geom");
+			SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
+			typeBuilder.setName("testType");
+			typeBuilder.setCRS(CRS.decode("EPSG:4326"));
+			typeBuilder.add("blah", Integer.class);
+			typeBuilder.add("geom", Geometry.class);
+			typeBuilder.setDefaultGeometry("geom");
 
-            SimpleFeatureType type = typeBuilder.buildFeatureType();
+			SimpleFeatureType type = typeBuilder.buildFeatureType();
 
 
 //			GeometryFactory geomFactory = new GeometryFactory();
-            SimpleFeatureBuilder build = new SimpleFeatureBuilder(type);
+			SimpleFeatureBuilder build = new SimpleFeatureBuilder( type );
 
 //			for (Coordinate c : g.getCoordinates()) {
 //				System.out.println(c.x + ", " + c.y);
 //				build.add( geomFactory.createPoint( c ));
 //			}
 
-            build.set("geom", g);
-            build.set("blah", i);
+			build.set("geom", g);
+			build.set("blah", i);
 
-            SimpleFeature sf = build.buildFeature(null);
-            sf.getBounds();
+			SimpleFeature sf = build.buildFeature(null);
+			sf.getBounds();
 
 //			SimpleFeature sf = SimpleFeatureBuilder.build(type, g.getCoordinates(), null);
 
-            fc.add(sf);
-        }
+			fc.add(sf);
+		}
 
-        return fc;
-    }
+		return fc;
+	}
 }

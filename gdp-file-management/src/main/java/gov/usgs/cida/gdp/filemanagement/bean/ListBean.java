@@ -30,7 +30,7 @@ public class ListBean implements XmlBean {
 	public String toXml() {
 		XStream xstream = new XStream();
 		xstream.autodetectAnnotations(true);
-		StringBuilder sb = new StringBuilder();
+		StringBuffer sb = new StringBuffer();
 		String result = "";
 		sb.append(xstream.toXML(this));
 		result = sb.toString();

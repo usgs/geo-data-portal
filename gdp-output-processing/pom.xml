@@ -7,10 +7,10 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
     <groupId>gov.usgs.cida.gdp</groupId>
-    <artifactId>gdp-output-processing-webapp</artifactId>
+    <artifactId>gdp-output-processing</artifactId>
     <packaging>war</packaging>
     <version>1.0-SNAPSHOT</version>
-    <name>gdp-output-processing-webapp</name>
+    <name>gdp-output-processing</name>
     <dependencies>
 
          <dependency>

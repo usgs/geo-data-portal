@@ -7,6 +7,7 @@ import gov.usgs.cida.gdp.coreprocessing.analysis.StationDataCSVWriter;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCategoricalGridCoverage;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCoverageWeightedGridStatistics;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCoverageWeightedGridStatisticsWriter.Statistic;
+import gov.usgs.cida.gdp.coreprocessing.servlet.ProcessServlet;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -36,8 +37,8 @@ import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
 import ucar.nc2.units.DateRange;
 
 public class CSVWriter {
-
-    public static boolean station(
+	
+	public static boolean station(
             FeatureDataset featureDataset,
             FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection,
             Date fromDate, Date toDate, DelimiterOption delimiterOption,
@@ -97,10 +98,10 @@ public class CSVWriter {
         } else {
             return false;
         }
-        return true;
+		return true;
     }
-
-    public static boolean grid(
+	
+	public static boolean grid(
             FeatureDataset featureDataset,
             boolean categorical,
             FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection,
@@ -145,10 +146,10 @@ public class CSVWriter {
                         timeRange = new Range(timeIndexMin, timeIndexMax);
                     }
                 } catch (NumberFormatException e) {
-                    LoggerFactory.getLogger(CSVWriter.class).error(
+                    LoggerFactory.getLogger(ProcessServlet.class).error(
                             e.getMessage());
                 } catch (InvalidRangeException e) {
-                    LoggerFactory.getLogger(CSVWriter.class).error(
+                    LoggerFactory.getLogger(ProcessServlet.class).error(
                             e.getMessage());
                 }
                 GroupBy.GridOption groupBy = null;
@@ -192,7 +193,7 @@ public class CSVWriter {
                             writer.close();
                             return true;
                         } catch (IOException e) {
-                            return false;
+                        	return false;
                         }
                     }
                 }
@@ -202,9 +203,10 @@ public class CSVWriter {
                         gridDataset.close();
                     }
                 } catch (IOException e) {
+                    
                 }
             }
         }
-        return true;
+		return true;
     }
 }

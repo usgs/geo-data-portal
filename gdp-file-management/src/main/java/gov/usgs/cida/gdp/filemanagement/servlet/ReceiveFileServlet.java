@@ -1,6 +1,5 @@
 package gov.usgs.cida.gdp.filemanagement.servlet;
 
-import gov.usgs.cida.gdp.filemanagement.FileUpload;
 import gov.usgs.cida.gdp.utilities.FileHelper;
 import gov.usgs.cida.gdp.utilities.XmlUtils;
 import gov.usgs.cida.gdp.utilities.bean.AckBean;
@@ -61,7 +60,7 @@ public class ReceiveFileServlet extends HttpServlet {
             String userDirectory = "";
 
             try {
-                userDirectory = FileUpload.uploadFiles(request, applicationUserspaceDir);
+                userDirectory = uploadFiles(request, applicationUserspaceDir);
             } catch (Exception e) {
                 xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FILE_UPLOAD, e));
                 XmlUtils.sendXml(xmlOutput, start, response);
@@ -107,32 +106,32 @@ public class ReceiveFileServlet extends HttpServlet {
      * @return
      * @throws Exception 
      */
-//    private String uploadFiles(HttpServletRequest request, String applicationTempDir) throws Exception {
-//        log.debug("User uploading file(s).");
-//
-//        // Create a factory for disk-based file items
-//        FileItemFactory factory = new DiskFileItemFactory();
-//
-//        // Constructs an instance of this class which
-//        // uses the supplied factory to create FileItem instances.
-//        ServletFileUpload upload = new ServletFileUpload(factory);
-//
-//        Cookie[] cookies = request.getCookies();
-//        String userDirectory = "";
-//        for (int cookieIndex = 0;cookieIndex < cookies.length;cookieIndex++) {
-//        	if ("gdp-user-directory".equals(cookies[cookieIndex].getName().toLowerCase())) {
-//        		userDirectory = cookies[cookieIndex].getValue();
-//        	}
-//        }
-//
-//        Object interimItems = upload.parseRequest(request);
-//        @SuppressWarnings("unchecked")
-//        List<FileItem> items = (List<FileItem>) interimItems;
-//
-//        // Save the file(s) to the user directory
-//        if (FileHelper.saveFileItems(applicationTempDir + userDirectory, items)) {
-//            return userDirectory;
-//        }
-//        return "";
-//    }
+    private String uploadFiles(HttpServletRequest request, String applicationTempDir) throws Exception {
+        log.debug("User uploading file(s).");
+
+        // Create a factory for disk-based file items
+        FileItemFactory factory = new DiskFileItemFactory();
+
+        // Constructs an instance of this class which
+        // uses the supplied factory to create FileItem instances.
+        ServletFileUpload upload = new ServletFileUpload(factory);
+
+        Cookie[] cookies = request.getCookies();
+        String userDirectory = "";
+        for (int cookieIndex = 0;cookieIndex < cookies.length;cookieIndex++) {
+        	if ("gdp-user-directory".equals(cookies[cookieIndex].getName().toLowerCase())) {
+        		userDirectory = cookies[cookieIndex].getValue();
+        	}
+        }
+
+        Object interimItems = upload.parseRequest(request);
+        @SuppressWarnings("unchecked")
+        List<FileItem> items = (List<FileItem>) interimItems;
+
+        // Save the file(s) to the user directory
+        if (FileHelper.saveFileItems(applicationTempDir + userDirectory, items)) {
+            return userDirectory;
+        }
+        return "";
+    }
 }

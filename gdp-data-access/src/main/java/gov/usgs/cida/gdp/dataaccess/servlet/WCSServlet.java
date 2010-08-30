@@ -1,7 +1,7 @@
 package gov.usgs.cida.gdp.dataaccess.servlet;
 
-import gov.usgs.cida.gdp.tools.dataaccess.WCSCoverageInfo;
-import gov.usgs.cida.gdp.tools.dataaccess.bean.WCSCoverageInfoBean;
+import gov.usgs.cida.gdp.dataaccess.WCSCoverageInfo;
+import gov.usgs.cida.gdp.dataaccess.bean.WCSCoverageInfoBean;
 import gov.usgs.cida.gdp.utilities.XmlUtils;
 import gov.usgs.cida.gdp.utilities.bean.AckBean;
 import gov.usgs.cida.gdp.utilities.bean.AvailableFilesBean;

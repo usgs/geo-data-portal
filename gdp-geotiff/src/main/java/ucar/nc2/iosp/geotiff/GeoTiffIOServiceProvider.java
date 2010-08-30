@@ -51,6 +51,7 @@ import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 
+
 /**
  *
  * @author tkunicki
@@ -61,9 +62,12 @@ public class GeoTiffIOServiceProvider extends AbstractIOServiceProvider {
             "it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader";
     private final static String IMAGEIO_JAI_READER =
             "com.sun.media.imageioimpl.plugins.tiff.TIFFImageReader";
+
     private final static String ATTRIBUTE_BAND = "band";
     private final static String ATTRIBUTE_IMAGE = "image";
+
     private String location;
+
 
     static {
         ImageIO.scanForPlugins();
@@ -71,8 +75,8 @@ public class GeoTiffIOServiceProvider extends AbstractIOServiceProvider {
 
     @Override
     public boolean isValidFile(RandomAccessFile raf) throws IOException {
-        return raf.getLocation().endsWith("tiff")
-                || raf.getLocation().endsWith("tif");
+        return raf.getLocation().endsWith("tiff") ||
+                raf.getLocation().endsWith("tif");
 
     }
 
@@ -149,10 +153,7 @@ public class GeoTiffIOServiceProvider extends AbstractIOServiceProvider {
                 imageReader.dispose();
             }
             if (imageInputStream != null) {
-                try {
-                    imageInputStream.close();
-                } catch (IOException e) {
-                }
+                try { imageInputStream.close(); } catch (IOException e) { }
             }
         }
     }
@@ -168,7 +169,7 @@ public class GeoTiffIOServiceProvider extends AbstractIOServiceProvider {
         int image = -1;
         int band = -1;
 
-        for (Attribute attribute : variable.getAttributes()) {
+        for(Attribute attribute : variable.getAttributes()) {
             if (ATTRIBUTE_IMAGE.equals(attribute.getName())) {
                 image = attribute.getNumericValue().intValue();
             } else if (ATTRIBUTE_BAND.equals(attribute.getName())) {
@@ -190,9 +191,9 @@ public class GeoTiffIOServiceProvider extends AbstractIOServiceProvider {
 
             imageReader = createImageReader();
 
-            if (section.getStride(1) > 1
-                    && variable.getDataType().isFloatingPoint()
-                    && IMAGEIO_JAI_READER.equals(imageReader.getClass().getName())) {
+            if (section.getStride(1) > 1 &&
+                variable.getDataType().isFloatingPoint() &&
+                IMAGEIO_JAI_READER.equals(imageReader.getClass().getName())) {
                 throw new IllegalArgumentException(
                         "ERROR:  Data corruption bug in Java JAI ImageIO TIFF "
                         + " ImageReader with floating point data and X strides > "
@@ -215,8 +216,8 @@ public class GeoTiffIOServiceProvider extends AbstractIOServiceProvider {
                     yRange.stride(),
                     0,
                     0);
-            imageReadParam.setSourceBands(new int[]{band});
-            imageReadParam.setDestinationBands(new int[]{0});
+            imageReadParam.setSourceBands(new int[] { band } );
+            imageReadParam.setDestinationBands(new int[] { 0 });
 
             BufferedImage bufferedImage = imageReader.read(image, imageReadParam);
 
@@ -227,7 +228,7 @@ public class GeoTiffIOServiceProvider extends AbstractIOServiceProvider {
             if (imageReader.getRawImageType(image).getNumBands() > 1) {
                 ParameterBlock parameterBlock = new ParameterBlock();
                 parameterBlock.addSource(bufferedImage);
-                parameterBlock.add(new int[]{0});
+                parameterBlock.add(new int[] { 0 });
                 PlanarImage planarImage = JAI.create("BandSelect", parameterBlock);
                 bufferedImage = planarImage.getAsBufferedImage();
             }
@@ -238,7 +239,7 @@ public class GeoTiffIOServiceProvider extends AbstractIOServiceProvider {
             // image data storage but it's not robust given all the SampleModel
             // implementations.
             Object arrayAsObject = createJavaArray(
-                    variable.getDataType(), (int) section.computeSize());
+                    variable.getDataType(), (int)section.computeSize());
 
             raster.getDataElements(
                     0, 0,
@@ -257,10 +258,7 @@ public class GeoTiffIOServiceProvider extends AbstractIOServiceProvider {
                 imageReader.dispose();
             }
             if (imageInputStream != null) {
-                try {
-                    imageInputStream.close();
-                } catch (IOException e) {
-                }
+                try { imageInputStream.close(); } catch (IOException e) { }
             }
         }
     }
@@ -277,7 +275,7 @@ public class GeoTiffIOServiceProvider extends AbstractIOServiceProvider {
 
     private ImageReader createImageReader() {
         Iterator<ImageReader> imageReaders =
-                ImageIO.getImageReadersBySuffix("tiff");
+            ImageIO.getImageReadersBySuffix("tiff");
         List<ImageReader> otherReaderList = new ArrayList<ImageReader>();
         ImageReader extReader = null;
         ImageReader jaiReader = null;
@@ -286,7 +284,7 @@ public class GeoTiffIOServiceProvider extends AbstractIOServiceProvider {
             String readerClassName = reader.getClass().getName();
             if (IMAGEIO_EXT_READER.equals(readerClassName)) {
                 extReader = reader;
-            } else if (IMAGEIO_JAI_READER.equals(readerClassName)) {
+            } else if (IMAGEIO_JAI_READER.equals(readerClassName)){
                 jaiReader = reader;
             } else {
                 otherReaderList.add(reader);
@@ -349,8 +347,7 @@ public class GeoTiffIOServiceProvider extends AbstractIOServiceProvider {
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.transform(source, result);
-        } catch (Exception e) {
-        }
+        } catch (Exception e) { }
     }
 
     public static void main(String[] args) throws Exception {
@@ -362,30 +359,25 @@ public class GeoTiffIOServiceProvider extends AbstractIOServiceProvider {
         fd.getNetcdfFile().writeCDL(System.out, true);
 
         if (fd instanceof GridDataset) {
-            GridDataset gd = (GridDataset) fd;
+            GridDataset gd = (GridDataset)fd;
 //            for (GridDatatype gdt : gd.getGrids()) {
-            GridDatatype gdt = gd.findGridDatatype("I0B0");
-            {
+                GridDatatype gdt = gd.findGridDatatype("I0B0"); {
                 System.out.println(gdt.getName());
                 GridCoordSystem gcs = gdt.getCoordinateSystem();
 
-                CoordinateAxis1D xAxis = (CoordinateAxis1D) gcs.getXHorizAxis();
-                CoordinateAxis1D yAxis = (CoordinateAxis1D) gcs.getYHorizAxis();
+                CoordinateAxis1D xAxis = (CoordinateAxis1D)gcs.getXHorizAxis();
+                CoordinateAxis1D yAxis = (CoordinateAxis1D)gcs.getYHorizAxis();
 
                 System.out.println(xAxis.getMinValue() + " : " + xAxis.getMaxValue());
                 System.out.println(yAxis.getMinValue() + " : " + yAxis.getMaxValue());
 
-                Array a = gdt.makeSubset(null, null, null, null, new Range(0, 1021, 1), new Range(0, 3060, 1)).readVolumeData(-1);
+                Array a = gdt.makeSubset(null, null, null, null, new Range(0, 1021, 1), new Range(0,3060,1)).readVolumeData(-1);
                 Double min = Double.MAX_VALUE;
                 Double max = -Double.MAX_VALUE;
                 while (a.hasNext()) {
                     double v = a.nextDouble();
-                    if (v < min) {
-                        min = v;
-                    }
-                    if (v > max) {
-                        max = v;
-                    }
+                    if (v < min) min = v;
+                    if (v > max) max = v;
                 }
                 System.out.println(min + " : " + max);
             }
@@ -394,4 +386,5 @@ public class GeoTiffIOServiceProvider extends AbstractIOServiceProvider {
         fd.close();
 
     }
+
 }

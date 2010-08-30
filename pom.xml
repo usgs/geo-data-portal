@@ -34,12 +34,9 @@
         <module>gdp-core-processing</module>
         <module>gdp-geotiff</module>
         <module>gdp-data-introspection</module>
-        <module>gdp-output-processing</module>
-        <module>gdp-mapping</module>
-        <module>gdp-geometry</module>
-        <module>gdp-core-processing-tools</module>
-    <module>gdp-data-access-tools</module>
-    <module>gdp-file-management-tools</module>
+    <module>gdp-output-processing</module>
+    <module>gdp-mapping</module>
+    <module>gdp-geometry</module>
   </modules>
     <properties>
         <geotools.version>2.6.0</geotools.version>
@@ -54,14 +51,14 @@
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
-<!--
+
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.13</version>
             <type>jar</type>
             <scope>compile</scope>
-        </dependency>-->
+        </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>

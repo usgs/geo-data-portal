@@ -23,9 +23,10 @@ import org.opengis.filter.Filter;
 public class ShapefileToFeatureCollection {
 
     static public FeatureCollection<SimpleFeatureType, SimpleFeature> shapefileToFeatureCollection(
-            final File uploadDirectory, final String outputFile, final String userDirectory,
-            final String userSpacePath, final String appTempDir, final String shapeSet,
-            final String[] features, final String attribute) throws IOException, CQLException {
+                final File uploadDirectory, final String outputFile, final String userDirectory,
+                final String userSpacePath, final String appTempDir, final String shapeSet,
+                final String[] features, final String attribute
+            ) throws IOException, CQLException {
         FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = null;
         FileHelper.deleteFile(uploadDirectory.getPath() + outputFile);
         String shapefilePath = null;
@@ -45,7 +46,7 @@ public class ShapefileToFeatureCollection {
             }
         }
 
-
+        
         AvailableFilesBean afb = AvailableFilesBean.getAvailableFilesBean(appTempDir, userDir);
         File shapeFile = ShapeFileHelper.getShapeFileFromShapeSetName(shapeSet, afb.getShapeSetList());
 

@@ -1,5 +1,6 @@
 package gov.usgs.cida.gdp.utilities.bean;
 
+import gov.usgs.cida.gdp.utilities.bean.XmlBean;
 import gov.usgs.cida.gdp.utilities.FileHelper;
 
 import java.io.File;
@@ -29,7 +30,6 @@ public class FilesBean implements XmlBean {
     @XStreamImplicit
     private Collection<File> files;
 
-    @Override
     public String toXml() {
         XStream xstream = new XStream();
         xstream.processAnnotations(FilesBean.class);

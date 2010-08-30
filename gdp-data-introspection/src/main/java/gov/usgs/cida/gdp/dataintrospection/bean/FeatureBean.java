@@ -41,7 +41,7 @@ public class FeatureBean implements XmlBean{
 	public String toXml() {
 		XStream xstream = new XStream();
 		xstream.processAnnotations(FeatureBean.class);
-		StringBuilder sb = new StringBuilder();
+		StringBuffer sb = new StringBuffer();
 		String result = "";
 		sb.append(xstream.toXML(this));
 		result = sb.toString();

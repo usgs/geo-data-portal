@@ -44,72 +44,68 @@ public class SendFileServlet extends HttpServlet {
 
         Long start = Long.valueOf(new Date().getTime());
 
-        String command = request.getParameter("command");
+		String command = request.getParameter("command");
 
         // User wishes to grab a file. Send this file if available.
-        if ("getfile".equals(command)) {
-            String file = request.getParameter("file");
-            String baseFilePath = System.getProperty("applicationTempDir");
-            baseFilePath = baseFilePath + FileHelper.getSeparator();
-            String fullFilePath = baseFilePath + "upload-repository" + FileHelper.getSeparator() + file;
-            File fileToUpload = null;
+		if ("getfile".equals(command)) {
+			String file = request.getParameter("file");
+			String baseFilePath = System.getProperty("applicationTempDir");
+	    	baseFilePath = baseFilePath + FileHelper.getSeparator();
+	    	String fullFilePath = baseFilePath + "upload-repository" +FileHelper.getSeparator()+file;
+	    	File fileToUpload = null;
 
-            if (!FileHelper.doesDirectoryOrFileExist(fullFilePath)) {
-                XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FILE_NOT_FOUND));
-                XmlUtils.sendXml(xmlOutput, start, response);
-                return;
-            }
-            fileToUpload = new File(fullFilePath);
+	    	if (!FileHelper.doesDirectoryOrFileExist(fullFilePath)) {
+				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FILE_NOT_FOUND));
+				XmlUtils.sendXml(xmlOutput, start, response);
+				return;
+	    	}
+	    	fileToUpload = new File(fullFilePath);
 
-            // Set the headers.
-            response.setContentType("application/x-download");
-            response.setHeader("Content-Disposition", "attachment; filename=" + fileToUpload.getName());
-            response.setCharacterEncoding("UTF-8");
+	    	// Set the headers.
+	    	response.setContentType("application/x-download");
+	    	response.setHeader("Content-Disposition", "attachment; filename=" + fileToUpload.getName());
+	    	response.setCharacterEncoding("UTF-8");
 
-            // Send the file.
-            ServletOutputStream out = null;
-            BufferedInputStream buf = null;
-            try {
-                out = response.getOutputStream();
-                response.setContentLength((int) fileToUpload.length());
-                FileInputStream input = new FileInputStream(fileToUpload);
-                buf = new BufferedInputStream(input);
-                int readBytes = 0;
-                while ((readBytes = buf.read()) != -1) {
-                    out.write(readBytes);
-                }
-                out.close();
-                buf.close();
-            } catch (IOException ioe) {
-                throw new ServletException(ioe.getMessage());
-            } finally {
-                if (out != null) {
-                    out.close();
-                }
-                if (buf != null) {
-                    buf.close();
-                }
-            }
+	    	// Send the file.
+	    	ServletOutputStream out = null;
+	    	BufferedInputStream buf = null;
+	    	try {
+		    	out = response.getOutputStream();
+		    	response.setContentLength((int) fileToUpload.length());
+		    	FileInputStream input = new FileInputStream(fileToUpload);
+		    	buf = new BufferedInputStream(input);
+		    	int readBytes = 0;
+		    	while ((readBytes = buf.read()) != -1) out.write(readBytes);
+		    	out.close();
+		    	buf.close();
+	    	} catch (IOException ioe) {
+	    	      throw new ServletException(ioe.getMessage());
+	    	} finally {
+	    		if (out != null)
+	    			out.close();
+	    	      if (buf != null)
+	    	    	  buf.close();
+	    	}
             return;
-        }
+		}
 
         // Checks the upload repository for finished process file availability
         if ("checkuploadfile".equals(command)) {
-            String file = request.getParameter("file");
-            String baseFilePath = System.getProperty("applicationTempDir");
-            baseFilePath = baseFilePath + FileHelper.getSeparator();
-            String fullFilePath = baseFilePath + "upload-repository" + FileHelper.getSeparator() + file;
-            boolean fileExists = FileHelper.doesDirectoryOrFileExist(fullFilePath);
-            boolean hasBytes = false;
-            File tempFile = new File(fullFilePath);
-            hasBytes = tempFile.length() > 0;
-            boolean fileExistsAndHasBytes = fileExists & hasBytes;
-            UploadFileCheckBean ufcb = new UploadFileCheckBean(file, fileExistsAndHasBytes);
+			String file = request.getParameter("file");
+			String baseFilePath = System.getProperty("applicationTempDir");
+	    	baseFilePath = baseFilePath + FileHelper.getSeparator();
+	    	String fullFilePath = baseFilePath + "upload-repository" +FileHelper.getSeparator()+file;
+	    	boolean fileExists = FileHelper.doesDirectoryOrFileExist(fullFilePath);
+	    	boolean hasBytes = false;
+	    	File tempFile = new File(fullFilePath);
+	    	hasBytes = tempFile.length() > 0;
+	    	boolean fileExistsAndHasBytes = fileExists & hasBytes;
+	    	UploadFileCheckBean ufcb = new UploadFileCheckBean(file, fileExistsAndHasBytes);
 
-            XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, ufcb);
-            XmlUtils.sendXml(xmlReply, start, response);
-            return;
-        }
+			XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, ufcb);
+			XmlUtils.sendXml(xmlReply, start, response);
+			return;
+		}
 
         //TODO- Do not know why this code is here. Check to see if it's used
         BufferedInputStream buf = null;
@@ -140,7 +136,7 @@ public class SendFileServlet extends HttpServlet {
             }
         }
 
-
+        
     }
 
     /**

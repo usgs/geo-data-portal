@@ -39,8 +39,8 @@ public class GDPServletContextListener implements ServletContextListener {
         // NOTE: Check class loaders to guarantee
         // MultiThreadedHttpConnectionManager is associated with this
         // Servlet Context's ClassLoader
-        if (MultiThreadedHttpConnectionManager.class.getClassLoader()
-                == Thread.currentThread().getContextClassLoader()) {
+        if (MultiThreadedHttpConnectionManager.class.getClassLoader() == 
+                Thread.currentThread().getContextClassLoader()) {
             MultiThreadedHttpConnectionManager.shutdownAll();
         }
     }

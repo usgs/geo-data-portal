@@ -5,6 +5,7 @@
 
 package gov.usgs.cida.gdp.utilities.bean;
 
+import gov.usgs.cida.gdp.utilities.bean.XmlBean;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
@@ -67,7 +68,7 @@ public enum ErrorEnum  implements XmlBean {
     public String toXml() {
         XStream xstream = new XStream();
         xstream.processAnnotations(ErrorEnum.class);
-        StringBuilder sb = new StringBuilder();
+        StringBuffer sb = new StringBuffer();
         String result = "";
         sb.append(xstream.toXML(this));
         result = sb.toString();

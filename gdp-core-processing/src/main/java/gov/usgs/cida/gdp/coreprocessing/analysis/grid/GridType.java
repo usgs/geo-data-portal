@@ -16,10 +16,10 @@ public enum GridType {
     OTHER();
 
     public static GridType findGridType(GridCoordSystem gcs) {
-
-        if (gcs.getEnsembleAxis() != null
-                || gcs.getRunTimeAxis() != null
-                || (gcs.hasTimeAxis() && !gcs.hasTimeAxis1D())) {
+        
+        if ( gcs.getEnsembleAxis() != null ||
+             gcs.getRunTimeAxis() != null ||
+             (gcs.hasTimeAxis() && !gcs.hasTimeAxis1D())) {
             return OTHER;
         }
 

@@ -1,6 +1,9 @@
 package gov.usgs.cida.gdp.webapp.servlet;
 
 import java.lang.reflect.Field;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import org.slf4j.LoggerFactory;

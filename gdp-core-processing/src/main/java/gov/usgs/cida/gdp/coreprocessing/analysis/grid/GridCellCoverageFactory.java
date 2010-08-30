@@ -1,3 +1,8 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
 package gov.usgs.cida.gdp.coreprocessing.analysis.grid;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -24,8 +29,9 @@ public abstract class GridCellCoverageFactory {
             FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection,
             String attributeName,
             GridCoordSystem gridCoordinateSystem)
-            throws FactoryException, TransformException {
-
+            throws FactoryException, TransformException
+    {
+        
         AttributeDescriptor attributeDescriptor =
                 featureCollection.getSchema().getDescriptor(attributeName);
         if (attributeDescriptor == null) {
@@ -36,11 +42,11 @@ public abstract class GridCellCoverageFactory {
         boolean attributeComparable = Comparable.class.isAssignableFrom(
                 attributeDescriptor.getType().getBinding());
 
-        Map<Object, GridCellCoverage> attributeCoverageMap = attributeComparable
-                ? // rely on Comparable to sort
-                new TreeMap<Object, GridCellCoverage>()
-                : // use order from FeatureCollection.iterator();
-                new LinkedHashMap<Object, GridCellCoverage>();
+        Map<Object, GridCellCoverage> attributeCoverageMap = attributeComparable ?
+                // rely on Comparable to sort
+                new TreeMap<Object, GridCellCoverage>() :
+                // use order from FeatureCollection.iterator();
+                new LinkedHashMap<Object, GridCellCoverage>(); 
 
         CoordinateReferenceSystem featureCoordinateSystem =
                 featureCollection.getSchema().getCoordinateReferenceSystem();
@@ -48,14 +54,14 @@ public abstract class GridCellCoverageFactory {
         Iterator<SimpleFeature> featureIterator = featureCollection.iterator();
         try {
             while (featureIterator.hasNext()) {
-
+                
                 SimpleFeature simpleFeature = featureIterator.next();
                 Object attribute = simpleFeature.getAttribute(attributeName);
-
+                
                 if (attribute != null) {
-                    Geometry geometry = (Geometry) simpleFeature.getDefaultGeometry();
+                    Geometry geometry = (Geometry)simpleFeature.getDefaultGeometry();
                     GridCellCoverage gridCellCoverage = attributeCoverageMap.get(attribute);
-
+                    
                     if (gridCellCoverage == null) {
                         gridCellCoverage = new GridCellCoverage(
                                 geometry,
@@ -76,4 +82,5 @@ public abstract class GridCellCoverageFactory {
         }
         return attributeCoverageMap;
     }
+
 }

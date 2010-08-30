@@ -9,6 +9,8 @@ import java.util.Collections;
 import java.util.Formatter;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.catalog.InvAccess;
 import thredds.catalog.InvCatalog;
@@ -132,7 +134,7 @@ public abstract class NetCDFUtility {
                                     }
                                 }
                             }
-                            if (variableList.isEmpty()) {
+                            if (variableList.size() == 0) {
                                 // no explicit observation dimension found? look for
                                 // variables with unlimited dimension
                                 for (VariableSimpleIF var : dataset.getDataVariables()) {
@@ -152,7 +154,7 @@ public abstract class NetCDFUtility {
                     //  Don't try explicit :Conventions attribute check since this
                     //  doesnt seem to be coming through TDS with cdmremote when
                     //  CF conventions are used (?!)
-                    if (variableList.isEmpty()) {
+                    if (variableList.size() == 0) {
                         // Try CF convention where range variable has coordinate attribute
                         for (VariableSimpleIF variable : dataset.getDataVariables()) {
                             if (variable.findAttributeIgnoreCase("coordinates") != null) {

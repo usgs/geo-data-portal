@@ -11,7 +11,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FileDataStore;
@@ -45,6 +44,7 @@ import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.iosp.geotiff.GeoTiffIOServiceProvider;
 
 public class FeatureCoverageWeightedGridStatistics {
+	private static org.slf4j.Logger log = LoggerFactory.getLogger(FeatureCoverageWeightedGridStatistics.class);
 
     public static void execute(
             FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection,
@@ -56,13 +56,14 @@ public class FeatureCoverageWeightedGridStatistics {
             BufferedWriter writer,
             boolean groupByStatistic,
             String delimiter)
-            throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException {
+            throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException
+    {
 
         GridDatatype gdt = gridDataset.findGridDatatype(variableName);
         Preconditions.checkNotNull(gdt, "Variable named %s not found in gridDataset", variableName);
 
         GridType gt = GridType.findGridType(gdt.getCoordinateSystem());
-        if (!(gt == GridType.YX || gt == GridType.TYX)) {
+        if( !(gt == GridType.YX || gt == GridType.TYX) ) {
             throw new IllegalStateException("Currently require y-x or t-y-x grid for this operation");
         }
 
@@ -75,7 +76,7 @@ public class FeatureCoverageWeightedGridStatistics {
                     llr, gdt.getCoordinateSystem());
             gdt = gdt.makeSubset(null, null, timeRange, null, ranges[1], ranges[0]);
         } catch (InvalidRangeException ex) {
-            LoggerFactory.getLogger(FeatureCoverageWeightedGridStatistics.class.getName()).error(null, ex);
+            log.error(null, ex);
             throw ex;  // rethrow requested by IS
         }
 
@@ -83,9 +84,9 @@ public class FeatureCoverageWeightedGridStatistics {
 
         Map<Object, GridCellCoverage> attributeCoverageMap =
                 GridCellCoverageFactory.generateByFeatureAttribute(
-                featureCollection,
-                attributeName,
-                gdt.getCoordinateSystem());
+                    featureCollection,
+                    attributeName,
+                    gdt.getCoordinateSystem());
 
         String variableUnits = gdt.getVariable().getUnitsString();
 
@@ -93,22 +94,22 @@ public class FeatureCoverageWeightedGridStatistics {
 
         FeatureCoverageWeightedGridStatisticsWriter writerX =
                 new FeatureCoverageWeightedGridStatisticsWriter(
-                attributeList,
-                variableName,
-                variableUnits,
-                statisticList,
-                groupByStatistic,
-                delimiter,
-                writer);
+                    attributeList,
+                    variableName,
+                    variableUnits,
+                    statisticList,
+                    groupByStatistic,
+                    delimiter,
+                    writer);
 
         WeightedGridStatisticsVisitor v = null;
         switch (gt) {
             case YX:
                 v = new WeightedGridStatisticsVisitor_YX(attributeCoverageMap, writerX);
-                break;
+            break;
             case TYX:
                 v = new WeightedGridStatisticsVisitor_TYX(attributeCoverageMap, writerX, gcs.getTimeAxis1D(), timeRange);
-                break;
+            break;
             default:
                 throw new IllegalStateException("Currently require y-x or t-y-x grid for this operation");
         }
@@ -118,12 +119,14 @@ public class FeatureCoverageWeightedGridStatistics {
         gct.traverse(v);
     }
 
+
     // Handle bugs in NetCDF 4.1 for X and Y CoordinateAxis2D (c2d) with
     // shapefile bound (LatLonRect) that doesn't interect any grid center
     // (aka midpoint) *and* issue calculating edges for c2d axes with  < 3
     // grid cells in any dimension.
     public static Range[] getRangesFromLatLonRect(LatLonRect llr, GridCoordSystem gcs)
-            throws InvalidRangeException {
+            throws InvalidRangeException
+    {
 
         int[] lowerCornerIndices = new int[2];
         int[] upperCornerIndices = new int[2];
@@ -131,8 +134,8 @@ public class FeatureCoverageWeightedGridStatistics {
         gcs.findXYindexFromLatLon(llr.getLatMin(), llr.getLonMin(), lowerCornerIndices);
         gcs.findXYindexFromLatLon(llr.getLatMax(), llr.getLonMax(), upperCornerIndices);
 
-        if (lowerCornerIndices[0] < 0 || lowerCornerIndices[1] < 0
-                || upperCornerIndices[0] < 0 || upperCornerIndices[1] < 0) {
+        if (lowerCornerIndices[0] < 0 || lowerCornerIndices[1] < 0 ||
+            upperCornerIndices[0] < 0 || upperCornerIndices[1] < 0) {
             throw new InvalidRangeException();
         }
 
@@ -140,14 +143,14 @@ public class FeatureCoverageWeightedGridStatistics {
         int upperX;
         int lowerY;
         int upperY;
-        if (lowerCornerIndices[0] < upperCornerIndices[0]) {
+        if(lowerCornerIndices[0] < upperCornerIndices[0]) {
             lowerX = lowerCornerIndices[0];
             upperX = upperCornerIndices[0];
         } else {
             upperX = lowerCornerIndices[0];
             lowerX = upperCornerIndices[0];
         }
-        if (lowerCornerIndices[1] < upperCornerIndices[1]) {
+        if(lowerCornerIndices[1] < upperCornerIndices[1]) {
             lowerY = lowerCornerIndices[1];
             upperY = upperCornerIndices[1];
         } else {
@@ -190,7 +193,7 @@ public class FeatureCoverageWeightedGridStatistics {
         int deltaY = upperY - lowerY;
         if (deltaY < 2) {
             CoordinateAxis yAxis = gcs.getYHorizAxis();
-            int maxY = yAxis.getShape(0) - 1; // inclusive
+            int maxY = yAxis.getShape(0)  - 1 ; // inclusive
             if (maxY < 2) {
                 throw new InvalidRangeException("Source grid too small");
             }
@@ -215,9 +218,10 @@ public class FeatureCoverageWeightedGridStatistics {
             }
         }
 
-        return new Range[]{
-                    new Range(lowerX, upperX),
-                    new Range(lowerY, upperY),};
+        return new Range[] {
+            new Range(lowerX, upperX),
+            new Range(lowerY, upperY),
+        };
     }
 
     public static abstract class FeatureCoverageGridCellVisitor extends GridCellVisitor {
@@ -248,7 +252,9 @@ public class FeatureCoverageWeightedGridStatistics {
         public abstract void processPerAttributeGridCellCoverage(double value, double coverage, Object attribute);
 
         public abstract void processAllAttributeGridCellCoverage(double value, double coverage);
+
     }
+
 
     protected static abstract class WeightedGridStatisticsVisitor extends FeatureCoverageGridCellVisitor {
 
@@ -307,18 +313,24 @@ public class FeatureCoverageWeightedGridStatistics {
         @Override
         public void traverseEnd() {
             try {
-                writer.writeRow(null, perAttributeStatistics.values(), allAttributeStatistics);
+                writer.writeRow(
+                        null,
+                        perAttributeStatistics.values(),
+                        allAttributeStatistics);
             } catch (IOException ex) {
-                LoggerFactory.getLogger(FeatureCoverageWeightedGridStatistics.class.getName()).error(null, ex);
+                // TODO
             }
         }
+
     }
 
     protected static class WeightedGridStatisticsVisitor_TYX extends WeightedGridStatisticsVisitor {
 
         protected Map<Object, WeightedStatistics1D> allTimestepPerAttributeStatistics;
         protected WeightedStatistics1D allTimestepAllAttributeStatistics;
+
         protected FeatureCoverageWeightedGridStatisticsWriter writer;
+        
         protected CoordinateAxis1DTime tAxis;
         protected int tIndexOffset;
 
@@ -335,7 +347,7 @@ public class FeatureCoverageWeightedGridStatistics {
 
         @Override
         public void traverseStart(GridCoordSystem gridCoordSystem) {
-
+            
             try {
                 writer.writerHeader(FeatureCoverageWeightedGridStatisticsWriter.TIMESTEPS_LABEL);
             } catch (IOException ex) {
@@ -362,18 +374,24 @@ public class FeatureCoverageWeightedGridStatistics {
         @Override
         public void tEnd(int tIndex) {
             try {
-                writer.writeRow(tAxis.getTimeDate(tIndexOffset + tIndex).toGMTString(), perAttributeStatistics.values(), allAttributeStatistics);
-            } catch (IOException ex) {
-                Logger.getLogger(FeatureCoverageWeightedGridStatistics.class.getName()).log(Level.SEVERE, null, ex);
+                writer.writeRow(
+                        tAxis.getTimeDate(tIndexOffset + tIndex).toGMTString(),
+                        perAttributeStatistics.values(),
+                        allAttributeStatistics);
+            } catch (IOException e) {
+                // TODO
             }
         }
 
         @Override
         public void traverseEnd() {
             try {
-                writer.writeRow(FeatureCoverageWeightedGridStatisticsWriter.ALL_TIMESTEPS_LABEL, allTimestepPerAttributeStatistics.values(), allTimestepAllAttributeStatistics);
+                writer.writeRow(
+                        FeatureCoverageWeightedGridStatisticsWriter.ALL_TIMESTEPS_LABEL,
+                        allTimestepPerAttributeStatistics.values(),
+                        allTimestepAllAttributeStatistics);
             } catch (IOException ex) {
-                Logger.getLogger(FeatureCoverageWeightedGridStatistics.class.getName()).log(Level.SEVERE, null, ex);
+                // TODO
             }
         }
     }
@@ -382,35 +400,35 @@ public class FeatureCoverageWeightedGridStatistics {
     public static void main(String[] args) throws Exception {
 
         NetcdfFile.registerIOProvider(GeoTiffIOServiceProvider.class);
-
+        
         String ncLocation =
-                //                "http://runoff.cr.usgs.gov:8086/thredds/dodsC/hydro/national/2.5arcmin";
-                //                "http://internal.cida.usgs.gov/thredds/dodsC/misc/us_gfdl.A1.monthly.Tavg.1960-2099.nc";
-                //                "http://localhost:18080/thredds/dodsC/ncml/gridded_obs.daily.Wind.ncml";
-                //                "/Users/tkunicki/Downloads/thredds-data/CONUS_2001-2010.ncml";
-                //                "/Users/tkunicki/Downloads/thredds-data/gridded_obs.daily.Wind.ncml";
-                //                "dods://igsarm-cida-javadev1.er.usgs.gov:8081/thredds/dodsC/qpe/ncrfc.ncml";
-                //                "dods://internal.cida.usgs.gov/thredds/dodsC/qpe/GRID.0530/200006_ncrfc_240ss.grd";
-                //                "dods://michigan.glin.net:8080/thredds/dodsC/glos/all/GLCFS/Forecast/m201010900.out1.nc";
+//                "http://runoff.cr.usgs.gov:8086/thredds/dodsC/hydro/national/2.5arcmin";
+//                "http://internal.cida.usgs.gov/thredds/dodsC/misc/us_gfdl.A1.monthly.Tavg.1960-2099.nc";
+//                "http://localhost:18080/thredds/dodsC/ncml/gridded_obs.daily.Wind.ncml";
+//                "/Users/tkunicki/Downloads/thredds-data/CONUS_2001-2010.ncml";
+//                "/Users/tkunicki/Downloads/thredds-data/gridded_obs.daily.Wind.ncml";
+//                "dods://igsarm-cida-javadev1.er.usgs.gov:8081/thredds/dodsC/qpe/ncrfc.ncml";
+//                "dods://internal.cida.usgs.gov/thredds/dodsC/qpe/GRID.0530/200006_ncrfc_240ss.grd";
+//                "dods://michigan.glin.net:8080/thredds/dodsC/glos/all/GLCFS/Forecast/m201010900.out1.nc";
                 "dods://michigan.glin.net:8080/thredds/dodsC/glos/glcfs/michigan/ncas_his2d";
 //                "/Users/tkunicki/x.tiff";
 
         String sfLocation =
-                //                "/Users/tkunicki/Projects/GDP/GDP/src/main/resources/Sample_Files/Shapefiles/serap_hru_239.shp";
-                //                "/Users/tkunicki/Downloads/lkm_hru/lkm_hru.shp";
-                //                "/Users/tkunicki/Downloads/HUC12LM/lake_mich_12_alb_NAD83.shp";
-                //                "/Users/tkunicki/Downloads/dbshapefiles/lk_mich.shp";
+//                "/Users/tkunicki/Projects/GDP/GDP/src/main/resources/Sample_Files/Shapefiles/serap_hru_239.shp";
+//                "/Users/tkunicki/Downloads/lkm_hru/lkm_hru.shp";
+//                "/Users/tkunicki/Downloads/HUC12LM/lake_mich_12_alb_NAD83.shp";
+//                "/Users/tkunicki/Downloads/dbshapefiles/lk_mich.shp";
                 "/Users/tkunicki/Downloads/lk_mich/test.shp";
 
         String attributeName =
-                //                "GRID_CODE";
-                //                "GRIDCODE";
-                //                "OBJECTID";
+//                "GRID_CODE";
+//                "GRIDCODE";
+//                "OBJECTID";
                 "Id";
 
         String variableName =
-                //                "Wind";
-                //                "P06M_NONE";
+//                "Wind";
+//                "P06M_NONE";
                 "eta";
 //                "depth";
 //                "I0B0";
@@ -433,39 +451,40 @@ public class FeatureCoverageWeightedGridStatistics {
             try {
                 writer = new BufferedWriter(new OutputStreamWriter(System.out));
 
-                FeatureCoverageWeightedGridStatistics.execute(
-                        featureCollection,
-                        attributeName,
-                        (GridDataset) dataset,
-                        variableName,
-                        timeRange,
-                        Arrays.asList(new FeatureCoverageWeightedGridStatisticsWriter.Statistic[]{
+            FeatureCoverageWeightedGridStatistics.execute(
+                    featureCollection,
+                    attributeName,
+                    (GridDataset)dataset,
+                    variableName,
+                    timeRange,
+                    Arrays.asList(new FeatureCoverageWeightedGridStatisticsWriter.Statistic[] {
                             FeatureCoverageWeightedGridStatisticsWriter.Statistic.mean,
-                            FeatureCoverageWeightedGridStatisticsWriter.Statistic.maximum,}),
-                        writer,
-                        false,
-                        ",");
+                            FeatureCoverageWeightedGridStatisticsWriter.Statistic.maximum, }),
+                    writer,
+                    false,
+                    ","
+                    );
 
             } catch (IOException ex) {
-                LoggerFactory.getLogger(FeatureCoverageWeightedGridStatistics.class.getName()).error(null, ex);
+                log.error(null, ex);
             } finally {
                 if (writer != null) {
                     try {
                         writer.close();
                     } catch (IOException ex) {
-                        LoggerFactory.getLogger(FeatureCoverageWeightedGridStatistics.class.getName()).error(null, ex);
+                        log.error(null, ex);
                     }
                 }
             }
 
         } catch (Exception ex) {
-            LoggerFactory.getLogger(FeatureCoverageWeightedGridStatistics.class.getName()).error(null, ex);
-        } finally {
+            log.error(null, ex);
+        }finally {
             if (dataset != null) {
                 try {
                     dataset.close();
                 } catch (IOException ex) {
-                    LoggerFactory.getLogger(FeatureCoverageWeightedGridStatistics.class.getName()).error(null, ex);
+                    log.error(null, ex);
                 }
             }
             if (dataStore != null) {

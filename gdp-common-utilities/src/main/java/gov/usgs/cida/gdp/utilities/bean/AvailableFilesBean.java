@@ -23,7 +23,7 @@ public class AvailableFilesBean implements XmlBean {
         String result = "";
         XStream xstream = new XStream();
         xstream.processAnnotations(AvailableFilesBean.class);
-        StringBuilder sb = new StringBuilder();
+        StringBuffer sb = new StringBuffer();
         sb.append(xstream.toXML(this));
         result = sb.toString();
         return result;

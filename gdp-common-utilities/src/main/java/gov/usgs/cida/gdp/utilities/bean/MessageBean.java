@@ -1,7 +1,7 @@
 package gov.usgs.cida.gdp.utilities.bean;
 
+import gov.usgs.cida.gdp.utilities.bean.XmlBean;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.thoughtworks.xstream.XStream;
@@ -22,14 +22,16 @@ public class MessageBean implements XmlBean {
 
 	public MessageBean(String... messages) {
 		this.message = new ArrayList<String>();
-                message.addAll(Arrays.asList(messages));
+		for (String singleMessage : messages) {
+			message.add(singleMessage);
+		}
 	}
 
 	@Override
 	public String toXml() {
 		XStream xstream = new XStream();
 		xstream.processAnnotations(MessageBean.class);
-		StringBuilder sb = new StringBuilder();
+		StringBuffer sb = new StringBuffer();
 		String result = "";
 		sb.append(xstream.toXML(this));
 		result = sb.toString();

@@ -1,4 +1,3 @@
-
 <project>
     <parent>
         <groupId>gov.usgs.cida.gdp</groupId>
@@ -47,13 +46,6 @@
             <artifactId>netcdf-all</artifactId>
             <version>4.1.20100220.0007</version>
         </dependency>
-        <dependency>
-            <groupId>com.sun.xml.fastinfoset</groupId>
-            <artifactId>FastInfoset</artifactId>
-            <version>1.2.7</version>
-        </dependency>
-
-        
     </dependencies>
 
 </project>

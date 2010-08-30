@@ -11,9 +11,9 @@ public class EllipsoidEntry implements CSVEntry, Ellipsoid {
     private double semiMinorAxis;
     private double inverseFlattening;
     private int unitOfMeasureCode;
+
     private UnitOfMeasure unitOfMeasure;
 
-    @Override
     public int getCode() {
         return code;
     }
@@ -22,7 +22,6 @@ public class EllipsoidEntry implements CSVEntry, Ellipsoid {
         this.code = code;
     }
 
-    @Override
     public double getInverseFlattening() {
         return inverseFlattening;
     }
@@ -31,7 +30,6 @@ public class EllipsoidEntry implements CSVEntry, Ellipsoid {
         this.inverseFlattening = inverseFlattening;
     }
 
-    @Override
     public String getName() {
         return name;
     }
@@ -40,7 +38,6 @@ public class EllipsoidEntry implements CSVEntry, Ellipsoid {
         this.name = name;
     }
 
-    @Override
     public double getSemiMajorAxis() {
         return semiMajorAxis;
     }
@@ -49,7 +46,6 @@ public class EllipsoidEntry implements CSVEntry, Ellipsoid {
         this.semiMajorAxis = semiMajorAxis;
     }
 
-    @Override
     public double getSemiMinorAxis() {
         return semiMinorAxis;
     }
@@ -62,7 +58,6 @@ public class EllipsoidEntry implements CSVEntry, Ellipsoid {
         this.unitOfMeasureCode = unitOfMeasureCode;
     }
 
-    @Override
     public synchronized UnitOfMeasure getUnitOfMeasure() {
         if (unitOfMeasure == null) {
             unitOfMeasure = EPSG.findUnitOfMeasureByCode(unitOfMeasureCode);

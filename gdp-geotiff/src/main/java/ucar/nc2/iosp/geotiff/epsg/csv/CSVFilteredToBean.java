@@ -14,6 +14,7 @@ class CSVFilteredToBean<T> extends CsvToBean<T> {
 
     private final static int FILTER_INDEX_UNSET = -1;
     private final static int FILTER_INDEX_UNUSED = -2;
+
     private int filteredIndex = FILTER_INDEX_UNSET;
 
     @Override
@@ -24,7 +25,7 @@ class CSVFilteredToBean<T> extends CsvToBean<T> {
         if (filteredIndex == FILTER_INDEX_UNUSED) {
             return processLineX(ms, line);
         }
-        Filter filter = ((CSVFilteredMappingStrategy) ms).getFilter();
+        Filter filter = ((CSVFilteredMappingStrategy)ms).getFilter();
         if (filteredIndex < line.length && filter.accept(line[filteredIndex])) {
             return processLineX(ms, line);
         }
@@ -35,8 +36,8 @@ class CSVFilteredToBean<T> extends CsvToBean<T> {
     // this is the original implementation of processLine(...) with a modification
     // to check to avoid parsing beyond line.length.
     protected T processLineX(MappingStrategy<T> mapper, String[] line) throws IllegalAccessException, InvocationTargetException, InstantiationException, IntrospectionException {
-        T bean = mapper.createBean();
-        for (int col = 0; col < line.length; col++) {
+    	T bean = mapper.createBean();
+        for(int col = 0; col < line.length; col++) {
             String value = line[col];
             PropertyDescriptor prop = mapper.findDescriptor(col);
             if (null != prop) {
@@ -49,7 +50,7 @@ class CSVFilteredToBean<T> extends CsvToBean<T> {
 
     private int findFilteredIndex(MappingStrategy<T> ms, int cc) {
         if (ms instanceof CSVFilteredMappingStrategy) {
-            CSVFilteredMappingStrategy fms = (CSVFilteredMappingStrategy) ms;
+            CSVFilteredMappingStrategy fms = (CSVFilteredMappingStrategy)ms;
             Filter f = fms.getFilter();
             if (f == null) {
                 return FILTER_INDEX_UNUSED;
@@ -100,6 +101,8 @@ class CSVFilteredToBean<T> extends CsvToBean<T> {
         return super.convertValue(string, pd);
     }
 
+
+
     @Override
     public List<T> parse(MappingStrategy<T> mapper, CSVReader csv) {
         filteredIndex = FILTER_INDEX_UNSET;
@@ -107,7 +110,7 @@ class CSVFilteredToBean<T> extends CsvToBean<T> {
             mapper.captureHeader(csv);
             String[] line;
             List<T> list = new ArrayList<T>();
-            while (null != (line = csv.readNext())) {
+            while(null != (line = csv.readNext())) {
                 T obj = processLine(mapper, line);
                 if (obj != null) {
                     list.add(obj);
@@ -118,4 +121,5 @@ class CSVFilteredToBean<T> extends CsvToBean<T> {
             throw new RuntimeException("Error parsing CSV!", e);
         }
     }
+
 }

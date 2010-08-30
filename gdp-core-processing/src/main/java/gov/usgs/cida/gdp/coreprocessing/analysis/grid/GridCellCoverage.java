@@ -20,6 +20,7 @@ import org.opengis.referencing.operation.TransformException;
 public class GridCellCoverage {
 
     private double[] cellCoverageFraction;
+
     final private int xCellCount;
     final private int yCellCount;
     final private int cellCount;
@@ -71,4 +72,5 @@ public class GridCellCoverage {
             }
         }
     }
+
 }
