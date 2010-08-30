@@ -5,19 +5,19 @@
 
 package gov.usgs.cida.gdp.utilities.bean;
 
-import gov.usgs.cida.gdp.utilities.bean.XmlBean;
-import com.thoughtworks.xstream.XStream;
+import gov.usgs.cida.gdp.utilities.PropertyFactory;
+
+import java.util.Date;
+
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-import gov.usgs.cida.gdp.utilities.PropertyFactory;
-import java.util.Date;
 
 /**
  *
  * @author isuftin
  */
 @XStreamAlias("error")
-public enum ErrorEnum  implements XmlBean {
+public enum ErrorEnum  implements XmlResponse {
    // ERR_CUSTOM_MESSAGE(-1),
     ERR_NO_COMMAND(0),
     ERR_USER_DIR_CREATE(1),
@@ -62,17 +62,6 @@ public enum ErrorEnum  implements XmlBean {
         this.errorNumber = errorNumber;
         String localError = PropertyFactory.getProperty("error.message." + this.ordinal());
         this.errorMessage = localError;
-    }
-
-@Override
-    public String toXml() {
-        XStream xstream = new XStream();
-        xstream.processAnnotations(ErrorEnum.class);
-        StringBuffer sb = new StringBuffer();
-        String result = "";
-        sb.append(xstream.toXML(this));
-        result = sb.toString();
-        return result;
     }
 
     public void setErrorMessage(String errorMessageParam) {

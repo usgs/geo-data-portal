@@ -11,12 +11,11 @@ import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.util.NamedObject;
 
-import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 @XStreamAlias("availabletimes")
-public class TimeBean implements XmlBean {
+public class TimeBean implements XmlResponse {
 
     @XStreamAlias("times")
     @XStreamImplicit(itemFieldName = "time")
@@ -52,17 +51,6 @@ public class TimeBean implements XmlBean {
         }
     }
 
-    @Override
-    public String toXml() {
-        XStream xstream = new XStream();
-        xstream.processAnnotations(TimeBean.class);
-        StringBuffer sb = new StringBuffer();
-        String result = "";
-        sb.append(xstream.toXML(this));
-        result = sb.toString();
-        return result;
-    }
-
     public void setTime(List<String> time) {
         this.time = time;
     }
@@ -87,7 +75,7 @@ public class TimeBean implements XmlBean {
         return endtime;
     }
 
-    static class TimeBreakdown implements XmlBean {
+    static class TimeBreakdown implements XmlResponse {
 
         private int month;
         private int day;
@@ -127,17 +115,6 @@ public class TimeBean implements XmlBean {
             this.hour = cal.get(Calendar.HOUR_OF_DAY);
             this.minute = cal.get(Calendar.MINUTE);
             this.second = cal.get(Calendar.SECOND);
-        }
-
-        @Override
-        public String toXml() {
-            XStream xstream = new XStream();
-            xstream.processAnnotations(TimeBreakdown.class);
-            StringBuffer sb = new StringBuffer();
-            String result = "";
-            sb.append(xstream.toXML(this));
-            result = sb.toString();
-            return result;
         }
 
         public int getMonth() {

@@ -9,23 +9,6 @@ import gov.usgs.cida.gdp.utilities.bean.AckBean;
 
 public class AckBeanTest {
 
-
-	@Test
-	public void testAckOk() {
-		AckBean ackBean = new AckBean(AckBean.ACK_OK);
-		
-		String result = ackBean.toXml();
-		assertNotNull(result);
-	}
-	
-	@Test
-	public void testAckFail() {
-		AckBean ackBean = new AckBean(AckBean.ACK_FAIL);
-		
-		String result = ackBean.toXml();
-		assertNotNull(result);
-	}
-
         @Test
         public void testSetStatus() {
             AckBean ackBean = new AckBean(1);

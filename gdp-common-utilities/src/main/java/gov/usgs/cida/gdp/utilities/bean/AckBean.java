@@ -1,11 +1,10 @@
 package gov.usgs.cida.gdp.utilities.bean;
 
-import gov.usgs.cida.gdp.utilities.bean.XmlBean;
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.annotations.XStreamAlias;
+import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
+import com.thoughtworks.xstream.annotations.XStreamAlias;	
 
 @XStreamAlias("acknowledgment")
-public class AckBean implements XmlBean {
+public class AckBean implements XmlResponse {
 	public static final int ACK_OK = 1;
 	public static final int ACK_FAIL = 2;
 
@@ -30,17 +29,6 @@ public class AckBean implements XmlBean {
 
 	public String getStatus() {
 		return status;
-	}
-
-	@Override
-	public String toXml() {
-		XStream xstream = new XStream();
-		xstream.processAnnotations(MessageBean.class);
-		StringBuffer sb = new StringBuffer();
-		String result = "";
-		sb.append(xstream.toXML(this));
-		result = sb.toString();
-		return result;
 	}
 
 }

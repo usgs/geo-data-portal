@@ -5,11 +5,10 @@ import gov.usgs.cida.gdp.utilities.FileHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("files")
-public class AvailableFilesBean implements XmlBean {
+public class AvailableFilesBean implements XmlResponse {
 
     @XStreamAlias("shapeSets")
     private List<ShapeFileSetBean> shapeSetList;
@@ -17,17 +16,6 @@ public class AvailableFilesBean implements XmlBean {
     private List<FilesBean> exampleFileList;
     @XStreamAlias("userFiles")
     private List<FilesBean> userFileList;
-
-    @Override
-    public String toXml() {
-        String result = "";
-        XStream xstream = new XStream();
-        xstream.processAnnotations(AvailableFilesBean.class);
-        StringBuffer sb = new StringBuffer();
-        sb.append(xstream.toXML(this));
-        result = sb.toString();
-        return result;
-    }
 
     static public AvailableFilesBean getAvailableFilesBean(String baseDirectory) throws IllegalArgumentException {
         return AvailableFilesBean.getAvailableFilesBean(baseDirectory, null);

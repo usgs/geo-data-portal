@@ -8,7 +8,7 @@ import gov.usgs.cida.gdp.utilities.bean.AckBean;
 import gov.usgs.cida.gdp.utilities.bean.ErrorBean;
 import gov.usgs.cida.gdp.utilities.bean.ErrorEnum;
 import gov.usgs.cida.gdp.utilities.bean.MessageBean;
-import gov.usgs.cida.gdp.utilities.bean.XmlBean;
+import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 import gov.usgs.cida.gdp.utilities.bean.XmlReplyBean;
 import java.util.ArrayList;
 import java.util.List;
@@ -109,7 +109,7 @@ public class XmlReplyBeanTest {
 
     @Test
     public void testXmlReplyBeanConstructorWithMessageBeanAndContentArray() {
-        XmlReplyBean result = new XmlReplyBean(new MessageBean("Test"), new XmlBean[]{null, null});
+        XmlReplyBean result = new XmlReplyBean(new MessageBean("Test"), new XmlResponse[]{null, null});
         assertNotNull(result);
     }
 
@@ -233,7 +233,7 @@ public class XmlReplyBeanTest {
      */
     @Test
     public void testSetContent() {
-        XmlBean[] content = {null, null};
+        XmlResponse[] content = {null, null};
         XmlReplyBean instance = new XmlReplyBean();
         instance.setContent(content);
         assertEquals(2, instance.getContent().length);
@@ -245,7 +245,7 @@ public class XmlReplyBeanTest {
     @Test
     public void testGetContent() {
         XmlReplyBean instance = new XmlReplyBean();
-        instance.setContent(new XmlBean[] {null, null});        
+        instance.setContent(new XmlResponse[] {null, null});
         Object[] result = instance.getContent();
         assertEquals(2, result.length);
     }

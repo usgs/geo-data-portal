@@ -31,7 +31,8 @@ public class OutputFileTypeBean implements XmlBean{
 	@Override
 	public String toXml() {
 		XStream xstream = new XStream();
-		xstream.processAnnotations(OutputFileTypeBean.class);
+//		xstream.processAnnotations(OutputFileTypeBean.class);
+		xstream.processAnnotations(this.getClass());
 		StringBuffer sb = new StringBuffer();
 		String result = "";
 		sb.append(xstream.toXML(this));

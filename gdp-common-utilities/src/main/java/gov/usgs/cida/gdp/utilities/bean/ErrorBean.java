@@ -1,6 +1,6 @@
 package gov.usgs.cida.gdp.utilities.bean;
 
-import gov.usgs.cida.gdp.utilities.bean.XmlBean;
+import gov.usgs.cida.gdp.utilities.PropertyFactory;
 
 import java.security.InvalidParameterException;
 import java.util.Date;
@@ -8,13 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-import gov.usgs.cida.gdp.utilities.PropertyFactory;
 
 @XStreamAlias("error")
-public class ErrorBean implements XmlBean {
+public class ErrorBean implements XmlResponse {
     // Check properties file to read/change message for these codes
 
     public final static int ERR_NO_COMMAND = 0;
@@ -93,15 +91,6 @@ public class ErrorBean implements XmlBean {
         setException(stackTrace);
         setErrorClass(errorClassParam);
         setErrorCreated(new Date());
-    }
-
-    @Override
-    public String toXml() {
-        XStream xstream = new XStream();
-        xstream.processAnnotations(ErrorBean.class);
-        StringBuffer sb = new StringBuffer();
-        sb.append(xstream.toXML(this));
-        return sb.toString();
     }
 
     public void setErrorMessage(String errorMessageParam) {

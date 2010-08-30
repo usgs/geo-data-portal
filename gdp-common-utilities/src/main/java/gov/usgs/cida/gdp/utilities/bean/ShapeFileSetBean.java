@@ -6,22 +6,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import org.geotools.data.FeatureReader;
 
+import org.geotools.data.FeatureReader;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.AttributeType;
 
-import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
-import org.opengis.feature.type.AttributeType;
 
 @XStreamAlias("shapeSet")
-public class ShapeFileSetBean implements XmlBean {
+public class ShapeFileSetBean implements XmlResponse {
 	
 	@XStreamAlias("shapeSetName")
 	@XStreamAsAttribute
@@ -258,14 +257,5 @@ public class ShapeFileSetBean implements XmlBean {
 		}
 		
 		return null;
-	}
-
-	@Override
-	public String toXml() {
-		XStream xstream = new XStream();
-		xstream.processAnnotations(ShapeFileSetBean.class);
-		StringBuffer sb = new StringBuffer();
-		sb.append(xstream.toXML(this));
-		return sb.toString();
 	}
 }

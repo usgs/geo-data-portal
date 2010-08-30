@@ -1,11 +1,11 @@
 package gov.usgs.cida.gdp.coreprocessing.bean;
 
-import gov.usgs.cida.gdp.utilities.bean.XmlBean;
-import com.thoughtworks.xstream.XStream;
+import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
+
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("fileLocation")
-public class FileLocationBean implements XmlBean {
+public class FileLocationBean implements XmlResponse {
 
 	@XStreamAlias("link")
 	private String uploadLocation;
@@ -20,17 +20,6 @@ public class FileLocationBean implements XmlBean {
 	public FileLocationBean(String uploadLocation, String shapefileLocation) {
 		this.uploadLocation = uploadLocation;
 		this.shapefileLocation = shapefileLocation;
-	}
-
-	@Override
-	public String toXml() {
-		XStream xstream = new XStream();
-		xstream.processAnnotations(FileLocationBean.class);
-		StringBuffer sb = new StringBuffer();
-		String result = "";
-		sb.append(xstream.toXML(this));
-		result = sb.toString();
-		return result;
 	}
 	
 	public void setUploadlocation(String uploadlocation) {

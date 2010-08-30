@@ -1,6 +1,6 @@
 package gov.usgs.cida.gdp.utilities.bean;
 
-import gov.usgs.cida.gdp.utilities.bean.XmlBean;
+import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 import gov.usgs.cida.gdp.utilities.FileHelper;
 
 import java.io.File;
@@ -17,7 +17,7 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 @XStreamAlias("fileSet")
-public class FilesBean implements XmlBean {
+public class FilesBean implements XmlResponse {
 
     @XStreamAlias("fileSetName")
     @XStreamAsAttribute

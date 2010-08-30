@@ -122,19 +122,19 @@ public class AvailableFilesBeanTest {
             }
 	}
 
-	@Test
-	public void testGetXmlWithEverythingPopulated() {
-		AvailableFilesBean filesBean = 
-			AvailableFilesBean.getAvailableFilesBean(this.tempDir, 
-						this.tempDir + "user_dir"
-						+ this.seperator
-						+ "Sample_Files"
-						+ this.seperator
-						+ "Shapefiles"
-						+ this.seperator);
-		String result = filesBean.toXml();
-		
-		assertNotNull(result);
-		assertNotSame(0, result.length());
-	}
+//	@Test
+//	public void testGetXmlWithEverythingPopulated() {
+//		AvailableFilesBean filesBean = 
+//			AvailableFilesBean.getAvailableFilesBean(this.tempDir, 
+//						this.tempDir + "user_dir"
+//						+ this.seperator
+//						+ "Sample_Files"
+//						+ this.seperator
+//						+ "Shapefiles"
+//						+ this.seperator);
+//		String result = filesBean.toXml();
+//		
+//		assertNotNull(result);
+//		assertNotSame(0, result.length());
+//	}
 }

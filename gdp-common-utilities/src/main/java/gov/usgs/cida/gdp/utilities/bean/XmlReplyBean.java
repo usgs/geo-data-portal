@@ -6,10 +6,9 @@ import org.slf4j.LoggerFactory;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import gov.usgs.cida.gdp.utilities.bean.XmlBean;
 
 @XStreamAlias("reply")
-public class XmlReplyBean implements XmlBean {
+public class XmlReplyBean implements XmlResponse {
 
 	private static org.slf4j.Logger log = LoggerFactory.getLogger(XmlReplyBean.class);
 
@@ -18,26 +17,26 @@ public class XmlReplyBean implements XmlBean {
 	private ErrorBean errorBean;
         private ErrorEnum errorEnum;
 	private MessageBean message;
-	private XmlBean[] content;
+	private XmlResponse[] content;
 
 	public XmlReplyBean() {
 		this.acknowledgment = new AckBean(AckBean.ACK_OK);
 	}
 
-	public XmlReplyBean(XmlBean... contentArray) {
+	public XmlReplyBean(XmlResponse... contentArray) {
 		this.acknowledgment = new AckBean(AckBean.ACK_OK);
 		this.content = contentArray;
 	}
 
-	public XmlReplyBean(int result, List<XmlBean> xmlBeanList) {
+	public XmlReplyBean(int result, List<XmlResponse> xmlBeanList) {
 		this.acknowledgment = new AckBean(result);
-		XmlBean[] xmlBeanArray = new XmlBean[0];
+		XmlResponse[] xmlBeanArray = new XmlResponse[0];
 		xmlBeanArray = xmlBeanList.toArray(xmlBeanArray);
 		this.content = xmlBeanArray;
 
 	}
 
-	public XmlReplyBean(MessageBean messageBean, XmlBean... contentArray) {
+	public XmlReplyBean(MessageBean messageBean, XmlResponse... contentArray) {
 		this.acknowledgment = new AckBean(AckBean.ACK_OK);
 		this.message = messageBean;
 		this.content = contentArray;
@@ -104,7 +103,7 @@ public class XmlReplyBean implements XmlBean {
 		}
 	}
 
-	public XmlReplyBean(int status, XmlBean... contentArray) throws IllegalArgumentException {
+	public XmlReplyBean(int status, XmlResponse... contentArray) throws IllegalArgumentException {
 		try {
 			this.acknowledgment = new AckBean(status);
 			this.content = contentArray;
@@ -114,7 +113,6 @@ public class XmlReplyBean implements XmlBean {
 		}
 	}
 
-	@Override
 	public String toXml() {
 		XStream xstream = new XStream();
 		xstream.autodetectAnnotations(true);
@@ -136,7 +134,7 @@ public class XmlReplyBean implements XmlBean {
 	}
 
 
-	public void setContent(XmlBean[] content) {
+	public void setContent(XmlResponse[] content) {
 		this.content = content;
 	}
 
