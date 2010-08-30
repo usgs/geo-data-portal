@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package gov.usgs.cida.gdp.coreprocessing.analysis;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -18,7 +17,7 @@ import ucar.unidata.geoloc.LatLonRect;
  * @author tkunicki
  */
 public class GeoToolsNetCDFUtility {
-    
+
     public static LatLonRect getLatLonRectFromEnvelope(ReferencedEnvelope envelope) throws TransformException {
         return getLatLonRectFromEnvelope(envelope, DefaultGeographicCRS.WGS84);
     }
@@ -30,5 +29,4 @@ public class GeoToolsNetCDFUtility {
                 new LatLonPointImpl(latLonBoundingBox.getMaxY(), latLonBoundingBox.getMaxX()));
         return llr;
     }
-
 }

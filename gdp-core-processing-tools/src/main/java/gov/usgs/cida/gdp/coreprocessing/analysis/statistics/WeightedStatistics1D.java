@@ -7,13 +7,9 @@ package gov.usgs.cida.gdp.coreprocessing.analysis.statistics;
 public class WeightedStatistics1D {
 
     private long count;
-
     private double weightSum;
-    
     private double mean;
-
     private double S;
-
     private double minimum;
     private double maximum;
 
@@ -34,18 +30,18 @@ public class WeightedStatistics1D {
     public void accumulate(double value, double weight) {
 
         // make sure we don't have NaN and weight > 0
-        if( value != value || weight <= 0) {
+        if (value != value || weight <= 0) {
             return;
         }
 
         doIncrementalUpdate(value, weight);
         ++count;
 
-        if(value < minimum) {
+        if (value < minimum) {
             minimum = value;
         }
 
-        if(value > maximum) {
+        if (value > maximum) {
             maximum = value;
         }
     }
@@ -54,7 +50,7 @@ public class WeightedStatistics1D {
         double temp = weightSum + weight;
         double Q = value - mean;
         double R = Q * weight / temp;
-        S +=  weightSum * Q * R;
+        S += weightSum * Q * R;
         mean += R;
         weightSum = temp;
     }
@@ -64,12 +60,12 @@ public class WeightedStatistics1D {
             if (count > 0) {
                 throw new UnsupportedOperationException();
             } else {
-			count = wsa.count;
-			weightSum = wsa.weightSum;
-			mean = wsa.mean;
-			S = wsa.S;
-			minimum = wsa.minimum;
-			maximum = wsa.maximum;
+                count = wsa.count;
+                weightSum = wsa.weightSum;
+                mean = wsa.mean;
+                S = wsa.S;
+                minimum = wsa.minimum;
+                maximum = wsa.maximum;
             }
         }
     }
@@ -77,7 +73,7 @@ public class WeightedStatistics1D {
     public long getCount() {
         return count;
     }
-    
+
     public double getWeightSum() {
         return weightSum;
     }
@@ -86,9 +82,8 @@ public class WeightedStatistics1D {
         return mean;
     }
 
-
     public double getSampleVariance() {
-        return count > 1 ? S * (double) count / ( (double) (count - 1) * weightSum) : 0d;
+        return count > 1 ? S * (double) count / ((double) (count - 1) * weightSum) : 0d;
     }
 
     public double getSampleStandardDeviation() {
@@ -123,5 +118,4 @@ public class WeightedStatistics1D {
         sb.append("  standard deviation : ").append(getSampleStandardDeviation()).append('\n');
         return sb.toString();
     }
-
 }

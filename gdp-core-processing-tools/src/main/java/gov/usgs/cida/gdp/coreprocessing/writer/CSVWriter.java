@@ -36,8 +36,8 @@ import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
 import ucar.nc2.units.DateRange;
 
 public class CSVWriter {
-	
-	public static boolean station(
+
+    public static boolean station(
             FeatureDataset featureDataset,
             FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection,
             Date fromDate, Date toDate, DelimiterOption delimiterOption,
@@ -97,10 +97,10 @@ public class CSVWriter {
         } else {
             return false;
         }
-		return true;
+        return true;
     }
-	
-	public static boolean grid(
+
+    public static boolean grid(
             FeatureDataset featureDataset,
             boolean categorical,
             FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection,
@@ -192,7 +192,7 @@ public class CSVWriter {
                             writer.close();
                             return true;
                         } catch (IOException e) {
-                        	return false;
+                            return false;
                         }
                     }
                 }
@@ -202,10 +202,9 @@ public class CSVWriter {
                         gridDataset.close();
                     }
                 } catch (IOException e) {
-                    
                 }
             }
         }
-		return true;
+        return true;
     }
 }

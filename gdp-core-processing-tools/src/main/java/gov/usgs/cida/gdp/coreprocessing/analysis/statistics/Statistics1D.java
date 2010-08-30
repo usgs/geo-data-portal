@@ -7,13 +7,10 @@ package gov.usgs.cida.gdp.coreprocessing.analysis.statistics;
 public class Statistics1D {
 
     private long count;
-    
     private double mean;
-
     private double m2;
     private double m3;
     private double m4;
-
     private double minimum;
     private double maximum;
 
@@ -42,10 +39,10 @@ public class Statistics1D {
 
     public void accumulate(double value) {
 
-        if(value != value) {
+        if (value != value) {
             return;
         }
-        
+
         double r = (double) count++;
         double n = (double) count;
         double n_inverse = 1d / n;
@@ -54,23 +51,23 @@ public class Statistics1D {
 
         double A = delta * n_inverse;
         mean += A;
-        m4 += A * (A * A * delta * r * ( n * ( n - 3d ) + 3d ) + 6d * A * m2 - 4d * m3);
+        m4 += A * (A * A * delta * r * (n * (n - 3d) + 3d) + 6d * A * m2 - 4d * m3);
 
         double B = value - mean;
-        m3 += A * ( B * delta * ( n - 2d ) - 3d * m2);
+        m3 += A * (B * delta * (n - 2d) - 3d * m2);
         m2 += delta * B;
 
-        if(value < minimum) {
-        	minimum = value;
+        if (value < minimum) {
+            minimum = value;
         }
 
-        if(value > maximum) {
-        	maximum = value;
+        if (value > maximum) {
+            maximum = value;
         }
     }
 
     public void accumulate(Statistics1D sa) {
-        if(sa != null && sa.count > 0) {
+        if (sa != null && sa.count > 0) {
             if (count > 0) {
 
                 double n1 = (double) count;
@@ -85,37 +82,37 @@ public class Statistics1D {
 
                 double delta = sa.mean - this.mean;
                 double A = delta / N;
-                double A_squared =  A * A;
+                double A_squared = A * A;
 
                 m4 += sa.m4
-                        + n_product * ( n1_squared - n_product + n2_squared ) * delta * A * A_squared
-                        + 6d * ( n1_squared * sa.m2 + n2_squared * m2) * A_squared
-                        + 4d * ( n1 * sa.m3 - n2 * m3) * A;
+                        + n_product * (n1_squared - n_product + n2_squared) * delta * A * A_squared
+                        + 6d * (n1_squared * sa.m2 + n2_squared * m2) * A_squared
+                        + 4d * (n1 * sa.m3 - n2 * m3) * A;
 
                 m3 += sa.m3
-                        + n_product * ( n1 - n2 ) * delta * A_squared
-                        + 3d * ( n1 * sa.m2 - n2 * m2 ) * A;
+                        + n_product * (n1 - n2) * delta * A_squared
+                        + 3d * (n1 * sa.m2 - n2 * m2) * A;
 
                 m2 += sa.m2
                         + n_product * delta * A;
 
                 mean += n2 * A;
 
-                if(sa.minimum < minimum) {
-                	minimum = sa.minimum;
+                if (sa.minimum < minimum) {
+                    minimum = sa.minimum;
                 }
 
-                if(sa.maximum > maximum) {
-                	maximum = sa.maximum;
+                if (sa.maximum > maximum) {
+                    maximum = sa.maximum;
                 }
             } else {
-            	count = sa.count;
-            	mean = sa.mean;
-            	m2 = sa.m2;
-            	m3 = sa.m3;
-            	m4 = sa.m4;
-            	minimum = sa.minimum;
-            	maximum = sa.maximum;
+                count = sa.count;
+                mean = sa.mean;
+                m2 = sa.m2;
+                m3 = sa.m3;
+                m4 = sa.m4;
+                minimum = sa.minimum;
+                maximum = sa.maximum;
             }
 
         }
@@ -141,9 +138,8 @@ public class Statistics1D {
         return m4;
     }
 
-
     public double getSampleVariance() {
-        return count > 1 ?  m2 / (double) (count - 1) : 0d;
+        return count > 1 ? m2 / (double) (count - 1) : 0d;
     }
 
     public double getSampleStandardDeviation() {
@@ -178,5 +174,4 @@ public class Statistics1D {
         sb.append("  standard deviation : ").append(getSampleStandardDeviation()).append('\n');
         return sb.toString();
     }
-
 }

@@ -62,7 +62,6 @@ import ucar.unidata.geoloc.Station;
 public class StationDataCSVWriter {
 
     public final static String DATE_FORMAT = "yyyy-MM-dd";
-
     public final static GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
 
     public static boolean write(
@@ -81,7 +80,9 @@ public class StationDataCSVWriter {
         Preconditions.checkNotNull(dateRange, "dateRange may not be null");
         Preconditions.checkNotNull(writer, "writer may not be null");
 
-        if (delimitter == null || delimitter.length() == 0) { delimitter = ","; }
+        if (delimitter == null || delimitter.length() == 0) {
+            delimitter = ",";
+        }
 
         TimeZone timeZone = TimeZone.getTimeZone("UTC");
 
@@ -106,7 +107,7 @@ public class StationDataCSVWriter {
             FeatureIterator<SimpleFeature> featureIterator = featureCollection.features();
             try {
                 while (featureIterator.hasNext() && !stationContained) {
-                    stationContained = ((Geometry)featureIterator.next().getDefaultGeometry()).contains(stationGeometry);
+                    stationContained = ((Geometry) featureIterator.next().getDefaultGeometry()).contains(stationGeometry);
                 }
             } finally {
                 featureCollection.close(featureIterator);
@@ -155,7 +156,7 @@ public class StationDataCSVWriter {
                         String name = variable.getShortName();
                         String units = variable.getUnitsString();
                         lineBuffer.append(delimitter).append(name);
-                        if( units !=null && units.length() > 0) {
+                        if (units != null && units.length() > 0) {
                             lineBuffer.append(" (").append(units).append(")");
                         }
                     }
@@ -167,7 +168,7 @@ public class StationDataCSVWriter {
                         String name = variable.getShortName();
                         String units = variable.getUnitsString();
                         lineBuffer.append(delimitter).append(name);
-                        if( units !=null && units.length() > 0) {
+                        if (units != null && units.length() > 0) {
                             lineBuffer.append(" (").append(units).append(")");
                         }
                     }
@@ -191,10 +192,10 @@ public class StationDataCSVWriter {
                     }
                     for (int variableIndex = 0; variableIndex < variableCount; ++variableIndex) {
                         for (int stationIndex = 0; stationIndex < stationCount; ++stationIndex) {
-                            float variableValue = rowData[stationIndex] != null ?
-                                rowData[stationIndex][variableIndex] :
-                                Float.NaN;
-                                lineBuffer.append(delimitter).append(variableValue);
+                            float variableValue = rowData[stationIndex] != null
+                                    ? rowData[stationIndex][variableIndex]
+                                    : Float.NaN;
+                            lineBuffer.append(delimitter).append(variableValue);
                         }
                     }
                     writer.write(lineBuffer.toString());
@@ -211,10 +212,10 @@ public class StationDataCSVWriter {
                     }
                     for (int stationIndex = 0; stationIndex < stationCount; ++stationIndex) {
                         for (int variableIndex = 0; variableIndex < variableCount; ++variableIndex) {
-                            float variableValue = rowData[stationIndex] != null ?
-                                rowData[stationIndex][variableIndex] :
-                                Float.NaN;
-                                lineBuffer.append(delimitter).append(variableValue);
+                            float variableValue = rowData[stationIndex] != null
+                                    ? rowData[stationIndex][variableIndex]
+                                    : Float.NaN;
+                            lineBuffer.append(delimitter).append(variableValue);
                         }
                     }
                     writer.write(lineBuffer.toString());
@@ -223,7 +224,7 @@ public class StationDataCSVWriter {
                 }
             }
         } finally {
-            if( pointFeatureCacheList != null) {
+            if (pointFeatureCacheList != null) {
                 for (PointFeatureCache cache : pointFeatureCacheList) {
                     if (cache != null) {
                         cache.finish();
@@ -239,15 +240,11 @@ public class StationDataCSVWriter {
 
         public final static long MILLIS_PER_DAY = 1000 * 60 * 60 * 24;
         public final static int BUFFER_SIZE = 16 << 10;
-
         private Station station;
-
         private int featureCount;
         private int variableCount;
-
         private File cacheFile;
         private DataInputStream cacheInputStream;
-
         long nextTimeMillis;
 
         public PointFeatureCache(StationTimeSeriesFeature stationTimeSeriesFeature, List<VariableSimpleIF> variables) throws IOException {
@@ -274,8 +271,8 @@ public class StationDataCSVWriter {
                     try {
                         cacheOutputStream = new DataOutputStream(
                                 new BufferedOutputStream(
-                                        new FileOutputStream(cacheFile), BUFFER_SIZE));
-                        while(pointFeatureIterator.hasNext()) {
+                                new FileOutputStream(cacheFile), BUFFER_SIZE));
+                        while (pointFeatureIterator.hasNext()) {
                             PointFeature pf = pointFeatureIterator.next();
                             cacheOutputStream.writeLong(pf.getNominalTimeAsDate().getTime());
                             for (VariableSimpleIF variable : variables) {
@@ -286,20 +283,26 @@ public class StationDataCSVWriter {
                         }
                     } finally {
                         if (cacheOutputStream != null) {
-                            try { cacheOutputStream.close(); } catch (IOException e) { }
+                            try {
+                                cacheOutputStream.close();
+                            } catch (IOException e) {
+                            }
                         }
                     }
 
                     try {
                         if (featureCount > 0) {
                             cacheInputStream = new DataInputStream(
-                                new BufferedInputStream(
-                                        new FileInputStream(cacheFile), BUFFER_SIZE));
+                                    new BufferedInputStream(
+                                    new FileInputStream(cacheFile), BUFFER_SIZE));
                             nextTimeMillis = cacheInputStream.readLong();
                         }
                     } catch (IOException e) {
                         if (cacheInputStream != null) {
-                            try { cacheInputStream.close(); } catch (IOException ee) { }
+                            try {
+                                cacheInputStream.close();
+                            } catch (IOException ee) {
+                            }
                         }
                         throw e;
                     }
@@ -330,28 +333,33 @@ public class StationDataCSVWriter {
         public float[] getFeatureForDate(Date date) throws IOException {
             float[] variableData = null;
             if (nextTimeMillis > 0) {
-                 long requesteTimedMillis = date.getTime();
-                 long delta = nextTimeMillis - requesteTimedMillis;
-                 if(delta < 0) { delta = -delta; }
-                 if (delta < MILLIS_PER_DAY) {
-                     variableData = new float[variableCount];
-                     try {
-                         for (int variableIndex = 0; variableIndex < variableCount; ++variableIndex) {
+                long requesteTimedMillis = date.getTime();
+                long delta = nextTimeMillis - requesteTimedMillis;
+                if (delta < 0) {
+                    delta = -delta;
+                }
+                if (delta < MILLIS_PER_DAY) {
+                    variableData = new float[variableCount];
+                    try {
+                        for (int variableIndex = 0; variableIndex < variableCount; ++variableIndex) {
                             variableData[variableIndex] = cacheInputStream.readFloat();
-                         }
-                         nextTimeMillis = cacheInputStream.readLong();
-                     } catch (EOFException e) {
-                         variableData = null;
-                         nextTimeMillis = -1;
-                     }
-                 }
+                        }
+                        nextTimeMillis = cacheInputStream.readLong();
+                    } catch (EOFException e) {
+                        variableData = null;
+                        nextTimeMillis = -1;
+                    }
+                }
             }
             return variableData;
         }
 
         public void finish() {
             if (cacheInputStream != null) {
-                try {  cacheInputStream.close(); } catch (IOException e) { }
+                try {
+                    cacheInputStream.close();
+                } catch (IOException e) {
+                }
                 cacheInputStream = null;
             }
             if (cacheFile != null) {
@@ -366,17 +374,15 @@ public class StationDataCSVWriter {
 
 
         String sfLocation =
-//                "src/main/resources/Sample_Files/Shapefiles/Yahara_River_HRUs_geo_WGS84.shp"
-//                "src/main/resources/Sample_Files/Shapefiles/serap_hru_239.shp"
-//                "/Users/tkunicki/Downloads/blob_2/blob.shp"
-                "/Users/tkunicki/Downloads/Archive/catchment0403_SimplifyPolygo.shp"
-                ;
-        String ncLocation = 
-//                "cdmremote:http://internal.cida.usgs.gov/thredds/cdmremote/gsod/gsod.nc"
-//                "cdmremote:http://cida-wiwsc-int-javadev1.er.usgs.gov/thredds/cdmremote/gsod/gsod.nc"
-//                "cdmremote:http://igsarm-cida-javadev1.er.usgs.gov:8081/thredds/cdmremote/gsod/gsod.nc"
-                "/Users/tkunicki/Downloads/GSOD/netcdf/gsod.c.uod.nc"
-                ;
+                //                "src/main/resources/Sample_Files/Shapefiles/Yahara_River_HRUs_geo_WGS84.shp"
+                //                "src/main/resources/Sample_Files/Shapefiles/serap_hru_239.shp"
+                //                "/Users/tkunicki/Downloads/blob_2/blob.shp"
+                "/Users/tkunicki/Downloads/Archive/catchment0403_SimplifyPolygo.shp";
+        String ncLocation =
+                //                "cdmremote:http://internal.cida.usgs.gov/thredds/cdmremote/gsod/gsod.nc"
+                //                "cdmremote:http://cida-wiwsc-int-javadev1.er.usgs.gov/thredds/cdmremote/gsod/gsod.nc"
+                //                "cdmremote:http://igsarm-cida-javadev1.er.usgs.gov:8081/thredds/cdmremote/gsod/gsod.nc"
+                "/Users/tkunicki/Downloads/GSOD/netcdf/gsod.c.uod.nc";
 
         FileDataStore dataStore = null;
         FeatureDataset dataset = null;
@@ -395,20 +401,19 @@ public class StationDataCSVWriter {
             dataset = FeatureDatasetFactoryManager.open(FeatureType.STATION, ncLocation, null, new Formatter());
             if (dataset != null) {
                 if (dataset instanceof FeatureDatasetPoint) {
-                    FeatureDatasetPoint featureDataSetPoint = (FeatureDatasetPoint)dataset;
+                    FeatureDatasetPoint featureDataSetPoint = (FeatureDatasetPoint) dataset;
                     ucar.nc2.ft.FeatureCollection fc = featureDataSetPoint.getPointFeatureCollectionList().get(0);
                     if (fc instanceof StationTimeSeriesFeatureCollection) {
-                        stationTimeSeriesFeatureCollection = (StationTimeSeriesFeatureCollection)fc;
+                        stationTimeSeriesFeatureCollection = (StationTimeSeriesFeatureCollection) fc;
                     }
                 }
             }
 
-            List<VariableSimpleIF> variableList = Arrays.asList(new VariableSimpleIF[] {
-                dataset.getDataVariable("min"),
-                dataset.getDataVariable("max"),
-                dataset.getDataVariable("prcp"),
-                dataset.getDataVariable("frshtt"),
-            });
+            List<VariableSimpleIF> variableList = Arrays.asList(new VariableSimpleIF[]{
+                        dataset.getDataVariable("min"),
+                        dataset.getDataVariable("max"),
+                        dataset.getDataVariable("prcp"),
+                        dataset.getDataVariable("frshtt"),});
 
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             df.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -425,14 +430,25 @@ public class StationDataCSVWriter {
                         true,
                         ",");
             } finally {
-                if (writer != null) { try {  writer.close(); } catch (IOException e) {} }
+                if (writer != null) {
+                    try {
+                        writer.close();
+                    } catch (IOException e) {
+                    }
+                }
             }
             System.out.println("Finished in " + (System.currentTimeMillis() - startMillis));
         } catch (Exception e) {
-            e.printStackTrace();
         } finally {
-            if (dataStore != null) { dataStore.dispose(); }
-            if (dataset != null) { try { dataset.close(); } catch (IOException e) { } }
+            if (dataStore != null) {
+                dataStore.dispose();
+            }
+            if (dataset != null) {
+                try {
+                    dataset.close();
+                } catch (IOException e) {
+                }
+            }
         }
     }
 }

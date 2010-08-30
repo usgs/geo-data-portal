@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package gov.usgs.cida.gdp.coreprocessing.analysis.grid;
 
 import com.google.common.base.Preconditions;
@@ -54,8 +49,7 @@ public class FeatureCategoricalGridCoverage {
             String variableName,
             BufferedWriter writer,
             String delimiter)
-            throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException
-    {
+            throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException {
 
         GridDatatype gdt = gridDataset.findGridDatatype(variableName);
         Preconditions.checkNotNull(gdt, "Variable named %s not found in gridDataset", variableName);
@@ -75,10 +69,10 @@ public class FeatureCategoricalGridCoverage {
         boolean attributeComparable = Comparable.class.isAssignableFrom(
                 attributeDescriptor.getType().getBinding());
 
-        Map<Object, Map<Integer, Integer>> attributeToCategoricalCoverageMap = attributeComparable ?
-                // rely on Comparable to sort
-                new TreeMap<Object, Map<Integer, Integer>>() :
-                // use order from FeatureCollection.iterator();
+        Map<Object, Map<Integer, Integer>> attributeToCategoricalCoverageMap = attributeComparable
+                ? // rely on Comparable to sort
+                new TreeMap<Object, Map<Integer, Integer>>()
+                : // use order from FeatureCollection.iterator();
                 new LinkedHashMap<Object, Map<Integer, Integer>>();
         SortedSet<Integer> categorySet = new TreeSet<Integer>();
 
@@ -109,11 +103,11 @@ public class FeatureCategoricalGridCoverage {
 
                     LatLonRect featureLatLonRect = new LatLonRect(
                             new LatLonPointImpl(
-                                featureBoundingBox.getMinY(), featureBoundingBox.getMinX()),
+                            featureBoundingBox.getMinY(), featureBoundingBox.getMinX()),
                             new LatLonPointImpl(
-                                featureBoundingBox.getMaxY(), featureBoundingBox.getMaxX()));
+                            featureBoundingBox.getMaxY(), featureBoundingBox.getMaxX()));
 
-                    Geometry featureGeometry = (Geometry)feature.getDefaultGeometry();
+                    Geometry featureGeometry = (Geometry) feature.getDefaultGeometry();
 
                     Range[] ranges = GridUtility.getRangesFromLatLonRect(
                             featureLatLonRect, gdt.getCoordinateSystem());
@@ -139,7 +133,7 @@ public class FeatureCategoricalGridCoverage {
             headerRow.add("Category");
         }
         delimitedWriter.writeRow(null, headerRow);
-        
+
         headerRow.clear();
         headerRow.addAll(categorySet);
         headerRow.add("Sample Count");
@@ -161,7 +155,7 @@ public class FeatureCategoricalGridCoverage {
             // calculate and store fraction for each categorical type
             for (Integer category : categorySet) {
                 Integer count = categoricalCoverageMap.get(category);
-                float fraction = count == null ?  0 : (float) count / (float) total;
+                float fraction = count == null ? 0 : (float) count / (float) total;
                 rowValues.add(fraction);
             }
             rowValues.add(total);
@@ -197,19 +191,17 @@ public class FeatureCategoricalGridCoverage {
             if (preparedGeometry.contains(geometryFactory.createPoint(coordinate))) {
                 Integer key = (int) value;
                 Integer count = categoryMap.get(key);
-                count =  count == null ? 1 : count + 1;
+                count = count == null ? 1 : count + 1;
                 categoryMap.put(key, count);
             }
-            
-        }
 
+        }
     }
 
     protected static class SimpleDelimitedWriter {
 
         private String delimiter;
         private BufferedWriter writer;
-
         private StringBuilder lineSB = new StringBuilder();
 
         public SimpleDelimitedWriter(
@@ -225,8 +217,7 @@ public class FeatureCategoricalGridCoverage {
         public void writeRow(
                 String rowLabel,
                 Collection<? extends Object> rowValues)
-                throws IOException
-        {
+                throws IOException {
             lineSB.setLength(0);
             if (rowLabel != null) {
                 lineSB.append(rowLabel);
@@ -239,5 +230,4 @@ public class FeatureCategoricalGridCoverage {
             writer.newLine();
         }
     }
-
 }

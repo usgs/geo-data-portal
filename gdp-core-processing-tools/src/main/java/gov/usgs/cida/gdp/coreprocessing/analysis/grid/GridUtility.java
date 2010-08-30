@@ -19,15 +19,15 @@ import ucar.unidata.geoloc.ProjectionPointImpl;
  */
 public abstract class GridUtility {
 
-    private GridUtility() {}
+    private GridUtility() {
+    }
 
     // Handle bugs in NetCDF 4.1 for X and Y CoordinateAxis2D (c2d) with
     // shapefile bound (LatLonRect) that doesn't interect any grid center
     // (aka midpoint) *and* issue calculating edges for c2d axes with  < 3
     // grid cells in any dimension.
     public static Range[] getRangesFromLatLonRect(LatLonRect llr, GridCoordSystem gcs)
-            throws InvalidRangeException
-    {
+            throws InvalidRangeException {
 
         int[] lowerCornerIndices = new int[2];
         int[] upperCornerIndices = new int[2];
@@ -35,8 +35,8 @@ public abstract class GridUtility {
         gcs.findXYindexFromLatLon(llr.getLatMin(), llr.getLonMin(), lowerCornerIndices);
         gcs.findXYindexFromLatLon(llr.getLatMax(), llr.getLonMax(), upperCornerIndices);
 
-        if (lowerCornerIndices[0] < 0 || lowerCornerIndices[1] < 0 ||
-            upperCornerIndices[0] < 0 || upperCornerIndices[1] < 0) {
+        if (lowerCornerIndices[0] < 0 || lowerCornerIndices[1] < 0
+                || upperCornerIndices[0] < 0 || upperCornerIndices[1] < 0) {
             throw new InvalidRangeException();
         }
 
@@ -44,14 +44,14 @@ public abstract class GridUtility {
         int upperX;
         int lowerY;
         int upperY;
-        if(lowerCornerIndices[0] < upperCornerIndices[0]) {
+        if (lowerCornerIndices[0] < upperCornerIndices[0]) {
             lowerX = lowerCornerIndices[0];
             upperX = upperCornerIndices[0];
         } else {
             upperX = lowerCornerIndices[0];
             lowerX = upperCornerIndices[0];
         }
-        if(lowerCornerIndices[1] < upperCornerIndices[1]) {
+        if (lowerCornerIndices[1] < upperCornerIndices[1]) {
             lowerY = lowerCornerIndices[1];
             upperY = upperCornerIndices[1];
         } else {
@@ -94,7 +94,7 @@ public abstract class GridUtility {
         int deltaY = upperY - lowerY;
         if (deltaY < 2) {
             CoordinateAxis yAxis = gcs.getYHorizAxis();
-            int maxY = yAxis.getShape(0)  - 1 ; // inclusive
+            int maxY = yAxis.getShape(0) - 1; // inclusive
             if (maxY < 2) {
                 throw new InvalidRangeException("Source grid too small");
             }
@@ -119,12 +119,10 @@ public abstract class GridUtility {
             }
         }
 
-        return new Range[] {
-            new Range(lowerX, upperX),
-            new Range(lowerY, upperY),
-        };
+        return new Range[]{
+                    new Range(lowerX, upperX),
+                    new Range(lowerY, upperY),};
     }
-
 
     public static CoordinateBuilder generateCoordinateBuilder(GridCoordSystem gridCoordSystem) {
         return gridCoordSystem.isLatLon()
@@ -135,9 +133,9 @@ public abstract class GridUtility {
     public static GridCellCenterAdapter generateGridCellCenterAdapterX(GridCoordSystem gridCoordSystem) {
         CoordinateAxis axis = gridCoordSystem.getXHorizAxis();
         if (axis instanceof CoordinateAxis1D) {
-            return new GridCellCenterAdapterAxis1DX((CoordinateAxis1D)axis);
+            return new GridCellCenterAdapterAxis1DX((CoordinateAxis1D) axis);
         } else if (axis instanceof CoordinateAxis2D) {
-            return new GridCellCenterAdapterAxis2DX((CoordinateAxis2D)axis);
+            return new GridCellCenterAdapterAxis2DX((CoordinateAxis2D) axis);
         } else {
             throw new IllegalStateException("Unknown coordinate axis type");
         }
@@ -146,9 +144,9 @@ public abstract class GridUtility {
     public static GridCellCenterAdapter generateGridCellCenterAdapterY(GridCoordSystem gridCoordSystem) {
         CoordinateAxis axis = gridCoordSystem.getYHorizAxis();
         if (axis instanceof CoordinateAxis1D) {
-            return new GridCellCenterAdapterAxis1DY((CoordinateAxis1D)axis);
+            return new GridCellCenterAdapterAxis1DY((CoordinateAxis1D) axis);
         } else if (axis instanceof CoordinateAxis2D) {
-            return new GridCellCenterAdapterAxis2DY((CoordinateAxis2D)axis);
+            return new GridCellCenterAdapterAxis2DY((CoordinateAxis2D) axis);
         } else {
             throw new IllegalStateException("Unknown coordinate axis type");
         }
@@ -157,9 +155,9 @@ public abstract class GridUtility {
     public static GridCellEdgeAdapter generateGridCellEdgeAdapterX(GridCoordSystem gridCoordSystem) {
         CoordinateAxis axis = gridCoordSystem.getXHorizAxis();
         if (axis instanceof CoordinateAxis1D) {
-            return new GridCellEdgeAdapterAxis1DX((CoordinateAxis1D)axis);
+            return new GridCellEdgeAdapterAxis1DX((CoordinateAxis1D) axis);
         } else if (axis instanceof CoordinateAxis2D) {
-            return new GridCellEdgeAdapterAxis2DX((CoordinateAxis2D)axis);
+            return new GridCellEdgeAdapterAxis2DX((CoordinateAxis2D) axis);
         } else {
             throw new IllegalStateException("Unknown coordinate axis type");
         }
@@ -168,15 +166,15 @@ public abstract class GridUtility {
     public static GridCellEdgeAdapter generateGridCellEdgeAdapterY(GridCoordSystem gridCoordSystem) {
         CoordinateAxis axis = gridCoordSystem.getYHorizAxis();
         if (axis instanceof CoordinateAxis1D) {
-            return new GridCellEdgeAdapterAxis1DY((CoordinateAxis1D)axis);
+            return new GridCellEdgeAdapterAxis1DY((CoordinateAxis1D) axis);
         } else if (axis instanceof CoordinateAxis2D) {
-            return new GridCellEdgeAdapterAxis2DY((CoordinateAxis2D)axis);
+            return new GridCellEdgeAdapterAxis2DY((CoordinateAxis2D) axis);
         } else {
             throw new IllegalStateException("Unknown coordinate axis type");
         }
     }
 
-   public static IndexToCoordinateBuilder generateIndexToCellCenterCoordinateBuilder(GridCoordSystem gridCoordSystem) {
+    public static IndexToCoordinateBuilder generateIndexToCellCenterCoordinateBuilder(GridCoordSystem gridCoordSystem) {
         return new IndexToCoordinateBuilder(
                 generateCoordinateBuilder(gridCoordSystem),
                 generateGridCellCenterAdapterX(gridCoordSystem),
@@ -247,13 +245,17 @@ public abstract class GridUtility {
     }
 
     public interface XYIndexToAxisValueAdapter {
+
         public int getValueCount();
+
         public double getValue(int xIndex, int yIndex);
     }
 
-    public interface GridCellCenterAdapter extends XYIndexToAxisValueAdapter { }
+    public interface GridCellCenterAdapter extends XYIndexToAxisValueAdapter {
+    }
 
-    public interface GridCellEdgeAdapter extends XYIndexToAxisValueAdapter { }
+    public interface GridCellEdgeAdapter extends XYIndexToAxisValueAdapter {
+    }
 
     public abstract static class GridCellCenterAdapterAxis1D implements GridCellCenterAdapter {
 
@@ -342,7 +344,7 @@ public abstract class GridUtility {
 
         @Override
         public int getValueCount() {
-           return cellEdges.length;
+            return cellEdges.length;
         }
     }
 
@@ -393,7 +395,7 @@ public abstract class GridUtility {
 
         @Override
         public int getValueCount() {
-           return cellEdges.getShape()[1];
+            return cellEdges.getShape()[1];
         }
     }
 
@@ -405,8 +407,7 @@ public abstract class GridUtility {
 
         @Override
         public int getValueCount() {
-           return cellEdges.getShape()[0];
+            return cellEdges.getShape()[0];
         }
     }
-
 }
