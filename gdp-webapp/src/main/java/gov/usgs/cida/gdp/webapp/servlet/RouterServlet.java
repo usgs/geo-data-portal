@@ -27,8 +27,8 @@ public class RouterServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     private static org.slf4j.Logger log = LoggerFactory.getLogger(RouterServlet.class);
-
     private static final Map<String, String> servletCommandMappings = new HashMap<String, String>();
+
     static {
         servletCommandMappings.put("getoutputstats", "http://localhost:8080/gdp-webapp/OutputInfoServlet");
         servletCommandMappings.put("listfiles", "http://localhost:8080/gdp-file-management/FileSelectionServlet");
@@ -66,7 +66,7 @@ public class RouterServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Long start = Long.valueOf(new Date().getTime());
-        
+
 
         // If the user is attempting to upload files, send them directly to the correct servlet
         if (ServletFileUpload.isMultipartContent(request)) {
@@ -76,7 +76,7 @@ public class RouterServlet extends HttpServlet {
             return;
         }
 
-        
+
 
 
         Map<String, String> requestParameters = request.getParameterMap();
@@ -99,23 +99,24 @@ public class RouterServlet extends HttpServlet {
         while (keys.hasNext()) {
             String key = keys.next();
             String commandKey = request.getParameter(key);
-            if (commandKey != null) log.debug(key + " : " + commandKey);
+            if (commandKey != null) {
+                log.debug(key + " : " + commandKey);
+            }
             commandList += "&" + key + "=" + commandKey;
         }
 
         String forwardToServlet = servletCommandMappings.get(command);
         if (forwardToServlet != null) {
-        	log.info(command);
+            log.info(command);
             response.sendRedirect(forwardToServlet + commandList);
         } else {
-        	log.info("No such command");
-        	ErrorBean errorBean = new ErrorBean(ErrorBean.ERR_NO_COMMAND);
+            log.info("No such command");
+            ErrorBean errorBean = new ErrorBean(ErrorBean.ERR_NO_COMMAND);
             XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, errorBean);
 
             XmlUtils.sendXml(xmlReply, start, response);
-            
-        	return;
+
+            return;
         }
     }
-
 }

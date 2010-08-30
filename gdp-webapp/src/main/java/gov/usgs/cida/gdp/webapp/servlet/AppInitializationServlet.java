@@ -1,8 +1,5 @@
 package gov.usgs.cida.gdp.webapp.servlet;
 
-//import gov.usgs.gdp.helper.FileHelper;
-//import gov.usgs.gdp.helper.PropertyFactory;
-
 import gov.usgs.cida.gdp.utilities.FileHelper;
 import gov.usgs.cida.gdp.utilities.PropertyFactory;
 import java.io.File;
@@ -211,7 +208,7 @@ public class AppInitializationServlet extends HttpServlet {
         Timer task = new Timer(true);
 
         String baseFilePath = System.getProperty("applicationTempDir");
-    	baseFilePath = baseFilePath + FileHelper.getSeparator();
+        baseFilePath = baseFilePath + FileHelper.getSeparator();
         File uploadDirName = new File(baseFilePath + PropertyFactory.getProperty("upload.directory.name"));
         File userSpaceDir = new File(System.getProperty("applicationUserSpaceDir"));
 
@@ -230,10 +227,11 @@ public class AppInitializationServlet extends HttpServlet {
     }
 
     class ScanFileTask extends TimerTask {
+
         private long hoursToWipe;
         private File workspaceDir;
         @SuppressWarnings("unused")
-		private File repositoryDir;
+        private File repositoryDir;
 
         @Override
         public void run() {
@@ -256,8 +254,8 @@ public class AppInitializationServlet extends HttpServlet {
         }
 
         public ScanFileTask(@SuppressWarnings("hiding") File workspaceDir,
-        		@SuppressWarnings("hiding") File repositoryDir,
-        		@SuppressWarnings("hiding") long hoursToWipe) {
+                @SuppressWarnings("hiding") File repositoryDir,
+                @SuppressWarnings("hiding") long hoursToWipe) {
             this.workspaceDir = workspaceDir;
             this.repositoryDir = repositoryDir;
             this.hoursToWipe = hoursToWipe;
@@ -309,8 +307,5 @@ public class AppInitializationServlet extends HttpServlet {
         public void setRepositoryDir(@SuppressWarnings("hiding") File repositoryDir) {
             this.repositoryDir = repositoryDir;
         }
-
     }
-
-
 }
