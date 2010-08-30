@@ -264,7 +264,7 @@ public class ShapeFileSetBean implements XmlBean {
 	public String toXml() {
 		XStream xstream = new XStream();
 		xstream.processAnnotations(ShapeFileSetBean.class);
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append(xstream.toXML(this));
 		return sb.toString();
 	}

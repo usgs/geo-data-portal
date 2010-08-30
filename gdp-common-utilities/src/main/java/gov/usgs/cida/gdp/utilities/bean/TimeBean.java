@@ -21,20 +21,20 @@ public class TimeBean implements XmlBean {
     @XStreamAlias("times")
     @XStreamImplicit(itemFieldName = "time")
     private List<String> time;
-    private TimeBreakdown starttime;
-    private TimeBreakdown endtime;
+    private TimeBreakdown startTime;
+    private TimeBreakdown endTime;
 
     public TimeBean() {
         this.time = new ArrayList<String>();
-        this.setStarttime(new TimeBreakdown());
-        this.setEndtime(new TimeBreakdown());
+        this.startTime = new TimeBreakdown();
+        this.endTime = new TimeBreakdown();
     }
 
     public TimeBean(GridDataset geoGrid, String gridSelection) {
         List<String> result = new ArrayList<String>();
         GeoGrid grid = geoGrid.findGridByName(gridSelection);
-        for (NamedObject time : grid.getTimes()) {
-            result.add(time.getName());
+        for (NamedObject no : grid.getTimes()) {
+            result.add(no.getName());
             this.time = result;
         }
     }
@@ -44,11 +44,11 @@ public class TimeBean implements XmlBean {
         this.time = dateRange;
 
         if (this.time.isEmpty()) {
-            this.setStarttime(new TimeBreakdown());
-            this.setEndtime(new TimeBreakdown());
+            this.startTime = new TimeBreakdown();
+            this.endTime = new TimeBreakdown();
         } else {
-            this.setStarttime(new TimeBreakdown(dateRange.get(0)));
-            this.setEndtime(new TimeBreakdown(dateRange.get(1)));
+            this.startTime = new TimeBreakdown(dateRange.get(0));
+            this.endTime = new TimeBreakdown(dateRange.get(1));
         }
     }
 
@@ -56,7 +56,7 @@ public class TimeBean implements XmlBean {
     public String toXml() {
         XStream xstream = new XStream();
         xstream.processAnnotations(TimeBean.class);
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         String result = "";
         sb.append(xstream.toXML(this));
         result = sb.toString();
@@ -72,19 +72,19 @@ public class TimeBean implements XmlBean {
     }
 
     public void setStarttime(TimeBreakdown starttime) {
-        this.starttime = starttime;
+        this.startTime = starttime;
     }
 
     public TimeBreakdown getStarttime() {
-        return starttime;
+        return startTime;
     }
 
     public void setEndtime(TimeBreakdown endtime) {
-        this.endtime = endtime;
+        this.endTime = endtime;
     }
 
     public TimeBreakdown getEndtime() {
-        return endtime;
+        return endTime;
     }
 
     static class TimeBreakdown implements XmlBean {
@@ -133,7 +133,7 @@ public class TimeBean implements XmlBean {
         public String toXml() {
             XStream xstream = new XStream();
             xstream.processAnnotations(TimeBreakdown.class);
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             String result = "";
             sb.append(xstream.toXML(this));
             result = sb.toString();

@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import gov.usgs.cida.gdp.utilities.bean.XmlBean;
 
 @XStreamAlias("reply")
 public class XmlReplyBean implements XmlBean {
@@ -119,7 +118,7 @@ public class XmlReplyBean implements XmlBean {
 		XStream xstream = new XStream();
 		xstream.autodetectAnnotations(true);
 
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 		sb.append(xstream.toXML(this));
 		return sb.toString();

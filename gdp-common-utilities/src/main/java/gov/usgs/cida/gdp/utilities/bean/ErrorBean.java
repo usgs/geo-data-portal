@@ -1,7 +1,5 @@
 package gov.usgs.cida.gdp.utilities.bean;
 
-import gov.usgs.cida.gdp.utilities.bean.XmlBean;
-
 import java.security.InvalidParameterException;
 import java.util.Date;
 import java.util.List;
@@ -88,18 +86,18 @@ public class ErrorBean implements XmlBean {
     }
 
     public ErrorBean(Integer errorNumberParam, String errorMessageParam, Exception stackTrace, String errorClassParam) {
-        setErrorMessage(errorMessageParam);
-        setErrorNumber(errorNumberParam);
-        setException(stackTrace);
-        setErrorClass(errorClassParam);
-        setErrorCreated(new Date());
+        this.errorMessage = errorMessageParam;
+        this.errorNumber = errorNumberParam;
+        this.exception = stackTrace;
+        this.errorClass = errorClassParam;
+        this.errorCreated = new Date();
     }
 
     @Override
     public String toXml() {
         XStream xstream = new XStream();
         xstream.processAnnotations(ErrorBean.class);
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(xstream.toXML(this));
         return sb.toString();
     }

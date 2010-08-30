@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package gov.usgs.cida.gdp.utilities;
 
 import java.io.IOException;
@@ -19,34 +18,33 @@ import java.util.Map;
  */
 public class HTTPUtils {
 
-	public static InputStream sendPacket(URL url, String requestMethod)
-			throws IOException {
+    public static InputStream sendPacket(URL url, String requestMethod)
+            throws IOException {
 
-		HttpURLConnection httpConnection = openHttpConnection(url,
-				requestMethod);
+        HttpURLConnection httpConnection = openHttpConnection(url,
+                requestMethod);
 
-		return getHttpConnectionInputStream(httpConnection);
-	}
+        return getHttpConnectionInputStream(httpConnection);
+    }
 
-	public static HttpURLConnection openHttpConnection(URL url,
-			String requestMethod) throws IOException, ProtocolException {
+    public static HttpURLConnection openHttpConnection(URL url,
+            String requestMethod) throws IOException, ProtocolException {
 
-		HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
-		httpConnection.setRequestMethod(requestMethod);
+        HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
+        httpConnection.setRequestMethod(requestMethod);
 
-		return httpConnection;
-	}
+        return httpConnection;
+    }
 
-	public static InputStream getHttpConnectionInputStream(HttpURLConnection httpConnection)
-			throws IOException {
+    public static InputStream getHttpConnectionInputStream(HttpURLConnection httpConnection)
+            throws IOException {
 
-		return httpConnection.getInputStream();
-	}
+        return httpConnection.getInputStream();
+    }
 
-	public static Map<String, List<String>> getHttpConnectionHeaderFields(HttpURLConnection httpConnection)
-			throws IOException {
+    public static Map<String, List<String>> getHttpConnectionHeaderFields(HttpURLConnection httpConnection)
+            throws IOException {
 
-		return httpConnection.getHeaderFields();
-	}
-
+        return httpConnection.getHeaderFields();
+    }
 }
