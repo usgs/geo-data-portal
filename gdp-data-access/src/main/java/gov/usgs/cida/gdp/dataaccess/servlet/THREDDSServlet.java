@@ -56,15 +56,15 @@ public class THREDDSServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Long start = Long.valueOf(new Date().getTime());
-        
+
         String command = request.getParameter("command");
         XmlReplyBean xmlReply = null;
 
         if ("getcatalog".equals(command)) {
-        	URL urlObject = null;
-        	try {
-        		urlObject = new URL(URLDecoder.decode(request.getParameter("url"), "UTF-8"));
-        	}catch (MalformedURLException e) {
+            URL urlObject = null;
+            try {
+                urlObject = new URL(URLDecoder.decode(request.getParameter("url"), "UTF-8"));
+            } catch (MalformedURLException e) {
                 xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_INVALID_URL));
                 XmlUtils.sendXml(xmlReply, start, response);
                 return;
@@ -72,7 +72,7 @@ public class THREDDSServlet extends HttpServlet {
 
             HttpClient client = new HttpClient();
             HttpMethod method = new GetMethod(urlObject.toString());
-            
+
             try {
                 int statusCode = client.executeMethod(method);
 
@@ -128,12 +128,12 @@ public class THREDDSServlet extends HttpServlet {
 
         if ("gettimerange".equals(command)) {
             String datasetUrl = request.getParameter("dataseturl");
-            
+
             // FIXME: properly handle multiple datatypes
             String[] gridSelections = request.getParameterValues("grid[]");
             String gridSelection = gridSelections[0];
             /////////////////////////////////////////////
-            
+
             TimeBean timeBean = null;
             try {
                 timeBean = THREDDSServerHelper.getTimeBean(datasetUrl, gridSelection);

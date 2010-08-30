@@ -67,28 +67,28 @@ public class THREDDSServerHelper {
         if (featureDataset != null) {
             try {
                 List<String> dateRange = NetCDFUtility.getDateRange(datasetUrl, gridSelection);
-        		if (dateRange.isEmpty()) {
-        			boolean hasTimeCoord = NetCDFUtility.hasTimeCoordinate(datasetUrl);
-        			if (hasTimeCoord) { // This occurs when there is no date range in the file but has time coords
-        				// We want the user to pick dates but don't have a range to give 
-        				dateRange.add("1800-01-01 00:00:00Z");
-        				dateRange.add("2100-12-31 00:00:00Z");
-        			}
-        		}
-        		
-        		TimeBean timeBean = new TimeBean(dateRange);
-        		
+                if (dateRange.isEmpty()) {
+                    boolean hasTimeCoord = NetCDFUtility.hasTimeCoordinate(datasetUrl);
+                    if (hasTimeCoord) { // This occurs when there is no date range in the file but has time coords
+                        // We want the user to pick dates but don't have a range to give
+                        dateRange.add("1800-01-01 00:00:00Z");
+                        dateRange.add("2100-12-31 00:00:00Z");
+                    }
+                }
+
+                TimeBean timeBean = new TimeBean(dateRange);
+
                 if (timeBean != null /*&& !timeBean.getTime().isEmpty()*/) {
                     return timeBean;
                 }
-                
+
             } finally {
                 featureDataset.close();
             }
         }
         return null;
     }
-    
+
     /**
      * Returns a list of dataset handles from the specified server.
      * 
@@ -168,7 +168,7 @@ public class THREDDSServerHelper {
 
     }
 
-     public final class testTHREDDSServers extends TimerTask {
+    public final class testTHREDDSServers extends TimerTask {
 
         private ServletConfig paramConfig;
 

@@ -1,6 +1,5 @@
 package gov.usgs.cida.gdp.dataaccess.servlet;
 
-
 import gov.usgs.cida.gdp.tools.dataaccess.bean.ServerBean;
 import gov.usgs.cida.gdp.tools.dataaccess.bean.ServerBeanList;
 import gov.usgs.cida.gdp.tools.dataaccess.bean.THREDDSInfoBean;
@@ -73,20 +72,22 @@ public class THREDDSCheckServlet extends HttpServlet {
 
         if ("checkserver".equals(command)) {
             String url = request.getParameter("url");
-            
+
             URL urlObject = null;
             try {
-        	 urlObject = new URL(URLDecoder.decode(url, "UTF-8"));
+                urlObject = new URL(URLDecoder.decode(url, "UTF-8"));
             } catch (MalformedURLException e) {
                 xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_INVALID_URL));
                 XmlUtils.sendXml(xmlReply, start, response);
                 return;
             }
-            
+
             String hostname = urlObject.getHost();
             int port = urlObject.getPort();
-            if (port == -1) port = 80;
-            
+            if (port == -1) {
+                port = 80;
+            }
+
             try {
                 boolean isServerUp = THREDDSServerHelper.isServerReachable(hostname, port, 5000);
                 ServerBean tsb = new ServerBean();
@@ -137,7 +138,7 @@ public class THREDDSCheckServlet extends HttpServlet {
         }
 
         @SuppressWarnings("unchecked")
-	@Override
+        @Override
         public void run() {
             Map<String, ServerBean> threddsServerBeanMap = (Map<String, ServerBean>) this.paramConfig.getServletContext().getAttribute("threddsServerBeanMap");
             if (threddsServerBeanMap == null) {
