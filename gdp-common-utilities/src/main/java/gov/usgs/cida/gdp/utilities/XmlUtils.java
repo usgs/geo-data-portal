@@ -5,13 +5,14 @@
 
 package gov.usgs.cida.gdp.utilities;
 
-import com.sun.xml.internal.fastinfoset.DecoderStateTables;
 import gov.usgs.cida.gdp.utilities.bean.XmlReplyBean;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Date;
 import javax.servlet.http.HttpServletResponse;
 import org.slf4j.LoggerFactory;
+
+import com.sun.xml.fastinfoset.DecoderStateTables;
 
 /**
  *
