@@ -19,13 +19,13 @@ public class GeogCSEntry implements CSVEntry, GeogCS {
     private int unitOfMeasureCode;
     private int ellipsoidCode;
     private int primeMeridianCode;
-
     private Datum datum;
     private Ellipsoid ellipsoid;
     private Datum greenwichDatum;
     private PrimeMeridian primeMeridian;
     private UnitOfMeasure unitOfMeasure;
 
+    @Override
     public int getCode() {
         return code;
     }
@@ -42,11 +42,11 @@ public class GeogCSEntry implements CSVEntry, GeogCS {
         this.ellipsoidCode = ellipsoidCode;
     }
 
-
     public void setGreenwichDatumCode(int greenwichDatumCode) {
         this.greenwichDatumCode = greenwichDatumCode;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -63,6 +63,7 @@ public class GeogCSEntry implements CSVEntry, GeogCS {
         this.unitOfMeasureCode = unitOfMeasureCode;
     }
 
+    @Override
     public synchronized Datum getDatum() {
         if (datum == null) {
             datum = EPSG.findDatumByCode(datumCode);
@@ -70,6 +71,7 @@ public class GeogCSEntry implements CSVEntry, GeogCS {
         return datum;
     }
 
+    @Override
     public synchronized Ellipsoid getEllipsoid() {
         if (ellipsoid == null) {
             ellipsoid = EPSG.findEllipsoidByCode(ellipsoidCode);
@@ -77,6 +79,7 @@ public class GeogCSEntry implements CSVEntry, GeogCS {
         return ellipsoid;
     }
 
+    @Override
     public synchronized Datum getGreenwichDatum() {
         if (greenwichDatum == null) {
             greenwichDatum = EPSG.findDatumByCode(greenwichDatumCode);
@@ -84,6 +87,7 @@ public class GeogCSEntry implements CSVEntry, GeogCS {
         return greenwichDatum;
     }
 
+    @Override
     public synchronized PrimeMeridian getPrimeMeridian() {
         if (primeMeridian == null) {
             primeMeridian = EPSG.findPrimeMeridianByCode(primeMeridianCode);
@@ -91,6 +95,7 @@ public class GeogCSEntry implements CSVEntry, GeogCS {
         return primeMeridian;
     }
 
+    @Override
     public synchronized UnitOfMeasure getUnitOfMeasure() {
         if (unitOfMeasure == null) {
             unitOfMeasure = EPSG.findUnitOfMeasureByCode(unitOfMeasureCode);

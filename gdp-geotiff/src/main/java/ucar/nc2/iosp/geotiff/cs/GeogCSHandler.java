@@ -10,7 +10,6 @@ import ucar.nc2.iosp.geotiff.epsg.GeogCS;
 public class GeogCSHandler implements CSHandler {
 
     private GeogCS geogCS;
-
     private Variable variable;
 
     public GeogCSHandler(GeogCS geogCS) {
@@ -33,7 +32,7 @@ public class GeogCSHandler implements CSHandler {
     @Override
     public synchronized Variable generateCRSVariable(NetcdfFile netCDFFile, int index) {
         if (variable == null) {
-          
+
             variable = new Variable(netCDFFile, null, null, "crs" + index);
             variable.setDataType(DataType.INT);
             variable.setIsScalar();
@@ -47,7 +46,7 @@ public class GeogCSHandler implements CSHandler {
     }
 
     public void augmentCRSVariable(Variable variable) {
-        
+
         variable.addAttribute(new Attribute("longitude_of_prime_meridian", geogCS.getPrimeMeridian().getLongitude()));
 
         Ellipsoid ellipsoid = geogCS.getEllipsoid();

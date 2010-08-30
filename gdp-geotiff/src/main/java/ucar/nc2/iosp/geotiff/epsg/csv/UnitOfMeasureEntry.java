@@ -14,9 +14,9 @@ public class UnitOfMeasureEntry implements CSVEntry, UnitOfMeasure {
     private int targetUnitOfMeasureCode;
     private double factorB;
     private double factorC;
-    
     private UnitOfMeasure targetUnitOfMeasure;
 
+    @Override
     public int getCode() {
         return code;
     }
@@ -25,6 +25,7 @@ public class UnitOfMeasureEntry implements CSVEntry, UnitOfMeasure {
         this.code = code;
     }
 
+    @Override
     public double getFactorB() {
         return factorB;
     }
@@ -33,6 +34,7 @@ public class UnitOfMeasureEntry implements CSVEntry, UnitOfMeasure {
         this.factorB = factorB;
     }
 
+    @Override
     public double getFactorC() {
         return factorC;
     }
@@ -41,6 +43,7 @@ public class UnitOfMeasureEntry implements CSVEntry, UnitOfMeasure {
         this.factorC = factorC;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -53,6 +56,7 @@ public class UnitOfMeasureEntry implements CSVEntry, UnitOfMeasure {
         this.targetUnitOfMeasureCode = targetUnitOfMeasureCode;
     }
 
+    @Override
     public String getType() {
         return type;
     }
@@ -61,11 +65,11 @@ public class UnitOfMeasureEntry implements CSVEntry, UnitOfMeasure {
         this.type = type;
     }
 
+    @Override
     public synchronized UnitOfMeasure getTargetUnitOfMeasure() {
         if (targetUnitOfMeasure == null) {
             targetUnitOfMeasure = EPSG.findUnitOfMeasureByCode(targetUnitOfMeasureCode);
         }
         return targetUnitOfMeasure;
     }
-
 }

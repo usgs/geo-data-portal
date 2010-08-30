@@ -11,10 +11,10 @@ public class DatumEntry implements CSVEntry, Datum {
     private String typeAsString;
     private int ellipsoidCode;
     private int primeMeridianCode;
-
     private Ellipsoid ellipsoid;
     private PrimeMeridian primeMeridian;
 
+    @Override
     public int getCode() {
         return code;
     }
@@ -27,6 +27,7 @@ public class DatumEntry implements CSVEntry, Datum {
         this.ellipsoidCode = ellipsoidCode;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -39,6 +40,7 @@ public class DatumEntry implements CSVEntry, Datum {
         this.primeMeridianCode = primeMeridianCode;
     }
 
+    @Override
     public Datum.Type getType() {
         return Datum.Type.valueOf(typeAsString);
     }
@@ -47,6 +49,7 @@ public class DatumEntry implements CSVEntry, Datum {
         this.typeAsString = typeAsString;
     }
 
+    @Override
     public synchronized Ellipsoid getEllipsoid() {
         if (ellipsoid == null) {
             if (getType() == Datum.Type.geodetic) {
@@ -58,6 +61,7 @@ public class DatumEntry implements CSVEntry, Datum {
         return ellipsoid;
     }
 
+    @Override
     public synchronized PrimeMeridian getPrimeMeridian() {
         if (primeMeridian == null) {
             if (getType() == Datum.Type.geodetic) {

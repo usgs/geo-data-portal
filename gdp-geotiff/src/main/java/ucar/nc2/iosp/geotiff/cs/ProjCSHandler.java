@@ -27,11 +27,12 @@ public class ProjCSHandler implements CSHandler {
         this.parameterMap = paramterMap;
     }
 
-
+    @Override
     public int getCode() {
         return 32767;
     }
 
+    @Override
     public String getName() {
         if (variable == null) {
             throw new IllegalStateException("Coordinate reference system not generated for this instance");
@@ -39,6 +40,7 @@ public class ProjCSHandler implements CSHandler {
         return variable.getName();
     }
 
+    @Override
     public synchronized Variable generateCRSVariable(NetcdfFile netCDFFile, int index) {
         if (variable == null) {
 
@@ -52,7 +54,7 @@ public class ProjCSHandler implements CSHandler {
             Double standardParallel2 = clonedMap.remove("standard_parallel2");
             if (standardParallel1 != null && !standardParallel1.isNaN()) {
                 if (standardParallel2 != null && !standardParallel2.isNaN()) {
-                   standardParallel = standardParallel1 + " " + standardParallel2;
+                    standardParallel = standardParallel1 + " " + standardParallel2;
                 } else {
                     standardParallel = standardParallel1.toString();
                 }

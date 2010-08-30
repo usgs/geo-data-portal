@@ -29,7 +29,6 @@ public class EPSG {
     private final static String RESOURCE_ELLIPSOID = "ucar/nc2/iosp/geotiff/epsg/csv/ellipsoid.csv";
     private final static String RESOURCE_PRIMEMERIDIAN = "ucar/nc2/iosp/geotiff/epsg/csv/prime_meridian.csv";
     private final static String RESOURCE_UNITOFMEASURE = "ucar/nc2/iosp/geotiff/epsg/csv/unit_of_measure.csv";
-
     private static Map<Integer, GeogCSEntry> geogCSMap;
 
     public synchronized static GeogCS findGeogCSByCode(int code) {
@@ -75,7 +74,6 @@ public class EPSG {
         }
         return geogCS;
     }
-
     private static Map<Integer, ProjCSEntry> projCSMap;
 
     public synchronized static ProjCS findProjCSByCode(int code) {
@@ -118,8 +116,6 @@ public class EPSG {
         }
         return projCSMap.get(code);
     }
-
-
     private static Map<Integer, DatumEntry> datumMap;
 
     public synchronized static Datum findDatumByCode(int code) {
@@ -140,7 +136,6 @@ public class EPSG {
         }
         return datumMap.get(code);
     }
-
     private static Map<Integer, EllipsoidEntry> ellipsoidMap;
 
     public synchronized static Ellipsoid findEllipsoidByCode(int code) {
@@ -162,7 +157,6 @@ public class EPSG {
         }
         return ellipsoidMap.get(code);
     }
-
     private static Map<Integer, PrimeMeridianEntry> primeMeridianMap;
 
     synchronized static PrimeMeridian findPrimeMeridianByCode(int code) {
@@ -182,7 +176,6 @@ public class EPSG {
         }
         return primeMeridianMap.get(code);
     }
-
     private static Map<Integer, UnitOfMeasureEntry> unitOfMeasureMap;
 
     public synchronized static UnitOfMeasure findUnitOfMeasureByCode(int code) {
@@ -205,8 +198,7 @@ public class EPSG {
         return unitOfMeasureMap.get(code);
     }
 
-
-    private synchronized static <T extends CSVEntry> void loadBeansFromCSV (
+    private synchronized static <T extends CSVEntry> void loadBeansFromCSV(
             Class<T> beanClass,
             Map<Integer, T> beanMap,
             Map<String, String> columnMap,
@@ -223,7 +215,7 @@ public class EPSG {
 
         List<T> list = csv.parse(ms, new CSVReader(
                 new BufferedReader(
-                    new InputStreamReader(inputStream))));
+                new InputStreamReader(inputStream))));
 
         for (T hd : list) {
             beanMap.put(hd.getCode(), hd);
@@ -239,5 +231,4 @@ public class EPSG {
         findPrimeMeridianByCode(-1);
         findUnitOfMeasureByCode(9001);
     }
-
 }

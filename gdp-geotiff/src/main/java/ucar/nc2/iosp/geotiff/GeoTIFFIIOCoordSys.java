@@ -12,7 +12,6 @@ import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import java.util.Arrays;
 import javax.imageio.metadata.IIOMetadata;
-import ucar.ma2.Index;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -25,6 +24,7 @@ public class GeoTIFFIIOCoordSys {
 
     // harveted for ProJ documentation and libgeotiff geo_normalize.c
     enum ProjCoordTrans {
+
         CT_TransverseMercator(1, 9807),
         CT_TransvMercator_Modified_Alaska(2),
         CT_ObliqueMercator(3, 9812, 9815),
@@ -56,6 +56,7 @@ public class GeoTIFFIIOCoordSys {
         Unknown(-1);
         private int tiffCode;
         private int[] epsgCodes;
+
         ProjCoordTrans(int tiffCode, int... epsgCodes) {
             this.tiffCode = tiffCode;
             this.epsgCodes = epsgCodes == null ? new int[0] : epsgCodes;
@@ -64,9 +65,11 @@ public class GeoTIFFIIOCoordSys {
         public int getTiffCode() {
             return tiffCode;
         }
+
         public int[] getEpsgCodes() {
             return epsgCodes;
         }
+
         public static ProjCoordTrans findByGeoTIFFCode(int tiffCode) {
             if (tiffCode > values().length || tiffCode < 1) {
                 return Unknown;
@@ -74,6 +77,7 @@ public class GeoTIFFIIOCoordSys {
                 return values()[tiffCode - 1];
             }
         }
+
         public static ProjCoordTrans findByEPSGCode(int epsgCode) {
             ProjCoordTrans pct = Unknown;
             for (int pctIndex = 0; pctIndex < values().length && pct == Unknown; ++pctIndex) {
@@ -87,7 +91,6 @@ public class GeoTIFFIIOCoordSys {
             return pct;
         }
     }
-
     public final static int EPSGNatOriginLat = 8801;
     public final static int EPSGNatOriginLong = 8802;
     public final static int EPSGNatOriginScaleFactor = 8805;
@@ -112,18 +115,14 @@ public class GeoTIFFIIOCoordSys {
     public final static int EPSGSphericalOriginLong = 8829;
     public final static int EPSGInitialLongitude = 8830;
     public final static int EPSGZoneWidth = 8831;
-
     int width;
     int height;
-
     double[] pixelScales;
     double[] tiePoints;
     double[] transformation;
-
     int modelType;
     int geographicType;
     int rasterType;
-
     CSHandler csHandler;
 
     public GeoTIFFIIOCoordSys(IIOMetadata metadata, int width, int height) {
@@ -165,9 +164,9 @@ public class GeoTIFFIIOCoordSys {
                 }
             }
         }
-        return (geogCS == null) ?
-            null :
-            new GeogCSHandler(geogCS);
+        return (geogCS == null)
+                ? null
+                : new GeogCSHandler(geogCS);
     }
 
     private ProjCSHandler generateProjCSHandler(
@@ -200,7 +199,7 @@ public class GeoTIFFIIOCoordSys {
             return null;
         }
         ProjCoordTrans pct = ProjCoordTrans.findByEPSGCode(projCS.getCoordOpMethodCode());
-        switch(pct) {
+        switch (pct) {
             case CT_AlbersEqualArea:
                 gridMappingName = "albers_conical_equal_area";
                 pMap.put("standard_parallel1",
@@ -285,9 +284,9 @@ public class GeoTIFFIIOCoordSys {
                 break;
             default:
         }
-        return (gridMappingName == null) ?
-            null :
-            new ProjCSHandler(geogCSHandler, gridMappingName, pMap);
+        return (gridMappingName == null)
+                ? null
+                : new ProjCSHandler(geogCSHandler, gridMappingName, pMap);
     }
 
     private ProjCSHandler generateProjCSHandlerFromProjCoordTrans(
@@ -301,7 +300,7 @@ public class GeoTIFFIIOCoordSys {
         ProjCoordTrans pct = ProjCoordTrans.findByGeoTIFFCode(projCoordTrans);
         double lat;
         double lon;
-        switch(pct) {
+        switch (pct) {
             case CT_AlbersEqualArea:
                 gridMappingName = "albers_conical_equal_area";
                 pMap.put("standard_parallel1",
@@ -454,18 +453,16 @@ public class GeoTIFFIIOCoordSys {
                 break;
             default:
         }
-        return (gridMappingName == null) ?
-            null :
-            new ProjCSHandler(geogCSHandler, gridMappingName, pMap);
+        return (gridMappingName == null)
+                ? null
+                : new ProjCSHandler(geogCSHandler, gridMappingName, pMap);
     }
 
-
-
     boolean isSupported() {
-        return width > -1 && height > -1 &&
-                pixelScales != null &&
-                tiePoints != null &&
-                csHandler != null;
+        return width > -1 && height > -1
+                && pixelScales != null
+                && tiePoints != null
+                && csHandler != null;
     }
 
     public CSHandler getCSHandler() {
@@ -539,10 +536,8 @@ public class GeoTIFFIIOCoordSys {
     public class Adapter {
 
         private NetcdfFile ncFile;
-
         private String dimensionsAsString;
         private String coordinatesAsString;
-
         private boolean generated;
 
         public Adapter(NetcdfFile ncFile) {
@@ -555,16 +550,16 @@ public class GeoTIFFIIOCoordSys {
             }
 
             Dimension xDim = ncFile.addDimension(
-                    null,new Dimension("x" + index, width));
+                    null, new Dimension("x" + index, width));
             Dimension yDim = ncFile.addDimension(
                     null, new Dimension("y" + index, height));
 
-            double tiePointXCenter = rasterType == RasterPixelIsPoint ?
-                    tiePoints[3] :
-                    tiePoints[3] + pixelScales[0] / 2d;
-            double tiePointYCenter = rasterType == RasterPixelIsPoint ?
-                    tiePoints[4] :
-                    tiePoints[4] - pixelScales[1] / 2d;
+            double tiePointXCenter = rasterType == RasterPixelIsPoint
+                    ? tiePoints[3]
+                    : tiePoints[3] + pixelScales[0] / 2d;
+            double tiePointYCenter = rasterType == RasterPixelIsPoint
+                    ? tiePoints[4]
+                    : tiePoints[4] - pixelScales[1] / 2d;
 
             String xName = null;
             String yName = null;
@@ -595,10 +590,10 @@ public class GeoTIFFIIOCoordSys {
             xVar.addAttribute(new Attribute("standard_name", xStandardName));
             xVar.setCachedData(
                     Array.makeArray(
-                        DataType.DOUBLE,
-                        width,
-                        tiePointXCenter,
-                        pixelScales[0]),
+                    DataType.DOUBLE,
+                    width,
+                    tiePointXCenter,
+                    pixelScales[0]),
                     false);
             ncFile.addVariable(null, xVar);
 
@@ -609,10 +604,10 @@ public class GeoTIFFIIOCoordSys {
             yVar.addAttribute(new Attribute("standard_name", yStandardName));
             yVar.setCachedData(
                     Array.makeArray(
-                        DataType.DOUBLE,
-                        height,
-                        tiePointYCenter,
-                        -pixelScales[1]),
+                    DataType.DOUBLE,
+                    height,
+                    tiePointYCenter,
+                    -pixelScales[1]),
                     false);
             ncFile.addVariable(null, yVar);
 
@@ -700,7 +695,5 @@ public class GeoTIFFIIOCoordSys {
             }
             return coordinatesAsString;
         }
-
     }
-
 }

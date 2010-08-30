@@ -13,9 +13,9 @@ public class PrimeMeridianEntry implements CSVEntry, PrimeMeridian {
     private String name;
     private double longitude;
     private int unitOfMeasureCode;
-
     private UnitOfMeasure unitOfMeasure;
 
+    @Override
     public int getCode() {
         return code;
     }
@@ -24,6 +24,7 @@ public class PrimeMeridianEntry implements CSVEntry, PrimeMeridian {
         this.code = code;
     }
 
+    @Override
     public double getLongitude() {
         return longitude;
     }
@@ -32,6 +33,7 @@ public class PrimeMeridianEntry implements CSVEntry, PrimeMeridian {
         this.longitude = longitude;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -44,6 +46,7 @@ public class PrimeMeridianEntry implements CSVEntry, PrimeMeridian {
         this.unitOfMeasureCode = unitOfMeasureCode;
     }
 
+    @Override
     public synchronized UnitOfMeasure getUnitOfMeasure() {
         if (unitOfMeasure == null) {
             unitOfMeasure = EPSG.findUnitOfMeasureByCode(unitOfMeasureCode);
@@ -72,5 +75,4 @@ public class PrimeMeridianEntry implements CSVEntry, PrimeMeridian {
         hash = 89 * hash + this.code;
         return hash;
     }
-
 }
