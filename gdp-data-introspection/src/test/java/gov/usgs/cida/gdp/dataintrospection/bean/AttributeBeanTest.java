@@ -51,15 +51,15 @@ public class AttributeBeanTest {
         assertEquals(result, result);
     }
 
-    @Test
-    public void testToXml() {
-        ArrayList<String> list = new ArrayList<String>();
-        list.add("Test1");
-        list.add("Test2");
-
-        AttributeBean ackBean = new AttributeBean(list);
-
-        String result = ackBean.toXml();
-        assertNotNull(result);
-    }
+//    @Test
+//    public void testToXml() {
+//        ArrayList<String> list = new ArrayList<String>();
+//        list.add("Test1");
+//        list.add("Test2");
+//
+//        AttributeBean ackBean = new AttributeBean(list);
+//
+//        String result = ackBean.toXml();
+//        assertNotNull(result);
+//    }
 }

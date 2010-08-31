@@ -4,7 +4,7 @@ import gov.usgs.cida.gdp.dataaccess.bean.DataTypeCollectionBean;
 import gov.usgs.cida.gdp.dataaccess.bean.ServerBean;
 import gov.usgs.cida.gdp.dataaccess.bean.THREDDSInfoBean;
 import gov.usgs.cida.gdp.utilities.bean.TimeBean;
-import gov.usgs.cida.gdp.utilities.bean.XmlBean;
+import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -152,13 +152,13 @@ public class THREDDSServerHelper {
 
     return result;
     }*/
-    public static List<XmlBean> getGridBeanListFromServer(String datasetUrl) throws IllegalArgumentException, IOException {
+    public static List<XmlResponse> getGridBeanListFromServer(String datasetUrl) throws IllegalArgumentException, IOException {
 
         if (datasetUrl == null || "".equals(datasetUrl)) {
             throw new IllegalArgumentException("DataSet URL invalid or null");
         }
 
-        List<XmlBean> result = new ArrayList<XmlBean>();
+        List<XmlResponse> result = new ArrayList<XmlResponse>();
         List<VariableSimpleIF> variables = NetCDFUtility.getDataVariableNames(datasetUrl);
         String type = NetCDFUtility.getDatasetType(datasetUrl);
         DataTypeCollectionBean dtcb = new DataTypeCollectionBean(type, variables.toArray(new VariableSimpleIF[0]));

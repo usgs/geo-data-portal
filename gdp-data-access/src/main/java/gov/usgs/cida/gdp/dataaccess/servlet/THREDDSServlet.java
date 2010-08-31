@@ -5,8 +5,8 @@ import gov.usgs.cida.gdp.utilities.XmlUtils;
 import gov.usgs.cida.gdp.utilities.bean.AckBean;
 import gov.usgs.cida.gdp.utilities.bean.ErrorBean;
 import gov.usgs.cida.gdp.utilities.bean.TimeBean;
-import gov.usgs.cida.gdp.utilities.bean.XmlBean;
 import gov.usgs.cida.gdp.utilities.bean.XmlReplyBean;
+import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -113,7 +113,7 @@ public class THREDDSServlet extends HttpServlet {
                 return;
             }
 
-            List<XmlBean> gridBeanList = null;
+            List<XmlResponse> gridBeanList = null;
             try {
                 gridBeanList = THREDDSServerHelper.getGridBeanListFromServer(datasetUrl);
             } catch (IOException e) {

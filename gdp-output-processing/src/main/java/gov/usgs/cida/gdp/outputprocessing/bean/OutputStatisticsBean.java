@@ -1,17 +1,16 @@
 package gov.usgs.cida.gdp.outputprocessing.bean;
 
-import gov.usgs.cida.gdp.utilities.bean.XmlBean;
 import gov.usgs.cida.gdp.utilities.PropertyFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
+import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 
 @XStreamAlias("outputStatistics")
-public class OutputStatisticsBean implements XmlBean {
+public class OutputStatisticsBean implements XmlResponse {
 
 	@XStreamAlias("statistics")
 	@XStreamImplicit(itemFieldName="statistic")
@@ -37,17 +36,6 @@ public class OutputStatisticsBean implements XmlBean {
 			}
 		} while (!"".equals(statistic));
 		if (!statistics.isEmpty()) result = new OutputStatisticsBean(statistics);
-		return result;
-	}
-	
-	@Override
-	public String toXml() {
-		XStream xstream = new XStream();
-		xstream.processAnnotations(OutputStatisticsBean.class);
-		StringBuffer sb = new StringBuffer();
-		String result = "";
-		sb.append(xstream.toXML(this));
-		result = sb.toString();
 		return result;
 	}
 	

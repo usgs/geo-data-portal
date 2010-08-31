@@ -1,15 +1,14 @@
 package gov.usgs.cida.gdp.dataaccess.bean;
 
-import gov.usgs.cida.gdp.utilities.bean.XmlBean;
 import java.util.Date;
 
 import org.slf4j.LoggerFactory;
 
-import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 
 @XStreamAlias("server")
-public class ServerBean implements XmlBean{
+public class ServerBean implements XmlResponse {
 
 	private static org.slf4j.Logger log = LoggerFactory.getLogger(ServerBean.class);
 	
@@ -51,16 +50,6 @@ public class ServerBean implements XmlBean{
 	}
 	public void setLastCheck(Date lastCheck) {
 		this.lastCheck = lastCheck;
-	}
-	@Override
-	public String toXml() {
-		XStream xstream = new XStream();
-		xstream.autodetectAnnotations(true);
-		StringBuffer sb = new StringBuffer();
-		String result = "";
-		sb.append(xstream.toXML(this));
-		result = sb.toString();
-		return result;
 	}
 	public void setUri(String uri) {
 		this.uri = uri;

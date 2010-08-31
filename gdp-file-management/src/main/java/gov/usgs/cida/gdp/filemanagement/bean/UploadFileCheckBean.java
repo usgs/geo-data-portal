@@ -1,11 +1,10 @@
 package gov.usgs.cida.gdp.filemanagement.bean;
 
-import gov.usgs.cida.gdp.utilities.bean.XmlBean;
-import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 
 @XStreamAlias("uploadFileCheck")
-public class UploadFileCheckBean implements XmlBean {
+public class UploadFileCheckBean implements XmlResponse {
 
     private boolean exists;
     private String file;
@@ -21,13 +20,6 @@ public class UploadFileCheckBean implements XmlBean {
     public UploadFileCheckBean(String file, boolean doesDirectoryOrFileExist) {
         this.file = file;
         this.exists = doesDirectoryOrFileExist;
-    }
-
-    @Override
-    public String toXml() {
-        XStream xstream = new XStream();
-        xstream.processAnnotations(UploadFileCheckBean.class);
-        return xstream.toXML(this);
     }
 
     public void setExists(boolean exists) {

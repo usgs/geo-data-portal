@@ -1,14 +1,13 @@
 package gov.usgs.cida.gdp.filemanagement.bean;
 
-import gov.usgs.cida.gdp.utilities.bean.XmlBean;
 import java.util.List;
 
-import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
+import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 
 @XStreamAlias("list")
-public class ListBean implements XmlBean {
+public class ListBean implements XmlResponse {
 	
 	@XStreamAlias("list")
 	@XStreamImplicit(itemFieldName="element")
@@ -24,16 +23,5 @@ public class ListBean implements XmlBean {
 
 	public List<String> getList() {
 		return list;
-	}
-
-	@Override
-	public String toXml() {
-		XStream xstream = new XStream();
-		xstream.autodetectAnnotations(true);
-		StringBuffer sb = new StringBuffer();
-		String result = "";
-		sb.append(xstream.toXML(this));
-		result = sb.toString();
-		return result;
 	}
 }

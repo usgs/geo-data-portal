@@ -1,13 +1,13 @@
 package gov.usgs.cida.gdp.dataaccess.bean;
 
-import gov.usgs.cida.gdp.utilities.bean.XmlBean;
+import com.thoughtworks.xstream.XStream;
 import java.util.List;
 
-import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
+import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 @XStreamAlias("servers")
-public class ServerBeanList implements XmlBean {
+public class ServerBeanList implements XmlResponse {
 
 	@XStreamImplicit(itemFieldName="server")
 	private List<ServerBean> beans;
@@ -15,18 +15,6 @@ public class ServerBeanList implements XmlBean {
 	public ServerBeanList(List<ServerBean> threddsServerBeanList) {
 		this.beans = threddsServerBeanList;
 	}
-
-	@Override
-	public String toXml() {
-		XStream xstream = new XStream();
-		xstream.autodetectAnnotations(true);
-		StringBuffer sb = new StringBuffer();
-		String result = "";
-		sb.append(xstream.toXML(this));
-		result = sb.toString();
-		return result;
-	}
-
 	public void setBeans(List<ServerBean> beans) {
 		this.beans = beans;
 	}

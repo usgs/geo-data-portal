@@ -1,15 +1,15 @@
 package gov.usgs.cida.gdp.outputprocessing.bean;
 
-import gov.usgs.cida.gdp.utilities.bean.XmlBean;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
+import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 
 @XStreamAlias("outputfiletypes")
-public class OutputFileTypeBean implements XmlBean{
+public class OutputFileTypeBean implements XmlResponse{
 	@XStreamImplicit(itemFieldName="type")
 	private List<String> types;
 
@@ -26,18 +26,6 @@ public class OutputFileTypeBean implements XmlBean{
 		for (String type : types) {
 			this.types.add(type);
 		}
-	}
-	
-	@Override
-	public String toXml() {
-		XStream xstream = new XStream();
-//		xstream.processAnnotations(OutputFileTypeBean.class);
-		xstream.processAnnotations(this.getClass());
-		StringBuffer sb = new StringBuffer();
-		String result = "";
-		sb.append(xstream.toXML(this));
-		result = sb.toString();
-		return result;
 	}
 	
 	public void setTypes(List<String> types) {

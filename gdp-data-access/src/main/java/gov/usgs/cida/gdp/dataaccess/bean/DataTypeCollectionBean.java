@@ -1,6 +1,5 @@
 package gov.usgs.cida.gdp.dataaccess.bean;
 
-import gov.usgs.cida.gdp.utilities.bean.XmlBean;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -10,9 +9,10 @@ import ucar.nc2.VariableSimpleIF;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
+import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 
 @XStreamAlias("datatypecollection")
-public class DataTypeCollectionBean implements XmlBean {
+public class DataTypeCollectionBean implements XmlResponse {
 
     @XStreamAlias("datatype")
 	@XStreamAsAttribute
@@ -36,17 +36,6 @@ public class DataTypeCollectionBean implements XmlBean {
 			dtbList.add(dtb);
 		}
 		this.dataTypeCollection = dtbList;
-	}
-	
-	@Override
-	public String toXml() {
-		XStream xstream = new XStream();
-		xstream.processAnnotations(DataTypeCollectionBean.class);
-		StringBuffer sb = new StringBuffer();
-		String result = "";
-		sb.append(xstream.toXML(this));
-		result = sb.toString();
-		return result;
 	}
 
     /**
@@ -78,7 +67,7 @@ public class DataTypeCollectionBean implements XmlBean {
     }
 	
     @XStreamAlias("type")
-	static public class DataTypeBean implements XmlBean {
+	static public class DataTypeBean implements XmlResponse {
 
 		private String description;
 		private String name;
@@ -97,11 +86,10 @@ public class DataTypeCollectionBean implements XmlBean {
 			this.unitsstring = variableSimpleIF.getUnitsString();
 		}
 		
-		@Override
 		public String toXml() {
 			XStream xstream = new XStream();
 			xstream.processAnnotations(DataTypeBean.class);
-			StringBuffer sb = new StringBuffer();
+			StringBuilder sb = new StringBuilder();
 			String result = "";
 			sb.append(xstream.toXML(this));
 			result = sb.toString();

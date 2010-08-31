@@ -94,9 +94,9 @@ public class EmailMessageBean {
         if (getBcc().isEmpty()) {
             return "";
         }
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         for (String emailAddress : getBcc()) {
-            result.append(emailAddress + ",");
+            result.append(emailAddress).append(",");
         }
         // Return the string without the trailing comma
         return result.toString().substring(0, result.toString().length() - 1);
