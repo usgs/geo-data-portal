@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gov.usgs.cida.gdp.utilities.bean;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -11,7 +7,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author isuftin
  */
 @XStreamAlias("userDirectory")
-public class UserDirectoryBean implements XmlResponse {
+public class UserDirectory implements XmlResponse {
 
     private String directory;
 

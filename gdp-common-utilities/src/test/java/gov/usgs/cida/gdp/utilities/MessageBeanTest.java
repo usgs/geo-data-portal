@@ -1,6 +1,6 @@
 package gov.usgs.cida.gdp.utilities;
 
-import gov.usgs.cida.gdp.utilities.bean.MessageBean;
+import gov.usgs.cida.gdp.utilities.bean.Message;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
@@ -12,13 +12,13 @@ public class MessageBeanTest {
 
 	@Test
 	public void createMessageBean() {
-		MessageBean result = new MessageBean();
+		Message result = new Message();
 		assertNotNull(result);
 	}
 	
 	@Test
 	public void testGetMessages() {
-		MessageBean messageBean = new MessageBean();
+		Message messageBean = new Message();
 		List<String> result = messageBean.getMessages();
 		assertNotNull(result);
 		assertTrue(result.isEmpty());
@@ -27,7 +27,7 @@ public class MessageBeanTest {
 
 	@Test
 	public void testSetmessages() {
-		MessageBean messageBean = new MessageBean();
+		Message messageBean = new Message();
 		List<String> messageList = new ArrayList<String>(1);
 		messageList.add("Test message");
 		messageBean.setMessages(messageList);
@@ -39,7 +39,7 @@ public class MessageBeanTest {
 
 	@Test
 	public void testAddMessage() {
-		MessageBean messageBean = new MessageBean();
+		Message messageBean = new Message();
 		messageBean.addMessage("Test message");
 		List<String> result = messageBean.getMessages();
 		assertNotNull(result);

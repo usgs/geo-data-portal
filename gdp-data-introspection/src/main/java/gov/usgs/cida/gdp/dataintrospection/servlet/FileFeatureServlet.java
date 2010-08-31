@@ -1,14 +1,14 @@
 package gov.usgs.cida.gdp.dataintrospection.servlet;
 
-import gov.usgs.cida.gdp.dataintrospection.bean.AttributeBean;
-import gov.usgs.cida.gdp.dataintrospection.bean.FeatureBean;
+import gov.usgs.cida.gdp.dataintrospection.bean.Attribute;
+import gov.usgs.cida.gdp.dataintrospection.bean.Feature;
 import gov.usgs.cida.gdp.utilities.FileHelper;
 import gov.usgs.cida.gdp.utilities.XmlUtils;
-import gov.usgs.cida.gdp.utilities.bean.AckBean;
-import gov.usgs.cida.gdp.utilities.bean.ErrorBean;
-import gov.usgs.cida.gdp.utilities.bean.FilesBean;
-import gov.usgs.cida.gdp.utilities.bean.ShapeFileSetBean;
-import gov.usgs.cida.gdp.utilities.bean.XmlReplyBean;
+import gov.usgs.cida.gdp.utilities.bean.Acknowledgement;
+import gov.usgs.cida.gdp.utilities.bean.Error;
+import gov.usgs.cida.gdp.utilities.bean.Files;
+import gov.usgs.cida.gdp.utilities.bean.ShapeFileSet;
+import gov.usgs.cida.gdp.utilities.bean.XmlReply;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -33,14 +33,14 @@ public class FileFeatureServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Long start = Long.valueOf(new Date().getTime());
 		String command = request.getParameter("command");
-		XmlReplyBean xmlReply = null;
+		XmlReply xmlReply = null;
 		if ("listfeatures".equals(command)) {
 			log.debug("User has chosen to list shapefile features");
 			String shapefile = request.getParameter("shapefile");
 			String attribute = request.getParameter("attribute");
 			if (attribute == null || "".equals(attribute)
 					|| shapefile == null || "".equals(shapefile)) {
-				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_MISSING_PARAM));
+				xmlReply = new XmlReply(Acknowledgement.ACK_FAIL, new Error(Error.ERR_MISSING_PARAM));
 				XmlUtils.sendXml(xmlReply, start, response);
 				return;
 			}
@@ -50,32 +50,32 @@ public class FileFeatureServlet extends HttpServlet {
 				if (!FileHelper.doesDirectoryOrFileExist(userDirectory)) userDirectory = "";
 			}
 
-			List<FilesBean> filesBeanList = FilesBean.getFilesBeanSetList(System.getProperty("applicationTempDir"), userDirectory);
+			List<Files> filesBeanList = Files.getFilesBeanSetList(System.getProperty("applicationTempDir"), userDirectory);
 			if (filesBeanList == null) {
-				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FILE_NOT_FOUND));
+				xmlReply = new XmlReply(Acknowledgement.ACK_FAIL, new Error(Error.ERR_FILE_NOT_FOUND));
 				XmlUtils.sendXml(xmlReply, start,response);
 				return;
 			}
-			ShapeFileSetBean shapeFileSetBean = ShapeFileSetBean.getShapeFileSetBeanFromFilesBeanList(filesBeanList, shapefile);
+			ShapeFileSet shapeFileSetBean = ShapeFileSet.getShapeFileSetBeanFromFilesBeanList(filesBeanList, shapefile);
 			shapeFileSetBean.setChosenAttribute(attribute);
 			// Pull Feature Lists
 			List<String> features = null;
             try {
-				features = ShapeFileSetBean.getFeatureListFromBean(shapeFileSetBean);
+				features = ShapeFileSet.getFeatureListFromBean(shapeFileSetBean);
 			} catch (IOException e) {
-				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FEATURES_NOT_FOUND));
+				xmlReply = new XmlReply(Acknowledgement.ACK_FAIL, new Error(Error.ERR_FEATURES_NOT_FOUND));
 				XmlUtils.sendXml(xmlReply, start,response);
 				return;
 			}
 
 			if (features != null && !features.isEmpty()) {
-				FeatureBean featureBean = new FeatureBean(features);
+				Feature featureBean = new Feature(features);
 				featureBean.setFilesetName(shapefile);
-				xmlReply = new XmlReplyBean(AckBean.ACK_OK, featureBean);
+				xmlReply = new XmlReply(Acknowledgement.ACK_OK, featureBean);
 				XmlUtils.sendXml(xmlReply, start,response);
 				return;
 			}
-			xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FEATURES_NOT_FOUND));
+			xmlReply = new XmlReply(Acknowledgement.ACK_FAIL, new Error(Error.ERR_FEATURES_NOT_FOUND));
 			XmlUtils.sendXml(xmlReply, start,response);
 			return;
 		}
@@ -86,24 +86,24 @@ public class FileFeatureServlet extends HttpServlet {
 
 			if (userDirectory == null || !FileHelper.doesDirectoryOrFileExist(userDirectory)) userDirectory = "";
 
-			List<FilesBean> filesBeanList = FilesBean.getFilesBeanSetList(System.getProperty("applicationTempDir"), userDirectory);
+			List<Files> filesBeanList = Files.getFilesBeanSetList(System.getProperty("applicationTempDir"), userDirectory);
 			if (filesBeanList == null) {
-				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FILE_NOT_FOUND));
+				xmlReply = new XmlReply(Acknowledgement.ACK_FAIL, new Error(Error.ERR_FILE_NOT_FOUND));
 				XmlUtils.sendXml(xmlReply, start, response);
 				return;
 			}
-			ShapeFileSetBean shapeFileSetBean = ShapeFileSetBean.getShapeFileSetBeanFromFilesBeanList(filesBeanList, shapefile);
+			ShapeFileSet shapeFileSetBean = ShapeFileSet.getShapeFileSetBeanFromFilesBeanList(filesBeanList, shapefile);
 
-			List<String> attributeList = ShapeFileSetBean.getAttributeListFromBean(shapeFileSetBean);
+			List<String> attributeList = ShapeFileSet.getAttributeListFromBean(shapeFileSetBean);
 			if (attributeList == null || attributeList.isEmpty()) {
-				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_ATTRIBUTES_NOT_FOUND));
+				xmlReply = new XmlReply(Acknowledgement.ACK_FAIL, new Error(Error.ERR_ATTRIBUTES_NOT_FOUND));
 				XmlUtils.sendXml(xmlReply,start, response);
 				return;
 			}
 
-			AttributeBean attributeBean = new AttributeBean(attributeList);
+			Attribute attributeBean = new Attribute(attributeList);
 			attributeBean.setFilesetName(shapefile);
-			xmlReply = new XmlReplyBean(AckBean.ACK_OK, attributeBean);
+			xmlReply = new XmlReply(Acknowledgement.ACK_OK, attributeBean);
 			XmlUtils.sendXml(xmlReply,start, response);
 			return;
 		}

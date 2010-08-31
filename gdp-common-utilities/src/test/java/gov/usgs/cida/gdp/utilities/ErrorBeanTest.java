@@ -1,6 +1,6 @@
 package gov.usgs.cida.gdp.utilities;
 
-import gov.usgs.cida.gdp.utilities.bean.ErrorBean;
+import gov.usgs.cida.gdp.utilities.bean.Error;
 import static org.junit.Assert.*;
 
 import java.util.Date;
@@ -12,7 +12,7 @@ public class ErrorBeanTest {
 
 //	@Test
 //	public void testToXmlWithBeanFilled() {
-//		ErrorBean errBean = new ErrorBean();
+//		Error errBean = new Error();
 //		errBean.setErrorClass("FakeName");
 //		errBean.setErrorCreated(new Date());
 //		errBean.setErrorMessage("Fake Message");
@@ -24,7 +24,7 @@ public class ErrorBeanTest {
 	
 //	@Test
 //	public void testToXmlWithSparselyFilledBean() {
-//		ErrorBean errBean = new ErrorBean();
+//		Error errBean = new Error();
 //		errBean.setErrorClass("FakeName");
 //		errBean.setErrorCreated(new Date());
 //		
@@ -34,7 +34,7 @@ public class ErrorBeanTest {
 	
 //	@Test
 //	public void testToXmlWithEmptyBean() {
-//		ErrorBean errBean = new ErrorBean();
+//		Error errBean = new Error();
 //		
 //		String result = errBean.toXml();
 //		assertNotNull(result);
@@ -42,14 +42,14 @@ public class ErrorBeanTest {
 
 	@Test
 	public void testInitializeWithInteger() {
-		ErrorBean errBean = new ErrorBean(Integer.valueOf(0));
+		Error errBean = new Error(Integer.valueOf(0));
 		assertNotNull(errBean.getErrorMessage());
 		assertEquals(errBean.getErrorMessage(), "No Command Has Been Provided - To list all available commands, use command=commandlist");
 	}
 	
 //	@Test
 //	public void testInitializeWithIntegerXmlOutput() {
-//		ErrorBean errBean = new ErrorBean(Integer.valueOf(0));
+//		Error errBean = new Error(Integer.valueOf(0));
 //		assertNotNull(errBean.getErrorMessage());
 //		assertEquals(errBean.getErrorMessage(), "No Command Has Been Provided - To list all available commands, use command=commandlist");
 //		String result = errBean.toXml();

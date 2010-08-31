@@ -2,10 +2,10 @@ package gov.usgs.cida.gdp.dataaccess.servlet;
 
 import gov.usgs.cida.gdp.dataaccess.helper.THREDDSServerHelper;
 import gov.usgs.cida.gdp.utilities.XmlUtils;
-import gov.usgs.cida.gdp.utilities.bean.AckBean;
-import gov.usgs.cida.gdp.utilities.bean.ErrorBean;
-import gov.usgs.cida.gdp.utilities.bean.TimeBean;
-import gov.usgs.cida.gdp.utilities.bean.XmlReplyBean;
+import gov.usgs.cida.gdp.utilities.bean.Acknowledgement;
+import gov.usgs.cida.gdp.utilities.bean.Error;
+import gov.usgs.cida.gdp.utilities.bean.Time;
+import gov.usgs.cida.gdp.utilities.bean.XmlReply;
 import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -58,14 +58,14 @@ public class THREDDSServlet extends HttpServlet {
         Long start = Long.valueOf(new Date().getTime());
         
         String command = request.getParameter("command");
-        XmlReplyBean xmlReply = null;
+        XmlReply xmlReply = null;
 
         if ("getcatalog".equals(command)) {
         	URL urlObject = null;
         	try {
         		urlObject = new URL(URLDecoder.decode(request.getParameter("url"), "UTF-8"));
         	}catch (MalformedURLException e) {
-                xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_INVALID_URL));
+                xmlReply = new XmlReply(Acknowledgement.ACK_FAIL, new Error(Error.ERR_INVALID_URL));
                 XmlUtils.sendXml(xmlReply, start, response);
                 return;
             }
@@ -89,11 +89,11 @@ public class THREDDSServlet extends HttpServlet {
                 XmlUtils.sendXml(xmlResponse, start, response);
                 return;
             } catch (HttpException e) {
-                xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_PROTOCOL_VIOLATION));
+                xmlReply = new XmlReply(Acknowledgement.ACK_FAIL, new Error(Error.ERR_PROTOCOL_VIOLATION));
                 XmlUtils.sendXml(xmlReply, start, response);
                 return;
             } catch (IOException e) {
-                xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_TRANSPORT_ERROR));
+                xmlReply = new XmlReply(Acknowledgement.ACK_FAIL, new Error(Error.ERR_TRANSPORT_ERROR));
                 XmlUtils.sendXml(xmlReply, start, response);
                 return;
             } finally {
@@ -108,7 +108,7 @@ public class THREDDSServlet extends HttpServlet {
             // Grab what we need to work with for this request
             String datasetUrl = request.getParameter("dataseturl");
             if (datasetUrl == null || "".equals(datasetUrl)) {
-                xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_MISSING_PARAM));
+                xmlReply = new XmlReply(Acknowledgement.ACK_FAIL, new Error(Error.ERR_MISSING_PARAM));
                 XmlUtils.sendXml(xmlReply, start, response);
                 return;
             }
@@ -117,11 +117,11 @@ public class THREDDSServlet extends HttpServlet {
             try {
                 gridBeanList = THREDDSServerHelper.getGridBeanListFromServer(datasetUrl);
             } catch (IOException e) {
-                xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_INVALID_URL));
+                xmlReply = new XmlReply(Acknowledgement.ACK_FAIL, new Error(Error.ERR_INVALID_URL));
                 XmlUtils.sendXml(xmlReply, start, response);
                 return;
             }
-            XmlReplyBean xrb = new XmlReplyBean(AckBean.ACK_OK, gridBeanList);
+            XmlReply xrb = new XmlReply(Acknowledgement.ACK_OK, gridBeanList);
             XmlUtils.sendXml(xrb, start, response);
             return;
         }
@@ -134,24 +134,24 @@ public class THREDDSServlet extends HttpServlet {
             String gridSelection = gridSelections[0];
             /////////////////////////////////////////////
             
-            TimeBean timeBean = null;
+            Time timeBean = null;
             try {
                 timeBean = THREDDSServerHelper.getTimeBean(datasetUrl, gridSelection);
             } catch (ParseException e) {
-                xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_MISSING_TIMERANGE));
+                xmlReply = new XmlReply(Acknowledgement.ACK_FAIL, new Error(Error.ERR_MISSING_TIMERANGE));
                 XmlUtils.sendXml(xmlReply, start, response);
                 return;
             }
 
             if (timeBean == null) {
-                xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_MISSING_TIMERANGE));
+                xmlReply = new XmlReply(Acknowledgement.ACK_FAIL, new Error(Error.ERR_MISSING_TIMERANGE));
                 XmlUtils.sendXml(xmlReply, start, response);
                 return;
             }
 
 
 
-            XmlReplyBean xrb = new XmlReplyBean(AckBean.ACK_OK, timeBean);
+            XmlReply xrb = new XmlReply(Acknowledgement.ACK_OK, timeBean);
             XmlUtils.sendXml(xrb, start, response);
             return;
         }

@@ -1,11 +1,11 @@
 package gov.usgs.cida.gdp.filemanagement.servlet;
 
-import gov.usgs.cida.gdp.filemanagement.bean.ListBean;
+import gov.usgs.cida.gdp.filemanagement.bean.List;
 import gov.usgs.cida.gdp.utilities.FileHelper;
 import gov.usgs.cida.gdp.utilities.XmlUtils;
-import gov.usgs.cida.gdp.utilities.bean.AckBean;
-import gov.usgs.cida.gdp.utilities.bean.MessageBean;
-import gov.usgs.cida.gdp.utilities.bean.XmlReplyBean;
+import gov.usgs.cida.gdp.utilities.bean.Acknowledgement;
+import gov.usgs.cida.gdp.utilities.bean.Message;
+import gov.usgs.cida.gdp.utilities.bean.XmlReply;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -75,7 +75,7 @@ public class GeoServerServlet extends HttpServlet {
 		else if ("t".equals(delimChar)) delim = "\t";
 		else if (delimChar == null) delim = "";  // if command doesn't require a delim
 		else {
-			sendReply(response, AckBean.ACK_FAIL, "Invalid delimiter.");
+			sendReply(response, Acknowledgement.ACK_FAIL, "Invalid delimiter.");
 			System.err.println("ERROR: invalid delimiter: " + delimChar);
 			return;
 		}
@@ -87,17 +87,17 @@ public class GeoServerServlet extends HttpServlet {
 					shapefilePath.lastIndexOf("."));
 			
 			if (!createDataStore(shapefilePath, shapefileName, workspace)) {
-				sendReply(response, AckBean.ACK_FAIL, "Could not create data store.");
+				sendReply(response, Acknowledgement.ACK_FAIL, "Could not create data store.");
 			} else {
 				// send back ack with workspace and layer names
-				sendReply(response, AckBean.ACK_OK, workspace, shapefileName);
+				sendReply(response, Acknowledgement.ACK_OK, workspace, shapefileName);
 			}
 			
 		} else if ("getdatafileselectables".equals(command)) {
 			// return list of dates in data file
 			ArrayList<String> dates = parseDates(new File(dataFileLoc), delim);
 			
-			XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, new ListBean(dates));
+			XmlReply xmlReply = new XmlReply(Acknowledgement.ACK_OK, new List(dates));
 			XmlUtils.sendXml(xmlReply, Long.valueOf(new Date().getTime()), response);
 			
 		} else if ("createcoloredmap".equals(command)) {
@@ -110,7 +110,7 @@ public class GeoServerServlet extends HttpServlet {
 			
 			createColoredMap(dataFileLoc, workspace, shapefileName, fromDate, toDate, stat, attribute, delim);
 			
-			sendReply(response, AckBean.ACK_OK);
+			sendReply(response, Acknowledgement.ACK_OK);
 		} else if ("clearcache".equals(command)) {
 			//clearCache();
 		}
@@ -258,7 +258,7 @@ public class GeoServerServlet extends HttpServlet {
 	}
 	
 	void sendReply(HttpServletResponse response, int status, String... messages) throws IOException {
-		XmlReplyBean xmlReply = new XmlReplyBean(status, new MessageBean(messages));
+		XmlReply xmlReply = new XmlReply(status, new Message(messages));
 		XmlUtils.sendXml(xmlReply, Long.valueOf(new Date().getTime()), response);
 	}
 	

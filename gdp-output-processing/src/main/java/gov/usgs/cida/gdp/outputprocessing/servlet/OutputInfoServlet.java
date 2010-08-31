@@ -5,13 +5,13 @@
 
 package gov.usgs.cida.gdp.outputprocessing.servlet;
 
-import gov.usgs.cida.gdp.outputprocessing.bean.OutputFileTypeBean;
-import gov.usgs.cida.gdp.outputprocessing.bean.OutputStatisticsBean;
+import gov.usgs.cida.gdp.outputprocessing.bean.OutputFileType;
+import gov.usgs.cida.gdp.outputprocessing.bean.OutputStatistics;
 import gov.usgs.cida.gdp.utilities.FileHelper;
 import gov.usgs.cida.gdp.utilities.XmlUtils;
-import gov.usgs.cida.gdp.utilities.bean.AckBean;
-import gov.usgs.cida.gdp.utilities.bean.ErrorBean;
-import gov.usgs.cida.gdp.utilities.bean.XmlReplyBean;
+import gov.usgs.cida.gdp.utilities.bean.Acknowledgement;
+import gov.usgs.cida.gdp.utilities.bean.Error;
+import gov.usgs.cida.gdp.utilities.bean.XmlReply;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -56,11 +56,11 @@ public class OutputInfoServlet extends HttpServlet {
     throws ServletException, IOException {
         Long start = Long.valueOf(new Date().getTime());
 		String command = request.getParameter("command");
-		XmlReplyBean xmlReply = null;
+		XmlReply xmlReply = null;
 
         if ("getoutputstats".equals(command)) {
-			OutputStatisticsBean outputStats = OutputStatisticsBean.getOutputStatisticsBean();
-			xmlReply = new XmlReplyBean(AckBean.ACK_OK, outputStats);
+			OutputStatistics outputStats = OutputStatistics.getOutputStatisticsBean();
+			xmlReply = new XmlReply(Acknowledgement.ACK_OK, outputStats);
 			XmlUtils.sendXml(xmlReply, start, response);
 			return;
 		}
@@ -69,13 +69,13 @@ public class OutputInfoServlet extends HttpServlet {
 			log.debug("User has chosen to get output file type list");
 			List<String> availableFileTypes = FileHelper.getOutputFileTypesAvailable();
 			if (availableFileTypes == null || availableFileTypes.isEmpty()) {
-				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_OUTFILES_UNAVAILABLE));
+				xmlReply = new XmlReply(Acknowledgement.ACK_FAIL, new Error(Error.ERR_OUTFILES_UNAVAILABLE));
 				XmlUtils.sendXml(xmlReply, start, response);
 				return;
 			}
 
-			OutputFileTypeBean oftb = new OutputFileTypeBean(availableFileTypes);
-			xmlReply = new XmlReplyBean(AckBean.ACK_OK, oftb);
+			OutputFileType oftb = new OutputFileType(availableFileTypes);
+			xmlReply = new XmlReply(Acknowledgement.ACK_OK, oftb);
 			XmlUtils.sendXml(xmlReply, start, response);
 			return;
 		}

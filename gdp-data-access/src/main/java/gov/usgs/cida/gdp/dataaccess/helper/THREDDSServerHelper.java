@@ -1,9 +1,9 @@
 package gov.usgs.cida.gdp.dataaccess.helper;
 
-import gov.usgs.cida.gdp.dataaccess.bean.DataTypeCollectionBean;
-import gov.usgs.cida.gdp.dataaccess.bean.ServerBean;
-import gov.usgs.cida.gdp.dataaccess.bean.THREDDSInfoBean;
-import gov.usgs.cida.gdp.utilities.bean.TimeBean;
+import gov.usgs.cida.gdp.dataaccess.bean.DataTypeCollection;
+import gov.usgs.cida.gdp.dataaccess.bean.Server;
+import gov.usgs.cida.gdp.dataaccess.bean.THREDDSInfo;
+import gov.usgs.cida.gdp.utilities.bean.Time;
 import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 
 import java.io.IOException;
@@ -57,7 +57,7 @@ public class THREDDSServerHelper {
         return result;
     }
 
-    public static TimeBean getTimeBean(String datasetUrl, String gridSelection) throws IOException, ParseException {
+    public static Time getTimeBean(String datasetUrl, String gridSelection) throws IOException, ParseException {
         Formatter errorLog = new Formatter();
         FeatureDataset featureDataset = null;
         featureDataset =
@@ -75,7 +75,7 @@ public class THREDDSServerHelper {
         			}
         		}
         		
-        		TimeBean timeBean = new TimeBean(dateRange);
+        		Time timeBean = new Time(dateRange);
         		
                 if (timeBean != null /*&& !timeBean.getTime().isEmpty()*/) {
                     return timeBean;
@@ -161,7 +161,7 @@ public class THREDDSServerHelper {
         List<XmlResponse> result = new ArrayList<XmlResponse>();
         List<VariableSimpleIF> variables = NetCDFUtility.getDataVariableNames(datasetUrl);
         String type = NetCDFUtility.getDatasetType(datasetUrl);
-        DataTypeCollectionBean dtcb = new DataTypeCollectionBean(type, variables.toArray(new VariableSimpleIF[0]));
+        DataTypeCollection dtcb = new DataTypeCollection(type, variables.toArray(new VariableSimpleIF[0]));
         result.add(dtcb);
         return result;
 
@@ -179,7 +179,7 @@ public class THREDDSServerHelper {
         @SuppressWarnings("unchecked")
         @Override
         public void run() {
-            Map<String, ServerBean> threddsServerBeanMap = (Map<String, ServerBean>) this.paramConfig.getServletContext().getAttribute("threddsServerBeanMap");
+            Map<String, Server> threddsServerBeanMap = (Map<String, Server>) this.paramConfig.getServletContext().getAttribute("threddsServerBeanMap");
             if (threddsServerBeanMap == null) {
                 threddsServerBeanMap = getTHREDDSServerBeanMap();
             }
@@ -194,15 +194,15 @@ public class THREDDSServerHelper {
          * @param threddsServerBeanMap
          * @return
          */
-        private Map<String, ServerBean> checkServers(Map<String, ServerBean> threddsServerBeanMap) {
-            Map<String, ServerBean> result = new TreeMap<String, ServerBean>();
+        private Map<String, Server> checkServers(Map<String, Server> threddsServerBeanMap) {
+            Map<String, Server> result = new TreeMap<String, Server>();
 
             Set<String> threddsServerBeanMapKeySet = threddsServerBeanMap.keySet();
             Iterator<String> threddsServerBeanMapKeySetIterator = threddsServerBeanMapKeySet.iterator();
 
             while (threddsServerBeanMapKeySetIterator.hasNext()) {
                 String key = threddsServerBeanMapKeySetIterator.next();
-                ServerBean threddsServerBean = threddsServerBeanMap.get(key);
+                Server threddsServerBean = threddsServerBeanMap.get(key);
                 threddsServerBean.setLastCheck(new Date());
                 String host = threddsServerBean.getHostname();
                 int port = threddsServerBean.getPort();
@@ -223,10 +223,10 @@ public class THREDDSServerHelper {
             return result;
         }
 
-        private Map<String, ServerBean> getTHREDDSServerBeanMap() {
-            Map<String, ServerBean> result = new TreeMap<String, ServerBean>();
+        private Map<String, Server> getTHREDDSServerBeanMap() {
+            Map<String, Server> result = new TreeMap<String, Server>();
 
-            Map<String, String> threddsUrlMap = THREDDSInfoBean.getTHREDDSUrlMap();
+            Map<String, String> threddsUrlMap = THREDDSInfo.getTHREDDSUrlMap();
             Set<String> threddsUrlMapKeySet = threddsUrlMap.keySet();
             Iterator<String> threddsUrlMapKeySetIterator = threddsUrlMapKeySet.iterator();
             while (threddsUrlMapKeySetIterator.hasNext()) {
@@ -234,7 +234,7 @@ public class THREDDSServerHelper {
                 String name = key;
                 String serverUrl = threddsUrlMap.get(key);
                 String protocol;
-                ServerBean threddsServerBean = new ServerBean();
+                Server threddsServerBean = new Server();
 
                 int startAt = 0;
                 if (serverUrl.contains("http:")) {

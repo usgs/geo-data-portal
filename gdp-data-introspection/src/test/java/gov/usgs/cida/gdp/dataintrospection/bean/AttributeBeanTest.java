@@ -1,6 +1,6 @@
 package gov.usgs.cida.gdp.dataintrospection.bean;
 
-import gov.usgs.cida.gdp.dataintrospection.bean.AttributeBean;
+import gov.usgs.cida.gdp.dataintrospection.bean.Attribute;
 import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,7 @@ public class AttributeBeanTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testSetAttribute() {
-        AttributeBean attBean = new AttributeBean(new ArrayList());
+        Attribute attBean = new Attribute(new ArrayList());
         ArrayList<String> list = new ArrayList<String>();
         list.add("Test1");
         list.add("Test2");
@@ -24,7 +24,7 @@ public class AttributeBeanTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testGetAttribute() {
-        AttributeBean attBean = new AttributeBean(new ArrayList());
+        Attribute attBean = new Attribute(new ArrayList());
         ArrayList<String> list = new ArrayList<String>();
         list.add("Test1");
         list.add("Test2");
@@ -36,7 +36,7 @@ public class AttributeBeanTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testGetFilesetName() {
-        AttributeBean attBean = new AttributeBean(new ArrayList());
+        Attribute attBean = new Attribute(new ArrayList());
         attBean.setFilesetName("TEST");
         String result = attBean.getFilesetName();
         assertEquals(result, result);
@@ -45,7 +45,7 @@ public class AttributeBeanTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testSetFilesetName() {
-        AttributeBean attBean = new AttributeBean(new ArrayList());
+        Attribute attBean = new Attribute(new ArrayList());
         attBean.setFilesetName("TEST");
         String result = attBean.getFilesetName();
         assertEquals(result, result);
@@ -57,7 +57,7 @@ public class AttributeBeanTest {
 //        list.add("Test1");
 //        list.add("Test2");
 //
-//        AttributeBean ackBean = new AttributeBean(list);
+//        Attribute ackBean = new Attribute(list);
 //
 //        String result = ackBean.toXml();
 //        assertNotNull(result);

@@ -12,7 +12,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
 @XStreamAlias("error")
-public class ErrorBean implements XmlResponse {
+public class Error implements XmlResponse {
     // Check properties file to read/change message for these codes
 
     public final static int ERR_NO_COMMAND = 0;
@@ -61,36 +61,36 @@ public class ErrorBean implements XmlResponse {
         }
     }
 
-    public ErrorBean() {
+    public Error() {
         // Default constructor
     }
 
-    public ErrorBean(int errorNumberParam) throws InvalidParameterException {
-        this(Integer.valueOf(errorNumberParam), ErrorBean.ERROR_MESSAGES.get(Integer.valueOf(errorNumberParam)));
+    public Error(int errorNumberParam) throws InvalidParameterException {
+        this(Integer.valueOf(errorNumberParam), Error.ERROR_MESSAGES.get(Integer.valueOf(errorNumberParam)));
     }
 
-    public ErrorBean(String errorMessageParam) {
+    public Error(String errorMessageParam) {
         this(Integer.valueOf(-1), errorMessageParam);
     }
 
-    public ErrorBean(Integer errorNumberParam, String errorMessageParam) {
+    public Error(Integer errorNumberParam, String errorMessageParam) {
         this(errorNumberParam, errorMessageParam, null);
     }
 
-    public ErrorBean(int errorNumberParam, Exception stackTrace) {
-        this(Integer.valueOf(errorNumberParam), ErrorBean.ERROR_MESSAGES.get(Integer.valueOf(errorNumberParam)), stackTrace, null);
+    public Error(int errorNumberParam, Exception stackTrace) {
+        this(Integer.valueOf(errorNumberParam), Error.ERROR_MESSAGES.get(Integer.valueOf(errorNumberParam)), stackTrace, null);
     }
 
-    public ErrorBean(Integer errorNumberParam, String errorMessageParam, Exception stackTrace) {
+    public Error(Integer errorNumberParam, String errorMessageParam, Exception stackTrace) {
         this(errorNumberParam, errorMessageParam, stackTrace, null);
     }
 
-    public ErrorBean(Integer errorNumberParam, String errorMessageParam, Exception stackTrace, String errorClassParam) {
-        setErrorMessage(errorMessageParam);
-        setErrorNumber(errorNumberParam);
-        setException(stackTrace);
-        setErrorClass(errorClassParam);
-        setErrorCreated(new Date());
+    public Error(Integer errorNumberParam, String errorMessageParam, Exception stackTrace, String errorClassParam) {
+        this.errorMessage = errorMessageParam;
+        this.errorNumber = errorNumberParam;
+        this.exception = stackTrace;
+        this.errorClass = errorClassParam;
+        this.errorCreated = new Date();
     }
 
     public void setErrorMessage(String errorMessageParam) {

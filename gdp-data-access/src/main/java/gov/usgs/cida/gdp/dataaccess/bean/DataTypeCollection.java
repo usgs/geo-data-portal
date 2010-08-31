@@ -12,7 +12,7 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 
 @XStreamAlias("datatypecollection")
-public class DataTypeCollectionBean implements XmlResponse {
+public class DataTypeCollection implements XmlResponse {
 
     @XStreamAlias("datatype")
 	@XStreamAsAttribute
@@ -21,14 +21,14 @@ public class DataTypeCollectionBean implements XmlResponse {
     @XStreamAlias("types")
 	private List<DataTypeBean> dataTypeCollection;
 	
-	public DataTypeCollectionBean() {}
+	public DataTypeCollection() {}
 	
-	public DataTypeCollectionBean(String type, DataTypeBean... dataTypeArray) {
+	public DataTypeCollection(String type, DataTypeBean... dataTypeArray) {
 		this.dataType = type;
 		this.dataTypeCollection = Arrays.asList(dataTypeArray);
 	}
 	
-	public DataTypeCollectionBean(String type, VariableSimpleIF... variableSimpleIFArray) {
+	public DataTypeCollection(String type, VariableSimpleIF... variableSimpleIFArray) {
 		this.dataType = type;
 		List<DataTypeBean> dtbList = new ArrayList<DataTypeBean>(variableSimpleIFArray.length);
 		for (VariableSimpleIF vsif : variableSimpleIFArray) {
@@ -84,16 +84,6 @@ public class DataTypeCollectionBean implements XmlResponse {
 			this.shape = variableSimpleIF.getShape();
 			this.shortname = variableSimpleIF.getShortName();
 			this.unitsstring = variableSimpleIF.getUnitsString();
-		}
-		
-		public String toXml() {
-			XStream xstream = new XStream();
-			xstream.processAnnotations(DataTypeBean.class);
-			StringBuilder sb = new StringBuilder();
-			String result = "";
-			sb.append(xstream.toXML(this));
-			result = sb.toString();
-			return result;
 		}
 		public String getDescription() {
 			return description;

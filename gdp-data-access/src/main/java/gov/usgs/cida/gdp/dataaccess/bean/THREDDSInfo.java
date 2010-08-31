@@ -19,7 +19,7 @@ import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.dt.grid.GridDataset;
 
 
-public class THREDDSInfoBean implements Serializable {
+public class THREDDSInfo implements Serializable {
 	private String THREDDSServer;
 	private String dataSetUrlSelection;
 	private String dataSetNameSelection;

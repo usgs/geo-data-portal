@@ -1,7 +1,7 @@
 package gov.usgs.cida.gdp.utilities;
 
-import gov.usgs.cida.gdp.utilities.bean.FilesBean;
-import gov.usgs.cida.gdp.utilities.bean.ShapeFileSetBean;
+import gov.usgs.cida.gdp.utilities.bean.Files;
+import gov.usgs.cida.gdp.utilities.bean.ShapeFileSet;
 import static org.junit.Assert.*;
 import gov.usgs.cida.gdp.utilities.FileHelper;
 
@@ -96,13 +96,13 @@ public class FilesBeanTest {
 		+ this.seperator
 		+ testFile + ".dbf";
 		
-		FilesBean filesBean = new FilesBean();
+		Files filesBean = new Files();
 		Collection<File> files = new ArrayList<File>();
 		files.add(new File(shpFile));
 		files.add(new File(prjFile));
 		files.add(new File(dbfFile));
 		filesBean.setFiles(files);
-		ShapeFileSetBean result = filesBean.getShapeFileSetBean();
+		ShapeFileSet result = filesBean.getShapeFileSetBean();
 		assertNotNull(result);
 	}
 	
@@ -113,7 +113,7 @@ public class FilesBeanTest {
 				+ "Sample_Files"
 				+ this.seperator , true);
 		assertNotNull(files);
-		List<FilesBean> filesList = FilesBean.getFilesBeanSetList(files);
+		List<Files> filesList = Files.getFilesBeanSetList(files);
 		assertNotNull(filesList);
 		assertFalse(filesList.isEmpty());
 	}

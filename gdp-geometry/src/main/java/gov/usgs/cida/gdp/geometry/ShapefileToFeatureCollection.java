@@ -2,7 +2,7 @@ package gov.usgs.cida.gdp.geometry;
 
 import gov.usgs.cida.gdp.utilities.FileHelper;
 import gov.usgs.cida.gdp.utilities.ShapeFileHelper;
-import gov.usgs.cida.gdp.utilities.bean.AvailableFilesBean;
+import gov.usgs.cida.gdp.utilities.bean.AvailableFiles;
 import java.io.File;
 import java.io.IOException;
 import org.geotools.data.DefaultQuery;
@@ -47,7 +47,7 @@ public class ShapefileToFeatureCollection {
         }
 
         
-        AvailableFilesBean afb = AvailableFilesBean.getAvailableFilesBean(appTempDir, userDir);
+        AvailableFiles afb = AvailableFiles.getAvailableFilesBean(appTempDir, userDir);
         File shapeFile = ShapeFileHelper.getShapeFileFromShapeSetName(shapeSet, afb.getShapeSetList());
 
         shapeFileDataStore = FileDataStoreFinder.getDataStore(shapeFile);

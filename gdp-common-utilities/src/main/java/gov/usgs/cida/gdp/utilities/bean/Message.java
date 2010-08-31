@@ -8,7 +8,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 @XStreamAlias("messages")
-public class MessageBean implements XmlResponse {
+public class Message implements XmlResponse {
 
     @XStreamAlias("message")
     @XStreamImplicit
@@ -16,11 +16,11 @@ public class MessageBean implements XmlResponse {
 
     // A JavaBean must have a public, nullary constructor. We must explicitly provide it because the generation
     // of the default constructor has been suppressed by the presence of other constructors in this class.
-    public MessageBean() {
+    public Message() {
         this(new String[0]);
     }
 
-    public MessageBean(String... messages) {
+    public Message(String... messages) {
         this.message = new ArrayList<String>();
         message.addAll(Arrays.asList(messages));
     }

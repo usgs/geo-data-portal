@@ -15,7 +15,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 @XStreamAlias("availabletimes")
-public class TimeBean implements XmlResponse {
+public class Time implements XmlResponse {
 
     @XStreamAlias("times")
     @XStreamImplicit(itemFieldName = "time")
@@ -23,31 +23,31 @@ public class TimeBean implements XmlResponse {
     private TimeBreakdown starttime;
     private TimeBreakdown endtime;
 
-    public TimeBean() {
+    public Time() {
         this.time = new ArrayList<String>();
-        this.setStarttime(new TimeBreakdown());
-        this.setEndtime(new TimeBreakdown());
+        this.starttime = new TimeBreakdown();
+        this.endtime = new TimeBreakdown();
     }
 
-    public TimeBean(GridDataset geoGrid, String gridSelection) {
+    public Time(GridDataset geoGrid, String gridSelection) {
         List<String> result = new ArrayList<String>();
         GeoGrid grid = geoGrid.findGridByName(gridSelection);
-        for (NamedObject time : grid.getTimes()) {
-            result.add(time.getName());
+        for (NamedObject Obj : grid.getTimes()) {
+            result.add(Obj.getName());
             this.time = result;
         }
     }
     
 
-    public TimeBean(List<String> dateRange) throws ParseException {
+    public Time(List<String> dateRange) throws ParseException {
         this.time = dateRange;
 
         if (this.time.isEmpty()) {
-            this.setStarttime(new TimeBreakdown());
-            this.setEndtime(new TimeBreakdown());
+            this.starttime = new TimeBreakdown();
+            this.endtime = new TimeBreakdown();
         } else {
-            this.setStarttime(new TimeBreakdown(dateRange.get(0)));
-            this.setEndtime(new TimeBreakdown(dateRange.get(1)));
+            this.starttime = new TimeBreakdown(dateRange.get(0));
+            this.endtime = new TimeBreakdown(dateRange.get(1));
         }
     }
 

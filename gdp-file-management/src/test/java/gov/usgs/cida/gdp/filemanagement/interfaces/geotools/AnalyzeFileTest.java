@@ -2,7 +2,7 @@ package gov.usgs.cida.gdp.filemanagement.interfaces.geotools;
 
 import gov.usgs.cida.gdp.filemanagement.interfaces.geotools.AnalyzeFile;
 import static org.junit.Assert.*;
-import gov.usgs.cida.gdp.utilities.bean.ShapeFileSetBean;
+import gov.usgs.cida.gdp.utilities.bean.ShapeFileSet;
 import gov.usgs.cida.gdp.utilities.FileHelper;
 
 import java.io.File;
@@ -98,7 +98,7 @@ public class AnalyzeFileTest {
 
         List<String> result = null;
 
-        ShapeFileSetBean testBean = new ShapeFileSetBean();
+        ShapeFileSet testBean = new ShapeFileSet();
         testBean.setDbfFile(new File(dbfFile));
         testBean.setShapeFile(new File(shpFile));
 

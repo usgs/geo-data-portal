@@ -8,9 +8,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 
 @XStreamAlias("server")
-public class ServerBean implements XmlResponse {
+public class Server implements XmlResponse {
 
-	private static org.slf4j.Logger log = LoggerFactory.getLogger(ServerBean.class);
+	private static org.slf4j.Logger log = LoggerFactory.getLogger(Server.class);
 	
         private String name;
 	private String protocol;
@@ -25,7 +25,7 @@ public class ServerBean implements XmlResponse {
 		return log;
 	}
 	public static void setLog(org.slf4j.Logger log) {
-		ServerBean.log = log;
+		Server.log = log;
 	}
 	public String getHostname() {
 		return hostname;

@@ -42,7 +42,7 @@ public class EmailMessageBeanTest {
 
     @Test
     public void testEmailMessageBeanDefault() {
-        EmailMessageBean instance = new EmailMessageBean();
+        EmailMessage instance = new EmailMessage();
         assertEquals("", instance.getFrom());
         assertEquals("", instance.getTo());
         assertTrue(instance.getCc().isEmpty());
@@ -51,141 +51,141 @@ public class EmailMessageBeanTest {
     }
 
     /**
-     * Test of getFrom method, of class EmailMessageBean.
+     * Test of getFrom method, of class EmailMessage.
      */
     @Test
     public void testGetFrom() {
-        EmailMessageBean instance = new EmailMessageBean();
+        EmailMessage instance = new EmailMessage();
         String expResult = "";
         String result = instance.getFrom();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of setFrom method, of class EmailMessageBean.
+     * Test of setFrom method, of class EmailMessage.
      */
     @Test
     public void testSetFrom() {
         String from = "";
-        EmailMessageBean instance = new EmailMessageBean();
+        EmailMessage instance = new EmailMessage();
         instance.setFrom(from);
     }
 
     /**
-     * Test of getTo method, of class EmailMessageBean.
+     * Test of getTo method, of class EmailMessage.
      */
     @Test
     public void testGetTo() {
-        EmailMessageBean instance = new EmailMessageBean();
+        EmailMessage instance = new EmailMessage();
         String expResult = "";
         String result = instance.getTo();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of setTo method, of class EmailMessageBean.
+     * Test of setTo method, of class EmailMessage.
      */
     @Test
     public void testSetTo() {
         String to = "";
-        EmailMessageBean instance = new EmailMessageBean();
+        EmailMessage instance = new EmailMessage();
         instance.setTo(to);
     }
 
     /**
-     * Test of getCc method, of class EmailMessageBean.
+     * Test of getCc method, of class EmailMessage.
      */
     @SuppressWarnings("unchecked")
     @Test
     public void testGetCc() {
-        EmailMessageBean instance = new EmailMessageBean();
+        EmailMessage instance = new EmailMessage();
         List expResult = new Vector<String>();
         List result = instance.getCc();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of setCc method, of class EmailMessageBean.
+     * Test of setCc method, of class EmailMessage.
      */
     @Test
     public void testSetCc() {
         List<String> cc = null;
-        EmailMessageBean instance = new EmailMessageBean();
+        EmailMessage instance = new EmailMessage();
         instance.setCc(cc);
     }
 
     /**
-     * Test of getSubject method, of class EmailMessageBean.
+     * Test of getSubject method, of class EmailMessage.
      */
     @Test
     public void testGetSubject() {
-        EmailMessageBean instance = new EmailMessageBean();
+        EmailMessage instance = new EmailMessage();
         String expResult = "";
         String result = instance.getSubject();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of setSubject method, of class EmailMessageBean.
+     * Test of setSubject method, of class EmailMessage.
      */
     @Test
     public void testSetSubject() {
         String subject = "";
-        EmailMessageBean instance = new EmailMessageBean();
+        EmailMessage instance = new EmailMessage();
         instance.setSubject(subject);
     }
 
     /**
-     * Test of getContent method, of class EmailMessageBean.
+     * Test of getContent method, of class EmailMessage.
      */
     @Test
     public void testGetContent() {
-        EmailMessageBean instance = new EmailMessageBean();
+        EmailMessage instance = new EmailMessage();
         String expResult = "";
         String result = instance.getContent();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of setContent method, of class EmailMessageBean.
+     * Test of setContent method, of class EmailMessage.
      */
     @Test
     public void testSetContent() {
         String content = "";
-        EmailMessageBean instance = new EmailMessageBean();
+        EmailMessage instance = new EmailMessage();
         instance.setContent(content);
     }
 
     /**
-     * Test of getBcc method, of class EmailMessageBean.
+     * Test of getBcc method, of class EmailMessage.
      */
     @SuppressWarnings("unchecked")
     @Test
     public void testGetBcc() {
-        EmailMessageBean instance = new EmailMessageBean();
+        EmailMessage instance = new EmailMessage();
         List expResult = new ArrayList<String>();
         List result = instance.getBcc();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of getBccToString method, of class EmailMessageBean.
+     * Test of getBccToString method, of class EmailMessage.
      */
     @Test
     public void testGetBccToString() {
-        EmailMessageBean instance = new EmailMessageBean();
+        EmailMessage instance = new EmailMessage();
         String expResult = "";
         String result = instance.getBccToString();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of setBcc method, of class EmailMessageBean.
+     * Test of setBcc method, of class EmailMessage.
      */
     @Test
     public void testSetBcc() {
         List<String> bcc = null;
-        EmailMessageBean instance = new EmailMessageBean();
+        EmailMessage instance = new EmailMessage();
         instance.setBcc(bcc);
     }
 

@@ -8,7 +8,7 @@ import java.util.*;
  * @author isuftin
  *
  */
-public class EmailMessageBean {
+public class EmailMessage {
 
     private String from;
     private String to;
@@ -17,7 +17,7 @@ public class EmailMessageBean {
     private String subject;
     private String content;
 
-    public EmailMessageBean() {
+    public EmailMessage() {
         this.from = "";
         this.to = "";
         this.cc = new Vector<String>();
@@ -26,7 +26,7 @@ public class EmailMessageBean {
         this.content = "";
     }
 
-    public EmailMessageBean(String from, String to, List<String> cc, String subject, String content) {
+    public EmailMessage(String from, String to, List<String> cc, String subject, String content) {
         this.from = from;
         this.to = to;
         this.cc = cc;
@@ -34,7 +34,7 @@ public class EmailMessageBean {
         this.content = content;
     }
 
-    public EmailMessageBean(String from, String to, List<String> cc, List<String> bcc, String subject, String content) {
+    public EmailMessage(String from, String to, List<String> cc, List<String> bcc, String subject, String content) {
         this.from = from;
         this.to = to;
         this.cc = cc;

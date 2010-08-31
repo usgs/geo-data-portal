@@ -5,7 +5,7 @@
 
 package gov.usgs.cida.gdp.utilities;
 
-import gov.usgs.cida.gdp.utilities.bean.ShapeFileSetBean;
+import gov.usgs.cida.gdp.utilities.bean.ShapeFileSet;
 import java.io.File;
 import java.util.List;
 
@@ -15,8 +15,8 @@ import java.util.List;
  */
 public class ShapeFileHelper {
 
-    static public File getShapeFileFromShapeSetName(final String shapeSetName, final List<ShapeFileSetBean> shapeBeanList) {
-        for (ShapeFileSetBean sfsb : shapeBeanList) {
+    static public File getShapeFileFromShapeSetName(final String shapeSetName, final List<ShapeFileSet> shapeBeanList) {
+        for (ShapeFileSet sfsb : shapeBeanList) {
             if (shapeSetName.equals(sfsb.getName())) {
                 return sfsb.getShapeFile();
 //                shapefilePath = shapeFile.getAbsolutePath();
@@ -25,8 +25,8 @@ public class ShapeFileHelper {
         return null;
     }
 
-    static public String getShapeFilePathFromShapeSetName(final String shapeSetName, final List<ShapeFileSetBean> shapeBeanList) {
-        for (ShapeFileSetBean sfsb : shapeBeanList) {
+    static public String getShapeFilePathFromShapeSetName(final String shapeSetName, final List<ShapeFileSet> shapeBeanList) {
+        for (ShapeFileSet sfsb : shapeBeanList) {
             if (shapeSetName.equals(sfsb.getName())) {
                 return sfsb.getShapeFile().getAbsolutePath();
             }

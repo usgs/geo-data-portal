@@ -10,22 +10,22 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 
 @XStreamAlias("outputStatistics")
-public class OutputStatisticsBean implements XmlResponse {
+public class OutputStatistics implements XmlResponse {
 
 	@XStreamAlias("statistics")
 	@XStreamImplicit(itemFieldName="statistic")
 	private List<String> statistics;
 
-	OutputStatisticsBean() {
+	OutputStatistics() {
 		statistics = new ArrayList<String>();
 	}
 	
-	OutputStatisticsBean(List<String> statistics) {
+	OutputStatistics(List<String> statistics) {
 		this.statistics = statistics;
 	}
 	
-	public static OutputStatisticsBean getOutputStatisticsBean() {
-		OutputStatisticsBean result = null;
+	public static OutputStatistics getOutputStatisticsBean() {
+		OutputStatistics result = null;
 		int index = 0;
 		String statistic = null;
 		List<String> statistics = new ArrayList<String>();
@@ -35,7 +35,7 @@ public class OutputStatisticsBean implements XmlResponse {
 				statistics.add(statistic);
 			}
 		} while (!"".equals(statistic));
-		if (!statistics.isEmpty()) result = new OutputStatisticsBean(statistics);
+		if (!statistics.isEmpty()) result = new OutputStatistics(statistics);
 		return result;
 	}
 	

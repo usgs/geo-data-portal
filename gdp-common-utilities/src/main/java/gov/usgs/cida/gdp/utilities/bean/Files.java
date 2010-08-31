@@ -1,6 +1,5 @@
 package gov.usgs.cida.gdp.utilities.bean;
 
-import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 import gov.usgs.cida.gdp.utilities.FileHelper;
 
 import java.io.File;
@@ -17,7 +16,7 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 @XStreamAlias("fileSet")
-public class FilesBean implements XmlResponse {
+public class Files implements XmlResponse {
 
     @XStreamAlias("fileSetName")
     @XStreamAsAttribute
@@ -32,12 +31,12 @@ public class FilesBean implements XmlResponse {
 
     public String toXml() {
         XStream xstream = new XStream();
-        xstream.processAnnotations(FilesBean.class);
+        xstream.processAnnotations(Files.class);
         return xstream.toXML(this);
     }
 
-    public ShapeFileSetBean getShapeFileSetBean() {
-        ShapeFileSetBean result = new ShapeFileSetBean();
+    public ShapeFileSet getShapeFileSetBean() {
+        ShapeFileSet result = new ShapeFileSet();
         for (File file : this.files) {
             if (file.getName().toLowerCase().contains(".shp")) {
                 result.setShapeFile(file);
@@ -76,15 +75,15 @@ public class FilesBean implements XmlResponse {
      * @param userDir
      * @return
      */
-    public static List<FilesBean> getFilesBeanSetList(String exampleDir, String userDir) {
-        List<FilesBean> result = new ArrayList<FilesBean>();
-        result.addAll(FilesBean.getFilesBeanSetList(exampleDir, true));
-        List<FilesBean> userFiles = new ArrayList<FilesBean>();
+    public static List<Files> getFilesBeanSetList(String exampleDir, String userDir) {
+        List<Files> result = new ArrayList<Files>();
+        result.addAll(Files.getFilesBeanSetList(exampleDir, true));
+        List<Files> userFiles = new ArrayList<Files>();
         if (userDir != null && !"".equals(userDir)) {
-            //result.addAll(FilesBean.getFilesBeanSetList(userDir, false));
-            userFiles = FilesBean.getFilesBeanSetList(userDir, false);
+            //result.addAll(Files.getFilesBeanSetList(userDir, false));
+            userFiles = Files.getFilesBeanSetList(userDir, false);
 
-            for (FilesBean filesBean : userFiles) {
+            for (Files filesBean : userFiles) {
                 filesBean.setUserDirectory(userDir.substring(userDir.lastIndexOf('/') + 1));
             }
             result.addAll(userFiles);
@@ -92,8 +91,8 @@ public class FilesBean implements XmlResponse {
         return result;
     }
 
-    public static List<FilesBean> getFilesBeanSetList(String directory, boolean recursive) throws IllegalArgumentException {
-        return FilesBean.getFilesBeanSetList(FileHelper.getFileCollection(directory, recursive));
+    public static List<Files> getFilesBeanSetList(String directory, boolean recursive) throws IllegalArgumentException {
+        return Files.getFilesBeanSetList(FileHelper.getFileCollection(directory, recursive));
     }
 
     /**
@@ -102,12 +101,12 @@ public class FilesBean implements XmlResponse {
      * @param files
      * @return
      */
-    public static List<FilesBean> getFilesBeanSetList(Collection<File> files) {
+    public static List<Files> getFilesBeanSetList(Collection<File> files) {
         if (files == null) {
             return null;
         }
-        List<FilesBean> result = new ArrayList<FilesBean>();
-        Map<String, FilesBean> filesBeanMap = new HashMap<String, FilesBean>();
+        List<Files> result = new ArrayList<Files>();
+        Map<String, Files> filesBeanMap = new HashMap<String, Files>();
 
         for (File file : files) {
             String fileName = file.getName();
@@ -116,10 +115,10 @@ public class FilesBean implements XmlResponse {
                 fileNameWithoutSuffix = fileName.substring(0, fileName.lastIndexOf('.'));
             }
 
-            //Check if we already have a FilesBean by this name
-            FilesBean filesBean = filesBeanMap.get(fileNameWithoutSuffix);
+            //Check if we already have a Files by this name
+            Files filesBean = filesBeanMap.get(fileNameWithoutSuffix);
             if (filesBean == null) {
-                filesBean = new FilesBean();
+                filesBean = new Files();
                 filesBean.setName(fileNameWithoutSuffix);
             }
             filesBean.getFiles().add(file);

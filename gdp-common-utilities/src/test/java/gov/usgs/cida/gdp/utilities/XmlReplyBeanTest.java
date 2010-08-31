@@ -1,11 +1,11 @@
 package gov.usgs.cida.gdp.utilities;
 
-import gov.usgs.cida.gdp.utilities.bean.AckBean;
-import gov.usgs.cida.gdp.utilities.bean.ErrorBean;
+import gov.usgs.cida.gdp.utilities.bean.Acknowledgement;
+import gov.usgs.cida.gdp.utilities.bean.Error;
 import gov.usgs.cida.gdp.utilities.bean.ErrorEnum;
-import gov.usgs.cida.gdp.utilities.bean.MessageBean;
+import gov.usgs.cida.gdp.utilities.bean.Message;
 import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
-import gov.usgs.cida.gdp.utilities.bean.XmlReplyBean;
+import gov.usgs.cida.gdp.utilities.bean.XmlReply;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
@@ -21,7 +21,7 @@ import static org.junit.Assert.*;
  */
 public class XmlReplyBeanTest {
 
-    XmlReplyBean instance = null;
+    XmlReply instance = null;
 
     public XmlReplyBeanTest() {
     }
@@ -36,7 +36,7 @@ public class XmlReplyBeanTest {
 
     @Before
     public void setUp() {
-        this.instance = new XmlReplyBean();
+        this.instance = new XmlReply();
     }
 
     @After
@@ -46,20 +46,20 @@ public class XmlReplyBeanTest {
 
     @Test
     public void testXmlReplyBeanConstructorAckBeanAndContentArray() {
-        XmlReplyBean result = new XmlReplyBean(new AckBean(AckBean.ACK_OK), new AckBean(AckBean.ACK_OK));
+        XmlReply result = new XmlReply(new Acknowledgement(Acknowledgement.ACK_OK), new Acknowledgement(Acknowledgement.ACK_OK));
         assertNotNull(result);
     }
 
     @Test
     public void testXmlReplyBeanConstructorWithInStatusAndContentArray() {
-        XmlReplyBean result = new XmlReplyBean(1, new AckBean(AckBean.ACK_OK));
+        XmlReply result = new XmlReply(1, new Acknowledgement(Acknowledgement.ACK_OK));
         assertNotNull(result);
     }
 
     @Test
     public void testXmlReplyBeanConstructorWithInStatusAndContentArrayWithIllegalArgumentException() {
         try {
-            XmlReplyBean result = new XmlReplyBean(-1, new AckBean(AckBean.ACK_OK));
+            XmlReply result = new XmlReply(-1, new Acknowledgement(Acknowledgement.ACK_OK));
             assertNotNull(result);
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
@@ -68,7 +68,7 @@ public class XmlReplyBeanTest {
 
     @Test
     public void testXmlReplyBeanConstructorWithInStatusAndMessageBean() {
-        XmlReplyBean result = new XmlReplyBean(1, new MessageBean());
+        XmlReply result = new XmlReply(1, new Message());
         assertNotNull(result);
     }
 
@@ -76,7 +76,7 @@ public class XmlReplyBeanTest {
     public void testXmlReplyBeanConstructorWithInStatusAndMessageBeanWithIllegalArgumentException() {
 
         try {
-            XmlReplyBean result = new XmlReplyBean(-1, new MessageBean());
+            XmlReply result = new XmlReply(-1, new Message());
             assertNotNull(result);
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
@@ -87,7 +87,7 @@ public class XmlReplyBeanTest {
     public void testXmlReplyBeanConstructorWithInStatusAndErrorEnumAndMessageBeanWithIllegalArgumentException() {
         try {
             @SuppressWarnings("unused")
-	    XmlReplyBean result = new XmlReplyBean(-1, ErrorEnum.ERR_ATTRIBUTES_NOT_FOUND, new MessageBean());
+	    XmlReply result = new XmlReply(-1, ErrorEnum.ERR_ATTRIBUTES_NOT_FOUND, new Message());
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
         }
@@ -97,21 +97,21 @@ public class XmlReplyBeanTest {
     @Test
     public void testXmlReplyBeanConstructorWithIntAndXmlBeanList() {
         List content = new ArrayList();
-        content.add(new AckBean(AckBean.ACK_OK));
-        XmlReplyBean result = new XmlReplyBean(1, content);
+        content.add(new Acknowledgement(Acknowledgement.ACK_OK));
+        XmlReply result = new XmlReply(1, content);
         assertNotNull(result);
         assertTrue(result.getContent().length > 0);
     }
 
     @Test
     public void testXmlReplyBeanConstructorWithMessageBeanAndContentArray() {
-        XmlReplyBean result = new XmlReplyBean(new MessageBean("Test"), new XmlResponse[]{null, null});
+        XmlReply result = new XmlReply(new Message("Test"), new XmlResponse[]{null, null});
         assertNotNull(result);
     }
 
     @Test
     public void testXmlReplyBeanConstructorWithStatusInt() {
-        XmlReplyBean result = new XmlReplyBean(1);
+        XmlReply result = new XmlReply(1);
         assertNotNull(result);
     }
 
@@ -119,7 +119,7 @@ public class XmlReplyBeanTest {
     public void testXmlReplyBeanConstructorWithStatusIntWithIllegalArgumentException() {
         try {
             @SuppressWarnings("unused")
-	    XmlReplyBean result = new XmlReplyBean(-1);
+	    XmlReply result = new XmlReply(-1);
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
         }
@@ -127,7 +127,7 @@ public class XmlReplyBeanTest {
 
     @Test
     public void testXmlReplyBeanConstructorWithStatusIntAndErrorBean() {
-        XmlReplyBean result = new XmlReplyBean(1, new ErrorBean());
+        XmlReply result = new XmlReply(1, new Error());
         assertNotNull(result);
     }
 
@@ -135,7 +135,7 @@ public class XmlReplyBeanTest {
     public void testXmlReplyBeanConstructorWithStatusIntAndErrorBeanWithIllegalArgumentException() {
         try {
             @SuppressWarnings("unused")
-	    XmlReplyBean result = new XmlReplyBean(-1, new ErrorBean());
+	    XmlReply result = new XmlReply(-1, new Error());
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
         }
@@ -143,7 +143,7 @@ public class XmlReplyBeanTest {
 
     @Test
     public void testXmlReplyBeanConstructorWithStatusIntAndErrorEnum() {
-        XmlReplyBean result = new XmlReplyBean(1, ErrorEnum.ERR_ATTRIBUTES_NOT_FOUND);
+        XmlReply result = new XmlReply(1, ErrorEnum.ERR_ATTRIBUTES_NOT_FOUND);
         assertNotNull(result);
     }
 
@@ -151,7 +151,7 @@ public class XmlReplyBeanTest {
     public void testXmlReplyBeanConstructorWithStatusIntAndErrorEnumWithIllegalArgumentException() {
         try {
             @SuppressWarnings("unused")
-	    XmlReplyBean result = new XmlReplyBean(-1, ErrorEnum.ERR_ATTRIBUTES_NOT_FOUND);
+	    XmlReply result = new XmlReply(-1, ErrorEnum.ERR_ATTRIBUTES_NOT_FOUND);
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
         }
@@ -159,7 +159,7 @@ public class XmlReplyBeanTest {
 
     @Test
     public void testXmlReplyBeanConstructorWithStatusIntAndErrorEnumAndMessageBean() {
-        XmlReplyBean result = new XmlReplyBean(1, ErrorEnum.ERR_ATTRIBUTES_NOT_FOUND, new MessageBean());
+        XmlReply result = new XmlReply(1, ErrorEnum.ERR_ATTRIBUTES_NOT_FOUND, new Message());
         assertNotNull(result);
     }
 
@@ -167,7 +167,7 @@ public class XmlReplyBeanTest {
     public void testXmlReplyBeanConstructorWithStatusIntAndErrorEnumAndMessageBeanWithIllegalArgumentException() {
         try {
             @SuppressWarnings("unused")
-	    XmlReplyBean result = new XmlReplyBean(-1, ErrorEnum.ERR_ATTRIBUTES_NOT_FOUND, new MessageBean());
+	    XmlReply result = new XmlReply(-1, ErrorEnum.ERR_ATTRIBUTES_NOT_FOUND, new Message());
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
         }
@@ -175,7 +175,7 @@ public class XmlReplyBeanTest {
 
     @Test
     public void testXmlReplyBeanConstructorWithStatusIntAndErrorBeanAndMessageBean() {
-        XmlReplyBean result = new XmlReplyBean(1, new ErrorBean(), new MessageBean());
+        XmlReply result = new XmlReply(1, new Error(), new Message());
         assertNotNull(result);
     }
 
@@ -183,97 +183,97 @@ public class XmlReplyBeanTest {
     public void testXmlReplyBeanConstructorWithStatusIntAndErrorBeanAndMessageBeanWithIllegalArgumentException() {
         try {
             @SuppressWarnings("unused")
-	    XmlReplyBean result = new XmlReplyBean(-1, new ErrorBean(), new MessageBean());
+	    XmlReply result = new XmlReply(-1, new Error(), new Message());
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
         }
     }
 
     /**
-     * Test of toXml method, of class XmlReplyBean.
+     * Test of toXml method, of class XmlReply.
      */
     @Test
     public void testToXml() {
-        XmlReplyBean instance = new XmlReplyBean();
-        instance.setMessage(new MessageBean("TEST"));
-        String result = instance.toXml();
+        XmlReply instance = new XmlReply();
+        instance.setMessage(new Message("TEST"));
+        String result = instance.toXML();
         assertTrue(result.contains("TEST"));
     }
 
     /**
-     * Test of setAcknowledgment method, of class XmlReplyBean.
+     * Test of setAcknowledgment method, of class XmlReply.
      */
     @Test
     public void testSetAcknowledgment() {
-        AckBean acknowledgment = new AckBean(1);
-        XmlReplyBean instance = new XmlReplyBean();
+        Acknowledgement acknowledgment = new Acknowledgement(1);
+        XmlReply instance = new XmlReply();
         instance.setAcknowledgment(acknowledgment);
         assertEquals("OK", instance.getAcknowledgment().getStatus());
     }
 
     /**
-     * Test of getAcknowledgment method, of class XmlReplyBean.
+     * Test of getAcknowledgment method, of class XmlReply.
      */
     @Test
     public void testGetAcknowledgment() {
-        AckBean acknowledgment = new AckBean(1);
-        XmlReplyBean instance = new XmlReplyBean();
+        Acknowledgement acknowledgment = new Acknowledgement(1);
+        XmlReply instance = new XmlReply();
         instance.setAcknowledgment(acknowledgment);
-        AckBean result = instance.getAcknowledgment();
+        Acknowledgement result = instance.getAcknowledgment();
         assertEquals("OK", result.getStatus());
 
     }
 
     /**
-     * Test of setContent method, of class XmlReplyBean.
+     * Test of setContent method, of class XmlReply.
      */
     @Test
     public void testSetContent() {
         XmlResponse[] content = {null, null};
-        XmlReplyBean instance = new XmlReplyBean();
+        XmlReply instance = new XmlReply();
         instance.setContent(content);
         assertEquals(2, instance.getContent().length);
     }
 
     /**
-     * Test of getContent method, of class XmlReplyBean.
+     * Test of getContent method, of class XmlReply.
      */
     @Test
     public void testGetContent() {
-        XmlReplyBean instance = new XmlReplyBean();
+        XmlReply instance = new XmlReply();
         instance.setContent(new XmlResponse[] {null, null});
         Object[] result = instance.getContent();
         assertEquals(2, result.length);
     }
 
     /**
-     * Test of setMessage method, of class XmlReplyBean.
+     * Test of setMessage method, of class XmlReply.
      */
     @Test
     public void testSetMessage() {
-        MessageBean message = new MessageBean("TEST");
-        XmlReplyBean instance = new XmlReplyBean();
+        Message message = new Message("TEST");
+        XmlReply instance = new XmlReply();
         instance.setMessage(message);
         assertEquals("TEST", instance.getMessage().getMessages().get(0));
     }
 
     /**
-     * Test of getMessage method, of class XmlReplyBean.
+     * Test of getMessage method, of class XmlReply.
      */
     @Test
     public void testGetMessage() {
-        MessageBean message = new MessageBean("TEST");
-        XmlReplyBean instance = new XmlReplyBean();
+        Message message = new Message("TEST");
+        XmlReply instance = new XmlReply();
         instance.setMessage(message);
         assertEquals("TEST", instance.getMessage().getMessages().get(0));
     }
 
     /**
-     * Test of getErrorEnum method, of class XmlReplyBean.
+     * Test of getErrorEnum method, of class XmlReply.
      */
     @Test
     public void testGetErrorEnum() {
-        XmlReplyBean instance = new XmlReplyBean();
+        XmlReply instance = new XmlReply();
         instance.setErrorEnum(ErrorEnum.ERR_ATTRIBUTES_NOT_FOUND);
         ErrorEnum expResult = ErrorEnum.ERR_ATTRIBUTES_NOT_FOUND;
         ErrorEnum result = instance.getErrorEnum();
@@ -281,11 +281,11 @@ public class XmlReplyBeanTest {
     }
 
     /**
-     * Test of setErrorEnum method, of class XmlReplyBean.
+     * Test of setErrorEnum method, of class XmlReply.
      */
     @Test
     public void testSetErrorEnum() {
-        XmlReplyBean instance = new XmlReplyBean();
+        XmlReply instance = new XmlReply();
         instance.setErrorEnum(ErrorEnum.ERR_ATTRIBUTES_NOT_FOUND);
         ErrorEnum expResult = ErrorEnum.ERR_ATTRIBUTES_NOT_FOUND;
         ErrorEnum result = instance.getErrorEnum();

@@ -5,7 +5,7 @@ import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("fileLocation")
-public class FileLocationBean implements XmlResponse {
+public class FileLocation implements XmlResponse {
 
 	@XStreamAlias("link")
 	private String uploadLocation;
@@ -13,11 +13,11 @@ public class FileLocationBean implements XmlResponse {
 	@XStreamAlias("shapefile")
 	private String shapefileLocation;
 
-	public FileLocationBean(String uploadLocation) {
+	public FileLocation(String uploadLocation) {
 		this.uploadLocation = uploadLocation;
 	}
 	
-	public FileLocationBean(String uploadLocation, String shapefileLocation) {
+	public FileLocation(String uploadLocation, String shapefileLocation) {
 		this.uploadLocation = uploadLocation;
 		this.shapefileLocation = shapefileLocation;
 	}

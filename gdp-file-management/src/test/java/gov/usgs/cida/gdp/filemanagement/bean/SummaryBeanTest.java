@@ -5,7 +5,7 @@
 
 package gov.usgs.cida.gdp.filemanagement.bean;
 
-import gov.usgs.cida.gdp.filemanagement.bean.SummaryBean;
+import gov.usgs.cida.gdp.filemanagement.bean.Summary;
 import gov.usgs.cida.gdp.utilities.FileHelper;
 
 import java.io.File;
@@ -78,21 +78,21 @@ private static org.slf4j.Logger log = LoggerFactory.getLogger(SummaryBeanTest.cl
         @Test
         public void testConstructors() {
             System.out.println("testConstructors");
-            SummaryBean result = null;
+            Summary result = null;
             assertNull(result);
 
-            result = new SummaryBean();
+            result = new Summary();
             assertNotNull(result);
             assertEquals("", result.getFileName());
             assertNotNull(result.getFileSummary());
             assertTrue(result.getFileSummary().isEmpty());
 
-            result = new SummaryBean("Test");
+            result = new Summary("Test");
             assertNotNull(result);
             assertEquals("Test", result.getFileName());
             assertNull(result.getFileSummary());
 
-            result = new SummaryBean("Test", new ArrayList<String>());
+            result = new Summary("Test", new ArrayList<String>());
             assertNotNull(result);
             assertEquals("Test", result.getFileName());
             assertNotNull(result.getFileSummary());
@@ -100,37 +100,37 @@ private static org.slf4j.Logger log = LoggerFactory.getLogger(SummaryBeanTest.cl
         }
 
     /**
-     * Test of getFileName method, of class SummaryBean.
+     * Test of getFileName method, of class Summary.
      */
     @Test
     public void testGetFileName() {
         System.out.println("getFileName");
-        SummaryBean instance = new SummaryBean();
+        Summary instance = new Summary();
         String expResult = "";
         String result = instance.getFileName();
         assertEquals(expResult, result);        
     }
 
     /**
-     * Test of setFileName method, of class SummaryBean.
+     * Test of setFileName method, of class Summary.
      */
     @Test
     public void testSetFileName() {
         System.out.println("setFileName");
         String fileName = "";
-        SummaryBean instance = new SummaryBean();
+        Summary instance = new Summary();
         instance.setFileName(fileName);
         String result = instance.getFileName();
         assertEquals("", result);
     }
 
     /**
-     * Test of getFileSummary method, of class SummaryBean.
+     * Test of getFileSummary method, of class Summary.
      */
     @Test
     public void testGetFileSummary() {
         System.out.println("getFileSummary");
-        SummaryBean instance = new SummaryBean();
+        Summary instance = new Summary();
         instance.setFileSummary(new ArrayList<String>());
         List<String> expResult = new ArrayList<String>();
         List<String> result = instance.getFileSummary();
@@ -139,12 +139,12 @@ private static org.slf4j.Logger log = LoggerFactory.getLogger(SummaryBeanTest.cl
     }
 
     /**
-     * Test of setFileSummary method, of class SummaryBean.
+     * Test of setFileSummary method, of class Summary.
      */
     @Test
     public void testSetFileSummary() {
         System.out.println("getFileSummary");
-        SummaryBean instance = new SummaryBean();
+        Summary instance = new Summary();
         instance.setFileSummary(new ArrayList<String>());
         List<String> expResult = new ArrayList<String>();
         List<String> result = instance.getFileSummary();

@@ -1,7 +1,7 @@
 package gov.usgs.cida.gdp.utilities;
 
-import gov.usgs.cida.gdp.utilities.bean.FilesBean;
-import gov.usgs.cida.gdp.utilities.bean.ShapeFileSetBean;
+import gov.usgs.cida.gdp.utilities.bean.Files;
+import gov.usgs.cida.gdp.utilities.bean.ShapeFileSet;
 import static org.junit.Assert.*;
 
 import java.io.File;
@@ -76,7 +76,7 @@ public class ShapeFileSetBeanTest {
 
     @Test
     public void testGetAttributeListWithNullMemberVariable() {
-        ShapeFileSetBean sfsb = new ShapeFileSetBean();
+        ShapeFileSet sfsb = new ShapeFileSet();
         List<String> result = sfsb.getAttributeList();
         assertNotNull(result);
         assertTrue(result.isEmpty());
@@ -108,17 +108,17 @@ public class ShapeFileSetBeanTest {
                 + this.seperator
                 + testFile + ".dbf";
 
-        FilesBean filesBean = new FilesBean();
+        Files filesBean = new Files();
         Collection<File> files = new ArrayList<File>();
         files.add(new File(shpFile));
         files.add(new File(prjFile));
         files.add(new File(dbfFile));
         filesBean.setFiles(files);
-        ShapeFileSetBean shapeFileSetBean = filesBean.getShapeFileSetBean();
+        ShapeFileSet shapeFileSetBean = filesBean.getShapeFileSetBean();
         assertNotNull(shapeFileSetBean);
         List<String> result = null;
         try {
-            result = ShapeFileSetBean.getAttributeListFromBean(shapeFileSetBean);
+            result = ShapeFileSet.getAttributeListFromBean(shapeFileSetBean);
         } catch (IOException e) {
             assertNotNull(result);
         }
@@ -155,17 +155,17 @@ public class ShapeFileSetBeanTest {
                 + this.seperator
                 + testFile + ".dbf";
 
-        FilesBean filesBean = new FilesBean();
+        Files filesBean = new Files();
         Collection<File> files = new ArrayList<File>();
         files.add(new File(shpFile));
         files.add(new File(prjFile));
         files.add(new File(dbfFile));
         filesBean.setFiles(files);
-        ShapeFileSetBean shapeFileSetBean = filesBean.getShapeFileSetBean();
+        ShapeFileSet shapeFileSetBean = filesBean.getShapeFileSetBean();
         shapeFileSetBean.setChosenAttribute("HUC_8");
         List<String> result = null;
         try {
-            result = ShapeFileSetBean.getFeatureListFromBean(shapeFileSetBean);
+            result = ShapeFileSet.getFeatureListFromBean(shapeFileSetBean);
             assertNotNull(result);
             assertFalse(result.isEmpty());
         } catch (IOException e) {
@@ -207,19 +207,19 @@ public class ShapeFileSetBeanTest {
                 + this.seperator
                 + testFile + ".shx";
 
-        ShapeFileSetBean result = null;
-        FilesBean filesBean = new FilesBean();
+        ShapeFileSet result = null;
+        Files filesBean = new Files();
         Collection<File> files = new ArrayList<File>();
         files.add(new File(shpFile));
         files.add(new File(prjFile));
         files.add(new File(dbfFile));
 
-        result = ShapeFileSetBean.getShapeFileSetBeanFromFilesBean(filesBean);
+        result = ShapeFileSet.getShapeFileSetBeanFromFilesBean(filesBean);
         assertNull(result);
 
         files.add(new File(shxFile));
         filesBean.setFiles(files);
-        result = ShapeFileSetBean.getShapeFileSetBeanFromFilesBean(filesBean);
+        result = ShapeFileSet.getShapeFileSetBeanFromFilesBean(filesBean);
         assertNotNull(result);
     }
 }

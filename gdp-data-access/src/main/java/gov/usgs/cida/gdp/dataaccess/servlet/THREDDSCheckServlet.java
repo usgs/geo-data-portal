@@ -1,14 +1,14 @@
 package gov.usgs.cida.gdp.dataaccess.servlet;
 
 
-import gov.usgs.cida.gdp.dataaccess.bean.ServerBean;
-import gov.usgs.cida.gdp.dataaccess.bean.ServerBeanList;
-import gov.usgs.cida.gdp.dataaccess.bean.THREDDSInfoBean;
+import gov.usgs.cida.gdp.dataaccess.bean.Server;
+import gov.usgs.cida.gdp.dataaccess.bean.ServerList;
+import gov.usgs.cida.gdp.dataaccess.bean.THREDDSInfo;
 import gov.usgs.cida.gdp.dataaccess.helper.THREDDSServerHelper;
 import gov.usgs.cida.gdp.utilities.XmlUtils;
-import gov.usgs.cida.gdp.utilities.bean.AckBean;
-import gov.usgs.cida.gdp.utilities.bean.ErrorBean;
-import gov.usgs.cida.gdp.utilities.bean.XmlReplyBean;
+import gov.usgs.cida.gdp.utilities.bean.Acknowledgement;
+import gov.usgs.cida.gdp.utilities.bean.Error;
+import gov.usgs.cida.gdp.utilities.bean.XmlReply;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -69,7 +69,7 @@ public class THREDDSCheckServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Long start = Long.valueOf(new Date().getTime());
         String command = request.getParameter("command");
-        XmlReplyBean xmlReply = null;
+        XmlReply xmlReply = null;
 
         if ("checkserver".equals(command)) {
             String url = request.getParameter("url");
@@ -78,7 +78,7 @@ public class THREDDSCheckServlet extends HttpServlet {
             try {
         	 urlObject = new URL(URLDecoder.decode(url, "UTF-8"));
             } catch (MalformedURLException e) {
-                xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_INVALID_URL));
+                xmlReply = new XmlReply(Acknowledgement.ACK_FAIL, new Error(Error.ERR_INVALID_URL));
                 XmlUtils.sendXml(xmlReply, start, response);
                 return;
             }
@@ -89,15 +89,15 @@ public class THREDDSCheckServlet extends HttpServlet {
             
             try {
                 boolean isServerUp = THREDDSServerHelper.isServerReachable(hostname, port, 5000);
-                ServerBean tsb = new ServerBean();
+                Server tsb = new Server();
                 tsb.setHostname(hostname);
                 tsb.setPort(port);
                 tsb.setActive(isServerUp);
                 tsb.setLastCheck(new Date());
-                xmlReply = new XmlReplyBean(AckBean.ACK_OK, tsb);
+                xmlReply = new XmlReply(Acknowledgement.ACK_OK, tsb);
                 XmlUtils.sendXml(xmlReply, start, response);
             } catch (IOException e) {
-                xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_ERROR_WHILE_CONNECTING));
+                xmlReply = new XmlReply(Acknowledgement.ACK_FAIL, new Error(Error.ERR_ERROR_WHILE_CONNECTING));
                 XmlUtils.sendXml(xmlReply, start, response);
                 return;
             }
@@ -107,17 +107,17 @@ public class THREDDSCheckServlet extends HttpServlet {
         if ("listservers".equals(command)) {
             log.debug("User is attempting to retrieve a list of THREDDS servers");
 
-            Map<String, ServerBean> threddsServerBeanMap = (Map<String, ServerBean>) this.getServletContext().getAttribute("threddsServerBeanMap");
+            Map<String, Server> threddsServerBeanMap = (Map<String, Server>) this.getServletContext().getAttribute("threddsServerBeanMap");
 
             if (threddsServerBeanMap != null) {
                 try {
-                    Collection<ServerBean> threddsServerBeanCollection = threddsServerBeanMap.values();
-                    List<ServerBean> threddsServerBeanList = new ArrayList<ServerBean>();
+                    Collection<Server> threddsServerBeanCollection = threddsServerBeanMap.values();
+                    List<Server> threddsServerBeanList = new ArrayList<Server>();
                     threddsServerBeanList.addAll(threddsServerBeanCollection);
 
                     // Best naming scheme ever.
-                    ServerBeanList threddsServerBeanListBean = new ServerBeanList(threddsServerBeanList);
-                    xmlReply = new XmlReplyBean(AckBean.ACK_OK, threddsServerBeanListBean);
+                    ServerList threddsServerBeanListBean = new ServerList(threddsServerBeanList);
+                    xmlReply = new XmlReply(Acknowledgement.ACK_OK, threddsServerBeanListBean);
                     XmlUtils.sendXml(xmlReply, start, response);
                 } catch (IOException e) {
                     log.error(e.getMessage());
@@ -139,7 +139,7 @@ public class THREDDSCheckServlet extends HttpServlet {
         @SuppressWarnings("unchecked")
 	@Override
         public void run() {
-            Map<String, ServerBean> threddsServerBeanMap = (Map<String, ServerBean>) this.paramConfig.getServletContext().getAttribute("threddsServerBeanMap");
+            Map<String, Server> threddsServerBeanMap = (Map<String, Server>) this.paramConfig.getServletContext().getAttribute("threddsServerBeanMap");
             if (threddsServerBeanMap == null) {
                 threddsServerBeanMap = getTHREDDSServerBeanMap();
             }
@@ -154,15 +154,15 @@ public class THREDDSCheckServlet extends HttpServlet {
          * @param threddsServerBeanMap
          * @return
          */
-        private Map<String, ServerBean> checkServers(Map<String, ServerBean> threddsServerBeanMap) {
-            Map<String, ServerBean> result = new TreeMap<String, ServerBean>();
+        private Map<String, Server> checkServers(Map<String, Server> threddsServerBeanMap) {
+            Map<String, Server> result = new TreeMap<String, Server>();
 
             Set<String> threddsServerBeanMapKeySet = threddsServerBeanMap.keySet();
             Iterator<String> threddsServerBeanMapKeySetIterator = threddsServerBeanMapKeySet.iterator();
 
             while (threddsServerBeanMapKeySetIterator.hasNext()) {
                 String key = threddsServerBeanMapKeySetIterator.next();
-                ServerBean threddsServerBean = threddsServerBeanMap.get(key);
+                Server threddsServerBean = threddsServerBeanMap.get(key);
                 threddsServerBean.setLastCheck(new Date());
                 String host = threddsServerBean.getHostname();
                 int port = threddsServerBean.getPort();
@@ -183,10 +183,10 @@ public class THREDDSCheckServlet extends HttpServlet {
             return result;
         }
 
-        private Map<String, ServerBean> getTHREDDSServerBeanMap() {
-            Map<String, ServerBean> result = new TreeMap<String, ServerBean>();
+        private Map<String, Server> getTHREDDSServerBeanMap() {
+            Map<String, Server> result = new TreeMap<String, Server>();
 
-            Map<String, String> threddsUrlMap = THREDDSInfoBean.getTHREDDSUrlMap();
+            Map<String, String> threddsUrlMap = THREDDSInfo.getTHREDDSUrlMap();
             Set<String> threddsUrlMapKeySet = threddsUrlMap.keySet();
             Iterator<String> threddsUrlMapKeySetIterator = threddsUrlMapKeySet.iterator();
             while (threddsUrlMapKeySetIterator.hasNext()) {
@@ -194,7 +194,7 @@ public class THREDDSCheckServlet extends HttpServlet {
                 String name = key;
                 String serverUrl = threddsUrlMap.get(key);
                 String protocol;
-                ServerBean threddsServerBean = new ServerBean();
+                Server threddsServerBean = new Server();
 
                 int startAt = 0;
                 if (serverUrl.contains("http:")) {

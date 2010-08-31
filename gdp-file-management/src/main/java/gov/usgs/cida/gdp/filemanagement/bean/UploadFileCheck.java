@@ -4,20 +4,20 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 
 @XStreamAlias("uploadFileCheck")
-public class UploadFileCheckBean implements XmlResponse {
+public class UploadFileCheck implements XmlResponse {
 
     private boolean exists;
     private String file;
 
-    public UploadFileCheckBean() {
+    public UploadFileCheck() {
         this.exists = false;
     }
 
-    public UploadFileCheckBean(boolean exists) {
-        new UploadFileCheckBean(null, exists);
+    public UploadFileCheck(boolean exists) {
+        this(null, exists);
     }
 
-    public UploadFileCheckBean(String file, boolean doesDirectoryOrFileExist) {
+    public UploadFileCheck(String file, boolean doesDirectoryOrFileExist) {
         this.file = file;
         this.exists = doesDirectoryOrFileExist;
     }

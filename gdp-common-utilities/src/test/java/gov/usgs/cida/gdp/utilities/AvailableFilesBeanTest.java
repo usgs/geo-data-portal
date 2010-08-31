@@ -1,7 +1,7 @@
 package gov.usgs.cida.gdp.utilities;
 
 
-import gov.usgs.cida.gdp.utilities.bean.AvailableFilesBean;
+import gov.usgs.cida.gdp.utilities.bean.AvailableFiles;
 import static org.junit.Assert.*;
 import gov.usgs.cida.gdp.utilities.FileHelper;
 
@@ -57,24 +57,24 @@ public class AvailableFilesBeanTest {
 	
 	@Test
 	public void testGetAvailableFilesBeanWithEmptyStringDirectory() {
-		AvailableFilesBean result = 
-			AvailableFilesBean.getAvailableFilesBean("", "");
+		AvailableFiles result =
+			AvailableFiles.getAvailableFilesBean("", "");
 		
 		assertNull(result);
 	}
 
 	@Test
 	public void testGetAvailableFilesBeanWithNullDirectory() {
-		AvailableFilesBean result = 
-			AvailableFilesBean.getAvailableFilesBean(null, null);
+		AvailableFiles result =
+			AvailableFiles.getAvailableFilesBean(null, null);
 		
 		assertNull(result);
 	}
 
         @Test
 	public void testGetAvailableFilesBeanWithPopulatedExamplesDirectory() {
-		AvailableFilesBean result = 
-			AvailableFilesBean.getAvailableFilesBean(this.tempDir, null);
+		AvailableFiles result =
+			AvailableFiles.getAvailableFilesBean(this.tempDir, null);
 		
 		assertNotNull(result);
 		assertNotNull(result.getExampleFileList());
@@ -86,8 +86,8 @@ public class AvailableFilesBeanTest {
 	
 	@Test
 	public void testGetAvailableFilesBeanWithPopulatedUserDirectory() {
-		AvailableFilesBean result = 
-			AvailableFilesBean.getAvailableFilesBean(this.tempDir, 
+		AvailableFiles result =
+			AvailableFiles.getAvailableFilesBean(this.tempDir,
 						this.tempDir + "user_dir"
 						+ this.seperator
 						+ "Sample_Files"
@@ -108,8 +108,8 @@ public class AvailableFilesBeanTest {
 	public void testGetAvailableFilesBeanWithBogusUserDirectory() {
             try {
 		@SuppressWarnings("unused")
-		AvailableFilesBean result =
-			AvailableFilesBean.getAvailableFilesBean(this.tempDir,
+		AvailableFiles result =
+			AvailableFiles.getAvailableFilesBean(this.tempDir,
 						this.tempDir + "user_dir"
 						+ this.seperator
 						+ "Sample_Files"
@@ -124,8 +124,8 @@ public class AvailableFilesBeanTest {
 
 //	@Test
 //	public void testGetXmlWithEverythingPopulated() {
-//		AvailableFilesBean filesBean = 
-//			AvailableFilesBean.getAvailableFilesBean(this.tempDir, 
+//		AvailableFiles filesBean =
+//			AvailableFiles.getAvailableFilesBean(this.tempDir,
 //						this.tempDir + "user_dir"
 //						+ this.seperator
 //						+ "Sample_Files"

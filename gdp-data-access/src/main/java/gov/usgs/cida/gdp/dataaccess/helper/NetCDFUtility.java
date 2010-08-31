@@ -1,7 +1,7 @@
 package gov.usgs.cida.gdp.dataaccess.helper;
 
 import com.google.common.base.Preconditions;
-import gov.usgs.cida.gdp.utilities.bean.TimeBean;
+import gov.usgs.cida.gdp.utilities.bean.Time;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -278,7 +278,7 @@ public abstract class NetCDFUtility {
         return dateRange;
     }
 
-    public static TimeBean getTimeBean(String location, String gridSelection) throws IOException, ParseException, IllegalArgumentException {
+    public static Time getTimeBean(String location, String gridSelection) throws IOException, ParseException, IllegalArgumentException {
         List<String> dateRange = NetCDFUtility.getDateRange(location, gridSelection);
         if (dateRange.isEmpty()) {
             boolean hasTimeCoord = NetCDFUtility.hasTimeCoordinate(location);
@@ -288,7 +288,7 @@ public abstract class NetCDFUtility {
                 dateRange.add("2100-12-31 00:00:00Z");
             }
         }
-        TimeBean result = new TimeBean(dateRange);
+        Time result = new Time(dateRange);
         return result;
     }
 

@@ -1,15 +1,15 @@
 package gov.usgs.cida.gdp.coreprocessing.servlet;
 
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCategoricalGridCoverage;
-import gov.usgs.cida.gdp.coreprocessing.bean.FileLocationBean;
+import gov.usgs.cida.gdp.coreprocessing.bean.FileLocation;
 import gov.usgs.cida.gdp.coreprocessing.writer.CSVWriter;
 import gov.usgs.cida.gdp.utilities.FileHelper;
 import gov.usgs.cida.gdp.utilities.XmlUtils;
-import gov.usgs.cida.gdp.utilities.bean.AckBean;
-import gov.usgs.cida.gdp.utilities.bean.AvailableFilesBean;
-import gov.usgs.cida.gdp.utilities.bean.ErrorBean;
-import gov.usgs.cida.gdp.utilities.bean.ShapeFileSetBean;
-import gov.usgs.cida.gdp.utilities.bean.XmlReplyBean;
+import gov.usgs.cida.gdp.utilities.bean.Acknowledgement;
+import gov.usgs.cida.gdp.utilities.bean.AvailableFiles;
+import gov.usgs.cida.gdp.utilities.bean.Error;
+import gov.usgs.cida.gdp.utilities.bean.ShapeFileSet;
+import gov.usgs.cida.gdp.utilities.bean.XmlReply;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -59,7 +59,7 @@ import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
 import ucar.nc2.units.DateRange;
 
 import gov.usgs.cida.gdp.communication.EmailHandler;
-import gov.usgs.cida.gdp.communication.bean.EmailMessageBean;
+import gov.usgs.cida.gdp.communication.bean.EmailMessage;
 import gov.usgs.cida.gdp.coreprocessing.DelimiterOption;
 import gov.usgs.cida.gdp.coreprocessing.GroupBy;
 import gov.usgs.cida.gdp.coreprocessing.GroupBy.StationOption;
@@ -145,8 +145,8 @@ public class ProcessServlet extends HttpServlet {
             // TODO- return error
             File uploadDirectory = FileHelper.createFileRepositoryDirectory(baseFilePath);
             if (!uploadDirectory.exists()) {
-                XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL,
-                        new ErrorBean("Could not create or read repository directory. Process failed."));
+                XmlReply xmlOutput = new XmlReply(Acknowledgement.ACK_FAIL,
+                        new Error("Could not create or read repository directory. Process failed."));
                 XmlUtils.sendXml(xmlOutput, start, response);
                 return;
             }
@@ -157,8 +157,8 @@ public class ProcessServlet extends HttpServlet {
             try {
                 featureCollection = Geometry.getFeatureCollection(lat, lon, userspacePath, userDirectory, uploadDirectory, appTempDir, shapeSet, features, outputFile, attribute);
             } catch (Exception ex) {
-                XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL,
-							new ErrorBean(ex.getMessage()));
+                XmlReply xmlOutput = new XmlReply(Acknowledgement.ACK_FAIL,
+							new Error(ex.getMessage()));
 					XmlUtils.sendXml(xmlOutput, start, response);
 					return;
             }
@@ -169,9 +169,9 @@ public class ProcessServlet extends HttpServlet {
             } else {
 
             	//TODO- Don't search through all shapefiles.
-                AvailableFilesBean afb = AvailableFilesBean.getAvailableFilesBean(appTempDir, userspacePath + userDirectory);
-                List<ShapeFileSetBean> shapeBeanList = afb.getShapeSetList();
-                for (ShapeFileSetBean sfsb : shapeBeanList) {
+                AvailableFiles afb = AvailableFiles.getAvailableFilesBean(appTempDir, userspacePath + userDirectory);
+                List<ShapeFileSet> shapeBeanList = afb.getShapeSetList();
+                for (ShapeFileSet sfsb : shapeBeanList) {
                     if (shapeSet.equals(sfsb.getName())) {
                         shapefilePath = sfsb.getShapeFile().getAbsolutePath();
                     }
@@ -215,7 +215,7 @@ public class ProcessServlet extends HttpServlet {
                     toDate = df.parse(toTime);
                     fromDate = df.parse(fromTime);
                 } catch (ParseException e1) {
-                	XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean("Unable to parse parameter dates. Are they in the right format?."));
+                	XmlReply xmlOutput = new XmlReply(Acknowledgement.ACK_FAIL, new Error("Unable to parse parameter dates. Are they in the right format?."));
                     XmlUtils.sendXml(xmlOutput, start, response);
                     return;
                 }
@@ -240,7 +240,7 @@ public class ProcessServlet extends HttpServlet {
 							groupById, outputFile);
 				}
 			} catch (Exception ex) {
-				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL,	new ErrorBean(ex.getMessage()));
+				XmlReply xmlOutput = new XmlReply(Acknowledgement.ACK_FAIL,	new Error(ex.getMessage()));
 				XmlUtils.sendXml(xmlOutput, start, response);
 				return;
 			}
@@ -253,13 +253,13 @@ public class ProcessServlet extends HttpServlet {
             File outputDataFile = new File(uploadDirectory.getPath(),
                     outputFile);
             if (!outputDataFile.exists()) {
-                XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL,
-                        new ErrorBean("Unable to create output file."));
+                XmlReply xmlOutput = new XmlReply(Acknowledgement.ACK_FAIL,
+                        new Error("Unable to create output file."));
                 XmlUtils.sendXml(xmlOutput, start, response);
                 return;
             }
 
-            FileLocationBean fileLocations = new FileLocationBean(outputDataFile.getName(), shapefilePath);
+            FileLocation fileLocations = new FileLocation(outputDataFile.getName(), shapefilePath);
 
             // If user specified an E-Mail address, send an E-Mail to the user
             // with the provided link - currently this is returning true/false
@@ -274,7 +274,7 @@ public class ProcessServlet extends HttpServlet {
             // + the file specified by the user ((fileForUpload.getName()) and
             // we send that
             // back to the user
-            XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, fileLocations);
+            XmlReply xmlReply = new XmlReply(Acknowledgement.ACK_OK, fileLocations);
             XmlUtils.sendXml(xmlReply, start, response);
             return;
         }
@@ -433,7 +433,7 @@ public class ProcessServlet extends HttpServlet {
 	        String content = "Your file is ready: " + finalUrlEmail;
 	        String subject = "Your file is ready";
 	        String from = "gdp_data@usgs.gov";
-	        EmailMessageBean emBean = new EmailMessageBean(from, email,
+	        EmailMessage emBean = new EmailMessage(from, email,
 	                new ArrayList<String>(), subject, content);
 	        EmailHandler emh = new EmailHandler();
 	        try {

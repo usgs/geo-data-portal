@@ -3,24 +3,24 @@ package gov.usgs.cida.gdp.filemanagement.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SummaryBean {
+public class Summary {
 	private String fileName;
 	private List<String> fileSummary;
 
-        public SummaryBean() {
+        public Summary() {
             this.fileName = "";
             this.fileSummary = new ArrayList<String>();
         }
 
-	public SummaryBean(String localFileName) {
+	public Summary(String localFileName) {
 		this.fileName = localFileName;
 	}
 	
-	public SummaryBean(List<String> fileSummaryParam) {
+	public Summary(List<String> fileSummaryParam) {
 		this.fileSummary = fileSummaryParam;
 	}
 	
-	public SummaryBean(String fileNameParam, List<String> fileSummaryParam) {
+	public Summary(String fileNameParam, List<String> fileSummaryParam) {
 		this.fileName = fileNameParam;
 		this.fileSummary = fileSummaryParam;
 	}

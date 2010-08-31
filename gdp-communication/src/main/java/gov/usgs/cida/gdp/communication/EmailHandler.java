@@ -1,6 +1,6 @@
 package gov.usgs.cida.gdp.communication;
 
-import gov.usgs.cida.gdp.communication.bean.EmailMessageBean;
+import gov.usgs.cida.gdp.communication.bean.EmailMessage;
 
 import java.util.Properties;
 
@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 public class EmailHandler {
 	private static org.slf4j.Logger log = LoggerFactory.getLogger(EmailHandler.class);
 
-	public boolean sendMessage(EmailMessageBean message) throws AddressException, MessagingException {
+	public boolean sendMessage(EmailMessage message) throws AddressException, MessagingException {
 		Properties properties = System.getProperties();
 
 //		if (Boolean.parseBoolean(PropertyFactory.getProperty("development"))) {

@@ -1,6 +1,6 @@
 package gov.usgs.cida.gdp.dataaccess.bean;
 
-import gov.usgs.cida.gdp.dataaccess.bean.THREDDSInfoBean;
+import gov.usgs.cida.gdp.dataaccess.bean.THREDDSInfo;
 import static org.junit.Assert.*;
 
 import java.text.ParseException;
@@ -11,11 +11,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class THREDDSInfoBeanTest {
-	THREDDSInfoBean tIBean = null;
+	THREDDSInfo tIBean = null;
 	
 	@Before
 	public void setUp() throws Exception {
-		this.tIBean = new THREDDSInfoBean();
+		this.tIBean = new THREDDSInfo();
 		this.tIBean.setDatasetGridTimes(new ArrayList<String>());
 		for (int yearCount = 1;yearCount < 12;yearCount++) {
 			for (int monthCount = 1; monthCount < 13;monthCount++) {
@@ -35,7 +35,7 @@ public class THREDDSInfoBeanTest {
 	
 	@Test
 	public final void testGetTHREDDSUrlMap() {
-		Map<String, String> result = THREDDSInfoBean.getTHREDDSUrlMap();
+		Map<String, String> result = THREDDSInfo.getTHREDDSUrlMap();
 		assertFalse(result.isEmpty());
 		assertEquals(result.get("NARR (North American Regional Reanalysis)"),"http://nomads.ncdc.noaa.gov/thredds/catalog.html");
 	}

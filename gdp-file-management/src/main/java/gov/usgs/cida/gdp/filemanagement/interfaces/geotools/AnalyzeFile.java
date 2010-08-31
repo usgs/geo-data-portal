@@ -1,7 +1,7 @@
 package gov.usgs.cida.gdp.filemanagement.interfaces.geotools;
 
 import gov.usgs.cida.gdp.filemanagement.GeoToolsFileAnalysis;
-import gov.usgs.cida.gdp.utilities.bean.ShapeFileSetBean;
+import gov.usgs.cida.gdp.utilities.bean.ShapeFileSet;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,12 +36,12 @@ public class AnalyzeFile {
 	}
 	
 	/**
-	 * Summarizes files in a ShapeFileSetBean file set
+	 * Summarizes files in a ShapeFileSet file set
 	 * @param shapeFileSetBean
 	 * @return
 	 * @throws IOException 
 	 */
-	public static List<String> getFileSummary(ShapeFileSetBean shapeFileSetBean) throws IOException {
+	public static List<String> getFileSummary(ShapeFileSet shapeFileSetBean) throws IOException {
 		List<String> result = new ArrayList<String>();
 		File dbFile = shapeFileSetBean.getDbfFile();
 		File shpFile = shapeFileSetBean.getShapeFile();

@@ -1,16 +1,19 @@
 package gov.usgs.cida.gdp.utilities.bean;
 
-import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 import com.thoughtworks.xstream.annotations.XStreamAlias;	
-
+/**
+ * Represents an acknowledgement to the client
+ *
+ * @author isuftin
+ */
 @XStreamAlias("acknowledgment")
-public class AckBean implements XmlResponse {
+public class Acknowledgement implements XmlResponse {
 	public static final int ACK_OK = 1;
 	public static final int ACK_FAIL = 2;
 
 	private String status;
 
-	public AckBean(int status) throws IllegalArgumentException {
+	public Acknowledgement(int status) throws IllegalArgumentException {
 		switch (status) {
 			case (1):
 				this.status = "OK";

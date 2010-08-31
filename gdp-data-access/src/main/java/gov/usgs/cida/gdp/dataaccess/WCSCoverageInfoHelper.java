@@ -4,7 +4,7 @@
  */
 package gov.usgs.cida.gdp.dataaccess;
 
-import gov.usgs.cida.gdp.dataaccess.bean.WCSCoverageInfoBean;
+import gov.usgs.cida.gdp.dataaccess.bean.WCSCoverageInfo;
 import java.io.File;
 import java.io.IOException;
 import org.geotools.data.FeatureSource;
@@ -26,11 +26,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author admin
  */
-public class WCSCoverageInfo {
-	private static org.slf4j.Logger log = LoggerFactory.getLogger(WCSCoverageInfo.class);
+public class WCSCoverageInfoHelper {
+	private static org.slf4j.Logger log = LoggerFactory.getLogger(WCSCoverageInfoHelper.class);
     private static final int MAX_COVERAGE_SIZE = 64 << 20; // 64 MB
 
-    public static WCSCoverageInfoBean calculateWCSCoverageInfo(
+    public static WCSCoverageInfo calculateWCSCoverageInfo(
                 String shapefilePath, double x1, double y1, double x2,
                 double y2, String crs, String gridOffsets, String dataTypeString
             ) throws IOException, NoSuchAuthorityCodeException, FactoryException, TransformException {
@@ -111,7 +111,7 @@ public class WCSCoverageInfo {
                 + Double.toString(featureXBounds.getMaxY());
 
 
-        WCSCoverageInfoBean bean = new WCSCoverageInfoBean(minResamplingFactor,
+        WCSCoverageInfo bean = new WCSCoverageInfo(minResamplingFactor,
                 fullyCovers, units, boundingBox);
 
         return bean;

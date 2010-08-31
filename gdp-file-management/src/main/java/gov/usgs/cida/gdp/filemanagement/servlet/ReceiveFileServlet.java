@@ -2,10 +2,10 @@ package gov.usgs.cida.gdp.filemanagement.servlet;
 
 import gov.usgs.cida.gdp.utilities.FileHelper;
 import gov.usgs.cida.gdp.utilities.XmlUtils;
-import gov.usgs.cida.gdp.utilities.bean.AckBean;
-import gov.usgs.cida.gdp.utilities.bean.ErrorBean;
-import gov.usgs.cida.gdp.utilities.bean.UserDirectoryBean;
-import gov.usgs.cida.gdp.utilities.bean.XmlReplyBean;
+import gov.usgs.cida.gdp.utilities.bean.Acknowledgement;
+import gov.usgs.cida.gdp.utilities.bean.Error;
+import gov.usgs.cida.gdp.utilities.bean.UserDirectory;
+import gov.usgs.cida.gdp.utilities.bean.XmlReply;
 
 import java.io.IOException;
 import java.util.*;
@@ -52,7 +52,7 @@ public class ReceiveFileServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Long start = Long.valueOf(new Date().getTime());
 
-        XmlReplyBean xmlOutput = null;
+        XmlReply xmlOutput = null;
         String command = request.getParameter("command");
 
         if (ServletFileUpload.isMultipartContent(request)) {
@@ -62,13 +62,13 @@ public class ReceiveFileServlet extends HttpServlet {
             try {
                 userDirectory = uploadFiles(request, applicationUserspaceDir);
             } catch (Exception e) {
-                xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FILE_UPLOAD, e));
+                xmlOutput = new XmlReply(Acknowledgement.ACK_FAIL, new Error(Error.ERR_FILE_UPLOAD, e));
                 XmlUtils.sendXml(xmlOutput, start, response);
                 return;
             }
 
             if ("".equals(userDirectory)) { // User directory could not be created
-                xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_USER_DIR_CREATE));
+                xmlOutput = new XmlReply(Acknowledgement.ACK_FAIL, new Error(Error.ERR_USER_DIR_CREATE));
                 XmlUtils.sendXml(xmlOutput, start, response);
                 return;
             }
@@ -82,17 +82,17 @@ public class ReceiveFileServlet extends HttpServlet {
         } else if ("createuserdirectory".equals(command)) {
             String dir = FileHelper.createUserDirectory(System.getProperty("applicationUserSpaceDir"));
 
-            XmlReplyBean xmlReply;
+            XmlReply xmlReply;
             if ("".equals(dir)) {
-                xmlReply = new XmlReplyBean(AckBean.ACK_FAIL);
+                xmlReply = new XmlReply(Acknowledgement.ACK_FAIL);
             } else {
                 Cookie c = new Cookie("gdp-user-directory", dir);
                 c.setMaxAge(-1); // set cookie to be deleted when web browser exits
                 c.setPath("/");  // set cookie's visibility to the whole app
                 response.addCookie(c); // add cookie to the response for the client browser to consume
-                UserDirectoryBean udb = new UserDirectoryBean();
+                UserDirectory udb = new UserDirectory();
                 udb.setDirectory(dir);
-                xmlReply = new XmlReplyBean(AckBean.ACK_OK, udb);
+                xmlReply = new XmlReply(Acknowledgement.ACK_OK, udb);
             }
 
             XmlUtils.sendXml(xmlReply, start, response);

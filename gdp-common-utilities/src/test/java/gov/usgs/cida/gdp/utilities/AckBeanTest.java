@@ -5,13 +5,13 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import com.vividsolutions.jts.util.Assert;
-import gov.usgs.cida.gdp.utilities.bean.AckBean;
+import gov.usgs.cida.gdp.utilities.bean.Acknowledgement;
 
 public class AckBeanTest {
 
         @Test
         public void testSetStatus() {
-            AckBean ackBean = new AckBean(1);
+            Acknowledgement ackBean = new Acknowledgement(1);
             assertEquals("OK", ackBean.getStatus());
             ackBean.setStatus("FAIL");
             assertEquals("FAIL", ackBean.getStatus());
@@ -22,7 +22,7 @@ public class AckBeanTest {
 	public void testInvalidStatus() {
 		try {
 			@SuppressWarnings("unused")
-			AckBean ackBean = new AckBean(3);
+			Acknowledgement ackBean = new Acknowledgement(3);
 		} catch (IllegalArgumentException e) {
 			return;
 		}

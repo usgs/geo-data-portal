@@ -1,11 +1,11 @@
 package gov.usgs.cida.gdp.filemanagement.servlet;
 
-import gov.usgs.cida.gdp.filemanagement.bean.UploadFileCheckBean;
+import gov.usgs.cida.gdp.filemanagement.bean.UploadFileCheck;
 import gov.usgs.cida.gdp.utilities.FileHelper;
 import gov.usgs.cida.gdp.utilities.XmlUtils;
-import gov.usgs.cida.gdp.utilities.bean.AckBean;
-import gov.usgs.cida.gdp.utilities.bean.ErrorBean;
-import gov.usgs.cida.gdp.utilities.bean.XmlReplyBean;
+import gov.usgs.cida.gdp.utilities.bean.Acknowledgement;
+import gov.usgs.cida.gdp.utilities.bean.Error;
+import gov.usgs.cida.gdp.utilities.bean.XmlReply;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -55,7 +55,7 @@ public class SendFileServlet extends HttpServlet {
 	    	File fileToUpload = null;
 
 	    	if (!FileHelper.doesDirectoryOrFileExist(fullFilePath)) {
-				XmlReplyBean xmlOutput = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FILE_NOT_FOUND));
+				XmlReply xmlOutput = new XmlReply(Acknowledgement.ACK_FAIL, new Error(Error.ERR_FILE_NOT_FOUND));
 				XmlUtils.sendXml(xmlOutput, start, response);
 				return;
 	    	}
@@ -100,9 +100,9 @@ public class SendFileServlet extends HttpServlet {
 	    	File tempFile = new File(fullFilePath);
 	    	hasBytes = tempFile.length() > 0;
 	    	boolean fileExistsAndHasBytes = fileExists & hasBytes;
-	    	UploadFileCheckBean ufcb = new UploadFileCheckBean(file, fileExistsAndHasBytes);
+	    	UploadFileCheck ufcb = new UploadFileCheck(file, fileExistsAndHasBytes);
 
-			XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, ufcb);
+			XmlReply xmlReply = new XmlReply(Acknowledgement.ACK_OK, ufcb);
 			XmlUtils.sendXml(xmlReply, start, response);
 			return;
 		}

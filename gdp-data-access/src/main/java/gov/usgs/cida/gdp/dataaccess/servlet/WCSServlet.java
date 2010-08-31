@@ -1,13 +1,13 @@
 package gov.usgs.cida.gdp.dataaccess.servlet;
 
-import gov.usgs.cida.gdp.dataaccess.WCSCoverageInfo;
-import gov.usgs.cida.gdp.dataaccess.bean.WCSCoverageInfoBean;
+import gov.usgs.cida.gdp.dataaccess.WCSCoverageInfoHelper;
+import gov.usgs.cida.gdp.dataaccess.bean.WCSCoverageInfo;
 import gov.usgs.cida.gdp.utilities.XmlUtils;
-import gov.usgs.cida.gdp.utilities.bean.AckBean;
-import gov.usgs.cida.gdp.utilities.bean.AvailableFilesBean;
-import gov.usgs.cida.gdp.utilities.bean.ErrorBean;
-import gov.usgs.cida.gdp.utilities.bean.ShapeFileSetBean;
-import gov.usgs.cida.gdp.utilities.bean.XmlReplyBean;
+import gov.usgs.cida.gdp.utilities.bean.Acknowledgement;
+import gov.usgs.cida.gdp.utilities.bean.AvailableFiles;
+import gov.usgs.cida.gdp.utilities.bean.Error;
+import gov.usgs.cida.gdp.utilities.bean.ShapeFileSet;
+import gov.usgs.cida.gdp.utilities.bean.XmlReply;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
@@ -74,10 +74,10 @@ public class WCSServlet extends HttpServlet {
             String userDir = System.getProperty("applicationUserSpaceDir");
 
             //TODO- Don't search through all shapefiles.
-            AvailableFilesBean afb = AvailableFilesBean.getAvailableFilesBean(appTempDir, userDir);
-            List<ShapeFileSetBean> shapeBeanList = afb.getShapeSetList();
+            AvailableFiles afb = AvailableFiles.getAvailableFilesBean(appTempDir, userDir);
+            List<ShapeFileSet> shapeBeanList = afb.getShapeSetList();
             File shapeFile = null;
-            for (ShapeFileSetBean sfsb : shapeBeanList) {
+            for (ShapeFileSet sfsb : shapeBeanList) {
                 if (shapefileName.equals(sfsb.getName())) {
                     shapeFile = sfsb.getShapeFile();
                     shapefilePath = shapeFile.getAbsolutePath();
@@ -91,18 +91,18 @@ public class WCSServlet extends HttpServlet {
             double x2 = Double.parseDouble(upperCornerNums[0]);
             double y2 = Double.parseDouble(upperCornerNums[1]);
 
-            WCSCoverageInfoBean bean = null;
+            WCSCoverageInfo bean = null;
             try {
-                bean = WCSCoverageInfo.calculateWCSCoverageInfo(shapefilePath, x1, y1, x2, y2, crs, gridOffsets, dataTypeString);
+                bean = WCSCoverageInfoHelper.calculateWCSCoverageInfo(shapefilePath, x1, y1, x2, y2, crs, gridOffsets, dataTypeString);
             } catch (NoSuchAuthorityCodeException ex) {
                 LoggerFactory.getLogger(WCSServlet.class.getName()).error(null, ex);
-                sendErrorReply(response, start, ErrorBean.ERR_CANNOT_COMPARE_GRID_AND_GEOM);
+                sendErrorReply(response, start, Error.ERR_CANNOT_COMPARE_GRID_AND_GEOM);
             } catch (FactoryException ex) {
                 LoggerFactory.getLogger(WCSServlet.class.getName()).error(null, ex);
-                sendErrorReply(response, start, ErrorBean.ERR_CANNOT_COMPARE_GRID_AND_GEOM);
+                sendErrorReply(response, start, Error.ERR_CANNOT_COMPARE_GRID_AND_GEOM);
             } catch (TransformException ex) {
                 LoggerFactory.getLogger(WCSServlet.class.getName()).error(null, ex);
-                sendErrorReply(response, start, ErrorBean.ERR_CANNOT_COMPARE_GRID_AND_GEOM);
+                sendErrorReply(response, start, Error.ERR_CANNOT_COMPARE_GRID_AND_GEOM);
             }
 
             sendWCSInfoReply(response, start, bean);
@@ -110,12 +110,12 @@ public class WCSServlet extends HttpServlet {
     }
 
     void sendErrorReply(HttpServletResponse response, long start, int error) throws IOException {
-        XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(error));
+        XmlReply xmlReply = new XmlReply(Acknowledgement.ACK_FAIL, new Error(error));
         XmlUtils.sendXml(xmlReply, start, response);
     }
 
-    void sendWCSInfoReply(HttpServletResponse response, long start, WCSCoverageInfoBean bean) throws IOException {
-        XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_OK, bean);
+    void sendWCSInfoReply(HttpServletResponse response, long start, WCSCoverageInfo bean) throws IOException {
+        XmlReply xmlReply = new XmlReply(Acknowledgement.ACK_OK, bean);
         XmlUtils.sendXml(xmlReply, start, response);
     }
 }

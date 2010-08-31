@@ -2,11 +2,11 @@ package gov.usgs.cida.gdp.filemanagement.servlet;
 
 import gov.usgs.cida.gdp.utilities.FileHelper;
 import gov.usgs.cida.gdp.utilities.XmlUtils;
-import gov.usgs.cida.gdp.utilities.bean.AckBean;
-import gov.usgs.cida.gdp.utilities.bean.AvailableFilesBean;
-import gov.usgs.cida.gdp.utilities.bean.ErrorBean;
-import gov.usgs.cida.gdp.utilities.bean.MessageBean;
-import gov.usgs.cida.gdp.utilities.bean.XmlReplyBean;
+import gov.usgs.cida.gdp.utilities.bean.Acknowledgement;
+import gov.usgs.cida.gdp.utilities.bean.AvailableFiles;
+import gov.usgs.cida.gdp.utilities.bean.Error;
+import gov.usgs.cida.gdp.utilities.bean.Message;
+import gov.usgs.cida.gdp.utilities.bean.XmlReply;
 
 import java.io.IOException;
 import java.util.Date;
@@ -52,7 +52,7 @@ public class FileSelectionServlet extends HttpServlet {
 
 		String command = (request.getParameter("command") == null) ? "" : request.getParameter("command");
 
-		XmlReplyBean xmlReply = null;
+		XmlReply xmlReply = null;
 
 		if ("listfiles".equals(command)) {
 			String userDirectory = request.getParameter("userdirectory") == null ? "": request.getParameter("userdirectory");
@@ -69,11 +69,11 @@ public class FileSelectionServlet extends HttpServlet {
 				}
 			}
 			
-			AvailableFilesBean afb = null;
+			AvailableFiles afb = null;
 			try {
-				afb = AvailableFilesBean.getAvailableFilesBean(tempDir, userSpaceDir + userDirectory);
+				afb = AvailableFiles.getAvailableFilesBean(tempDir, userSpaceDir + userDirectory);
 			} catch (IllegalArgumentException e) {
-				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new ErrorBean(ErrorBean.ERR_FILE_LIST, e));
+				xmlReply = new XmlReply(Acknowledgement.ACK_FAIL, new Error(Error.ERR_FILE_LIST, e));
 				XmlUtils.sendXml(xmlReply, start, response);
 				return;
 			}
@@ -83,12 +83,12 @@ public class FileSelectionServlet extends HttpServlet {
 					|| afb.getShapeSetList() == null
 					|| afb.getShapeSetList().isEmpty()) {
 				// Couldn't pull any files. Send an error to the caller.
-				xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, new MessageBean("Could not find any files to work with."));
+				xmlReply = new XmlReply(Acknowledgement.ACK_FAIL, new Message("Could not find any files to work with."));
 				XmlUtils.sendXml(xmlReply, start, response);
 				return;
 			}
 
-			xmlReply = new XmlReplyBean(AckBean.ACK_OK, afb);
+			xmlReply = new XmlReply(Acknowledgement.ACK_OK, afb);
 			XmlUtils.sendXml(xmlReply, start, response);
             return;
 		}

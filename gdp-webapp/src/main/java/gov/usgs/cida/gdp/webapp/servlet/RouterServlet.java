@@ -15,9 +15,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.slf4j.LoggerFactory;
 
-import gov.usgs.cida.gdp.utilities.bean.AckBean;
-import gov.usgs.cida.gdp.utilities.bean.ErrorBean;
-import gov.usgs.cida.gdp.utilities.bean.XmlReplyBean;
+import gov.usgs.cida.gdp.utilities.bean.Acknowledgement;
+import gov.usgs.cida.gdp.utilities.bean.Error;
+import gov.usgs.cida.gdp.utilities.bean.XmlReply;
 import java.util.Iterator;
 
 /**
@@ -88,8 +88,8 @@ public class RouterServlet extends HttpServlet {
         // Must go after above isMultiPartContent block since that block doesn't contain a commandKey parameter
         if (!requestParameters.containsKey("command")) {
             log.info("User did not send command");
-            ErrorBean errorBean = new ErrorBean(ErrorBean.ERR_NO_COMMAND);
-            XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, errorBean);
+            Error errorBean = new Error(Error.ERR_NO_COMMAND);
+            XmlReply xmlReply = new XmlReply(Acknowledgement.ACK_FAIL, errorBean);
             XmlUtils.sendXml(xmlReply, start, response);
             return;
         }
@@ -109,8 +109,8 @@ public class RouterServlet extends HttpServlet {
             response.sendRedirect(forwardToServlet + commandList);
         } else {
         	log.info("No such command");
-        	ErrorBean errorBean = new ErrorBean(ErrorBean.ERR_NO_COMMAND);
-            XmlReplyBean xmlReply = new XmlReplyBean(AckBean.ACK_FAIL, errorBean);
+        	Error errorBean = new Error(Error.ERR_NO_COMMAND);
+            XmlReply xmlReply = new XmlReply(Acknowledgement.ACK_FAIL, errorBean);
 
             XmlUtils.sendXml(xmlReply, start, response);
             
