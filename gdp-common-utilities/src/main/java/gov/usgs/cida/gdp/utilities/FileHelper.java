@@ -21,7 +21,6 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.slf4j.LoggerFactory;
-//import org.geotools.data.FileDataStore;
 
 /**
  * Utility class that helps with multiple FileIO operations
@@ -66,26 +65,35 @@ public class FileHelper {
      * @return
      */
     public static Collection<File> wipeOldFiles(File directory, Long cutoffTime) {
-        if (directory == null || !directory.exists()) return new ArrayList<File>();
+        if (directory == null || !directory.exists()) {
+            return new ArrayList<File>();
+        }
 
         Collection<File> result = new ArrayList<File>();
         Collection<File> oldFiles = FileHelper.getFilesOlderThan(directory, cutoffTime, Boolean.TRUE);
         for (File file : oldFiles) {
             String logString = "Deleting File: \"" + file.toString() + "\" ... ";
-            if (file.delete()) {
+
+            if (file.canWrite() && file.delete()) {
                 logString += "done. ";
                 result.add(file);
-                if (file.getParentFile().isDirectory() && file.getParentFile().delete()) log.info("Deleting Directory: \"" + file.getParent() + "\" ...  done");
+                if (file.getParentFile().isDirectory() && file.getParentFile().delete()) {
+                    log.info("Deleting Directory: \"" + file.getParent() + "\" ...  done");
+                }
             } else {
                 logString += "FAILED!";
             }
-
             log.info(logString);
         }
 
         return result;
     }
 
+    /**
+     * Create a repository directory structure
+     * @param baseFilePath - point in the fs at which to begin structuring the repository directory from
+     * @return
+     */
     public static File createFileRepositoryDirectory(final String baseFilePath) {
         String basePath = baseFilePath;
         String directoryName = PropertyFactory.getProperty("upload.directory.name");
@@ -99,9 +107,9 @@ public class FileHelper {
         if (FileHelper.doesDirectoryOrFileExist(directory)) {
             return new File(directory);
         }
-        if (!FileHelper.createDir(directory)) {
-            return null;
-        }
+
+        FileHelper.createDir(directory);
+
         File result = new File(directory);
         if (!result.exists()) {
             return null;
@@ -114,11 +122,13 @@ public class FileHelper {
      *
      * @param directory
      * @param removeAtSysExit
-     * @return
+     * @return boolean true if already exists or created, false if directory could not be created
      */
     public static boolean createDir(String directory) {
         boolean result = false;
-        if (FileHelper.doesDirectoryOrFileExist(directory)) return true;
+        if (FileHelper.doesDirectoryOrFileExist(directory)) {
+            return true;
+        }
         result = new File(directory).mkdirs();
         return result;
     }
@@ -352,20 +362,22 @@ public class FileHelper {
      * @return
      * @throws Exception 
      */
-    public static boolean saveFileItems(String directory, List<FileItem> items) throws Exception  {
+    public static boolean saveFileItems(String directory, List<FileItem> items) throws Exception {
+        //TODO: Figure out a good way of testing this function
+
         // Process the uploaded items
         Iterator<FileItem> iter = items.iterator();
-        
+
         // Check for upload directory existence. Create if it does not exist. 
         FileHelper.createDir(directory);
-        
+
         while (iter.hasNext()) {
             FileItem item = iter.next();
 
             // This substring process is a fix for Windows uploaders
             // This gets only the filename from a full pathname. For some reason, Windows uploads includes the entire pathname (C:\something\something\filename)
             String fileName = (item.getName() != null && item.getName().contains("\\")) ? item.getName().substring(item.getName().lastIndexOf("\\") + 1) : item.getName();
-            
+
             String tempFile = directory + java.io.File.separator + fileName;
             if (fileName != null && !"".equals(fileName)) {
                 File uploadedFile = new File(tempFile);
@@ -380,15 +392,15 @@ public class FileHelper {
     }
 
     /**
-     * Takes a zip file and unzips it to a directory
+     * Takes a zip file and unzips it to a outputDirectory
      * 
-     * @param directory
+     * @param outputDirectory
      * @param zipFile
      * @return
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public static boolean unzipFile(String directory, File zipFile) throws FileNotFoundException, IOException {
+    public static boolean unzipFile(String outputDirectory, File zipFile) throws FileNotFoundException, IOException {
         FileInputStream fis = new FileInputStream(zipFile);
         ZipInputStream zis = new ZipInputStream(new BufferedInputStream(fis));
         ZipEntry entry = null;
@@ -396,22 +408,14 @@ public class FileHelper {
 
         final int BUFFER = 2048;
         while ((entry = zis.getNextEntry()) != null) {
-            String fileName =  entry.getName();
+            String fileName = entry.getName();
             log.debug("Unzipping: " + entry.getName());
 
-            // If this file doesn't pertain to a shape file.
-            // Move to next
-            if (!(fileName.toLowerCase().contains("shp") ||
-                    fileName.toLowerCase().contains("dbf") ||
-                    fileName.toLowerCase().contains("shx") ||
-                    fileName.toLowerCase().contains("prj") ||
-                    fileName.toLowerCase().contains("zip")
-                )) continue;
             int count = 0;
             byte data[] = new byte[BUFFER];
             // Get the final filename (even if it's within directories in the ZIP file)
             String destinationFileName = entry.getName().contains("/") ? entry.getName().substring(entry.getName().lastIndexOf('/')) : entry.getName();
-            FileOutputStream fos = new FileOutputStream(directory + java.io.File.separator + destinationFileName);
+            FileOutputStream fos = new FileOutputStream(outputDirectory + java.io.File.separator + destinationFileName);
             dest = new BufferedOutputStream(fos, BUFFER);
             while ((count = zis.read(data, 0, BUFFER)) != -1) {
                 dest.write(data, 0, count);
@@ -419,22 +423,9 @@ public class FileHelper {
             dest.flush();
             dest.close();
         }
-        zis.close();        
+        zis.close();
         return true;
     }
-
-//    public static List<FileDataStore> getShapeFileDataStores(
-//            List<String> shpFiles) throws IOException {
-//        List<FileDataStore> result = new ArrayList<FileDataStore>();
-//        for (String file : shpFiles) {
-//            FileDataStore fds = GeoToolsFileAnalysis.getFileDataStore(new File(file.trim()));
-//            if (fds != null) {
-//                result.add(fds);
-//            }
-//        }
-//        return result;
-//    }
-    
 
     /**
      * Creates a unique user directory
@@ -443,7 +434,7 @@ public class FileHelper {
      */
     public static String createUserDirectory(String applicationUserSpaceDir) {
         String userSubDir = Long.toString(new Date().getTime());
-        
+
         //String applicationUserSpaceDir = System.getProperty("applicationUserSpaceDir");
         String seperator = FileHelper.getSeparator();
         String userTempDir = applicationUserSpaceDir + seperator + userSubDir;
@@ -458,15 +449,18 @@ public class FileHelper {
         return "";
     }
 
-    
-	public static boolean updateTimestamp(final String path, final boolean recursive) throws IOException {
-        if (path == null || "".equals(path)) return false;
-        if (!FileHelper.doesDirectoryOrFileExist(path)) return false;
-        
+    public static boolean updateTimestamp(final String path, final boolean recursive) throws IOException {
+        if (path == null || "".equals(path)) {
+            return false;
+        }
+        if (!FileHelper.doesDirectoryOrFileExist(path)) {
+            return false;
+        }
+
         FileUtils.touch(new File(path));
         if (recursive) {
-        	@SuppressWarnings("unchecked")
-            Iterator<File> files =  FileUtils.iterateFiles(new File(path), null, true);
+            @SuppressWarnings("unchecked")
+            Iterator<File> files = FileUtils.iterateFiles(new File(path), null, true);
             while (files.hasNext()) {
                 File file = files.next();
                 FileUtils.touch(file); // update date on file
@@ -483,25 +477,29 @@ public class FileHelper {
      * @param recursive
      * @return
      */
-	@SuppressWarnings("unchecked")
-	static Collection<File> getFilesOlderThan(File filePath, Long age, Boolean recursive) {
-        if (filePath  == null || !filePath.exists()) return new ArrayList<File>();
+    @SuppressWarnings("unchecked")
+    static Collection<File> getFilesOlderThan(File filePath, Long age, Boolean recursive) {
+        if (filePath == null || !filePath.exists()) {
+            return new ArrayList<File>();
+        }
         Iterator<File> files = null;
-        
-        if (recursive.booleanValue()) files = FileUtils.iterateFiles(filePath, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
-        else files = FileUtils.iterateFiles(filePath, TrueFileFilter.INSTANCE, null);
+
+        if (recursive.booleanValue()) {
+            files = FileUtils.iterateFiles(filePath, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
+        } else {
+            files = FileUtils.iterateFiles(filePath, TrueFileFilter.INSTANCE, null);
+        }
 
         Collection<File> result = new ArrayList<File>();
         Date date = new Date();
-        while (files.hasNext()) 
-        {
+        while (files.hasNext()) {
             File file = files.next();
-            
-            if (file.lastModified() <  date.getTime() - age.longValue()) {
+
+            if (file.lastModified() < date.getTime() - age.longValue()) {
                 result.add(file);
             }
         }
-        
+
         return result;
     }
 }
