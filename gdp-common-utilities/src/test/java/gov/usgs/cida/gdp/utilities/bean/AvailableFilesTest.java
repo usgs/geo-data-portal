@@ -1,8 +1,9 @@
-package gov.usgs.cida.gdp.utilities;
+package gov.usgs.cida.gdp.utilities.bean;
 
 
 import gov.usgs.cida.gdp.utilities.bean.AvailableFiles;
 import static org.junit.Assert.*;
+import gov.usgs.cida.gdp.utilities.FileHelper;
 import gov.usgs.cida.gdp.utilities.FileHelper;
 
 import java.io.File;
@@ -14,7 +15,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class AvailableFilesBeanTest {
+public class AvailableFilesTest {
 
 	private String tempDir = "";
 
