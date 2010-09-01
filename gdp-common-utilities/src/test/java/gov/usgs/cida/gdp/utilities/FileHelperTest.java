@@ -563,4 +563,20 @@ public class FileHelperTest {
         Collection<File> result = FileHelper.getFilesOlderThan(new File("derp"), Long.MIN_VALUE, Boolean.TRUE);
         assertTrue(result.isEmpty());
     }
+
+       @Test
+    public void testGetFilesOlderThanWithRealFilePathAndRecursiveWithMaxAgeValue() {
+           // We should find no files older than the maximum long value
+        Collection<File> result = FileHelper.getFilesOlderThan(new File(this.tempDir), Long.MAX_VALUE, Boolean.TRUE);
+        assertTrue(result.isEmpty());
+    }
+
+              @Test
+    public void testGetFilesOlderThanWithRealFilePathAndNonRecursiveWithMaxAgeValue() {
+                  // We should find no files older than the maximum long value
+        Collection<File> result = FileHelper.getFilesOlderThan(new File(this.tempDir), Long.MAX_VALUE, Boolean.FALSE);
+        assertTrue(result.isEmpty());
+    }
+
+
 }
