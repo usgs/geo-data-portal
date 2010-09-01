@@ -1,4 +1,4 @@
-package gov.usgs.cida.gdp.utilities;
+package gov.usgs.cida.gdp.utilities.bean;
 
 import static org.junit.Assert.*;
 
@@ -7,7 +7,7 @@ import org.junit.Test;
 import com.vividsolutions.jts.util.Assert;
 import gov.usgs.cida.gdp.utilities.bean.Acknowledgement;
 
-public class AckBeanTest {
+public class AcknowledgmentTest {
 
         @Test
         public void testSetStatus() {

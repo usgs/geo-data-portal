@@ -1,5 +1,6 @@
-package gov.usgs.cida.gdp.utilities;
+package gov.usgs.cida.gdp.utilities.bean;
 
+import gov.usgs.cida.gdp.utilities.FileHelper;
 import gov.usgs.cida.gdp.utilities.bean.Files;
 import gov.usgs.cida.gdp.utilities.bean.ShapeFileSet;
 import static org.junit.Assert.*;
@@ -21,11 +22,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class ShapeFileSetBeanTest {
+public class ShapeFileSetTest {
 	
 	private static final String testFile = "demo_HUCs";
 	
-    private static org.slf4j.Logger log = LoggerFactory.getLogger(ShapeFileSetBeanTest.class);
+    private static org.slf4j.Logger log = LoggerFactory.getLogger(ShapeFileSetTest.class);
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {

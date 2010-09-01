@@ -524,7 +524,7 @@ public class FileHelperTest {
         assertTrue(file2Date > file1Date);
     }
 
-        @Test
+    @Test
     public void testUpdateTimeStampOnSingleNonexistentFile() {
         File file1 = new File(FileHelperTest.testFilePath);
         long file1Date = file1.lastModified();
@@ -564,19 +564,17 @@ public class FileHelperTest {
         assertTrue(result.isEmpty());
     }
 
-       @Test
+    @Test
     public void testGetFilesOlderThanWithRealFilePathAndRecursiveWithMaxAgeValue() {
-           // We should find no files older than the maximum long value
+        // We should find no files older than the maximum long value
         Collection<File> result = FileHelper.getFilesOlderThan(new File(this.tempDir), Long.MAX_VALUE, Boolean.TRUE);
         assertTrue(result.isEmpty());
     }
 
-              @Test
+    @Test
     public void testGetFilesOlderThanWithRealFilePathAndNonRecursiveWithMaxAgeValue() {
-                  // We should find no files older than the maximum long value
+        // We should find no files older than the maximum long value
         Collection<File> result = FileHelper.getFilesOlderThan(new File(this.tempDir), Long.MAX_VALUE, Boolean.FALSE);
         assertTrue(result.isEmpty());
     }
-
-
 }

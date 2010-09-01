@@ -1,4 +1,4 @@
-package gov.usgs.cida.gdp.utilities;
+package gov.usgs.cida.gdp.utilities.bean;
 
 import gov.usgs.cida.gdp.utilities.bean.Error;
 import static org.junit.Assert.*;
@@ -7,7 +7,7 @@ import java.util.Date;
 
 import org.junit.Test;
 
-public class ErrorBeanTest {
+public class ErrorTest {
 
 
 //	@Test

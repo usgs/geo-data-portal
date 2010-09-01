@@ -1,4 +1,4 @@
-package gov.usgs.cida.gdp.utilities;
+package gov.usgs.cida.gdp.utilities.bean;
 
 import gov.usgs.cida.gdp.utilities.bean.Message;
 import static org.junit.Assert.*;
@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-public class MessageBeanTest {
+public class MessageTest {
 
 	@Test
 	public void createMessageBean() {

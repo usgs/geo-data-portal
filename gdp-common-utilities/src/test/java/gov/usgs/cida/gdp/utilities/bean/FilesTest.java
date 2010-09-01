@@ -1,8 +1,9 @@
-package gov.usgs.cida.gdp.utilities;
+package gov.usgs.cida.gdp.utilities.bean;
 
 import gov.usgs.cida.gdp.utilities.bean.Files;
 import gov.usgs.cida.gdp.utilities.bean.ShapeFileSet;
 import static org.junit.Assert.*;
+import gov.usgs.cida.gdp.utilities.FileHelper;
 import gov.usgs.cida.gdp.utilities.FileHelper;
 
 import java.io.File;
@@ -21,11 +22,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 
-public class FilesBeanTest {
+public class FilesTest {
 	
 	private static final String testFile = "demo_HUCs";
 	
-	private static org.slf4j.Logger log = LoggerFactory.getLogger(FilesBeanTest.class);
+	private static org.slf4j.Logger log = LoggerFactory.getLogger(FilesTest.class);
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		log.debug("Started testing class");
