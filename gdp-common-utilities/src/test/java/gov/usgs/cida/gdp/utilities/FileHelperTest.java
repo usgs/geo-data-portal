@@ -424,7 +424,7 @@ public class FileHelperTest {
 
     @Test
     public void testCreateRepoDirWithinvalidBasefilePath() {
-        File directoryCreatedAt = FileHelper.createFileRepositoryDirectory(this.seperator + "/invalid" + this.seperator);
+        File directoryCreatedAt = FileHelper.createFileRepositoryDirectory(this.seperator + "invalid" + this.seperator);
         assertNull(directoryCreatedAt);
     }
 
@@ -550,5 +550,17 @@ public class FileHelperTest {
             Logger.getLogger(FileHelperTest.class.getName()).log(Level.SEVERE, null, ex);
         }
         assertTrue(result);
+    }
+
+    @Test
+    public void testGetFilesOlderThanWithNullFilePath() {
+        Collection<File> result = FileHelper.getFilesOlderThan(null, Long.MIN_VALUE, Boolean.TRUE);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void testGetFilesOlderThanWithNonExistantFilePath() {
+        Collection<File> result = FileHelper.getFilesOlderThan(new File("derp"), Long.MIN_VALUE, Boolean.TRUE);
+        assertTrue(result.isEmpty());
     }
 }
