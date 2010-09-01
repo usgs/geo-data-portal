@@ -1,8 +1,6 @@
 package gov.usgs.cida.gdp.utilities.bean;
 
 import gov.usgs.cida.gdp.utilities.FileHelper;
-import gov.usgs.cida.gdp.utilities.bean.Files;
-import gov.usgs.cida.gdp.utilities.bean.ShapeFileSet;
 import static org.junit.Assert.*;
 
 import java.io.File;
