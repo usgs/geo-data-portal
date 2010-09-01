@@ -1,6 +1,5 @@
 package gov.usgs.cida.gdp.coreprocessing.servlet;
 
-import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCategoricalGridCoverage;
 import gov.usgs.cida.gdp.coreprocessing.bean.FileLocation;
 import gov.usgs.cida.gdp.coreprocessing.writer.CSVWriter;
 import gov.usgs.cida.gdp.utilities.FileHelper;
@@ -10,10 +9,8 @@ import gov.usgs.cida.gdp.utilities.bean.AvailableFiles;
 import gov.usgs.cida.gdp.utilities.bean.Error;
 import gov.usgs.cida.gdp.utilities.bean.ShapeFileSet;
 import gov.usgs.cida.gdp.utilities.bean.XmlReply;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -37,35 +34,19 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.LoggerFactory;
 import org.geotools.feature.FeatureCollection;
-import org.geotools.feature.SchemaException;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.operation.TransformException;
 
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
-import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dataset.CoordinateAxis1DTime;
-import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
-import ucar.nc2.units.DateRange;
 
 import gov.usgs.cida.gdp.communication.EmailHandler;
 import gov.usgs.cida.gdp.communication.bean.EmailMessage;
 import gov.usgs.cida.gdp.coreprocessing.DelimiterOption;
-import gov.usgs.cida.gdp.coreprocessing.GroupBy;
-import gov.usgs.cida.gdp.coreprocessing.GroupBy.StationOption;
-import gov.usgs.cida.gdp.coreprocessing.analysis.StationDataCSVWriter;
-import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCoverageWeightedGridStatistics;
-import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCoverageWeightedGridStatisticsWriter.Statistic;
 import gov.usgs.cida.gdp.geometry.Geometry;
 import gov.usgs.cida.gdp.utilities.HTTPUtils;
 import ucar.nc2.NetcdfFile;
