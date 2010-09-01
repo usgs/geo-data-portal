@@ -7,37 +7,45 @@ import java.util.List;
 import org.junit.Test;
 
 public class PropertyFactoryTest {
+    @Test
+    public final void testGetKeys() {
+        Enumeration<Object> result = PropertyFactory.getKeys();
+        assertNotNull(result);
+        assertTrue(result.hasMoreElements());
+    }
 
-	@Test
-	public final void testGetKeys() {
-		Enumeration<Object> result = PropertyFactory.getKeys();
-		assertNotNull(result);
-		assertTrue(result.hasMoreElements());
-	}
+    @Test
+    public final void testGetPropertyWithFakeKey() {
+        String result = PropertyFactory.getProperty("does.not.exist");
+        assertEquals("", result);
+    }
 
-	@Test
-	public final void testGetProperty() {
-		String result = PropertyFactory.getProperty("does.not.exist");
-		assertEquals("", result);
+    @Test
+    public final void testGetPropertyWithRealKey() {
+        String result = PropertyFactory.getProperty("server.url.0");
+        assertEquals("RUNOFF;http://runoff.cr.usgs.gov:8086/thredds/hydrologic_catalog.xml", result);
+    }
 
-		result = PropertyFactory.getProperty("server.url.0");
-		assertEquals("RUNOFF;http://runoff.cr.usgs.gov:8086/thredds/hydrologic_catalog.xml", result);
-	}
+        @Test
+    public final void testGetPropertyWithNullKey() {
+        String result = PropertyFactory.getProperty(null);
+        assertNull(result);
+    }
 
-	@Test
-	public final void testSetProperty() {
-		String result = PropertyFactory.getProperty("server.url.0");
-		assertEquals("RUNOFF;http://runoff.cr.usgs.gov:8086/thredds/hydrologic_catalog.xml", result);
-		PropertyFactory.setProperty("test...test", "...");
-		result = PropertyFactory.getProperty("test...test");
-		assertEquals("...", result);
-	}
+    @Test
+    public final void testSetProperty() {
+        String result = PropertyFactory.getProperty("server.url.0");
+        assertEquals("RUNOFF;http://runoff.cr.usgs.gov:8086/thredds/hydrologic_catalog.xml", result);
+        PropertyFactory.setProperty("test...test", "...");
+        result = PropertyFactory.getProperty("test...test");
+        assertEquals("...", result);
+    }
 
-	@Test
-	public final void testGetValueList() {
-		List<String> result = null;
-		result = PropertyFactory.getValueList("server.url");
-		assertNotNull(result);
-		assertTrue(result.size() > 1);
-	}
+    @Test
+    public final void testGetValueList() {
+        List<String> result = null;
+        result = PropertyFactory.getValueList("server.url");
+        assertNotNull(result);
+        assertTrue(result.size() > 1);
+    }
 }
