@@ -53,6 +53,11 @@
             <artifactId>netcdf-all</artifactId>
             <version>4.1.20100220.0007</version>
         </dependency>
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <version>3.0</version>
+        </dependency>
     </dependencies>
 
 </project>
