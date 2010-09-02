@@ -21,102 +21,146 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-
 public class FilesTest {
-	
-	private static final String testFile = "demo_HUCs";
-	
-	private static org.slf4j.Logger log = LoggerFactory.getLogger(FilesTest.class);
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-		log.debug("Started testing class");
-	} 
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-		log.debug("Ended testing class");
-	}
-	private String tempDir = "";
 
-	private String seperator = "";
-	
-	@Before
-	public void setUp() throws Exception {
-		this.seperator = FileHelper.getSeparator();
-		this.tempDir = FileHelper.getSystemTemp() 
-		+ this.seperator 
-		+ "GDP-APP-TEMP" 
-		+ this.seperator
-		+ "testing-feel-free-to-delete"
-		+ this.seperator;
-	(new File(this.tempDir)).mkdir();
-		
-		// Copy example files 
-		ClassLoader cl = Thread.currentThread().getContextClassLoader(); 
-		URL sampleFileLocation = cl.getResource("Sample_Files/");
-		if (sampleFileLocation != null) {
-			File sampleFiles = null;
-			try {
-				sampleFiles = new File(sampleFileLocation.toURI());
-			} catch (URISyntaxException e) {
-				assertTrue("Exception encountered: " + e.getMessage(), false);
-			}
-			FileHelper.copyFileToFile(sampleFiles, this.tempDir + this.seperator);
-		} else {
-			fail("Sample files could not be loaded for test");
-		}
-	}
+    private static final String testFile = "demo_HUCs";
+    private static org.slf4j.Logger log = LoggerFactory.getLogger(FilesTest.class);
 
-	@After
-	public void tearDown() throws Exception {
-		FileUtils.deleteDirectory((new File(this.tempDir)));
-	}
-	
-	@Test
-	public void testGetShapeFileSetList() {
-		String shpFile = this.tempDir 
-		+ this.seperator 
-		+ "Sample_Files" 
-		+ this.seperator
-		+ "Shapefiles" 
-		+ this.seperator
-		+ testFile + ".shp";
-		
-		String prjFile = this.tempDir 
-		+ this.seperator 
-		+ "Sample_Files" 
-		+ this.seperator
-		+ "Shapefiles" 
-		+ this.seperator
-		+ testFile + ".prj";
-		
-		String dbfFile = this.tempDir 
-		+ this.seperator 
-		+ "Sample_Files" 
-		+ this.seperator
-		+ "Shapefiles" 
-		+ this.seperator
-		+ testFile + ".dbf";
-		
-		Files filesBean = new Files();
-		Collection<File> files = new ArrayList<File>();
-		files.add(new File(shpFile));
-		files.add(new File(prjFile));
-		files.add(new File(dbfFile));
-		filesBean.setFiles(files);
-		ShapeFileSet result = filesBean.getShapeFileSetBean();
-		assertNotNull(result);
-	}
-	
-	@Test
-	public void testGetFilesBeanSetList() {
-		Collection<File> files = FileHelper.getFileCollection(this.tempDir 
-				+ this.seperator 
-				+ "Sample_Files"
-				+ this.seperator , true);
-		assertNotNull(files);
-		List<Files> filesList = Files.getFilesBeanSetList(files);
-		assertNotNull(filesList);
-		assertFalse(filesList.isEmpty());
-	}
-	
+    @BeforeClass
+    public static void setUpBeforeClass() throws Exception {
+        log.debug("Started testing class");
+    }
+
+    @AfterClass
+    public static void tearDownAfterClass() throws Exception {
+        log.debug("Ended testing class");
+    }
+    private String tempDir = "";
+    private String seperator = "";
+
+    @Before
+    public void setUp() throws Exception {
+        this.seperator = FileHelper.getSeparator();
+        this.tempDir = FileHelper.getSystemTemp()
+                + this.seperator
+                + "GDP-APP-TEMP"
+                + this.seperator
+                + "testing-feel-free-to-delete"
+                + this.seperator;
+        (new File(this.tempDir)).mkdir();
+
+        // Copy example files
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        URL sampleFileLocation = cl.getResource("Sample_Files/");
+        if (sampleFileLocation != null) {
+            File sampleFiles = null;
+            try {
+                sampleFiles = new File(sampleFileLocation.toURI());
+            } catch (URISyntaxException e) {
+                assertTrue("Exception encountered: " + e.getMessage(), false);
+            }
+            FileHelper.copyFileToFile(sampleFiles, this.tempDir + this.seperator);
+        } else {
+            fail("Sample files could not be loaded for test");
+        }
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        FileUtils.deleteDirectory((new File(this.tempDir)));
+    }
+
+    @Test
+    public void testGetShapeFileSetList() {
+        String shpFile = this.tempDir
+                + this.seperator
+                + "Sample_Files"
+                + this.seperator
+                + "Shapefiles"
+                + this.seperator
+                + testFile + ".shp";
+
+        String prjFile = this.tempDir
+                + this.seperator
+                + "Sample_Files"
+                + this.seperator
+                + "Shapefiles"
+                + this.seperator
+                + testFile + ".prj";
+
+        String dbfFile = this.tempDir
+                + this.seperator
+                + "Sample_Files"
+                + this.seperator
+                + "Shapefiles"
+                + this.seperator
+                + testFile + ".dbf";
+
+        String falseFile = this.tempDir
+                + this.seperator
+                + "Sample_Files"
+                + this.seperator
+                + "Shapefiles"
+                + this.seperator
+                + testFile + ".dbs";
+
+        Files filesBean = new Files();
+        Collection<File> files = new ArrayList<File>();
+        files.add(new File(shpFile));
+        files.add(new File(prjFile));
+        files.add(new File(dbfFile));
+        files.add(new File(falseFile));
+        filesBean.setFiles(files);
+        ShapeFileSet result = filesBean.getShapeFileSetBean();
+        assertNotNull(result);
+    }
+
+    @Test
+    public void testGetFilesBeanSetList() {
+        Collection<File> files = FileHelper.getFileCollection(this.tempDir
+                + this.seperator
+                + "Sample_Files"
+                + this.seperator, true);
+        assertNotNull(files);
+        List<Files> filesList = Files.getFilesBeanSetList(files);
+        assertNotNull(filesList);
+        assertFalse(filesList.isEmpty());
+    }
+
+       @Test
+    public void testGetFilesBeanSetListWithNullFilesList() {
+        List<Files> filesList = Files.getFilesBeanSetList(null);
+        assertNull(filesList);
+    }
+
+    @Test
+    public void testGetFilesBeanSetListWithNullUserDir() {
+        Collection<File> files = FileHelper.getFileCollection(this.tempDir
+                + this.seperator
+                + "Sample_Files"
+                + this.seperator, true);
+        assertNotNull(files);
+        List<Files> filesList = Files.getFilesBeanSetList(tempDir, null);
+        assertNotNull(filesList);
+        assertFalse(filesList.isEmpty());
+    }
+
+    @Test
+    public void testGetFilesBeanSetListWithEmptyQuotesUserDir() {
+        Collection<File> files = FileHelper.getFileCollection(this.tempDir
+                + this.seperator
+                + "Sample_Files"
+                + this.seperator, true);
+        assertNotNull(files);
+        List<Files> filesList = Files.getFilesBeanSetList(tempDir, "");
+        assertNotNull(filesList);
+        assertFalse(filesList.isEmpty());
+    }
+
+    @Test
+    public void testGetName() {
+        Files files = new Files();
+        files.setName("test");
+        assertEquals(files.getName(), "test");
+    }
 }

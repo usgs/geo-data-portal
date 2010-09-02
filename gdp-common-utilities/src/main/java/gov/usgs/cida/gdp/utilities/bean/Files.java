@@ -29,11 +29,11 @@ public class Files implements XmlResponse {
     @XStreamImplicit
     private Collection<File> files;
 
-    public String toXml() {
-        XStream xstream = new XStream();
-        xstream.processAnnotations(Files.class);
-        return xstream.toXML(this);
-    }
+//    public String toXml() {
+//        XStream xstream = new XStream();
+//        xstream.processAnnotations(Files.class);
+//        return xstream.toXML(this);
+//    }
 
     public ShapeFileSet getShapeFileSetBean() {
         ShapeFileSet result = new ShapeFileSet();
