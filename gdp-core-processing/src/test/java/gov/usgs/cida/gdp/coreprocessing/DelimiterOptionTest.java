@@ -48,25 +48,4 @@ public class DelimiterOptionTest {
         assertEquals(DelimiterOption.getDefault(), DelimiterOption.c);
     }
 
-    /**
-     * Test of valueOf method, of class DelimiterOption.
-     */
-    @Test
-    public void testValueOf() {
-    }
-
-    /**
-     * Test of getDefault method, of class DelimiterOption.
-     */
-    @Test
-    public void testGetDefault() {
-    }
-
-    /**
-     * Test of toString method, of class DelimiterOption.
-     */
-    @Test
-    public void testToString() {
-    }
-
 }

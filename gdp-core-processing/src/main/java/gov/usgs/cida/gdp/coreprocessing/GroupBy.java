@@ -42,5 +42,10 @@ public class GroupBy {
             public static GridOption getDefault() {
                 return attributes;
             }
+
+            @Override
+             public String toString() {
+                 return description;
+             }
         }
 }
