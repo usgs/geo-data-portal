@@ -19,9 +19,9 @@ import static org.junit.Assert.*;
  *
  * @author isuftin
  */
-public class EmailMessageBeanTest {
+public class EmailMessageTest {
 
-    public EmailMessageBeanTest() {
+    public EmailMessageTest() {
     }
 
     @BeforeClass
@@ -187,6 +187,25 @@ public class EmailMessageBeanTest {
         List<String> bcc = null;
         EmailMessage instance = new EmailMessage();
         instance.setBcc(bcc);
+    }
+
+    @Test
+    public void testGetBCCToStringWithEmptyBCC() {
+        EmailMessage instance = new EmailMessage();
+        instance.setBcc(new ArrayList<String>());
+        String result = instance.getBccToString();
+        assertEquals("", result);
+    }
+
+    @Test
+    public void testGetBCCToString() {
+        EmailMessage instance = new EmailMessage();
+        List<String> input = new ArrayList<String>();
+        input.add("test@test.com");
+        instance.setBcc(input);
+        String result = instance.getBccToString();
+        assertFalse("".equals(result));
+        assertEquals("test@test.com,", result);
     }
 
 }
