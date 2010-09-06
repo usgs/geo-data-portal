@@ -1,4 +1,4 @@
-package gov.usgs.cida.gdp.coreprocessing;
+package gov.usgs.cida.gdp.coreprocessing.analysis.grid;
 
 import static gov.usgs.cida.gdp.coreprocessing.GridCellHelper.*;
 import static org.junit.Assert.assertEquals;

@@ -1,10 +1,9 @@
-package gov.usgs.cida.gdp.coreprocessing;
+package gov.usgs.cida.gdp.coreprocessing.analysis.grid;
 
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.GridCellTraverser;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.GridCellTraverser;
 import static org.junit.Assert.assertEquals;
 import static gov.usgs.cida.gdp.coreprocessing.GridCellHelper.*;
-
 import gov.usgs.cida.gdp.utilities.FileHelper;
 
 import java.io.IOException;
@@ -18,13 +17,13 @@ import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 
-public class ZYXGridCellVisitorTest {
+public class TYXGridCellVisitorTest {
 	
 	private GridCellVisitorMock gcvm = null;
 	
 	@Before
 	public void setUp() throws IOException {
-		String datasetUrl = getResourceDir() + FileHelper.getSeparator() + "testSimpleZYXGrid.ncml";
+		String datasetUrl = getResourceDir() + FileHelper.getSeparator() + "testSimpleTYXGrid.ncml";
 		FeatureDataset fd = FeatureDatasetFactoryManager.open(null, datasetUrl, null, new Formatter(System.err));
 		GridDataset dataset = (GridDataset)fd;
 		GridDatatype gdt = dataset.findGridDatatype(GridTypeTest.DATATYPE_RH);
@@ -35,25 +34,25 @@ public class ZYXGridCellVisitorTest {
 
 	@Test
 	public void testVisitorMockProcessCount() throws IOException {
-		int cells = Z_SIZE * Y_SIZE * X_SIZE;
+		int cells = T_SIZE * Y_SIZE * X_SIZE;
 	    assertEquals("The number of cells processed should be reported accurately", gcvm.getProcessCount(), cells);
 	}
 	
 	@Test
 	public void testVisitorMockYXCellCount() {
-		int cells = Z_SIZE;
+		int cells = T_SIZE;
 		assertEquals("The number of YX cells should be reported accurately", gcvm.getYXCount(), cells);
 	}
 	
 	@Test
 	public void testVisitorMockZCellCount() {
-		int cells = Z_SIZE;
+		int cells = 0;
 		assertEquals("The number of Z cells should be reported accurately", gcvm.getZCount(), cells);
 	}
 	
 	@Test
 	public void testVisitorMockTCellCount() {
-		int cells = 0;
+		int cells = T_SIZE;
 		assertEquals("The number of T cells should be reported accurately", gcvm.getTCount(), cells);
 	}
 	
