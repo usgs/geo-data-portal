@@ -205,7 +205,7 @@ public class EmailMessageTest {
         instance.setBcc(input);
         String result = instance.getBccToString();
         assertFalse("".equals(result));
-        assertEquals("test@test.com,", result);
+        assertEquals("test@test.com", result);
     }
 
 }
