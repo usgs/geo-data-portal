@@ -111,7 +111,7 @@ public class FileHelperTest {
 
             boolean result = FileHelper.renameFile(file, "new.file");
             assertTrue(result);
-            File newFile = new File(file.getParent() + File.pathSeparator + "new.file");
+            File newFile = new File(file.getParent() + File.separator + "new.file");
             assertTrue(newFile.exists());
             assertFalse(file.exists());
             newFile.delete();

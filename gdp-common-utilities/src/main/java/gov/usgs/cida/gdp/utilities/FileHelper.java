@@ -41,7 +41,7 @@ public class FileHelper {
      * @throws IOException
      */
     public static boolean renameFile(final File fromFile, final String toFileName) throws IOException {
-        File toFile = new  File(fromFile.getParent() +toFileName);
+        File toFile = new  File(fromFile.getParent() + File.separator + toFileName);
         FileUtils.copyFile(fromFile, toFile);
         if (!toFile.exists()) return false;
         return fromFile.delete();
