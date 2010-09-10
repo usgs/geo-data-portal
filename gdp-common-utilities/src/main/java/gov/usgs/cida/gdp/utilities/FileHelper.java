@@ -32,6 +32,21 @@ public class FileHelper {
 
     private static org.slf4j.Logger log = LoggerFactory.getLogger(FileHelper.class);
 
+    /**
+     * Performs a safe renaming of a file. First copies old file to new file, then if new file exists, removes old file.
+     *
+     * @param fromFile
+     * @param toFileName
+     * @return true if succeeded, false if not
+     * @throws IOException
+     */
+    public static boolean renameFile(final File fromFile, final String toFileName) throws IOException {
+        File toFile = new  File(fromFile.getParent() +toFileName);
+        FileUtils.copyFile(fromFile, toFile);
+        if (!toFile.exists()) return false;
+        return fromFile.delete();
+    }
+
     public static boolean copyFileToFile(final File inFile, final String outFileString) throws IOException {
         return FileHelper.copyFileToFile(inFile, outFileString, false);
     }

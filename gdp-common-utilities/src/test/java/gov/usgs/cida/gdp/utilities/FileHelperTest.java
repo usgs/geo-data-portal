@@ -90,6 +90,38 @@ public class FileHelperTest {
     }
 
     @Test
+    public void testGetCanonicalPathname() {
+        File file = new File(this.sampleDir + this.secondTestFile + ".prj");
+        assertTrue(file.exists());
+
+        String result = null;
+        try {
+            result = file.getParent();
+        } catch (Exception ex) {
+            Logger.getLogger(FileHelperTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        assertNotNull(result);
+    }
+
+    @Test
+    public void testRenameFile() {
+        try {
+            File file = File.createTempFile("delete", "me");
+            assertTrue(file.exists());
+
+            boolean result = FileHelper.renameFile(file, "new.file");
+            assertTrue(result);
+            File newFile = new File(file.getParent() + File.pathSeparator + "new.file");
+            assertTrue(newFile.exists());
+            assertFalse(file.exists());
+            newFile.delete();
+        } catch (IOException ex) {
+            Logger.getLogger(FileHelperTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    @Test
     /**
      * If this fails, try cleaning/building the project and re-run
      */
