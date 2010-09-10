@@ -2,7 +2,6 @@ package gov.usgs.cida.gdp.filemanagement;
 
 
 import static org.junit.Assert.*;
-import gov.usgs.cida.gdp.filemanagement.GeoToolsFileAnalysis;
 import gov.usgs.cida.gdp.utilities.FileHelper;
 
 import java.io.File;
@@ -26,7 +25,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.vividsolutions.jts.geom.Geometry;
-import gov.usgs.cida.gdp.filemanagement.GeoToolsFileAnalysis;
 
 public class GeoToolsFileAnalysisTest {
 	

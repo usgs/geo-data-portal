@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+    <display-name>gdp-file-management</display-name>
+    <servlet>
+        <description>
+            Receives files from client in a multi-part form upload
+        </description>
+        <display-name>ReceiveFileServlet</display-name>
+        <servlet-name>ReceiveFileServlet</servlet-name>
+        <servlet-class>gov.usgs.cida.gdp.filemanagement.servlet.ReceiveFileServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>FileSelectionServlet</servlet-name>
+        <servlet-class>gov.usgs.cida.gdp.filemanagement.servlet.FileSelectionServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GeoServerServlet</servlet-name>
+        <servlet-class>gov.usgs.cida.gdp.filemanagement.servlet.GeoServerServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ReceiveFileServlet</servlet-name>
+        <url-pattern>/ReceiveFileServlet</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <description>
+            Sends files to client
+        </description>
+        <display-name>SendFileServlet</display-name>
+        <servlet-name>SendFileServlet</servlet-name>
+        <servlet-class>gov.usgs.cida.gdp.filemanagement.servlet.SendFileServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SendFileServlet</servlet-name>
+        <url-pattern>/SendFileServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FileSelectionServlet</servlet-name>
+        <url-pattern>/FileSelectionServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GeoServerServlet</servlet-name>
+        <url-pattern>/GeoServerServlet</url-pattern>
+    </servlet-mapping>
+</web-app>
