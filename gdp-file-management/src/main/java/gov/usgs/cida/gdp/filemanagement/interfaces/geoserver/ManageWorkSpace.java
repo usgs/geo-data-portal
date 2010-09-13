@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -23,12 +24,14 @@ public class ManageWorkSpace {
 
     private String geoServerURL = "http://localhost:8081/geoserver";
 
+    public ManageWorkSpace() { /* Class uses the default eoServerURL specified above */}
+
     public ManageWorkSpace(String geoServerURL) {
         this.geoServerURL = geoServerURL;
     }
 
     public boolean createDataStore(String shapefilePath, String shapefileName, String workspace) throws IOException {
-            return createDataStore(shapefilePath, shapefileName, workspace, this.geoServerURL);
+            return createDataStore(shapefilePath, shapefileName, workspace, "gdp");
     }
 
     public boolean createDataStore(String shapefilePath, String shapefileName, String workspace, String geoServerURL) throws IOException {
@@ -63,9 +66,31 @@ public class ManageWorkSpace {
         return true;
     }
 
-    boolean workspaceExists(String workspace) throws IOException {
+    /**
+     * @see ManageWorkSpace#listDataStores(java.lang.String) 
+     *
+     * @return
+     * @throws MalformedURLException
+     */
+    public String listDataStores() throws MalformedURLException, IOException {
+        return listDataStores("gdp");
+    }
+
+    /**
+     * Lists data stores in a given workspace
+     *
+     * @param workspace
+     * @return
+     */
+    public String listDataStores(String workspace) throws MalformedURLException, IOException {
+//        mws.getResponse(new URL("http://localhost:8081/geoserver/rest/workspaces/gdp/datastores.xml"), "GET", "text/html", null, null, null);
+        return getResponse(new URL(this.getGeoServerURL() + "/rest/workspaces/" + workspace + "/datastores.xml"), "GET", "text/html", null, null, null);
+
+    }
+
+    public boolean workspaceExists(String workspace) throws IOException {
         try {
-            sendPacket(new URL(geoServerURL + "/rest/workspaces/" + workspace), "GET", null, null);
+            sendPacket(new URL(getGeoServerURL() + "/rest/workspaces/" + workspace), "GET", null, null);
         } catch (FileNotFoundException e) {
             return false;
         }
@@ -75,7 +100,7 @@ public class ManageWorkSpace {
 
     boolean dataStoreExists(String workspace, String dataStore) throws IOException {
         try {
-            URL url = new URL(geoServerURL + "/rest/workspaces/" + workspace + "/datastores/" + dataStore);
+            URL url = new URL(getGeoServerURL() + "/rest/workspaces/" + workspace + "/datastores/" + dataStore);
             sendPacket(url, "GET", null, null);
         } catch (FileNotFoundException e) {
             return false;
@@ -86,7 +111,7 @@ public class ManageWorkSpace {
 
     boolean styleExists(String styleName) throws IOException {
         try {
-            sendPacket(new URL(geoServerURL + "/rest/styles/" + styleName), "GET", null, null);
+            sendPacket(new URL(getGeoServerURL() + "/rest/styles/" + styleName), "GET", null, null);
         } catch (FileNotFoundException e) {
             return false;
         }
@@ -126,17 +151,50 @@ public class ManageWorkSpace {
 
         // create style in geoserver
         if (!styleExists(styleName)) {
-            sendPacket(new URL(geoServerURL + "/rest/styles?name=" + styleName),
+            sendPacket(new URL(getGeoServerURL() + "/rest/styles?name=" + styleName),
                     "POST", "application/vnd.ogc.sld+xml", sld);
         } else {
-            sendPacket(new URL(geoServerURL + "/rest/styles/" + styleName),
+            sendPacket(new URL(getGeoServerURL() + "/rest/styles/" + styleName),
                     "PUT", "application/vnd.ogc.sld+xml", sld);
         }
 
         // set layer to use the new style
-        sendPacket(new URL(geoServerURL + "/rest/layers/" + workspace + ":" + layer), "PUT", "text/xml",
+        sendPacket(new URL(getGeoServerURL() + "/rest/layers/" + workspace + ":" + layer), "PUT", "text/xml",
                 "<layer><defaultStyle><name>" + styleName + "</name></defaultStyle>"
                 + "<enabled>true</enabled></layer>");
+    }
+
+    String getResponse(URL url, String requestMethod, String contentType, String content, String user, String pass, String... requestProperties) throws MalformedURLException, IOException {
+
+        HttpURLConnection httpConnection = (HttpURLConnection)url.openConnection();
+        httpConnection.setDoOutput(true);
+        httpConnection.setRequestMethod(requestMethod);
+
+        //Set authentication
+        String u = ("".equals(user) || user == null) ? "admin" : user;
+        String p = ("".equals(pass) || pass == null) ? "geoserver" : pass;
+        String encoding = new sun.misc.BASE64Encoder().encode((u + ":" + p).getBytes());
+        httpConnection.addRequestProperty("Authorization", "Basic " + encoding);
+        
+        if (contentType != null)  httpConnection.addRequestProperty("Content-Type", contentType);
+
+        for (int i = 0; i < requestProperties.length; i += 2)  httpConnection.addRequestProperty(requestProperties[i], requestProperties[i + 1]);
+
+        int responseCode = httpConnection.getResponseCode();
+        String responseMessage = httpConnection.getResponseMessage();
+
+        StringBuilder responseString = new StringBuilder();
+        BufferedReader br = null;
+        try {
+            String line = null;
+            br = new BufferedReader(new InputStreamReader(httpConnection.getInputStream(), "UTF-8"));
+            while ((line = br.readLine()) != null) responseString.append(line).append("\n");
+        } finally {
+            br.close();
+            httpConnection.disconnect();
+        }
+        
+        return responseString.toString();
     }
 
     void sendPacket(URL url, String requestMethod, String contentType, String content,
@@ -165,7 +223,6 @@ public class ManageWorkSpace {
 
         // For some reason this has to be here for the packet above to be sent //
         BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
-        @SuppressWarnings("unused") //remove warning from IDE
         String line;
         while ((line = reader.readLine()) != null) {
             //System.out.println(line);
@@ -428,5 +485,19 @@ public class ManageWorkSpace {
                 + "</StyledLayerDescriptor>";
 
         return style;
+    }
+
+    /**
+     * @return the geoServerURL
+     */
+    public String getGeoServerURL() {
+        return geoServerURL;
+    }
+
+    /**
+     * @param geoServerURL the geoServerURL to set
+     */
+    public void setGeoServerURL(String geoServerURL) {
+        this.geoServerURL = geoServerURL;
     }
 }
