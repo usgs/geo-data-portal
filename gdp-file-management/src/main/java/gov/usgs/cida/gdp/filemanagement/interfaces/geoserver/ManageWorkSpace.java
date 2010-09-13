@@ -21,7 +21,7 @@ import java.util.Date;
  */
 public class ManageWorkSpace {
 
-    private static final String geoServerURL = "http://localhost:8052/geoserver";
+    private static final String geoServerURL = "http://localhost:8080/geoserver";
 
     public boolean createDataStore(String shapefilePath, String shapefileName, String workspace)
             throws IOException {
