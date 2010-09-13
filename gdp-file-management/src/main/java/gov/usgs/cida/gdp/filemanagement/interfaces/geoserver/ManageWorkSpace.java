@@ -21,11 +21,17 @@ import java.util.Date;
  */
 public class ManageWorkSpace {
 
-    private static final String geoServerURL = "http://localhost:8080/geoserver";
+    private String geoServerURL = "http://localhost:8081/geoserver";
 
-    public boolean createDataStore(String shapefilePath, String shapefileName, String workspace)
-            throws IOException {
+    public ManageWorkSpace(String geoServerURL) {
+        this.geoServerURL = geoServerURL;
+    }
 
+    public boolean createDataStore(String shapefilePath, String shapefileName, String workspace) throws IOException {
+            return createDataStore(shapefilePath, shapefileName, workspace, this.geoServerURL);
+    }
+
+    public boolean createDataStore(String shapefilePath, String shapefileName, String workspace, String geoServerURL) throws IOException {
         // create the workspace if it doesn't already exist
         URL workspacesURL = new URL(geoServerURL + "/rest/workspaces/");
         if (!workspaceExists(workspace)) {
