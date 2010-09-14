@@ -67,6 +67,14 @@ public class ManageWorkSpace {
     }
 
     /**
+     * Lists available workspaces
+     * @return
+     */
+    public String listWorkSpaces() throws MalformedURLException, IOException {
+        return getResponse(new URL(this.getGeoServerURL() + "/rest/workspaces.xml"), "GET", "text/html", null, null, null);
+    }
+
+    /**
      * @see ManageWorkSpace#listDataStores(java.lang.String) 
      *
      * @return
@@ -83,9 +91,7 @@ public class ManageWorkSpace {
      * @return
      */
     public String listDataStores(String workspace) throws MalformedURLException, IOException {
-//        mws.getResponse(new URL("http://localhost:8081/geoserver/rest/workspaces/gdp/datastores.xml"), "GET", "text/html", null, null, null);
         return getResponse(new URL(this.getGeoServerURL() + "/rest/workspaces/" + workspace + "/datastores.xml"), "GET", "text/html", null, null, null);
-
     }
 
     public boolean workspaceExists(String workspace) throws IOException {
