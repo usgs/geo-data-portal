@@ -10,7 +10,6 @@ import java.util.Formatter;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FileDataStore;
@@ -67,13 +66,17 @@ public class FeatureCoverageWeightedGridStatistics {
             throw new IllegalStateException("Currently require y-x or t-y-x grid for this operation");
         }
 
-        LatLonRect llr = GeoToolsNetCDFUtility.getLatLonRectFromEnvelope(
+        LatLonRect featureCollectionLLR = GeoToolsNetCDFUtility.getLatLonRectFromEnvelope(
                 featureCollection.getBounds(),
                 DefaultGeographicCRS.WGS84);
+		LatLonRect gridLLR = gdt.getCoordinateSystem().getLatLonBoundingBox();
+		if (gridLLR.containedIn(featureCollectionLLR)) {
+			throw new RuntimeException("feature bounds (" + featureCollectionLLR + ") not contained in gridded dataset (" + gridLLR + ")");
+		}
 
         try {
             Range[] ranges = GridUtility.getRangesFromLatLonRect(
-                    llr, gdt.getCoordinateSystem());
+                    featureCollectionLLR, gdt.getCoordinateSystem());
             gdt = gdt.makeSubset(null, null, timeRange, null, ranges[1], ranges[0]);
         } catch (InvalidRangeException ex) {
             log.error(null, ex);

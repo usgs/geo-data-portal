@@ -6,6 +6,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.prep.PreparedGeometry;
 import com.vividsolutions.jts.geom.prep.PreparedGeometryFactory;
+import gov.usgs.cida.gdp.coreprocessing.analysis.GeoToolsNetCDFUtility;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.GridUtility.IndexToCoordinateBuilder;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -59,6 +60,14 @@ public class FeatureCategoricalGridCoverage {
         if (gt != GridType.YX) {
             throw new IllegalStateException("Currently require y-x or t-y-x grid for this operation");
         }
+
+		LatLonRect featureCollectionLLR = GeoToolsNetCDFUtility.getLatLonRectFromEnvelope(
+				featureCollection.getBounds(),
+				DefaultGeographicCRS.WGS84);
+		LatLonRect gridLLR = gdt.getCoordinateSystem().getLatLonBoundingBox();
+		if (gridLLR.containedIn(featureCollectionLLR)) {
+			throw new RuntimeException("feature bounds (" + featureCollectionLLR + ") not contained in gridded dataset (" + gridLLR + ")");
+		}
 
         AttributeDescriptor attributeDescriptor =
                 featureCollection.getSchema().getDescriptor(attributeName);

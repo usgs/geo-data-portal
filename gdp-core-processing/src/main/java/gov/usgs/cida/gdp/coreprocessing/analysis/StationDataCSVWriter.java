@@ -91,15 +91,20 @@ public class StationDataCSVWriter {
         GregorianCalendar end = new GregorianCalendar(timeZone);
         end.setTime(dateRange.getEnd().getDate());
 
-        LatLonRect latLonRect = GeoToolsNetCDFUtility.getLatLonRectFromEnvelope(
+        LatLonRect featureCollectionLLR = GeoToolsNetCDFUtility.getLatLonRectFromEnvelope(
                 featureCollection.getBounds(),
                 DefaultGeographicCRS.WGS84);
+		LatLonRect stationLLR = stationTimeSeriesFeatureCollection.getBoundingBox();
+		if (stationLLR.containedIn(featureCollectionLLR)) {
+			throw new RuntimeException("feature bounds (" + featureCollectionLLR + ") not contained in station time series dataset (" + stationLLR + ")");
+		}
+
         featureCollection = new ReprojectFeatureResults(
                 featureCollection,
                 DefaultGeographicCRS.WGS84);
 
         List<PointFeatureCache> pointFeatureCacheList = new ArrayList<PointFeatureCache>();
-        for (Station station : stationTimeSeriesFeatureCollection.getStations(latLonRect)) {
+        for (Station station : stationTimeSeriesFeatureCollection.getStations(featureCollectionLLR)) {
             Coordinate stationCoordinate = new Coordinate(station.getLongitude(), station.getLatitude());
             Geometry stationGeometry = GEOMETRY_FACTORY.createPoint(stationCoordinate);
             boolean stationContained = false;

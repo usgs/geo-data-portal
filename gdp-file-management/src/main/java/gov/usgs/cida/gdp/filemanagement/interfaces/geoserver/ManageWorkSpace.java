@@ -71,7 +71,7 @@ public class ManageWorkSpace {
      * @return
      */
     public String listWorkSpaces() throws MalformedURLException, IOException {
-        return getResponse(new URL(this.getGeoServerURL() + "/rest/workspaces.xml"), "GET", "text/html", null, null, null);
+        return getResponse(new URL(this.getGeoServerURL() + "/rest/workspaces.xml"), "GET", "text/xml", null, null, null);
     }
 
     /**
@@ -194,12 +194,13 @@ public class ManageWorkSpace {
         try {
             String line = null;
             br = new BufferedReader(new InputStreamReader(httpConnection.getInputStream(), "UTF-8"));
-            while ((line = br.readLine()) != null) responseString.append(line).append("\n");
+            while ((line = br.readLine()) != null) {
+                responseString.append(line);
+            }
         } finally {
             br.close();
             httpConnection.disconnect();
         }
-        
         return responseString.toString();
     }
 
