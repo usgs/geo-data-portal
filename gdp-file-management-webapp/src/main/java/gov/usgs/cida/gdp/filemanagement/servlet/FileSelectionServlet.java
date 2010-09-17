@@ -1,4 +1,4 @@
-package gov.usga.cida.gdp.filemanagement.servlet;
+package gov.usgs.cida.gdp.filemanagement.servlet;
 
 import gov.usgs.cida.gdp.utilities.FileHelper;
 import gov.usgs.cida.gdp.utilities.XmlUtils;

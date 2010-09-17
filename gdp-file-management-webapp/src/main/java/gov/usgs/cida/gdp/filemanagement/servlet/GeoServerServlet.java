@@ -1,4 +1,4 @@
-package gov.usga.cida.gdp.filemanagement.servlet;
+package gov.usgs.cida.gdp.filemanagement.servlet;
 
 import gov.usgs.cida.gdp.filemanagement.bean.List;
 import gov.usgs.cida.gdp.filemanagement.interfaces.geoserver.ManageWorkSpace;

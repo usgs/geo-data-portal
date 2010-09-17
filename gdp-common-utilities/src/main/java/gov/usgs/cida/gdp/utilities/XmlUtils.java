@@ -61,6 +61,7 @@ public class XmlUtils {
     public static void sendXml(XmlReply xmlReply, Long startTime, HttpServletResponse response)
             throws IOException {
         XStream stream = new XStream();
+        stream.autodetectAnnotations(true);
         sendXml(stream.toXML(xmlReply), startTime, response);
     }
 }
