@@ -29,35 +29,24 @@ public abstract class GridUtility {
             throws InvalidRangeException
     {
 
-        int[] lowerCornerIndices = new int[2];
-        int[] upperCornerIndices = new int[2];
-
-        gcs.findXYindexFromLatLon(llr.getLatMin(), llr.getLonMin(), lowerCornerIndices);
-        gcs.findXYindexFromLatLon(llr.getLatMax(), llr.getLonMax(), upperCornerIndices);
-
-        if (lowerCornerIndices[0] < 0 || lowerCornerIndices[1] < 0 ||
-            upperCornerIndices[0] < 0 || upperCornerIndices[1] < 0) {
-            throw new InvalidRangeException();
-        }
-
-        int lowerX;
-        int upperX;
-        int lowerY;
-        int upperY;
-        if(lowerCornerIndices[0] < upperCornerIndices[0]) {
-            lowerX = lowerCornerIndices[0];
-            upperX = upperCornerIndices[0];
-        } else {
-            upperX = lowerCornerIndices[0];
-            lowerX = upperCornerIndices[0];
-        }
-        if(lowerCornerIndices[1] < upperCornerIndices[1]) {
-            lowerY = lowerCornerIndices[1];
-            upperY = upperCornerIndices[1];
-        } else {
-            upperY = lowerCornerIndices[1];
-            lowerY = upperCornerIndices[1];
-        }
+		double[][] coords = {
+			{ llr.getLatMin(), llr.getLonMin() },
+			{ llr.getLatMin(), llr.getLonMax() },
+			{ llr.getLatMax(), llr.getLonMax() },
+			{ llr.getLatMax(), llr.getLonMin() },
+		};
+		int[] currentIndices = new int[2];
+		int lowerX = Integer.MAX_VALUE;
+		int upperX = Integer.MIN_VALUE;
+		int lowerY = Integer.MAX_VALUE;
+		int upperY = Integer.MIN_VALUE;
+		for (int i = 0; i < coords.length; ++i) {
+			gcs.findXYindexFromLatLon(coords[i][0], coords[i][1], currentIndices);
+			if (currentIndices[0] < lowerX) { lowerX = currentIndices[0] ; }
+			if (currentIndices[0] > upperX) { upperX = currentIndices[0] ; }
+			if (currentIndices[1] < lowerY) { lowerY = currentIndices[1] ; }
+			if (currentIndices[1] > upperY) { upperY = currentIndices[1] ; }
+		}
 
         // Buffer X dimension to width of 3, otherwise grid cell width calc fails.
         // NOTE: NetCDF ranges are upper edge inclusive

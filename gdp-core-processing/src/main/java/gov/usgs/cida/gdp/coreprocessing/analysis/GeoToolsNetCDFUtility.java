@@ -23,8 +23,8 @@ public class GeoToolsNetCDFUtility {
         return getLatLonRectFromEnvelope(envelope, DefaultGeographicCRS.WGS84);
     }
 
-    public static LatLonRect getLatLonRectFromEnvelope(ReferencedEnvelope envelope, GeographicCRS crs) throws TransformException {
-        BoundingBox latLonBoundingBox = envelope.toBounds(crs);
+    public static LatLonRect getLatLonRectFromEnvelope(ReferencedEnvelope envelope, GeographicCRS targetCRS) throws TransformException {
+        BoundingBox latLonBoundingBox = envelope.toBounds(targetCRS);
         LatLonRect llr = new LatLonRect(
                 new LatLonPointImpl(latLonBoundingBox.getMinY(), latLonBoundingBox.getMinX()),
                 new LatLonPointImpl(latLonBoundingBox.getMaxY(), latLonBoundingBox.getMaxX()));
