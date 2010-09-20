@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Formatter;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.slf4j.LoggerFactory;
 
 import thredds.catalog.*;
@@ -33,15 +35,24 @@ public class THREDDSServerHelper {
      * @return
      * @throws IOException
      */
-    public static boolean isServerReachable(final String host, final int port, final int timeout) throws IOException {
+    public static boolean isServerReachable(final String host, final int port, final int timeout)  {
         boolean result = false;
 
         Socket testSocket = new Socket();
         InetSocketAddress address = new InetSocketAddress(host, port);
-        testSocket.connect(address, timeout);
+        try {
+            testSocket.connect(address, timeout);
+        } catch (IOException ex) {
+            Logger.getLogger(THREDDSServerHelper.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
         result = testSocket.isConnected();
         if (result) {
-            testSocket.close();
+            try {
+                testSocket.close();
+            } catch (IOException ex) {
+                Logger.getLogger(THREDDSServerHelper.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
         return result;
