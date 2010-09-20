@@ -1,4 +1,4 @@
-package gov.usgs.cida.gdp.dataaccess.servlet;
+package gov.usgs.cida.dataaccess.servlet;
 
 import gov.usgs.cida.gdp.dataaccess.helper.THREDDSServerHelper;
 import gov.usgs.cida.gdp.utilities.XmlUtils;
