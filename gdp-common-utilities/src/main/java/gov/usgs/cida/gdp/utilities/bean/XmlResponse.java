@@ -1,14 +1,17 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package gov.usgs.cida.gdp.utilities.bean;
+
+import com.thoughtworks.xstream.XStream;
 
 /**
  *
- * @author admin
+ * @author isuftin
  */
-public interface XmlResponse {
+public abstract class XmlResponse {
+
+    public String toXML() {
+        XStream stream = new XStream();
+        stream.autodetectAnnotations(true);
+        return stream.toXML(this);
+    }
 
 }

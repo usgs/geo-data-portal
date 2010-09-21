@@ -7,7 +7,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author isuftin
  */
 @XStreamAlias("acknowledgment")
-public class Acknowledgement implements XmlResponse {
+public class Acknowledgement extends XmlResponse {
 	public static final int ACK_OK = 1;
 	public static final int ACK_FAIL = 2;
 

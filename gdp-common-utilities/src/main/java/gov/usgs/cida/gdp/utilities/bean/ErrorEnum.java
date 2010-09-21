@@ -12,7 +12,7 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
  * @author isuftin
  */
 @XStreamAlias("error")
-public enum ErrorEnum  implements XmlResponse {
+public enum ErrorEnum  {
    // ERR_CUSTOM_MESSAGE(-1),
     ERR_NO_COMMAND(0),
     ERR_USER_DIR_CREATE(1),

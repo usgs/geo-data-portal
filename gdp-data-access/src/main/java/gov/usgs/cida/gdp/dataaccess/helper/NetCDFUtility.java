@@ -33,8 +33,10 @@ import ucar.nc2.util.NamedObject;
 
 public abstract class NetCDFUtility {
     // Private nullary ctor ensures non-instantiability.
-    private NetCDFUtility() { }
-    
+
+    private NetCDFUtility() {
+    }
+
     /**
      * For every dataset discovered in a depth-first traversal of {@code catalog}, this method returns a handle to it
      * of type {@code serviceType}, if available.
@@ -114,8 +116,8 @@ public abstract class NetCDFUtility {
                         //   http://www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html
                         if (convName.contains("Unidata Observation Dataset")) {
                             Attribute obsDimAtt = dataset.findGlobalAttributeIgnoreCase("observationDimension");
-                            String obsDimName = (obsDimAtt != null && obsDimAtt.isString()) ?
-                                    obsDimAtt.getStringValue() : null;
+                            String obsDimName = (obsDimAtt != null && obsDimAtt.isString())
+                                    ? obsDimAtt.getStringValue() : null;
                             if (obsDimName != null && obsDimName.length() > 0) {
                                 String psuedoRecordPrefix = obsDimName + '.';
                                 for (VariableSimpleIF var : dataset.getDataVariables()) {
@@ -179,16 +181,16 @@ public abstract class NetCDFUtility {
     }
 
     public static String getDatasetType(String datasetUrl) throws IOException {
-    	FeatureDataset featureDataset = null;
-    	try {
-    		featureDataset = FeatureDatasetFactoryManager.open(null, datasetUrl, null, new Formatter());
-    		return featureDataset.getFeatureType().toString();
-    	} finally {
-			featureDataset.close();
-		}
-	}
+        FeatureDataset featureDataset = null;
+        try {
+            featureDataset = FeatureDatasetFactoryManager.open(null, datasetUrl, null, new Formatter());
+            return featureDataset.getFeatureType().toString();
+        } finally {
+            featureDataset.close();
+        }
+    }
 
-	public static boolean hasTimeCoordinate(String location) throws IOException {
+    public static boolean hasTimeCoordinate(String location) throws IOException {
         FeatureDataset featureDataset = null;
         boolean result = false;
         try {
@@ -214,9 +216,8 @@ public abstract class NetCDFUtility {
 //            }
 //        }
 //        return hasTime;
-    	return featureDataset.getFeatureType() == FeatureType.STATION;
+        return featureDataset.getFeatureType() == FeatureType.STATION;
     }
-
 
     /**
      * Retrieves a List of type String which has a date range from the beginning to the end of a FeatureDataSet

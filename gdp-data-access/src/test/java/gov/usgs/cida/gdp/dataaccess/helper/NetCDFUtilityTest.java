@@ -1,5 +1,7 @@
 package gov.usgs.cida.gdp.dataaccess.helper;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import thredds.catalog.InvService;
 import ucar.nc2.units.DateType;
 import thredds.catalog.DataFormatType;
@@ -100,5 +102,10 @@ public class NetCDFUtilityTest {
         List<InvAccess> invList = invDataSet.getAccess();
         assertFalse(invList.isEmpty());
         assertEquals(invList.size(), 4);
+    }
+
+    @Test
+    public void testActualCIDAThredds() throws MalformedURLException, URISyntaxException {
+        
     }
 }

@@ -16,7 +16,7 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 @XStreamAlias("fileSet")
-public class Files implements XmlResponse {
+public class Files extends XmlResponse {
 
     @XStreamAlias("fileSetName")
     @XStreamAsAttribute

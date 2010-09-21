@@ -1,4 +1,4 @@
-package gov.usgs.cida.dataaccess.servlet;
+package gov.usgs.cida.gdp.dataaccess.servlet;
 
 import gov.usgs.cida.gdp.dataaccess.CoverageMetaData;
 import gov.usgs.cida.gdp.dataaccess.bean.WCSCoverageInfo;

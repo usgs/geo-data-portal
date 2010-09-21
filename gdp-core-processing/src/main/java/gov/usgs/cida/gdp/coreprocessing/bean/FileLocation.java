@@ -5,7 +5,7 @@ import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("fileLocation")
-public class FileLocation implements XmlResponse {
+public class FileLocation extends XmlResponse {
 
 	@XStreamAlias("link")
 	private String uploadLocation;

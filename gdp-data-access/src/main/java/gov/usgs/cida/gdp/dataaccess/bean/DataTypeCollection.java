@@ -6,13 +6,12 @@ import java.util.List;
 
 import ucar.nc2.VariableSimpleIF;
 
-import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 
 @XStreamAlias("datatypecollection")
-public class DataTypeCollection implements XmlResponse {
+public class DataTypeCollection extends XmlResponse {
 
     @XStreamAlias("datatype")
 	@XStreamAsAttribute
@@ -67,7 +66,7 @@ public class DataTypeCollection implements XmlResponse {
     }
 	
     @XStreamAlias("type")
-	static public class DataTypeBean implements XmlResponse {
+	static public class DataTypeBean extends XmlResponse {
 
 		private String description;
 		private String name;

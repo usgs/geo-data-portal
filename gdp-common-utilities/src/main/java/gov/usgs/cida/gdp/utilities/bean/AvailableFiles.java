@@ -8,7 +8,7 @@ import java.util.List;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("files")
-public class AvailableFiles implements XmlResponse {
+public class AvailableFiles extends XmlResponse {
 
     @XStreamAlias("shapeSets")
     private List<ShapeFileSet> shapeSetList;

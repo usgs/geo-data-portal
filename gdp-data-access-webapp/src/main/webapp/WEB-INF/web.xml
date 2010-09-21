@@ -17,14 +17,12 @@
     </servlet-mapping>
     
     <servlet>
-        <description>
-            ...
-        </description>
         <display-name>THREDDSCheckServlet</display-name>
         <servlet-name>THREDDSCheckServlet</servlet-name>
         <servlet-class>
             gov.usgs.cida.gdp.dataaccess.servlet.THREDDSCheckServlet
         </servlet-class>
+        <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
         <servlet-name>THREDDSCheckServlet</servlet-name>
@@ -32,9 +30,6 @@
     </servlet-mapping>
 
     <servlet>
-        <description>
-            ...
-        </description>
         <display-name>THREDDSServlet</display-name>
         <servlet-name>THREDDSServlet</servlet-name>
         <servlet-class>

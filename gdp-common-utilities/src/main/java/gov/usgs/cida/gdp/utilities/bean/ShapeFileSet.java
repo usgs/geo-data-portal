@@ -20,7 +20,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 @XStreamAlias("shapeSet")
-public class ShapeFileSet implements XmlResponse {
+public class ShapeFileSet extends XmlResponse {
 
     @XStreamAlias("shapeSetName")
     @XStreamAsAttribute
@@ -258,4 +258,5 @@ public class ShapeFileSet implements XmlResponse {
 
         return null;
     }
+
 }

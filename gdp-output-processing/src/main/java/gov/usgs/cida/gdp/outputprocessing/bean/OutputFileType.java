@@ -9,7 +9,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 
 @XStreamAlias("outputfiletypes")
-public class OutputFileType implements XmlResponse {
+public class OutputFileType extends XmlResponse {
 
     @XStreamImplicit(itemFieldName = "type")
     private List<String> types;

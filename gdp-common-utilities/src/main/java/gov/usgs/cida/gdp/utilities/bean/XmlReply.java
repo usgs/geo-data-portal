@@ -1,6 +1,5 @@
 package gov.usgs.cida.gdp.utilities.bean;
 
-import com.thoughtworks.xstream.XStream;
 import java.util.List;
 
 import org.slf4j.LoggerFactory;
@@ -8,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("reply")
-public class XmlReply implements XmlResponse {
+public class XmlReply extends XmlResponse {
 
     private static org.slf4j.Logger log = LoggerFactory.getLogger(XmlReply.class);
     private Acknowledgement acknowledgment;
@@ -149,8 +148,4 @@ public class XmlReply implements XmlResponse {
         this.errorEnum = errorEnum;
     }
 
-    public String toXML() {
-        XStream stream = new XStream();
-        return stream.toXML(this);
-    }
 }

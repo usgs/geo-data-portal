@@ -6,7 +6,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 
 @XStreamAlias("list")
-public class List implements XmlResponse {
+public class List extends XmlResponse {
 	
 	@XStreamAlias("list")
 	@XStreamImplicit(itemFieldName="element")

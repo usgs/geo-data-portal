@@ -12,7 +12,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
 @XStreamAlias("error")
-public class Error implements XmlResponse {
+public class Error extends XmlResponse {
     // Check properties file to read/change message for these codes
 
     public final static int ERR_NO_COMMAND = 0;

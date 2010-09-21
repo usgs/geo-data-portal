@@ -7,7 +7,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 
 @XStreamAlias("attributes")
-public class Attribute implements XmlResponse {
+public class Attribute extends XmlResponse {
 	
 	@XStreamAlias("fileSetName")
 	private String filesetName;

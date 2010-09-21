@@ -10,7 +10,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 
 @XStreamAlias("outputStatistics")
-public class OutputStatistics implements XmlResponse {
+public class OutputStatistics extends XmlResponse {
 
 	@XStreamAlias("statistics")
 	@XStreamImplicit(itemFieldName="statistic")

@@ -8,7 +8,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 
 @XStreamAlias("server")
-public class Server implements XmlResponse {
+public class Server extends XmlResponse {
 
 	private static org.slf4j.Logger log = LoggerFactory.getLogger(Server.class);
 	

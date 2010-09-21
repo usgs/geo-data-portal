@@ -1,4 +1,4 @@
-package gov.usgs.cida.dataaccess.servlet;
+package gov.usgs.cida.gdp.dataaccess.servlet;
 
 
 import gov.usgs.cida.gdp.dataaccess.bean.Server;
@@ -37,13 +37,6 @@ public class THREDDSCheckServlet extends HttpServlet {
     static org.slf4j.Logger log = LoggerFactory.getLogger(THREDDSCheckServlet.class);
     private Timer timer;
     private static final long FIVE_MINUTES = 1000 * 60 * 5; 		// Run every 5 minutes
-
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public THREDDSCheckServlet() {
-        super();
-    }
 
     @Override
     public void init(ServletConfig paramConfig) throws ServletException {

@@ -8,7 +8,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 @XStreamAlias("messages")
-public class Message implements XmlResponse {
+public class Message extends XmlResponse {
 
     @XStreamAlias("message")
     @XStreamImplicit
@@ -42,4 +42,5 @@ public class Message implements XmlResponse {
         }
         return this.message.add(message);
     }
+
 }

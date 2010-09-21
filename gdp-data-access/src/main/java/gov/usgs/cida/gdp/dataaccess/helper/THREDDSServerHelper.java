@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,6 +29,18 @@ public class THREDDSServerHelper {
     static org.slf4j.Logger log = LoggerFactory.getLogger(THREDDSServerHelper.class);
 
     /**
+     * Sets the default timeout for this function to 5 seconds
+     *
+     * @see THREDDSServerHelper#isServerReachable(java.lang.String, int, int)
+     * @param host
+     * @param port
+     * @return
+     */
+    public static boolean isServerReachable(final String host, final int port) {
+        return THREDDSServerHelper.isServerReachable(host, port, 5000);
+    }
+
+    /**
      * Tests whether or not a THREDDS server is reachable
      *
      * @param host
@@ -35,7 +49,7 @@ public class THREDDSServerHelper {
      * @return
      * @throws IOException
      */
-    public static boolean isServerReachable(final String host, final int port, final int timeout)  {
+    public static boolean isServerReachable(final String host, final int port, final int timeout) {
         boolean result = false;
 
         Socket testSocket = new Socket();
@@ -67,28 +81,28 @@ public class THREDDSServerHelper {
         if (featureDataset != null) {
             try {
                 List<String> dateRange = NetCDFUtility.getDateRange(datasetUrl, gridSelection);
-        		if (dateRange.isEmpty()) {
-        			boolean hasTimeCoord = NetCDFUtility.hasTimeCoordinate(datasetUrl);
-        			if (hasTimeCoord) { // This occurs when there is no date range in the file but has time coords
-        				// We want the user to pick dates but don't have a range to give 
-        				dateRange.add("1800-01-01 00:00:00Z");
-        				dateRange.add("2100-12-31 00:00:00Z");
-        			}
-        		}
-        		
-        		Time timeBean = new Time(dateRange);
-        		
+                if (dateRange.isEmpty()) {
+                    boolean hasTimeCoord = NetCDFUtility.hasTimeCoordinate(datasetUrl);
+                    if (hasTimeCoord) { // This occurs when there is no date range in the file but has time coords
+                        // We want the user to pick dates but don't have a range to give
+                        dateRange.add("1800-01-01 00:00:00Z");
+                        dateRange.add("2100-12-31 00:00:00Z");
+                    }
+                }
+
+                Time timeBean = new Time(dateRange);
+
                 if (timeBean != null /*&& !timeBean.getTime().isEmpty()*/) {
                     return timeBean;
                 }
-                
+
             } finally {
                 featureDataset.close();
             }
         }
         return null;
     }
-    
+
     /**
      * Returns a list of dataset handles from the specified server.
      * 
@@ -122,37 +136,14 @@ public class THREDDSServerHelper {
         return catalog;
     }
 
-    /**
-     * Returns a List<XmlBean> which is actually a List<DataSetBean>
-     * 
-     * @param hostname
-     * @param port
-     * @param uri
-     * @return
-     * @throws IllegalArgumentException
-     */
-    /*public static List<XmlBean> getDatasetListFromServer(String hostname,
-    int port, String uri) throws IllegalArgumentException {
-
-    if (hostname == null || "".equals(hostname)) throw new IllegalArgumentException("Hostname invalid or null");
-    if (uri == null || "".equals(uri)) throw new IllegalArgumentException("URI invalid or null");
-    if (port == 0) port = 80;
-
-    List<XmlBean> result = new ArrayList<XmlBean>();
-    List<InvAccess> invAccessList = THREDDSServerHelper.getDatasetHandlesFromServer(hostname, port, uri);
-
-    if (invAccessList == null) return result;
-    for (InvAccess invAccess : invAccessList) {
-
-    InvDataset ds = invAccess.getDataset();
-    List<InvPropertyBean> = ds.getP
-    DataSetBean dsb = new DataSetBean(ds);
-    result.add(dsb);
+    
+    public static void getDatasetListFromServer(URL catalogURL) throws URISyntaxException {
+        InvCatalogFactory factory = new InvCatalogFactory("default", true);
+        InvCatalog catalog = factory.readXML(catalogURL.toURI());
+        List<InvDataset> dsList = catalog.getDatasets();
+        
     }
-
-
-    return result;
-    }*/
+    
     public static List<XmlResponse> getGridBeanListFromServer(String datasetUrl) throws IllegalArgumentException, IOException {
 
         if (datasetUrl == null || "".equals(datasetUrl)) {
@@ -167,6 +158,4 @@ public class THREDDSServerHelper {
         return result;
 
     }
-
-
 }

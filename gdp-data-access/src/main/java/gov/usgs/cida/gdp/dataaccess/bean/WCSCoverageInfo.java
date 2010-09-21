@@ -4,7 +4,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 
 @XStreamAlias("WCSCoverageInfo")
-public class WCSCoverageInfo implements XmlResponse {
+public class WCSCoverageInfo extends XmlResponse {
 
     private static long serialVersionUID = 1L;
 

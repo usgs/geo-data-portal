@@ -7,7 +7,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author isuftin
  */
 @XStreamAlias("userDirectory")
-public class UserDirectory implements XmlResponse {
+public class UserDirectory extends XmlResponse {
 
     private String directory;
 

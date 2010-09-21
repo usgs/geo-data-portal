@@ -4,7 +4,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 
 @XStreamAlias("uploadFileCheck")
-public class UploadFileCheck implements XmlResponse {
+public class UploadFileCheck extends XmlResponse {
 
     private boolean exists;
     private String file;

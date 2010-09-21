@@ -15,7 +15,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 @XStreamAlias("availabletimes")
-public class Time implements XmlResponse {
+public class Time extends XmlResponse {
 
     @XStreamAlias("times")
     @XStreamImplicit(itemFieldName = "time")
@@ -37,7 +37,6 @@ public class Time implements XmlResponse {
             this.time = result;
         }
     }
-    
 
     public Time(List<String> dateRange) throws ParseException {
         this.time = dateRange;
@@ -75,7 +74,7 @@ public class Time implements XmlResponse {
         return endtime;
     }
 
-    static class TimeBreakdown implements XmlResponse {
+    static class TimeBreakdown extends XmlResponse {
 
         private int month;
         private int day;
