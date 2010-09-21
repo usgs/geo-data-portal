@@ -2,13 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package gov.usgs.cida.dataaccess.webapp.helper;
+package gov.usgs.cida.gdp.dataaccess.helper;
 
 import gov.usgs.cida.gdp.dataaccess.bean.Server;
 import gov.usgs.cida.gdp.dataaccess.bean.THREDDSInfo;
-import gov.usgs.cida.gdp.dataaccess.helper.THREDDSServerHelper;
-import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
@@ -59,18 +56,11 @@ public final class TestTHREDDSServers extends TimerTask {
             int port = threddsServerBean.getPort();
             int timeout = 5000;
 
-            boolean serverIsUp = false;
-            try {
-                serverIsUp = THREDDSServerHelper.isServerReachable(host, port, timeout);
-            } catch (UnknownHostException e) {
-                log.debug("Host " + host + ":" + port + " could not be reached. Reason: " + e.getMessage() + "\n\tBeing labeled as down. Will re-check in 5 minutes.");
-            } catch (IOException e) {
-                log.debug("Host " + host + ":" + port + " could not be reached. Reason: " + e.getMessage() + "\n\tBeing labeled as down. Will re-check in 5 minutes.");
-            }
+            boolean serverIsUp = THREDDSServerHelper.isServerReachable(host, port, timeout);
+            if (!serverIsUp) log.debug("Host " + host + ":" + port + " could not be reached. \n\tBeing labeled as down. Will re-check in 5 minutes.");
             threddsServerBean.setActive(serverIsUp);
             result.put(key, threddsServerBean);
         }
-
         return result;
     }
 

@@ -3,9 +3,6 @@ package gov.usgs.cida.gdp.dataaccess.helper;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
-import java.net.ConnectException;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 import java.util.List;
 
 import org.junit.Test;

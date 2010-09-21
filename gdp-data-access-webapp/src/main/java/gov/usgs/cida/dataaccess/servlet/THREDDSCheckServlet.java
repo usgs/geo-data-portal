@@ -1,10 +1,10 @@
 package gov.usgs.cida.dataaccess.servlet;
 
 
-import gov.usgs.cida.dataaccess.webapp.helper.TestTHREDDSServers;
 import gov.usgs.cida.gdp.dataaccess.bean.Server;
 import gov.usgs.cida.gdp.dataaccess.bean.ServerList;
 import gov.usgs.cida.gdp.dataaccess.helper.THREDDSServerHelper;
+import gov.usgs.cida.gdp.dataaccess.helper.TestTHREDDSServers;
 import gov.usgs.cida.gdp.utilities.XmlUtils;
 import gov.usgs.cida.gdp.utilities.bean.Acknowledgement;
 import gov.usgs.cida.gdp.utilities.bean.XmlReply;
