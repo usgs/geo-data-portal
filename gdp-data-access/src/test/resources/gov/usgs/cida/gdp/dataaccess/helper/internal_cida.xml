@@ -1,0 +1,433 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="CIDA Development and Testing USGS Internal THREDDS Server." version="1.0.1">
+  <service name="Services" serviceType="Compound" base="">
+    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
+    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
+    <service name="wms" serviceType="WMS" base="/thredds/wms/"/>
+    <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
+  </service>
+  <dataset name="CIDA THREDDS Holdings" ID="CTH">
+    <documentation type="Summary">Datasets held by the Center for Integrated Data Analytics for access via TDS.</documentation>
+    <publisher>
+      <name>CIDA</name>
+      <contact url="http://cida.usgs.gov" email="dblodgett@usgs.gov"/>
+    </publisher>
+    <dataset name="Gridded Meteorological Observations by Ed Maurer" ID="gmo/GMO_w_meta.ncml" urlPath="gmo/GMO_w_meta.ncml">
+      <serviceName>Services</serviceName>
+      <dataFormat>NetCDF-Grid</dataFormat>
+      <documentation xlink:href="http://www.engr.scu.edu/~emaurer/data.shtml" xlink:title="Ed Maurer's Data and Files"/>
+      <documentation type="Rights">Freely Available.</documentation>
+      <documentation type="Summary">Gridded Meteorological Observations</documentation>
+      <documentation type="Reference">Maurer, E.P., A.W. Wood, J.C. Adam, D.P. Lettenmaier, and B. Nijssen, 2002, A Long-Term Hydrologically-Based Data Set of Land Surface Fluxes and States for the Conterminous United States, J. Climate 15(22), 3237-3251</documentation>
+      <creator>
+        <name>E. Maurer</name>
+        <contact url="http://www.engr.scu.edu/~emaurer/data.shtml" email="emaurer@engr.scu.edu"/>
+      </creator>
+      <keyword>Surface Winds Atmosphere</keyword>
+      <keyword>Air Temperature Atmosphere</keyword>
+      <keyword>Precipitation</keyword>
+      <keyword>Rain</keyword>
+      <publisher>
+        <name>CIDA</name>
+        <contact url="http://cida.usgs.gov" email="dblodgett@usgs.gov"/>
+      </publisher>
+      <geospatialCoverage>
+        <northsouth>
+          <start>53.0</start>
+          <size>-29.0</size>
+          <units>degrees_north</units>
+        </northsouth>
+        <eastwest>
+          <start>-125.0</start>
+          <size>58.0</size>
+          <units>degrees_east</units>
+        </eastwest>
+      </geospatialCoverage>
+      <timeCoverage>
+        <start>1950-01-01T00:00</start>
+        <end>1999-12-31T00:00</end>
+      </timeCoverage>
+    </dataset>
+    <dataset name="National RFC QPE Mosaic" ID="misc/npvu/arfcqpe_w_meta.ncml" urlPath="misc/npvu/arfcqpe_w_meta.ncml">
+      <serviceName>Services</serviceName>
+      <dataFormat>NetCDF-Grid</dataFormat>
+      <documentation xlink:href="http://www.hpc.ncep.noaa.gov/npvu/index.shtml" xlink:title="National Precipitation Verification Unit"/>
+      <documentation xlink:href="http://water.weather.gov/precip/about.php" xlink:title="NWS Advanced Hydrologic Prediction Service About Page"/>
+      <documentation type="Rights">Freely Available.</documentation>
+      <documentation type="Summary">National Mosaic of Radar indicated-rain gage verified and corrected precipitation estimate on a ~10km grid. 6 hour temporal resolution. Files are added daily from the latest 7 day dataset.</documentation>
+      <contributor role="aggregate and archive">National Precipitation Verification Unit</contributor>
+      <creator>
+        <name>River Forecasting Centers</name>
+        <contact url="http://water.weather.gov/precip/rfc.php" email=""/>
+      </creator>
+      <keyword>Precipitation Amount</keyword>
+      <keyword>Rain</keyword>
+      <publisher>
+        <name>CIDA</name>
+        <contact url="http://cida.usgs.gov" email="dblodgett@usgs.gov"/>
+      </publisher>
+      <geospatialCoverage>
+        <northsouth>
+          <start>53.0</start>
+          <size>-29.0</size>
+          <units>degrees_north</units>
+        </northsouth>
+        <eastwest>
+          <start>-125.0</start>
+          <size>58.0</size>
+          <units>degrees_east</units>
+        </eastwest>
+      </geospatialCoverage>
+      <timeCoverage>
+        <start>2001-04-1T18:00:00Z</start>
+        <end>present</end>
+      </timeCoverage>
+    </dataset>
+    <dataset name="Real Time National RFC QPE Mosaic" ID="misc/npvu/rfcqpe_w_meta.ncml" urlPath="misc/npvu/rfcqpe_w_meta.ncml">
+      <serviceName>Services</serviceName>
+      <dataFormat>NetCDF-Grid</dataFormat>
+      <documentation xlink:href="http://www.hpc.ncep.noaa.gov/npvu/index.shtml" xlink:title="National Precipitation Verification Unit"/>
+      <documentation xlink:href="http://water.weather.gov/precip/about.php" xlink:title="NWS Advanced Hydrologic Prediction Service About Page"/>
+      <documentation type="Rights">Freely Available.</documentation>
+      <documentation type="Summary">National Mosaic of Radar indicated-rain gage verified and corrected precipitation estimate on a !10km grid. 6 hour temporal resolution. Files are updated from the NPVU holdings hourly. The files may be updated for two to three days after originally becoming available as river forecasting centers provide and adjust their rainfall estimates.</documentation>
+      <contributor role="aggregate and archive">National Precipitation Verification Unit</contributor>
+      <creator>
+        <name>River Forecasting Centers</name>
+        <contact url="http://water.weather.gov/precip/rfc.php" email=""/>
+      </creator>
+      <keyword>Precipitation Amount</keyword>
+      <keyword>Rain</keyword>
+      <publisher>
+        <name>CIDA</name>
+        <contact url="http://cida.usgs.gov" email="dblodgett@usgs.gov"/>
+      </publisher>
+      <geospatialCoverage>
+        <northsouth>
+          <start>53.0</start>
+          <size>-29.0</size>
+          <units>degrees_north</units>
+        </northsouth>
+        <eastwest>
+          <start>-125.0</start>
+          <size>58.0</size>
+          <units>degrees_east</units>
+        </eastwest>
+      </geospatialCoverage>
+      <timeCoverage>
+        <end>present</end>
+        <duration>7 days</duration>
+      </timeCoverage>
+    </dataset>
+    <dataset name="North Central River Forecasting Center QPE" ID="misc/npvu/ancrfcqpe_w_meta.ncml" urlPath="misc/npvu/ancrfcqpe_w_meta.ncml">
+      <serviceName>Services</serviceName>
+      <dataFormat>NetCDF-Grid</dataFormat>
+      <documentation xlink:href="http://www.hpc.ncep.noaa.gov/npvu/index.shtml" xlink:title="National Precipitation Verification Unit"/>
+      <documentation xlink:href="http://water.weather.gov/precip/about.php" xlink:title="NWS Advanced Hydrologic Prediction Service About Page"/>
+      <documentation type="Rights">Freely Available.</documentation>
+      <documentation type="Summary">Radar indicated-rain gage verified and corrected precipitation estimate on the ~4km HRAP grid. 1 hour and 6 hour temporal resolution. Includes only the North Central River Forecasting Center's data.</documentation>
+      <contributor role="aggregate and archive">National Precipitation Verification Unit</contributor>
+      <creator>
+        <name>River Forecasting Centers</name>
+        <contact url="http://water.weather.gov/precip/rfc.php" email=""/>
+      </creator>
+      <keyword>Precipitation Amount</keyword>
+      <keyword>Rain</keyword>
+      <publisher>
+        <name>CIDA</name>
+        <contact url="http://cida.usgs.gov" email="dblodgett@usgs.gov"/>
+      </publisher>
+      <geospatialCoverage>
+        <northsouth>
+          <start>38.0</start>
+          <size>13.0</size>
+          <units>degrees_north</units>
+        </northsouth>
+        <eastwest>
+          <start>-105.0</start>
+          <size>16.0</size>
+          <units>degrees_east</units>
+        </eastwest>
+      </geospatialCoverage>
+      <timeCoverage>
+        <start>2000-06-15T00:00</start>
+        <end>present</end>
+      </timeCoverage>
+    </dataset>
+    <dataset name="Real Time North Central River Forecasting Center QPE" ID="misc/npvu/ncrfcqpe_w_meta.ncml" urlPath="misc/npvu/ncrfcqpe_w_meta.ncml">
+      <serviceName>Services</serviceName>
+      <dataFormat>NetCDF-Grid</dataFormat>
+      <documentation xlink:href="http://www.hpc.ncep.noaa.gov/npvu/index.shtml" xlink:title="National Precipitation Verification Unit"/>
+      <documentation xlink:href="http://water.weather.gov/precip/about.php" xlink:title="NWS Advanced Hydrologic Prediction Service About Page"/>
+      <documentation type="Rights">Freely Available.</documentation>
+      <documentation type="Summary">Latest available 7 days of radar indicated-rain gage verified and corrected precipitation estimate on the ~4km HRAP grid. 1 hour and 6 hour temporal resolution. Includes only the North Central River Forecasting Center's data.</documentation>
+      <contributor role="aggregate and archive">National Precipitation Verification Unit</contributor>
+      <creator>
+        <name>River Forecasting Centers</name>
+        <contact url="http://water.weather.gov/precip/rfc.php" email=""/>
+      </creator>
+      <keyword>Precipitation Amount</keyword>
+      <keyword>Rain</keyword>
+      <publisher>
+        <name>CIDA</name>
+        <contact url="http://cida.usgs.gov" email="dblodgett@usgs.gov"/>
+      </publisher>
+      <geospatialCoverage>
+        <northsouth>
+          <start>38.0</start>
+          <size>13.0</size>
+          <units>degrees_north</units>
+        </northsouth>
+        <eastwest>
+          <start>-105.0</start>
+          <size>16.0</size>
+          <units>degrees_east</units>
+        </eastwest>
+      </geospatialCoverage>
+      <timeCoverage>
+        <end>present</end>
+        <duration>7 days</duration>
+      </timeCoverage>
+    </dataset>
+    <dataset name="Ohio River Forecasting Center QPE" ID="misc/npvu/aohrfcqpe_w_meta.ncml" urlPath="misc/npvu/aohrfcqpe_w_meta.ncml">
+      <serviceName>Services</serviceName>
+      <dataFormat>NetCDF-Grid</dataFormat>
+      <documentation xlink:href="http://www.hpc.ncep.noaa.gov/npvu/index.shtml" xlink:title="National Precipitation Verification Unit"/>
+      <documentation xlink:href="http://water.weather.gov/precip/about.php" xlink:title="NWS Advanced Hydrologic Prediction Service About Page"/>
+      <documentation type="Rights">Freely Available.</documentation>
+      <documentation type="Summary">Radar indicated-rain gage verified and corrected precipitation estimate on the ~4km HRAP grid. 1 hour and 6 hour temporal resolution. Includes only the Ohio River Forecasting Center's data.</documentation>
+      <contributor role="aggregate and archive">National Precipitation Verification Unit</contributor>
+      <creator>
+        <name>River Forecasting Centers</name>
+        <contact url="http://water.weather.gov/precip/rfc.php" email=""/>
+      </creator>
+      <keyword>Precipitation Amount</keyword>
+      <keyword>Rain</keyword>
+      <publisher>
+        <name>CIDA</name>
+        <contact url="http://cida.usgs.gov" email="dblodgett@usgs.gov"/>
+      </publisher>
+      <geospatialCoverage>
+        <northsouth>
+          <start>35.5</start>
+          <size>10.0</size>
+          <units>degrees_north</units>
+        </northsouth>
+        <eastwest>
+          <start>-90.0</start>
+          <size>21.3</size>
+          <units>degrees_east</units>
+        </eastwest>
+      </geospatialCoverage>
+      <timeCoverage>
+        <start>2000-06-26T00:00</start>
+        <end>present</end>
+      </timeCoverage>
+    </dataset>
+    <dataset name="Real Time Ohio River Forecasting Center QPE" ID="misc/npvu/ohrfcqpe_w_meta.ncml" urlPath="misc/npvu/ohrfcqpe_w_meta.ncml">
+      <serviceName>Services</serviceName>
+      <dataFormat>NetCDF-Grid</dataFormat>
+      <documentation xlink:href="http://www.hpc.ncep.noaa.gov/npvu/index.shtml" xlink:title="National Precipitation Verification Unit"/>
+      <documentation xlink:href="http://water.weather.gov/precip/about.php" xlink:title="NWS Advanced Hydrologic Prediction Service About Page"/>
+      <documentation type="Rights">Freely Available.</documentation>
+      <documentation type="Summary">Latest available 7 days of radar indicated-rain gage verified and corrected precipitation estimate on the ~4km HRAP grid. 1 hour and 6 hour temporal resolution. Includes only the Ohio River Forecasting Center's data.</documentation>
+      <contributor role="aggregate and archive">National Precipitation Verification Unit</contributor>
+      <creator>
+        <name>River Forecasting Centers</name>
+        <contact url="http://water.weather.gov/precip/rfc.php" email=""/>
+      </creator>
+      <keyword>Precipitation Amount</keyword>
+      <keyword>Rain</keyword>
+      <publisher>
+        <name>CIDA</name>
+        <contact url="http://cida.usgs.gov" email="dblodgett@usgs.gov"/>
+      </publisher>
+      <geospatialCoverage>
+        <northsouth>
+          <start>35.5</start>
+          <size>10.0</size>
+          <units>degrees_north</units>
+        </northsouth>
+        <eastwest>
+          <start>-90.0</start>
+          <size>21.3</size>
+          <units>degrees_east</units>
+        </eastwest>
+      </geospatialCoverage>
+      <timeCoverage>
+        <end>present</end>
+        <duration>7 days</duration>
+      </timeCoverage>
+    </dataset>
+    <dataset name="North East River Forecasting Center QPE" ID="misc/npvu/anerfcqpe_w_meta.ncml" urlPath="misc/npvu/anerfcqpe_w_meta.ncml">
+      <serviceName>Services</serviceName>
+      <dataFormat>NetCDF-Grid</dataFormat>
+      <documentation xlink:href="http://www.hpc.ncep.noaa.gov/npvu/index.shtml" xlink:title="National Precipitation Verification Unit"/>
+      <documentation xlink:href="http://water.weather.gov/precip/about.php" xlink:title="NWS Advanced Hydrologic Prediction Service About Page"/>
+      <documentation type="Rights">Freely Available.</documentation>
+      <documentation type="Summary">Radar indicated-rain gage verified and corrected precipitation estimate on the ~4km HRAP grid. 1 hour and 6 hour temporal resolution. Includes only the North East River Forecasting Center's data.</documentation>
+      <contributor role="aggregate and archive">National Precipitation Verification Unit</contributor>
+      <creator>
+        <name>River Forecasting Centers</name>
+        <contact url="http://water.weather.gov/precip/rfc.php" email=""/>
+      </creator>
+      <keyword>Precipitation Amount</keyword>
+      <keyword>Rain</keyword>
+      <publisher>
+        <name>CIDA</name>
+        <contact url="http://cida.usgs.gov" email="dblodgett@usgs.gov"/>
+      </publisher>
+      <geospatialCoverage>
+        <northsouth>
+          <start>38.0</start>
+          <size>12.0</size>
+          <units>degrees_north</units>
+        </northsouth>
+        <eastwest>
+          <start>-80.0</start>
+          <size>15.0</size>
+          <units>degrees_east</units>
+        </eastwest>
+      </geospatialCoverage>
+      <timeCoverage>
+        <start>2010-08-14T00:00</start>
+        <end>present</end>
+      </timeCoverage>
+    </dataset>
+    <dataset name="Real Time North East River Forecasting Center QPE" ID="misc/npvu/nerfcqpe_w_meta.ncml" urlPath="misc/npvu/nerfcqpe_w_meta.ncml">
+      <serviceName>Services</serviceName>
+      <dataFormat>NetCDF-Grid</dataFormat>
+      <documentation xlink:href="http://www.hpc.ncep.noaa.gov/npvu/index.shtml" xlink:title="National Precipitation Verification Unit"/>
+      <documentation xlink:href="http://water.weather.gov/precip/about.php" xlink:title="NWS Advanced Hydrologic Prediction Service About Page"/>
+      <documentation type="Rights">Freely Available.</documentation>
+      <documentation type="Summary">Radar indicated-rain gage verified and corrected precipitation estimate on the ~4km HRAP grid. 1 hour and 6 hour temporal resolution. Includes only the North East River Forecasting Center's data.</documentation>
+      <contributor role="aggregate and archive">National Precipitation Verification Unit</contributor>
+      <creator>
+        <name>River Forecasting Centers</name>
+        <contact url="http://water.weather.gov/precip/rfc.php" email=""/>
+      </creator>
+      <keyword>Precipitation Amount</keyword>
+      <keyword>Rain</keyword>
+      <publisher>
+        <name>CIDA</name>
+        <contact url="http://cida.usgs.gov" email="dblodgett@usgs.gov"/>
+      </publisher>
+      <geospatialCoverage>
+        <northsouth>
+          <start>38.0</start>
+          <size>12.0</size>
+          <units>degrees_north</units>
+        </northsouth>
+        <eastwest>
+          <start>-80.0</start>
+          <size>15.0</size>
+          <units>degrees_east</units>
+        </eastwest>
+      </geospatialCoverage>
+      <timeCoverage>
+        <end>present</end>
+        <duration>7 days</duration>
+      </timeCoverage>
+    </dataset>
+    <dataset name="US GFDL A1 Monthly Tavg 1960-2099" ID="misc/us_gfdl.A1.monthly.Tavg.1960-2099.nc" urlPath="misc/us_gfdl.A1.monthly.Tavg.1960-2099.nc">
+      <serviceName>Services</serviceName>
+      <dataFormat>NetCDF-Grid</dataFormat>
+      <documentation type="Rights">Freely Available.</documentation>
+      <documentation type="Summary">Downscaled monthly average temperature</documentation>
+      <documentation type="History">Fri Mar 24 15:50:23 2006: ncrcat us_gfdl_cm2_1.sresa1fi.monthly.Tavg.1960-1969.nc us_gfdl_cm2_1.sresa1fi.monthly.Tavg.1970-1979.nc us_gfdl_cm2_1.sresa1fi.monthly.Tavg.1980-1989.nc us_gfdl_cm2_1.sresa1fi.monthly.Tavg.1990-1999.nc us_gfdl_cm2_1.sresa1fi.monthly.Tavg.2000-2009.nc us_gfdl_cm2_1.sresa1fi.monthly.Tavg.2010-2019.nc us_gfdl_cm2_1.sresa1fi.monthly.Tavg.2020-2029.nc us_gfdl_cm2_1.sresa1fi.monthly.Tavg.2030-2039.nc us_gfdl_cm2_1.sresa1fi.monthly.Tavg.2040-2049.nc us_gfdl_cm2_1.sresa1fi.monthly.Tavg.2050-2059.nc us_gfdl_cm2_1.sresa1fi.monthly.Tavg.2060-2069.nc us_gfdl_cm2_1.sresa1fi.monthly.Tavg.2070-2079.nc us_gfdl_cm2_1.sresa1fi.monthly.Tavg.2080-2089.nc us_gfdl_cm2_1.sresa1fi.monthly.Tavg.2090-2099.nc us_gfdl.A1.monthly.Tavg.1960-2099.nc Fri Mar 3 14:50:25 2006: ncrcat -O -p /data/emaurer/us_ipcc/sresa1fi/prep/fut.gfdl_cm2_1/vic_scale/ncfiles -n 10,4,1 us_gfdl_cm2_1.sresa1fi.monthly.Tavg.1960.nc /data/emaurer/us_ipcc/sresa1fi/prep/fut.gfdl_cm2_1/vic_scale/ncfiles/us_gfdl_cm2_1.sresa1fi.monthly.Tavg.1960-1969.nc Downscaled Data</documentation>
+      <creator>
+        <name>Unknown</name>
+        <contact url="" email=""/>
+      </creator>
+      <publisher>
+        <name>CIDA</name>
+        <contact url="http://cida.usgs.gov" email="dblodgett@usgs.gov"/>
+      </publisher>
+      <geospatialCoverage>
+        <northsouth>
+          <start>0.0</start>
+          <size>360.0</size>
+          <units>degrees_north</units>
+        </northsouth>
+        <eastwest>
+          <start>0.0</start>
+          <size>360.0</size>
+          <units>degrees_east</units>
+        </eastwest>
+      </geospatialCoverage>
+      <timeCoverage>
+        <start>1960-01-01</start>
+        <end>2099-11-30</end>
+      </timeCoverage>
+    </dataset>
+    <dataset name="US GFDL sresa2 Air Temp 2001-2100" ID="misc/gfdl.sresa2.tas.2001-2100.nc" urlPath="misc/gfdl.sresa2.tas.2001-2100.nc">
+      <serviceName>Services</serviceName>
+      <dataFormat>NetCDF-Grid</dataFormat>
+      <documentation type="Rights">Freely Available.</documentation>
+      <documentation type="Summary">Air Temperature from GFDL CM2.1, SRESA2 (run1) SRES A2 experiment output for IPCC AR4 and US CCSP</documentation>
+      <documentation type="History">input/atmos.200101-210012.t_ref.nc At 10:21:57 on 01/28/2005, CMOR rewrote data to comply with CF standards and IPCC Fourth Assessment and US CCSP Projects requirements</documentation>
+      <documentation type="Comment">GFDL experiment name = CM2.1U-H2_SresA2_W1. PCMDI experiment name = SRESA2 (run1). Initial conditions for this experiment were taken from 1 January 2001 of the climate of the 20th century experiment named CM2.1U-D4_1860-2000-AllForc_H2. Several time varying forcing agents used during the first 100 years of this CM2.1U-H2_SresA2_W1 experiment were based on output of the MOZART global atmospheric chemistry climate model when driven with the SRES A2 emission scenarios. For the CM2.1U-H2_SresA2_W1 experiment volcanic aerosols were zero, land surface cover types were time invariant, and solar irradiance varied seasonally based upon late 20th century averages but with no interannual variation.</documentation>
+      <documentation type="Reference">The GFDL Data Portal (http://nomads.gfdl.noaa.gov/) provides access to NOAA/GFDL's publicly available model input and output data sets. From this web site one can view and download data sets and documentation, including those related to the GFDL CM2.1 model experiments run for the IPCC's 4th Assessment Report and the US CCSP.</documentation>
+      <creator>
+        <name>IPCC Fourth Assessment and US CCSP Projects</name>
+        <contact url="http://nomads.gfdl.noaa.gov" email="GFDL.Climate.Model.Info@noaa.gov"/>
+      </creator>
+      <publisher>
+        <name>CIDA</name>
+        <contact url="http://cida.usgs.gov" email="dblodgett@usgs.gov"/>
+      </publisher>
+      <geospatialCoverage>
+        <northsouth>
+          <start>0.0</start>
+          <size>360.0</size>
+          <units>degrees_north</units>
+        </northsouth>
+        <eastwest>
+          <start>0.0</start>
+          <size>360.0</size>
+          <units>degrees_east</units>
+        </eastwest>
+      </geospatialCoverage>
+      <timeCoverage>
+        <start>2001-01-16T12:00:00Z</start>
+        <end>2100-11-22T12:00:00Z</end>
+      </timeCoverage>
+    </dataset>
+    <dataset name="US GFDL sresa2 Geopotential Height 2001-2100" ID="misc/gfdl.sresa2.zg.2001-2100.nc" urlPath="misc/gfdl.sresa2.zg.2001-2100.nc">
+      <serviceName>Services</serviceName>
+      <dataFormat>NetCDF-Grid</dataFormat>
+      <documentation type="Rights">Freely Available.</documentation>
+      <documentation type="Summary">Geopotential Height from GFDL CM2.1, SRESA2 (run1) SRES A2 experiment output for IPCC AR4 and US CCSP</documentation>
+      <documentation type="History">input/atmos.200101-210012.t_ref.nc At 10:21:57 on 01/28/2005, CMOR rewrote data to comply with CF standards and IPCC Fourth Assessment and US CCSP Projects requirements</documentation>
+      <documentation type="Comment">GFDL experiment name = CM2.1U-H2_SresA2_W1. PCMDI experiment name = SRESA2 (run1). Initial conditions for this experiment were taken from 1 January 2001 of the climate of the 20th century experiment named CM2.1U-D4_1860-2000-AllForc_H2. Several time varying forcing agents used during the first 100 years of this CM2.1U-H2_SresA2_W1 experiment were based on output of the MOZART global atmospheric chemistry climate model when driven with the SRES A2 emission scenarios. For the CM2.1U-H2_SresA2_W1 experiment volcanic aerosols were zero, land surface cover types were time invariant, and solar irradiance varied seasonally based upon late 20th century averages but with no interannual variation.</documentation>
+      <documentation type="Reference">The GFDL Data Portal (http://nomads.gfdl.noaa.gov/) provides access to NOAA/GFDL's publicly available model input and output data sets. From this web site one can view and download data sets and documentation, including those related to the GFDL CM2.1 model experiments run for the IPCC's 4th Assessment Report and the US CCSP.</documentation>
+      <creator>
+        <name>IPCC Fourth Assessment and US CCSP Projects</name>
+        <contact url="http://nomads.gfdl.noaa.gov" email="GFDL.Climate.Model.Info@noaa.gov"/>
+      </creator>
+      <publisher>
+        <name>CIDA</name>
+        <contact url="http://cida.usgs.gov" email="dblodgett@usgs.gov"/>
+      </publisher>
+      <geospatialCoverage>
+        <northsouth>
+          <start>0.0</start>
+          <size>360.0</size>
+          <units>degrees_north</units>
+        </northsouth>
+        <eastwest>
+          <start>0.0</start>
+          <size>360.0</size>
+          <units>degrees_east</units>
+        </eastwest>
+      </geospatialCoverage>
+      <timeCoverage>
+        <start>2001-01-16T12:00:00Z</start>
+        <end>2100-11-22T12:00:00Z</end>
+      </timeCoverage>
+    </dataset>
+  </dataset>
+  <catalogRef xlink:href="misc_catalog.xml" xlink:title="Misc Catalog" name=""/>
+  <catalogRef xlink:href="gsod_catalog.xml" xlink:title="GSOD Catalog" name=""/>
+  <catalogRef xlink:href="qpe_catalog.xml" xlink:title="QPE Catalog" name=""/>
+  <catalogRef xlink:href="gmo_catalog.xml" xlink:title="GMO Catalog" name=""/>
+</catalog>
