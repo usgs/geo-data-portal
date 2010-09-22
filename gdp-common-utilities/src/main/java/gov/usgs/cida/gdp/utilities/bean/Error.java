@@ -93,6 +93,13 @@ public class Error extends XmlResponse {
         this.errorCreated = new Date();
     }
 
+    public Error(ErrorEnum errorEnum) {
+        this.errorMessage = errorEnum.getErrorMessage();
+        this.errorNumber = errorEnum.getErrorNumber();
+        this.errorClass = errorEnum.getErrorClass();
+        this.errorCreated = new Date();
+    }
+
     public void setErrorMessage(String errorMessageParam) {
         this.errorMessage = errorMessageParam;
     }
