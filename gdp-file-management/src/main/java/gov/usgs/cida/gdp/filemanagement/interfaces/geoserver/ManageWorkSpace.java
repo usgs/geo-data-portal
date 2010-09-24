@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.lang.String;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -15,6 +16,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -22,16 +25,23 @@ import java.util.Date;
  */
 public class ManageWorkSpace {
 
-    private String geoServerURL = "http://localhost:8081/geoserver";
-
+    private String geoServerURLString = "http://localhost:8081/geoserver";
+    private URL geoServerURL;
+    
     public ManageWorkSpace() { /* Class uses the default eoServerURL specified above */}
 
-    public ManageWorkSpace(String geoServerURL) {
+    public ManageWorkSpace(String geoServerURL) throws MalformedURLException {
+        this.geoServerURLString = geoServerURL;
+        this.geoServerURL = new URL(geoServerURLString);
+    }
+
+    public ManageWorkSpace(URL geoServerURL) {
+        this.geoServerURLString = geoServerURL.toExternalForm();
         this.geoServerURL = geoServerURL;
     }
 
     public boolean createDataStore(String shapefilePath, String shapefileName, String workspace) throws IOException {
-            return createDataStore(shapefilePath, shapefileName, workspace, "gdp");
+            return createDataStore(shapefilePath, shapefileName, workspace, this.geoServerURLString);
     }
 
     public boolean createDataStore(String shapefilePath, String shapefileName, String workspace, String geoServerURL) throws IOException {
@@ -43,7 +53,10 @@ public class ManageWorkSpace {
         }
 
         URL dataStoresURL = new URL(workspacesURL + workspace + "/datastores/");
-        String dataStoreXML = createDataStoreXML(shapefileName, workspace, shapefilePath);
+        String namespace = "";
+        Matcher nsMatcher = Pattern.compile(".*<uri>(.*)</uri>.*").matcher(getNameSpaceForWorkSpace(workspace));
+        if (nsMatcher.matches()) namespace = nsMatcher.group(1);
+        String dataStoreXML = createDataStoreXML(shapefileName, workspace, namespace, shapefilePath);
         if (!dataStoreExists(workspace, shapefileName)) {
             // send POST to create the datastore if it doesn't exist
             sendPacket(dataStoresURL, "POST", "text/xml", dataStoreXML);
@@ -59,11 +72,15 @@ public class ManageWorkSpace {
 
         // Make sure we render using the default polygon style, and not whatever
         // colored style might have been used before
-        sendPacket(new URL(geoServerURL + "/rest/layers/" + workspace + ":" + shapefileName), "PUT", "text/xml",
+        sendPacket(new URL(geoServerURL + "/rest/namespaces/" + workspace + ":" + shapefileName), "PUT", "text/xml",
                 "<layer><defaultStyle><name>polygon</name></defaultStyle>"
                 + "<enabled>true</enabled></layer>");
 
         return true;
+    }
+
+    public String getNameSpaceForWorkSpace(String workspace) throws MalformedURLException, IOException {
+        return getResponse(new URL(this.getGeoServerURLString() + "/rest/namespaces/" + workspace + ".xml"), "GET", "text/xml", null, null, null);
     }
 
     /**
@@ -71,7 +88,7 @@ public class ManageWorkSpace {
      * @return
      */
     public String listWorkSpaces() throws MalformedURLException, IOException {
-        return getResponse(new URL(this.getGeoServerURL() + "/rest/workspaces.xml"), "GET", "text/xml", null, null, null);
+        return getResponse(new URL(this.getGeoServerURLString() + "/rest/workspaces.xml"), "GET", "text/xml", null, null, null);
     }
 
     /**
@@ -91,12 +108,12 @@ public class ManageWorkSpace {
      * @return
      */
     public String listDataStores(String workspace) throws MalformedURLException, IOException {
-        return getResponse(new URL(this.getGeoServerURL() + "/rest/workspaces/" + workspace + "/datastores.xml"), "GET", "text/html", null, null, null);
+        return getResponse(new URL(this.getGeoServerURLString() + "/rest/workspaces/" + workspace + "/datastores.xml"), "GET", "text/html", null, null, null);
     }
 
     public boolean workspaceExists(String workspace) throws IOException {
         try {
-            sendPacket(new URL(getGeoServerURL() + "/rest/workspaces/" + workspace), "GET", null, null);
+            sendPacket(new URL(this.getGeoServerURLString() + "/rest/workspaces/" + workspace), "GET", null, null);
         } catch (FileNotFoundException e) {
             return false;
         }
@@ -106,7 +123,7 @@ public class ManageWorkSpace {
 
     boolean dataStoreExists(String workspace, String dataStore) throws IOException {
         try {
-            URL url = new URL(getGeoServerURL() + "/rest/workspaces/" + workspace + "/datastores/" + dataStore);
+            URL url = new URL(this.getGeoServerURLString() + "/rest/workspaces/" + workspace + "/datastores/" + dataStore);
             sendPacket(url, "GET", null, null);
         } catch (FileNotFoundException e) {
             return false;
@@ -117,7 +134,7 @@ public class ManageWorkSpace {
 
     boolean styleExists(String styleName) throws IOException {
         try {
-            sendPacket(new URL(getGeoServerURL() + "/rest/styles/" + styleName), "GET", null, null);
+            sendPacket(new URL(this.getGeoServerURLString() + "/rest/styles/" + styleName), "GET", null, null);
         } catch (FileNotFoundException e) {
             return false;
         }
@@ -157,15 +174,15 @@ public class ManageWorkSpace {
 
         // create style in geoserver
         if (!styleExists(styleName)) {
-            sendPacket(new URL(getGeoServerURL() + "/rest/styles?name=" + styleName),
+            sendPacket(new URL(this.getGeoServerURLString() + "/rest/styles?name=" + styleName),
                     "POST", "application/vnd.ogc.sld+xml", sld);
         } else {
-            sendPacket(new URL(getGeoServerURL() + "/rest/styles/" + styleName),
+            sendPacket(new URL(this.getGeoServerURLString() + "/rest/styles/" + styleName),
                     "PUT", "application/vnd.ogc.sld+xml", sld);
         }
 
         // set layer to use the new style
-        sendPacket(new URL(getGeoServerURL() + "/rest/layers/" + workspace + ":" + layer), "PUT", "text/xml",
+        sendPacket(new URL(this.getGeoServerURLString() + "/rest/layers/" + workspace + ":" + layer), "PUT", "text/xml",
                 "<layer><defaultStyle><name>" + styleName + "</name></defaultStyle>"
                 + "<enabled>true</enabled></layer>");
     }
@@ -242,7 +259,7 @@ public class ManageWorkSpace {
         return new String("<workspace><name>" + workspace + "</name></workspace>");
     }
 
-    String createDataStoreXML(String name, String workspace, String url) {
+    String createDataStoreXML(String name, String workspace, String namespace, String url) {
 
         return new String(
                 "<dataStore>"
@@ -257,7 +274,7 @@ public class ManageWorkSpace {
                 + "    <entry key=\"create spatial index\">true</entry>"
                 + "    <entry key=\"charset\">ISO-8859-1</entry>"
                 + "    <entry key=\"url\">file:" + url + "</entry>"
-                + "    <entry key=\"namespace\">http://" + workspace + "</entry>"
+                + "    <entry key=\"namespace\">" + namespace + "</entry>"
                 + "  </connectionParameters>"
                 + "</dataStore>");
     }
@@ -304,7 +321,6 @@ public class ManageWorkSpace {
             }
         } catch (IOException e) {
             System.err.println("Error retrieving dates");
-            e.printStackTrace();
         }
 
         return dates;
@@ -411,11 +427,7 @@ public class ManageWorkSpace {
                 }
             }
         } catch (IOException e) {
-            System.err.println("Error reading file");
-            e.printStackTrace();
         } catch (ParseException e) {
-            System.err.println("Error parsing date");
-            e.printStackTrace();
         }
     }
 
@@ -495,16 +507,31 @@ public class ManageWorkSpace {
     }
 
     /**
-     * @return the geoServerURL
+     * @return the geoServerURLString
      */
-    public String getGeoServerURL() {
-        return geoServerURL;
+    public URL getGeoServerURL() {
+        return getGeoServerURL();
     }
 
     /**
-     * @param geoServerURL the geoServerURL to set
+     * @param geoServerURLString the geoServerURLString to set
      */
-    public void setGeoServerURL(String geoServerURL) {
-        this.geoServerURL = geoServerURL;
+    public void setGeoServerURL(URL geoServerURL) {
+        this.setGeoServerURL(geoServerURL);
     }
+
+    /**
+     * @return the geoServerURLString
+     */
+    public String getGeoServerURLString() {
+        return geoServerURLString;
+    }
+
+    /**
+     * @param geoServerURLString the geoServerURLString to set
+     */
+    public void setGeoServerURLString(String geoServerURLString) {
+        this.geoServerURLString = geoServerURLString;
+    }
+
 }
