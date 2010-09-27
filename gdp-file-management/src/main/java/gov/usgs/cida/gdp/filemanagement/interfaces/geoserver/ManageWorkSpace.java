@@ -72,7 +72,7 @@ public class ManageWorkSpace {
 
         // Make sure we render using the default polygon style, and not whatever
         // colored style might have been used before
-        sendPacket(new URL(geoServerURL + "/rest/namespaces/" + workspace + ":" + shapefileName), "PUT", "text/xml",
+        sendPacket(new URL(geoServerURL + "/rest/layers/" + workspace + ":" + shapefileName), "PUT", "text/xml",
                 "<layer><defaultStyle><name>polygon</name></defaultStyle>"
                 + "<enabled>true</enabled></layer>");
 
