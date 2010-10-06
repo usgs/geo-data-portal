@@ -59,7 +59,8 @@ public class ProcessServlet extends HttpServlet {
     static {
         try {
             NetcdfFile.registerIOProvider(ucar.nc2.iosp.geotiff.GeoTiffIOServiceProvider.class);
-        } catch (Exception e) { }
+        } catch (Exception e) {
+        }
     }
 
     // // END - MOVEME
@@ -86,6 +87,11 @@ public class ProcessServlet extends HttpServlet {
 
             // THREDDS
             String dataset = request.getParameter("dataset");
+            // IS - By request of DB- We need to alias the dataset variable to go from
+            //      internal.mdc.usgs.gov/thredds (or whatever it is at the time) to an
+            //      internal routing - http://cida-wiwsc-int-javatest2a.er.usgs.gov/thredds
+            //      (or whatever it is at the time)
+
             String[] dataTypes = request.getParameterValues("datatype");
             String from = request.getParameter("from");
             String to = request.getParameter("to");
@@ -139,17 +145,17 @@ public class ProcessServlet extends HttpServlet {
                 featureCollection = Geometry.getFeatureCollection(lat, lon, userspacePath, userDirectory, uploadDirectory, appTempDir, shapeSet, features, outputFile, attribute);
             } catch (Exception ex) {
                 XmlReply xmlOutput = new XmlReply(Acknowledgement.ACK_FAIL,
-							new Error(ex.getMessage()));
-					XmlUtils.sendXml(xmlOutput, start, response);
-					return;
+                        new Error(ex.getMessage()));
+                XmlUtils.sendXml(xmlOutput, start, response);
+                return;
             }
-            
+
             if (lat != null && lon != null) {
                 attributeName = "placeholder";
                 shapefilePath = userspacePath + userDirectory + FileHelper.getSeparator() + "latlon.shp";
             } else {
 
-            	//TODO- Don't search through all shapefiles.
+                //TODO- Don't search through all shapefiles.
                 AvailableFiles afb = AvailableFiles.getAvailableFilesBean(appTempDir, userspacePath + userDirectory);
                 List<ShapeFileSet> shapeBeanList = afb.getShapeSetList();
                 for (ShapeFileSet sfsb : shapeBeanList) {
@@ -164,7 +170,7 @@ public class ProcessServlet extends HttpServlet {
                 try {
                     delimiterOption = DelimiterOption.valueOf(delimId);
                 } catch (IllegalArgumentException e) {
-                     /* failure handled below */
+                    /* failure handled below */
                 }
             }
 
@@ -196,7 +202,7 @@ public class ProcessServlet extends HttpServlet {
                     toDate = df.parse(toTime);
                     fromDate = df.parse(fromTime);
                 } catch (ParseException e1) {
-                	XmlReply xmlOutput = new XmlReply(Acknowledgement.ACK_FAIL, new Error("Unable to parse parameter dates. Are they in the right format?."));
+                    XmlReply xmlOutput = new XmlReply(Acknowledgement.ACK_FAIL, new Error("Unable to parse parameter dates. Are they in the right format?."));
                     XmlUtils.sendXml(xmlOutput, start, response);
                     return;
                 }
@@ -207,24 +213,24 @@ public class ProcessServlet extends HttpServlet {
             FeatureDataset featureDataset = FeatureDatasetFactoryManager.open(
                     FeatureType.ANY, datasetUrl, null, errorLog);
 
-			try {
-				if (featureDataset.getFeatureType() == FeatureType.GRID && featureDataset instanceof GridDataset) {
-					boolean categorical = false;
-					CSVWriter.grid(featureDataset, categorical,
-							featureCollection, attributeName, delimiterOption,
-							fromDate, toDate, dataTypes, groupById,
-							outputStats, outputFile);
+            try {
+                if (featureDataset.getFeatureType() == FeatureType.GRID && featureDataset instanceof GridDataset) {
+                    boolean categorical = false;
+                    CSVWriter.grid(featureDataset, categorical,
+                            featureCollection, attributeName, delimiterOption,
+                            fromDate, toDate, dataTypes, groupById,
+                            outputStats, outputFile);
 
-				} else if (featureDataset.getFeatureType() == FeatureType.STATION && featureDataset instanceof FeatureDatasetPoint) {
-					CSVWriter.station(featureDataset, featureCollection,
-							fromDate, toDate, delimiterOption, dataTypes,
-							groupById, outputFile);
-				}
-			} catch (Exception ex) {
-				XmlReply xmlOutput = new XmlReply(Acknowledgement.ACK_FAIL,	new Error(ex.getMessage()));
-				XmlUtils.sendXml(xmlOutput, start, response);
-				return;
-			}
+                } else if (featureDataset.getFeatureType() == FeatureType.STATION && featureDataset instanceof FeatureDatasetPoint) {
+                    CSVWriter.station(featureDataset, featureCollection,
+                            fromDate, toDate, delimiterOption, dataTypes,
+                            groupById, outputFile);
+                }
+            } catch (Exception ex) {
+                XmlReply xmlOutput = new XmlReply(Acknowledgement.ACK_FAIL, new Error(ex.getMessage()));
+                XmlUtils.sendXml(xmlOutput, start, response);
+                return;
+            }
 
             // Move completed file to the upload repository
             FileHelper.copyFileToFile(
@@ -271,10 +277,6 @@ public class ProcessServlet extends HttpServlet {
             HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);
     }
-
-    
-
-    
 
     private File wcs(String wcsServer, String wcsCoverage,
             String wcsBoundingBox, String wcsGridCRS, String wcsGridOffsets,
@@ -410,21 +412,21 @@ public class ProcessServlet extends HttpServlet {
     }
 
     private boolean sendEmail(String email, String finalUrlEmail) {
-    	if (email != null && !"".equals(email))  {
-	        String content = "Your file is ready: " + finalUrlEmail;
-	        String subject = "Your file is ready";
-	        String from = "gdp_data@usgs.gov";
-	        EmailMessage emBean = new EmailMessage(from, email,
-	                new ArrayList<String>(), subject, content);
-	        EmailHandler emh = new EmailHandler();
-	        try {
-				return emh.sendMessage(emBean);
-			} catch (AddressException e) {
-				return false;
-			} catch (MessagingException e) {
-				return false;
-			}
-    	}
-    	return false;
+        if (email != null && !"".equals(email)) {
+            String content = "Your file is ready: " + finalUrlEmail;
+            String subject = "Your file is ready";
+            String from = "gdp_data@usgs.gov";
+            EmailMessage emBean = new EmailMessage(from, email,
+                    new ArrayList<String>(), subject, content);
+            EmailHandler emh = new EmailHandler();
+            try {
+                return emh.sendMessage(emBean);
+            } catch (AddressException e) {
+                return false;
+            } catch (MessagingException e) {
+                return false;
+            }
+        }
+        return false;
     }
 }
