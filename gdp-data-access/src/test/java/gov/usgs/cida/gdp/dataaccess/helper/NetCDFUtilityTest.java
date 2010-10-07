@@ -1,7 +1,8 @@
 package gov.usgs.cida.gdp.dataaccess.helper;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import java.net.MalformedURLException;
-import java.net.URL;
 import thredds.catalog.InvService;
 import ucar.nc2.units.DateType;
 import thredds.catalog.DataFormatType;
@@ -18,6 +19,18 @@ import thredds.catalog.ServiceType;
 import static org.junit.Assert.*;
 
 public class NetCDFUtilityTest {
+
+    private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetCDFUtilityTest.class);
+
+    @BeforeClass
+    public static void setUpBeforeClass() throws Exception {
+        log.debug("Started testing class.");
+    }
+
+    @AfterClass
+    public static void tearDownAfterClass() throws Exception {
+        log.debug("Ended testing class.");
+    }
 
     @Test
     public void testGetDatasetHandles() throws Exception {
@@ -106,6 +119,5 @@ public class NetCDFUtilityTest {
 
     @Test
     public void testActualCIDAThredds() throws MalformedURLException, URISyntaxException {
-        
     }
 }

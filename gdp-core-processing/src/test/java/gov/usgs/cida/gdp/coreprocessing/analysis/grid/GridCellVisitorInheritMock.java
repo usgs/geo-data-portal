@@ -1,7 +1,7 @@
 package gov.usgs.cida.gdp.coreprocessing.analysis.grid;
 
-import gov.usgs.cida.gdp.coreprocessing.analysis.grid.GridCellVisitor;
-import gov.usgs.cida.gdp.coreprocessing.analysis.grid.GridCellVisitor;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 
 /**
  * @author jordan
@@ -11,14 +11,25 @@ import gov.usgs.cida.gdp.coreprocessing.analysis.grid.GridCellVisitor;
  */
 public class GridCellVisitorInheritMock extends GridCellVisitor {
 
-	private int processCount = 0;
+    private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridCellVisitorInheritMock.class);
 
-	@Override
-	public void processGridCell(int xCellIndex, int yCellIndex, double value) {
-		processCount++;
-	}
-	
-	public int getProcessCount() {
-		return processCount;
-	}
+    @BeforeClass
+    public static void setUpBeforeClass() throws Exception {
+        log.debug("Started testing class.");
+    }
+
+    @AfterClass
+    public static void tearDownAfterClass() throws Exception {
+        log.debug("Ended testing class.");
+    }
+    private int processCount = 0;
+
+    @Override
+    public void processGridCell(int xCellIndex, int yCellIndex, double value) {
+        processCount++;
+    }
+
+    public int getProcessCount() {
+        return processCount;
+    }
 }

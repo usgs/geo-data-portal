@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package gov.usgs.cida.gdp.outputprocessing.servlet;
 
 import gov.usgs.cida.gdp.outputprocessing.bean.OutputFileType;
@@ -30,7 +25,6 @@ public class OutputInfoServlet extends HttpServlet {
     private static org.slf4j.Logger log = LoggerFactory.getLogger(OutputInfoServlet.class);
 
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /** 
      * Handles the HTTP <code>GET</code> method.
      * @param request servlet request
@@ -59,26 +53,26 @@ public class OutputInfoServlet extends HttpServlet {
 		XmlReply xmlReply = null;
 
         if ("getoutputstats".equals(command)) {
-			OutputStatistics outputStats = OutputStatistics.getOutputStatisticsBean();
-			xmlReply = new XmlReply(Acknowledgement.ACK_OK, outputStats);
-			XmlUtils.sendXml(xmlReply, start, response);
-			return;
-		}
+                OutputStatistics outputStats = OutputStatistics.getOutputStatisticsBean();
+                xmlReply = new XmlReply(Acknowledgement.ACK_OK, outputStats);
+                XmlUtils.sendXml(xmlReply, start, response);
+                return;
+        }
 
-		if ("getoutputtypelist".equals(command)) {
-			log.debug("User has chosen to get output file type list");
-			List<String> availableFileTypes = FileHelper.getOutputFileTypesAvailable();
-			if (availableFileTypes == null || availableFileTypes.isEmpty()) {
-				xmlReply = new XmlReply(Acknowledgement.ACK_FAIL, new Error(Error.ERR_OUTFILES_UNAVAILABLE));
-				XmlUtils.sendXml(xmlReply, start, response);
-				return;
-			}
+        if ("getoutputtypelist".equals(command)) {
+                log.debug("User has chosen to get output file type list");
+                List<String> availableFileTypes = FileHelper.getOutputFileTypesAvailable();
+                if (availableFileTypes == null || availableFileTypes.isEmpty()) {
+                        xmlReply = new XmlReply(Acknowledgement.ACK_FAIL, new Error(Error.ERR_OUTFILES_UNAVAILABLE));
+                        XmlUtils.sendXml(xmlReply, start, response);
+                        return;
+                }
 
-			OutputFileType oftb = new OutputFileType(availableFileTypes);
-			xmlReply = new XmlReply(Acknowledgement.ACK_OK, oftb);
-			XmlUtils.sendXml(xmlReply, start, response);
-			return;
-		}
+                OutputFileType oftb = new OutputFileType(availableFileTypes);
+                xmlReply = new XmlReply(Acknowledgement.ACK_OK, oftb);
+                XmlUtils.sendXml(xmlReply, start, response);
+                return;
+        }
     }
 
 }

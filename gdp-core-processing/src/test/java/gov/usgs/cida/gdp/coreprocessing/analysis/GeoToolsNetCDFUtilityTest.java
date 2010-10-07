@@ -1,19 +1,12 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package gov.usgs.cida.gdp.coreprocessing.analysis;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.opengis.referencing.operation.TransformException;
 import ucar.unidata.geoloc.LatLonRect;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -23,20 +16,16 @@ import static org.junit.Assert.*;
  */
 public class GeoToolsNetCDFUtilityTest {
 
+    private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GeoToolsNetCDFUtilityTest.class);
+
     @BeforeClass
-    public static void setUpClass() throws Exception {
+    public static void setUpBeforeClass() throws Exception {
+        log.debug("Started testing class.");
     }
 
     @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
+    public static void tearDownAfterClass() throws Exception {
+        log.debug("Ended testing class.");
     }
 
     @Test
@@ -60,7 +49,6 @@ public class GeoToolsNetCDFUtilityTest {
         assertEquals(result.getUpperRightPoint().getLongitude(), -1.0, 0.0);
         assertEquals(result.getLowerLeftPoint().getLatitude(), -1.0, 0.0);
         assertEquals(result.getLowerLeftPoint().getLongitude(), 0.0, 0.0);
-        
-    }
 
+    }
 }

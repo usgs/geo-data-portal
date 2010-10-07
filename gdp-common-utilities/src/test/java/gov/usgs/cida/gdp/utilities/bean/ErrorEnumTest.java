@@ -1,15 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gov.usgs.cida.gdp.utilities.bean;
 
 import java.util.Date;
 import javax.management.RuntimeErrorException;
 import static org.junit.Assert.*;
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -18,26 +12,18 @@ import org.junit.Test;
  * @author isuftin
  */
 public class ErrorEnumTest {
-
-    public ErrorEnumTest() {
-    }
+    private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ErrorEnumTest.class);
 
     @BeforeClass
-    public static void setUpClass() throws Exception {
+    public static void setUpBeforeClass() throws Exception {
+        log.debug("Started testing class.");
     }
 
     @AfterClass
-    public static void tearDownClass() throws Exception {
+    public static void tearDownAfterClass() throws Exception {
+        log.debug("Ended testing class.");
     }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
-    }
-
+    
     @Test
     public void createErrorEnumWithInteger() {
         assertEquals(ErrorEnum.ERR_NO_COMMAND.getErrorMessage(), "No Command Has Been Provided - To list all available commands, use command=commandlist");

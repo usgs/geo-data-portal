@@ -1,11 +1,5 @@
 package gov.usgs.cida.gdp.utilities.bean;
 
-import gov.usgs.cida.gdp.utilities.bean.Acknowledgement;
-import gov.usgs.cida.gdp.utilities.bean.Error;
-import gov.usgs.cida.gdp.utilities.bean.ErrorEnum;
-import gov.usgs.cida.gdp.utilities.bean.Message;
-import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
-import gov.usgs.cida.gdp.utilities.bean.XmlReply;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
@@ -22,16 +16,16 @@ import static org.junit.Assert.*;
 public class XmlReplyTest {
 
     XmlReply instance = null;
-
-    public XmlReplyTest() {
-    }
+    private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(XmlReplyTest.class);
 
     @BeforeClass
-    public static void setUpClass() throws Exception {
+    public static void setUpBeforeClass() throws Exception {
+        log.debug("Started testing class.");
     }
 
     @AfterClass
-    public static void tearDownClass() throws Exception {
+    public static void tearDownAfterClass() throws Exception {
+        log.debug("Ended testing class.");
     }
 
     @Before
@@ -87,7 +81,7 @@ public class XmlReplyTest {
     public void testXmlReplyBeanConstructorWithInStatusAndErrorEnumAndMessageBeanWithIllegalArgumentException() {
         try {
             @SuppressWarnings("unused")
-	    XmlReply result = new XmlReply(-1, ErrorEnum.ERR_ATTRIBUTES_NOT_FOUND, new Message());
+            XmlReply result = new XmlReply(-1, ErrorEnum.ERR_ATTRIBUTES_NOT_FOUND, new Message());
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
         }
@@ -119,7 +113,7 @@ public class XmlReplyTest {
     public void testXmlReplyBeanConstructorWithStatusIntWithIllegalArgumentException() {
         try {
             @SuppressWarnings("unused")
-	    XmlReply result = new XmlReply(-1);
+            XmlReply result = new XmlReply(-1);
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
         }
@@ -135,7 +129,7 @@ public class XmlReplyTest {
     public void testXmlReplyBeanConstructorWithStatusIntAndErrorBeanWithIllegalArgumentException() {
         try {
             @SuppressWarnings("unused")
-	    XmlReply result = new XmlReply(-1, new Error());
+            XmlReply result = new XmlReply(-1, new Error());
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
         }
@@ -151,7 +145,7 @@ public class XmlReplyTest {
     public void testXmlReplyBeanConstructorWithStatusIntAndErrorEnumWithIllegalArgumentException() {
         try {
             @SuppressWarnings("unused")
-	    XmlReply result = new XmlReply(-1, ErrorEnum.ERR_ATTRIBUTES_NOT_FOUND);
+            XmlReply result = new XmlReply(-1, ErrorEnum.ERR_ATTRIBUTES_NOT_FOUND);
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
         }
@@ -167,7 +161,7 @@ public class XmlReplyTest {
     public void testXmlReplyBeanConstructorWithStatusIntAndErrorEnumAndMessageBeanWithIllegalArgumentException() {
         try {
             @SuppressWarnings("unused")
-	    XmlReply result = new XmlReply(-1, ErrorEnum.ERR_ATTRIBUTES_NOT_FOUND, new Message());
+            XmlReply result = new XmlReply(-1, ErrorEnum.ERR_ATTRIBUTES_NOT_FOUND, new Message());
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
         }
@@ -183,7 +177,7 @@ public class XmlReplyTest {
     public void testXmlReplyBeanConstructorWithStatusIntAndErrorBeanAndMessageBeanWithIllegalArgumentException() {
         try {
             @SuppressWarnings("unused")
-	    XmlReply result = new XmlReply(-1, new Error(), new Message());
+            XmlReply result = new XmlReply(-1, new Error(), new Message());
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
         }
@@ -241,7 +235,7 @@ public class XmlReplyTest {
     @Test
     public void testGetContent() {
         XmlReply instance = new XmlReply();
-        instance.setContent(new XmlResponse[] {null, null});
+        instance.setContent(new XmlResponse[]{null, null});
         Object[] result = instance.getContent();
         assertEquals(2, result.length);
     }

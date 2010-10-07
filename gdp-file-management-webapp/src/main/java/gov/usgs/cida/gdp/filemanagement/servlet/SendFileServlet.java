@@ -32,13 +32,6 @@ public class SendFileServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public SendFileServlet() {
-        super();
-    }
-
-    /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
      *      response)
      */

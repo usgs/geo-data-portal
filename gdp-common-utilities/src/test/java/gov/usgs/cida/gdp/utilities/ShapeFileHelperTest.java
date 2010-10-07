@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package gov.usgs.cida.gdp.utilities;
 
 import gov.usgs.cida.gdp.utilities.bean.Files;
@@ -17,12 +12,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static  org.junit.Assert.*;
+import static org.junit.Assert.*;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -33,22 +29,22 @@ public class ShapeFileHelperTest {
     private String tempDir = "";
     private String seperator = "";
     private String testFile = "demo_HUCs";
-    List<ShapeFileSet> shapeBeanList = new ArrayList<ShapeFileSet>();;
-    
-    public ShapeFileHelperTest() {
-    }
+    List<ShapeFileSet> shapeBeanList = new ArrayList<ShapeFileSet>();
+    private static org.slf4j.Logger log = LoggerFactory.getLogger(ShapeFileHelperTest.class);
 
     @BeforeClass
-    public static void setUpClass() throws Exception {
+    public static void setUpBeforeClass() throws Exception {
+        log.debug("Started testing class.");
     }
 
     @AfterClass
-    public static void tearDownClass() throws Exception {
+    public static void tearDownAfterClass() throws Exception {
+        log.debug("Ended testing class.");
     }
 
     @Before
-    public void setUp(){
-         this.tempDir = System.getProperty("java.io.tmpdir");
+    public void setUp() {
+        this.tempDir = System.getProperty("java.io.tmpdir");
 
         if (!(this.tempDir.endsWith("/") || this.tempDir.endsWith("\\"))) {
             this.tempDir = this.tempDir + System.getProperty("file.separator");
@@ -117,6 +113,12 @@ public class ShapeFileHelperTest {
 
     @After
     public void tearDown() {
+        File delDir = new File(this.tempDir);
+        try {
+            FileHelper.deleteDirRecursively(delDir);
+        } catch (IOException ex) {
+            Logger.getLogger(FileHelperTest.class.getName()).log(Level.SEVERE, "Failed to delete: " + delDir.getPath() + "  -- Remember to clean project or remove this file/dir.", ex);
+        }
     }
 
     /**
@@ -128,7 +130,6 @@ public class ShapeFileHelperTest {
         assertNotNull(result);
     }
 
-
     /**
      * Test of getShapeFileFromShapeSetName method, of class ShapeFileHelper.
      */
@@ -138,25 +139,26 @@ public class ShapeFileHelperTest {
         assertNull(result);
     }
 
-        /**
+    /**
      * Test of getShapeFileFromShapeSetName method, of class ShapeFileHelper.
      */
     @Test
     public void testGetShapeFilePathFromShapeSetWithCorrectName() {
-        String  result = ShapeFileHelper.getShapeFilePathFromShapeSetName("demo_HUCs", shapeBeanList);
+        String result = ShapeFileHelper.getShapeFilePathFromShapeSetName("demo_HUCs", shapeBeanList);
         assertNotNull(result);
         assertFalse(result.isEmpty());
     }
 
-            /**
+    /**
      * Test of getShapeFileFromShapeSetName method, of class ShapeFileHelper.
      */
     @Test
     public void testGetShapeFilePathFromShapeSetWithInCorrectName() {
-        String  result = ShapeFileHelper.getShapeFilePathFromShapeSetName("incorrect", shapeBeanList);
+        String result = ShapeFileHelper.getShapeFilePathFromShapeSetName("incorrect", shapeBeanList);
         assertNull(result);
     }
-        /**
+
+    /**
      * Test of getShapeFileFromShapeSetName method, of class ShapeFileHelper.
      */
     @Test
@@ -164,5 +166,4 @@ public class ShapeFileHelperTest {
         ShapeFileHelper result = new ShapeFileHelper();
         assertNotNull(result);
     }
-
 }

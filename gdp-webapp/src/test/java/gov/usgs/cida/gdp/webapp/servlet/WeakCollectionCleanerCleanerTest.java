@@ -1,10 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gov.usgs.cida.gdp.webapp.servlet;
 
-import gov.usgs.cida.gdp.webapp.servlet.WeakCollectionCleanerCleaner;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import java.lang.reflect.Field;
 import org.junit.Test;
 
@@ -18,6 +15,17 @@ public class WeakCollectionCleanerCleanerTest {
 
     // this value is actually hardcoded as a literal in the WeakCollectionCleaner impl.
     public final static String ThreadName_WeakCollectionCleaner = "WeakCollectionCleaner";
+    private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(WeakCollectionCleanerCleanerTest.class);
+
+    @BeforeClass
+    public static void setUpBeforeClass() throws Exception {
+        log.debug("Started testing class.");
+    }
+
+    @AfterClass
+    public static void tearDownAfterClass() throws Exception {
+        log.debug("Ended testing class.");
+    }
 
     @Test
     public void testWeakCollectionCleanerSignature() {

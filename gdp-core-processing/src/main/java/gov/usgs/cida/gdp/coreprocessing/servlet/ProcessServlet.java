@@ -91,7 +91,7 @@ public class ProcessServlet extends HttpServlet {
             //      internal.mdc.usgs.gov/thredds (or whatever it is at the time) to an
             //      internal routing - http://cida-wiwsc-int-javatest2a.er.usgs.gov/thredds
             //      (or whatever it is at the time)
-                    if (dataset.contains("http://internal.cida.usgs.gov/thredds/")) dataset = dataset.replace("http://internal.cida.usgs.gov/thredds/", "http://cida-wiwsc-int-javatest2a.er.usgs.gov/thredds/");
+            if (dataset.contains("http://internal.cida.usgs.gov/thredds/")) dataset = dataset.replace("http://internal.cida.usgs.gov/thredds/", "http://cida-wiwsc-int-javatest2a.er.usgs.gov/thredds/");
 
             String[] dataTypes = request.getParameterValues("datatype");
             String from = request.getParameter("from");

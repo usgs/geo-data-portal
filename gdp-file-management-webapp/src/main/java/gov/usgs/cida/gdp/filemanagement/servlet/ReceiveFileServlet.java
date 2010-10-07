@@ -27,16 +27,8 @@ import org.slf4j.LoggerFactory;
  */
 public class ReceiveFileServlet extends HttpServlet {
 
-	private static final long serialVersionUID = 6766229674722132238L;
-	private static org.slf4j.Logger log = LoggerFactory.getLogger(ReceiveFileServlet.class);
-
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public ReceiveFileServlet() {
-        super();
-    }
-
+    private static final long serialVersionUID = 6766229674722132238L;
+    private static org.slf4j.Logger log = LoggerFactory.getLogger(ReceiveFileServlet.class);
     /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
@@ -118,10 +110,10 @@ public class ReceiveFileServlet extends HttpServlet {
 
         Cookie[] cookies = request.getCookies();
         String userDirectory = "";
-        for (int cookieIndex = 0;cookieIndex < cookies.length;cookieIndex++) {
-        	if ("gdp-user-directory".equals(cookies[cookieIndex].getName().toLowerCase())) {
-        		userDirectory = cookies[cookieIndex].getValue();
-        	}
+        for (int cookieIndex = 0; cookieIndex < cookies.length; cookieIndex++) {
+            if ("gdp-user-directory".equals(cookies[cookieIndex].getName().toLowerCase())) {
+                userDirectory = cookies[cookieIndex].getValue();
+            }
         }
 
         Object interimItems = upload.parseRequest(request);

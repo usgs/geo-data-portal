@@ -1,12 +1,27 @@
 package gov.usgs.cida.gdp.utilities.bean;
 
+import org.junit.AfterClass;
 import java.util.Date;
 import static org.junit.Assert.*;
+import org.junit.BeforeClass;
 
 
 import org.junit.Test;
 
 public class ErrorTest {
+
+    private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ErrorTest.class);
+
+    @BeforeClass
+    public static void setUpBeforeClass() throws Exception {
+        log.debug("Started testing class.");
+    }
+
+    @AfterClass
+    public static void tearDownAfterClass() throws Exception {
+        log.debug("Ended testing class.");
+    }
+
     @Test
     public void testInitializeWithInteger() {
         Error errBean = new Error(Integer.valueOf(0));
@@ -59,7 +74,7 @@ public class ErrorTest {
         assertEquals(errBean.getErrorCreated().getTime(), longDate);
     }
 
-        @Test
+    @Test
     public void testSetGetErrorClassParam() {
         Error errBean = new Error();
         errBean.setErrorClass("test");
@@ -67,19 +82,19 @@ public class ErrorTest {
         assertEquals(errBean.getErrorClass(), "test");
     }
 
-        @Test
-        public void testToString() {
-            Error errBean = new Error();
+    @Test
+    public void testToString() {
+        Error errBean = new Error();
         errBean.setErrorClass("test");
         assertNotNull(errBean.toString());
         assertNotSame("", errBean.toString());
-        }
+    }
 
-                @Test
-        public void testSetGetErrorNumber() {
-            Error errBean = new Error();
+    @Test
+    public void testSetGetErrorNumber() {
+        Error errBean = new Error();
         errBean.setErrorNumber(Integer.MIN_VALUE);
         assertNotNull(errBean.getErrorNumber());
         assertTrue(errBean.getErrorNumber() == Integer.MIN_VALUE);
-        }
+    }
 }

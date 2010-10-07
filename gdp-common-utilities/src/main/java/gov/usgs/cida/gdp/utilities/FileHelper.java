@@ -110,15 +110,15 @@ public class FileHelper {
      * @return
      */
     public static File createFileRepositoryDirectory(final String baseFilePath) {
-        String basePath = baseFilePath;
+        String basePath = baseFilePath + System.getProperty("file.separator");
         String directoryName = PropertyFactory.getProperty("upload.directory.name");
-        if (basePath == null) {
-            basePath = "";
+        if (baseFilePath == null) {
+            return null;
         }
         if (directoryName == null || "".equals(directoryName)) {
             directoryName = "upload-repository";
         }
-        String directory = basePath + directoryName;
+        String directory = basePath  + directoryName;
         if (FileHelper.doesDirectoryOrFileExist(directory)) {
             return new File(directory);
         }

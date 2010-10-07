@@ -11,13 +11,27 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
 
 public class AvailableFilesTest {
 
     private String tempDir = "";
     private String seperator = "";
+    private static org.slf4j.Logger log = LoggerFactory.getLogger(AvailableFilesTest.class);
+
+    @BeforeClass
+    public static void setUpBeforeClass() throws Exception {
+        log.debug("Started testing class.");
+    }
+
+    @AfterClass
+    public static void tearDownAfterClass() throws Exception {
+        log.debug("Ended testing class.");
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -176,19 +190,4 @@ public class AvailableFilesTest {
 
         }
     }
-//	@Test
-//	public void testGetXmlWithEverythingPopulated() {
-//		AvailableFiles filesBean =
-//			AvailableFiles.getAvailableFilesBean(this.tempDir,
-//						this.tempDir + "user_dir"
-//						+ this.seperator
-//						+ "Sample_Files"
-//						+ this.seperator
-//						+ "Shapefiles"
-//						+ this.seperator);
-//		String result = filesBean.toXml();
-//		
-//		assertNotNull(result);
-//		assertNotSame(0, result.length());
-//	}
 }

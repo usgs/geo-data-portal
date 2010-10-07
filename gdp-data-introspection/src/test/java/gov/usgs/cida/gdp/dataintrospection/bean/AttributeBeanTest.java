@@ -1,13 +1,26 @@
 package gov.usgs.cida.gdp.dataintrospection.bean;
 
-import gov.usgs.cida.gdp.dataintrospection.bean.Attribute;
 import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 
 import org.junit.Test;
 
 public class AttributeBeanTest {
+
+    private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AttributeBeanTest.class);
+
+    @BeforeClass
+    public static void setUpBeforeClass() throws Exception {
+        log.debug("Started testing class.");
+    }
+
+    @AfterClass
+    public static void tearDownAfterClass() throws Exception {
+        log.debug("Ended testing class.");
+    }
 
     @SuppressWarnings("unchecked")
     @Test
@@ -50,7 +63,6 @@ public class AttributeBeanTest {
         String result = attBean.getFilesetName();
         assertEquals(result, result);
     }
-
 //    @Test
 //    public void testToXml() {
 //        ArrayList<String> list = new ArrayList<String>();

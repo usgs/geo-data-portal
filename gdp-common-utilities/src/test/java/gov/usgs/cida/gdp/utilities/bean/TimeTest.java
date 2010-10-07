@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gov.usgs.cida.gdp.utilities.bean;
 
 import gov.usgs.cida.gdp.utilities.bean.Time.TimeBreakdown;
@@ -14,9 +10,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static org.junit.Assert.*;
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -26,23 +20,16 @@ import org.junit.Test;
  */
 public class TimeTest {
 
-    public TimeTest() {
-    }
+    private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TimeTest.class);
 
     @BeforeClass
-    public static void setUpClass() throws Exception {
+    public static void setUpBeforeClass() throws Exception {
+        log.debug("Started testing class.");
     }
 
     @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
+    public static void tearDownAfterClass() throws Exception {
+        log.debug("Ended testing class.");
     }
 
     @Test
@@ -121,31 +108,32 @@ public class TimeTest {
         target.setEndtime(tbd);
         assertNotNull(target.getEndtime());
     }
-     @Test
+
+    @Test
     public void testTimeBreakdownSetGetMonth() {
         TimeBreakdown target = new TimeBreakdown();
         target.setMonth(1);
-        assertEquals(target.getMonth(),1);
+        assertEquals(target.getMonth(), 1);
     }
 
-         @Test
+    @Test
     public void testTimeBreakdownSetGetDay() {
         TimeBreakdown target = new TimeBreakdown();
         target.setDay(1);
-        assertEquals(target.getDay(),1);
+        assertEquals(target.getDay(), 1);
     }
 
-                @Test
+    @Test
     public void testTimeBreakdownSetGetYear() {
         TimeBreakdown target = new TimeBreakdown();
         target.setYear(1);
-        assertEquals(target.getYear(),1);
+        assertEquals(target.getYear(), 1);
     }
 
-                                @Test
+    @Test
     public void testTimeBreakdownSetGetTimeZone() {
         TimeBreakdown target = new TimeBreakdown();
         target.setYear(1);
-        assertEquals(target.getYear(),1);
+        assertEquals(target.getYear(), 1);
     }
 }

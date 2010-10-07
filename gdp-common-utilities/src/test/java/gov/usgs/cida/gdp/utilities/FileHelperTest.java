@@ -14,7 +14,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.slf4j.LoggerFactory;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -34,12 +33,12 @@ public class FileHelperTest {
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        log.debug("Started testing class");
+        log.debug("Started testing class.");
     }
 
     @AfterClass
     public static void tearDownAfterClass() throws Exception {
-        log.debug("Ended testing class");
+        log.debug("Ended testing class.");
     }
 
     @Before
@@ -81,9 +80,8 @@ public class FileHelperTest {
     @After
     public void tearDown() {
         File delDir = new File(this.tempDir);
-
         try {
-            FileUtils.deleteDirectory(delDir);
+            FileHelper.deleteDirRecursively(delDir);
         } catch (IOException ex) {
             Logger.getLogger(FileHelperTest.class.getName()).log(Level.SEVERE, "Failed to delete: " + delDir.getPath() + "  -- Remember to clean project or remove this file/dir.", ex);
         }
@@ -190,7 +188,6 @@ public class FileHelperTest {
 
         // really delete the directory
         FileHelper.wipeOldFiles(directory, 1l);
-
     }
 
     @Test
@@ -445,13 +442,13 @@ public class FileHelperTest {
     @Test
     public void testCreateRepoDirWithNullBasefilePath() {
         File directoryCreatedAt = FileHelper.createFileRepositoryDirectory(null);
-        assertTrue(directoryCreatedAt.exists());
+        assertNull(directoryCreatedAt);
     }
 
     @Test
     public void testCreateRepoDirWithEmptyBasefilePath() {
         File directoryCreatedAt = FileHelper.createFileRepositoryDirectory("");
-        assertTrue(directoryCreatedAt.exists());
+        assertNull(directoryCreatedAt);
     }
 
     @Test

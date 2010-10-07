@@ -1,12 +1,12 @@
 package gov.usgs.cida.gdp.utilities;
 
+import org.slf4j.LoggerFactory;
 import gov.usgs.cida.gdp.utilities.bean.XmlReply;
 import java.io.PrintWriter;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static org.easymock.EasyMock.*;
-import org.junit.Ignore;
 import javax.servlet.http.HttpServletResponse;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -23,16 +23,16 @@ public class XmlUtilsTest {
 
     HttpServletResponse response = null;
     PrintWriter writer = null;
-
-    public XmlUtilsTest() {
-    }
+    private static org.slf4j.Logger log = LoggerFactory.getLogger(XmlUtilsTest.class);
 
     @BeforeClass
-    public static void setUpClass() throws Exception {
+    public static void setUpBeforeClass() throws Exception {
+        log.debug("Started testing class.");
     }
 
     @AfterClass
-    public static void tearDownClass() throws Exception {
+    public static void tearDownAfterClass() throws Exception {
+        log.debug("Ended testing class.");
     }
 
     @Before
@@ -61,10 +61,10 @@ public class XmlUtilsTest {
         } catch (IOException ex) {
             fail(ex.getMessage());
         }
-       assertTrue(true);
+        assertTrue(true);
     }
 
-        /**
+    /**
      * Test of sendXml method, of class XmlUtils.
      */
     @Test
@@ -88,7 +88,7 @@ public class XmlUtilsTest {
         } catch (IOException ex) {
             fail(ex.getMessage());
         }
-       assertTrue(true);
+        assertTrue(true);
     }
 
     @Test

@@ -1,11 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gov.usgs.cida.gdp.utilities;
 
+import org.slf4j.LoggerFactory;
 import java.net.HttpURLConnection;
-import java.net.ProtocolException;
 import java.util.List;
 import java.util.Map;
 import java.io.IOException;
@@ -13,9 +9,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -25,24 +19,16 @@ import static org.junit.Assert.*;
  * @author isuftin
  */
 public class HTTPUtilsTest {
-
-    public HTTPUtilsTest() {
-    }
+    private static org.slf4j.Logger log = LoggerFactory.getLogger(HTTPUtilsTest.class);
 
     @BeforeClass
-    public static void setUpClass() throws Exception {
+    public static void setUpBeforeClass() throws Exception {
+        log.debug("Started testing class.");
     }
 
     @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
+    public static void tearDownAfterClass() throws Exception {
+        log.debug("Ended testing class.");
     }
 
     /**

@@ -10,4 +10,5 @@
         <url-pattern>/OutputInfoServlet</url-pattern>
         <url-pattern>/outputinfoservlet</url-pattern>
     </servlet-mapping>
+
 </web-app>

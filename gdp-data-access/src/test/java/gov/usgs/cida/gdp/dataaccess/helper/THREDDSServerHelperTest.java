@@ -1,5 +1,7 @@
 package gov.usgs.cida.gdp.dataaccess.helper;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
@@ -13,6 +15,18 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assume.*;
 
 public class THREDDSServerHelperTest {
+
+    private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(THREDDSServerHelperTest.class);
+
+    @BeforeClass
+    public static void setUpBeforeClass() throws Exception {
+        log.debug("Started testing class.");
+    }
+
+    @AfterClass
+    public static void tearDownAfterClass() throws Exception {
+        log.debug("Ended testing class.");
+    }
 
     @Test
     public void testIsServerReachable() {

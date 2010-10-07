@@ -3,10 +3,26 @@ package gov.usgs.cida.gdp.utilities;
 import static org.junit.Assert.*;
 import java.util.Enumeration;
 import java.util.List;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
 
 public class PropertyFactoryTest {
+
+    private static org.slf4j.Logger log = LoggerFactory.getLogger(PropertyFactoryTest.class);
+
+    @BeforeClass
+    public static void setUpBeforeClass() throws Exception {
+        log.debug("Started testing class.");
+    }
+
+    @AfterClass
+    public static void tearDownAfterClass() throws Exception {
+        log.debug("Ended testing class.");
+    }
+
     @Test
     public final void testGetKeys() {
         Enumeration<Object> result = PropertyFactory.getKeys();

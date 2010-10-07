@@ -24,14 +24,6 @@ public class FileSelectionServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     private static org.slf4j.Logger log = LoggerFactory.getLogger(FileSelectionServlet.class);
-
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public FileSelectionServlet() {
-        super();
-    }
-
     /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
      *      response)
