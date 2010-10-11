@@ -1,5 +1,6 @@
 package gov.usgs.cida.gdp.utilities;
 
+import java.net.InetAddress;
 import org.slf4j.LoggerFactory;
 import java.net.HttpURLConnection;
 import java.util.List;
@@ -20,15 +21,19 @@ import static org.junit.Assert.*;
  */
 public class HTTPUtilsTest {
     private static org.slf4j.Logger log = LoggerFactory.getLogger(HTTPUtilsTest.class);
-
+    private static boolean isServerReachable = false;
+    private static String server = "www.java2s.com";
+    
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        log.debug("Started testing class.");
+        log.debug("Started testing class : " + HTTPUtilsTest.class.getName());
+        isServerReachable = InetAddress.getByName(server).isReachable(3000);
+        String test = "";
     }
 
     @AfterClass
     public static void tearDownAfterClass() throws Exception {
-        log.debug("Ended testing class.");
+        log.debug("Ended testing class : " + HTTPUtilsTest.class.getName());
     }
 
     /**
@@ -36,9 +41,13 @@ public class HTTPUtilsTest {
      */
     @Test
     public void testSendPacket() {
+        if (!isServerReachable) {
+            log.debug(server + " is not reachable. Skipping testSendPacket()");
+            return;
+        }
         InputStream result = null;
         try {
-            result = HTTPUtils.sendPacket(new URL("http://www.google.com"), "GET");
+            result = HTTPUtils.sendPacket(new URL("http://" + server), "GET");
             assertTrue(result.read() > -1);
         } catch (IOException ex) {
             Logger.getLogger(HTTPUtilsTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -62,16 +71,20 @@ public class HTTPUtilsTest {
      */
     @Test
     public void testGetHttpConnectionHeaderFields() {
+        if (!isServerReachable) {
+            log.debug(server + " is not reachable. Skipping testGetHttpConnectionHeaderFields()");
+            return;
+        }
         Map<String, List<String>> result = null;
         HttpURLConnection conn = null;
         try {
-            conn = HTTPUtils.openHttpConnection(new URL("http://www.google.com"), "GET");
+            conn = HTTPUtils.openHttpConnection(new URL("http://" + server), "GET");
         } catch (IOException ex) {
             Logger.getLogger(HTTPUtilsTest.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         try {
-            result = HTTPUtils.getHttpConnectionHeaderFields(HTTPUtils.openHttpConnection(new URL("http://www.google.com"), "GET"));
+            result = HTTPUtils.getHttpConnectionHeaderFields(HTTPUtils.openHttpConnection(new URL("http://" + server), "GET"));
         } catch (IOException ex) {
             Logger.getLogger(HTTPUtilsTest.class.getName()).log(Level.SEVERE, null, ex);
         }

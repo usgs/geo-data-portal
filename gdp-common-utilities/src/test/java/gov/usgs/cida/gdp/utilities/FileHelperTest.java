@@ -33,12 +33,12 @@ public class FileHelperTest {
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        log.debug("Started testing class.");
+        log.debug("Started testing class: " + FileHelperTest.class.getName());
     }
 
     @AfterClass
     public static void tearDownAfterClass() throws Exception {
-        log.debug("Ended testing class.");
+        log.debug("Ended testing class: " + FileHelperTest.class.getName());
     }
 
     @Before
