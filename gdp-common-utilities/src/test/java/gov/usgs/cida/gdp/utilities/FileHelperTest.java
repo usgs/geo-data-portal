@@ -13,13 +13,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-
 import org.slf4j.LoggerFactory;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import static org.hamcrest.CoreMatchers.*;
+import org.hamcrest.core.IsEqual;
 
 public class FileHelperTest {
 
@@ -116,7 +117,6 @@ public class FileHelperTest {
         } catch (IOException ex) {
             Logger.getLogger(FileHelperTest.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }
 
     @Test
@@ -605,5 +605,43 @@ public class FileHelperTest {
         // We should find no files older than the maximum long value
         Collection<File> result = FileHelper.getFilesOlderThan(new File(this.tempDir), Long.MAX_VALUE, Boolean.FALSE);
         assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void testFileToByteArray() {
+        File input = null;
+        byte[] result = null;
+
+        // First we attain a handler to a file
+        input = new File(FileHelperTest.sampleDir + "test_zip.zip");
+        try {
+            // Try to get a byte array from it
+            result = FileHelper.getBytesFromFile(input);
+        } catch (IOException ex) {
+            fail(ex.getMessage());
+        }
+
+        assertThat(result.length, is(not(0)));
+        assertThat(result.length, is(equalTo((int) input.length())));
+    }
+
+    @Test
+    public void testByteArrayToBase64() {
+        File input = null;
+        byte[] inputByteArray = null;
+        byte[] result = null;
+        
+        input = new File(FileHelperTest.sampleDir + "test_zip.zip");
+        
+        try {
+            inputByteArray = FileHelper.getBytesFromFile(input);
+        } catch (IOException ex) {
+            fail(ex.getMessage());
+        }
+
+        result = FileHelper.base64Encode(inputByteArray);
+        assertThat(result.length, is(not(0)));
+        assertThat(result.length, is(not((int) input.length())));
+        assertThat(result.length, is(not(inputByteArray.length)));
     }
 }
