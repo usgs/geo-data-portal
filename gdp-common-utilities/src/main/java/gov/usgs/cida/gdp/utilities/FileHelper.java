@@ -42,7 +42,7 @@ public class FileHelper {
     public static byte[] base64Encode(final File input) throws IOException {
         byte[] result = null;
 
-        result = FileHelper.base64Encode(FileHelper.getBytesFromFile(input));
+        result = FileHelper.base64Encode(FileHelper.getByteArrayFromFile(input));
 
         return result;
     }
@@ -69,7 +69,7 @@ public class FileHelper {
      * @return
      * @throws IOException
      */
-    public static byte[] getBytesFromFile(File file) throws IOException {
+    public static byte[] getByteArrayFromFile(File file) throws IOException {
         InputStream is = new FileInputStream(file);
 
         // Get the size of the file

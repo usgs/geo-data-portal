@@ -616,7 +616,7 @@ public class FileHelperTest {
         input = new File(FileHelperTest.sampleDir + "test_zip.zip");
         try {
             // Try to get a byte array from it
-            result = FileHelper.getBytesFromFile(input);
+            result = FileHelper.getByteArrayFromFile(input);
         } catch (IOException ex) {
             fail(ex.getMessage());
         }
@@ -634,7 +634,7 @@ public class FileHelperTest {
         input = new File(FileHelperTest.sampleDir + "test_zip.zip");
         
         try {
-            inputByteArray = FileHelper.getBytesFromFile(input);
+            inputByteArray = FileHelper.getByteArrayFromFile(input);
         } catch (IOException ex) {
             fail(ex.getMessage());
         }
