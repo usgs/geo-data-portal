@@ -5,7 +5,7 @@ import gov.usgs.cida.gdp.utilities.PropertyFactory;
 import java.util.Date;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
+import com.thoughtworks.xstream.annotations.XStreamAsAttribute; 
 
 /**
  *

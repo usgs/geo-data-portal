@@ -20,7 +20,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.hamcrest.CoreMatchers.*;
-import org.hamcrest.core.IsEqual;
 
 public class FileHelperTest {
 

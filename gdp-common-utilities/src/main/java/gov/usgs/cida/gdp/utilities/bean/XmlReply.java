@@ -17,7 +17,7 @@ public class XmlReply extends XmlResponse {
     private XmlResponse[] content;
 
     public XmlReply() {
-        this.acknowledgment = new Acknowledgement(Acknowledgement.ACK_OK);
+        this.acknowledgment = new Acknowledgement(Acknowledgement.ACK_OK); 
     }
 
     public XmlReply(XmlResponse... contentArray) {

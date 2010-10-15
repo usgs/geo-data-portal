@@ -17,7 +17,7 @@ import org.opengis.feature.type.AttributeType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
-import com.thoughtworks.xstream.annotations.XStreamOmitField;
+import com.thoughtworks.xstream.annotations.XStreamOmitField; 
 
 @XStreamAlias("shapeSet")
 public class ShapeFileSet extends XmlResponse {
@@ -258,5 +258,4 @@ public class ShapeFileSet extends XmlResponse {
 
         return null;
     }
-
 }

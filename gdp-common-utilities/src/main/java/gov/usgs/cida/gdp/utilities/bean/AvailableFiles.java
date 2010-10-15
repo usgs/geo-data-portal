@@ -29,8 +29,12 @@ public class AvailableFiles extends XmlResponse {
      * @return
      */
     static public AvailableFiles getAvailableFilesBean(String baseDirectory, String userDirectory) throws IllegalArgumentException {
-        if (baseDirectory == null) return null;
-        if ("".equals(baseDirectory)) return null;
+        if (baseDirectory == null) {
+            return null;
+        }
+        if ("".equals(baseDirectory)) {
+            return null;
+        }
 
         AvailableFiles result = new AvailableFiles();
         List<Files> allFilesBeanList = new ArrayList<Files>();
