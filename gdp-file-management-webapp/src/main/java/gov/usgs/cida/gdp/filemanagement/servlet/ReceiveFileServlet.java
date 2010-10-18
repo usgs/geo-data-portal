@@ -6,6 +6,7 @@ import gov.usgs.cida.gdp.utilities.bean.Acknowledgement;
 import gov.usgs.cida.gdp.utilities.bean.Error;
 import gov.usgs.cida.gdp.utilities.bean.UserDirectory;
 import gov.usgs.cida.gdp.utilities.bean.XmlReply;
+import java.io.File;
 
 import java.io.IOException;
 import java.util.*;
@@ -48,7 +49,10 @@ public class ReceiveFileServlet extends HttpServlet {
         String command = request.getParameter("command");
 
         if (ServletFileUpload.isMultipartContent(request)) {
-            String applicationUserspaceDir = System.getProperty("applicationUserSpaceDir");
+            // "gdp.shapefile.temp.path" should be set in the tomcat startup script or setenv.sh as JAVA_OPTS="-Dgdp.shapefile.temp.path=/wherever/you/want/this/file/placed"
+            String tempLocation = ("".equals(System.getProperty("gdp.shapefile.temp.path")) || System.getProperty("shapefile.temp.path") == null)? System.getProperty("java.io.tmpdir") : System.getProperty("gdp.io.tmpdir");
+            String applicationUserspaceDir = tempLocation +  File.separator + "GDP" + File.separator +  UUID.randomUUID();
+            
             String userDirectory = "";
 
             try {
@@ -71,23 +75,6 @@ public class ReceiveFileServlet extends HttpServlet {
             RequestDispatcher rd = request.getRequestDispatcher("/FileSelectionServlet?command=listfiles&userdirectory=" + userDirectory);
             rd.forward(request, response);
             return;
-        } else if ("createuserdirectory".equals(command)) {
-            String dir = FileHelper.createUserDirectory(System.getProperty("applicationUserSpaceDir"));
-
-            XmlReply xmlReply;
-            if ("".equals(dir)) {
-                xmlReply = new XmlReply(Acknowledgement.ACK_FAIL);
-            } else {
-                Cookie c = new Cookie("gdp-user-directory", dir);
-                c.setMaxAge(-1); // set cookie to be deleted when web browser exits
-                c.setPath("/");  // set cookie's visibility to the whole app
-                response.addCookie(c); // add cookie to the response for the client browser to consume
-                UserDirectory udb = new UserDirectory();
-                udb.setDirectory(dir);
-                xmlReply = new XmlReply(Acknowledgement.ACK_OK, udb);
-            }
-
-            XmlUtils.sendXml(xmlReply, start, response);
         }
     }
 

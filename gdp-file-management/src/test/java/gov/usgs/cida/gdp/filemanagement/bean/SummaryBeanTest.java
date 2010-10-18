@@ -1,11 +1,5 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package gov.usgs.cida.gdp.filemanagement.bean;
 
-import gov.usgs.cida.gdp.filemanagement.bean.Summary;
 import gov.usgs.cida.gdp.utilities.FileHelper;
 
 import java.io.File;
