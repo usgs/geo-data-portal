@@ -39,10 +39,10 @@ public class WPSHelper {
         sb.append("<wps:Input>");
         sb.append("<ows:Identifier>file</ows:Identifier>");
         sb.append("<wps:Data>");
-        sb.append("<wps:ComplexData mimeType=\"application/x-zipped-shp\" encoding=\"UTF-8\">");
-//        sb.append("<![CDATA[");
+        sb.append("<wps:ComplexData mimeType=\"application/x-zipped-shp\" encoding=\"base64\">");
+        sb.append("<![CDATA[");
         sb.append(new String(FileHelper.base64Encode(inputFile)));
-//        sb.append("]]");
+        sb.append("]]>");
         sb.append("</wps:ComplexData>");
         sb.append("</wps:Data>");
         sb.append("</wps:Input>");
