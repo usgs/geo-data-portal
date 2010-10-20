@@ -37,31 +37,38 @@ public class PropertyFactory {
     }
 
     /**
-     * Get a property from the factory
+     * Get a property from the factory or JVM property file.
      *
      * @param key A key for the property
      * @return a property based on key given, "" if not found
      */
     static public String getProperty(String key) {
-        if (key == null) {
-            return null;
-        }
+        if (key == null) return null;
 
         // No real way to test this chunk of code - would require
         // properties file to not exist during testing
         if (properties == null) {
             log.debug("Loading properties file");
             loadProperties();
-            log.debug("Loaded properties file");
+            log.debug("Finished Loading properties file");
         }
         
-        String result = (properties.get(key) == null) ? "" : (String) properties.get(key);
-        if ("".equals(result)) {
-            // Whoa. Ok, this is weird. Even the file didn't have the property.
-            // Well, we do what we can. We return "". Not the best, but it will do.
+        String result = null;
+
+        // First check to see if the property exists in the JVM
+        result = System.getProperty(key);
+
+        // Check if we have a property value. If not, try getting it from the
+        // properties file.
+        if (result == null) result = (String) properties.get(key);
+
+        // Check again if we have a property. If not, set the output to empty string.
+        if (result == null) {
+            // Log that the property could not be found.
             log.info("unable to find property for key: " + key);
-            return "";
+            result = "";
         }
+        
         return result;
     }
 
