@@ -1,19 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
     <display-name>gdp-file-management-webapp</display-name>
-
-
-    <servlet>
-        <display-name>FileSelectionServlet</display-name>
-        <servlet-name>FileSelectionServlet</servlet-name>
-        <servlet-class>gov.usgs.cida.gdp.filemanagement.servlet.FileSelectionServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>FileSelectionServlet</servlet-name>
-        <url-pattern>/FileSelectionServlet</url-pattern>
-        <url-pattern>/fileselectionservlet</url-pattern>
-    </servlet-mapping>
-
     <servlet>
         <display-name>GeoServerServlet</display-name>
         <servlet-name>GeoServerServlet</servlet-name>
@@ -24,27 +11,4 @@
         <url-pattern>/GeoServerServlet</url-pattern>
         <url-pattern>/geoserverservlet</url-pattern>
     </servlet-mapping>
-
-    <servlet>
-        <display-name>ReceiveFileServlet</display-name>
-        <servlet-name>ReceiveFileServlet</servlet-name>
-        <servlet-class>gov.usgs.cida.gdp.filemanagement.servlet.ReceiveFileServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>ReceiveFileServlet</servlet-name>
-        <url-pattern>/ReceiveFileServlet</url-pattern>
-        <url-pattern>/receivefileServlet</url-pattern>
-    </servlet-mapping>
-
-
-    <servlet>
-        <servlet-name>SendFileServlet</servlet-name>
-        <servlet-class>gov.usgs.cida.gdp.filemanagement.servlet.SendFileServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>SendFileServlet</servlet-name>
-        <url-pattern>/SendFileServlet</url-pattern>
-        <url-pattern>/sendfileservlet</url-pattern>
-    </servlet-mapping>
-
 </web-app>
