@@ -35,7 +35,7 @@ public class AvailableFilesTest {
 
     @Before
     public void setUp() throws Exception {
-        this.seperator = FileHelper.getSeparator();
+        this.seperator = File.separator;
         this.tempDir = FileHelper.getSystemTemp()
                 + this.seperator
                 + "GDP-APP-TEMP"
@@ -47,7 +47,7 @@ public class AvailableFilesTest {
 
         // Copy example files
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        URL sampleFileLocation = cl.getResource("Sample_Files" + FileHelper.getSeparator());
+        URL sampleFileLocation = cl.getResource("Sample_Files" + File.separator);
         if (sampleFileLocation != null) {
             File sampleFiles = null;
             try {

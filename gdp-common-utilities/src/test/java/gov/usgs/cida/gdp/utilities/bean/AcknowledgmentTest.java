@@ -36,13 +36,11 @@ public class AcknowledgmentTest {
     public void testSetStatusToTwo() {
         Acknowledgement ackBean = new Acknowledgement(2);
         assertEquals("FAIL", ackBean.getStatus());
-
     }
 
     @Test
     public void testInvalidStatus() {
         try {
-            @SuppressWarnings("unused")
             Acknowledgement ackBean = new Acknowledgement(3);
         } catch (IllegalArgumentException e) {
             return;

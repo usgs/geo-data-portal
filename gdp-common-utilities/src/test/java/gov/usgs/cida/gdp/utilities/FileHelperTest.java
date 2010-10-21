@@ -379,23 +379,6 @@ public class FileHelperTest {
         }
 
     }
-
-    @Test
-    public void testGetSeparator() {
-        String result = FileHelper.getSeparator();
-        assertNotNull(result);
-        assertFalse("".equals(result));
-        log.debug("System separator: " + result);
-    }
-
-    @Test
-    public void testGetSystemPathSeparator() {
-        String result = FileHelper.getSystemPathSeparator();
-        assertNotNull(result);
-        assertFalse("".equals(result));
-        log.debug("System path separator: " + result);
-    }
-
     @Test
     public void testGetSystemTemp() {
         String result = FileHelper.getSystemTemp();

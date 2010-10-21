@@ -37,7 +37,7 @@ public class FilesTest {
 
     @Before
     public void setUp() throws Exception {
-        this.seperator = FileHelper.getSeparator();
+        this.seperator = File.separator;
         this.tempDir = FileHelper.getSystemTemp()
                 + this.seperator
                 + "GDP-APP-TEMP"

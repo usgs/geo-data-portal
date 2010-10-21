@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -54,6 +55,7 @@ public class FileHelper {
      * @return
      */
     public static byte[] base64Encode(final byte[] input) {
+        if (input == null) return (byte[]) Array.newInstance(byte.class, 0);
         byte[] result = null;
 
         Base64 encoder = new Base64();
@@ -70,11 +72,13 @@ public class FileHelper {
      * @throws IOException
      */
     public static byte[] getByteArrayFromFile(File file) throws IOException {
+        if (file == null) return (byte[]) Array.newInstance(byte.class, 0);
         InputStream is = new FileInputStream(file);
 
         // Get the size of the file
         long length = file.length();
 
+        // Maximum size of file cannot be larger than the Integer.MAX_VALUE
         if (length > Integer.MAX_VALUE) {
             throw new IOException("File is too large: " + file.length() + " bytes. Maximum length: " + Integer.MAX_VALUE);
         }
@@ -131,9 +135,9 @@ public class FileHelper {
      */
     public static boolean copyFileToFile(final File inFile, final String outPath, boolean deleteOriginalFile) throws IOException {
         if (inFile.isDirectory()) {
-            FileUtils.copyDirectory(inFile, (new File(outPath + FileHelper.getSeparator() + inFile.getName())));
+            FileUtils.copyDirectory(inFile, (new File(outPath + File.separator + inFile.getName())));
         } else {
-            FileUtils.copyFile(inFile, (new File(outPath + FileHelper.getSeparator() + inFile.getName())));
+            FileUtils.copyFile(inFile, (new File(outPath + File.separator + inFile.getName())));
         }
         if (deleteOriginalFile) {
             FileUtils.deleteQuietly(inFile);
@@ -381,39 +385,13 @@ public class FileHelper {
      */
     @SuppressWarnings("unchecked")
     public static Collection<?> getFileCollection(String filePath, String[] extensions, boolean recursive) throws IllegalArgumentException {
-        if (filePath == null) {
-            return null;
-        }
+        if (filePath == null) return null;
+
         Collection<File> result = null;
         Object interimResult = FileUtils.listFiles((new File(filePath)), extensions, recursive);
         if (interimResult instanceof Collection<?>) {
             result = (Collection<File>) interimResult;
         }
-        return result;
-    }
-
-    /**
-     * @see java.io.File.separator
-     * @return
-     */
-    public static String getSeparator() {
-        String result = "";
-
-        result = java.io.File.separator;
-
-        return result;
-
-    }
-
-    /**
-     * @see java.io.File.pathSeparator
-     * @return
-     */
-    public static String getSystemPathSeparator() {
-        String result = "";
-
-        result = java.io.File.pathSeparator;
-
         return result;
     }
 
@@ -519,7 +497,7 @@ public class FileHelper {
         String userSubDir = Long.toString(new Date().getTime());
 
         //String applicationUserSpaceDir = System.getProperty("applicationUserSpaceDir");
-        String seperator = FileHelper.getSeparator();
+        String seperator = File.separator;
         String userTempDir = applicationUserSpaceDir + seperator + userSubDir;
         boolean wasCreated = FileHelper.createDir(userTempDir);
         if (wasCreated) {

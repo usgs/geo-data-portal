@@ -1,11 +1,11 @@
 package gov.usgs.cida.gdp.utilities.bean;
 
-import gov.usgs.cida.gdp.utilities.FileHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import java.io.File;
 
 @XStreamAlias("files")
 public class AvailableFiles extends XmlResponse {
@@ -41,7 +41,7 @@ public class AvailableFiles extends XmlResponse {
         List<ShapeFileSet> allShapes = new ArrayList<ShapeFileSet>();
         String exampleDirectory = baseDirectory
                 + "Sample_Files"
-                + FileHelper.getSeparator();
+                + File.separator;
 
         // Create the user file bean list (if calling method decides)
         if (userDirectory != null && !"".equals(userDirectory)) {
