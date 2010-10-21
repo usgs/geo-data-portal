@@ -48,8 +48,8 @@ public class SendFileServlet extends HttpServlet {
             String file = request.getParameter("file");
             boolean zipped = ("yes".equals(request.getParameter("zipped")));
             String baseFilePath = System.getProperty("applicationTempDir");
-            baseFilePath = baseFilePath + FileHelper.getSeparator();
-            String fullFilePath = baseFilePath + "upload-repository" + FileHelper.getSeparator() + file;
+            baseFilePath = baseFilePath + File.separator;
+            String fullFilePath = baseFilePath + "upload-repository" + File.separator + file;
             File fileToUpload = null;
 
             if (!FileHelper.doesDirectoryOrFileExist(fullFilePath)) {
@@ -116,8 +116,8 @@ public class SendFileServlet extends HttpServlet {
         if ("checkuploadfile".equals(command)) {
             String file = request.getParameter("file");
             String baseFilePath = System.getProperty("applicationTempDir");
-            baseFilePath = baseFilePath + FileHelper.getSeparator();
-            String fullFilePath = baseFilePath + "upload-repository" + FileHelper.getSeparator() + file;
+            baseFilePath = baseFilePath + File.separator;
+            String fullFilePath = baseFilePath + "upload-repository" + File.separator + file;
             boolean fileExists = FileHelper.doesDirectoryOrFileExist(fullFilePath);
             boolean hasBytes = false;
             File tempFile = new File(fullFilePath);

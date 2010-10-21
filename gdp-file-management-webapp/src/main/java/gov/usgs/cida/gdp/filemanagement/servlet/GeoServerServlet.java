@@ -78,7 +78,7 @@ public class GeoServerServlet extends HttpServlet {
         if ("createdatastore".equals(command)) {
             String shapefilePath = URLDecoder.decode(request.getParameter("shapefilepath"), "UTF-8");
             String shapefileName = shapefilePath.substring(
-                    shapefilePath.lastIndexOf(FileHelper.getSeparator()) + 1,
+                    shapefilePath.lastIndexOf(File.separator) + 1,
                     shapefilePath.lastIndexOf("."));
 
             if (!mws.createDataStore(shapefilePath, shapefileName, workspace)) {
