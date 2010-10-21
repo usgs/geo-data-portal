@@ -117,7 +117,7 @@ public class ProcessServlet extends HttpServlet {
             String delimId = request.getParameter("delim");
             String userspacePath = System.getProperty("applicationUserSpaceDir");
             String appTempDir = System.getProperty("applicationTempDir");
-            String baseFilePath = appTempDir + FileHelper.getSeparator();
+            String baseFilePath = appTempDir + File.separator;
 
             // Email
             String email = request.getParameter("email");
@@ -153,7 +153,7 @@ public class ProcessServlet extends HttpServlet {
 
             if (lat != null && lon != null) {
                 attributeName = "placeholder";
-                shapefilePath = userspacePath + userDirectory + FileHelper.getSeparator() + "latlon.shp";
+                shapefilePath = userspacePath + userDirectory + File.separator + "latlon.shp";
             } else {
 
                 //TODO- Don't search through all shapefiles.

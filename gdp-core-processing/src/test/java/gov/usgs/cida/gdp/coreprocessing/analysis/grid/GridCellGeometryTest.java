@@ -1,8 +1,8 @@
 package gov.usgs.cida.gdp.coreprocessing.analysis.grid;
 
+import java.io.File;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import gov.usgs.cida.gdp.utilities.FileHelper;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -40,7 +40,7 @@ public class GridCellGeometryTest {
 
     @Before
     public void setUp() throws IOException {
-        String datasetUrl = getResourceDir() + FileHelper.getSeparator() + "testSimpleYXGrid.ncml";
+        String datasetUrl = getResourceDir() + File.separator + "testSimpleYXGrid.ncml";
         assignGridCellGeometryAndGridCoordSystem(datasetUrl);
     }
 
@@ -97,14 +97,14 @@ public class GridCellGeometryTest {
 
     @Test
     public void testProjectionGeometry() throws IOException {
-        String datasetUrl = getResourceDir() + FileHelper.getSeparator() + "testProjectedTYXGrid.ncml";
+        String datasetUrl = getResourceDir() + File.separator + "testProjectedTYXGrid.ncml";
         assignGridCellGeometryAndGridCoordSystem(datasetUrl);
         assertNotNull("Geometry should not be null", gcg.getCellGeometry(0, 0));
     }
 
     @Test
     public void testRotatedGeometry() throws IOException {
-        String datasetUrl = getResourceDir() + FileHelper.getSeparator() + "testRotatedTYXGrid.ncml";
+        String datasetUrl = getResourceDir() + File.separator + "testRotatedTYXGrid.ncml";
         assignGridCellGeometryAndGridCoordSystem(datasetUrl);
         assertNotNull("Geometry should not be null", gcg.getCellGeometry(0, 0));
     }

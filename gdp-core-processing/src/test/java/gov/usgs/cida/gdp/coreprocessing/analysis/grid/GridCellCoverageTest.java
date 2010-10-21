@@ -60,8 +60,8 @@ public class GridCellCoverageTest {
 
     @Before
     public void setUp() throws IOException, InvalidRangeException {
-        ncLocation = getResourceDir() + FileHelper.getSeparator() + "testGridCellCoverageTYX.ncml";
-        sfLocation = getResourceDir() + FileHelper.getSeparator() + "Trout_Lake_HRUs_rotated_geo_WGS84.shp";
+        ncLocation = getResourceDir() + File.separator + "testGridCellCoverageTYX.ncml";
+        sfLocation = getResourceDir() + File.separator + "Trout_Lake_HRUs_rotated_geo_WGS84.shp";
         dataStore = FileDataStoreFinder.getDataStore(new File(sfLocation));
         attributeName = "GRIDCODE";
         variableName = GridTypeTest.DATATYPE_RH;
@@ -98,7 +98,7 @@ public class GridCellCoverageTest {
 
     @Test
     public void testWeightedGenerateYX() throws InvalidRangeException, IOException, FactoryException, TransformException, SchemaException {
-        ncLocation = getResourceDir() + FileHelper.getSeparator() + "testGridCellCoverageYX.ncml";
+        ncLocation = getResourceDir() + File.separator + "testGridCellCoverageYX.ncml";
 
         FeatureCoverageWeightedGridStatistics.execute(
                 getFeatureCollection(ncLocation),
@@ -116,7 +116,7 @@ public class GridCellCoverageTest {
 
     @Test(expected = InvalidRangeException.class)
     public void testWeightedGenerateSmallX() throws InvalidRangeException, IOException, FactoryException, TransformException, SchemaException {
-        ncLocation = getResourceDir() + FileHelper.getSeparator() + "testCoverageTYXSmallX.ncml";
+        ncLocation = getResourceDir() + File.separator + "testCoverageTYXSmallX.ncml";
 
         FeatureCoverageWeightedGridStatistics.execute(
                 getFeatureCollection(ncLocation),
@@ -134,7 +134,7 @@ public class GridCellCoverageTest {
 
     @Test(expected = InvalidRangeException.class)
     public void testWeightedGenerateSmallY() throws InvalidRangeException, IOException, FactoryException, TransformException, SchemaException {
-        ncLocation = getResourceDir() + FileHelper.getSeparator() + "testCoverageTYXSmallY.ncml";
+        ncLocation = getResourceDir() + File.separator + "testCoverageTYXSmallY.ncml";
 
         FeatureCoverageWeightedGridStatistics.execute(
                 getFeatureCollection(ncLocation),
@@ -152,7 +152,7 @@ public class GridCellCoverageTest {
 
     @Test(expected = IllegalStateException.class)
     public void testWeightedGenerateTZYXUnsupported() throws InvalidRangeException, IOException, FactoryException, TransformException, SchemaException {
-        ncLocation = getResourceDir() + FileHelper.getSeparator() + "testGridCellCoverageTZYX.ncml";
+        ncLocation = getResourceDir() + File.separator + "testGridCellCoverageTZYX.ncml";
         timeRange = new Range(0, 0);
 
         FeatureCoverageWeightedGridStatistics.execute(

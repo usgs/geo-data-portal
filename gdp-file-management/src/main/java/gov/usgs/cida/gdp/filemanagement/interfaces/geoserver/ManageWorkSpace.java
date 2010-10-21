@@ -21,14 +21,14 @@ import java.util.regex.Pattern;
 
 /**
  *
- * @author isuftin
+ * @author razoerb
  */
 public class ManageWorkSpace {
 
     private String geoServerURLString = "http://localhost:8081/geoserver";
     private URL geoServerURL;
     
-    public ManageWorkSpace() { /* Class uses the default eoServerURL specified above */}
+    public ManageWorkSpace() { /* Class uses the default geoServerURL specified above */}
 
     public ManageWorkSpace(String geoServerURL) throws MalformedURLException {
         this.geoServerURLString = geoServerURL;

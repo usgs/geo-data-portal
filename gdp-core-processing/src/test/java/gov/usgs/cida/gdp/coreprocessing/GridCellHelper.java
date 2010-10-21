@@ -30,7 +30,7 @@ public class GridCellHelper {
     public synchronized static String getResourceDir() {
         if (RESOURCE_PATH == null) {
             ClassLoader cl = GridCellHelper.class.getClassLoader();
-            URL sampleFileLocation = cl.getResource("Sample_files" + FileHelper.getSeparator());
+            URL sampleFileLocation = cl.getResource("Sample_files" + File.separator);
             try {
                 RESOURCE_PATH = new File(sampleFileLocation.toURI()).getPath();
             } catch (URISyntaxException e) {

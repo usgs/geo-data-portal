@@ -31,7 +31,7 @@ public class Geometry {
         // Define a feature collection isiong lat/lon or shapefile
         if (lat != null && lon != null) {
 
-            String fullUserDir = userspacePath + userDirectory + FileHelper.getSeparator();
+            String fullUserDir = userspacePath + userDirectory + File.separator;
 
             // When getting the geometry from the epa nhd service, there
             // won't be any attributes. But the attribute cannot be null, so set it

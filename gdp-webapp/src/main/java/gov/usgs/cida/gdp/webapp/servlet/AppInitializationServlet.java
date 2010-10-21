@@ -67,7 +67,7 @@ public class AppInitializationServlet extends HttpServlet {
         log.info("File System Initialization is starting.");
 
         // Get the temp directory for the system
-        this.seperator = FileHelper.getSeparator();
+        this.seperator = File.separator;
         this.tmpDir = FileHelper.getSystemTemp() + this.seperator + "GDP-APP-TEMP" + this.seperator;
         log.info("Current application directory is: " + this.tmpDir);
 
@@ -121,7 +121,7 @@ public class AppInitializationServlet extends HttpServlet {
         // Place example files in temporary directory
         try {
             ClassLoader cl = Thread.currentThread().getContextClassLoader();
-            URL sampleFileLocation = cl.getResource("Sample_Files" + FileHelper.getSeparator());
+            URL sampleFileLocation = cl.getResource("Sample_Files" + File.separator);
             if (sampleFileLocation == null) {
                 log.info("Sample files were not written to the application temp directory");
                 log.info("\t These files will not be available for processing.");
@@ -154,7 +154,7 @@ public class AppInitializationServlet extends HttpServlet {
 
         Date currentDate = new Date();
         String currentMilliseconds = Long.toString(currentDate.getTime());
-        result = this.tmpDir + currentMilliseconds + FileHelper.getSeparator();
+        result = this.tmpDir + currentMilliseconds + File.separator;
 
         return result;
     }
@@ -178,8 +178,8 @@ public class AppInitializationServlet extends HttpServlet {
     public boolean deleteApplicationTempDirs() {
         boolean result = false;
         try {
-            String tempDir = FileHelper.getSystemTemp() + FileHelper.getSeparator();
-            result = FileHelper.deleteDirRecursively(tempDir + "GDP-APP-TEMP" + FileHelper.getSeparator());
+            String tempDir = FileHelper.getSystemTemp() + File.separator;
+            result = FileHelper.deleteDirRecursively(tempDir + "GDP-APP-TEMP" + File.separator);
             if (result) {
                 log.info("Temporary files from application's previous run have been removed");
             } else {
@@ -211,7 +211,7 @@ public class AppInitializationServlet extends HttpServlet {
         Timer task = new Timer(true);
 
         String baseFilePath = System.getProperty("applicationTempDir");
-    	baseFilePath = baseFilePath + FileHelper.getSeparator();
+    	baseFilePath = baseFilePath + File.separator;
         File uploadDirName = new File(baseFilePath + PropertyFactory.getProperty("upload.directory.name"));
         File userSpaceDir = new File(System.getProperty("applicationUserSpaceDir"));
 

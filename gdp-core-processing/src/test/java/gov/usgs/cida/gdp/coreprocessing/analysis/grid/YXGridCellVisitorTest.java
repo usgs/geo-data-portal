@@ -1,8 +1,8 @@
 package gov.usgs.cida.gdp.coreprocessing.analysis.grid;
 
 import static gov.usgs.cida.gdp.coreprocessing.GridCellHelper.*;
+import java.io.File;
 import static org.junit.Assert.assertEquals;
-import gov.usgs.cida.gdp.utilities.FileHelper;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -34,7 +34,7 @@ public class YXGridCellVisitorTest {
 
     @Before
     public void setUp() throws IOException {
-        String datasetUrl = getResourceDir() + FileHelper.getSeparator() + "testSimpleYXGrid.ncml";
+        String datasetUrl = getResourceDir() + File.separator + "testSimpleYXGrid.ncml";
         FeatureDataset fd = FeatureDatasetFactoryManager.open(null, datasetUrl, null, new Formatter(System.err));
         GridDataset dataset = (GridDataset) fd;
         GridDatatype gdt = dataset.findGridDatatype(GridTypeTest.DATATYPE_RH);

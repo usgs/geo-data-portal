@@ -1,9 +1,9 @@
 package gov.usgs.cida.gdp.coreprocessing.analysis.grid;
 
 import static gov.usgs.cida.gdp.coreprocessing.GridCellHelper.*;
+import java.io.File;
 import static org.junit.Assert.assertEquals;
 
-import gov.usgs.cida.gdp.utilities.FileHelper;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -33,7 +33,7 @@ public class GridCellTraverserTest {
 
     @Test
     public void testYXTraversal() throws IOException {
-        String datasetUrl = getResourceDir() + FileHelper.getSeparator() + "testSimpleYXGrid.ncml";
+        String datasetUrl = getResourceDir() + File.separator + "testSimpleYXGrid.ncml";
         GridCellTraverserHelper gct = getGridCellTraverserHelper(datasetUrl);
         assertEquals("X cell count should match ncml", gct.getXCellCount(), X_SIZE);
         assertEquals("Y cell count should match ncml", gct.getYCellCount(), Y_SIZE);
@@ -43,7 +43,7 @@ public class GridCellTraverserTest {
 
     @Test
     public void testZYXTraversal() throws IOException {
-        String datasetUrl = getResourceDir() + FileHelper.getSeparator() + "testSimpleZYXGrid.ncml";
+        String datasetUrl = getResourceDir() + File.separator + "testSimpleZYXGrid.ncml";
         GridCellTraverserHelper gct = getGridCellTraverserHelper(datasetUrl);
         assertEquals("X cell count should match ncml", gct.getXCellCount(), X_SIZE);
         assertEquals("Y cell count should match ncml", gct.getYCellCount(), Y_SIZE);
@@ -53,7 +53,7 @@ public class GridCellTraverserTest {
 
     @Test
     public void testTYXTraversal() throws IOException {
-        String datasetUrl = getResourceDir() + FileHelper.getSeparator() + "testSimpleTYXGrid.ncml";
+        String datasetUrl = getResourceDir() + File.separator + "testSimpleTYXGrid.ncml";
         GridCellTraverserHelper gct = getGridCellTraverserHelper(datasetUrl);
         assertEquals("X cell count should match ncml", gct.getXCellCount(), X_SIZE);
         assertEquals("Y cell count should match ncml", gct.getYCellCount(), Y_SIZE);
@@ -63,7 +63,7 @@ public class GridCellTraverserTest {
 
     @Test
     public void testTZYXTraversal() throws IOException {
-        String datasetUrl = getResourceDir() + FileHelper.getSeparator() + "testSimpleTZYXGrid.ncml";
+        String datasetUrl = getResourceDir() + File.separator + "testSimpleTZYXGrid.ncml";
         GridCellTraverserHelper gct = getGridCellTraverserHelper(datasetUrl);
         assertEquals("X cell count should match ncml", gct.getXCellCount(), X_SIZE);
         assertEquals("Y cell count should match ncml", gct.getYCellCount(), Y_SIZE);

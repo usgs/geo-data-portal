@@ -58,8 +58,8 @@ public class GridUtilityTest {
 
     @Before
     public void setUp() throws IOException, InvalidRangeException {
-        ncLocation = getResourceDir() + FileHelper.getSeparator() + "testGridCellCoverageTYX.ncml";
-        sfLocation = getResourceDir() + FileHelper.getSeparator() + "Trout_Lake_HRUs_rotated_geo_WGS84.shp";
+        ncLocation = getResourceDir() + File.separator + "testGridCellCoverageTYX.ncml";
+        sfLocation = getResourceDir() + File.separator + "Trout_Lake_HRUs_rotated_geo_WGS84.shp";
         dataStore = FileDataStoreFinder.getDataStore(new File(sfLocation));
     }
 
@@ -93,7 +93,7 @@ public class GridUtilityTest {
 
     @Test
     public void testTopOfGrid() throws IOException, InvalidRangeException {
-        ncLocation = getResourceDir() + FileHelper.getSeparator() + "testCoverageTYXSmallestValid.ncml";
+        ncLocation = getResourceDir() + File.separator + "testCoverageTYXSmallestValid.ncml";
         getFeatureCollection(ncLocation);
         LatLonRect llr = new LatLonRect(
                 new LatLonPointImpl(42, -91),
@@ -105,7 +105,7 @@ public class GridUtilityTest {
 
     @Test
     public void testBottomOfGrid() throws IOException, InvalidRangeException {
-        ncLocation = getResourceDir() + FileHelper.getSeparator() + "testCoverageTYXSmallestValid.ncml";
+        ncLocation = getResourceDir() + File.separator + "testCoverageTYXSmallestValid.ncml";
         getFeatureCollection(ncLocation);
         LatLonRect llr = new LatLonRect(
                 new LatLonPointImpl(40, -91),
@@ -117,7 +117,7 @@ public class GridUtilityTest {
 
     @Test
     public void testLeftOfGrid() throws IOException, InvalidRangeException {
-        ncLocation = getResourceDir() + FileHelper.getSeparator() + "testCoverageTYXSmallestValid.ncml";
+        ncLocation = getResourceDir() + File.separator + "testCoverageTYXSmallestValid.ncml";
         getFeatureCollection(ncLocation);
         LatLonRect llr = new LatLonRect(
                 new LatLonPointImpl(40, -91),
@@ -129,7 +129,7 @@ public class GridUtilityTest {
 
     @Test
     public void testMiddleOfGrid() throws IOException, InvalidRangeException {
-        ncLocation = getResourceDir() + FileHelper.getSeparator() + "testCoverageTYXSmallestValid.ncml";
+        ncLocation = getResourceDir() + File.separator + "testCoverageTYXSmallestValid.ncml";
         getFeatureCollection(ncLocation);
         LatLonRect llr = new LatLonRect(
                 new LatLonPointImpl(41, -90),
@@ -141,7 +141,7 @@ public class GridUtilityTest {
 
     @Test
     public void testMiddleOfBiggerGrid() throws IOException, InvalidRangeException {
-        ncLocation = getResourceDir() + FileHelper.getSeparator() + "testCoverageTYXFourByFour.ncml";
+        ncLocation = getResourceDir() + File.separator + "testCoverageTYXFourByFour.ncml";
         getFeatureCollection(ncLocation);
         LatLonRect llr = new LatLonRect(
                 new LatLonPointImpl(41, -90),
@@ -153,7 +153,7 @@ public class GridUtilityTest {
 
     @Test
     public void testTopMiddleOfBiggerGrid() throws IOException, InvalidRangeException {
-        ncLocation = getResourceDir() + FileHelper.getSeparator() + "testCoverageTYXFourByFour.ncml";
+        ncLocation = getResourceDir() + File.separator + "testCoverageTYXFourByFour.ncml";
         getFeatureCollection(ncLocation);
         LatLonRect llr = new LatLonRect(
                 new LatLonPointImpl(43, -90),
@@ -165,7 +165,7 @@ public class GridUtilityTest {
 
     @Test
     public void testBottomMiddleOfBiggerGrid() throws IOException, InvalidRangeException {
-        ncLocation = getResourceDir() + FileHelper.getSeparator() + "testCoverageTYXFourByFour.ncml";
+        ncLocation = getResourceDir() + File.separator + "testCoverageTYXFourByFour.ncml";
         getFeatureCollection(ncLocation);
         LatLonRect llr = new LatLonRect(
                 new LatLonPointImpl(41, -90),
@@ -177,7 +177,7 @@ public class GridUtilityTest {
 
     @Test
     public void testLeftMiddleOfBiggerGrid() throws IOException, InvalidRangeException {
-        ncLocation = getResourceDir() + FileHelper.getSeparator() + "testCoverageTYXFourByFour.ncml";
+        ncLocation = getResourceDir() + File.separator + "testCoverageTYXFourByFour.ncml";
         getFeatureCollection(ncLocation);
         LatLonRect llr = new LatLonRect(
                 new LatLonPointImpl(41, -91),
