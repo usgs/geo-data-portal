@@ -1,10 +1,8 @@
 package gov.usgs.cida.gdp.dataaccess.servlet;
 
-
 import gov.usgs.cida.gdp.dataaccess.bean.Server;
 import gov.usgs.cida.gdp.dataaccess.bean.ServerList;
 import gov.usgs.cida.gdp.dataaccess.helper.THREDDSServerHelper;
-import gov.usgs.cida.gdp.dataaccess.helper.TestTHREDDSServers;
 import gov.usgs.cida.gdp.utilities.XmlUtils;
 import gov.usgs.cida.gdp.utilities.bean.Acknowledgement;
 import gov.usgs.cida.gdp.utilities.bean.XmlReply;
@@ -19,8 +17,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,14 +35,6 @@ public class THREDDSCheckServlet extends HttpServlet {
     private static final long FIVE_MINUTES = 1000 * 60 * 5; 		// Run every 5 minutes
 
     @Override
-    public void init(ServletConfig paramConfig) throws ServletException {
-        super.init(paramConfig);
-        this.timer = new Timer(true);
-        this.timer.scheduleAtFixedRate(new TestTHREDDSServers(paramConfig), 0, FIVE_MINUTES);
-
-    }
-
-    @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         doPost(request, response);
     }
@@ -60,20 +48,22 @@ public class THREDDSCheckServlet extends HttpServlet {
 
         if ("checkserver".equals(command)) {
             String url = request.getParameter("url");
-            
+
             URL urlObject = null;
             try {
-        	 urlObject = new URL(URLDecoder.decode(url, "UTF-8"));
+                urlObject = new URL(URLDecoder.decode(url, "UTF-8"));
             } catch (MalformedURLException e) {
                 xmlReply = new XmlReply(Acknowledgement.ACK_FAIL, new Error(Error.ERR_INVALID_URL));
                 XmlUtils.sendXml(xmlReply, start, response);
                 return;
             }
-            
+
             String hostname = urlObject.getHost();
             int port = urlObject.getPort();
-            if (port == -1) port = 80;
-            
+            if (port == -1) {
+                port = 80;
+            }
+
             try {
                 boolean isServerUp = THREDDSServerHelper.isServerReachable(hostname, port, 5000);
                 Server tsb = new Server();
@@ -113,6 +103,4 @@ public class THREDDSCheckServlet extends HttpServlet {
             }
         }
     }
-
-
 }

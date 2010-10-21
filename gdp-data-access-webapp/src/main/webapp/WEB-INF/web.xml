@@ -2,27 +2,11 @@
 <web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
     <display-name>gdp-data-access-webapp</display-name>
     <servlet>
-        <description>
-            ...
-        </description>
-        <display-name>WCSServlet</display-name>
-        <servlet-name>WCSServlet</servlet-name>
-        <servlet-class>
-            gov.usgs.cida.gdp.dataaccess.servlet.WCSServlet
-        </servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>WCSServlet</servlet-name>
-        <url-pattern>/WCSServlet</url-pattern>
-    </servlet-mapping>
-    
-    <servlet>
         <display-name>THREDDSCheckServlet</display-name>
         <servlet-name>THREDDSCheckServlet</servlet-name>
         <servlet-class>
             gov.usgs.cida.gdp.dataaccess.servlet.THREDDSCheckServlet
         </servlet-class>
-        <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
         <servlet-name>THREDDSCheckServlet</servlet-name>
