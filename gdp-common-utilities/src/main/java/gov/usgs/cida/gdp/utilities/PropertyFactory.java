@@ -60,12 +60,15 @@ public class PropertyFactory {
 
         // Check if we have a property value. If not, try getting it from the
         // properties file.
-        if (result == null) result = (String) properties.get(key);
+        if (result == null) {
+            result = (String) properties.get(key);
+            log.debug("Key '" + key + "' not found in environment variables.");
+        }
 
         // Check again if we have a property. If not, set the output to empty string.
         if (result == null) {
             // Log that the property could not be found.
-            log.info("unable to find property for key: " + key);
+            log.debug("Key '" + key + "' not found in local properties variables.");
             result = "";
         }
         
