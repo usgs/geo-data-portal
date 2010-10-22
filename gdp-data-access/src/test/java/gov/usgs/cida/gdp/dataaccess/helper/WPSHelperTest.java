@@ -92,7 +92,7 @@ public class WPSHelperTest {
     public void testCreateWPSReceiveFilesXML() throws Exception {
         String result = null;
 
-        result = WPSHelper.createWPSReceiveFilesXML(new File(this.testFilePath + ".zip"), "http://localhost:8081/geoserver", "testFile");
+        result = WPSHelper.createWPSReceiveFilesXML(new File(this.testFilePath + ".zip"), "testFile");
 
         assertNotNull(result);
     }
