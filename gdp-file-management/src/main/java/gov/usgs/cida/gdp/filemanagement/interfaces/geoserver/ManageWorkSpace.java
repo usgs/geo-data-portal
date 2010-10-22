@@ -1,5 +1,6 @@
 package gov.usgs.cida.gdp.filemanagement.interfaces.geoserver;
 
+import gov.usgs.cida.gdp.constants.AppConstant;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -7,7 +8,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.lang.String;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -25,19 +25,18 @@ import java.util.regex.Pattern;
  */
 public class ManageWorkSpace {
 
-    private String geoServerURLString = "http://localhost:8081/geoserver";
-    private URL geoServerURL;
+    private String geoServerURLString = "";
     
-    public ManageWorkSpace() { /* Class uses the default geoServerURL specified above */}
+    public ManageWorkSpace() {
+        this.geoServerURLString = AppConstant.WFS_ENDPOINT.toString();
+    }
 
     public ManageWorkSpace(String geoServerURL) throws MalformedURLException {
         this.geoServerURLString = geoServerURL;
-        this.geoServerURL = new URL(geoServerURLString);
     }
 
     public ManageWorkSpace(URL geoServerURL) {
         this.geoServerURLString = geoServerURL.toExternalForm();
-        this.geoServerURL = geoServerURL;
     }
 
     public boolean createDataStore(String shapefilePath, String shapefileName, String workspace) throws IOException {
