@@ -6,6 +6,7 @@ import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -13,94 +14,74 @@ import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Formatter;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.slf4j.LoggerFactory;
 
 import thredds.catalog.*;
 import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.ft.FeatureDatasetFactoryManager;
 
 public class THREDDSServerHelper {
 
     static org.slf4j.Logger log = LoggerFactory.getLogger(THREDDSServerHelper.class);
 
     /**
-     * Sets the default timeout for this function to 5 seconds
-     *
-     * @see THREDDSServerHelper#isServerReachable(java.lang.String, int, int)
-     * @param host
-     * @param port
-     * @return
-     */
-    public static boolean isServerReachable(final String host, final int port) {
-        return THREDDSServerHelper.isServerReachable(host, port, 5000);
-    }
-
-    /**
      * Tests whether or not a THREDDS server is reachable
-     *
-     * @param host
-     * @param port
-     * @param timeout - milliseconds
-     * @return
-     * @throws IOException
      */
-    public static boolean isServerReachable(final String host, final int port, final int timeout) {
-        boolean result = false;
+    public static boolean isServerReachable(String serverURL) {
+        
+        URL url;
+        try {
+            url = new URL(serverURL);
+        } catch (MalformedURLException ex) {
+            return false;
+        }
+
+        String host = url.getHost();
+
+        int port = url.getPort();
+
+        // If port isn't specified, use the protocol's default port
+        if (port == -1) port = url.getDefaultPort();
+
+        // If there is no default port for the protocol, or the protocol is
+        // unknown, give port 80 (default http port) a try because we have
+        // nothing else to go on.
+        if (port == -1) {
+            port = 80;
+        }
 
         Socket testSocket = new Socket();
         InetSocketAddress address = new InetSocketAddress(host, port);
         try {
-            testSocket.connect(address, timeout);
+            // 5 sec timeout
+            testSocket.connect(address, 5000);
         } catch (IOException ex) {
-            Logger.getLogger(THREDDSServerHelper.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
-        result = testSocket.isConnected();
-        if (result) {
-            try {
-                testSocket.close();
-            } catch (IOException ex) {
-                Logger.getLogger(THREDDSServerHelper.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
 
-        return result;
+        try {
+            testSocket.close();
+        } catch (IOException ex) { }
+
+        return true;
     }
 
     public static Time getTimeBean(String datasetUrl, String gridSelection) throws IOException, ParseException {
-        Formatter errorLog = new Formatter();
-        FeatureDataset featureDataset = null;
-        featureDataset =
-                FeatureDatasetFactoryManager.open(null, datasetUrl, null, errorLog);
 
-        if (featureDataset != null) {
-            try {
-                List<String> dateRange = NetCDFUtility.getDateRange(datasetUrl, gridSelection);
-                if (dateRange.isEmpty()) {
-                    boolean hasTimeCoord = NetCDFUtility.hasTimeCoordinate(datasetUrl);
-                    if (hasTimeCoord) { // This occurs when there is no date range in the file but has time coords
-                        // We want the user to pick dates but don't have a range to give
-                        dateRange.add("1800-01-01 00:00:00Z");
-                        dateRange.add("2100-12-31 00:00:00Z");
-                    }
-                }
-
-                Time timeBean = new Time(dateRange);
-
-                if (timeBean != null /*&& !timeBean.getTime().isEmpty()*/) {
-                    return timeBean;
-                }
-
-            } finally {
-                featureDataset.close();
+        List<String> dateRange = NetCDFUtility.getDateRange(datasetUrl, gridSelection);
+        if (dateRange.isEmpty()) {
+            boolean hasTimeCoord = NetCDFUtility.hasTimeCoordinate(datasetUrl);
+            if (hasTimeCoord) { // This occurs when there is no date range
+                // in the file but dataset has time coords. We want the user
+                // to pick dates but don't have a range to give.
+                dateRange.add("1800-01-01 00:00:00Z");
+                dateRange.add("2100-12-31 00:00:00Z");
             }
         }
-        return null;
+
+        Time timeBean = new Time(dateRange);
+
+        return timeBean;
     }
 
     /**
@@ -137,18 +118,15 @@ public class THREDDSServerHelper {
     }
 
     
-    public static void getDatasetListFromServer(URL catalogURL) throws URISyntaxException {
+    public static void getDatasetListFromServer(String catalogURL) throws URISyntaxException {
         InvCatalogFactory factory = new InvCatalogFactory("default", true);
-        InvCatalog catalog = factory.readXML(catalogURL.toURI());
+        InvCatalog catalog = factory.readXML(new URI(catalogURL));
         List<InvDataset> dsList = catalog.getDatasets();
         
     }
     
-    public static List<XmlResponse> getGridBeanListFromServer(String datasetUrl) throws IllegalArgumentException, IOException {
-
-        if (datasetUrl == null || "".equals(datasetUrl)) {
-            throw new IllegalArgumentException("DataSet URL invalid or null");
-        }
+    public static List<XmlResponse> getGridBeanListFromServer(String datasetUrl)
+            throws IllegalArgumentException, IOException {
 
         List<XmlResponse> result = new ArrayList<XmlResponse>();
         List<VariableSimpleIF> variables = NetCDFUtility.getDataVariableNames(datasetUrl);
@@ -156,6 +134,5 @@ public class THREDDSServerHelper {
         DataTypeCollection dtcb = new DataTypeCollection(type, variables.toArray(new VariableSimpleIF[0]));
         result.add(dtcb);
         return result;
-
     }
 }

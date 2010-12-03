@@ -30,26 +30,20 @@ public class THREDDSServerHelperTest {
 
     @Test
     public void testIsServerReachable() {
-        String workingHost = "www.google.com";
-        int workingPort = 80;
-        int timeout = 5000;
+        String workingURL = "http://www.google.com";
 
         boolean result = false;
-        result = THREDDSServerHelper.isServerReachable(workingHost, workingPort, timeout);
+        result = THREDDSServerHelper.isServerReachable(workingURL);
         assertTrue(result);
 
-        int nonWorkingPort = 64738;
-        result = THREDDSServerHelper.isServerReachable(workingHost, nonWorkingPort, timeout);
-        assertFalse(result);
-
-        String nonWorkingHost = "www.ivan-suftin-rocks.com";
-        result = THREDDSServerHelper.isServerReachable(nonWorkingHost, workingPort, timeout);
+        String nonWorkingURL = "http://www.ivan-suftin-rocks.com";
+        result = THREDDSServerHelper.isServerReachable(nonWorkingURL);
         assertFalse(result);
     }
 
     @Test
     public void testGetDatasetHandlesFromServer() throws IOException {
-        assumeThat(THREDDSServerHelper.isServerReachable("motherlode.ucar.edu", 8080, 5000), is(true));
+        assumeThat(THREDDSServerHelper.isServerReachable("http://motherlode.ucar.edu:8080"), is(true));
         String host = "motherlode.ucar.edu";
         int port = 8080;
         String uri = "/thredds/catalog/station/metar/catalog.xml";
@@ -60,7 +54,7 @@ public class THREDDSServerHelperTest {
 
     @Test
     public void testGetInvCatalogFromServer() throws IOException {
-        assumeThat(THREDDSServerHelper.isServerReachable("motherlode.ucar.edu", 8080, 5000), is(true));
+        assumeThat(THREDDSServerHelper.isServerReachable("http://motherlode.ucar.edu:8080"), is(true));
         String host = "motherlode.ucar.edu";
         int port = 8080;
         String uri = "/thredds/catalog/station/metar/catalog.xml";

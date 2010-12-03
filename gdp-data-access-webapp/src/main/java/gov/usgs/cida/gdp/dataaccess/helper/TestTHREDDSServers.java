@@ -52,12 +52,13 @@ public final class TestTHREDDSServers extends TimerTask {
             String key = threddsServerBeanMapKeySetIterator.next();
             Server threddsServerBean = threddsServerBeanMap.get(key);
             threddsServerBean.setLastCheck(new Date());
-            String host = threddsServerBean.getHostname();
-            int port = threddsServerBean.getPort();
-            int timeout = 5000;
 
-            boolean serverIsUp = THREDDSServerHelper.isServerReachable(host, port, timeout);
-            if (!serverIsUp) log.debug("Host " + host + ":" + port + " could not be reached. \n\tBeing labeled as down. Will re-check in 5 minutes.");
+            String serverURL = threddsServerBean.getFullUrl();
+
+            boolean serverIsUp = THREDDSServerHelper.isServerReachable(serverURL);
+            if (!serverIsUp) log.debug("Server " + serverURL + " could not be reached.\n"
+                    + "\tBeing labeled as down. Will re-check in 5 minutes.");
+            
             threddsServerBean.setActive(serverIsUp);
             result.put(key, threddsServerBean);
         }

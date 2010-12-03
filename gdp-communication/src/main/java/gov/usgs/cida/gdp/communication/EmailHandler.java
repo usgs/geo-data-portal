@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 public class EmailHandler {
 	private static org.slf4j.Logger log = LoggerFactory.getLogger(EmailHandler.class);
 
-	public boolean sendMessage(EmailMessage message) throws AddressException, MessagingException {
+	public static void sendMessage(EmailMessage message) throws AddressException, MessagingException {
 		Properties properties = System.getProperties();
 
 //		if (Boolean.parseBoolean(PropertyFactory.getProperty("development"))) {
@@ -50,10 +50,5 @@ public class EmailHandler {
 
 		Transport.send(msg);
 		log.info("Sent E-Mail From " + message.getFrom() + " to " + message.getTo());
-		return true;
-
-
 	}
-
-
 }

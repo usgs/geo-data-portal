@@ -7,7 +7,7 @@ import gov.usgs.cida.gdp.coreprocessing.analysis.StationDataCSVWriter;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCategoricalGridCoverage;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCoverageWeightedGridStatistics;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCoverageWeightedGridStatisticsWriter.Statistic;
-import gov.usgs.cida.gdp.coreprocessing.servlet.ProcessServlet;
+import gov.usgs.cida.gdp.coreprocessing.Process;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -146,10 +146,10 @@ public class CSVWriter {
                         timeRange = new Range(timeIndexMin, timeIndexMax);
                     }
                 } catch (NumberFormatException e) {
-                    LoggerFactory.getLogger(ProcessServlet.class).error(
+                    LoggerFactory.getLogger(Process.class).error(
                             e.getMessage());
                 } catch (InvalidRangeException e) {
-                    LoggerFactory.getLogger(ProcessServlet.class).error(
+                    LoggerFactory.getLogger(Process.class).error(
                             e.getMessage());
                 }
                 GroupBy.GridOption groupBy = null;

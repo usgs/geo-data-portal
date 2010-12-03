@@ -58,17 +58,11 @@ public class THREDDSCheckServlet extends HttpServlet {
                 return;
             }
 
-            String hostname = urlObject.getHost();
-            int port = urlObject.getPort();
-            if (port == -1) {
-                port = 80;
-            }
-
             try {
-                boolean isServerUp = THREDDSServerHelper.isServerReachable(hostname, port, 5000);
+                boolean isServerUp = THREDDSServerHelper.isServerReachable(url);
                 Server tsb = new Server();
-                tsb.setHostname(hostname);
-                tsb.setPort(port);
+                tsb.setHostname(urlObject.getHost());
+                tsb.setPort(urlObject.getPort());
                 tsb.setActive(isServerUp);
                 tsb.setLastCheck(new Date());
                 xmlReply = new XmlReply(Acknowledgement.ACK_OK, tsb);

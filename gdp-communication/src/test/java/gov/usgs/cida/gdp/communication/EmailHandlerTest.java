@@ -6,7 +6,6 @@ import java.util.List;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -35,10 +34,14 @@ public class EmailHandlerTest {
         bcc.add("test@test.ing.gov");
         bcc.add("test@test.ing.gov");
         EmailMessage message = new EmailMessage("test@test.doesnt.exist.gov", "test@testing.purposes.on.ly.gov", bcc, bcc, "Test", "Test");
-        EmailHandler instance = new EmailHandler();
-        boolean expResult = true;
-        boolean result = instance.sendMessage(message);
-        assertEquals(expResult, result);
+
+        try {
+            EmailHandler.sendMessage(message);
+        } catch (Exception e) {
+            assert(false);
+        }
+
+        assert(true);
     }
 
     /**
@@ -50,9 +53,13 @@ public class EmailHandlerTest {
         bcc.add("test@test.ing.gov");
         bcc.add("test@test.ing.gov");
         EmailMessage message = new EmailMessage("test@test.doesnt.exist.gov", "test@testing.purposes.on.ly.gov", bcc, "Test", "Test");
-        EmailHandler instance = new EmailHandler();
-        boolean expResult = true;
-        boolean result = instance.sendMessage(message);
-        assertEquals(expResult, result);
+
+        try {
+            EmailHandler.sendMessage(message);
+        } catch (Exception e) {
+            assert(false);
+        }
+
+        assert(true);
     }
 }

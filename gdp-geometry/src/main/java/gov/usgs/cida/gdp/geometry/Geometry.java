@@ -5,14 +5,22 @@
 package gov.usgs.cida.gdp.geometry;
 
 import gov.usgs.cida.gdp.utilities.FileHelper;
+import gov.usgs.cida.gdp.utilities.ShapeFileHelper;
+import gov.usgs.cida.gdp.utilities.bean.AvailableFiles;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import org.geotools.data.DefaultQuery;
+import org.geotools.data.FeatureSource;
+import org.geotools.data.FileDataStore;
+import org.geotools.data.FileDataStoreFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.SchemaException;
+import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.filter.Filter;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 
@@ -23,26 +31,67 @@ import org.opengis.referencing.NoSuchAuthorityCodeException;
 public class Geometry {
 
     public static FeatureCollection<SimpleFeatureType, SimpleFeature> getFeatureCollection(
-            final String lat, final String lon, final String userspacePath, final String userDirectory,
+            final String userspacePath, final String userDirectory,
             final File uploadDirectory, final String appTempDir, final String shapeSet,
             final String[] features, final String outputFile, final String attribute) 
-        throws MalformedURLException, IOException, SchemaException, NoSuchAuthorityCodeException, FactoryException, CQLException {
+        throws MalformedURLException, IOException, SchemaException,
+            NoSuchAuthorityCodeException, FactoryException, CQLException {
         
-        // Define a feature collection isiong lat/lon or shapefile
-        if (lat != null && lon != null) {
+        //NHDService.getGeometry(lon, lat, shapefilePath, shxFilePath);
 
-            String fullUserDir = userspacePath + userDirectory + File.separator;
+        return shapefileToFeatureCollection(uploadDirectory, outputFile,
+                userDirectory, userspacePath, appTempDir, shapeSet, features, attribute);
+    }
 
-            // When getting the geometry from the epa nhd service, there
-            // won't be any attributes. But the attribute cannot be null, so set it
-            // to a placeholder, "placeholder"
-            String shapefilePath = fullUserDir + "latlon.shp";
-            String shxFilePath = fullUserDir + "latlon.shx";
+    static public FeatureCollection<SimpleFeatureType, SimpleFeature> shapefileToFeatureCollection(
+                final File uploadDirectory, final String outputFile, final String userDirectory,
+                final String userSpacePath, final String appTempDir, final String shapeSet,
+                final String[] features, final String attribute
+            ) throws IOException, CQLException {
+        
+        FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = null;
+        FileHelper.deleteFile(uploadDirectory.getPath() + outputFile);
+        String shapefilePath = null;
 
-            return NHDService.getGeometry(lon, lat, shapefilePath, shxFilePath);
-        } else {
-            return ShapefileToFeatureCollection.shapefileToFeatureCollection(
-                    uploadDirectory, outputFile, userDirectory, userspacePath, appTempDir, shapeSet, features, attribute);
+        FileDataStore shapeFileDataStore;
+        FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = null;
+
+        // Set up the shapefile
+
+        String userDir = userDirectory;
+        if (userDir != null && !"".equals(userSpacePath + userDir)) {
+            if (FileHelper.doesDirectoryOrFileExist(userSpacePath + userDir)) {
+                FileHelper.updateTimestamp(userSpacePath + userDir, false); // Update the timestamp
+                userDir = userSpacePath + userDir;
+            } else {
+                userDir = "";
+            }
         }
+
+
+        AvailableFiles afb = AvailableFiles.getAvailableFilesBean(appTempDir, userDir);
+        File shapeFile = ShapeFileHelper.getShapeFileFromShapeSetName(shapeSet, afb.getShapeSetList());
+
+        shapeFileDataStore = FileDataStoreFinder.getDataStore(shapeFile);
+        featureSource = shapeFileDataStore.getFeatureSource();
+
+        if (features[0].equals("*")) {
+            featureCollection = featureSource.getFeatures();
+        } else {
+            //Implementing a filter using the CQL language
+            // http://docs.codehaus.org/display/GEOTOOLS/CQL+Parser+Design
+            String cqlQuery = attribute + " == '" + features[0] + "'";
+            Filter attributeFilter = null;
+            for (int index = 1; index < features.length; index++) {
+                cqlQuery = cqlQuery + " OR " + attribute + " == '" + features[index] + "'";
+            }
+
+            attributeFilter = CQL.toFilter(cqlQuery);
+            featureCollection = featureSource.getFeatures(
+                    new DefaultQuery(
+                    featureSource.getSchema().getTypeName(),
+                    attributeFilter));
+        }
+        return featureCollection;
     }
 }
