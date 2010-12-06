@@ -1,6 +1,5 @@
 package gov.usgs.cida.gdp.coreprocessing;
 
-import gov.usgs.cida.gdp.coreprocessing.bean.FileLocation;
 import gov.usgs.cida.gdp.utilities.FileHelper;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -52,11 +51,13 @@ public class Process {
 
         // Check for upload directory. If not found, return null
         // TODO- return error
-        String uploadDirectoryPath = "";
+        String uploadDirectoryPath = System.getProperty("applicationWorkDir");
         File uploadDirectory = FileHelper.createFileRepositoryDirectory(uploadDirectoryPath);
 
         DelimiterOption delimiterOption = null;
         try {
+            // TODO
+            inputs.delimId = "[comma]";
             delimiterOption = DelimiterOption.valueOf(inputs.delimId);
         } catch (IllegalArgumentException e) {
             delimiterOption = DelimiterOption.getDefault();
@@ -71,8 +72,12 @@ public class Process {
 
             dataTypes = new String[] { "I0B0" };
         } else { // THREDDS
-            dataTypes = (String[]) inputs.threddsDataTypes.toArray();
+            // Passing in String[0] forces toArray to allocate a new array. This
+            // is how the javadocs say to do it.
+            dataTypes = inputs.threddsDataTypes.toArray(new String[0]);
         }
+
+        String[] outputStats = inputs.outputStats.toArray(new String[0]);
 
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -85,23 +90,21 @@ public class Process {
             throw new Exception("Unable to parse dates. Must be in 'yyyy-MM-dd' format");
         }
 
-        // TODO: way to check FeatureType without catalog url?
-        String threddsURL = "";
         Formatter errorLog = new Formatter();
         FeatureDataset featureDataset = FeatureDatasetFactoryManager.open(
-                FeatureType.ANY, threddsURL, null, errorLog);
+                FeatureType.ANY, inputs.threddsDataset, null, errorLog);
 
         try {
 
             FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = null;
-            String outputFile = "";
+            String outputFile = ""; //Integer.toString(inputs.hashCode());
 
             if (featureDataset.getFeatureType() == FeatureType.GRID && featureDataset instanceof GridDataset) {
                 boolean categorical = false;
                 CSVWriter.grid(featureDataset, categorical,
                         featureCollection, inputs.attribute, delimiterOption,
                         fromDate, toDate, dataTypes, inputs.threddsGroupBy,
-                        (String[]) inputs.outputStats.toArray(), outputFile);
+                        outputStats, outputFile);
 
             } else if (featureDataset.getFeatureType() == FeatureType.STATION && featureDataset instanceof FeatureDatasetPoint) {
                 CSVWriter.station(featureDataset, featureCollection,
