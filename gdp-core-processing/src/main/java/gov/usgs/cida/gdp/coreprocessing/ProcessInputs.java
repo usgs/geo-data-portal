@@ -12,7 +12,6 @@ public class ProcessInputs {
     public String dataSetInterface;
 
     // THREDDS
-    public String threddsURL;
     public String threddsDataset;
     public ArrayList<String> threddsDataTypes = new ArrayList<String>();
     public String threddsFromDate;

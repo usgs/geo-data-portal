@@ -48,7 +48,7 @@ public class Process {
         }
     }
 
-    public static FileLocation process(ProcessInputs inputs) throws Exception {
+    public static String process(ProcessInputs inputs) throws Exception {
 
         // Check for upload directory. If not found, return null
         // TODO- return error
@@ -70,7 +70,7 @@ public class Process {
                     inputs.wcsResampleFilter, inputs.wcsResampleFactor);
 
             dataTypes = new String[] { "I0B0" };
-        } else {
+        } else { // THREDDS
             dataTypes = (String[]) inputs.threddsDataTypes.toArray();
         }
 
@@ -85,9 +85,11 @@ public class Process {
             throw new Exception("Unable to parse dates. Must be in 'yyyy-MM-dd' format");
         }
 
+        // TODO: way to check FeatureType without catalog url?
+        String threddsURL = "";
         Formatter errorLog = new Formatter();
         FeatureDataset featureDataset = FeatureDatasetFactoryManager.open(
-                FeatureType.ANY, inputs.threddsURL, null, errorLog);
+                FeatureType.ANY, threddsURL, null, errorLog);
 
         try {
 
@@ -96,15 +98,15 @@ public class Process {
 
             if (featureDataset.getFeatureType() == FeatureType.GRID && featureDataset instanceof GridDataset) {
                 boolean categorical = false;
-                    CSVWriter.grid(featureDataset, categorical,
-                            featureCollection, inputs.attribute, delimiterOption,
-                            fromDate, toDate, dataTypes, inputs.threddsGroupBy,
-                            (String[]) inputs.outputStats.toArray(), outputFile);
+                CSVWriter.grid(featureDataset, categorical,
+                        featureCollection, inputs.attribute, delimiterOption,
+                        fromDate, toDate, dataTypes, inputs.threddsGroupBy,
+                        (String[]) inputs.outputStats.toArray(), outputFile);
 
-                } else if (featureDataset.getFeatureType() == FeatureType.STATION && featureDataset instanceof FeatureDatasetPoint) {
-                    CSVWriter.station(featureDataset, featureCollection,
-                            fromDate, toDate, delimiterOption, dataTypes,
-                            inputs.threddsGroupBy, outputFile);
+            } else if (featureDataset.getFeatureType() == FeatureType.STATION && featureDataset instanceof FeatureDatasetPoint) {
+                CSVWriter.station(featureDataset, featureCollection,
+                        fromDate, toDate, delimiterOption, dataTypes,
+                        inputs.threddsGroupBy, outputFile);
             }
         } catch (Exception ex) {
             throw ex;
@@ -121,12 +123,10 @@ public class Process {
             throw new Exception("Unable to create output file.");
         }
 
-        FileLocation fileLocations = new FileLocation(outputDataFile.getName());
-
         String outputFileURL = "";
         sendEmail(inputs.email, outputFileURL);
 
-        return fileLocations;
+        return outputDataFile.getName();
     }
 
     private static File wcs(String wcsServer, String wcsCoverage,
