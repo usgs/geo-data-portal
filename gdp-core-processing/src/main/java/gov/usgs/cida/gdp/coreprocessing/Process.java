@@ -73,9 +73,7 @@ public class Process {
 
             dataTypes = new String[] { "I0B0" };
         } else { // THREDDS
-            // Passing in String[0] forces toArray to allocate a new array. This
-            // is how the javadocs say to do it.
-            dataTypes = inputs.threddsDataTypes.toArray(new String[0]);
+            dataTypes = inputs.threddsDataTypes;
 
             // TODO: dates only valid when using THREDDS?
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
@@ -89,14 +87,23 @@ public class Process {
             }
         }
 
-        String[] outputStats = inputs.outputStats.toArray(new String[0]);
-
         Formatter errorLog = new Formatter();
         FeatureDataset featureDataset = FeatureDatasetFactoryManager.open(
                 FeatureType.ANY, inputs.threddsDataset, null, errorLog);
 
-        // TODO
-        String outputFilename = ""; //Integer.toString(inputs.hashCode());
+        // TODO: better way to name output?
+        Object[] hashCodeInputs = new Object[] { 
+            inputs.attribute, inputs.dataSetInterface, inputs.delimId,
+            inputs.email, inputs.featureType, inputs.gdpURL, inputs.threddsDataset,
+            inputs.threddsFromDate, inputs.threddsGroupBy, inputs.threddsToDate,
+            inputs.wcsBoundingBox, inputs.wcsCoverage, inputs.wcsDataType,
+            inputs.wcsGridCRS, inputs.wcsGridOffsets, inputs.wcsResampleFactor,
+            inputs.wcsResampleFilter, inputs.wcsURL, inputs.wfsURL, 
+            inputs.features, inputs.outputStats, inputs.threddsDataTypes
+        };
+
+        int hashCode = Arrays.deepHashCode(hashCodeInputs);
+        String outputFilename = Integer.toHexString(hashCode) + ".out";
         
         try {
             FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = null;
@@ -111,7 +118,7 @@ public class Process {
                 CSVWriter.grid(featureDataset, categorical,
                         featureCollection, inputs.attribute, delimiterOption,
                         fromDate, toDate, dataTypes, inputs.threddsGroupBy,
-                        outputStats, outputFilename);
+                        inputs.outputStats, outputFilename);
 
             } else if (featureDataset.getFeatureType() == FeatureType.STATION && featureDataset instanceof FeatureDatasetPoint) {
                 CSVWriter.station(featureDataset, featureCollection,
@@ -141,26 +148,14 @@ public class Process {
 
     private static File wcs(String wcsServer, String wcsCoverage,
             String wcsBoundingBox, String wcsGridCRS, String wcsGridOffsets,
-            String wcsResmapleFilter, String wcsResampleFactor)
+            String wcsResampleFilter, String wcsResampleFactor)
             throws MalformedURLException, IOException {
 
-        int wcsRequestHashCode = 7;
-        wcsRequestHashCode = 31 * wcsRequestHashCode
-                + (wcsServer == null ? 0 : wcsServer.hashCode());
-        wcsRequestHashCode = 31 * wcsRequestHashCode
-                + (wcsCoverage == null ? 0 : wcsCoverage.hashCode());
-        wcsRequestHashCode = 31 * wcsRequestHashCode
-                + (wcsBoundingBox == null ? 0 : wcsBoundingBox.hashCode());
-        wcsRequestHashCode = 31 * wcsRequestHashCode
-                + (wcsGridCRS == null ? 0 : wcsGridCRS.hashCode());
-        wcsRequestHashCode = 31 * wcsRequestHashCode
-                + (wcsGridOffsets == null ? 0 : wcsGridOffsets.hashCode());
-        wcsRequestHashCode = 31
-                * wcsRequestHashCode
-                + (wcsResmapleFilter == null ? 0 : wcsResmapleFilter.hashCode());
-        wcsRequestHashCode = 31
-                * wcsRequestHashCode
-                + (wcsResampleFactor == null ? 0 : wcsResampleFactor.hashCode());
+        String[] wcsParams = new String[] { wcsServer, wcsCoverage, wcsBoundingBox,
+            wcsGridCRS, wcsGridOffsets, wcsResampleFilter, wcsResampleFactor };
+
+        int wcsRequestHashCode = Arrays.hashCode(wcsParams);
+
         File wcsRequestOutputFile = new File(
                 System.getProperty("applicationWorkDir"),
                 Integer.toHexString(wcsRequestHashCode) + ".tiff");
@@ -262,6 +257,19 @@ public class Process {
         }
 
         return null; // new line not found
+    }
+
+    /**
+     * Calculates a hash code of the passed in strings.
+     */
+    private static int calcHashCode(String[] strings) {
+        int hashCode = 7;
+
+        for (String s : strings) {
+            hashCode = 31 * hashCode + (s == null ? 0 : s.hashCode());
+        }
+
+        return hashCode;
     }
 
     private static void sendEmail(String email, String finalUrlEmail)

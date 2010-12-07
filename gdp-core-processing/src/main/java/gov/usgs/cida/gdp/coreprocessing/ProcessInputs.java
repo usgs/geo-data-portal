@@ -1,19 +1,17 @@
 package gov.usgs.cida.gdp.coreprocessing;
 
-import java.util.ArrayList;
-
 public class ProcessInputs {
     // Geometry
     public String wfsURL;
     public String featureType;
     public String attribute;
-    public ArrayList<String> features = new ArrayList<String>();;
+    public String[] features;
 
     public String dataSetInterface;
 
     // THREDDS
     public String threddsDataset;
-    public ArrayList<String> threddsDataTypes = new ArrayList<String>();
+    public String[] threddsDataTypes;
     public String threddsFromDate;
     public String threddsToDate;
     public String threddsGroupBy;
@@ -29,7 +27,7 @@ public class ProcessInputs {
     public String wcsResampleFilter;
 
     // Output
-    public ArrayList<String> outputStats = new ArrayList<String>();
+    public String[] outputStats;
 
     // URL at which the client accessed GDP. Used to send user a getfile link in
     // the processing finished email.
