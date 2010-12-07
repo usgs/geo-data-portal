@@ -1,4 +1,4 @@
-package gov.usgs.cida.gdp.communication.bean;
+package gov.usgs.cida.gdp.communication;
 
 import java.util.*;
 

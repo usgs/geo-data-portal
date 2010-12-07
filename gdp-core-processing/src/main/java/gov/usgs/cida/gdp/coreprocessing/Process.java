@@ -29,7 +29,7 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
 
 import gov.usgs.cida.gdp.communication.EmailHandler;
-import gov.usgs.cida.gdp.communication.bean.EmailMessage;
+import gov.usgs.cida.gdp.communication.EmailMessage;
 import gov.usgs.cida.gdp.coreprocessing.writer.CSVWriter;
 import gov.usgs.cida.gdp.utilities.HTTPUtils;
 import org.apache.commons.io.FileUtils;
@@ -64,6 +64,7 @@ public class Process {
         }
 
         String dataTypes[];
+        Date fromDate = null, toDate = null;
         File wcsCoverage;
         if ("WCS".equals(inputs.dataSetInterface)) {
             wcsCoverage = wcs(inputs.wcsURL, inputs.wcsCoverage,
@@ -75,20 +76,20 @@ public class Process {
             // Passing in String[0] forces toArray to allocate a new array. This
             // is how the javadocs say to do it.
             dataTypes = inputs.threddsDataTypes.toArray(new String[0]);
+
+            // TODO: dates only valid when using THREDDS?
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            df.setTimeZone(TimeZone.getTimeZone("UTC"));
+            
+            try{
+                toDate = df.parse(inputs.threddsToDate);
+                fromDate = df.parse(inputs.threddsFromDate);
+            } catch (ParseException e1) {
+                throw new Exception("Unable to parse dates. Must be in 'yyyy-MM-dd' format");
+            }
         }
 
         String[] outputStats = inputs.outputStats.toArray(new String[0]);
-
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        df.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-        Date fromDate, toDate;
-        try{
-            toDate = df.parse(inputs.threddsToDate);
-            fromDate = df.parse(inputs.threddsFromDate);
-        } catch (ParseException e1) {
-            throw new Exception("Unable to parse dates. Must be in 'yyyy-MM-dd' format");
-        }
 
         Formatter errorLog = new Formatter();
         FeatureDataset featureDataset = FeatureDatasetFactoryManager.open(
@@ -126,14 +127,13 @@ public class Process {
         File finishedOutputDir = new File(System.getProperty("applicationTempDir"),
                 "finished-output");
 
-        // Create directory if it doesn't already exist.
-        finishedOutputDir.createNewFile();
-
+        // Creates directory if it doesn't already exist.
         FileUtils.moveFileToDirectory(
                 new File(System.getProperty("applicationWorkDir") + outputFilename),
                 finishedOutputDir, true);
 
-        String outputFileURL = "";
+        // TODO: get file through WPS? If so, can you do kvp?
+        String outputFileURL = inputs.gdpURL + "wps?file=" + outputFilename;
         sendEmail(inputs.email, outputFileURL);
 
         return outputFilename;

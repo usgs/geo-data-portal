@@ -1,7 +1,5 @@
 package gov.usgs.cida.gdp.communication;
 
-import gov.usgs.cida.gdp.communication.bean.EmailMessage;
-
 import java.util.Properties;
 
 import gov.usgs.cida.gdp.utilities.PropertyFactory;

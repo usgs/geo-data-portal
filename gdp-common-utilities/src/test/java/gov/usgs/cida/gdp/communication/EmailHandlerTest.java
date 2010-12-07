@@ -1,6 +1,5 @@
 package gov.usgs.cida.gdp.communication;
 
-import gov.usgs.cida.gdp.communication.bean.EmailMessage;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.AfterClass;
