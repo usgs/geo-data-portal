@@ -39,6 +39,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.dt.GridDatatype;
 
 public class Process {
 
@@ -100,7 +101,12 @@ public class Process {
             FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = null;
 
             if (featureDataset.getFeatureType() == FeatureType.GRID && featureDataset instanceof GridDataset) {
-                boolean categorical = false;
+
+                GridDataset gridDataset = (GridDataset) featureDataset;
+                String gridName = dataTypes[0];
+                GridDatatype gdt = gridDataset.findGridByName(gridName);
+                boolean categorical = gdt.getDataType().isIntegral();
+
                 CSVWriter.grid(featureDataset, categorical,
                         featureCollection, inputs.attribute, delimiterOption,
                         fromDate, toDate, dataTypes, inputs.threddsGroupBy,
