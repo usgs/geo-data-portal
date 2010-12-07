@@ -30,8 +30,10 @@ public class ProcessInputs {
 
     // Output
     public ArrayList<String> outputStats = new ArrayList<String>();
-    public String output;
-    public String outputFile;
+
+    // URL at which the client accessed GDP. Used to send user a getfile link in
+    // the processing finished email.
+    public String gdpURL;
     public String delimId;
     public String email;
 }

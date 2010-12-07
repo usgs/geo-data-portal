@@ -1,6 +1,5 @@
 package gov.usgs.cida.gdp.coreprocessing;
 
-import gov.usgs.cida.gdp.utilities.FileHelper;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -33,12 +32,17 @@ import gov.usgs.cida.gdp.communication.EmailHandler;
 import gov.usgs.cida.gdp.communication.bean.EmailMessage;
 import gov.usgs.cida.gdp.coreprocessing.writer.CSVWriter;
 import gov.usgs.cida.gdp.utilities.HTTPUtils;
+import org.apache.commons.io.FileUtils;
 import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
 
 public class Process {
+
+    static Logger log = LoggerFactory.getLogger(Process.class);
 
     static {
         try {
@@ -48,11 +52,6 @@ public class Process {
     }
 
     public static String process(ProcessInputs inputs) throws Exception {
-
-        // Check for upload directory. If not found, return null
-        // TODO- return error
-        String uploadDirectoryPath = System.getProperty("applicationWorkDir");
-        File uploadDirectory = FileHelper.createFileRepositoryDirectory(uploadDirectoryPath);
 
         DelimiterOption delimiterOption = null;
         try {
@@ -94,42 +93,44 @@ public class Process {
         FeatureDataset featureDataset = FeatureDatasetFactoryManager.open(
                 FeatureType.ANY, inputs.threddsDataset, null, errorLog);
 
+        // TODO
+        String outputFilename = ""; //Integer.toString(inputs.hashCode());
+        
         try {
-
             FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = null;
-            String outputFile = ""; //Integer.toString(inputs.hashCode());
 
             if (featureDataset.getFeatureType() == FeatureType.GRID && featureDataset instanceof GridDataset) {
                 boolean categorical = false;
                 CSVWriter.grid(featureDataset, categorical,
                         featureCollection, inputs.attribute, delimiterOption,
                         fromDate, toDate, dataTypes, inputs.threddsGroupBy,
-                        outputStats, outputFile);
+                        outputStats, outputFilename);
 
             } else if (featureDataset.getFeatureType() == FeatureType.STATION && featureDataset instanceof FeatureDatasetPoint) {
                 CSVWriter.station(featureDataset, featureCollection,
                         fromDate, toDate, delimiterOption, dataTypes,
-                        inputs.threddsGroupBy, outputFile);
+                        inputs.threddsGroupBy, outputFilename);
+            } else {
+                log.error("Unsupported dataset FeatureType: " + featureDataset.getFeatureType());
             }
         } catch (Exception ex) {
             throw ex;
         }
 
-        // Move completed file to the upload repository
-        FileHelper.copyFileToFile(
-                new File(System.getProperty("applicationWorkDir")
-                + inputs.outputFile), uploadDirectory.getPath(), true);
+        File finishedOutputDir = new File(System.getProperty("applicationTempDir"),
+                "finished-output");
 
-        File outputDataFile = new File(uploadDirectory.getPath(),
-                inputs.outputFile);
-        if (!outputDataFile.exists()) {
-            throw new Exception("Unable to create output file.");
-        }
+        // Create directory if it doesn't already exist.
+        finishedOutputDir.createNewFile();
+
+        FileUtils.moveFileToDirectory(
+                new File(System.getProperty("applicationWorkDir") + outputFilename),
+                finishedOutputDir, true);
 
         String outputFileURL = "";
         sendEmail(inputs.email, outputFileURL);
 
-        return outputDataFile.getName();
+        return outputFilename;
     }
 
     private static File wcs(String wcsServer, String wcsCoverage,
