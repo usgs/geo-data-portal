@@ -102,6 +102,7 @@ public class Process {
             inputs.features, inputs.outputStats, inputs.threddsDataTypes
         };
 
+        // deepHashCode to recursively process any arrays within the array.
         int hashCode = Arrays.deepHashCode(hashCodeInputs);
         String outputFilename = Integer.toHexString(hashCode) + ".out";
         
@@ -139,7 +140,8 @@ public class Process {
                 new File(System.getProperty("applicationWorkDir") + outputFilename),
                 finishedOutputDir, true);
 
-        // TODO: get file through WPS? If so, can you do kvp?
+        // TODO: get file through WPS? If so, can you do kvp? Also, can you get
+        // gdpURL from within here instead of being sent it from the front end?
         String outputFileURL = inputs.gdpURL + "wps?file=" + outputFilename;
         sendEmail(inputs.email, outputFileURL);
 
@@ -257,19 +259,6 @@ public class Process {
         }
 
         return null; // new line not found
-    }
-
-    /**
-     * Calculates a hash code of the passed in strings.
-     */
-    private static int calcHashCode(String[] strings) {
-        int hashCode = 7;
-
-        for (String s : strings) {
-            hashCode = 31 * hashCode + (s == null ? 0 : s.hashCode());
-        }
-
-        return hashCode;
     }
 
     private static void sendEmail(String email, String finalUrlEmail)

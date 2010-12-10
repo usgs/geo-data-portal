@@ -39,11 +39,11 @@ public class ManageWorkSpace {
         this.geoServerURLString = geoServerURL.toExternalForm();
     }
 
-    public boolean createDataStore(String shapefilePath, String shapefileName, String workspace) throws IOException {
-            return createDataStore(shapefilePath, shapefileName, workspace, this.geoServerURLString);
+    public boolean createDataStore(String shapefilePath, String layerName, String workspace) throws IOException {
+        return createDataStore(shapefilePath, layerName, workspace, this.geoServerURLString);
     }
 
-    public boolean createDataStore(String shapefilePath, String shapefileName, String workspace, String geoServerURL) throws IOException {
+    public boolean createDataStore(String shapefilePath, String layerName, String workspace, String geoServerURL) throws IOException {
         // create the workspace if it doesn't already exist
         URL workspacesURL = new URL(geoServerURL + "/rest/workspaces/");
         if (!workspaceExists(workspace)) {
@@ -55,23 +55,23 @@ public class ManageWorkSpace {
         String namespace = "";
         Matcher nsMatcher = Pattern.compile(".*<uri>(.*)</uri>.*").matcher(getNameSpaceForWorkSpace(workspace));
         if (nsMatcher.matches()) namespace = nsMatcher.group(1);
-        String dataStoreXML = createDataStoreXML(shapefileName, workspace, namespace, shapefilePath);
-        if (!dataStoreExists(workspace, shapefileName)) {
+        String dataStoreXML = createDataStoreXML(layerName, workspace, namespace, shapefilePath);
+        if (!dataStoreExists(workspace, layerName)) {
             // send POST to create the datastore if it doesn't exist
             sendPacket(dataStoresURL, "POST", "text/xml", dataStoreXML);
 
             // create featuretype based on the datastore
-            String featureTypeXML = createFeatureTypeXML(shapefileName, workspace);
-            URL featureTypesURL = new URL(dataStoresURL + shapefileName + "/featuretypes.xml");
+            String featureTypeXML = createFeatureTypeXML(layerName, workspace);
+            URL featureTypesURL = new URL(dataStoresURL + layerName + "/featuretypes.xml");
             sendPacket(featureTypesURL, "POST", "text/xml", featureTypeXML);
         } else {
             // otherwise send PUT to insure that it's pointing to the correct shapefile
-            sendPacket(new URL(dataStoresURL + shapefileName + ".xml"), "PUT", "text/xml", dataStoreXML);
+            sendPacket(new URL(dataStoresURL + layerName + ".xml"), "PUT", "text/xml", dataStoreXML);
         }
 
         // Make sure we render using the default polygon style, and not whatever
         // colored style might have been used before
-        sendPacket(new URL(geoServerURL + "/rest/layers/" + workspace + ":" + shapefileName), "PUT", "text/xml",
+        sendPacket(new URL(geoServerURL + "/rest/layers/" + workspace + ":" + layerName), "PUT", "text/xml",
                 "<layer><defaultStyle><name>polygon</name></defaultStyle>"
                 + "<enabled>true</enabled></layer>");
 
