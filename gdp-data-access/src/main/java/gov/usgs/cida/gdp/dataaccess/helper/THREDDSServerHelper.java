@@ -57,11 +57,11 @@ public class THREDDSServerHelper {
             testSocket.connect(address, 5000);
         } catch (IOException ex) {
             return false;
+        } finally {
+            try {
+                testSocket.close();
+            } catch (IOException ex) { }
         }
-
-        try {
-            testSocket.close();
-        } catch (IOException ex) { }
 
         return true;
     }

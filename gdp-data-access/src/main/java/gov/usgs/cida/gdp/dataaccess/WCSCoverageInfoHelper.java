@@ -2,7 +2,13 @@ package gov.usgs.cida.gdp.dataaccess;
 
 import gov.usgs.cida.gdp.dataaccess.bean.WCSCoverageInfo;
 import gov.usgs.cida.gdp.utilities.HTTPUtils;
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.net.URL;
 
 import java.util.HashMap;
@@ -196,6 +202,25 @@ public class WCSCoverageInfoHelper {
                 fullyCovers, units, boundingBox);
 
         return bean;
+    }
+
+    public static String getWcsDescribeCoverages(String wcsURL) throws IOException {
+        InputStream is = HTTPUtils.sendPacket(
+                new URL(wcsURL + "?SERVICE=WCS&VERSION=1.1.1&REQUEST=DescribeCoverage"), "GET");
+
+        Writer writer = new StringWriter();
+        char[] buffer = new char[1024];
+        try {
+            Reader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+            int n;
+            while ((n = reader.read(buffer)) != -1) {
+                writer.write(buffer, 0, n);
+            }
+        } finally {
+            is.close();
+        }
+
+        return writer.toString();
     }
 
     private static class GetObservationNamespaceContext implements NamespaceContext {
