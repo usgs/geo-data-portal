@@ -5,8 +5,13 @@
 
 package gov.usgs.cida.gdp.utilities;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
@@ -27,6 +32,22 @@ public class HTTPUtils {
 
 		return getHttpConnectionInputStream(httpConnection);
 	}
+
+    public static String getStringFromInputStream(InputStream is) throws IOException {
+        Writer writer = new StringWriter();
+        char[] buffer = new char[1024];
+        try {
+            Reader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+            int n;
+            while ((n = reader.read(buffer)) != -1) {
+                writer.write(buffer, 0, n);
+            }
+        } finally {
+            is.close();
+        }
+
+        return writer.toString();
+    }
 
 	public static HttpURLConnection openHttpConnection(URL url,
 			String requestMethod) throws IOException, ProtocolException {
