@@ -22,7 +22,7 @@ import static ucar.nc2.iosp.geotiff.GeoTiffIIOMetadataAdapter.*;
 
 public class GeoTIFFIIOCoordSys {
 
-    // harveted for ProJ documentation and libgeotiff geo_normalize.c
+    // harvested for ProJ documentation and libgeotiff geo_normalize.c
     enum ProjCoordTrans {
         CT_TransverseMercator(1, 9807),
         CT_TransvMercator_Modified_Alaska(2),
@@ -614,71 +614,6 @@ public class GeoTIFFIIOCoordSys {
                         -pixelScales[1]),
                     false);
             ncFile.addVariable(null, yVar);
-
-            /* code below is functional but appears unneeded */
-//            if (rasterType == RasterPixelIsArea) {
-//                Dimension boundsDim = ncFile.getRootGroup().findDimension("bounds");
-//                if (boundsDim == null) {
-//                    boundsDim = ncFile.addDimension(
-//                        null, new Dimension("bounds", 2));
-//                }
-//
-//                // X Bounds
-//                {
-//                    Variable xBoundsVar = new Variable(ncFile, null, null, xVar.getName() + "_bounds");
-//                    xBoundsVar.setDataType(DataType.DOUBLE);
-//                    xBoundsVar.setDimensions(xDim.getName() + " " + boundsDim.getName());
-//
-//                    xVar.addAttribute(new Attribute("bounds", xBoundsVar.getName()));
-//
-//                    int xBoundsCount = width * 2;
-//                    double[] xBounds = new double[xBoundsCount];
-//                    double xBound = tiePoints[3];
-//                    xBounds[0] = xBound;
-//                    for (int xBoundsIndex = 1; xBoundsIndex < xBoundsCount - 1; /* incremented in body */ ) {
-//                        xBound += pixelScales[0];
-//                        xBounds[xBoundsIndex++] = xBound;
-//                        xBounds[xBoundsIndex++] = xBound;
-//                    }
-//                    xBound += pixelScales[0];
-//                    xBounds[xBoundsCount - 1] = xBound;
-//                    xBoundsVar.setCachedData(
-//                            Array.factory(
-//                                DataType.DOUBLE,
-//                                new int[] { width, 2 },
-//                                xBounds),
-//                            false);
-//                    ncFile.addVariable(null, xBoundsVar);
-//                }
-//
-//                // Y Bounds
-//                {
-//                    Variable yBoundsVar = new Variable(ncFile, null, null, yVar.getName() + "_bounds");
-//                    yBoundsVar.setDataType(DataType.DOUBLE);
-//                    yBoundsVar.setDimensions(yDim.getName() + " " + boundsDim.getName());
-//
-//                    yVar.addAttribute(new Attribute("bounds", yBoundsVar.getName()));
-//
-//                    int yBoundsCount = height * 2;
-//                    double[] yBounds = new double[yBoundsCount];
-//                    double yBound = tiePoints[4];
-//                    yBounds[0] = yBound;
-//                    for (int yBoundsIndex = 1; yBoundsIndex < yBoundsCount - 1; /* incremented in body */ ) {
-//                        yBound -= pixelScales[1];
-//                        yBounds[yBoundsIndex++] = yBound;
-//                        yBounds[yBoundsIndex++] = yBound;
-//                    }
-//                    yBound -= pixelScales[1];
-//                    yBounds[yBoundsCount - 1] = yBound;
-//                    yBoundsVar.setCachedData(
-//                            Array.factory(
-//                                DataType.DOUBLE,
-//                                new int[] { height, 2 },
-//                                yBounds),
-//                            false);
-//                    ncFile.addVariable(null, yBoundsVar);
-//                }
-//            }
 
             dimensionsAsString = yDim.getName() + " " + xDim.getName();
             coordinatesAsString = yVar.getName() + " " + xVar.getName();

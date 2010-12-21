@@ -104,8 +104,6 @@ public class GeoTiffIOServiceProvider extends AbstractIOServiceProvider {
                 int imageHeightPixels = imageReader.getHeight(imageIndex);
                 IIOMetadata imageMetadata = imageReader.getImageMetadata(imageIndex);
 
-                dumpMetaDataXML(imageMetadata);
-
                 GeoTIFFIIOCoordSys cs = new GeoTIFFIIOCoordSys(
                         imageMetadata, imageWidthPixels, imageHeightPixels);
 
