@@ -6,7 +6,6 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.prep.PreparedGeometry;
 import com.vividsolutions.jts.geom.prep.PreparedGeometryFactory;
-import gov.usgs.cida.gdp.coreprocessing.analysis.GeoToolsNetCDFUtility;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.GridUtility.IndexToCoordinateBuilder;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -19,23 +18,23 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import org.geotools.data.crs.ReprojectFeatureResults;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.SchemaException;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.geometry.jts.JTS;
+import org.geotools.referencing.CRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.geometry.BoundingBox;
 import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
-import ucar.unidata.geoloc.LatLonPointImpl;
-import ucar.unidata.geoloc.LatLonRect;
 
 /**
  *
@@ -61,14 +60,6 @@ public class FeatureCategoricalGridCoverage {
             throw new IllegalStateException("Currently require y-x or t-y-x grid for this operation");
         }
 
-		LatLonRect featureCollectionLLR = GeoToolsNetCDFUtility.getLatLonRectFromEnvelope(
-				featureCollection.getBounds(),
-				DefaultGeographicCRS.WGS84);
-		LatLonRect gridLLR = gdt.getCoordinateSystem().getLatLonBoundingBox();
-		if (gridLLR.containedIn(featureCollectionLLR)) {
-			throw new RuntimeException("feature bounds (" + featureCollectionLLR + ") not contained in gridded dataset (" + gridLLR + ")");
-		}
-
         AttributeDescriptor attributeDescriptor =
                 featureCollection.getSchema().getDescriptor(attributeName);
         if (attributeDescriptor == null) {
@@ -86,11 +77,14 @@ public class FeatureCategoricalGridCoverage {
                 new LinkedHashMap<Object, Map<Integer, Integer>>();
         SortedSet<Integer> categorySet = new TreeSet<Integer>();
 
+		CoordinateReferenceSystem gridCRS = CRSUtility.getCRSFromGridDatatype(gdt);
+		CoordinateReferenceSystem featureCRS =
+				featureCollection.getSchema().getCoordinateReferenceSystem();
 
-        // not sure how well this will work... alternative
-        featureCollection = new ReprojectFeatureResults(
-                featureCollection,
-                DefaultGeographicCRS.WGS84);
+		MathTransform gridToFeatureTransform = CRS.findMathTransform(
+				gridCRS,
+				featureCRS,
+				true);
 
         Iterator<SimpleFeature> featureIterator = featureCollection.iterator();
 
@@ -111,23 +105,20 @@ public class FeatureCategoricalGridCoverage {
 
                     BoundingBox featureBoundingBox = feature.getBounds();
 
-                    LatLonRect featureLatLonRect = new LatLonRect(
-                            new LatLonPointImpl(
-                                featureBoundingBox.getMinY(), featureBoundingBox.getMinX()),
-                            new LatLonPointImpl(
-                                featureBoundingBox.getMaxY(), featureBoundingBox.getMaxX()));
-
                     Geometry featureGeometry = (Geometry)feature.getDefaultGeometry();
 
-                    Range[] ranges = GridUtility.getRangesFromLatLonRect(
-                            featureLatLonRect, gdt.getCoordinateSystem());
+                    Range[] ranges = GridUtility.getRangesFromBoundingBox(
+                            featureBoundingBox, gdt.getCoordinateSystem());
 
                     GridDatatype featureGridDataType = gdt.makeSubset(null, null, null, null, ranges[1], ranges[0]);
 
                     PreparedGeometry preparedGeometry = PreparedGeometryFactory.prepare(featureGeometry);
 
                     GridCellTraverser traverser = new GridCellTraverser(featureGridDataType);
-                    traverser.traverse(new FeatureGridCellVisitor(preparedGeometry, categoricalCoverageMap));
+                    traverser.traverse(new FeatureGridCellVisitor(
+							preparedGeometry,
+							gridToFeatureTransform,
+							categoricalCoverageMap));
 
                     categorySet.addAll(categoricalCoverageMap.keySet());
                 }
@@ -177,15 +168,19 @@ public class FeatureCategoricalGridCoverage {
 
     protected static class FeatureGridCellVisitor extends GridCellVisitor {
 
-        GeometryFactory geometryFactory = new GeometryFactory();
-        IndexToCoordinateBuilder coordinateBuilder;
-        PreparedGeometry preparedGeometry;
-        Map<Integer, Integer> categoryMap;
+        private final GeometryFactory geometryFactory = new GeometryFactory();
+        private final PreparedGeometry preparedGeometry;
+		private final MathTransform gridToFeatureTransform;
+        private final Map<Integer, Integer> categoryMap;
+
+        private IndexToCoordinateBuilder coordinateBuilder;
 
         protected FeatureGridCellVisitor(
                 PreparedGeometry preparedGeometry,
+				MathTransform gridToFeatureTransform,
                 Map<Integer, Integer> categoryMap) {
             this.preparedGeometry = preparedGeometry;
+			this.gridToFeatureTransform = gridToFeatureTransform;
             this.categoryMap = categoryMap;
         }
 
@@ -198,6 +193,9 @@ public class FeatureCategoricalGridCoverage {
         public void processGridCell(int xCellIndex, int yCellIndex, double value) {
             Coordinate coordinate =
                     coordinateBuilder.getCoordinate(xCellIndex, yCellIndex);
+			try {
+				JTS.transform(coordinate, coordinate, gridToFeatureTransform);
+			} catch (TransformException e) { }
             if (preparedGeometry.contains(geometryFactory.createPoint(coordinate))) {
                 Integer key = (int) value;
                 Integer count = categoryMap.get(key);

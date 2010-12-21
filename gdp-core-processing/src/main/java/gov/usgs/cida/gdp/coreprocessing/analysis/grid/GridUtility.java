@@ -1,6 +1,11 @@
 package gov.usgs.cida.gdp.coreprocessing.analysis.grid;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.opengis.geometry.BoundingBox;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.TransformException;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
@@ -8,10 +13,12 @@ import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.GridDatatype;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPointImpl;
+import ucar.unidata.geoloc.ProjectionRect;
 
 /**
  *
@@ -21,10 +28,60 @@ public abstract class GridUtility {
 
     private GridUtility() {}
 
+	public static BoundingBox getBoundingBox(GridDatatype gdt) {
+		return getBoundingBox(gdt.getCoordinateSystem());
+	}
+
+	public static BoundingBox getBoundingBox(GridCoordSystem gcs) {
+		CoordinateReferenceSystem gridCRS = CRSUtility.getCRSFromGridCoordSystem(gcs);
+		ProjectionRect rect = gcs.getBoundingBox();
+		return new ReferencedEnvelope(
+				rect.getMinX(),
+				rect.getMaxX(),
+				rect.getMinY(),
+				rect.getMaxY(),
+				gridCRS);
+	}
+
+	public static Range[] getRangesFromBoundingBox(BoundingBox bounds, GridCoordSystem gcs)
+			throws InvalidRangeException, TransformException, FactoryException {
+
+		CoordinateReferenceSystem gridCRS = CRSUtility.getCRSFromGridCoordSystem(gcs);
+
+		bounds = bounds.toBounds(gridCRS);
+
+		double[][] coords = {
+			{ bounds.getMinX(), bounds.getMinY() },
+			{ bounds.getMinX(), bounds.getMaxY() },
+			{ bounds.getMaxX(), bounds.getMaxY() },
+			{ bounds.getMaxX(), bounds.getMinY() },
+		};
+		int[] currentIndices = new int[2];
+		int lowerX = Integer.MAX_VALUE;
+		int upperX = Integer.MIN_VALUE;
+		int lowerY = Integer.MAX_VALUE;
+		int upperY = Integer.MIN_VALUE;
+
+		for (int i = 0; i < coords.length; ++i) {
+			gcs.findXYindexFromCoord(coords[i][0], coords[i][1], currentIndices);
+			if (currentIndices[0] < lowerX) { lowerX = currentIndices[0] ; }
+			if (currentIndices[0] > upperX) { upperX = currentIndices[0] ; }
+			if (currentIndices[1] < lowerY) { lowerY = currentIndices[1] ; }
+			if (currentIndices[1] > upperY) { upperY = currentIndices[1] ; }
+		}
+
+		return bufferXYRanges(gcs, new Range[] {
+            new Range(lowerX, upperX),
+            new Range(lowerY, upperY),
+        } );
+
+    }
+
     // Handle bugs in NetCDF 4.1 for X and Y CoordinateAxis2D (c2d) with
     // shapefile bound (LatLonRect) that doesn't interect any grid center
     // (aka midpoint) *and* issue calculating edges for c2d axes with  < 3
     // grid cells in any dimension.
+	@Deprecated
     public static Range[] getRangesFromLatLonRect(LatLonRect llr, GridCoordSystem gcs)
             throws InvalidRangeException
     {
@@ -41,6 +98,7 @@ public abstract class GridUtility {
 		int lowerY = Integer.MAX_VALUE;
 		int upperY = Integer.MIN_VALUE;
 		for (int i = 0; i < coords.length; ++i) {
+			// seem to need this for CoordinateAxis2D instances
 			gcs.findXYindexFromLatLon(coords[i][0], coords[i][1], currentIndices);
 			if (currentIndices[0] < lowerX) { lowerX = currentIndices[0] ; }
 			if (currentIndices[0] > upperX) { upperX = currentIndices[0] ; }
@@ -48,7 +106,18 @@ public abstract class GridUtility {
 			if (currentIndices[1] > upperY) { upperY = currentIndices[1] ; }
 		}
 
-        // Buffer X dimension to width of 3, otherwise grid cell width calc fails.
+		return bufferXYRanges(gcs, new Range[] {
+            new Range(lowerX, upperX),
+            new Range(lowerY, upperY),
+        } );
+    }
+
+	public static Range[] bufferXYRanges(GridCoordSystem gcs, Range[] ranges) throws InvalidRangeException {
+		int lowerX = ranges[0].first();
+		int upperX = ranges[0].last();
+		int lowerY = ranges[1].first();
+		int upperY = ranges[1].last();
+		// Buffer X dimension to width of 3, otherwise grid cell width calc fails.
         // NOTE: NetCDF ranges are upper edge inclusive
         int deltaX = upperX - lowerX;
         if (deltaX < 2) {
@@ -112,7 +181,8 @@ public abstract class GridUtility {
             new Range(lowerX, upperX),
             new Range(lowerY, upperY),
         };
-    }
+
+	}
 
 
     public static CoordinateBuilder generateCoordinateBuilder(GridCoordSystem gridCoordSystem) {
@@ -165,19 +235,33 @@ public abstract class GridUtility {
         }
     }
 
-   public static IndexToCoordinateBuilder generateIndexToCellCenterCoordinateBuilder(GridCoordSystem gridCoordSystem) {
+   public static IndexToCoordinateBuilder generateIndexToCellCenterLatLonCoordinateBuilder(GridCoordSystem gridCoordSystem) {
         return new IndexToCoordinateBuilder(
                 generateCoordinateBuilder(gridCoordSystem),
                 generateGridCellCenterAdapterX(gridCoordSystem),
                 generateGridCellCenterAdapterY(gridCoordSystem));
     }
 
-    public static IndexToCoordinateBuilder generateIndexToCellEdgeCoordinateBuilder(GridCoordSystem gridCoordSystem) {
+    public static IndexToCoordinateBuilder generateIndexToCellEdgeLatLonCoordinateBuilder(GridCoordSystem gridCoordSystem) {
         return new IndexToCoordinateBuilder(
                 generateCoordinateBuilder(gridCoordSystem),
                 generateGridCellEdgeAdapterX(gridCoordSystem),
                 generateGridCellEdgeAdapterY(gridCoordSystem));
     }
+
+	public static IndexToCoordinateBuilder generateIndexToCellCenterCoordinateBuilder(GridCoordSystem gridCoordSystem) {
+		return new IndexToCoordinateBuilder(
+                new CoordinateBuilder(),
+                generateGridCellEdgeAdapterX(gridCoordSystem),
+                generateGridCellEdgeAdapterY(gridCoordSystem));
+	}
+
+	public static IndexToCoordinateBuilder generateIndexToCellEdgeCoordinateBuilder(GridCoordSystem gridCoordSystem) {
+		return new IndexToCoordinateBuilder(
+                new CoordinateBuilder(),
+                generateGridCellEdgeAdapterX(gridCoordSystem),
+                generateGridCellEdgeAdapterY(gridCoordSystem));
+	}
 
     public static class IndexToCoordinateBuilder {
 

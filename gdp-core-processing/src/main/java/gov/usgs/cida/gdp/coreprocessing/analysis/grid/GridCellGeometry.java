@@ -5,6 +5,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.GridUtility.IndexToCoordinateBuilder;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dt.GridCoordSystem;
 
@@ -16,15 +17,20 @@ public class GridCellGeometry {
 
     private final GridCoordSystem gridCoordSystem;
 
+	private final CoordinateReferenceSystem gridCRS;
+
     private final int xCellCount;
     private final int yCellCount;
     private final int cellCount;
 
-    private Geometry[] cellGeometry;
+    private final GeometryFactory geometryFactory;
+	private final IndexToCoordinateBuilder coordinateBuilder;
 
     public GridCellGeometry(GridCoordSystem gridCoordSystem) {
 
         this.gridCoordSystem = gridCoordSystem;
+
+		this.gridCRS = CRSUtility.getCRSFromGridCoordSystem(gridCoordSystem);
 
         CoordinateAxis xAxis = gridCoordSystem.getXHorizAxis();
         CoordinateAxis yAxis = gridCoordSystem.getYHorizAxis();
@@ -33,12 +39,20 @@ public class GridCellGeometry {
         yCellCount = yAxis.getShape(0);
         cellCount = xCellCount * yCellCount;
 
-        generateCellGeometry();
+		geometryFactory = new GeometryFactory(
+                new PrecisionModel(PrecisionModel.FLOATING));
+
+		coordinateBuilder =
+                GridUtility.generateIndexToCellEdgeCoordinateBuilder(gridCoordSystem);
     }
 
     public GridCoordSystem getGridCoordSystem() {
         return gridCoordSystem;
     }
+
+	public CoordinateReferenceSystem getGridCRS() {
+		return gridCRS;
+	}
 
     public int getCellCountX() {
         return xCellCount;
@@ -61,69 +75,30 @@ public class GridCellGeometry {
     }
 
     Geometry getCellGeometryQuick(int xIndex, int yIndex) {
-        return cellGeometry[xIndex + yIndex * xCellCount];
+        return generateCellGeometry(xIndex, yIndex);
     }
 
     Geometry getCellGeometryQuick(int yxIndex) {
-        return cellGeometry[yxIndex];
+        return generateCellGeometry(yxIndex % xCellCount, yxIndex / xCellCount);
     }
 
-    private void generateCellGeometry() {
-
-//        GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory(null);
-        GeometryFactory geometryFactory = new GeometryFactory(
-                new PrecisionModel(PrecisionModel.FLOATING),
-                8307);
-
-        IndexToCoordinateBuilder indexToCoordinateBuilder =
-                GridUtility.generateIndexToCellEdgeCoordinateBuilder(gridCoordSystem);
-
-        int xCellEdgeCount = indexToCoordinateBuilder.getXIndexCount();
-
-        cellGeometry = new Geometry[cellCount];
-
-        Coordinate[] lowerCoordinates = null;
-        Coordinate[] upperCoordinates = new Coordinate[xCellEdgeCount];
-
-        // prime data storage for algorithm below...
-        for (int xCellIndex = 0; xCellIndex < xCellEdgeCount; ++xCellIndex) {
-            upperCoordinates[xCellIndex] =
-                    indexToCoordinateBuilder.getCoordinate(xCellIndex, 0);
-        }
-
-        for (int yIndexLower = 0; yIndexLower < yCellCount; ++yIndexLower) {
-
-            int yOffset = xCellCount * yIndexLower;
-
-            int yIndexUpper = yIndexLower + 1;
-
-            lowerCoordinates = upperCoordinates;
-            upperCoordinates = new Coordinate[xCellEdgeCount];
-
-            upperCoordinates[0] =
-                    indexToCoordinateBuilder.getCoordinate(0, yIndexUpper);
-            
-            for (int xIndexLower = 0; xIndexLower < xCellCount; ++xIndexLower) {
-                int xIndexUpper = xIndexLower + 1;
-
-                upperCoordinates[xIndexUpper] =
-                        indexToCoordinateBuilder.getCoordinate(xIndexUpper, yIndexUpper);
-
-                Coordinate[] ringCoordinates = new Coordinate[] {
-                    lowerCoordinates[xIndexLower],
-                    lowerCoordinates[xIndexUpper],
-                    upperCoordinates[xIndexUpper],
-                    upperCoordinates[xIndexLower],
-                    // same as first entry, required for LinearRing
-                    lowerCoordinates[xIndexLower]
-                };
-
-                cellGeometry[yOffset + xIndexLower] =
-                        geometryFactory.createPolygon(
-                            geometryFactory.createLinearRing(ringCoordinates),
-                            null);
-            }
-        }
+    private Geometry generateCellGeometry(int xIndex, int yIndex) {
+		Coordinate coordinate = coordinateBuilder.getCoordinate(xIndex, yIndex);
+		Coordinate[] coordinates = new Coordinate[] {
+			coordinate,
+			coordinateBuilder.getCoordinate(xIndex + 1, yIndex),
+			coordinateBuilder.getCoordinate(xIndex + 1, yIndex + 1),
+			coordinateBuilder.getCoordinate(xIndex, yIndex + 1),
+			// same as first entry, required for LinearRing
+			coordinate
+		};
+        return geometryFactory.createPolygon(
+			geometryFactory.createLinearRing(coordinates),
+			null);
     }
+
+	public final int calculateYXIndex(int xIndex, int yIndex) {
+		return xIndex + yIndex * xCellCount;
+	}
     
 }

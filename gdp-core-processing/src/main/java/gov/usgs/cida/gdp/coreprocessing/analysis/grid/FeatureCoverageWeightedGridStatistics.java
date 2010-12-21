@@ -1,12 +1,19 @@
 package gov.usgs.cida.gdp.coreprocessing.analysis.grid;
 
+import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCoverageWeightedGridStatisticsWriter.Statistic;
+import gov.usgs.cida.gdp.coreprocessing.analysis.statistics.WeightedStatistics1D;
+import gov.usgs.cida.gdp.coreprocessing.analysis.grid.GridCellCoverageFactory.GridCellCoverageByIndex;
+import gov.usgs.cida.gdp.coreprocessing.analysis.grid.GridCellCoverageFactory.GridCellIndexCoverage;
+
+import com.google.common.base.Preconditions;
+
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.SchemaException;
@@ -17,21 +24,12 @@ import org.opengis.referencing.operation.TransformException;
 
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
-import ucar.unidata.geoloc.LatLonRect;
-
-import com.google.common.base.Preconditions;
-import gov.usgs.cida.gdp.coreprocessing.analysis.GeoToolsNetCDFUtility;
-import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCoverageWeightedGridStatisticsWriter.Statistic;
-import gov.usgs.cida.gdp.coreprocessing.analysis.statistics.WeightedStatistics1D;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.slf4j.LoggerFactory;
-import ucar.nc2.dataset.CoordinateAxis1DTime;
 
 public class FeatureCoverageWeightedGridStatistics {
-	private static org.slf4j.Logger log = LoggerFactory.getLogger(FeatureCoverageWeightedGridStatistics.class);
 
     public static void execute(
             FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection,
@@ -54,34 +52,26 @@ public class FeatureCoverageWeightedGridStatistics {
             throw new IllegalStateException("Currently require y-x or t-y-x grid for this operation");
         }
 
-        LatLonRect featureCollectionLLR = GeoToolsNetCDFUtility.getLatLonRectFromEnvelope(
-                featureCollection.getBounds(),
-                DefaultGeographicCRS.WGS84);
-		LatLonRect gridLLR = gdt.getCoordinateSystem().getLatLonBoundingBox();
-		if (gridLLR.containedIn(featureCollectionLLR)) {
-			throw new RuntimeException("feature bounds (" + featureCollectionLLR + ") not contained in gridded dataset (" + gridLLR + ")");
-		}
-
         try {
-            Range[] ranges = GridUtility.getRangesFromLatLonRect(
-                    featureCollectionLLR, gdt.getCoordinateSystem());
+            Range[] ranges = GridUtility.getRangesFromBoundingBox(
+                    featureCollection.getBounds(), gdt.getCoordinateSystem());
             gdt = gdt.makeSubset(null, null, timeRange, null, ranges[1], ranges[0]);
         } catch (InvalidRangeException ex) {
-            log.error(null, ex);
+            Logger.getLogger(FeatureCoverageWeightedGridStatistics.class.getName()).log(Level.SEVERE, null, ex);
             throw ex;  // rethrow requested by IS
         }
 
         GridCoordSystem gcs = gdt.getCoordinateSystem();
 
-        Map<Object, GridCellCoverage> attributeCoverageMap =
-                GridCellCoverageFactory.generateByFeatureAttribute(
+        GridCellCoverageByIndex coverageByIndex =
+				GridCellCoverageFactory.generateFeatureAttributeCoverageByIndex(
                     featureCollection,
                     attributeName,
                     gdt.getCoordinateSystem());
 
         String variableUnits = gdt.getVariable().getUnitsString();
 
-        List<Object> attributeList = Collections.unmodifiableList(new ArrayList<Object>(attributeCoverageMap.keySet()));
+        List<Object> attributeList = coverageByIndex.getAttributeValueList();
 
         FeatureCoverageWeightedGridStatisticsWriter writerX =
                 new FeatureCoverageWeightedGridStatisticsWriter(
@@ -96,10 +86,10 @@ public class FeatureCoverageWeightedGridStatistics {
         WeightedGridStatisticsVisitor v = null;
         switch (gt) {
             case YX:
-                v = new WeightedGridStatisticsVisitor_YX(attributeCoverageMap, writerX);
+                v = new WeightedGridStatisticsVisitor_YX(coverageByIndex, writerX);
             break;
             case TYX:
-                v = new WeightedGridStatisticsVisitor_TYX(attributeCoverageMap, writerX, gcs.getTimeAxis1D(), timeRange);
+                v = new WeightedGridStatisticsVisitor_TYX(coverageByIndex, writerX, gcs.getTimeAxis1D(), timeRange);
             break;
             default:
                 throw new IllegalStateException("Currently require y-x or t-y-x grid for this operation");
@@ -112,24 +102,24 @@ public class FeatureCoverageWeightedGridStatistics {
 
     public static abstract class FeatureCoverageGridCellVisitor extends GridCellVisitor {
 
-        final protected Map<Object, GridCellCoverage> attributeCoverageMap;
+        final protected GridCellCoverageByIndex coverageByIndex;
 
-        public FeatureCoverageGridCellVisitor(Map<Object, GridCellCoverage> attributeCoverageMap) {
-            this.attributeCoverageMap = attributeCoverageMap;
+        public FeatureCoverageGridCellVisitor(GridCellCoverageByIndex coverageByIndex) {
+            this.coverageByIndex = coverageByIndex;
         }
 
         @Override
         public void processGridCell(int xCellIndex, int yCellIndex, double value) {
             double coverageTotal = 0;
-            for (Map.Entry<Object, GridCellCoverage> entry : this.attributeCoverageMap.entrySet()) {
-                Object attribute = entry.getKey();
-                GridCellCoverage gridCellCoverage = entry.getValue();
-                double coverage = gridCellCoverage.getCellCoverageFraction(xCellIndex, yCellIndex);
-                if (coverage > 0.0) {
-                    processPerAttributeGridCellCoverage(value, coverage, attribute);
-                }
-                coverageTotal += coverage;
-            }
+			List<GridCellIndexCoverage> list = coverageByIndex.getCoverageList(xCellIndex, yCellIndex);
+			if (list != null) {
+				for (GridCellIndexCoverage c : list) {
+					if (c.coverage > 0.0) {
+						processPerAttributeGridCellCoverage(value, c.coverage, c.attribute);
+					}
+					coverageTotal += c.coverage;
+				}
+			}
             if (coverageTotal > 0.0) {
                 processAllAttributeGridCellCoverage(value, coverageTotal);
             }
@@ -147,13 +137,13 @@ public class FeatureCoverageWeightedGridStatistics {
         protected Map<Object, WeightedStatistics1D> perAttributeStatistics;
         protected WeightedStatistics1D allAttributeStatistics;
 
-        public WeightedGridStatisticsVisitor(Map<Object, GridCellCoverage> attributeCoverageMap) {
-            super(attributeCoverageMap);
+        public WeightedGridStatisticsVisitor(GridCellCoverageByIndex coverageByIndex) {
+            super(coverageByIndex);
         }
 
         protected Map<Object, WeightedStatistics1D> createPerAttributeStatisticsMap() {
             Map map = new LinkedHashMap<Object, WeightedStatistics1D>();
-            for (Object attributeValue : attributeCoverageMap.keySet()) {
+            for (Object attributeValue : coverageByIndex.getAttributeValueList()) {
                 map.put(attributeValue, new WeightedStatistics1D());
             }
             return map;
@@ -181,9 +171,9 @@ public class FeatureCoverageWeightedGridStatistics {
         FeatureCoverageWeightedGridStatisticsWriter writer;
 
         WeightedGridStatisticsVisitor_YX(
-                Map<Object, GridCellCoverage> attributeCoverageMap,
+                GridCellCoverageByIndex coverageByIndex,
                 FeatureCoverageWeightedGridStatisticsWriter writer) {
-            super(attributeCoverageMap);
+            super(coverageByIndex);
             this.writer = writer;
         }
 
@@ -221,11 +211,11 @@ public class FeatureCoverageWeightedGridStatistics {
         protected int tIndexOffset;
 
         public WeightedGridStatisticsVisitor_TYX(
-                Map<Object, GridCellCoverage> attributeCoverageMap,
+                GridCellCoverageByIndex coverageByIndex,
                 FeatureCoverageWeightedGridStatisticsWriter writer,
                 CoordinateAxis1DTime tAxis,
                 Range tRange) {
-            super(attributeCoverageMap);
+            super(coverageByIndex);
             this.writer = writer;
             this.tAxis = tAxis;
             this.tIndexOffset = tRange.first();
@@ -281,4 +271,5 @@ public class FeatureCoverageWeightedGridStatistics {
             }
         }
     }
+
 }
