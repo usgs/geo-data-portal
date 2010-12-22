@@ -6,25 +6,21 @@
         <groupId>gov.usgs.cida.gdp</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <groupId>gov.usgs.cida.gdp</groupId>
     <artifactId>gdp-output-processing</artifactId>
     <packaging>war</packaging>
-    <version>1.0-SNAPSHOT</version>
     <name>gdp-output-processing</name>
     <dependencies>
-
-         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.5</version>
-            <scope>provided</scope>
-        </dependency>
-
+        <!-- sibling module dependencies -->
          <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>gdp-common-utilities</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
-
+        <!-- version numbers set in parent pom -->
+         <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>

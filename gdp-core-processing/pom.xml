@@ -2,84 +2,55 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>gdp</artifactId>
         <groupId>gov.usgs.cida.gdp</groupId>
+        <artifactId>gdp</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <groupId>gov.usgs.cida.gdp</groupId>
     <artifactId>gdp-core-processing</artifactId>
-    <packaging>jar</packaging>
-    <version>1.0-SNAPSHOT</version>
     <name>gdp-core-processing</name>
     <dependencies>
-
-        <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-web-api</artifactId>
-            <version>6.0</version>
-            <scope>provided</scope>
-        </dependency>
-
+        <!-- sibling module dependencies -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>gdp-geotiff</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>gdp-common-utilities</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>gdp-geometry</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
-
+        <!-- version numbers set in parent pom -->
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>gdp-communication</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <groupId>edu.ucar</groupId>
+            <artifactId>netcdf</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>edu.ucar.unidata</groupId>
-            <artifactId>netcdf-all</artifactId>
-            <version>4.1.20100220.0007</version>
-        </dependency>
-
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-main</artifactId>
-            <version>${geotools.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-xml</artifactId>
-            <version>${geotools.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-cql</artifactId>
-            <version>${geotools.version}</version>
         </dependency>
-
         <dependency>
             <groupId>com.google.collections</groupId>
             <artifactId>google-collections</artifactId>
-            <version>1.0</version>
         </dependency>
-
         <dependency>
-            <groupId>com.google.protobuf</groupId>
-            <artifactId>protobuf-java</artifactId>
-            <version>2.1.0</version>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <scope>provided</scope>
         </dependency>
-
     </dependencies>
 </project>
 
