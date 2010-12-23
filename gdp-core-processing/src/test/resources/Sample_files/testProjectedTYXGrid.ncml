@@ -22,7 +22,7 @@
     <values start="256035" increment="100000" />
   </variable>
   <variable name="time" shape="time" type="int">
-    <attribute name="units" value="hours" />
+    <attribute name="units" value="hours since 0001-01-01 00:00:00" />
     <values start="1" increment="1" />
   </variable>
   
