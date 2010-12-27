@@ -151,6 +151,15 @@ public class FileHelper {
      * @param cutoffTime
      * @return
      */
+
+    /**
+     * Delete files older than a given Long instance
+     * 
+     * @param directory Directory within which to search.
+     * @param cutoffTime
+     * @param deleteDirectory Also delete the directory given in the directory param
+     * @return
+     */
     public static Collection<File> wipeOldFiles(File directory, Long cutoffTime, boolean deleteDirectory) {
         if (directory == null || !directory.exists()) {
             return new ArrayList<File>();
@@ -164,8 +173,12 @@ public class FileHelper {
             if (file.canWrite() && file.delete()) {
                 logString += "done. ";
                 result.add(file);
-                if (deleteDirectory && file.getParentFile().isDirectory() && file.getParentFile().delete()) {
-                    log.info("Deleting Directory: \"" + file.getParent() + "\" ...  done");
+                if (file.getParentFile().isDirectory()) {
+                    if (file.getParentFile() != directory && file.getParentFile().delete()) {
+                        log.info("Deleting Directory: \"" + file.getParent() + "\" ...  done");
+                    } else if (file.getParentFile() == directory && deleteDirectory) {
+                        log.info("Deleting Directory: \"" + file.getParent() + "\" ...  done");
+                    }
                 }
             } else {
                 logString += "FAILED!";
