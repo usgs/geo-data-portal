@@ -124,7 +124,7 @@ public class FileHelperTest {
      */
     public void testWipeOldFilesWithNoOldFiles() {
         Collection<File> result = new ArrayList<File>();
-        result = FileHelper.wipeOldFiles(new File(this.tempDir), 3600000l);
+        result = FileHelper.wipeOldFiles(new File(this.tempDir), 3600000l, true);
         assertTrue(result.isEmpty());
     }
 
@@ -134,7 +134,7 @@ public class FileHelperTest {
     @Test
     public void testWipeOldFilesWithFakeDirectory() {
         Collection<File> result = new ArrayList<File>();
-        result = FileHelper.wipeOldFiles(new File("/not/real"), 3600000l);
+        result = FileHelper.wipeOldFiles(new File("/not/real"), 3600000l, true);
         assertTrue(result.isEmpty());
     }
 
@@ -144,14 +144,14 @@ public class FileHelperTest {
     @Test
     public void testWipeOldFilesWithNullArgument() {
         Collection<File> result = new ArrayList<File>();
-        result = FileHelper.wipeOldFiles(null, 3600000l);
+        result = FileHelper.wipeOldFiles(null, 3600000l, true);
         assertTrue(result.isEmpty());
     }
 
     @Test
     public void testWipeOldFilesWithOldFiles() {
         Collection<File> result = new ArrayList<File>();
-        result = FileHelper.wipeOldFiles(new File(this.tempDir), 1l);
+        result = FileHelper.wipeOldFiles(new File(this.tempDir), 1l, true);
         assertTrue(!result.isEmpty());
     }
 
@@ -171,7 +171,7 @@ public class FileHelperTest {
         // Lock a file
         File file1 = new File(singleFile);
         file1.setReadOnly();
-        result = FileHelper.wipeOldFiles(directory, 1l);
+        result = FileHelper.wipeOldFiles(directory, 1l, true);
 
         // Test that the locked file doesnt show up in the deleted files list
         boolean containsFail = true;
@@ -186,7 +186,7 @@ public class FileHelperTest {
         file1.setWritable(false);
 
         // really delete the directory
-        FileHelper.wipeOldFiles(directory, 1l);
+        FileHelper.wipeOldFiles(directory, 1l, true);
     }
 
     @Test

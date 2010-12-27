@@ -151,7 +151,7 @@ public class FileHelper {
      * @param cutoffTime
      * @return
      */
-    public static Collection<File> wipeOldFiles(File directory, Long cutoffTime) {
+    public static Collection<File> wipeOldFiles(File directory, Long cutoffTime, boolean deleteDirectory) {
         if (directory == null || !directory.exists()) {
             return new ArrayList<File>();
         }
@@ -164,7 +164,7 @@ public class FileHelper {
             if (file.canWrite() && file.delete()) {
                 logString += "done. ";
                 result.add(file);
-                if (file.getParentFile().isDirectory() && file.getParentFile().delete()) {
+                if (deleteDirectory && file.getParentFile().isDirectory() && file.getParentFile().delete()) {
                     log.info("Deleting Directory: \"" + file.getParent() + "\" ...  done");
                 }
             } else {
