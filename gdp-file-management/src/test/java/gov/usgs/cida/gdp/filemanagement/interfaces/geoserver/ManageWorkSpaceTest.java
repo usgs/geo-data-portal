@@ -8,7 +8,6 @@ package gov.usgs.cida.gdp.filemanagement.interfaces.geoserver;
 import org.junit.Ignore;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.After;
@@ -41,6 +40,19 @@ public class ManageWorkSpaceTest {
 
     @After
     public void tearDown() {
+    }
+
+    @Test
+    @Ignore
+    public void updateGeoServerTest() {
+        try {
+            ManageWorkSpace mws = new ManageWorkSpace("http://localhost:8080/geoserver");
+            String result = mws.updateGeoServer();
+            assertTrue(result != null);
+            System.out.println(result);
+        } catch (IOException ex) {
+            Logger.getLogger(ManageWorkSpaceTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**

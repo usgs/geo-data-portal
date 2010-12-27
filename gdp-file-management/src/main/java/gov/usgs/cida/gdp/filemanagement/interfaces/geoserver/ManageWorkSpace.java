@@ -43,6 +43,14 @@ public class ManageWorkSpace {
         return createDataStore(shapefilePath, layerName, workspace, this.geoServerURLString);
     }
 
+    public String updateGeoServer() throws IOException{
+        return updateGeoServer(getGeoServerURLString());
+    }
+
+    public String updateGeoServer(String geoServerURL) throws IOException{
+        return getResponse(new URL(geoServerURL + "/rest/reload/"), "POST", "text/xml", null, null, null);
+    }
+
     public boolean createDataStore(String shapefilePath, String layerName, String workspace, String geoServerURL) throws IOException {
         // create the workspace if it doesn't already exist
         URL workspacesURL = new URL(geoServerURL + "/rest/workspaces/");
@@ -193,8 +201,8 @@ public class ManageWorkSpace {
         httpConnection.setRequestMethod(requestMethod);
 
         //Set authentication
-        String u = ("".equals(user) || user == null) ? "admin" : user;
-        String p = ("".equals(pass) || pass == null) ? "geoserver" : pass;
+        String u = (user == null || "".equals(user)) ? AppConstant.WFS_USER.toString() : user;
+        String p = (pass == null || "".equals(pass)) ? AppConstant.WFS_PASS.toString() : pass;
         String encoding = new sun.misc.BASE64Encoder().encode((u + ":" + p).getBytes());
         httpConnection.addRequestProperty("Authorization", "Basic " + encoding);
         
@@ -214,7 +222,7 @@ public class ManageWorkSpace {
                 responseString.append(line);
             }
         } finally {
-            br.close();
+            if (br != null) br.close();
             httpConnection.disconnect();
         }
         return responseString.toString();
