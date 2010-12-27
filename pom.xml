@@ -21,10 +21,26 @@
         <module>gdp-geometry</module>
         <module>gdp-file-management-webapp</module>
         <module>gdp-wps-test</module>
-<!--        <module>gdp-processing-wps</module>-->
+        <module>gdp-processing-wps</module>
     </modules>
+    <repositories>
+        <repository>
+            <id>cida-gdp-development</id>
+            <name>CIDA GDP Development</name>
+            <url>http://internal.cida.usgs.gov/nexus/content/groups/cida-gdp-development</url>
+<!--            <url>http://igsarmewfsbbl.er.usgs.gov:8081/nexus/content/groups/cida-gdp-development</url>-->
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
     <properties>
-        <n52-wps.version>2.0-RC6-SNAPSHOT</n52-wps.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <n52-wps.version>2.0-RC5</n52-wps.version>
         <geotools.version>2.6.5</geotools.version>
         <netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
     </properties>
@@ -185,7 +201,6 @@
                 <artifactId>52n-wps-transactional</artifactId>
                 <version>${n52-wps.version}</version>
             </dependency>
-            <!-- 52North WPS transitive dependencies -->
             <dependency>
                 <groupId>org.geotools</groupId>
                 <artifactId>gt-arcgrid</artifactId>
