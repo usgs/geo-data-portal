@@ -204,6 +204,11 @@ public class FileHelper {
         return result;
     }
 
+
+    public static boolean createDir(File directory) {
+        return FileHelper.createDir(directory.toString());
+    }
+
     /**
      * Creates a directory in the filesystem
      *
