@@ -39,8 +39,8 @@ public class ManageWorkSpace {
         this.geoServerURLString = geoServerURL.toExternalForm();
     }
 
-    public boolean createDataStore(String shapefilePath, String layerName, String workspace) throws IOException {
-        return createDataStore(shapefilePath, layerName, workspace, this.geoServerURLString);
+    public boolean createDataStore(String shapefilePath, String layerName, String workspace, String srsCode) throws IOException {
+        return createDataStore(shapefilePath, layerName, workspace, this.geoServerURLString, srsCode);
     }
 
     public String updateGeoServer() throws IOException{
@@ -51,7 +51,7 @@ public class ManageWorkSpace {
         return getResponse(new URL(geoServerURL + "/rest/reload/"), "POST", "text/xml", null, null, null);
     }
 
-    public boolean createDataStore(String shapefilePath, String layerName, String workspace, String geoServerURL) throws IOException {
+    public boolean createDataStore(String shapefilePath, String layerName, String workspace, String geoServerURL, String srsCode) throws IOException {
         // create the workspace if it doesn't already exist
         URL workspacesURL = new URL(geoServerURL + "/rest/workspaces/");
         if (!workspaceExists(workspace)) {
@@ -69,7 +69,7 @@ public class ManageWorkSpace {
             sendPacket(dataStoresURL, "POST", "text/xml", dataStoreXML);
 
             // create featuretype based on the datastore
-            String featureTypeXML = createFeatureTypeXML(layerName, workspace);
+            String featureTypeXML = createFeatureTypeXML(layerName, workspace, srsCode);
             URL featureTypesURL = new URL(dataStoresURL + layerName + "/featuretypes.xml");
             sendPacket(featureTypesURL, "POST", "text/xml", featureTypeXML);
         } else {
@@ -286,7 +286,7 @@ public class ManageWorkSpace {
                 + "</dataStore>");
     }
 
-    String createFeatureTypeXML(String name, String workspace) {
+    String createFeatureTypeXML(String name, String workspace, String srsCode) {
 
         return new String(
                 "<featureType>"
@@ -297,7 +297,7 @@ public class ManageWorkSpace {
                 + "  </namespace>"
                 + "  <title>" + name + "</title>"
                 + "  <enabled>true</enabled>"
-                + "  <srs>EPSG:4326</srs>"
+                + "  <srs>" + srsCode + "</srs>"
                 + "  <store class=\"dataStore\">"
                 + "    <name>" + name + "</name>"
                 + "  </store>"
