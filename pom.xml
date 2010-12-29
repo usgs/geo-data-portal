@@ -21,7 +21,7 @@
         <module>gdp-geometry</module>
         <module>gdp-file-management-webapp</module>
         <module>gdp-wps-test</module>
-        <module>gdp-processing-wps</module>
+        <!--module>gdp-processing-wps</module-->
     </modules>
     <repositories>
         <repository>
@@ -40,7 +40,7 @@
     </repositories>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <n52-wps.version>2.0-RC5</n52-wps.version>
+        <n52-wps.version>2.0-RC6</n52-wps.version>
         <geotools.version>2.6.5</geotools.version>
         <netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
     </properties>
