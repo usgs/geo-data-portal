@@ -77,11 +77,12 @@ public class GeoServerServlet extends HttpServlet {
 
         if ("createdatastore".equals(command)) {
             String shapefilePath = URLDecoder.decode(request.getParameter("shapefilepath"), "UTF-8");
+			String srsCode = URLDecoder.decode(request.getParameter("srs-code"), "UTF-8");
             String shapefileName = shapefilePath.substring(
                     shapefilePath.lastIndexOf(File.separator) + 1,
                     shapefilePath.lastIndexOf("."));
 
-            if (!mws.createDataStore(shapefilePath, shapefileName, workspace)) {
+            if (!mws.createDataStore(shapefilePath, shapefileName, workspace, srsCode)) {
                 sendReply(response, Acknowledgement.ACK_FAIL, "Could not create data store.");
             } else {
                 // send back ack with workspace and layer names
