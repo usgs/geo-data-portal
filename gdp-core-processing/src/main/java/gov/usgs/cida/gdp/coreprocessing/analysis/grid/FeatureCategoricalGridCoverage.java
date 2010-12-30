@@ -1,6 +1,5 @@
 package gov.usgs.cida.gdp.coreprocessing.analysis.grid;
 
-import com.google.common.base.Preconditions;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -36,6 +35,8 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  *
  * @author tkunicki
@@ -51,11 +52,24 @@ public class FeatureCategoricalGridCoverage {
             String delimiter)
             throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException
     {
+        GridDatatype gridDatatype = 
+                checkNotNull(
+                    gridDataset.findGridDatatype(
+                        checkNotNull(variableName, "variableName argument may not be null")),
+                    "Variable named %s not found in girdded dataset %s", variableName);
+        execute(featureCollection, attributeName, gridDatatype, writer, delimiter);
+    }
 
-        GridDatatype gdt = gridDataset.findGridDatatype(variableName);
-        Preconditions.checkNotNull(gdt, "Variable named %s not found in gridDataset", variableName);
+    public static void execute(
+            FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection,
+            String attributeName,
+            GridDatatype gridDataType,
+            BufferedWriter writer,
+            String delimiter)
+            throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException
+    {
 
-        GridType gt = GridType.findGridType(gdt.getCoordinateSystem());
+        GridType gt = GridType.findGridType(gridDataType.getCoordinateSystem());
         if (gt != GridType.YX) {
             throw new IllegalStateException("Currently require y-x or t-y-x grid for this operation");
         }
@@ -77,7 +91,7 @@ public class FeatureCategoricalGridCoverage {
                 new LinkedHashMap<Object, Map<Integer, Integer>>();
         SortedSet<Integer> categorySet = new TreeSet<Integer>();
 
-		CoordinateReferenceSystem gridCRS = CRSUtility.getCRSFromGridDatatype(gdt);
+		CoordinateReferenceSystem gridCRS = CRSUtility.getCRSFromGridDatatype(gridDataType);
 		CoordinateReferenceSystem featureCRS =
 				featureCollection.getSchema().getCoordinateReferenceSystem();
 
@@ -108,9 +122,9 @@ public class FeatureCategoricalGridCoverage {
                     Geometry featureGeometry = (Geometry)feature.getDefaultGeometry();
 
                     Range[] ranges = GridUtility.getRangesFromBoundingBox(
-                            featureBoundingBox, gdt.getCoordinateSystem());
+                            featureBoundingBox, gridDataType.getCoordinateSystem());
 
-                    GridDatatype featureGridDataType = gdt.makeSubset(null, null, null, null, ranges[1], ranges[0]);
+                    GridDatatype featureGridDataType = gridDataType.makeSubset(null, null, null, null, ranges[1], ranges[0]);
 
                     PreparedGeometry preparedGeometry = PreparedGeometryFactory.prepare(featureGeometry);
 

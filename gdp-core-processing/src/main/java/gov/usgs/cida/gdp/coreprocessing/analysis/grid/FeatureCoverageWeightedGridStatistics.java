@@ -5,8 +5,6 @@ import gov.usgs.cida.gdp.coreprocessing.analysis.statistics.WeightedStatistics1D
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.GridCellCoverageFactory.GridCellCoverageByIndex;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.GridCellCoverageFactory.GridCellIndexCoverage;
 
-import com.google.common.base.Preconditions;
-
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -29,6 +27,8 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class FeatureCoverageWeightedGridStatistics {
 
     public static void execute(
@@ -43,40 +43,63 @@ public class FeatureCoverageWeightedGridStatistics {
             String delimiter)
             throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException
     {
+        GridDatatype gridDatatype = checkNotNull(
+                    gridDataset.findGridDatatype(variableName),
+                    "Variable named %s not found in girdded dataset %s",
+                    variableName);
 
-        GridDatatype gdt = gridDataset.findGridDatatype(variableName);
-        Preconditions.checkNotNull(gdt, "Variable named %s not found in gridDataset", variableName);
+        execute(featureCollection,
+                attributeName,
+                gridDatatype,
+                timeRange,
+                statisticList,
+                writer,
+                groupByStatistic,
+                delimiter);
+    }
 
-        GridType gt = GridType.findGridType(gdt.getCoordinateSystem());
+    public static void execute(
+            FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection,
+            String attributeName,
+            GridDatatype gridDatatype,
+            Range timeRange,
+            List<Statistic> statisticList,
+            BufferedWriter writer,
+            boolean groupByStatistic,
+            String delimiter)
+            throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException
+    {
+
+        GridType gt = GridType.findGridType(gridDatatype.getCoordinateSystem());
         if( !(gt == GridType.YX || gt == GridType.TYX) ) {
             throw new IllegalStateException("Currently require y-x or t-y-x grid for this operation");
         }
 
         try {
             Range[] ranges = GridUtility.getRangesFromBoundingBox(
-                    featureCollection.getBounds(), gdt.getCoordinateSystem());
-            gdt = gdt.makeSubset(null, null, timeRange, null, ranges[1], ranges[0]);
+                    featureCollection.getBounds(), gridDatatype.getCoordinateSystem());
+            gridDatatype = gridDatatype.makeSubset(null, null, timeRange, null, ranges[1], ranges[0]);
         } catch (InvalidRangeException ex) {
             Logger.getLogger(FeatureCoverageWeightedGridStatistics.class.getName()).log(Level.SEVERE, null, ex);
             throw ex;  // rethrow requested by IS
         }
 
-        GridCoordSystem gcs = gdt.getCoordinateSystem();
+        GridCoordSystem gcs = gridDatatype.getCoordinateSystem();
 
         GridCellCoverageByIndex coverageByIndex =
 				GridCellCoverageFactory.generateFeatureAttributeCoverageByIndex(
                     featureCollection,
                     attributeName,
-                    gdt.getCoordinateSystem());
+                    gridDatatype.getCoordinateSystem());
 
-        String variableUnits = gdt.getVariable().getUnitsString();
+        String variableUnits = gridDatatype.getVariable().getUnitsString();
 
         List<Object> attributeList = coverageByIndex.getAttributeValueList();
 
         FeatureCoverageWeightedGridStatisticsWriter writerX =
                 new FeatureCoverageWeightedGridStatisticsWriter(
                     attributeList,
-                    variableName,
+                    gridDatatype.getName(),
                     variableUnits,
                     statisticList,
                     groupByStatistic,
@@ -95,7 +118,7 @@ public class FeatureCoverageWeightedGridStatistics {
                 throw new IllegalStateException("Currently require y-x or t-y-x grid for this operation");
         }
 
-        GridCellTraverser gct = new GridCellTraverser(gdt);
+        GridCellTraverser gct = new GridCellTraverser(gridDatatype);
 
         gct.traverse(v);
     }
