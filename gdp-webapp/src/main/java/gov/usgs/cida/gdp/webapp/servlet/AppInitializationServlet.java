@@ -240,7 +240,7 @@ public class AppInitializationServlet extends HttpServlet {
             log.info("Running File Wipe Task... ");
             Collection<File> filesDeleted = new ArrayList<File>();
             if (getWorkspaceDir() != null && getWorkspaceDir().exists()) {
-                filesDeleted = FileHelper.wipeOldFiles(getWorkspaceDir(), Long.valueOf(this.hoursToWipe));
+                filesDeleted = FileHelper.wipeOldFiles(getWorkspaceDir(), Long.valueOf(this.hoursToWipe), false);
                 if (!filesDeleted.isEmpty()) {
                     log.info("Finished deleting userspace files. " + filesDeleted.size() + " deleted.");
                     filesDeleted = new ArrayList<File>();
@@ -248,7 +248,7 @@ public class AppInitializationServlet extends HttpServlet {
             }
 
             if (getRepositoryDir() != null && getRepositoryDir().exists()) {
-                filesDeleted = FileHelper.wipeOldFiles(getRepositoryDir(), Long.valueOf(this.hoursToWipe));
+                filesDeleted = FileHelper.wipeOldFiles(getRepositoryDir(), Long.valueOf(this.hoursToWipe), false);
                 if (!filesDeleted.isEmpty()) {
                     log.info("Finished deleting repository directory files. " + filesDeleted.size() + " deleted.");
                 }
