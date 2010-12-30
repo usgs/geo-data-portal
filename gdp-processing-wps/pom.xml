@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>gdp</artifactId>
+        <groupId>gov.usgs.cida.gdp</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>gdp-wps-processing</artifactId>
+    <packaging>war</packaging>
+    <name>gdp-wps-processing</name>
+    <dependencies>
+        <!-- sibling module dependencies -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>gdp-core-processing</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- version numbers set in parent pom -->
+        <dependency>
+            <groupId>com.sun.xml.fastinfoset</groupId>
+            <artifactId>FastInfoset</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>edu.ucar</groupId>
+            <artifactId>netcdf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.n52.wps</groupId>
+            <artifactId>52n-wps-commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.n52.wps</groupId>
+            <artifactId>52n-wps-io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.n52.wps</groupId>
+            <artifactId>52n-wps-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.n52.wps</groupId>
+            <artifactId>52n-wps-transactional</artifactId>
+        </dependency>
+    </dependencies>
+</project>

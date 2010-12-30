@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WPSConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://n52.org/wps schema_v1.xsd" xmlns="http://n52.org/wps">
+	<Datahandlers>
+
+		<ParserList>
+			<Parser name="GMLStreamingParser" className="gov.usgs.cida.gdp.wps.parser.GMLStreamingParser" active="true">
+				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/2.0.0/feature.xsd</Property>
+				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/2.1.1/feature.xsd</Property>
+				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/2.1.2/feature.xsd</Property>
+				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/2.1.2.1/feature.xsd</Property>
+				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/3.0.0/base/feature.xsd</Property>
+				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/3.0.1/base/feature.xsd</Property>
+				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/3.1.0/base/feature.xsd</Property>
+				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/3.1.1/base/feature.xsd</Property>
+				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/3.2.1/base/feature.xsd</Property>
+				<Property name="supportedFormat" active="true">text/xml</Property>
+				<Property name="supportedEncoding" active="true">UTF-8</Property>
+			</Parser>
+            <Parser name="GeoTIFFFileParser" className="gov.usgs.cida.gdp.wps.parser.GeoTIFFFileParser" active="true">
+                <Property name="supportedFormat" active="true">image/tiff</Property>
+                <Property name="supportedFormat" active="true">image/geotiff</Property>
+                <Property name="supportedEncoding" active="true">UTF-8</Property>
+            </Parser>
+		</ParserList>
+
+		<GeneratorList>
+			<Generator name="CSVGenerator" className="gov.usgs.cida.gdp.wps.generator.CSVGenerator" active="true">
+				<Property name="supportedFormat" active="true">text/csv</Property>
+				<Property name="supportedEncoding" active="true">UTF-8</Property>
+			</Generator>
+		</GeneratorList>
+	</Datahandlers>
+
+	<AlgorithmRepositoryList>
+
+		<Repository name="LocalAlgorithmRepository" className="org.n52.wps.server.LocalAlgorithmRepository" active="true">
+			<Property name="Algorithm" active="true">gov.usgs.cida.gdp.wps.algorithm.FeatureCategoricalGridCoverageAlgorithm</Property>
+			<Property name="Algorithm" active="true">gov.usgs.cida.gdp.wps.algorithm.FeatureWeightedGridStatisticsAlgorithm</Property>
+		</Repository>
+
+	</AlgorithmRepositoryList>
+
+
+	<Server hostname="localhost" hostport="18080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="process">
+        <Database/>
+    </Server>
+
+</WPSConfiguration>
