@@ -55,7 +55,9 @@ public class FileHelper {
      * @return
      */
     public static byte[] base64Encode(final byte[] input) {
-        if (input == null) return (byte[]) Array.newInstance(byte.class, 0);
+        if (input == null) {
+            return (byte[]) Array.newInstance(byte.class, 0);
+        }
         byte[] result = null;
 
         Base64 encoder = new Base64();
@@ -74,34 +76,38 @@ public class FileHelper {
     public static byte[] getByteArrayFromFile(File file) throws IOException {
         if (file == null) return (byte[]) Array.newInstance(byte.class, 0);
         InputStream is = new FileInputStream(file);
+        
+        try {
+            // Get the size of the file
+            long length = file.length();
 
-        // Get the size of the file
-        long length = file.length();
+            // Maximum size of file cannot be larger than the Integer.MAX_VALUE
+            if (length > Integer.MAX_VALUE) {
+                throw new IOException("File is too large: " + file.length() + " bytes. Maximum length: " + Integer.MAX_VALUE);
+            }
 
-        // Maximum size of file cannot be larger than the Integer.MAX_VALUE
-        if (length > Integer.MAX_VALUE) {
-            throw new IOException("File is too large: " + file.length() + " bytes. Maximum length: " + Integer.MAX_VALUE);
+            // Create the byte array to hold the data
+            byte[] bytes = new byte[(int) length];
+
+            // Read in the bytes
+            int offset = 0;
+            int numRead = 0;
+            while (offset < bytes.length
+                    && (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0) {
+                offset += numRead;
+            }
+
+            // Ensure all the bytes have been read in
+            if (offset < bytes.length) {
+                throw new IOException("Could not completely read file " + file.getName());
+            }
+
+
+            return bytes;
+        } finally {
+            // Close the input stream and return bytes
+            is.close();
         }
-
-        // Create the byte array to hold the data
-        byte[] bytes = new byte[(int)length];
-
-        // Read in the bytes
-        int offset = 0;
-        int numRead = 0;
-        while (offset < bytes.length
-               && (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {
-            offset += numRead;
-        }
-
-        // Ensure all the bytes have been read in
-        if (offset < bytes.length) {
-            throw new IOException("Could not completely read file "+ file.getName());
-        }
-
-        // Close the input stream and return bytes
-        is.close();
-        return bytes;
     }
 
     /**
@@ -113,9 +119,11 @@ public class FileHelper {
      * @throws IOException
      */
     public static boolean renameFile(final File fromFile, final String toFileName) throws IOException {
-        File toFile = new  File(fromFile.getParent() + File.separator + toFileName);
+        File toFile = new File(fromFile.getParent() + File.separator + toFileName);
         FileUtils.copyFile(fromFile, toFile);
-        if (!toFile.exists()) return false;
+        if (!toFile.exists()) {
+            return false;
+        }
         return fromFile.delete();
     }
 
@@ -151,7 +159,6 @@ public class FileHelper {
      * @param cutoffTime
      * @return
      */
-
     /**
      * Delete files older than a given Long instance
      * 
@@ -203,7 +210,7 @@ public class FileHelper {
         if (directoryName == null || "".equals(directoryName)) {
             directoryName = "upload-repository";
         }
-        String directory = basePath  + directoryName;
+        String directory = basePath + directoryName;
         if (FileHelper.doesDirectoryOrFileExist(directory)) {
             return new File(directory);
         }
@@ -216,7 +223,6 @@ public class FileHelper {
         }
         return result;
     }
-
 
     public static boolean createDir(File directory) {
         return FileHelper.createDir(directory.toString());
@@ -403,7 +409,9 @@ public class FileHelper {
      */
     @SuppressWarnings("unchecked")
     public static Collection<?> getFileCollection(String filePath, String[] extensions, boolean recursive) throws IllegalArgumentException {
-        if (filePath == null) return null;
+        if (filePath == null) {
+            return null;
+        }
 
         Collection<File> result = null;
         Object interimResult = FileUtils.listFiles((new File(filePath)), extensions, recursive);
