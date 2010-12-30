@@ -67,14 +67,16 @@ public class ManageWorkSpace {
         if (!dataStoreExists(workspace, layerName)) {
             // send POST to create the datastore if it doesn't exist
             sendPacket(dataStoresURL, "POST", "text/xml", dataStoreXML);
+        } else {
+            // otherwise send PUT to ensure that it's pointing to the correct shapefile
+            sendPacket(new URL(dataStoresURL + layerName + ".xml"), "PUT", "text/xml", dataStoreXML);
+        }
 
+        if (!layerExists(workspace, layerName, layerName)) {
             // create featuretype based on the datastore
             String featureTypeXML = createFeatureTypeXML(layerName, workspace, srsCode);
             URL featureTypesURL = new URL(dataStoresURL + layerName + "/featuretypes.xml");
             sendPacket(featureTypesURL, "POST", "text/xml", featureTypeXML);
-        } else {
-            // otherwise send PUT to insure that it's pointing to the correct shapefile
-            sendPacket(new URL(dataStoresURL + layerName + ".xml"), "PUT", "text/xml", dataStoreXML);
         }
 
         // Make sure we render using the default polygon style, and not whatever
@@ -133,6 +135,18 @@ public class ManageWorkSpace {
             URL url = new URL(this.getGeoServerURLString() + "/rest/workspaces/" + workspace + "/datastores/" + dataStore);
             sendPacket(url, "GET", null, null);
         } catch (FileNotFoundException e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    boolean layerExists(String workspace, String dataStore, String layerName) throws IOException {
+        try {
+            URL url = new URL(this.getGeoServerURLString() + "/rest/workspaces/"
+                    + workspace + "/datastores/" + dataStore + "/featuretypes/" + layerName + ".xml");
+            sendPacket(url, "GET", null, null);
+        } catch (IOException e) {
             return false;
         }
 
