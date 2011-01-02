@@ -1,10 +1,16 @@
 package gov.usgs.cida.gdp.wps.algorithm;
 
+import gov.usgs.cida.gdp.wps.algorithm.descriptor.AlgorithmDescriptor;
+import gov.usgs.cida.gdp.wps.algorithm.descriptor.ComplexDataInputDescriptor;
+import gov.usgs.cida.gdp.wps.algorithm.descriptor.ComplexDataOutputDescriptor;
+import gov.usgs.cida.gdp.wps.algorithm.descriptor.InputDescriptor;
+import gov.usgs.cida.gdp.wps.algorithm.descriptor.LiteralDataInputDescriptor;
+import gov.usgs.cida.gdp.wps.algorithm.descriptor.LiteralDataOutputDescriptor;
+import gov.usgs.cida.gdp.wps.algorithm.descriptor.OutputDescriptor;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-
 import net.opengis.ows.x11.AllowedValuesDocument.AllowedValues;
 import net.opengis.wps.x100.ComplexDataCombinationType;
 import net.opengis.wps.x100.ComplexDataCombinationsType;
@@ -20,12 +26,12 @@ import net.opengis.wps.x100.ProcessDescriptionType.ProcessOutputs;
 import net.opengis.wps.x100.ProcessDescriptionsDocument.ProcessDescriptions;
 import org.apache.xmlbeans.XmlOptions;
 import org.apache.xmlbeans.XmlValidationError;
-
 import org.n52.wps.io.GeneratorFactory;
 import org.n52.wps.io.IGenerator;
 import org.n52.wps.io.IOHandler;
 import org.n52.wps.io.IParser;
 import org.n52.wps.io.ParserFactory;
+import org.n52.wps.io.data.IData;
 import org.n52.wps.server.AbstractAlgorithm;
 import org.n52.wps.server.observerpattern.IObserver;
 import org.n52.wps.server.observerpattern.ISubject;
@@ -49,42 +55,37 @@ public abstract class AbstractSelfDescribingAlgorithm extends AbstractAlgorithm 
         processDescription.setProcessVersion(algorithmDescriptor.getVersion());
 
         // 1. Identifer
-        processDescription.addNewIdentifier().setStringValue(getClass().getSimpleName());
-        if (algorithmDescriptor.hasTitle()) {
-            processDescription.addNewTitle().setStringValue(algorithmDescriptor.getTitle());
-        }
+        processDescription.addNewIdentifier().setStringValue(algorithmDescriptor.getIdentifier());
+        processDescription.addNewTitle().setStringValue( algorithmDescriptor.hasTitle() ?
+                algorithmDescriptor.getIdentifier() :
+                algorithmDescriptor.getTitle());
         if (algorithmDescriptor.hasAbstract()) {
             processDescription.addNewAbstract().setStringValue(algorithmDescriptor.getAbstract());
         }
 
         // 2. Inputs
-        Map<String, InputDescriptor> identifiers = getInputDescriptorMap();
+        Collection<InputDescriptor> inputDescriptors = algorithmDescriptor.getInputDescriptors();
         DataInputs dataInputs = null;
-        if (identifiers.size() > 0) {
+        if (inputDescriptors.size() > 0) {
             dataInputs = processDescription.addNewDataInputs();
         }
 
-        for (String identifier : identifiers.keySet()) {
-            InputDescriptor descriptor = identifiers.get(identifier);
+        for (InputDescriptor inputDescriptor : inputDescriptors) {
 
             InputDescriptionType dataInput = dataInputs.addNewInput();
-            dataInput.setMinOccurs(descriptor.getMinOccurs());
-            dataInput.setMaxOccurs(descriptor.getMaxOccurs());
+            dataInput.setMinOccurs(inputDescriptor.getMinOccurs());
+            dataInput.setMaxOccurs(inputDescriptor.getMaxOccurs());
 
-            dataInput.addNewIdentifier().setStringValue(identifier);
-            if (descriptor.hasTitle()) {
-                dataInput.addNewTitle().setStringValue(descriptor.getTitle());
-            } else {
-                // WPS 1.0.0 spec says 'Title' element is optional, but this implementation
-                // appears to require it...?
-                dataInput.addNewTitle().setStringValue(identifier);
-            }
-            if (descriptor.hasAbstract()) {
-                dataInput.addNewAbstract().setStringValue(descriptor.getAbstract());
+            dataInput.addNewIdentifier().setStringValue(inputDescriptor.getIdentifier());
+            dataInput.addNewTitle().setStringValue( inputDescriptor.hasTitle() ?
+                    inputDescriptor.getTitle() :
+                    inputDescriptor.getIdentifier());
+            if (inputDescriptor.hasAbstract()) {
+                dataInput.addNewAbstract().setStringValue(inputDescriptor.getAbstract());
             }
 
-            if (descriptor instanceof LiteralDataInputDescriptor) {
-                LiteralDataInputDescriptor literalDescriptor = (LiteralDataInputDescriptor)descriptor;
+            if (inputDescriptor instanceof LiteralDataInputDescriptor) {
+                LiteralDataInputDescriptor literalDescriptor = (LiteralDataInputDescriptor)inputDescriptor;
 
                 LiteralInputType literalData = dataInput.addNewLiteralData();
                 literalData.addNewDataType().setReference(literalDescriptor.getDataType());
@@ -101,36 +102,31 @@ public abstract class AbstractSelfDescribingAlgorithm extends AbstractAlgorithm 
                     literalData.addNewAnyValue();
                 }
 
-            } else if (descriptor instanceof ComplexDataInputDescriptor) {
-                describeComplexDataInput(dataInput.addNewComplexData(), descriptor.getBinding());
+            } else if (inputDescriptor instanceof ComplexDataInputDescriptor) {
+                describeComplexDataInput(dataInput.addNewComplexData(), inputDescriptor.getBinding());
             }
         }
 
         //3. Outputs
         ProcessOutputs dataOutputs = processDescription.addNewProcessOutputs();
-        Map<String, OutputDescriptor> outputIdentifiers = getOutputDescriptorMap();
-        for (String identifier : outputIdentifiers.keySet()) {
-            OutputDescriptor descriptor = getOutputDescriptorMap().get(identifier);
+        Collection<OutputDescriptor> outputDescriptors = algorithmDescriptor.getOutputDescriptors();
+        for (OutputDescriptor outputDescriptor : outputDescriptors) {
 
             OutputDescriptionType dataOutput = dataOutputs.addNewOutput();
-            dataOutput.addNewIdentifier().setStringValue(identifier);
-            if (descriptor.hasTitle()) {
-                dataOutput.addNewTitle().setStringValue(descriptor.getTitle());
-            } else {
-                // WPS 1.0.0 spec says 'Title' element is optional, but this implementation
-                // appears to require it...?
-                dataOutput.addNewTitle().setStringValue(identifier);
-            }
-            if (descriptor.hasAbstract()) {
-                dataOutput.addNewAbstract().setStringValue(descriptor.getAbstract());
+            dataOutput.addNewIdentifier().setStringValue(outputDescriptor.getIdentifier());
+            dataOutput.addNewTitle().setStringValue( outputDescriptor.hasTitle() ?
+                    outputDescriptor.getTitle() :
+                    outputDescriptor.getIdentifier());
+            if (outputDescriptor.hasAbstract()) {
+                dataOutput.addNewAbstract().setStringValue(outputDescriptor.getAbstract());
             }
 
-            if (descriptor instanceof LiteralDataOutputDescriptor) {
-                LiteralDataOutputDescriptor literalDescriptor = (LiteralDataOutputDescriptor)descriptor;
+            if (outputDescriptor instanceof LiteralDataOutputDescriptor) {
+                LiteralDataOutputDescriptor literalDescriptor = (LiteralDataOutputDescriptor)outputDescriptor;
                 dataOutput.addNewLiteralOutput().addNewDataType().
                         setReference(literalDescriptor.getDataType());
-            } else if (descriptor instanceof ComplexDataOutputDescriptor) {
-                describeComplexDataOutput(dataOutput.addNewComplexOutput(), descriptor.getBinding());
+            } else if (outputDescriptor instanceof ComplexDataOutputDescriptor) {
+                describeComplexDataOutput(dataOutput.addNewComplexOutput(), outputDescriptor.getBinding());
            }
         }
         return document.getProcessDescriptions().getProcessDescriptionArray(0);
@@ -228,18 +224,14 @@ public abstract class AbstractSelfDescribingAlgorithm extends AbstractAlgorithm 
 
     protected abstract AlgorithmDescriptor getAlgorithmDescriptor();
 
-    protected abstract Map<String, InputDescriptor> getInputDescriptorMap();
-
-    protected abstract Map<String, OutputDescriptor> getOutputDescriptorMap();
-
     @Override
-    public Class getInputDataType(String string) {
-        return getInputDescriptorMap().get(string).getBinding();
+    public Class<? extends IData> getInputDataType(String identifier) {
+        return getAlgorithmDescriptor().getInputDescriptor(identifier).getBinding();
     }
 
     @Override
-    public Class getOutputDataType(String string) {
-        return getOutputDescriptorMap().get(string).getBinding();
+    public Class<? extends IData> getOutputDataType(String identifier) {
+        return getAlgorithmDescriptor().getOutputDescriptor(identifier).getBinding();
     }
 
     private List observers = new ArrayList();

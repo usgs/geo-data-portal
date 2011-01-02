@@ -4,15 +4,17 @@ import gov.usgs.cida.gdp.coreprocessing.Delimiter;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCoverageWeightedGridStatistics;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCoverageWeightedGridStatistics.GroupBy;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCoverageWeightedGridStatisticsWriter.Statistic;
+import gov.usgs.cida.gdp.wps.algorithm.descriptor.AlgorithmDescriptor;
+import gov.usgs.cida.gdp.wps.algorithm.descriptor.ComplexDataInputDescriptor;
+import gov.usgs.cida.gdp.wps.algorithm.descriptor.ComplexDataOutputDescriptor;
+import gov.usgs.cida.gdp.wps.algorithm.descriptor.LiteralDataInputDescriptor;
 import gov.usgs.cida.gdp.wps.binding.CSVDataBinding;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.geotools.feature.FeatureCollection;
@@ -45,40 +47,33 @@ public class FeatureWeightedGridStatisticsAlgorithm extends BaseAlgorithm {
 
     private final static String O_OUTPUT = "OUTPUT";
 
-    private final static Map<String, InputDescriptor> INPUT;
-    private final static Map<String, OutputDescriptor> OUTPUT;
     private final static AlgorithmDescriptor ALGORITHM_DESCRIPTOR;
 
     static {
         ALGORITHM_DESCRIPTOR = AlgorithmDescriptor.builder(FeatureWeightedGridStatisticsAlgorithm.class).
                 version("1.0.0").
                 storeSupported(true).
-                statusSupported(true).build();
-
-        Map<String, InputDescriptor> imap = new LinkedHashMap<String, InputDescriptor>();
-        imap.put(I_FEATURE_COLLECTION,
-                ComplexDataInputDescriptor.builder(GTVectorDataBinding.class).build());
-        imap.put(I_FEATURE_ATTRIBUTE_NAME,
-                LiteralDataInputDescriptor.stringBuilder().build());
-        imap.put(I_DATASET_URI,
-                LiteralDataInputDescriptor.anyURIBuilder().build());
-        imap.put(I_DATASET_ID,
-                LiteralDataInputDescriptor.stringBuilder().build());
-        imap.put(I_TIME_START,
-                LiteralDataInputDescriptor.dateBuilder().minOccurs(0).build());
-        imap.put(I_TIME_END,
-                LiteralDataInputDescriptor.dateBuilder().minOccurs(0).build());
-        imap.put(I_STATISTICS,
-                LiteralDataInputDescriptor.stringBuilder().minOccurs(0).maxOccurs(Statistic.values().length).allowedValues(Statistic.class).build());
-        imap.put(I_GROUP_BY,
-                LiteralDataInputDescriptor.stringBuilder().allowedValues(GroupBy.class).build());
-        imap.put(I_DELIMITER,
-                LiteralDataInputDescriptor.stringBuilder().allowedValues(Delimiter.class).build());
-        INPUT = Collections.unmodifiableMap(imap);
-
-        Map<String, OutputDescriptor> omap = new LinkedHashMap<String, OutputDescriptor>();
-        omap.put(O_OUTPUT, ComplexDataOutputDescriptor.builder(CSVDataBinding.class).build());
-        OUTPUT = Collections.unmodifiableMap(omap);
+                statusSupported(true).
+                addInputDesciptor(
+                    ComplexDataInputDescriptor.builder(GTVectorDataBinding.class, I_FEATURE_COLLECTION)).
+                addInputDesciptor(
+                    LiteralDataInputDescriptor.stringBuilder(I_FEATURE_ATTRIBUTE_NAME)).
+                addInputDesciptor(
+                    LiteralDataInputDescriptor.anyURIBuilder(I_DATASET_URI)).
+                addInputDesciptor(
+                    LiteralDataInputDescriptor.stringBuilder(I_DATASET_ID)).
+                addInputDesciptor(
+                    LiteralDataInputDescriptor.dateBuilder(I_TIME_START).minOccurs(0)).
+                addInputDesciptor(
+                    LiteralDataInputDescriptor.dateBuilder(I_TIME_END).minOccurs(0)).
+                addInputDesciptor(
+                    LiteralDataInputDescriptor.stringBuilder(I_STATISTICS).minOccurs(0).maxOccurs(Statistic.class).allowedValues(Statistic.class)).
+                addInputDesciptor(
+                    LiteralDataInputDescriptor.stringBuilder(I_GROUP_BY).allowedValues(GroupBy.class)).
+                addInputDesciptor(
+                    LiteralDataInputDescriptor.stringBuilder(I_DELIMITER).allowedValues(Delimiter.class)).
+                addOutputDesciptor(ComplexDataOutputDescriptor.builder(CSVDataBinding.class, O_OUTPUT)).
+                build();
     }
 
     public FeatureWeightedGridStatisticsAlgorithm() {
@@ -88,16 +83,6 @@ public class FeatureWeightedGridStatisticsAlgorithm extends BaseAlgorithm {
     @Override
     protected AlgorithmDescriptor getAlgorithmDescriptor() {
         return ALGORITHM_DESCRIPTOR;
-    }
-
-    @Override
-    protected Map<String, InputDescriptor> getInputDescriptorMap() {
-        return INPUT;
-    }
-
-    @Override
-    protected Map<String, OutputDescriptor> getOutputDescriptorMap() {
-        return OUTPUT;
     }
 
     @Override

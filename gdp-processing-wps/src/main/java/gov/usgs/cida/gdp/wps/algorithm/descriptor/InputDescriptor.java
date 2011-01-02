@@ -1,4 +1,4 @@
-package gov.usgs.cida.gdp.wps.algorithm;
+package gov.usgs.cida.gdp.wps.algorithm.descriptor;
 
 import java.math.BigInteger;
 import org.n52.wps.io.data.IData;
@@ -31,8 +31,8 @@ public abstract class InputDescriptor<T extends Class<? extends IData>> extends 
         private BigInteger minOccurs = BigInteger.ONE;
         private BigInteger maxOccurs = BigInteger.ONE;
 
-        protected Builder(T binding) {
-            super(binding);
+        protected Builder(T binding, String identifier) {
+            super(binding, identifier);
         }
 
         public B minOccurs(int minOccurs) {
@@ -52,6 +52,12 @@ public abstract class InputDescriptor<T extends Class<? extends IData>> extends 
             this.maxOccurs = maxOccurs;
             return self();
         }
+
+        public <E extends Enum<E>> B maxOccurs(Class<E> enumType) {
+            return maxOccurs(enumType.getEnumConstants().length);
+        }
+
+        public abstract InputDescriptor<T> build();
     }
     
 }

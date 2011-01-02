@@ -1,4 +1,4 @@
-package gov.usgs.cida.gdp.wps.algorithm;
+package gov.usgs.cida.gdp.wps.algorithm.descriptor;
 
 import org.n52.wps.io.data.IData;
 
@@ -14,9 +14,11 @@ public abstract class OutputDescriptor<T extends Class<? extends IData>> extends
 
     public static abstract class Builder<B extends Builder<B,T>, T extends Class<? extends IData>> extends BoundDescriptor.Builder<B,T>{
 
-        protected Builder(T binding) {
-            super(binding);
+        protected Builder(T binding, String idenifier) {
+            super(binding, idenifier);
         }
+
+        public abstract OutputDescriptor<T> build();
 
     }
     

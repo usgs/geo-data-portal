@@ -1,4 +1,4 @@
-package gov.usgs.cida.gdp.wps.algorithm;
+package gov.usgs.cida.gdp.wps.algorithm.descriptor;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -54,65 +54,67 @@ public class LiteralDataInputDescriptor<T extends Class<? extends ILiteralData>>
         return this.allowedValues;
     }
 
-    private static <T extends Class<? extends ILiteralData>> Builder<?,T> builder(T binding, String schemaType) {
-        return new BuilderTyped(binding, schemaType);
-    }
-    
-    public static Builder<?,Class<LiteralAnyURIBinding>> anyURIBuilder() {
-        return builder(LiteralAnyURIBinding.class, "xs:anyURI");
+    private static <T extends Class<? extends ILiteralData>> Builder<?,T> builder(T binding, String identifier, String schemaType) {
+        return new BuilderTyped(binding, identifier, schemaType);
     }
 
-    public static Builder<?,Class<LiteralBase64BinaryBinding>> base64BinaryBuilder() {
-        return builder(LiteralBase64BinaryBinding.class, "xs:base64Binary");
+    // utility functions, quite verbose...  should have some factory method somewhere to
+    // match binding class and schema type.  see analot in LiteralDataOutputDescriptor
+    public static Builder<?,Class<LiteralAnyURIBinding>> anyURIBuilder(String identifier) {
+        return builder(LiteralAnyURIBinding.class, identifier, "xs:anyURI");
     }
 
-    public static Builder<?,Class<LiteralBooleanBinding>> booleanBuilder() {
-        return builder(LiteralBooleanBinding.class, "xs:boolean");
+    public static Builder<?,Class<LiteralBase64BinaryBinding>> base64BinaryBuilder(String identifier) {
+        return builder(LiteralBase64BinaryBinding.class, identifier, "xs:base64Binary");
     }
 
-    public static Builder<?,Class<LiteralByteBinding>> byteBuilder() {
-        return builder(LiteralByteBinding.class, "xs:byte");
+    public static Builder<?,Class<LiteralBooleanBinding>> booleanBuilder(String identifier) {
+        return builder(LiteralBooleanBinding.class, identifier, "xs:boolean");
     }
 
-    public static Builder<?,Class<LiteralDateTimeBinding>> dateBuilder() {
-        return builder(LiteralDateTimeBinding.class, "xs:date");
+    public static Builder<?,Class<LiteralByteBinding>> byteBuilder(String identifier) {
+        return builder(LiteralByteBinding.class, identifier, "xs:byte");
     }
 
-    public static Builder<?,Class<LiteralDateTimeBinding>> timeBuilder() {
-        return builder(LiteralDateTimeBinding.class, "xs:time");
+    public static Builder<?,Class<LiteralDateTimeBinding>> dateBuilder(String identifier) {
+        return builder(LiteralDateTimeBinding.class, identifier, "xs:date");
     }
 
-    public static Builder<?,Class<LiteralDateTimeBinding>> dateTimeBuilder() {
-        return builder(LiteralDateTimeBinding.class, "xs:dateTime");
+    public static Builder<?,Class<LiteralDateTimeBinding>> timeBuilder(String identifier) {
+        return builder(LiteralDateTimeBinding.class, identifier, "xs:time");
     }
 
-    public static Builder<?,Class<LiteralDateTimeBinding>> durationBuilder() {
-        return builder(LiteralDateTimeBinding.class, "xs:duration");
+    public static Builder<?,Class<LiteralDateTimeBinding>> dateTimeBuilder(String identifier) {
+        return builder(LiteralDateTimeBinding.class, identifier, "xs:dateTime");
     }
 
-    public static Builder<?,Class<LiteralDoubleBinding>> doubleBuilder() {
-        return builder(LiteralDoubleBinding.class, "xs:double");
+    public static Builder<?,Class<LiteralDateTimeBinding>> durationBuilder(String identifier) {
+        return builder(LiteralDateTimeBinding.class, identifier, "xs:duration");
     }
 
-    public static Builder<?,Class<LiteralFloatBinding>> floatBuilder() {
-        return builder(LiteralFloatBinding.class, "xs:float");
+    public static Builder<?,Class<LiteralDoubleBinding>> doubleBuilder(String identifier) {
+        return builder(LiteralDoubleBinding.class, identifier, "xs:double");
     }
 
-    public static Builder<?,Class<LiteralIntBinding>> intBuilder() {
-        return builder(LiteralIntBinding.class, "xs:int");
+    public static Builder<?,Class<LiteralFloatBinding>> floatBuilder(String identifier) {
+        return builder(LiteralFloatBinding.class, identifier, "xs:float");
     }
 
-    public static Builder<?,Class<LiteralShortBinding>> shortBuilder() {
-        return builder(LiteralShortBinding.class, "xs:short");
+    public static Builder<?,Class<LiteralIntBinding>> intBuilder(String identifier) {
+        return builder(LiteralIntBinding.class, identifier, "xs:int");
     }
 
-    public static Builder<?,Class<LiteralStringBinding>> stringBuilder() {
-        return builder(LiteralStringBinding.class, "xs:string");
+    public static Builder<?,Class<LiteralShortBinding>> shortBuilder(String identifier) {
+        return builder(LiteralShortBinding.class, identifier, "xs:short");
+    }
+
+    public static Builder<?,Class<LiteralStringBinding>> stringBuilder(String identifier) {
+        return builder(LiteralStringBinding.class, identifier, "xs:string");
     }
 
     private static class BuilderTyped<T extends Class<? extends ILiteralData>> extends Builder<BuilderTyped<T>, T> {
-        public BuilderTyped(T binding, String schemaType) {
-            super(binding, schemaType);
+        public BuilderTyped(T binding, String identifier, String schemaType) {
+            super(binding, identifier, schemaType);
         }
         @Override
         protected BuilderTyped self() {
@@ -126,8 +128,8 @@ public class LiteralDataInputDescriptor<T extends Class<? extends ILiteralData>>
         private Object defaultValue;
         private List<? extends Object> allowedValues;
         
-        protected Builder(T binding, String schemaType) {
-            super(binding);
+        protected Builder(T binding, String identifier, String schemaType) {
+            super(binding, identifier);
             this.schemaType = schemaType;
         }
 

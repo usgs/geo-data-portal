@@ -1,4 +1,4 @@
-package gov.usgs.cida.gdp.wps.algorithm;
+package gov.usgs.cida.gdp.wps.algorithm.descriptor;
 
 /**
  *

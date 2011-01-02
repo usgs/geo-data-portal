@@ -16,19 +16,19 @@ public class FeatureCoverageWeightedGridStatisticsWriter {
 
     public enum Statistic {
 
-        mean("%.7g", "%s")
+        MEAN("%.7g", "%s")
         { @Override public Number getValue(WeightedStatistics1D wsa) { return wsa.getMean(); } },
-        minimum("%.7g", "%s")
+        MINIMUM("%.7g", "%s")
         { @Override public Number getValue(WeightedStatistics1D wsa) { return wsa.getMinimum(); } },
-        maximum("%.7g", "%s")
+        MAXIMUM("%.7g", "%s")
         { @Override public Number getValue(WeightedStatistics1D wsa) { return wsa.getMaximum(); } },
-        variance("%.7g", "%s^2")
+        VARIANCE("%.7g", "%s^2")
         { @Override public Number getValue(WeightedStatistics1D wsa) { return wsa.getSampleVariance(); } },
-        std_dev("%.7g", "%s")
+        STD_DEV("%.7g", "%s")
         { @Override public Number getValue(WeightedStatistics1D wsa) { return wsa.getSampleStandardDeviation(); } },
-        weight_sum("%.7g")
+        WEIGHT_SUM("%.7g")
         { @Override public Number getValue(WeightedStatistics1D wsa) { return wsa.getWeightSum(); } },
-        count("%d")
+        COUNT("%d")
         { @Override public Number getValue(WeightedStatistics1D wsa) { return wsa.getCount(); } };
 
         private final String valueFormat;

@@ -1,4 +1,4 @@
-package gov.usgs.cida.gdp.wps.algorithm;
+package gov.usgs.cida.gdp.wps.algorithm.descriptor;
 
 import java.math.BigInteger;
 import org.n52.wps.io.data.IComplexData;
@@ -20,13 +20,13 @@ public class ComplexDataInputDescriptor<T extends Class<? extends IComplexData>>
         return maximumMegaBytes;
     }
     
-    public static <T extends Class<? extends IComplexData>> Builder<?,T> builder(T binding) {
-        return new BuilderTyped(binding);
+    public static <T extends Class<? extends IComplexData>> Builder<?,T> builder(T binding, String identifier) {
+        return new BuilderTyped(binding, identifier);
     }
 
     private static class BuilderTyped<T extends Class<? extends IComplexData>> extends Builder<BuilderTyped<T>, T> {
-        public BuilderTyped(T binding) {
-            super(binding);
+        public BuilderTyped(T binding, String identifier) {
+            super(binding, identifier);
         }
         @Override
         protected BuilderTyped self() {
@@ -38,8 +38,8 @@ public class ComplexDataInputDescriptor<T extends Class<? extends IComplexData>>
 
         private BigInteger maximumMegaBytes;
         
-        private Builder(T binding) {
-            super(binding);
+        private Builder(T binding, String identifier) {
+            super(binding, identifier);
         }
 
         public B maximumMegaBytes(int maximumMegaBytes) {

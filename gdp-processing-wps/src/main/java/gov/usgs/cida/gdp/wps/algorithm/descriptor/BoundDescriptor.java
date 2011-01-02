@@ -1,4 +1,4 @@
-package gov.usgs.cida.gdp.wps.algorithm;
+package gov.usgs.cida.gdp.wps.algorithm.descriptor;
 
 /**
  *
@@ -23,6 +23,11 @@ public abstract class BoundDescriptor<T extends Class<?>> extends Descriptor {
 
         protected Builder(T binding) {
             this.binding = binding;
+        }
+        
+        protected Builder(T binding, String identifier) {
+            this(binding);
+            identifier(identifier);
         }
 
         @Override
