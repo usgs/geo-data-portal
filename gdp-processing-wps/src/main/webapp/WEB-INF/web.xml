@@ -9,7 +9,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>wpsServlet</servlet-name>
-        <url-pattern>/wps</url-pattern>
+        <url-pattern>/WebProcessingService</url-pattern>
     </servlet-mapping>
     <servlet>
         <servlet-name>resultServlet</servlet-name>
@@ -18,7 +18,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>resultServlet</servlet-name>
-        <url-pattern>/result</url-pattern>
+        <url-pattern>/RetrieveResultServlet</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>/index.html</welcome-file>

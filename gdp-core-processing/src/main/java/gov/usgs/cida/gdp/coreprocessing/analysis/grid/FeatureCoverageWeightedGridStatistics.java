@@ -1,5 +1,6 @@
 package gov.usgs.cida.gdp.coreprocessing.analysis.grid;
 
+import gov.usgs.cida.gdp.coreprocessing.Delimiter;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCoverageWeightedGridStatisticsWriter.Statistic;
 import gov.usgs.cida.gdp.coreprocessing.analysis.statistics.WeightedStatistics1D;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.GridCellCoverageFactory.GridCellCoverageByIndex;
@@ -31,6 +32,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class FeatureCoverageWeightedGridStatistics {
 
+    public enum GroupBy {
+        STATISTIC,
+        FEATURE_ATTRIBUTE;
+    }
+
     public static void execute(
             FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection,
             String attributeName,
@@ -39,8 +45,8 @@ public class FeatureCoverageWeightedGridStatistics {
             Range timeRange,
             List<Statistic> statisticList,
             BufferedWriter writer,
-            boolean groupByStatistic,
-            String delimiter)
+            GroupBy groupBy,
+            Delimiter delimiter)
             throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException
     {
         GridDatatype gridDatatype = checkNotNull(
@@ -54,7 +60,7 @@ public class FeatureCoverageWeightedGridStatistics {
                 timeRange,
                 statisticList,
                 writer,
-                groupByStatistic,
+                groupBy,
                 delimiter);
     }
 
@@ -65,8 +71,8 @@ public class FeatureCoverageWeightedGridStatistics {
             Range timeRange,
             List<Statistic> statisticList,
             BufferedWriter writer,
-            boolean groupByStatistic,
-            String delimiter)
+            GroupBy groupBy,
+            Delimiter delimiter)
             throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException
     {
 
@@ -102,8 +108,8 @@ public class FeatureCoverageWeightedGridStatistics {
                     gridDatatype.getName(),
                     variableUnits,
                     statisticList,
-                    groupByStatistic,
-                    delimiter,
+                    groupBy != groupBy.FEATURE_ATTRIBUTE,  // != in case value equals null, default to GroupBy.STATISTIC
+                    delimiter.delimiter,
                     writer);
 
         WeightedGridStatisticsVisitor v = null;

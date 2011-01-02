@@ -21,25 +21,33 @@ import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
  */
 public class LiteralDataInputDescriptor<T extends Class<? extends ILiteralData>> extends InputDescriptor<T> {
 
-    private final String schemaType;
+    private final String dataType;
     private final Object defaultValue;
     private final List<? extends Object> allowedValues;
 
 	protected LiteralDataInputDescriptor(Builder builder) {
 		super(builder);
-        this.schemaType = builder.schemaType;
+        this.dataType = builder.schemaType;
 		this.defaultValue = builder.defaultValue;
 		this.allowedValues = builder.allowedValues != null ?
             Collections.unmodifiableList(builder.allowedValues) :
             null;
 	}
 
-    public String getSchemaType() {
-        return schemaType;
+    public String getDataType() {
+        return dataType;
+    }
+
+    public boolean hasDefaultValue() {
+        return getDefaultValue() != null;
     }
 
     public Object getDefaultValue() {
         return this.defaultValue;
+    }
+
+    public boolean hasAllowedValues() {
+        return getAllowedValues() != null && getAllowedValues().size() > 0;
     }
 
     public List<? extends Object> getAllowedValues() {
@@ -66,8 +74,20 @@ public class LiteralDataInputDescriptor<T extends Class<? extends ILiteralData>>
         return builder(LiteralByteBinding.class, "xs:byte");
     }
 
+    public static Builder<?,Class<LiteralDateTimeBinding>> dateBuilder() {
+        return builder(LiteralDateTimeBinding.class, "xs:date");
+    }
+
+    public static Builder<?,Class<LiteralDateTimeBinding>> timeBuilder() {
+        return builder(LiteralDateTimeBinding.class, "xs:time");
+    }
+
     public static Builder<?,Class<LiteralDateTimeBinding>> dateTimeBuilder() {
         return builder(LiteralDateTimeBinding.class, "xs:dateTime");
+    }
+
+    public static Builder<?,Class<LiteralDateTimeBinding>> durationBuilder() {
+        return builder(LiteralDateTimeBinding.class, "xs:duration");
     }
 
     public static Builder<?,Class<LiteralDoubleBinding>> doubleBuilder() {
@@ -106,7 +126,7 @@ public class LiteralDataInputDescriptor<T extends Class<? extends ILiteralData>>
         private Object defaultValue;
         private List<? extends Object> allowedValues;
         
-        public Builder(T binding, String schemaType) {
+        protected Builder(T binding, String schemaType) {
             super(binding);
             this.schemaType = schemaType;
         }

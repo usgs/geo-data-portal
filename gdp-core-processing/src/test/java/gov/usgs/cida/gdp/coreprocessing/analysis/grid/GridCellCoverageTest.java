@@ -1,8 +1,8 @@
 package gov.usgs.cida.gdp.coreprocessing.analysis.grid;
 
+import gov.usgs.cida.gdp.coreprocessing.Delimiter;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import gov.usgs.cida.gdp.utilities.FileHelper;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -11,20 +11,17 @@ import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.Formatter;
 
-
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.SchemaException;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.FactoryException;
-
 import org.opengis.referencing.operation.TransformException;
 
 import ucar.ma2.InvalidRangeException;
@@ -91,8 +88,8 @@ public class GridCellCoverageTest {
                     FeatureCoverageWeightedGridStatisticsWriter.Statistic.mean,
                     FeatureCoverageWeightedGridStatisticsWriter.Statistic.maximum,}),
                 writer,
-                false,
-                ",");
+                FeatureCoverageWeightedGridStatistics.GroupBy.FEATURE_ATTRIBUTE,
+                Delimiter.COMMA);
         // Check it in some way?
     }
 
@@ -110,8 +107,8 @@ public class GridCellCoverageTest {
                     FeatureCoverageWeightedGridStatisticsWriter.Statistic.mean,
                     FeatureCoverageWeightedGridStatisticsWriter.Statistic.maximum,}),
                 writer,
-                false,
-                ",");
+                FeatureCoverageWeightedGridStatistics.GroupBy.FEATURE_ATTRIBUTE,
+                Delimiter.COMMA);
     }
 
     @Test(expected = InvalidRangeException.class)
@@ -128,8 +125,8 @@ public class GridCellCoverageTest {
                     FeatureCoverageWeightedGridStatisticsWriter.Statistic.mean,
                     FeatureCoverageWeightedGridStatisticsWriter.Statistic.maximum,}),
                 writer,
-                false,
-                ",");
+                FeatureCoverageWeightedGridStatistics.GroupBy.FEATURE_ATTRIBUTE,
+                Delimiter.COMMA);
     }
 
     @Test(expected = InvalidRangeException.class)
@@ -146,8 +143,8 @@ public class GridCellCoverageTest {
                     FeatureCoverageWeightedGridStatisticsWriter.Statistic.mean,
                     FeatureCoverageWeightedGridStatisticsWriter.Statistic.maximum,}),
                 writer,
-                false,
-                ",");
+                FeatureCoverageWeightedGridStatistics.GroupBy.FEATURE_ATTRIBUTE,
+                Delimiter.COMMA);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -165,8 +162,8 @@ public class GridCellCoverageTest {
                     FeatureCoverageWeightedGridStatisticsWriter.Statistic.mean,
                     FeatureCoverageWeightedGridStatisticsWriter.Statistic.maximum,}),
                 writer,
-                false,
-                ",");
+                FeatureCoverageWeightedGridStatistics.GroupBy.FEATURE_ATTRIBUTE,
+                Delimiter.COMMA);
     }
 
     @Test
@@ -186,8 +183,8 @@ public class GridCellCoverageTest {
                     FeatureCoverageWeightedGridStatisticsWriter.Statistic.weight_sum,
                     FeatureCoverageWeightedGridStatisticsWriter.Statistic.count,}),
                 writer,
-                false,
-                ",");
+                FeatureCoverageWeightedGridStatistics.GroupBy.FEATURE_ATTRIBUTE,
+                Delimiter.COMMA);
     }
 
     private FeatureCollection<SimpleFeatureType, SimpleFeature> getFeatureCollection(String ncLocation) throws IOException {

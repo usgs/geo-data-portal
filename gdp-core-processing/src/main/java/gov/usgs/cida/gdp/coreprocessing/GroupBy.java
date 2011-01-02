@@ -13,7 +13,9 @@ public class GroupBy {
 
         public enum StationOption {
 
-            station("Station"), variable("Variable");
+            station("Station"),
+            variable("Variable");
+
             public final String description;
 
             private StationOption(String description) {
@@ -30,22 +32,4 @@ public class GroupBy {
             }
         }
 
-        public enum GridOption {
-
-            attributes("Attributes"), statistics("Statistics");
-            public final String description;
-
-            private GridOption(String description) {
-                this.description = description;
-            }
-
-            public static GridOption getDefault() {
-                return attributes;
-            }
-
-            @Override
-             public String toString() {
-                 return description;
-             }
-        }
 }

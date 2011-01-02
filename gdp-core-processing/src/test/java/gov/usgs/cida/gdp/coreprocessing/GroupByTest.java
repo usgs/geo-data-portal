@@ -36,10 +36,4 @@ public class GroupByTest {
         assertEquals(GroupBy.StationOption.getDefault().getClass(), GroupBy.StationOption.station.getClass());
     }
 
-    @Test
-    public void testGridOption() {
-        assertEquals(GroupBy.GridOption.attributes.toString(), "Attributes");
-        assertEquals(GroupBy.GridOption.statistics.toString(), "Statistics");
-        assertEquals(GroupBy.GridOption.getDefault().getClass(), GroupBy.GridOption.attributes.getClass());
-    }
 }

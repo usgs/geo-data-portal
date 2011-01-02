@@ -1,23 +1,19 @@
 package gov.usgs.cida.gdp.wps.algorithm;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import net.opengis.ows.x11.AllowedValuesDocument.AllowedValues;
-import net.opengis.ows.x11.DomainMetadataType;
 import net.opengis.wps.x100.ComplexDataCombinationType;
 import net.opengis.wps.x100.ComplexDataCombinationsType;
 import net.opengis.wps.x100.ComplexDataDescriptionType;
 import net.opengis.wps.x100.InputDescriptionType;
 import net.opengis.wps.x100.LiteralInputType;
-import net.opengis.wps.x100.LiteralOutputType;
 import net.opengis.wps.x100.OutputDescriptionType;
 import net.opengis.wps.x100.ProcessDescriptionType;
 import net.opengis.wps.x100.ProcessDescriptionsDocument;
-import net.opengis.wps.x100.SupportedComplexDataInputType;
 import net.opengis.wps.x100.SupportedComplexDataType;
 import net.opengis.wps.x100.ProcessDescriptionType.DataInputs;
 import net.opengis.wps.x100.ProcessDescriptionType.ProcessOutputs;
@@ -30,8 +26,6 @@ import org.n52.wps.io.IGenerator;
 import org.n52.wps.io.IOHandler;
 import org.n52.wps.io.IParser;
 import org.n52.wps.io.ParserFactory;
-import org.n52.wps.io.data.IComplexData;
-import org.n52.wps.io.data.ILiteralData;
 import org.n52.wps.server.AbstractAlgorithm;
 import org.n52.wps.server.observerpattern.IObserver;
 import org.n52.wps.server.observerpattern.ISubject;
@@ -42,24 +36,26 @@ public abstract class AbstractSelfDescribingAlgorithm extends AbstractAlgorithm 
         super();
     }
 
-    public AbstractSelfDescribingAlgorithm(String wellKnownName) {
-        super(wellKnownName);
-    }
-
     @Override
     protected ProcessDescriptionType initializeDescription() {
+
+        AlgorithmDescriptor algorithmDescriptor = getAlgorithmDescriptor();
 
         ProcessDescriptionsDocument document = ProcessDescriptionsDocument.Factory.newInstance();
         ProcessDescriptions processDescriptions = document.addNewProcessDescriptions();
         ProcessDescriptionType processDescription = processDescriptions.addNewProcessDescription();
-        processDescription.setStatusSupported(true);
-        processDescription.setStoreSupported(true);
-        processDescription.setProcessVersion("1.0.0");
+        processDescription.setStatusSupported(algorithmDescriptor.getStatusSupported());
+        processDescription.setStoreSupported(algorithmDescriptor.getStoreSupported());
+        processDescription.setProcessVersion(algorithmDescriptor.getVersion());
 
         // 1. Identifer
-        String wellKnownName = getWellKnownName();
-        processDescription.addNewIdentifier().setStringValue(wellKnownName == null ? getClass().getCanonicalName() : wellKnownName);
-        processDescription.addNewTitle().setStringValue(wellKnownName == null ? getClass().getCanonicalName() : wellKnownName);
+        processDescription.addNewIdentifier().setStringValue(getClass().getSimpleName());
+        if (algorithmDescriptor.hasTitle()) {
+            processDescription.addNewTitle().setStringValue(algorithmDescriptor.getTitle());
+        }
+        if (algorithmDescriptor.hasAbstract()) {
+            processDescription.addNewAbstract().setStringValue(algorithmDescriptor.getAbstract());
+        }
 
         // 2. Inputs
         Map<String, InputDescriptor> identifiers = getInputDescriptorMap();
@@ -74,25 +70,31 @@ public abstract class AbstractSelfDescribingAlgorithm extends AbstractAlgorithm 
             InputDescriptionType dataInput = dataInputs.addNewInput();
             dataInput.setMinOccurs(descriptor.getMinOccurs());
             dataInput.setMaxOccurs(descriptor.getMaxOccurs());
+
             dataInput.addNewIdentifier().setStringValue(identifier);
-            dataInput.addNewTitle().setStringValue(identifier);
-            dataInput.addNewAbstract().setStringValue(identifier);
+            if (descriptor.hasTitle()) {
+                dataInput.addNewTitle().setStringValue(descriptor.getTitle());
+            } else {
+                // WPS 1.0.0 spec says 'Title' element is optional, but this implementation
+                // appears to require it...?
+                dataInput.addNewTitle().setStringValue(identifier);
+            }
+            if (descriptor.hasAbstract()) {
+                dataInput.addNewAbstract().setStringValue(descriptor.getAbstract());
+            }
 
             if (descriptor instanceof LiteralDataInputDescriptor) {
                 LiteralDataInputDescriptor literalDescriptor = (LiteralDataInputDescriptor)descriptor;
 
                 LiteralInputType literalData = dataInput.addNewLiteralData();
-                DomainMetadataType datatype = literalData.addNewDataType();
-                datatype.setReference(literalDescriptor.getSchemaType());
+                literalData.addNewDataType().setReference(literalDescriptor.getDataType());
 
-                Object defaultValue = literalDescriptor.getDefaultValue();
-                if (defaultValue != null) {
-                    literalData.setDefaultValue(defaultValue.toString());
+                if (literalDescriptor.hasDefaultValue()) {
+                    literalData.setDefaultValue(literalDescriptor.getDefaultValue().toString());
                 }
-                List<? extends Object> allowedValues = literalDescriptor.getAllowedValues();
-                if (allowedValues != null && allowedValues.size() > 0) {
+                if (literalDescriptor.hasAllowedValues()) {
                     AllowedValues allowed = literalData.addNewAllowedValues();
-                    for (Object allow : allowedValues) {
+                    for (Object allow : literalDescriptor.getAllowedValues()) {
                         allowed.addNewValue().setStringValue(allow.toString());
                     }
                 } else {
@@ -100,41 +102,35 @@ public abstract class AbstractSelfDescribingAlgorithm extends AbstractAlgorithm 
                 }
 
             } else if (descriptor instanceof ComplexDataInputDescriptor) {
-                SupportedComplexDataInputType complexData = dataInput.addNewComplexData();
-                describeComplexDataInput(complexData, descriptor.getBinding());
+                describeComplexDataInput(dataInput.addNewComplexData(), descriptor.getBinding());
             }
         }
 
         //3. Outputs
         ProcessOutputs dataOutputs = processDescription.addNewProcessOutputs();
-        Map<String, Class> outputIdentifiers = getOutputDescriptorMap();
+        Map<String, OutputDescriptor> outputIdentifiers = getOutputDescriptorMap();
         for (String identifier : outputIdentifiers.keySet()) {
+            OutputDescriptor descriptor = getOutputDescriptorMap().get(identifier);
+
             OutputDescriptionType dataOutput = dataOutputs.addNewOutput();
-
             dataOutput.addNewIdentifier().setStringValue(identifier);
-            dataOutput.addNewTitle().setStringValue(identifier);
-            dataOutput.addNewAbstract().setStringValue(identifier);
+            if (descriptor.hasTitle()) {
+                dataOutput.addNewTitle().setStringValue(descriptor.getTitle());
+            } else {
+                // WPS 1.0.0 spec says 'Title' element is optional, but this implementation
+                // appears to require it...?
+                dataOutput.addNewTitle().setStringValue(identifier);
+            }
+            if (descriptor.hasAbstract()) {
+                dataOutput.addNewAbstract().setStringValue(descriptor.getAbstract());
+            }
 
-            Class outputDataTypeClass = this.getOutputDataType(identifier);
-
-            if (ILiteralData.class.isAssignableFrom(outputDataTypeClass)) {
-
-                LiteralOutputType literalData = dataOutput.addNewLiteralOutput();
-                String outputClassType = "";
-
-                Constructor[] constructors = outputDataTypeClass.getConstructors();
-                for (Constructor constructor : constructors) {
-                    Class[] parameters = constructor.getParameterTypes();
-                    if (parameters.length == 1) {
-                        outputClassType = parameters[0].getSimpleName();
-                    }
-                }
-                if (outputClassType.length() > 0) {
-                    literalData.addNewDataType().setReference("xs:" + outputClassType.toLowerCase());
-                }
-            } else if (IComplexData.class.isAssignableFrom(outputDataTypeClass)) {
-                SupportedComplexDataType complexData = dataOutput.addNewComplexOutput();
-                describeComplexDataOutput(complexData, outputDataTypeClass);
+            if (descriptor instanceof LiteralDataOutputDescriptor) {
+                LiteralDataOutputDescriptor literalDescriptor = (LiteralDataOutputDescriptor)descriptor;
+                dataOutput.addNewLiteralOutput().addNewDataType().
+                        setReference(literalDescriptor.getDataType());
+            } else if (descriptor instanceof ComplexDataOutputDescriptor) {
+                describeComplexDataOutput(dataOutput.addNewComplexOutput(), descriptor.getBinding());
            }
         }
         return document.getProcessDescriptions().getProcessDescriptionArray(0);
@@ -222,17 +218,19 @@ public abstract class AbstractSelfDescribingAlgorithm extends AbstractAlgorithm 
         if (!valid) {
             System.err.println("Error validating process description for " + getClass().getCanonicalName());
             for (XmlValidationError error : errorList) {
-                System.out.println("\tMessage: " + error.getMessage());
-                System.out.println("\tLocation of invalid XML: " +
+                System.err.println("\tMessage: " + error.getMessage());
+                System.err.println("\tLocation of invalid XML: " +
                      error.getCursorLocation().xmlText());
             }
         }
         return true;
     }
 
+    protected abstract AlgorithmDescriptor getAlgorithmDescriptor();
+
     protected abstract Map<String, InputDescriptor> getInputDescriptorMap();
 
-    protected abstract Map<String, Class> getOutputDescriptorMap();
+    protected abstract Map<String, OutputDescriptor> getOutputDescriptorMap();
 
     @Override
     public Class getInputDataType(String string) {
@@ -241,7 +239,7 @@ public abstract class AbstractSelfDescribingAlgorithm extends AbstractAlgorithm 
 
     @Override
     public Class getOutputDataType(String string) {
-        return getOutputDescriptorMap().get(string);
+        return getOutputDescriptorMap().get(string).getBinding();
     }
 
     private List observers = new ArrayList();

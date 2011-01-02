@@ -1,5 +1,6 @@
 package gov.usgs.cida.gdp.wps.algorithm;
 
+import gov.usgs.cida.gdp.coreprocessing.Delimiter;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCategoricalGridCoverage;
 import gov.usgs.cida.gdp.wps.binding.CSVDataBinding;
 import java.io.BufferedWriter;
@@ -32,11 +33,20 @@ public class FeatureCategoricalGridCoverageAlgorithm extends BaseAlgorithm {
     private final static String I_FEATURE_ATTRIBUTE_NAME = "FEATURE_ATTRIBUTE_NAME";
     private final static String I_DATASET_URI = "DATASET_URI";
     private final static String I_DATASET_ID = "DATASET_ID";
+    private final static String I_DELIMITER = "DELIMITER";
     private final static String O_OUTPUT = "OUTPUT";
-    private final static Map<String, InputDescriptor> INPUT;
-    private final static Map<String, Class> OUTPUT;
+
+    private final static Map<String, InputDescriptor> INPUT_DESCRIPTOR_MAP;
+    private final static Map<String, OutputDescriptor> OUTPUT_DESCRIPTOR_MAP;
+    private final static AlgorithmDescriptor ALGORITHM_DESCRIPTOR;
 
     static {
+        ALGORITHM_DESCRIPTOR = AlgorithmDescriptor.builder(FeatureCategoricalGridCoverageAlgorithm.class).
+                version("1.0.0").
+                storeSupported(true).
+                statusSupported(true).build();
+
+
         Map<String, InputDescriptor> imap = new LinkedHashMap<String, InputDescriptor>();
         imap.put(I_FEATURE_COLLECTION,
                 ComplexDataInputDescriptor.builder(GTVectorDataBinding.class).build());
@@ -46,21 +56,28 @@ public class FeatureCategoricalGridCoverageAlgorithm extends BaseAlgorithm {
                LiteralDataInputDescriptor.anyURIBuilder().build());
         imap.put(I_DATASET_ID,
                 LiteralDataInputDescriptor.stringBuilder().build());
-        INPUT = Collections.unmodifiableMap(imap);
+        imap.put(I_DELIMITER,
+                LiteralDataInputDescriptor.stringBuilder().minOccurs(0).maxOccurs(1).allowedValues(Delimiter.class).build());
+        INPUT_DESCRIPTOR_MAP = Collections.unmodifiableMap(imap);
 
-        Map<String, Class> omap = new LinkedHashMap<String, Class>();
-        omap.put(O_OUTPUT, CSVDataBinding.class);
-        OUTPUT = Collections.unmodifiableMap(omap);
+        Map<String, OutputDescriptor> omap = new LinkedHashMap<String, OutputDescriptor>();
+        omap.put(O_OUTPUT, ComplexDataOutputDescriptor.builder(CSVDataBinding.class).build());
+        OUTPUT_DESCRIPTOR_MAP = Collections.unmodifiableMap(omap);
+    }
+
+    @Override
+    protected AlgorithmDescriptor getAlgorithmDescriptor() {
+        return ALGORITHM_DESCRIPTOR;
     }
 
     @Override
     protected Map<String, InputDescriptor> getInputDescriptorMap() {
-        return INPUT;
+        return INPUT_DESCRIPTOR_MAP;
     }
 
     @Override
-    protected Map<String, Class> getOutputDescriptorMap() {
-        return OUTPUT;
+    protected Map<String, OutputDescriptor> getOutputDescriptorMap() {
+        return OUTPUT_DESCRIPTOR_MAP;
     }
 
     public FeatureCategoricalGridCoverageAlgorithm() {
@@ -82,6 +99,11 @@ public class FeatureCategoricalGridCoverageAlgorithm extends BaseAlgorithm {
             featureDataset = extractFeatureDataset(input, I_DATASET_URI);
             String featureDatasetID = extractString(input, I_DATASET_ID);
 
+            String delimiterString = extractString(input, I_DELIMITER);
+                Delimiter delimiter = delimiterString == null ?
+                    Delimiter.getDefault() :
+                    Delimiter.valueOf(delimiterString);
+
             GridDatatype gridDatatype = null;
             if (featureDataset instanceof GridDataset) {
                 gridDatatype = ((GridDataset)featureDataset).findGridDatatype(featureDatasetID);
@@ -94,7 +116,7 @@ public class FeatureCategoricalGridCoverageAlgorithm extends BaseAlgorithm {
                         featureAttributeName,
                         gridDatatype,
                         writer,
-                        ",");
+                        delimiter);
 
                 writer.flush();
                 writer.close();

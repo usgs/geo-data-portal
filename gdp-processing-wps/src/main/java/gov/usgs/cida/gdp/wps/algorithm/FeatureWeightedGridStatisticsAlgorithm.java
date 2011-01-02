@@ -1,6 +1,8 @@
 package gov.usgs.cida.gdp.wps.algorithm;
 
+import gov.usgs.cida.gdp.coreprocessing.Delimiter;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCoverageWeightedGridStatistics;
+import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCoverageWeightedGridStatistics.GroupBy;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCoverageWeightedGridStatisticsWriter.Statistic;
 import gov.usgs.cida.gdp.wps.binding.CSVDataBinding;
 import java.io.BufferedWriter;
@@ -38,38 +40,54 @@ public class FeatureWeightedGridStatisticsAlgorithm extends BaseAlgorithm {
     private final static String I_TIME_START = "TIME_START";
     private final static String I_TIME_END = "TIME_END";
     private final static String I_STATISTICS = "STATISTICS";
+    private final static String I_GROUP_BY = "GROUP_BY";
     private final static String I_DELIMITER = "DELIMITER";
 
     private final static String O_OUTPUT = "OUTPUT";
 
     private final static Map<String, InputDescriptor> INPUT;
-    private final static Map<String, Class> OUTPUT;
+    private final static Map<String, OutputDescriptor> OUTPUT;
+    private final static AlgorithmDescriptor ALGORITHM_DESCRIPTOR;
 
     static {
-            Map<String, InputDescriptor> imap = new LinkedHashMap<String, InputDescriptor>();
-            imap.put(I_FEATURE_COLLECTION,
-                    ComplexDataInputDescriptor.builder(GTVectorDataBinding.class).build());
-            imap.put(I_FEATURE_ATTRIBUTE_NAME,
-                    LiteralDataInputDescriptor.stringBuilder().build());
-            imap.put(I_DATASET_URI,
-               LiteralDataInputDescriptor.anyURIBuilder().build());
-            imap.put(I_DATASET_ID,
-                    LiteralDataInputDescriptor.stringBuilder().build());
-            imap.put(I_TIME_START,
-                    LiteralDataInputDescriptor.dateTimeBuilder().minOccurs(0).build());
-            imap.put(I_TIME_END,
-                    LiteralDataInputDescriptor.dateTimeBuilder().minOccurs(0).build());
-            imap.put(I_STATISTICS,
-                    LiteralDataInputDescriptor.stringBuilder().minOccurs(0).maxOccurs(Statistic.values().length).allowedValues(Statistic.class).build());
-            INPUT = Collections.unmodifiableMap(imap);
+        ALGORITHM_DESCRIPTOR = AlgorithmDescriptor.builder(FeatureWeightedGridStatisticsAlgorithm.class).
+                version("1.0.0").
+                storeSupported(true).
+                statusSupported(true).build();
 
-            Map<String, Class> omap = new LinkedHashMap<String, Class>();
-            omap.put(O_OUTPUT, CSVDataBinding.class);
-            OUTPUT = Collections.unmodifiableMap(omap);
+        Map<String, InputDescriptor> imap = new LinkedHashMap<String, InputDescriptor>();
+        imap.put(I_FEATURE_COLLECTION,
+                ComplexDataInputDescriptor.builder(GTVectorDataBinding.class).build());
+        imap.put(I_FEATURE_ATTRIBUTE_NAME,
+                LiteralDataInputDescriptor.stringBuilder().build());
+        imap.put(I_DATASET_URI,
+                LiteralDataInputDescriptor.anyURIBuilder().build());
+        imap.put(I_DATASET_ID,
+                LiteralDataInputDescriptor.stringBuilder().build());
+        imap.put(I_TIME_START,
+                LiteralDataInputDescriptor.dateBuilder().minOccurs(0).build());
+        imap.put(I_TIME_END,
+                LiteralDataInputDescriptor.dateBuilder().minOccurs(0).build());
+        imap.put(I_STATISTICS,
+                LiteralDataInputDescriptor.stringBuilder().minOccurs(0).maxOccurs(Statistic.values().length).allowedValues(Statistic.class).build());
+        imap.put(I_GROUP_BY,
+                LiteralDataInputDescriptor.stringBuilder().allowedValues(GroupBy.class).build());
+        imap.put(I_DELIMITER,
+                LiteralDataInputDescriptor.stringBuilder().allowedValues(Delimiter.class).build());
+        INPUT = Collections.unmodifiableMap(imap);
+
+        Map<String, OutputDescriptor> omap = new LinkedHashMap<String, OutputDescriptor>();
+        omap.put(O_OUTPUT, ComplexDataOutputDescriptor.builder(CSVDataBinding.class).build());
+        OUTPUT = Collections.unmodifiableMap(omap);
     }
 
     public FeatureWeightedGridStatisticsAlgorithm() {
             super();
+    }
+
+    @Override
+    protected AlgorithmDescriptor getAlgorithmDescriptor() {
+        return ALGORITHM_DESCRIPTOR;
     }
 
     @Override
@@ -78,7 +96,7 @@ public class FeatureWeightedGridStatisticsAlgorithm extends BaseAlgorithm {
     }
 
     @Override
-    protected Map<String, Class> getOutputDescriptorMap() {
+    protected Map<String, OutputDescriptor> getOutputDescriptorMap() {
         return OUTPUT;
     }
 
@@ -106,6 +124,21 @@ public class FeatureWeightedGridStatisticsAlgorithm extends BaseAlgorithm {
                         extractDate(input, I_TIME_START),
                         extractDate(input, I_TIME_END));
 
+                List<String> statisticStringList = extractStringList(input, I_STATISTICS);
+                List<Statistic> statisticList = statisticStringList.size() < 1 ?
+                    Arrays.asList(Statistic.values()) :
+                    convertStringToEnumList(statisticStringList, Statistic.class);
+
+                String delimiterString = extractString(input, I_DELIMITER);
+                Delimiter delimiter = delimiterString == null ?
+                    Delimiter.COMMA :
+                    Delimiter.valueOf(delimiterString);
+
+                String groupByString = extractString(input, I_GROUP_BY);
+                GroupBy groupBy = groupByString == null ?
+                    GroupBy.STATISTIC :
+                    GroupBy.valueOf(groupByString);
+
                 File file = File.createTempFile("gdp", "csv");
                 writer = new BufferedWriter(new FileWriter(file));
 
@@ -114,10 +147,10 @@ public class FeatureWeightedGridStatisticsAlgorithm extends BaseAlgorithm {
                         featureAttributeName,
                         gridDatatype,
                         timeRange,
-                        Arrays.asList(Statistic.values()),
+                        statisticList,
                         writer,
-                        false,
-                        ",");
+                        groupBy,
+                        delimiter);
 
                 writer.flush();
                 writer.close();

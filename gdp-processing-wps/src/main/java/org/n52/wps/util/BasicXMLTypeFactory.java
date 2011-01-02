@@ -36,24 +36,25 @@ package org.n52.wps.util;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.ParseException;
-import java.util.logging.Level;
 
 import org.apache.log4j.Logger;
-import org.apache.ws.security.util.XmlSchemaDateFormat;
 import org.apache.xmlbeans.impl.util.Base64;
+import org.joda.time.format.ISODateTimeFormat;
+import org.joda.time.format.ISOPeriodFormat;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.literal.LiteralAnyURIBinding;
 import org.n52.wps.io.data.binding.literal.LiteralBase64BinaryBinding;
 import org.n52.wps.io.data.binding.literal.LiteralBooleanBinding;
 import org.n52.wps.io.data.binding.literal.LiteralByteBinding;
-import org.n52.wps.io.data.binding.literal.LiteralDateTimeBinding;
+import org.n52.wps.io.data.binding.literal.LiteralDateBinding;
 import org.n52.wps.io.data.binding.literal.LiteralDoubleBinding;
+import org.n52.wps.io.data.binding.literal.LiteralDurationBinding;
 import org.n52.wps.io.data.binding.literal.LiteralFloatBinding;
 import org.n52.wps.io.data.binding.literal.LiteralIntBinding;
 import org.n52.wps.io.data.binding.literal.LiteralLongBinding;
 import org.n52.wps.io.data.binding.literal.LiteralShortBinding;
 import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
+import org.n52.wps.io.data.binding.literal.LiteralTimeBinding;
 
 public class BasicXMLTypeFactory {
 
@@ -68,7 +69,10 @@ public class BasicXMLTypeFactory {
 	public static String BYTE_URI = "xs:byte";
 	public static String BOOLEAN_URI = "xs:boolean";
 	public static String STRING_URI = "xs:string";
+	public static String DATE_URI = "xs:date";
+	public static String TIME_URI = "xs:time";
 	public static String DATETIME_URI = "xs:dateTime";
+	public static String DURATION_URI = "xs:duration";
 	public static String BASE64BINARY_URI = "xs:base64Binary";
     public static String ANYURI_URI = "xs:anyURI";
 
@@ -99,14 +103,14 @@ public class BasicXMLTypeFactory {
 			return new LiteralBooleanBinding(Boolean.parseBoolean(obj));
 		} else if (xmlDataTypeURI.equals(STRING_URI)) {
 			return new LiteralStringBinding(obj);
+		} else if (xmlDataTypeURI.equals(TIME_URI)) {
+            return new LiteralTimeBinding(ISODateTimeFormat.time().parseDateTime(obj));
+		} else if (xmlDataTypeURI.equals(DATE_URI)) {
+            return new LiteralDateBinding(ISODateTimeFormat.date().parseDateTime(obj));
 		} else if (xmlDataTypeURI.equals(DATETIME_URI)) {
-			try {
-				return new LiteralDateTimeBinding(new XmlSchemaDateFormat()
-						.parse(obj));
-			} catch (ParseException e) {
-				LOGGER.error("Could not parse dateTime data", e);
-				return null;
-			}
+            return new LiteralDateBinding(ISODateTimeFormat.dateTime().parseDateTime(obj));
+		} else if (xmlDataTypeURI.equals(DURATION_URI)) {
+            return new LiteralDurationBinding(ISOPeriodFormat.standard().parsePeriod(obj));
 		} else if (xmlDataTypeURI.equals(BASE64BINARY_URI)) {
 			return new LiteralBase64BinaryBinding(Base64.decode(obj.getBytes()));
 		} else if (xmlDataTypeURI.equals(ANYURI_URI)) {

@@ -50,14 +50,14 @@
 		<wps:Input>
 			<ows:Identifier>TIME_END</ows:Identifier>
 			<wps:Data>
-				<wps:LiteralData>1959-01-31</wps:LiteralData>
+				<wps:LiteralData>1950-01-02</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
 	</wps:DataInputs>
 	<wps:ResponseForm>
 		<wps:ResponseDocument storeExecuteResponse="true" status="true">
 			<wps:Output asReference="true">
-				<ows:Identifier>CSV</ows:Identifier>
+				<ows:Identifier>OUTPUT</ows:Identifier>
 			</wps:Output>
 		</wps:ResponseDocument>
 	</wps:ResponseForm>

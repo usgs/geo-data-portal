@@ -2,21 +2,16 @@ package gov.usgs.cida.gdp.wps.algorithm;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 import org.geotools.feature.FeatureCollection;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
 import org.n52.wps.io.data.binding.literal.LiteralAnyURIBinding;
-import org.n52.wps.io.data.binding.literal.LiteralDateTimeBinding;
+import org.n52.wps.io.data.binding.literal.LiteralDateBinding;
 import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
@@ -49,10 +44,9 @@ public abstract class BaseAlgorithm extends AbstractSelfDescribingAlgorithm {
     }
 
     protected FeatureDataset extractFeatureDataset(Map<String, List<IData>> input, String id) {
-        String featureDatasetURIString = extractString(input, id);
+        URI featureDatasetURI = extractURI(input, id);
         FeatureDataset featureDataset = null;
         try {
-            URI featureDatasetURI = new URI(featureDatasetURIString);
             String featureDatasetScheme = featureDatasetURI.getScheme();
             if ("dods".equals(featureDatasetURI.getScheme())) {
                 featureDataset = FeatureDatasetFactoryManager.open(
@@ -64,28 +58,11 @@ public abstract class BaseAlgorithm extends AbstractSelfDescribingAlgorithm {
             } else if ("http".equals(featureDatasetScheme)) {
 
             }
-        } catch (URISyntaxException ex) {
-            throw new RuntimeException(ex);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
         return featureDataset;
     }
-
-//    protected Date extractTime(Map<String, List<IData>> input, String id) {
-//        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-//        df.setTimeZone(TimeZone.getTimeZone("UTC"));
-//        String timeString = extractString(input, id);
-//        Date date = null;
-//        if (timeString != null) {
-//            try {
-//                date = df.parse(timeString);
-//            } catch (ParseException ex) {
-//                throw new RuntimeException(ex);
-//            }
-//        }
-//        return date;
-//    }
 
 	protected List<String> extractStringList(Map<String, List<IData>> input, String id) {
 		List<String> stringList = new ArrayList<String>();
@@ -106,8 +83,8 @@ public abstract class BaseAlgorithm extends AbstractSelfDescribingAlgorithm {
 		List<IData> iDataList = input.get(id);
 		if (iDataList != null) {
 			for(IData data : iDataList) {
-				if (data instanceof LiteralDateTimeBinding) {
-					dateList.add(((LiteralDateTimeBinding)data).getPayload());
+				if (data instanceof LiteralDateBinding) {
+					dateList.add(((LiteralDateBinding)data).getPayload().toDate());
 				}
 			}
 
@@ -179,6 +156,18 @@ public abstract class BaseAlgorithm extends AbstractSelfDescribingAlgorithm {
             }
         }
         return timeRange;
+    }
+
+    protected <T extends Enum<T>> List<T> convertStringToEnumList(List<String> stringList, Class<T> enumType) {
+        List<T> enumList = new ArrayList<T>();
+        
+        // since we don't have a handle to an enum instance, we grab one so
+        // that we can use the easy instance valueOf() call
+        T temp = enumType.getEnumConstants()[0];
+        for (String string : stringList) {
+            enumList.add(temp.valueOf(enumType, string));
+        }
+        return enumList;
     }
 
 }
