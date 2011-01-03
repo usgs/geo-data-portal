@@ -5,6 +5,7 @@ import gov.usgs.cida.gdp.wps.algorithm.annotation.ComplexDataInput;
 import gov.usgs.cida.gdp.wps.algorithm.annotation.ComplexDataOutput;
 import gov.usgs.cida.gdp.wps.algorithm.annotation.LiteralDataInput;
 import gov.usgs.cida.gdp.wps.algorithm.annotation.LiteralDataOutput;
+import gov.usgs.cida.gdp.wps.algorithm.annotation.Process;
 import gov.usgs.cida.gdp.wps.algorithm.descriptor.AlgorithmDescriptor;
 import gov.usgs.cida.gdp.wps.algorithm.descriptor.ComplexDataInputDescriptor;
 import gov.usgs.cida.gdp.wps.algorithm.descriptor.ComplexDataOutputDescriptor;
@@ -17,11 +18,14 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.n52.wps.io.data.IData;
+import org.n52.wps.server.IAlgorithm;
 
 /**
  *
@@ -29,141 +33,193 @@ import org.n52.wps.io.data.IData;
  */
 public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingAlgorithm {
 
-    public Map<String, Field> inputFieldMap;
-    public Map<String, Field> outputFieldMap;
-    public Map<String, Method> outputMethodMap;
-    public Map<String, Method> inputMethodMap;
+    public static class Introspector {
 
-    static void processAnnotations(
-            Class<?> annotatedClass,
-            AlgorithmDescriptor.Builder<?, ?> algorithmBuilder,
-            Map<String, Field> inputFieldMap,
-            Map<String, Field> outputFieldMap,
-            Map<String, Method> inputMethodMap,
-            Map<String, Method> outputMethodMap) {
+        private Class<? extends IAlgorithm> algorithmClass;
 
-        try {
+        private AlgorithmDescriptor<?> algorithmDescriptor;
 
-            Algorithm algorithm = annotatedClass.getAnnotation(Algorithm.class);
+        private Method processMethod;
 
-            algorithmBuilder.identifier(
-                        algorithm.identifier().length() > 0 ?
-                            algorithm.identifier() :
-                            annotatedClass.getCanonicalName()).
-                    title(algorithm.title()).
-                    abstrakt(algorithm.abstrakt()).
-                    version(algorithm.version()).
-                    storeSupported(algorithm.storeSupported()).
-                    statusSupported(algorithm.statusSupported());
+        private Map<String, Field> inputFieldMap;
+        private Map<String, Field> outputFieldMap;
+        private Map<String, Method> outputMethodMap;
+        private Map<String, Method> inputMethodMap;
 
-            parseElements(algorithmBuilder, inputFieldMap, outputFieldMap, annotatedClass.getDeclaredFields());
-            parseElements(algorithmBuilder, inputMethodMap, outputMethodMap, annotatedClass.getDeclaredMethods());
+        public Introspector(Class<? extends IAlgorithm> algorithmClass) {
 
+            this.algorithmClass = algorithmClass;
 
-        } catch (Exception e) {
-            e.printStackTrace();
+            inputFieldMap = new LinkedHashMap<String, Field>();
+            outputFieldMap = new LinkedHashMap<String, Field>();
+            inputMethodMap = new LinkedHashMap<String, Method>();
+            outputMethodMap = new LinkedHashMap<String, Method>();
+
+            parseClass();
+
+            inputFieldMap = Collections.unmodifiableMap(inputFieldMap);
+            outputFieldMap = Collections.unmodifiableMap(outputFieldMap);
+            inputMethodMap = Collections.unmodifiableMap(inputMethodMap);
+            outputMethodMap = Collections.unmodifiableMap(outputMethodMap);
+        }
+
+        private void parseClass() {
+
+            AlgorithmDescriptor.Builder<?,?> algorithmBuilder = AlgorithmDescriptor.builder(algorithmClass);
+            try {
+
+                Algorithm algorithm = algorithmClass.getAnnotation(Algorithm.class);
+
+                algorithmBuilder.identifier(
+                            algorithm.identifier().length() > 0 ?
+                                algorithm.identifier() :
+                                algorithmClass.getCanonicalName()).
+                        title(algorithm.title()).
+                        abstrakt(algorithm.abstrakt()).
+                        version(algorithm.version()).
+                        storeSupported(algorithm.storeSupported()).
+                        statusSupported(algorithm.statusSupported());
+
+                parseElements(algorithmBuilder, inputFieldMap, outputFieldMap, algorithmClass.getDeclaredFields());
+                parseElements(algorithmBuilder, inputMethodMap, outputMethodMap, algorithmClass.getDeclaredMethods());
+
+                Iterator<Method> methodIterator = Arrays.asList(algorithmClass.getDeclaredMethods()).iterator();
+                while (methodIterator.hasNext() && processMethod == null) {
+                    Method method = methodIterator.next();
+                    if (method.getAnnotation(Process.class) != null) {
+                        processMethod = method;
+                        // TODO check signature
+                        processMethod.setAccessible(true);
+                    }
+                }
+
+                algorithmDescriptor = algorithmBuilder.build();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        protected <T extends AccessibleObject> void parseElements(
+                AlgorithmDescriptor.Builder<?, ?> algorithmBuilder,
+                Map<String, T> inputElementMap,
+                Map<String, T> outputElementMap,
+                T[] elements) {
+
+            for (T element : elements) {
+                {
+                    LiteralDataOutput ldo = element.getAnnotation(LiteralDataOutput.class);
+                    if (ldo != null) {
+                        LiteralDataOutputDescriptor ldod =
+                                LiteralDataOutputDescriptor.builder(ldo.binding(), ldo.identifier()).
+                                title(ldo.title()).
+                                abstrakt(ldo.abstrakt()).build();
+
+                        // TODO validate here!!!
+                        element.setAccessible(true);
+                        outputElementMap.put(ldo.identifier(), element);
+                        algorithmBuilder.addOutputDesciptor(ldod);
+                    }
+                }
+                {
+                    ComplexDataOutput cdo = element.getAnnotation(ComplexDataOutput.class);
+                    if (cdo != null) {
+                        ComplexDataOutputDescriptor cdod =
+                                ComplexDataOutputDescriptor.builder(
+                                cdo.binding(),
+                                cdo.identifier()).
+                                title(cdo.title()).
+                                abstrakt(cdo.abstrakt()).
+                                build();
+
+                        // TODO validate here!!!
+
+                        element.setAccessible(true);
+                        outputElementMap.put(cdo.identifier(), element);
+                        algorithmBuilder.addOutputDesciptor(cdod);
+                    }
+                }
+                {
+                    LiteralDataInput ldi = element.getAnnotation(LiteralDataInput.class);
+                    if (ldi != null) {
+                        LiteralDataInputDescriptor ldid =
+                                LiteralDataInputDescriptor.builder(ldi.binding(), ldi.identifier()).
+                                title(ldi.title()).
+                                abstrakt(ldi.abstrakt()).
+                                minOccurs(ldi.minOccurs()).
+                                maxOccurs(ldi.maxOccurs()).
+                                defaultValue(ldi.defaultValue()).
+                                allowedValues(ldi.allowedValues()).
+                                build();
+
+                        // TODO validate here!!!
+
+                        element.setAccessible(true);
+                        inputElementMap.put(ldi.identifier(), element);
+                        algorithmBuilder.addInputDesciptor(ldid);
+                    }
+                }
+                {
+                    ComplexDataInput cdi = element.getAnnotation(ComplexDataInput.class);
+                    if (cdi != null) {
+                        ComplexDataInputDescriptor cdid =
+                                ComplexDataInputDescriptor.builder(cdi.binding(), cdi.identifier()).
+                                title(cdi.title()).
+                                abstrakt(cdi.abstrakt()).
+                                minOccurs(cdi.minOccurs()).
+                                maxOccurs(cdi.maxOccurs()).
+                                maximumMegaBytes(cdi.maximumMegaBytes()).
+                                build();
+
+                        // TODO validate here!!!
+
+                        element.setAccessible(true);
+                        inputElementMap.put(cdi.identifier(), element);
+                        algorithmBuilder.addInputDesciptor(cdid);
+                    }
+                }
+            }
+        }
+
+        public AlgorithmDescriptor getAlgorithmDescriptor() {
+            return algorithmDescriptor;
+        }
+
+        public Method getProcessMethod() {
+            return processMethod;
+        }
+
+        public Map<String, Field> getInputFieldMap() {
+            return inputFieldMap;
+        }
+
+        public Map<String, Field> getOutputFieldMap() {
+            return outputFieldMap;
+        }
+
+        public Map<String, Method> getInputMethodMap() {
+            return inputMethodMap;
+        }
+
+        public Map<String, Method> getOutputMethodMap() {
+            return outputMethodMap;
         }
     }
 
-    protected static <T extends AccessibleObject> void parseElements(
-            AlgorithmDescriptor.Builder<?, ?> algorithmBuilder,
-            Map<String, T> inputElementMap,
-            Map<String, T> outputElementMap,
-            T[] elements) {
-
-        for (T element : elements) {
-            {
-                LiteralDataOutput ldo = element.getAnnotation(LiteralDataOutput.class);
-                if (ldo != null) {
-                    LiteralDataOutputDescriptor ldod =
-                            LiteralDataOutputDescriptor.builder(ldo.binding(), ldo.identifier()).
-                            title(ldo.title()).
-                            abstrakt(ldo.abstrakt()).build();
-
-                    // TODO validate here!!!
-                    element.setAccessible(true);
-                    outputElementMap.put(ldo.identifier(), element);
-                    algorithmBuilder.addOutputDesciptor(ldod);
-                }
-            }
-            {
-                ComplexDataOutput cdo = element.getAnnotation(ComplexDataOutput.class);
-                if (cdo != null) {
-                    ComplexDataOutputDescriptor cdod =
-                            ComplexDataOutputDescriptor.builder(
-                            cdo.binding(),
-                            cdo.identifier()).
-                            title(cdo.title()).
-                            abstrakt(cdo.abstrakt()).
-                            build();
-
-                    // TODO validate here!!!
-
-                    element.setAccessible(true);
-                    outputElementMap.put(cdo.identifier(), element);
-                    algorithmBuilder.addOutputDesciptor(cdod);
-                }
-            }
-            {
-                LiteralDataInput ldi = element.getAnnotation(LiteralDataInput.class);
-                if (ldi != null) {
-                    LiteralDataInputDescriptor ldid =
-                            LiteralDataInputDescriptor.builder(ldi.binding(), ldi.identifier()).
-                            title(ldi.title()).
-                            abstrakt(ldi.abstrakt()).
-                            minOccurs(ldi.minOccurs()).
-                            maxOccurs(ldi.maxOccurs()).
-                            defaultValue(ldi.defaultValue()).
-                            allowedValues(ldi.allowedValues()).
-                            build();
-
-                    // TODO validate here!!!
-
-                    element.setAccessible(true);
-                    inputElementMap.put(ldi.identifier(), element);
-                    algorithmBuilder.addInputDesciptor(ldid);
-                }
-            }
-            {
-                ComplexDataInput cdi = element.getAnnotation(ComplexDataInput.class);
-                if (cdi != null) {
-                    ComplexDataInputDescriptor cdid =
-                            ComplexDataInputDescriptor.builder(cdi.binding(), cdi.identifier()).
-                            title(cdi.title()).
-                            abstrakt(cdi.abstrakt()).
-                            minOccurs(cdi.minOccurs()).
-                            maxOccurs(cdi.maxOccurs()).
-                            maximumMegaBytes(cdi.maximumMegaBytes()).
-                            build();
-
-                    // TODO validate here!!!
-
-                    element.setAccessible(true);
-                    inputElementMap.put(cdi.identifier(), element);
-                    algorithmBuilder.addInputDesciptor(cdid);
-                }
-            }
+    private final static Map<Class<? extends IAlgorithm>, Introspector> introspectorMap =
+            new HashMap<Class<? extends IAlgorithm>, Introspector>();
+    public static synchronized Introspector getInstrospector(Class<? extends IAlgorithm> algorithmClass) {
+        Introspector introspector = introspectorMap.get(algorithmClass);
+        if (introspector == null) {
+            introspector = new Introspector(algorithmClass);
+            introspectorMap.put(algorithmClass, introspector);
         }
+        return introspector;
     }
 
     @Override
     protected AlgorithmDescriptor getAlgorithmDescriptor() {
-
-        AlgorithmDescriptor.Builder algorithmBuilder = AlgorithmDescriptor.builder(getClass());
-        inputFieldMap = new LinkedHashMap<String, Field>();
-        outputFieldMap = new LinkedHashMap<String, Field>();
-        inputMethodMap = new LinkedHashMap<String, Method>();
-        outputMethodMap = new LinkedHashMap<String, Method>();
-
-        processAnnotations(
-                getClass(),
-                algorithmBuilder,
-                inputFieldMap,
-                outputFieldMap,
-                inputMethodMap,
-                outputMethodMap);
-
-        return algorithmBuilder.build();
+        return getInstrospector(getClass()).getAlgorithmDescriptor();
     }
 
     @Override
@@ -173,9 +229,10 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
         // this is here as I plan on  separating the implementation
         // from the annotated process/algorithm, there's no reason it needs to me
         // a subclass (simply that way not for development convenience)
-        Object target = this;
+        IAlgorithm target = this;
+        Introspector introspector = getInstrospector(target.getClass());
 
-        for (Map.Entry<String, Field> iEntry : inputFieldMap.entrySet()) {
+        for (Map.Entry<String, Field> iEntry : introspector.getInputFieldMap().entrySet()) {
             String iIdentifier = iEntry.getKey();
             Field iField = iEntry.getValue();
             try {
@@ -213,7 +270,7 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
                 ex.printStackTrace();
             }
         }
-        for (Map.Entry<String, Method> iEntry : inputMethodMap.entrySet()) {
+        for (Map.Entry<String, Method> iEntry : introspector.getInputMethodMap().entrySet()) {
             String iIdentifier = iEntry.getKey();
             Method iMethod = iEntry.getValue();
             try {
@@ -256,9 +313,13 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
             }
         }
 
-        process();
+        try {
+            introspector.getProcessMethod().invoke(target);
+        } catch (Exception ex) {
+                ex.printStackTrace();
+        }
 
-        for (Map.Entry<String, Field> oEntry : outputFieldMap.entrySet()) {
+        for (Map.Entry<String, Field> oEntry : introspector.getOutputFieldMap().entrySet()) {
             String oIdentifier = oEntry.getKey();
             Field oField = oEntry.getValue();
             try {
@@ -271,11 +332,11 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
                 ex.printStackTrace();
             }
         }
-        for (Map.Entry<String, Method> oEntry : outputMethodMap.entrySet()) {
+        for (Map.Entry<String, Method> oEntry : introspector.getOutputMethodMap().entrySet()) {
             String oIdentifier = oEntry.getKey();
             Method oMethod = oEntry.getValue();
             try {
-                Object value = oMethod.invoke(target, (Object[]) null);
+                Object value = oMethod.invoke(target);
                 Class<?> bindingClass = getAlgorithmDescriptor().getOutputDescriptor(oIdentifier).getBinding();
                 Constructor bindingConstructor = bindingClass.getConstructor(value.getClass());
                 Object binding = bindingConstructor.newInstance(value);
@@ -287,5 +348,4 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
         return oMap;
     }
 
-    public abstract void process();
 }

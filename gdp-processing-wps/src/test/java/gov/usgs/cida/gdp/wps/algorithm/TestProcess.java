@@ -3,6 +3,7 @@ package gov.usgs.cida.gdp.wps.algorithm;
 import gov.usgs.cida.gdp.wps.algorithm.annotation.Algorithm;
 import gov.usgs.cida.gdp.wps.algorithm.annotation.LiteralDataInput;
 import gov.usgs.cida.gdp.wps.algorithm.annotation.LiteralDataOutput;
+import gov.usgs.cida.gdp.wps.algorithm.annotation.Process;
 import java.util.Iterator;
 import java.util.List;
 import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
@@ -12,7 +13,7 @@ import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
  * @author tkunicki
  */
 @Algorithm(
-    title="TestProcesTitle",
+    title="TestProcessTitle",
     abstrakt="TestProcessAbstract",
     version="1.0.0",
     storeSupported=true,
@@ -41,7 +42,7 @@ public class TestProcess extends AbstractAnnotatedAlgorithm {
     private String methodString;
     private String methodOutput;
 
-    @Override
+    @Process
     public void process() {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
