@@ -11,7 +11,7 @@ import org.geotools.feature.FeatureCollection;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
 import org.n52.wps.io.data.binding.literal.LiteralAnyURIBinding;
-import org.n52.wps.io.data.binding.literal.LiteralDateBinding;
+import org.n52.wps.io.data.binding.literal.LiteralDateTimeBinding;
 import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
@@ -83,8 +83,8 @@ public abstract class BaseAlgorithm extends AbstractSelfDescribingAlgorithm {
 		List<IData> iDataList = input.get(id);
 		if (iDataList != null) {
 			for(IData data : iDataList) {
-				if (data instanceof LiteralDateBinding) {
-					dateList.add(((LiteralDateBinding)data).getPayload().toDate());
+				if (data instanceof LiteralDateTimeBinding) {
+					dateList.add(((LiteralDateTimeBinding)data).getPayload());
 				}
 			}
 

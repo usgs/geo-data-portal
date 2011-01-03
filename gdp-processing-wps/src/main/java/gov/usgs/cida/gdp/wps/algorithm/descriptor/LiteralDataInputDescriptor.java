@@ -1,6 +1,5 @@
 package gov.usgs.cida.gdp.wps.algorithm.descriptor;
 
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -78,22 +77,10 @@ public class LiteralDataInputDescriptor<T extends Class<? extends ILiteralData>>
         return builder(LiteralByteBinding.class, identifier);
     }
 
-    public static Builder<?,Class<LiteralDateTimeBinding>> dateBuilder(String identifier) {
-        return builder(LiteralDateTimeBinding.class, identifier);
-    }
-
-    public static Builder<?,Class<LiteralDateTimeBinding>> timeBuilder(String identifier) {
-        return builder(LiteralDateTimeBinding.class, identifier);
-    }
-
     public static Builder<?,Class<LiteralDateTimeBinding>> dateTimeBuilder(String identifier) {
         return builder(LiteralDateTimeBinding.class, identifier);
     }
-
-    public static Builder<?,Class<LiteralDateTimeBinding>> durationBuilder(String identifier) {
-        return builder(LiteralDateTimeBinding.class, identifier);
-    }
-
+    
     public static Builder<?,Class<LiteralDoubleBinding>> doubleBuilder(String identifier) {
         return builder(LiteralDoubleBinding.class, identifier);
     }

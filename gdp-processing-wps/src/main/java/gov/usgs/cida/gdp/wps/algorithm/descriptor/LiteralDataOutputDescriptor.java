@@ -51,19 +51,7 @@ public class LiteralDataOutputDescriptor<T extends Class<? extends ILiteralData>
         return builder(LiteralByteBinding.class, identifier);
     }
 
-    public static Builder<?,Class<LiteralDateTimeBinding>> dateBuilder(String identifier) {
-        return builder(LiteralDateTimeBinding.class, identifier);
-    }
-
-    public static Builder<?,Class<LiteralDateTimeBinding>> timeBuilder(String identifier) {
-        return builder(LiteralDateTimeBinding.class, identifier);
-    }
-
     public static Builder<?,Class<LiteralDateTimeBinding>> dateTimeBuilder(String identifier) {
-        return builder(LiteralDateTimeBinding.class, identifier);
-    }
-
-    public static Builder<?,Class<LiteralDateTimeBinding>> durationBuilder(String identifier) {
         return builder(LiteralDateTimeBinding.class, identifier);
     }
 
@@ -106,6 +94,7 @@ public class LiteralDataOutputDescriptor<T extends Class<? extends ILiteralData>
             this.dataType = dataType;
         }
 
+        @Override
         public LiteralDataOutputDescriptor<T> build() {
             return new LiteralDataOutputDescriptor<T>(this);
         }

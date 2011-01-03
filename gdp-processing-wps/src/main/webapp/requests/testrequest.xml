@@ -44,13 +44,13 @@
 		<wps:Input>
 			<ows:Identifier>TIME_START</ows:Identifier>
 			<wps:Data>
-				<wps:LiteralData>1950-01-01</wps:LiteralData>
+				<wps:LiteralData>1950-01-01T00:00:00Z</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
 		<wps:Input>
 			<ows:Identifier>TIME_END</ows:Identifier>
 			<wps:Data>
-				<wps:LiteralData>1950-01-02</wps:LiteralData>
+				<wps:LiteralData>1950-01-02T00:00:00Z</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
 	</wps:DataInputs>
