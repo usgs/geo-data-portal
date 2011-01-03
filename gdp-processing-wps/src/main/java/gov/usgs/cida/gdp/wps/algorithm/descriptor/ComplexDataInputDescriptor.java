@@ -51,7 +51,6 @@ public class ComplexDataInputDescriptor<T extends Class<? extends IComplexData>>
             return self();
         }
 
-        @Override
         public ComplexDataInputDescriptor<T> build() {
             return new ComplexDataInputDescriptor<T>(this);
         }

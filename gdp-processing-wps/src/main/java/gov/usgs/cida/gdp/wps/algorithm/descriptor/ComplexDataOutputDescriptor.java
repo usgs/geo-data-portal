@@ -33,7 +33,6 @@ public class ComplexDataOutputDescriptor<T extends Class<? extends IComplexData>
             super(binding, identifier);
         }
 
-        @Override
         public ComplexDataOutputDescriptor<T> build() {
             return new ComplexDataOutputDescriptor<T>(this);
         }

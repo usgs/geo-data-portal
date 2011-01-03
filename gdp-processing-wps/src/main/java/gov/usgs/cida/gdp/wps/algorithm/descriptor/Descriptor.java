@@ -16,12 +16,16 @@ public abstract class Descriptor {
         this.abstrakt = builder.abstrakt;
     }
 
+    public boolean hasIdentifier() {
+        return identifier != null && identifier.length() > 0;
+    }
+
     public String getIdentifier() {
         return identifier;
     }
 
     public boolean hasTitle() {
-        return getTitle() != null;
+        return getTitle() != null && title.length() > 0;
     }
 
     public String getTitle() {
@@ -29,14 +33,14 @@ public abstract class Descriptor {
     }
 
     public boolean hasAbstract() {
-        return getAbstract() != null;
+        return getAbstract() != null && abstrakt.length() > 0;
     }
 
     public String getAbstract() {
         return abstrakt;
     }
 
-    static abstract class Builder<B extends Builder<B>> {
+    public static abstract class Builder<B extends Builder<B>> {
 
         private String identifier;
         private String title;
@@ -59,8 +63,6 @@ public abstract class Descriptor {
         }
 
         protected abstract B self();
-
-        public abstract Descriptor build();
     }
     
 }

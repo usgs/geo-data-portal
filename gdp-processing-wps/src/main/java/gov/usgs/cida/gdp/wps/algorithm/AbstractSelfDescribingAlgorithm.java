@@ -54,16 +54,14 @@ public abstract class AbstractSelfDescribingAlgorithm extends AbstractAlgorithm 
         processDescription.setStoreSupported(algorithmDescriptor.getStoreSupported());
         processDescription.setProcessVersion(algorithmDescriptor.getVersion());
 
-        // 1. Identifer
         processDescription.addNewIdentifier().setStringValue(algorithmDescriptor.getIdentifier());
         processDescription.addNewTitle().setStringValue( algorithmDescriptor.hasTitle() ?
-                algorithmDescriptor.getIdentifier() :
-                algorithmDescriptor.getTitle());
+                algorithmDescriptor.getTitle() :
+                algorithmDescriptor.getIdentifier());
         if (algorithmDescriptor.hasAbstract()) {
             processDescription.addNewAbstract().setStringValue(algorithmDescriptor.getAbstract());
         }
 
-        // 2. Inputs
         Collection<InputDescriptor> inputDescriptors = algorithmDescriptor.getInputDescriptors();
         DataInputs dataInputs = null;
         if (inputDescriptors.size() > 0) {
@@ -85,18 +83,18 @@ public abstract class AbstractSelfDescribingAlgorithm extends AbstractAlgorithm 
             }
 
             if (inputDescriptor instanceof LiteralDataInputDescriptor) {
-                LiteralDataInputDescriptor literalDescriptor = (LiteralDataInputDescriptor)inputDescriptor;
+                LiteralDataInputDescriptor<?> literalDescriptor = (LiteralDataInputDescriptor)inputDescriptor;
 
                 LiteralInputType literalData = dataInput.addNewLiteralData();
                 literalData.addNewDataType().setReference(literalDescriptor.getDataType());
 
                 if (literalDescriptor.hasDefaultValue()) {
-                    literalData.setDefaultValue(literalDescriptor.getDefaultValue().toString());
+                    literalData.setDefaultValue(literalDescriptor.getDefaultValue());
                 }
                 if (literalDescriptor.hasAllowedValues()) {
                     AllowedValues allowed = literalData.addNewAllowedValues();
-                    for (Object allow : literalDescriptor.getAllowedValues()) {
-                        allowed.addNewValue().setStringValue(allow.toString());
+                    for (String allowedValue : literalDescriptor.getAllowedValues()) {
+                        allowed.addNewValue().setStringValue(allowedValue);
                     }
                 } else {
                     literalData.addNewAnyValue();
@@ -107,7 +105,6 @@ public abstract class AbstractSelfDescribingAlgorithm extends AbstractAlgorithm 
             }
         }
 
-        //3. Outputs
         ProcessOutputs dataOutputs = processDescription.addNewProcessOutputs();
         Collection<OutputDescriptor> outputDescriptors = algorithmDescriptor.getOutputDescriptors();
         for (OutputDescriptor outputDescriptor : outputDescriptors) {
@@ -122,7 +119,7 @@ public abstract class AbstractSelfDescribingAlgorithm extends AbstractAlgorithm 
             }
 
             if (outputDescriptor instanceof LiteralDataOutputDescriptor) {
-                LiteralDataOutputDescriptor literalDescriptor = (LiteralDataOutputDescriptor)outputDescriptor;
+                LiteralDataOutputDescriptor<?> literalDescriptor = (LiteralDataOutputDescriptor)outputDescriptor;
                 dataOutput.addNewLiteralOutput().addNewDataType().
                         setReference(literalDescriptor.getDataType());
             } else if (outputDescriptor instanceof ComplexDataOutputDescriptor) {

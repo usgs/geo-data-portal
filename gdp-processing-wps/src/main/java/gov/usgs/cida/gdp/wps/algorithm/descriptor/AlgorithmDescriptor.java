@@ -141,7 +141,6 @@ public class AlgorithmDescriptor<T extends Class<? extends IAlgorithm>> extends 
             return self();
         }
         
-        @Override
         public AlgorithmDescriptor<T> build() {
             return new AlgorithmDescriptor<T>(this);
         }

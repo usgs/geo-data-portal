@@ -17,7 +17,7 @@ public abstract class BoundDescriptor<T extends Class<?>> extends Descriptor {
         return binding;
     }
 
-    static abstract class Builder<B extends Builder<B,T>, T extends Class<?>> extends Descriptor.Builder<B> {
+    public static abstract class Builder<B extends Builder<B,T>, T extends Class<?>> extends Descriptor.Builder<B> {
 
         private final T binding;
 
@@ -29,9 +29,6 @@ public abstract class BoundDescriptor<T extends Class<?>> extends Descriptor {
             this(binding);
             identifier(identifier);
         }
-
-        @Override
-        public abstract BoundDescriptor<T> build();
     }
     
 }

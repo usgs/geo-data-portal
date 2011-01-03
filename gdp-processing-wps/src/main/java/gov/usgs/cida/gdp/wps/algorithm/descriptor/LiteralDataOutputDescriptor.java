@@ -29,67 +29,67 @@ public class LiteralDataOutputDescriptor<T extends Class<? extends ILiteralData>
         return dataType;
     }
 
-    private static <T extends Class<? extends ILiteralData>> Builder<?,T> builder(T binding, String identifier, String schemaType) {
-        return new BuilderTyped(binding, identifier, schemaType);
+    public static <T extends Class<? extends ILiteralData>> Builder<?,T> builder(T binding, String identifier) {
+        return new BuilderTyped(binding, identifier, LiteralDataDescriptorUtility.dataTypeForBinding(binding));
     }
 
     // utility functions, quite verbose...  should have some factory method somewhere to
     // match binding class and schema type.  see analot in LiteralDataOutputDescriptor
     public static Builder<?,Class<LiteralAnyURIBinding>> anyURIBuilder(String identifier) {
-        return builder(LiteralAnyURIBinding.class, identifier, "xs:anyURI");
+        return builder(LiteralAnyURIBinding.class, identifier);
     }
 
     public static Builder<?,Class<LiteralBase64BinaryBinding>> base64BinaryBuilder(String identifier) {
-        return builder(LiteralBase64BinaryBinding.class, identifier, "xs:base64Binary");
+        return builder(LiteralBase64BinaryBinding.class, identifier);
     }
 
     public static Builder<?,Class<LiteralBooleanBinding>> booleanBuilder(String identifier) {
-        return builder(LiteralBooleanBinding.class, identifier, "xs:boolean");
+        return builder(LiteralBooleanBinding.class, identifier);
     }
 
     public static Builder<?,Class<LiteralByteBinding>> byteBuilder(String identifier) {
-        return builder(LiteralByteBinding.class, identifier, "xs:byte");
+        return builder(LiteralByteBinding.class, identifier);
     }
 
     public static Builder<?,Class<LiteralDateTimeBinding>> dateBuilder(String identifier) {
-        return builder(LiteralDateTimeBinding.class, identifier, "xs:date");
+        return builder(LiteralDateTimeBinding.class, identifier);
     }
 
     public static Builder<?,Class<LiteralDateTimeBinding>> timeBuilder(String identifier) {
-        return builder(LiteralDateTimeBinding.class, identifier, "xs:time");
+        return builder(LiteralDateTimeBinding.class, identifier);
     }
 
     public static Builder<?,Class<LiteralDateTimeBinding>> dateTimeBuilder(String identifier) {
-        return builder(LiteralDateTimeBinding.class, identifier, "xs:dateTime");
+        return builder(LiteralDateTimeBinding.class, identifier);
     }
 
     public static Builder<?,Class<LiteralDateTimeBinding>> durationBuilder(String identifier) {
-        return builder(LiteralDateTimeBinding.class, identifier, "xs:duration");
+        return builder(LiteralDateTimeBinding.class, identifier);
     }
 
     public static Builder<?,Class<LiteralDoubleBinding>> doubleBuilder(String identifier) {
-        return builder(LiteralDoubleBinding.class, identifier, "xs:double");
+        return builder(LiteralDoubleBinding.class, identifier);
     }
 
     public static Builder<?,Class<LiteralFloatBinding>> floatBuilder(String identifier) {
-        return builder(LiteralFloatBinding.class, identifier, "xs:float");
+        return builder(LiteralFloatBinding.class, identifier);
     }
 
     public static Builder<?,Class<LiteralIntBinding>> intBuilder(String identifier) {
-        return builder(LiteralIntBinding.class, identifier, "xs:int");
+        return builder(LiteralIntBinding.class, identifier);
     }
 
     public static Builder<?,Class<LiteralShortBinding>> shortBuilder(String identifier) {
-        return builder(LiteralShortBinding.class, identifier, "xs:short");
+        return builder(LiteralShortBinding.class, identifier);
     }
 
     public static Builder<?,Class<LiteralStringBinding>> stringBuilder(String identifier) {
-        return builder(LiteralStringBinding.class, identifier, "xs:string");
+        return builder(LiteralStringBinding.class, identifier);
     }
 
     private static class BuilderTyped<T extends Class<? extends ILiteralData>> extends Builder<BuilderTyped<T>, T> {
-        public BuilderTyped(T binding, String identifier, String schemaType) {
-            super(binding, identifier, schemaType);
+        public BuilderTyped(T binding, String identifier, String dataType) {
+            super(binding, identifier, dataType);
         }
         @Override
         protected BuilderTyped self() {
@@ -106,7 +106,6 @@ public class LiteralDataOutputDescriptor<T extends Class<? extends ILiteralData>
             this.dataType = dataType;
         }
 
-        @Override
         public LiteralDataOutputDescriptor<T> build() {
             return new LiteralDataOutputDescriptor<T>(this);
         }
