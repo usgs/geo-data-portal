@@ -63,9 +63,9 @@ public class FeatureWeightedGridStatisticsAlgorithm extends BaseAlgorithm {
                 addInputDesciptor(
                     LiteralDataInputDescriptor.stringBuilder(I_DATASET_ID)).
                 addInputDesciptor(
-                    LiteralDataInputDescriptor.dateBuilder(I_TIME_START).minOccurs(0)).
+                    LiteralDataInputDescriptor.dateTimeBuilder(I_TIME_START).minOccurs(0)).
                 addInputDesciptor(
-                    LiteralDataInputDescriptor.dateBuilder(I_TIME_END).minOccurs(0)).
+                    LiteralDataInputDescriptor.dateTimeBuilder(I_TIME_END).minOccurs(0)).
                 addInputDesciptor(
                     LiteralDataInputDescriptor.stringBuilder(I_STATISTICS).minOccurs(0).maxOccurs(Statistic.class).allowedValues(Statistic.class)).
                 addInputDesciptor(
