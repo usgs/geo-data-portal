@@ -3,6 +3,7 @@ package gov.usgs.cida.gdp.geometry;
 import gov.usgs.cida.gdp.utilities.HTTPUtils;
 
 import com.vividsolutions.jts.geom.GeometryCollection;
+import gov.usgs.cida.gdp.constants.AppConstant;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -49,7 +50,7 @@ public class WatersService {
         // Write to a shapefile so GeoServer can load the geometry. As of 2.0.2,
         // Geoserver (GeoTools) GML datastores are unsupported. Hence the
         // GML -> Shapefile conversion.
-        String tempDir = System.getProperty("java.io.tmpdir");
+        String tempDir = AppConstant.NEW_SHAPEFILE_LOCATION.toString();
 
         String shapefileName = "waters_" + lon.hashCode() * 31 + lat.hashCode() * 7;
 
