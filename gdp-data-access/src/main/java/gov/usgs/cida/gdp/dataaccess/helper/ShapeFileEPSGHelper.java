@@ -16,17 +16,6 @@ import org.slf4j.LoggerFactory;
 public class ShapeFileEPSGHelper {
     private static Logger log = LoggerFactory.getLogger(ShapeFileEPSGHelper.class);
 
-    private File prjFile;
-
-    ShapeFileEPSGHelper(final File prjFile)  {
-        this.prjFile = prjFile;
-    }
-
-    public String getEpsgFromPrj() {
-        String result = null;
-        return result;
-    }
-
     public static String getEpsgFromPrj(final File prjFile) throws IOException, FactoryException {
         String result = null;
         if (prjFile == null || !prjFile.exists()) return result;
@@ -52,20 +41,6 @@ public class ShapeFileEPSGHelper {
         result = CRS.lookupIdentifier(crs, true);
 
         return result;
-    }
-
-    /**
-     * @return the prjFile
-     */
-    public File getPrjFile() {
-        return this.prjFile;
-    }
-
-    /**
-     * @param prjFile the prjFile to set
-     */
-    public void setPrjFile(File prjFile) {
-        this.prjFile = prjFile;
     }
 
 }

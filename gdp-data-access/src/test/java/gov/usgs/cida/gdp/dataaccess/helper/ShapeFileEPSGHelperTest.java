@@ -106,32 +106,6 @@ public class ShapeFileEPSGHelperTest {
     }
 
     /**
-     * Test of getShapeFile method, of class ShapeFileEPSGHelper.
-     */
-    @Test
-    public void testGetShapeFileDirectory() {
-        System.out.println("getShapeFile");
-        File expResult = new File(System.getProperty("java.io.tmpdir"));
-        ShapeFileEPSGHelper instance = new ShapeFileEPSGHelper(expResult);
-        instance.setPrjFile(expResult);
-        File result = instance.getPrjFile();
-        assertEquals(expResult, result);
-    }
-
-    /**
-     * Test of setPrjFile method, of class ShapeFileEPSGHelper.
-     */
-    @Test
-    public void testSetShapeFileDirectory() {
-        System.out.println("setShapeFile");
-        File expResult = new File(System.getProperty("java.io.tmpdir"));
-        ShapeFileEPSGHelper instance = new ShapeFileEPSGHelper(expResult);
-        instance.setPrjFile(expResult);
-        File result = instance.getPrjFile();
-        assertEquals(expResult, result);
-    }
-
-    /**
      * Test of setPrjFile method, of class ShapeFileEPSGHelper.
      */
     @Test
