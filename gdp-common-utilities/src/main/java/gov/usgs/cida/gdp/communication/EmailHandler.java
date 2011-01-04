@@ -1,5 +1,6 @@
 package gov.usgs.cida.gdp.communication;
 
+import gov.usgs.cida.gdp.constants.AppConstant;
 import java.util.Properties;
 
 import gov.usgs.cida.gdp.utilities.PropertyFactory;
@@ -21,8 +22,8 @@ public class EmailHandler {
 		Properties properties = System.getProperties();
 
 //		if (Boolean.parseBoolean(PropertyFactory.getProperty("development"))) {
-			properties.put("mail.smtp.host", PropertyFactory.getProperty("development.mail.smtp.host"));
-			properties.put("mail.smtp.port", PropertyFactory.getProperty("development.mail.smtp.port"));
+			properties.put("mail.smtp.host", AppConstant.EMAIL_HOST.toString());
+			properties.put("mail.smtp.port", AppConstant.EMAIL_PORT.toString());
 //		} else {
 //			properties.put("mail.smtp.host", PropertyFactory.getProperty("production.mail.smtp.host"));
 //			properties.put("mail.smtp.port", PropertyFactory.getProperty("production.mail.smtp.port"));
