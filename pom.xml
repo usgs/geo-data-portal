@@ -193,6 +193,10 @@
                         <artifactId>stax-api</artifactId>
                         <groupId>stax</groupId>
                     </exclusion>
+					<exclusion>
+						<artifactId>geronimo-javamail_1.4_spec</artifactId>
+						<groupId>org.apache.geronimo.specs</groupId>
+					</exclusion>
                 </exclusions>
             </dependency>
             <dependency>

@@ -1,6 +1,7 @@
 package gov.usgs.cida.gdp.communication;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -52,6 +53,23 @@ public class EmailHandlerTest {
         bcc.add("test@test.ing.gov");
         bcc.add("test@test.ing.gov");
         EmailMessage message = new EmailMessage("test@test.doesnt.exist.gov", "test@testing.purposes.on.ly.gov", bcc, "Test", "Test");
+
+        try {
+            EmailHandler.sendMessage(message);
+        } catch (Exception e) {
+            assert(false);
+        }
+
+        assert(true);
+    }
+
+	  /**
+     * Test of sendMessage method, of class EmailHandler.
+     */
+    @Test
+    public void testSendMessageNoCcBcc() throws Exception {
+        List<String> bcc = new LinkedList<String>();
+        EmailMessage message = new EmailMessage("test@test.doesnt.exist.gov", "test@testing.purposes.on.ly.gov", null, "Test", "Test");
 
         try {
             EmailHandler.sendMessage(message);

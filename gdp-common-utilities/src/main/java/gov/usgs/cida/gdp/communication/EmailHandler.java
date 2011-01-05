@@ -3,8 +3,6 @@ package gov.usgs.cida.gdp.communication;
 import gov.usgs.cida.gdp.constants.AppConstant;
 import java.util.Properties;
 
-import gov.usgs.cida.gdp.utilities.PropertyFactory;
-
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -31,7 +29,6 @@ public class EmailHandler {
 
 		Session session = Session.getInstance(properties, null);
 		session.setDebug(true);
-
 
 		Message msg = new MimeMessage(session);
 
