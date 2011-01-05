@@ -60,6 +60,9 @@ public class EmailMessage {
     }
 
     public List<String> getCc() {
+        if (this.cc == null) {
+            setCc(new ArrayList<String>());
+        }
         return this.cc;
     }
 
@@ -96,6 +99,18 @@ public class EmailMessage {
         }
         StringBuilder result = new StringBuilder();
         for (String emailAddress : getBcc()) {
+            result.append(emailAddress).append(",");
+        }
+        // Return the string without the trailing comma
+        return result.toString().substring(0, result.toString().length() - 1);
+    }
+
+	public String getCcToString() {
+        if (getCc().isEmpty()) {
+            return "";
+        }
+        StringBuilder result = new StringBuilder();
+        for (String emailAddress : getCc()) {
             result.append(emailAddress).append(",");
         }
         // Return the string without the trailing comma

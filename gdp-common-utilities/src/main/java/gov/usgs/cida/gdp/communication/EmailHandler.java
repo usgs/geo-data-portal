@@ -41,8 +41,21 @@ public class EmailHandler {
 			email.setAddress(message.getBcc().get(counter));
 			bccList[counter] = email;
 		}
+
+		InternetAddress[] ccList = new InternetAddress[message.getCc().size()];
+		for (int counter = 0;counter < message.getCc().size();counter++)  {
+			InternetAddress email = new InternetAddress();
+			email.setAddress(message.getCc().get(counter));
+			ccList[counter] = email;
+		}
+
 		msg.setRecipient(Message.RecipientType.TO, new InternetAddress(message.getTo()));
-		msg.setRecipients(Message.RecipientType.BCC, bccList);
+		if (bccList.length > 0) {
+			msg.setRecipients(Message.RecipientType.BCC, bccList);
+		}
+		if (ccList.length > 0) {
+			msg.setRecipients(Message.RecipientType.CC, ccList);
+		}
 		msg.setFrom(new InternetAddress(message.getFrom()));
 		msg.setSubject(message.getSubject());
 		msg.setContent(message.getContent(), "text/plain");
