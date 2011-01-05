@@ -6,14 +6,12 @@
 package gov.usgs.cida.gdp.dataaccess.helper;
 
 import gov.usgs.cida.gdp.utilities.FileHelper;
-import gov.usgs.cida.gdp.utilities.bean.Files;
 import gov.usgs.cida.gdp.utilities.bean.ShapeFileSet;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -37,8 +35,8 @@ public class ShapeFileEPSGHelperTest {
     private String seperator = "";
     private String testFile = "demo_HUCs";
     private List<ShapeFileSet> shapeBeanList = new ArrayList<ShapeFileSet>();
-    private String wkt = "PROJCS[\"NAD_1983_Albers\",GEOGCS[\"GCS_North_American_1983\",DATUM[\"D_North_American_1983\",SPHEROID[\"GRS_1980\",6378137.0,298.257222101]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Albers\"],PARAMETER[\"False_Easting\",0.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",-96.0],PARAMETER[\"Standard_Parallel_1\",29.5],PARAMETER[\"Standard_Parallel_2\",45.5],PARAMETER[\"Latitude_Of_Origin\",23.0],UNIT[\"Meter\",1.0]]";
-
+    private String wkt_ProjCRSKnown_GeogCRSKnown = "PROJCS[\"NAD_1983_Albers\",GEOGCS[\"GCS_North_American_1983\",DATUM[\"D_North_American_1983\",SPHEROID[\"GRS_1980\",6378137.0,298.257222101]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Albers\"],PARAMETER[\"False_Easting\",0.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",-96.0],PARAMETER[\"Standard_Parallel_1\",29.5],PARAMETER[\"Standard_Parallel_2\",45.5],PARAMETER[\"Latitude_Of_Origin\",23.0],UNIT[\"Meter\",1.0]]";
+    private String wkt_ProjCRSUnknown_GeogCRSKnown = "PROJCS[\"NAD_1983_Albers\",GEOGCS[\"GCS_North_American_1983\",DATUM[\"D_North_American_1983\",SPHEROID[\"GRS_1980\",6378137.0,298.257222101]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Albers\"],PARAMETER[\"False_Easting\",0.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",-96.0],PARAMETER[\"Standard_Parallel_1\",29.3],PARAMETER[\"Standard_Parallel_2\",45.3],PARAMETER[\"Latitude_Of_Origin\",23.0],UNIT[\"Meter\",1.0]]";
 
     public ShapeFileEPSGHelperTest() {
     }
@@ -113,7 +111,7 @@ public class ShapeFileEPSGHelperTest {
         System.out.println("getEpsgFromPrj");
         String result = null;
         try {
-            result = ShapeFileEPSGHelper.getEpsgFromPrj(this.prjFile);
+            result = ShapeFileEPSGHelper.getDeclaredEPSGFromPrj(this.prjFile);
         } catch (IOException ex) {
             Logger.getLogger(ShapeFileEPSGHelperTest.class.getName()).log(Level.SEVERE, null, ex);
         } catch (FactoryException ex) {
@@ -131,11 +129,24 @@ public class ShapeFileEPSGHelperTest {
         System.out.println("getEpsgFromWkt");
         String result = null;
         try {
-            result = ShapeFileEPSGHelper.getEpsgFromWkt(wkt);
+            result = ShapeFileEPSGHelper.getDeclaredEPSGFromWKT(wkt_ProjCRSKnown_GeogCRSKnown);
         } catch (FactoryException ex) {
             Logger.getLogger(ShapeFileEPSGHelperTest.class.getName()).log(Level.SEVERE, null, ex);
         }
         String expResult = "EPSG:5070";
+        assertEquals(expResult, result);
+    }
+
+    @Test
+    public void testGetEpsgFromWktWithUnknownProjectedCRS() {
+        System.out.println("getEpsgFromWkt");
+        String result = null;
+        try {
+            result = ShapeFileEPSGHelper.getDeclaredEPSGFromWKT(wkt_ProjCRSUnknown_GeogCRSKnown);
+        } catch (FactoryException ex) {
+            Logger.getLogger(ShapeFileEPSGHelperTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        String expResult = "EPSG:4269";
         assertEquals(expResult, result);
     }
 

@@ -6,6 +6,7 @@ import java.io.IOException;
 import org.geotools.referencing.CRS;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.crs.ProjectedCRS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,17 +17,17 @@ import org.slf4j.LoggerFactory;
 public class ShapeFileEPSGHelper {
     private static Logger log = LoggerFactory.getLogger(ShapeFileEPSGHelper.class);
 
-    public static String getEpsgFromPrj(final File prjFile) throws IOException, FactoryException {
+    public static String getDeclaredEPSGFromPrj(final File prjFile) throws IOException, FactoryException {
         String result = null;
         if (prjFile == null || !prjFile.exists()) return result;
 
         byte[] wktByteArray = FileHelper.getByteArrayFromFile(prjFile);
-        result = ShapeFileEPSGHelper.getEpsgFromWkt(new String(wktByteArray));
+        result = ShapeFileEPSGHelper.getDeclaredEPSGFromWKT(new String(wktByteArray));
 
         return result;
     }
 
-    public static String getEpsgFromWkt(final String wkt) throws FactoryException {
+    public static String getDeclaredEPSGFromWKT(final String wkt) throws FactoryException {
         String result = null;
         if (wkt == null || "".equals(wkt)) return result;
 
@@ -39,6 +40,10 @@ public class ShapeFileEPSGHelper {
         }
 
         result = CRS.lookupIdentifier(crs, true);
+
+        if (result == null && crs instanceof ProjectedCRS) {
+            result = CRS.lookupIdentifier(((ProjectedCRS)crs).getBaseCRS(), true);
+        }
 
         return result;
     }
