@@ -311,6 +311,7 @@ public class ManageWorkSpace {
                 + "  </namespace>"
                 + "  <title>" + name + "</title>"
                 + "  <enabled>true</enabled>"
+                + "  <projectionPolicy>REPROJECT_TO_DECLARED</projectionPolicy>"
                 + "  <srs>" + srsCode + "</srs>"
                 + "  <store class=\"dataStore\">"
                 + "    <name>" + name + "</name>"
