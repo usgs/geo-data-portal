@@ -39,8 +39,8 @@ public class ManageWorkSpace {
         this.geoServerURLString = geoServerURL.toExternalForm();
     }
 
-    public boolean createDataStore(String shapefilePath, String layerName, String workspace, String srsCode) throws IOException {
-        return createDataStore(shapefilePath, layerName, workspace, this.geoServerURLString, srsCode);
+    public boolean createDataStore(String shapefilePath, String layerName, String workspace, String nativeCRS, String declaredCRS) throws IOException {
+        return createDataStore(shapefilePath, layerName, workspace, this.geoServerURLString, nativeCRS, declaredCRS);
     }
 
     public String updateGeoServer() throws IOException{
@@ -51,7 +51,7 @@ public class ManageWorkSpace {
         return getResponse(new URL(geoServerURL + "/rest/reload/"), "POST", "text/xml", null, null, null);
     }
 
-    public boolean createDataStore(String shapefilePath, String layerName, String workspace, String geoServerURL, String srsCode) throws IOException {
+    public boolean createDataStore(String shapefilePath, String layerName, String workspace, String geoServerURL, String nativeCRS, String declaredCRS) throws IOException {
         // create the workspace if it doesn't already exist
         URL workspacesURL = new URL(geoServerURL + "/rest/workspaces/");
         if (!workspaceExists(workspace)) {
@@ -74,7 +74,7 @@ public class ManageWorkSpace {
 
         if (!layerExists(workspace, layerName, layerName)) {
             // create featuretype based on the datastore
-            String featureTypeXML = createFeatureTypeXML(layerName, workspace, srsCode);
+            String featureTypeXML = createFeatureTypeXML(layerName, workspace, nativeCRS, declaredCRS);
             URL featureTypesURL = new URL(dataStoresURL + layerName + "/featuretypes.xml");
             sendPacket(featureTypesURL, "POST", "text/xml", featureTypeXML);
         }
@@ -282,8 +282,7 @@ public class ManageWorkSpace {
 
     String createDataStoreXML(String name, String workspace, String namespace, String url) {
 
-        return new String(
-                "<dataStore>"
+        return  "<dataStore>"
                 + "  <name>" + name + "</name>"
                 + "  <type>Shapefile</type>"
                 + "  <enabled>true</enabled>"
@@ -297,13 +296,12 @@ public class ManageWorkSpace {
                 + "    <entry key=\"url\">file:" + url + "</entry>"
                 + "    <entry key=\"namespace\">" + namespace + "</entry>"
                 + "  </connectionParameters>"
-                + "</dataStore>");
+                + "</dataStore>";
     }
 
-    String createFeatureTypeXML(String name, String workspace, String srsCode) {
+    String createFeatureTypeXML(String name, String workspace, String nativeCRS, String declaredCRS) {
 
-        return new String(
-                "<featureType>"
+        return  "<featureType>"
                 + "  <name>" + name + "</name>"
                 + "  <nativeName>" + name + "</nativeName>"
                 + "  <namespace>"
@@ -311,12 +309,14 @@ public class ManageWorkSpace {
                 + "  </namespace>"
                 + "  <title>" + name + "</title>"
                 + "  <enabled>true</enabled>"
+                // use CDATA as this may contain WKT with XML reserved characters
+                + "  <nativeCRS><![CDATA[" + nativeCRS + "]]></nativeCRS>"  
+                + "  <srs>" + declaredCRS + "</srs>"
 //                + "  <projectionPolicy>REPROJECT_TO_DECLARED</projectionPolicy>"
-                + "  <srs>" + srsCode + "</srs>"
                 + "  <store class=\"dataStore\">"
                 + "    <name>" + name + "</name>"
                 + "  </store>"
-                + "</featureType>");
+                + "</featureType>";
     }
 
     public ArrayList<String> parseDates(File data, String delim) {
@@ -475,7 +475,7 @@ public class ManageWorkSpace {
             spread = 1;
         }
 
-        String style = new String(
+        String style = 
                 "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"
                 + "<StyledLayerDescriptor version=\"1.0.0\""
                 + "    xsi:schemaLocation=\"http://www.opengis.net/sld StyledLayerDescriptor.xsd\""
@@ -487,7 +487,7 @@ public class ManageWorkSpace {
                 + "    <Name>Colors</Name>"
                 + "    <UserStyle>"
                 + "      <Title>Colors</Title>"
-                + "      <FeatureTypeStyle>");
+                + "      <FeatureTypeStyle>";
 
         String color;
         for (int i = 0; i < requestedStats.size(); i++) {

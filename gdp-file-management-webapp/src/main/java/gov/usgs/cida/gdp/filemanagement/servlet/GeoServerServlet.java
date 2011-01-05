@@ -82,7 +82,7 @@ public class GeoServerServlet extends HttpServlet {
                     shapefilePath.lastIndexOf(File.separator) + 1,
                     shapefilePath.lastIndexOf("."));
 
-            if (!mws.createDataStore(shapefilePath, shapefileName, workspace, srsCode)) {
+            if (!mws.createDataStore(shapefilePath, shapefileName, workspace, srsCode, srsCode)) {
                 sendReply(response, Acknowledgement.ACK_FAIL, "Could not create data store.");
             } else {
                 // send back ack with workspace and layer names
