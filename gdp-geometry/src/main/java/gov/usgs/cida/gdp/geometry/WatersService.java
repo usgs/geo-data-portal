@@ -58,12 +58,12 @@ public class WatersService {
         File shxFile = new File(tempDir, name + ".shx");
         File dbfFile = new File(tempDir, name + ".dbf");
 
+        // Make sure all parent directories exist
+        shpFile.getParentFile().mkdirs();
+
         if (shpFile.exists()) shpFile.delete();
         if (shxFile.exists()) shxFile.delete();
         if (dbfFile.exists()) dbfFile.delete();
-
-        // Make sure all parent directories exist
-        shpFile.getParentFile().mkdirs();
 
         shpFile.createNewFile();
         shxFile.createNewFile();
