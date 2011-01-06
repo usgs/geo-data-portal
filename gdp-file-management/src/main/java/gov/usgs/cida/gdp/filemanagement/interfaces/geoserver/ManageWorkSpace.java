@@ -77,6 +77,12 @@ public class ManageWorkSpace {
             String featureTypeXML = createFeatureTypeXML(layerName, workspace, nativeCRS, declaredCRS);
             URL featureTypesURL = new URL(dataStoresURL + layerName + "/featuretypes.xml");
             sendPacket(featureTypesURL, "POST", "text/xml", featureTypeXML);
+
+            // This directive generates an error when included with initial POST, we have to include
+            // in separate update via PUT.
+            URL featureTypeUpdateURL = new URL(dataStoresURL + layerName + "/featuretypes/" + layerName + ".xml");
+            sendPacket(featureTypeUpdateURL, "PUT", "text/xml",
+                    "<featureType><projectionPolicy>REPROJECT_TO_DECLARED</projectionPolicy></featureType>");
         }
 
         // Make sure we render using the default polygon style, and not whatever
@@ -312,9 +318,8 @@ public class ManageWorkSpace {
                 // use CDATA as this may contain WKT with XML reserved characters
                 + "  <nativeCRS><![CDATA[" + nativeCRS + "]]></nativeCRS>"  
                 + "  <srs>" + declaredCRS + "</srs>"
-                + "  <projectionPolicy>REPROJECT_TO_DECLARED</projectionPolicy>"
                 + "  <store class=\"dataStore\">"
-                + "    <name>" + name + "</name>"
+                + "    <name>" + name + "</name>" // this is actually the datastore name (we keep it the same as the layer name)
                 + "  </store>"
                 + "</featureType>";
     }
@@ -555,5 +560,5 @@ public class ManageWorkSpace {
     public void setGeoServerURLString(String geoServerURLString) {
         this.geoServerURLString = geoServerURLString;
     }
-
+    
 }
