@@ -24,7 +24,7 @@ import org.xml.sax.SAXException;
  */
 public class WatersService {
 
-    public static File getGeometry(String lon, String lat) throws Exception {
+    public static File getGeometry(String lon, String lat, String name) throws Exception {
         
         // Get reachcode containing lat/lon point from the EPA WATERS web service
         InputStream reachJson =
@@ -52,13 +52,14 @@ public class WatersService {
         // GML -> Shapefile conversion.
         String tempDir = AppConstant.NEW_SHAPEFILE_LOCATION.toString();
 
-        String shapefileName = "waters_" + lon.hashCode() * 31 + lat.hashCode() * 7;
-
-        File shpFile = new File(tempDir, shapefileName + ".shp");
-        File shxFile = new File(tempDir, shapefileName + ".shx");
+        File shpFile = new File(tempDir, name + ".shp");
+        File shxFile = new File(tempDir, name + ".shx");
 
         if (shpFile.exists()) shpFile.delete();
         if (shxFile.exists()) shxFile.delete();
+
+        // Make sure all parent directories exist
+        shpFile.getParentFile().mkdirs();
 
         shpFile.createNewFile();
         shxFile.createNewFile();
