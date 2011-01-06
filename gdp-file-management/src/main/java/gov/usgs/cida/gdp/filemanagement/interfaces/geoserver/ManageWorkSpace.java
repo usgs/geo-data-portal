@@ -312,7 +312,7 @@ public class ManageWorkSpace {
                 // use CDATA as this may contain WKT with XML reserved characters
                 + "  <nativeCRS><![CDATA[" + nativeCRS + "]]></nativeCRS>"  
                 + "  <srs>" + declaredCRS + "</srs>"
-//                + "  <projectionPolicy>REPROJECT_TO_DECLARED</projectionPolicy>"
+                + "  <projectionPolicy>REPROJECT_TO_DECLARED</projectionPolicy>"
                 + "  <store class=\"dataStore\">"
                 + "    <name>" + name + "</name>"
                 + "  </store>"
