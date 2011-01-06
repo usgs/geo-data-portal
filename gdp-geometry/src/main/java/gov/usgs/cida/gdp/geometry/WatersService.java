@@ -15,6 +15,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonParser;
+import org.geotools.data.shapefile.dbf.DbaseFileHeader;
+import org.geotools.data.shapefile.dbf.DbaseFileWriter;
 import org.geotools.data.shapefile.shp.ShapeType;
 import org.geotools.data.shapefile.shp.ShapefileWriter;
 import org.xml.sax.SAXException;
@@ -54,23 +56,38 @@ public class WatersService {
 
         File shpFile = new File(tempDir, name + ".shp");
         File shxFile = new File(tempDir, name + ".shx");
+        File dbfFile = new File(tempDir, name + ".dbf");
 
         if (shpFile.exists()) shpFile.delete();
         if (shxFile.exists()) shxFile.delete();
+        if (dbfFile.exists()) dbfFile.delete();
 
         // Make sure all parent directories exist
         shpFile.getParentFile().mkdirs();
 
         shpFile.createNewFile();
         shxFile.createNewFile();
+        dbfFile.createNewFile();
 
         FileOutputStream shpFileInputStream = new FileOutputStream(shpFile);
         FileOutputStream shxFileInputStream = new FileOutputStream(shxFile);
+        FileOutputStream dbfFileInputStream = new FileOutputStream(dbfFile);
 
+        // Write dbf file with simple placeholder attribute
+        DbaseFileHeader header = new DbaseFileHeader();
+        header.addColumn("ID", 'N', 4, 0);
+        header.setNumRecords(1);
+
+        DbaseFileWriter dfw = new DbaseFileWriter(header, dbfFileInputStream.getChannel());
+        dfw.write(new Object[] { 0 });
+        dfw.close();
+
+        // Write geometry
         ShapefileWriter sw = new ShapefileWriter(shpFileInputStream.getChannel(),
                 shxFileInputStream.getChannel());
         
         sw.write(g, ShapeType.POLYGON);
+        sw.close();
 
         return shpFile;
     }
