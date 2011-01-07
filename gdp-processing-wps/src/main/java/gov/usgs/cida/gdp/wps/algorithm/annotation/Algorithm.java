@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 public @interface Algorithm {
     String identifier() default "";
     String title() default "";
-    String abstrakt() default "";
+    String abstrakt() default "";  // 'abstract' is java reserved keyword
     String version();
     boolean storeSupported() default true;
     boolean statusSupported() default true;

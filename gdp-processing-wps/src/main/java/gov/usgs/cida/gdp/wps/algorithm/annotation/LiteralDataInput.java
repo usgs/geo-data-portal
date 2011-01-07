@@ -13,9 +13,9 @@ import org.n52.wps.io.data.ILiteralData;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.FIELD})
 public @interface LiteralDataInput {
-    String identifier();
+    String identifier();  // identifier
     String title() default "";
-    String abstrakt() default "";
+    String abstrakt() default "";  // 'abstract' is java reserved keyword
     int minOccurs() default 1;
     int maxOccurs() default 1;
     String defaultValue() default "";

@@ -13,8 +13,8 @@ import org.n52.wps.io.data.ILiteralData;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.FIELD})
 public @interface LiteralDataOutput {
-    String identifier();
+    String identifier();  // identifier
     String title() default "";
-    String abstrakt() default "";
+    String abstrakt() default "";  // 'abstract' is java reserved keyword
     Class <? extends ILiteralData> binding();
 }

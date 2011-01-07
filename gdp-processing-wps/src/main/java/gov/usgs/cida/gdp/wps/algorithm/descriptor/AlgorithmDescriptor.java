@@ -6,13 +6,12 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.n52.wps.server.IAlgorithm;
 
 /**
  *
  * @author tkunicki
  */
-public class AlgorithmDescriptor<T extends Class<? extends IAlgorithm>> extends BoundDescriptor<T> {
+public class AlgorithmDescriptor extends Descriptor {
 
     private final String version;
     private final boolean storeSupported;
@@ -20,7 +19,7 @@ public class AlgorithmDescriptor<T extends Class<? extends IAlgorithm>> extends 
     private final Map<String, InputDescriptor> inputDescriptorMap;
     private final Map<String, OutputDescriptor> outputDescriptorMap;
 
-	AlgorithmDescriptor(Builder<? extends Builder<?,T>, T> builder) {
+	AlgorithmDescriptor(Builder<? extends Builder<?>> builder) {
         super(builder);
         this.version = builder.version;
         this.storeSupported = builder.storeSupported;
@@ -68,13 +67,17 @@ public class AlgorithmDescriptor<T extends Class<? extends IAlgorithm>> extends 
         return outputDescriptorMap.values();
     }
 
-    public static <T extends Class<? extends IAlgorithm>> Builder<?,T> builder(T binding) {
-        return new BuilderTyped(binding);
+    public static Builder<?> builder(String identifier) {
+        return new BuilderTyped(identifier);
     }
 
-    private static class BuilderTyped<T extends Class<? extends IAlgorithm>> extends Builder<BuilderTyped<T>, T> {
-        public BuilderTyped(T binding) {
-            super(binding);
+    public static Builder<?> builder(Class<?> clazz) {
+        return new BuilderTyped(clazz.getCanonicalName());
+    }
+
+    private static class BuilderTyped extends Builder<BuilderTyped> {
+        public BuilderTyped(String identifier) {
+            super(identifier);
         }
         @Override
         protected BuilderTyped self() {
@@ -82,18 +85,18 @@ public class AlgorithmDescriptor<T extends Class<? extends IAlgorithm>> extends 
         }
     }
 
-    public static abstract class Builder<B extends Builder<B,T>, T extends Class<? extends IAlgorithm>> extends BoundDescriptor.Builder<B,T>{
+    public static abstract class Builder<B extends Builder<B>> extends Descriptor.Builder<B>{
 
-        private String version;
-        private boolean storeSupported;
-        private boolean statusSupported;
+        private String version = "1.0.0";
+        private boolean storeSupported = true;
+        private boolean statusSupported = true;
         private List<InputDescriptor> inputDescriptors;
         private List<OutputDescriptor> outputDescriptors;
 
-        protected Builder(T binding) {
-            super(binding);
-            identifier(binding.getCanonicalName());
-            title(binding.getCanonicalName());
+        protected Builder(String identifier) {
+            super();
+            identifier(identifier);
+            title(identifier);
             inputDescriptors = new ArrayList<InputDescriptor>();
             outputDescriptors = new ArrayList<OutputDescriptor>();
         }
@@ -141,8 +144,8 @@ public class AlgorithmDescriptor<T extends Class<? extends IAlgorithm>> extends 
             return self();
         }
         
-        public AlgorithmDescriptor<T> build() {
-            return new AlgorithmDescriptor<T>(this);
+        public AlgorithmDescriptor build() {
+            return new AlgorithmDescriptor(this);
         }
 
     }
