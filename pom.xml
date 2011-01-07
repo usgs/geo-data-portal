@@ -25,7 +25,8 @@
         <repository>
             <id>cida-gdp-development</id>
             <name>CIDA GDP Development</name>
-            <url>http://internal.cida.usgs.gov/nexus/content/groups/cida-gdp-development</url>
+<!--            <url>http://internal.cida.usgs.gov/nexus/content/groups/cida-gdp-development</url>-->
+            <url>http://igsarmewfsbbl.er.usgs.gov:8081/nexus/content/groups/cida-gdp-development</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
