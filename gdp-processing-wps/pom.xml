@@ -9,6 +9,9 @@
     <artifactId>gdp-wps-processing</artifactId>
     <packaging>war</packaging>
     <name>gdp-wps-processing</name>
+    <build>
+        <finalName>gdp-process-wps</finalName>
+    </build>
     <dependencies>
         <!-- sibling module dependencies -->
         <dependency>
