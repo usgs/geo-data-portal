@@ -96,6 +96,10 @@ public class FeatureWeightedGridStatisticsAlgorithm extends BaseAlgorithm {
         try {
             featureCollection = extractFeatureCollection(input, I_FEATURE_COLLECTION);
             String featureAttributeName = extractString(input, I_FEATURE_ATTRIBUTE_NAME);
+            if (featureCollection.getSchema().getDescriptor(featureAttributeName) == null) {
+                addError("Attribute " + featureAttributeName + " not found in feature collection");
+                return null;
+            }
 
             featureDataset = extractFeatureDataset(input, I_DATASET_URI);
             String featureDatasetID = extractString(input, I_DATASET_ID);
@@ -103,56 +107,72 @@ public class FeatureWeightedGridStatisticsAlgorithm extends BaseAlgorithm {
             GridDatatype gridDatatype = null;
             if (featureDataset instanceof GridDataset) {
                 gridDatatype = ((GridDataset)featureDataset).findGridDatatype(featureDatasetID);
-
-                Range timeRange = generateTimeRange(
-                        gridDatatype,
-                        extractDate(input, I_TIME_START),
-                        extractDate(input, I_TIME_END));
-
-                List<String> statisticStringList = extractStringList(input, I_STATISTICS);
-                List<Statistic> statisticList = statisticStringList.size() < 1 ?
-                    Arrays.asList(Statistic.values()) :
-                    convertStringToEnumList(statisticStringList, Statistic.class);
-
-                String delimiterString = extractString(input, I_DELIMITER);
-                Delimiter delimiter = delimiterString == null ?
-                    Delimiter.COMMA :
-                    Delimiter.valueOf(delimiterString);
-
-                String groupByString = extractString(input, I_GROUP_BY);
-                GroupBy groupBy = groupByString == null ?
-                    GroupBy.STATISTIC :
-                    GroupBy.valueOf(groupByString);
-
-                File file = File.createTempFile("gdp", "csv");
-                writer = new BufferedWriter(new FileWriter(file));
-
-                FeatureCoverageWeightedGridStatistics.execute(
-                        featureCollection,
-                        featureAttributeName,
-                        gridDatatype,
-                        timeRange,
-                        statisticList,
-                        writer,
-                        groupBy,
-                        delimiter);
-
-                writer.flush();
-                writer.close();
-
-                output.put(O_OUTPUT, new CSVDataBinding(file));
+            } else {
+                addError(I_DATASET_URI + " does not resolve to gridded dataset");
+                return null;
             }
 
+            if (gridDatatype == null) {
+                addError("Variable " +I_DATASET_ID + " not found in " + I_DATASET_URI);
+                return null;
+            }
+
+            Range timeRange = generateTimeRange(
+                    gridDatatype,
+                    extractDate(input, I_TIME_START),
+                    extractDate(input, I_TIME_END));
+
+            List<String> statisticStringList = extractStringList(input, I_STATISTICS);
+            List<Statistic> statisticList = statisticStringList.size() < 1 ?
+            Arrays.asList(Statistic.values()) :
+            convertStringToEnumList(statisticStringList, Statistic.class);
+
+            String delimiterString = extractString(input, I_DELIMITER);
+            Delimiter delimiter = delimiterString == null ?
+                Delimiter.COMMA :
+                Delimiter.valueOf(delimiterString);
+
+            String groupByString = extractString(input, I_GROUP_BY);
+            GroupBy groupBy = groupByString == null ?
+                GroupBy.STATISTIC :
+                GroupBy.valueOf(groupByString);
+
+            File file = File.createTempFile("gdp", "csv");
+            writer = new BufferedWriter(new FileWriter(file));
+
+            FeatureCoverageWeightedGridStatistics.execute(
+                    featureCollection,
+                    featureAttributeName,
+                    gridDatatype,
+                    timeRange,
+                    statisticList,
+                    writer,
+                    groupBy,
+                    delimiter);
+
+            writer.flush();
+            writer.close();
+
+            output.put(O_OUTPUT, new CSVDataBinding(file));
+
         } catch (InvalidRangeException e) {
-            throw new RuntimeException(e);
+            addError("Error subsetting gridded data :" + e.getMessage());
+//            throw new RuntimeException(e);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            addError("IO Error :" + e.getMessage());
+//            throw new RuntimeException(e);
         } catch (FactoryException e) {
-            throw new RuntimeException(e);
+            addError("Error initializing CRS factory:" + e.getMessage());
+//            throw new RuntimeException(e);
         } catch (TransformException e) {
-            throw new RuntimeException(e);
+            addError("Error attempting CRS transform:" + e.getMessage());
+//            throw new RuntimeException(e);
         } catch (SchemaException e) {
-            throw new RuntimeException(e);
+            addError("Error subsetting gridded data :" + e.getMessage());
+//            throw new RuntimeException(e);
+        } catch (Exception e) {
+            addError("General Error: " + e.getMessage());
+//            throw new RuntimeException(e);
         } finally {
             if (featureDataset != null) try { featureDataset.close(); } catch (IOException e) { }
             if (writer != null) try { writer.close(); } catch (IOException e) { }

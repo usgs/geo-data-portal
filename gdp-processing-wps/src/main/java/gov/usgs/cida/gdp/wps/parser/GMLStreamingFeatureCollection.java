@@ -416,14 +416,4 @@ public class GMLStreamingFeatureCollection implements FeatureCollection {
 		}
 	}
 
-	public static void main(String[] args) throws FileNotFoundException, IOException, SAXException, ParserConfigurationException {
-
-        File f = new File("/Users/tkunicki/Projects/GDP/trunk/GDP/gdp-processing-wps/src/main/webapp/requests/gml-simple.xml");
-		
-        GMLStreamingFeatureCollection c = new GMLStreamingFeatureCollection(f);
-        System.out.println(c.getBounds().getCoordinateReferenceSystem());
-        System.out.println(c.getSchema().getCoordinateReferenceSystem());
-
-	}
-
 }

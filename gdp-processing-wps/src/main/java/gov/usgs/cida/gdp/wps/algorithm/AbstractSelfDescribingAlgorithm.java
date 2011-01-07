@@ -262,10 +262,15 @@ public abstract class AbstractSelfDescribingAlgorithm extends AbstractAlgorithm 
             o.update(this);
         }
     }
+    
+    List<String> errorList = new ArrayList();
+    protected List<String> addError(String error) {
+        errorList.add(error);
+        return errorList;
+    }
 
     @Override
     public List<String> getErrors() {
-        List<String> errors = new ArrayList();
-        return errors;
+        return errorList;
     }
 }
