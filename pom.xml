@@ -12,7 +12,6 @@
     </description>
     <modules>
         <module>gdp-common-utilities</module>
-        <module>gdp-webapp</module>
         <module>gdp-file-management</module>
         <module>gdp-data-access</module>
         <module>gdp-core-processing</module>
