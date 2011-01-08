@@ -6,9 +6,9 @@
         <groupId>gov.usgs.cida.gdp</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>gdp-wps-processing</artifactId>
+    <artifactId>gdp-process-wps</artifactId>
     <packaging>war</packaging>
-    <name>gdp-wps-processing</name>
+    <name>gdp-process-wps</name>
     <build>
         <finalName>gdp-process-wps</finalName>
     </build>
