@@ -6,7 +6,8 @@ import java.util.List;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
+import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.*;
 /**
  *
  * @author isuftin
@@ -23,6 +24,12 @@ public class EmailHandlerTest {
     @AfterClass
     public static void tearDownAfterClass() throws Exception {
         log.debug("Ended testing class.");
+    }
+
+    @Test
+    public void createClassTest() {
+        EmailHandler result = new EmailHandler();
+        assertThat(result, is(notNullValue()));
     }
 
     /**
