@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns:ExecuteResponse xmlns:ns="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_response.xsd" serviceInstance="http://localhost:18080/process/WebProcessingService?REQUEST=GetCapabilities&amp;SERVICE=WPS" xml:lang="en-US" service="WPS" version="1.0.0" statusLocation="http://localhost:18080/process/RetrieveResultServlet?id=1294085133965">
+  <ns:Process ns:processVersion="1.0.0">
+    <ows:Identifier>gov.usgs.cida.gdp.wps.algorithm.FeatureWeightedGridStatisticsAlgorithm</ows:Identifier>
+    <ows:Title>gov.usgs.cida.gdp.wps.algorithm.FeatureWeightedGridStatisticsAlgorithm</ows:Title>
+  </ns:Process>
+  <ns:Status creationTime="2011-01-03T14:05:33.944-06:00">
+    <ns:ProcessFailed>
+	  <ows:ExceptionReport version="1">
+		<ows:Exception>BigError</ows:Exception>
+	  </ows:ExceptionReport>
+	</ns:ProcessFailed>
+  </ns:Status>
+</ns:ExecuteResponse>
