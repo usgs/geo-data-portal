@@ -2,6 +2,7 @@ package gov.usgs.cida.gdp.wps.algorithm.discovery;
 
 import gov.usgs.cida.client.csw.util.CSWGetServiceURL;
 import gov.usgs.cida.client.csw.util.CSWRecord;
+import gov.usgs.cida.gdp.constants.AppConstant;
 import java.math.BigInteger;
 import java.net.URL;
 import java.util.ArrayList;
@@ -33,8 +34,8 @@ public class GetCswRecords extends AbstractSelfDescribingAlgorithm {
 
         List<CSWRecord> records;
         try {
-            URL geonetworkURL = new URL("http://igsarm-cida-javatest1.er.usgs.gov:8082/geonetwork/srv/en/csw");
-            records = CSWGetServiceURL.getServerReference(geonetworkURL, query, "gdp", "gdpgdp");
+            URL cswURL = new URL(AppConstant.CSW_ENDPOINT.toString());
+            records = CSWGetServiceURL.getServerReference(cswURL, query, "gdp", "gdpgdp");
         } catch (Exception ex) {
             log.error("An error occurred in algorithm GetCswRecords", ex);
             throw new RuntimeException("An error occured while processing request: " + ex.getMessage());
