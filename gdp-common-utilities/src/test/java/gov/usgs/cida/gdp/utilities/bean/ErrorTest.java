@@ -97,4 +97,11 @@ public class ErrorTest {
         assertNotNull(errBean.getErrorNumber());
         assertTrue(errBean.getErrorNumber() == Integer.MIN_VALUE);
     }
+
+    @Test
+    public void testErrorConstructor() {
+        Error test = new Error(ErrorEnum.ERR_FILE_LIST);
+        assertNotNull(test);
+        assertTrue(test.getErrorNumber() == 1);
+    }
 }

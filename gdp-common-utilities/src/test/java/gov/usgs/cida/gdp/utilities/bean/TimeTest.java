@@ -133,7 +133,32 @@ public class TimeTest {
     @Test
     public void testTimeBreakdownSetGetTimeZone() {
         TimeBreakdown target = new TimeBreakdown();
-        target.setYear(1);
-        assertEquals(target.getYear(), 1);
+        target.setTimezone(1);
+        assertEquals(target.getTimezone(), 1);
     }
+    
+
+    @Test
+    public void testTimeBreakdownSetGetHour() {
+        TimeBreakdown target = new TimeBreakdown();
+        target.setHour(1);
+        assertEquals(target.getHour(), 1);
+    }
+
+
+    @Test
+    public void testTimeBreakdownSetGetMinute() {
+        TimeBreakdown target = new TimeBreakdown();
+        target.setMinute(1);
+        assertEquals(target.getMinute(), 1);
+    }
+
+    @Test
+    public void testTimeBreakdownSetGetSecond() {
+        TimeBreakdown target = new TimeBreakdown();
+        target.setSecond(1);
+        assertEquals(target.getSecond(), 1);
+    }
+
+
 }
