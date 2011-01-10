@@ -41,7 +41,7 @@
 	</AlgorithmRepositoryList>
 
 
-	<Server hostname="localhost" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="process">
+	<Server hostname="localhost" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="gdp-process-wps">
         <Database/>
     </Server>
 
