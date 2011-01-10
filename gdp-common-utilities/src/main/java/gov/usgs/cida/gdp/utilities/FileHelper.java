@@ -196,33 +196,33 @@ public class FileHelper {
         return result;
     }
 
-    /**
-     * Create a repository directory structure
-     * @param baseFilePath - point in the fs at which to begin structuring the repository directory from
-     * @return
-     */
-    public static File createFileRepositoryDirectory(final String baseFilePath) {
-        String basePath = baseFilePath + System.getProperty("file.separator");
-        String directoryName = PropertyFactory.getProperty("upload.directory.name");
-        if (baseFilePath == null) {
-            return null;
-        }
-        if (directoryName == null || "".equals(directoryName)) {
-            directoryName = "upload-repository";
-        }
-        String directory = basePath + directoryName;
-        if (FileHelper.doesDirectoryOrFileExist(directory)) {
-            return new File(directory);
-        }
-
-        FileHelper.createDir(directory);
-
-        File result = new File(directory);
-        if (!result.exists()) {
-            return null;
-        }
-        return result;
-    }
+//    /**
+//     * Create a repository directory structure
+//     * @param baseFilePath - point in the fs at which to begin structuring the repository directory from
+//     * @return
+//     */
+//    public static File createFileRepositoryDirectory(final String baseFilePath) {
+//        String basePath = baseFilePath + System.getProperty("file.separator");
+//        String directoryName = PropertyFactory.getProperty("upload.directory.name");
+//        if (baseFilePath == null) {
+//            return null;
+//        }
+//        if (directoryName == null || "".equals(directoryName)) {
+//            directoryName = "upload-repository";
+//        }
+//        String directory = basePath + directoryName;
+//        if (FileHelper.doesDirectoryOrFileExist(directory)) {
+//            return new File(directory);
+//        }
+//
+//        FileHelper.createDir(directory);
+//
+//        File result = new File(directory);
+//        if (!result.exists()) {
+//            return null;
+//        }
+//        return result;
+//    }
 
     public static boolean createDir(File directory) {
         return FileHelper.createDir(directory.toString());

@@ -3,7 +3,6 @@ package gov.usgs.cida.gdp.utilities;
 import java.io.FileNotFoundException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -97,7 +96,7 @@ public class FileHelperTest {
 
     @Test
     public void base64EncodeWithByteArray() throws IOException {
-        byte[] result = FileHelper.base64Encode(new byte[] {'a','b','c','d','e','f','g'});
+        byte[] result = FileHelper.base64Encode(new byte[]{'a', 'b', 'c', 'd', 'e', 'f', 'g'});
         assertThat(result, is(not(nullValue())));
         assertThat(result.length, is(equalTo(14)));
     }
@@ -163,6 +162,22 @@ public class FileHelperTest {
         result = FileHelper.wipeOldFiles(new File(this.tempDir), 3600000l, true);
         assertTrue(result.isEmpty());
     }
+//
+//    @Test
+//    public void testWipeOldFilesWithAnAlreadyOpenFile() throws FileNotFoundException, IOException {
+//        Collection<File> result = new ArrayList<File>();
+//        File openFile = new File(FileHelperTest.sampleDir);
+//        InputStream is = null;
+//        try {
+//            is = new FileInputStream(openFile);
+//            result = FileHelper.wipeOldFiles(openFile, 3600000l, false);
+//        } finally {
+//            if (is != null) {
+//                is.close();
+//            }
+//        }
+//        assertTrue(result.isEmpty());
+//    }
 
     /**
      * If this fails, try cleaning/building the project and re-run
@@ -415,6 +430,7 @@ public class FileHelperTest {
         }
 
     }
+
     @Test
     public void testGetSystemTemp() {
         String result = FileHelper.getSystemTemp();
@@ -450,30 +466,30 @@ public class FileHelperTest {
             assertNotNull(e);
         }
     }
-
-    @Test
-    public void testCreateRepoDir() {
-        File directoryCreatedAt = FileHelper.createFileRepositoryDirectory(this.tempDir);
-        assertTrue(directoryCreatedAt.exists());
-    }
-
-    @Test
-    public void testCreateRepoDirWithNullBasefilePath() {
-        File directoryCreatedAt = FileHelper.createFileRepositoryDirectory(null);
-        assertNull(directoryCreatedAt);
-    }
-
-    @Test
-    public void testCreateRepoDirWithEmptyBasefilePath() {
-        File directoryCreatedAt = FileHelper.createFileRepositoryDirectory("");
-        assertNull(directoryCreatedAt);
-    }
-
-    @Test
-    public void testCreateRepoDirWithinvalidBasefilePath() {
-        File directoryCreatedAt = FileHelper.createFileRepositoryDirectory(this.seperator + "invalid" + this.seperator);
-        assertNull(directoryCreatedAt);
-    }
+//
+//    @Test
+//    public void testCreateRepoDir() {
+//        File directoryCreatedAt = FileHelper.createFileRepositoryDirectory(this.tempDir);
+//        assertTrue(directoryCreatedAt.exists());
+//    }
+//
+//    @Test
+//    public void testCreateRepoDirWithNullBasefilePath() {
+//        File directoryCreatedAt = FileHelper.createFileRepositoryDirectory(null);
+//        assertNull(directoryCreatedAt);
+//    }
+//
+//    @Test
+//    public void testCreateRepoDirWithEmptyBasefilePath() {
+//        File directoryCreatedAt = FileHelper.createFileRepositoryDirectory("");
+//        assertNull(directoryCreatedAt);
+//    }
+//
+//    @Test
+//    public void testCreateRepoDirWithinvalidBasefilePath() {
+//        File directoryCreatedAt = FileHelper.createFileRepositoryDirectory(this.seperator + "invalid" + this.seperator);
+//        assertNull(directoryCreatedAt);
+//    }
 
     @Test
     public void testCreateDirWithExistingDir() {
@@ -660,16 +676,14 @@ public class FileHelperTest {
         assertThat(result.length, is(equalTo(0)));
     }
 
-
-
     @Test
     public void testByteArrayToBase64() {
         File input = null;
         byte[] inputByteArray = null;
         byte[] result = null;
-        
+
         input = new File(FileHelperTest.sampleDir + "test_zip.zip");
-        
+
         try {
             inputByteArray = FileHelper.getByteArrayFromFile(input);
         } catch (IOException ex) {
