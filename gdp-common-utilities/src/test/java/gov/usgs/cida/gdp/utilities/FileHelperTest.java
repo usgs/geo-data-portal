@@ -19,7 +19,8 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.*;
 
 public class FileHelperTest {
 
@@ -88,6 +89,28 @@ public class FileHelperTest {
     }
 
     @Test
+    public void base64EncodeWithFile() throws IOException {
+        File file = new File(this.sampleDir + this.secondTestFile + ".prj");
+        byte[] result = FileHelper.base64Encode(file);
+        assertThat(result, is(not(nullValue())));
+    }
+
+    @Test
+    public void base64EncodeWithByteArray() throws IOException {
+        byte[] result = FileHelper.base64Encode(new byte[] {'a','b','c','d','e','f','g'});
+        assertThat(result, is(not(nullValue())));
+        assertThat(result.length, is(equalTo(14)));
+    }
+
+    @Test
+    public void base64EncodeWithNullByteArray() throws IOException {
+        byte[] input = null;
+        byte[] result = FileHelper.base64Encode(input);
+        assertThat(result, is(not(nullValue())));
+        assertThat(result.length, is(equalTo(0)));
+    }
+
+    @Test
     public void testGetCanonicalPathname() {
         File file = new File(this.sampleDir + this.secondTestFile + ".prj");
         assertTrue(file.exists());
@@ -113,6 +136,19 @@ public class FileHelperTest {
             assertTrue(newFile.exists());
             assertFalse(file.exists());
             newFile.delete();
+        } catch (IOException ex) {
+            Logger.getLogger(FileHelperTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Test
+    public void testRenameFileWithSameFiles() {
+        try {
+            File file = File.createTempFile("delete", "me");
+            assertTrue(file.exists());
+
+            boolean result = FileHelper.renameFile(file, "delete.me");
+            assertTrue(result);
         } catch (IOException ex) {
             Logger.getLogger(FileHelperTest.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -606,6 +642,25 @@ public class FileHelperTest {
         assertThat(result.length, is(not(0)));
         assertThat(result.length, is(equalTo((int) input.length())));
     }
+
+    @Test
+    public void testFileToByteArrayWithNullInput() {
+        File input = null;
+        byte[] result = null;
+
+        // First we attain a handler to a file
+        try {
+            // Try to get a byte array from it
+            result = FileHelper.getByteArrayFromFile(input);
+        } catch (IOException ex) {
+            fail(ex.getMessage());
+        }
+
+        assertThat(result.length, is(not(nullValue())));
+        assertThat(result.length, is(equalTo(0)));
+    }
+
+
 
     @Test
     public void testByteArrayToBase64() {
