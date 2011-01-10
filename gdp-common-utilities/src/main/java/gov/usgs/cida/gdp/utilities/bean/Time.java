@@ -28,15 +28,15 @@ public class Time extends XmlResponse {
         this.starttime = new TimeBreakdown();
         this.endtime = new TimeBreakdown();
     }
-
-    public Time(GridDataset geoGrid, String gridSelection) {
-        List<String> result = new ArrayList<String>();
-        GeoGrid grid = geoGrid.findGridByName(gridSelection);
-        for (NamedObject Obj : grid.getTimes()) {
-            result.add(Obj.getName());
-            this.time = result;
-        }
-    }
+//
+//    public Time(GridDataset geoGrid, String gridSelection) {
+//        List<String> result = new ArrayList<String>();
+//        GeoGrid grid = geoGrid.findGridByName(gridSelection);
+//        for (NamedObject Obj : grid.getTimes()) {
+//            result.add(Obj.getName());
+//            this.time = result;
+//        }
+//    }
 
     public Time(List<String> dateRange) throws ParseException {
         this.time = dateRange;
