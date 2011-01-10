@@ -61,21 +61,6 @@ public class CoverageMetaData {
         }
 
         if (string.contains("INT")) {
-            // Bytes
-            if (string.endsWith("1")) {
-                return PrimitiveDataType.BYTE;
-            }
-            if (string.endsWith("2")) {
-                return PrimitiveDataType.SHORT;
-            }
-            if (string.endsWith("4")) {
-                return PrimitiveDataType.INT;
-            }
-            // Byte or Bit?
-            if (string.endsWith("8")) {
-                return PrimitiveDataType.LONG;
-//                return PrimitiveDataType.BYTE;
-            }
             // Bits
             if (string.endsWith("16")) {
                 return PrimitiveDataType.SHORT;
@@ -86,6 +71,21 @@ public class CoverageMetaData {
             if (string.endsWith("64")) {
                 return PrimitiveDataType.LONG;
             }
+            // Bytes
+            if (string.endsWith("1")) {
+                return PrimitiveDataType.BYTE;
+            }
+            if (string.endsWith("2")) {
+                return PrimitiveDataType.SHORT;
+            }
+            if (string.endsWith("4")) {
+                return PrimitiveDataType.INT;
+            }
+            // Byte or Bit?  Assume Byte as it's larger
+            if (string.endsWith("8")) {
+                return PrimitiveDataType.LONG;
+//                return PrimitiveDataType.BYTE;
+            }
         }
         
         if (string.contains("INTEGER")) {
@@ -93,18 +93,18 @@ public class CoverageMetaData {
         }
 
         if (string.contains("FLOAT")) {
-            // Bytes
-            if (string.endsWith("4")) {
-                return PrimitiveDataType.FLOAT;
-            }
-            if (string.endsWith("8")) {
-                return PrimitiveDataType.DOUBLE;
-            }
             // Bits
             if (string.endsWith("32")) {
                 return PrimitiveDataType.FLOAT;
             }
             if (string.endsWith("64")) {
+                return PrimitiveDataType.DOUBLE;
+            }
+            // Bytes
+            if (string.endsWith("4")) {
+                return PrimitiveDataType.FLOAT;
+            }
+            if (string.endsWith("8")) {
                 return PrimitiveDataType.DOUBLE;
             }
         }
