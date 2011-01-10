@@ -231,107 +231,12 @@
             <Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.discovery.GetWmsCapabilities</Property>
             <Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.discovery.GetCswRecords</Property>
             <Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.discovery.GetGridTimeRange</Property>
-            <Property active="true" name="Algorithm">org.n52.wps.server.algorithm.SimpleBufferAlgorithm</Property>
-            <Property active="true" name="Algorithm">org.n52.wps.server.algorithm.simplify.DouglasPeuckerAlgorithm</Property>
-            <Property active="true" name="Algorithm">org.n52.wps.server.algorithm.intersection.IntersectionAlgorithm</Property>
-            <Property active="true" name="Algorithm">org.n52.wps.server.algorithm.convexhull.ConvexHullAlgorithm</Property>
-            <Property active="true" name="Algorithm">org.n52.wps.server.algorithm.raster.AddRasterValues</Property>
-
         </Repository>
 
         <Repository active="true" name="UploadedAlgorithmRepository" className="org.n52.wps.server.UploadedAlgorithmRepository">
         </Repository>
-
-		<!--
-
-
-		<Repository name="GeotoolsProcessRepository" className="org.n52.wps.geotools.GeotoolsProcessRepository">
-		</Repository>
-
-
-		<Repository name="LocalUnicoreAlgorithmRepository"	className="org.n52.wps.unicore.UnicoreAlgorithmRepository">
-			<Property active="true" name="Algorithm">org.n52.wps.unicore.algorithm.UnicoreSimpleBufferAlgorithm</Property>
-
-			<Property active="true" name="Registry">https://localhost:8080/DEMO-SITE/services/Registry?res=default_registry</Property>
-			<Property active="true" name="Keystore">/home/bastian/.gpe4unicore/keystore.jks</Property>
-			<Property active="true" name="Type">jks</Property>
-			<Property active="true" name="Alias">demo user</Property>
-			<Property active="true" name="Password">unicore</Property>
-
-			<Property active="true" name="OverwriteRemoteFile">false</Property>
-			<Property active="true" name="CompressInputData">true</Property>
-		</Repository>
-
-
-		 -->
-		<!--
-		<Repository name="LocalGridGainAlgorithmRepository"	className="org.n52.wps.gridgain.GridGainAlgorithmRepository">
-			<Property active="true" name="Algorithm">org.n52.wps.gridgain.algorithm.GridGainSimpleBufferAlgorithm</Property>
-		</Repository>
- 		-->
-		<!--
-			<Repository name="OracleBPELRepository"
-			className="org.n52.wps.transactional.service.DefaultTransactionalProcessRepository">
-			<Property active="true"
-			name="GenericAlgorithm">org.n52.wps.transactional.algorithm.DefaultTransactionalAlgorithm</Property>
-			<Property active="true"
-			name="DeployManager">org.n52.wps.transactional.deploy.bpel.oracle.OracleBPELManager</Property>
-			<Property active="true" name="WorkspaceLocationRoot"></Property> <Property active="true"
-			name="supportedFormat">whatever.xsd</Property> <Property active="true"
-			name="DeploymentProfileClass">org.n52.wps.transactional.deploymentprofiles.BPELDeploymentProfile</Property>
-			this should be created <SupportedDeploymentProfiles schema=""
-			repositoyName="OracleBPELRepository">
-
-		<Repository name="SextanteRepository" className="org.n52.wps.server.sextante.SextanteProcessRepository">
-		</Repository>
-
-		<Repository name="AGSRepository" className="org.n52.wps.ags.AGSProcessRepository">
-			<Property active="true" name="IP">**</Property>
-			<Property active="true" name="DOMAIN">**</Property>
-			<Property active="true" name="USER">**</Property>
-			<Property active="true" name="PASS">**</Property>
-			<Property active="true" name="WORKSPACEBASE">**</Property>
-			<Property active="true" name="ARCOBJECTSJAR">**</Property>
-			<Property active="true" name="DESCRIBE_PROCESS_DIR">D:\development\xmlDescriptions</Property>
-		</Repository>
-
-		<Repository name="LegacyProcessRepository" className="org.n52.wps.server.legacy.LegacyProcessRepository">
-
-			<Property active="true" name="DESCRIBE_PROCESS_DIR">D:\development\legacyDescriptions</Property>
-			<Property active="true" name="TEMPLATE_WORKSPACE_DIR">D:\development\templateWS</Property>
-
-
-			<Property active="true" name="DELEGATOR">org.n52.wps.ags.LegacyAGSProcessDelegator</Property>
-			<Property active="true" name="DELEGATOR">org.n52.wps.ags.scripting.LegacyPythonDelegator</Property>
-
-
-			<Delegator name="LegacyAGSProcessDelegator" className="org.n52.wps.ags.LegacyAGSProcessDelegator">
-				<Property active="true" name="CONTAINER">urn:n52:esri:arctoolbox:9.3</Property>
-				<Property active="true" name="BACKEND">urn:n52:esri:arcgis:9.3.1</Property>
-				<Property active="true" name="BACKEND">urn:n52:esri:arcgis:9.3</Property>
-			</Delegator>
-
-
-		</Repository>
-
-
-			 <Repository name="AGSRepository" className="org.n52.wps.ags.AGSProcessRepository">
-            <Property active="true" name="IP">vsoknos.geoinformatik.geo.uni-muenster.de</Property>
-            <Property active="true" name="DOMAIN">vsoknos.geoinformatik.geo.uni-muenster.de</Property>
-            <Property active="true" name="USER">soknos-wps</Property>
-            <Property active="true" name="PASS">soknos-52N</Property>
-            <Property active="true" name="WORKSPACEBASE">C:\wpsworkspace</Property>
-            <Property active="true" name="ARCOBJECTSJAR">C:\Programme\ArcGIS\java\lib\arcobjects.jar</Property>
-            <Property active="true" name="DESCRIBE_PROCESS_DIR">C:\wps\xmlDescriptions</Property>
-          </Repository>
-            <Repository name="SextanteRepository" className="org.n52.wps.server.sextante.SextanteProcessRepository">
-          </Repository>
-           -->
-
-
-
     </AlgorithmRepositoryList>
-    <Server hostname="localhost" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="wps">
+    <Server hostname="localhost" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="gdp-utility-wps">
         <Database/>
     </Server>
 </WPSConfiguration>
