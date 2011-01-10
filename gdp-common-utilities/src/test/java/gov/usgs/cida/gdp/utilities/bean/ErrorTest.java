@@ -102,6 +102,6 @@ public class ErrorTest {
     public void testErrorConstructor() {
         Error test = new Error(ErrorEnum.ERR_FILE_LIST);
         assertNotNull(test);
-        assertTrue(test.getErrorNumber() == 1);
+        assertTrue(test.getErrorNumber() == 3);
     }
 }
