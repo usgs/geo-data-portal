@@ -6,7 +6,6 @@
 package gov.usgs.cida.gdp.dataaccess.helper;
 
 import gov.usgs.cida.gdp.utilities.FileHelper;
-import gov.usgs.cida.gdp.utilities.bean.ShapeFileSet;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -34,7 +33,6 @@ public class ShapeFileEPSGHelperTest {
     private String tempDir = "";
     private String seperator = "";
     private String testFile = "demo_HUCs";
-    private List<ShapeFileSet> shapeBeanList = new ArrayList<ShapeFileSet>();
     private String wkt_ProjCRSKnown_GeogCRSKnown = "PROJCS[\"NAD_1983_Albers\",GEOGCS[\"GCS_North_American_1983\",DATUM[\"D_North_American_1983\",SPHEROID[\"GRS_1980\",6378137.0,298.257222101]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Albers\"],PARAMETER[\"False_Easting\",0.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",-96.0],PARAMETER[\"Standard_Parallel_1\",29.5],PARAMETER[\"Standard_Parallel_2\",45.5],PARAMETER[\"Latitude_Of_Origin\",23.0],UNIT[\"Meter\",1.0]]";
     private String wkt_ProjCRSUnknown_GeogCRSKnown = "PROJCS[\"NAD_1983_Albers\",GEOGCS[\"GCS_North_American_1983\",DATUM[\"D_North_American_1983\",SPHEROID[\"GRS_1980\",6378137.0,298.257222101]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Albers\"],PARAMETER[\"False_Easting\",0.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",-96.0],PARAMETER[\"Standard_Parallel_1\",29.3],PARAMETER[\"Standard_Parallel_2\",45.3],PARAMETER[\"Latitude_Of_Origin\",23.0],UNIT[\"Meter\",1.0]]";
 

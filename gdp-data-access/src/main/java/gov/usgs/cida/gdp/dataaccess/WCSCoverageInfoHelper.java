@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 /**
- *
+ * TODO get rid of this after Tom is done with his stuff
  * @author admin
  */
 public class WCSCoverageInfoHelper {
@@ -58,7 +58,7 @@ public class WCSCoverageInfoHelper {
 
         do {
             String XPATH_featureName = "/wfs:WFS_Capabilities/wfs:FeatureTypeList/"
-                    + "wfs:FeatureType[" + i + "]/wfs:Name/text()";
+                    + "wfs:FeatureType[wfs:featureName='%s']/wfs:Name/text()";
 
             String XPATH_featureLowerCorner = "/wfs:WFS_Capabilities/wfs:FeatureTypeList/"
                     + "wfs:FeatureType[" + i + "]/ows:WGS84BoundingBox/ows:LowerCorner/text()";
@@ -212,7 +212,7 @@ public class WCSCoverageInfoHelper {
 
         static {
             namespaceMap = new HashMap<String, String>();
-            namespaceMap.put("", "http://www.opengis.net/wfs");
+            namespaceMap.put("", "http://www.opengis.net/wfs/1.0.0");
             namespaceMap.put("wfs", "http://www.opengis.net/wfs");
             namespaceMap.put("ows", "http://www.opengis.net/ows");
             namespaceMap.put("gml", "http://www.opengis.net/gml");

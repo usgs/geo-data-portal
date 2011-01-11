@@ -1,7 +1,7 @@
 package gov.usgs.cida.gdp.wps.servlet;
 
 import gov.usgs.cida.gdp.constants.AppConstant;
-import gov.usgs.cida.gdp.filemanagement.interfaces.geoserver.ManageWorkSpace;
+import gov.usgs.cida.gdp.dataaccess.ManageGeoserverWorkspace;
 import gov.usgs.cida.gdp.utilities.FileHelper;
 import java.io.File;
 import java.io.IOException;
@@ -103,7 +103,7 @@ public class FileWipeAutomationServlet extends HttpServlet {
                 if (!filesDeleted.isEmpty()) {
                     log.info("Finished deleting repository directory files. " + filesDeleted.size() + " deleted.");
                     try {
-                        new ManageWorkSpace().updateGeoServer(AppConstant.WFS_ENDPOINT.toString());
+                        new ManageGeoserverWorkspace().updateGeoServer(AppConstant.WFS_ENDPOINT.toString());
                         log.info("GeoServer has been reloaded after datastores were deleted.");
                     } catch (IOException ex) {
                         Logger.getLogger(FileWipeAutomationServlet.class.getName()).log(Level.WARNING, null, ex);

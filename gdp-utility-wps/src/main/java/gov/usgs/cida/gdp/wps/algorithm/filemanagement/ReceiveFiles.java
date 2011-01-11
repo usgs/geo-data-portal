@@ -2,7 +2,7 @@ package gov.usgs.cida.gdp.wps.algorithm.filemanagement;
 
 import gov.usgs.cida.gdp.constants.AppConstant;
 import gov.usgs.cida.gdp.dataaccess.helper.ShapeFileEPSGHelper;
-import gov.usgs.cida.gdp.filemanagement.interfaces.geoserver.ManageWorkSpace;
+import gov.usgs.cida.gdp.dataaccess.ManageGeoserverWorkspace;
 import gov.usgs.cida.gdp.utilities.FileHelper;
 import java.io.File;
 import java.io.FileFilter;
@@ -126,7 +126,7 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
         String geoServerURL = AppConstant.WFS_ENDPOINT.toString();
         String workspace = "upload";
         try {
-            ManageWorkSpace mws = new ManageWorkSpace(geoServerURL);
+            ManageGeoserverWorkspace mws = new ManageGeoserverWorkspace(geoServerURL);
             mws.createDataStore(renamedShpPath, desiredFilename, workspace, nativeCRS, declaredCRS);
         } catch (IOException ex) {
             errors.add(ex.getMessage());
