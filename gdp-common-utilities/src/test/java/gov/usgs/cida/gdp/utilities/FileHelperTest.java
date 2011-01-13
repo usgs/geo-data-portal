@@ -465,15 +465,6 @@ public class FileHelperTest {
     }
 
     @Test
-    public void testLoadFile() {
-        String fileToLoad = testFilePath + ".shx";
-
-        File result = FileHelper.loadFile(fileToLoad);
-        assertNotNull("File came back null", result);
-        assertTrue("File is not a file", result.isFile());
-    }
-
-    @Test
     public void testGetFileCollection() {
         String dirToList = this.tempDir + this.seperator;
         Collection<File> result = null;
@@ -491,30 +482,6 @@ public class FileHelperTest {
             assertNotNull(e);
         }
     }
-//
-//    @Test
-//    public void testCreateRepoDir() {
-//        File directoryCreatedAt = FileHelper.createFileRepositoryDirectory(this.tempDir);
-//        assertTrue(directoryCreatedAt.exists());
-//    }
-//
-//    @Test
-//    public void testCreateRepoDirWithNullBasefilePath() {
-//        File directoryCreatedAt = FileHelper.createFileRepositoryDirectory(null);
-//        assertNull(directoryCreatedAt);
-//    }
-//
-//    @Test
-//    public void testCreateRepoDirWithEmptyBasefilePath() {
-//        File directoryCreatedAt = FileHelper.createFileRepositoryDirectory("");
-//        assertNull(directoryCreatedAt);
-//    }
-//
-//    @Test
-//    public void testCreateRepoDirWithinvalidBasefilePath() {
-//        File directoryCreatedAt = FileHelper.createFileRepositoryDirectory(this.seperator + "invalid" + this.seperator);
-//        assertNull(directoryCreatedAt);
-//    }
 
     @Test
     public void testCreateDirWithExistingDir() {
@@ -561,7 +528,6 @@ public class FileHelperTest {
     @Test
     public void testCreateUserDirectory() {
         String createdDir = FileHelper.createUserDirectory(this.tempDir + this.seperator);
-//        assertTrue(createdDir.contains(dirToCreate));
         assertFalse(createdDir.isEmpty());
     }
 
