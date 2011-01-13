@@ -439,6 +439,19 @@ public class FileHelperTest {
     }
 
     @Test
+    public void testFindFileWithNull() {
+        File result = FileHelper.findFile(null, null);
+        assertNull(result);
+    }
+
+
+    @Test
+    public void testFindFileWithEmptyString() {
+        File result = FileHelper.findFile("", "");
+        assertNull(result);
+    }
+
+    @Test
     public void testGetFileList() {
         String dirToList = this.tempDir + this.seperator;
         List<String> result = null;

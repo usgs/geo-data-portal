@@ -19,7 +19,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.slf4j.LoggerFactory;
@@ -446,7 +445,7 @@ public class FileHelper {
             int count = 0;
             byte data[] = new byte[BUFFER];
             // Get the final filename (even if it's within directories in the ZIP file)
-            String destinationFileName = entry.getName().contains("/") ? entry.getName().substring(entry.getName().lastIndexOf('/')) : entry.getName();
+            String destinationFileName = entry.getName().contains(File.pathSeparator) ? entry.getName().substring(entry.getName().lastIndexOf(File.pathSeparator)) : entry.getName();
             FileOutputStream fos = new FileOutputStream(outputDirectory + java.io.File.separator + destinationFileName);
             dest = new BufferedOutputStream(fos, BUFFER);
             while ((count = zis.read(data, 0, BUFFER)) != -1) {
