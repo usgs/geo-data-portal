@@ -142,6 +142,19 @@ public class FileHelperTest {
     }
 
     @Test
+    public void testRenameFilesWithoutBeingAbleToWriteDestinationFile() {
+            try {
+            File file = File.createTempFile("delete", "me");
+            assertTrue(file.exists());
+
+            boolean result = FileHelper.renameFile(file, "test2");
+            assertTrue(result);
+        } catch (IOException ex) {
+            Logger.getLogger(FileHelperTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Test
     public void testRenameFileWithSameFiles() {
         try {
             File file = File.createTempFile("delete", "me");
@@ -242,12 +255,23 @@ public class FileHelperTest {
     }
 
     @Test
-    public void testCreateDir() {
+    public void testCreateDirUsingStringObject() {
         boolean result = false;
         String testDir = System.getProperty("java.io.tmpdir")
                 + java.io.File.separator
                 + Long.toString((new Date()).getTime()) + 1;
         result = FileHelper.createDir(testDir);
+        assertTrue(result);
+        (new File(testDir)).delete();
+    }
+
+    @Test
+    public void testCreateDirUsingFileObject() {
+        boolean result = false;
+        String testDir = System.getProperty("java.io.tmpdir")
+                + java.io.File.separator
+                + Long.toString((new Date()).getTime()) + 1;
+        result = FileHelper.createDir(new File(testDir));
         assertTrue(result);
         (new File(testDir)).delete();
     }

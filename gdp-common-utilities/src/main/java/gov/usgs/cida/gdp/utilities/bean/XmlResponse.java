@@ -6,7 +6,7 @@ import com.thoughtworks.xstream.XStream;
  *
  * @author isuftin
  */
-public abstract class XmlResponse {
+public class XmlResponse {
 
     public String toXML() {
         XStream stream = new XStream();
