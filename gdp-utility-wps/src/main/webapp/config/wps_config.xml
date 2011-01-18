@@ -215,8 +215,7 @@
                 <Property active="true" name="supportedFormat">text/xml</Property>
                 <Property active="true" name="supportedEncoding">UTF-8</Property>
             </Generator>
-				
-
+            
         </GeneratorList>
     </Datahandlers>
     <AlgorithmRepositoryList>
@@ -233,8 +232,6 @@
             <Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.discovery.GetGridTimeRange</Property>
         </Repository>
 
-        <Repository active="true" name="UploadedAlgorithmRepository" className="org.n52.wps.server.UploadedAlgorithmRepository">
-        </Repository>
     </AlgorithmRepositoryList>
     <Server hostname="localhost" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="gdp-utility-wps">
         <Database/>
