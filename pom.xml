@@ -255,7 +255,6 @@
                 <artifactId>gt-xsd-kml</artifactId>
                 <version>${geotools.version}</version>
             </dependency>
-
         </dependencies>
     </dependencyManagement>
     <build>
@@ -268,22 +267,6 @@
                     <configuration>
                         <source>1.6</source>
                         <target>1.6</target>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.cargo</groupId>
-                    <artifactId>cargo-maven2-plugin</artifactId>
-                    <configuration>
-                        <container>
-                            <containerId>${cargo.containerId}</containerId>
-                            <type>remote</type>
-                        </container>
-                        <configuration>
-                            <type>runtime</type>
-                            <properties>
-                                <cargo.server.settings>${cargo.server.settings}</cargo.server.settings>
-                            </properties>
-                        </configuration>
                     </configuration>
                 </plugin>
             </plugins>

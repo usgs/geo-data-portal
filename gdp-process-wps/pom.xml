@@ -11,12 +11,35 @@
     <name>gdp-process-wps</name>
     <build>
         <finalName>gdp-process-wps</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.cargo</groupId>
+                <artifactId>cargo-maven2-plugin</artifactId>
+                <configuration>
+                    <container>
+                        <containerId>${cargo.containerId}</containerId>
+                        <type>remote</type>
+                    </container>
+                    <configuration>
+                        <type>runtime</type>
+                        <properties>
+                            <cargo.server.settings>${cargo.server.settings}</cargo.server.settings>
+                        </properties>
+                    </configuration>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
     <dependencies>
         <!-- sibling module dependencies -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>gdp-core-processing</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>gdp-data-access</artifactId>
             <version>${project.version}</version>
         </dependency>
         <!-- version numbers set in parent pom -->
