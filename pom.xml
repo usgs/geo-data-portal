@@ -194,10 +194,10 @@
                         <artifactId>stax-api</artifactId>
                         <groupId>stax</groupId>
                     </exclusion>
-					<exclusion>
-						<artifactId>geronimo-javamail_1.4_spec</artifactId>
-						<groupId>org.apache.geronimo.specs</groupId>
-					</exclusion>
+                    <exclusion>
+                        <artifactId>geronimo-javamail_1.4_spec</artifactId>
+                        <groupId>org.apache.geronimo.specs</groupId>
+                    </exclusion>
                 </exclusions>
             </dependency>
             <dependency>
@@ -268,6 +268,22 @@
                     <configuration>
                         <source>1.6</source>
                         <target>1.6</target>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.cargo</groupId>
+                    <artifactId>cargo-maven2-plugin</artifactId>
+                    <configuration>
+                        <container>
+                            <containerId>${cargo.containerId}</containerId>
+                            <type>remote</type>
+                        </container>
+                        <configuration>
+                            <type>runtime</type>
+                            <properties>
+                                <cargo.server.settings>${cargo.server.settings}</cargo.server.settings>
+                            </properties>
+                        </configuration>
                     </configuration>
                 </plugin>
             </plugins>
