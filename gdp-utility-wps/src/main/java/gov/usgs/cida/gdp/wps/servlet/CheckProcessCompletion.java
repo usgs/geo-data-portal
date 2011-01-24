@@ -94,7 +94,14 @@ class EmailCheckTask extends TimerTask {
 		catch (Exception ex) {
 			String error = "Error in process checking/sending email: " + ex.getMessage();
 			log.error(error);
-			throw new RuntimeException(error);
+			//throw new RuntimeException(error);
+			try {
+				sendFailedEmail(error);
+			}
+			catch (Exception ex2) {
+				log.error("Also, email was bad, cannot send " + ex2.getMessage());
+			}
+			this.cancel();
 		}
 
 	}
