@@ -17,6 +17,7 @@
         <module>gdp-geotiff</module>
         <module>gdp-utility-wps</module>
         <module>gdp-process-wps</module>
+        <module>geoserver</module>
     </modules>
     <repositories>
         <repository>
