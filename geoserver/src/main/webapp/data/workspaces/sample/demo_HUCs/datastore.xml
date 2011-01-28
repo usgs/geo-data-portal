@@ -1,0 +1,16 @@
+<dataStore>
+  <id>DataStoreInfoImpl-378103b2:12a1edeecf1:-7fe4</id>
+  <name>demo_HUCs</name>
+  <type>Shapefile</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl-378103b2:12a1edeecf1:-7fe9</id>
+  </workspace>
+  <connectionParameters>
+    <entry key="memory mapped buffer">true</entry>
+    <entry key="create spatial index">true</entry>
+    <entry key="charset">ISO-8859-1</entry>
+    <entry key="url">file:data/demo_HUCs</entry>
+    <entry key="namespace">gov.usgs.cida.gdp.sample</entry>
+  </connectionParameters>
+</dataStore>

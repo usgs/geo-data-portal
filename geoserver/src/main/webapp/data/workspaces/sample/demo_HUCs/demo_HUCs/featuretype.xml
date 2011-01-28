@@ -1,0 +1,38 @@
+<featureType>
+  <id>FeatureTypeInfoImpl-378103b2:12a1edeecf1:-7fe3</id>
+  <name>demo_HUCs</name>
+  <nativeName>demo_HUCs</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl-378103b2:12a1edeecf1:-7fe8</id>
+  </namespace>
+  <title>demo_HUCs</title>
+  <nativeCRS>GEOGCS[&quot;GCS_North_American_1983&quot;, 
+  DATUM[&quot;D_North_American_1983&quot;, 
+    SPHEROID[&quot;GRS_1980&quot;, 6378137.0, 298.257222101]], 
+  PRIMEM[&quot;Greenwich&quot;, 0.0], 
+  UNIT[&quot;degree&quot;, 0.017453292519943295], 
+  AXIS[&quot;Longitude&quot;, EAST], 
+  AXIS[&quot;Latitude&quot;, NORTH]]</nativeCRS>
+  <srs>EPSG:4269</srs>
+  <nativeBoundingBox>
+    <minx>-89.172</minx>
+    <maxx>-86.134</maxx>
+    <miny>30.225</miny>
+    <maxy>34.749</maxy>
+    <crs>EPSG:4269</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>-89.172</minx>
+    <maxx>-86.134</maxx>
+    <miny>30.225</miny>
+    <maxy>34.749</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl-378103b2:12a1edeecf1:-7fe4</id>
+  </store>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+</featureType>

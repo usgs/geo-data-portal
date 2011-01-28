@@ -1,0 +1,16 @@
+<layer>
+  <name>demo_HUCs</name>
+  <id>LayerInfoImpl-378103b2:12a1edeecf1:-7fe2</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-4e0b98bf:12475d46fdd:-7fe0</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-378103b2:12a1edeecf1:-7fe3</id>
+  </resource>
+  <enabled>true</enabled>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+</layer>

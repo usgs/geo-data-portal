@@ -1,0 +1,38 @@
+<featureType>
+  <id>FeatureTypeInfoImpl-378103b2:12a1edeecf1:-7fd7</id>
+  <name>stjoe_hucs</name>
+  <nativeName>stjoe_hucs</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl-378103b2:12a1edeecf1:-7fe8</id>
+  </namespace>
+  <title>stjoe_hucs</title>
+  <nativeCRS>GEOGCS[&quot;GCS_North_American_1983&quot;, 
+  DATUM[&quot;D_North_American_1983&quot;, 
+    SPHEROID[&quot;GRS_1980&quot;, 6378137.0, 298.257222101]], 
+  PRIMEM[&quot;Greenwich&quot;, 0.0], 
+  UNIT[&quot;degree&quot;, 0.017453292519943295], 
+  AXIS[&quot;Longitude&quot;, EAST], 
+  AXIS[&quot;Latitude&quot;, NORTH]]</nativeCRS>
+  <srs>EPSG:4269</srs>
+  <nativeBoundingBox>
+    <minx>-86.543</minx>
+    <maxx>-84.441</maxx>
+    <miny>41.265</miny>
+    <maxy>42.374</maxy>
+    <crs>EPSG:4269</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>-86.543</minx>
+    <maxx>-84.441</maxx>
+    <miny>41.265</miny>
+    <maxy>42.374</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl-378103b2:12a1edeecf1:-7fde</id>
+  </store>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+</featureType>

@@ -1,0 +1,49 @@
+<featureType>
+  <id>FeatureTypeInfoImpl-2531c29e:12b68682f90:-7fff</id>
+  <name>merge_national</name>
+  <nativeName>merge_national</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl-378103b2:12a1edeecf1:-7fe8</id>
+  </namespace>
+  <title>merge_national</title>
+  <nativeCRS class="projected">PROJCS[&quot;NAD_1983_Albers&quot;, 
+  GEOGCS[&quot;GCS_North_American_1983&quot;, 
+    DATUM[&quot;D_North_American_1983&quot;, 
+      SPHEROID[&quot;GRS_1980&quot;, 6378137.0, 298.257222101]], 
+    PRIMEM[&quot;Greenwich&quot;, 0.0], 
+    UNIT[&quot;degree&quot;, 0.017453292519943295], 
+    AXIS[&quot;Longitude&quot;, EAST], 
+    AXIS[&quot;Latitude&quot;, NORTH]], 
+  PROJECTION[&quot;Albers_Conic_Equal_Area&quot;], 
+  PARAMETER[&quot;central_meridian&quot;, -96.0], 
+  PARAMETER[&quot;latitude_of_origin&quot;, 23.0], 
+  PARAMETER[&quot;standard_parallel_1&quot;, 29.5], 
+  PARAMETER[&quot;false_easting&quot;, 0.0], 
+  PARAMETER[&quot;false_northing&quot;, 0.0], 
+  PARAMETER[&quot;standard_parallel_2&quot;, 45.5], 
+  UNIT[&quot;m&quot;, 1.0], 
+  AXIS[&quot;x&quot;, EAST], 
+  AXIS[&quot;y&quot;, NORTH]]</nativeCRS>
+  <srs>EPSG:4269</srs>
+  <nativeBoundingBox>
+    <minx>-2341005.0</minx>
+    <maxx>2218365.0</maxx>
+    <miny>467775.0</miny>
+    <maxy>3127155.0</maxy>
+    <crs class="projected">EPSG:42303</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>0.0</minx>
+    <maxx>0.0</maxx>
+    <miny>90.0</miny>
+    <maxy>90.0</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl-2531c29e:12b68682f90:-8000</id>
+  </store>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+</featureType>

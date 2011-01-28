@@ -1,0 +1,38 @@
+<featureType>
+  <id>FeatureTypeInfoImpl-378103b2:12a1edeecf1:-7fdb</id>
+  <name>Yahara_River_HRUs_geo_WGS84</name>
+  <nativeName>Yahara_River_HRUs_geo_WGS84</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl-378103b2:12a1edeecf1:-7fe8</id>
+  </namespace>
+  <title>Yahara_River_HRUs_geo_WGS84</title>
+  <nativeCRS>GEOGCS[&quot;GCS_WGS_1984&quot;, 
+  DATUM[&quot;D_WGS_1984&quot;, 
+    SPHEROID[&quot;WGS_1984&quot;, 6378137.0, 298.257223563]], 
+  PRIMEM[&quot;Greenwich&quot;, 0.0], 
+  UNIT[&quot;degree&quot;, 0.017453292519943295], 
+  AXIS[&quot;Longitude&quot;, EAST], 
+  AXIS[&quot;Latitude&quot;, NORTH]]</nativeCRS>
+  <srs>EPSG:4326</srs>
+  <nativeBoundingBox>
+    <minx>-89.606</minx>
+    <maxx>-89.083</maxx>
+    <miny>42.759</miny>
+    <maxy>43.366</maxy>
+    <crs>EPSG:4326</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>-89.606</minx>
+    <maxx>-89.083</maxx>
+    <miny>42.759</miny>
+    <maxy>43.366</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl-378103b2:12a1edeecf1:-7fdc</id>
+  </store>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+</featureType>
