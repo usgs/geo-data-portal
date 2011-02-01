@@ -20,6 +20,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -106,7 +109,7 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
                         if (processValidator.validate(method)) {
                             processMethod = method;
                         } else {
-                            // TODO: error
+                        // TODO: error? warning?
                         }
                     }
                 }
@@ -138,7 +141,7 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
                         outputElementMap.put(ldo.identifier(), element);
                         algorithmBuilder.addOutputDesciptor(ldod);
                     } else {
-                        // TODO: error
+                        // TODO: error? warning?
                     }
                 }
                 ComplexDataOutput cdo = element.getAnnotation(ComplexDataOutput.class);
@@ -155,7 +158,7 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
                         outputElementMap.put(cdo.identifier(), element);
                         algorithmBuilder.addOutputDesciptor(cdod);
                     } else {
-                        // TODO: error
+                        // TODO: error? warning?
                     }
                 }
                 LiteralDataInput ldi = element.getAnnotation(LiteralDataInput.class);
@@ -174,7 +177,7 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
                         inputElementMap.put(ldi.identifier(), element);
                         algorithmBuilder.addInputDesciptor(ldid);
                     } else {
-                        // TODO: error
+                        // TODO: error? warning?
                     }
                 }
                 ComplexDataInput cdi = element.getAnnotation(ComplexDataInput.class);
@@ -192,7 +195,7 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
                         inputElementMap.put(cdi.identifier(), element);
                         algorithmBuilder.addInputDesciptor(cdid);
                     } else {
-                        // TODO: error
+                        // TODO: error? warning?
                     }
                 }
             }
@@ -223,23 +226,8 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
         }
         
         private static abstract class Validator {
-
             protected static boolean checkModifier(Member member) {
                 return ((member.getModifiers() & Modifier.PUBLIC) != 0);
-            }
-
-            protected static boolean checkType(Class<?> candidateClass, Class<? extends IData> bindingClass, boolean listRequired) {
-                try {
-                    Class<?> payloadClass = bindingClass.getMethod("getPayload", (Class<?>[])null).getReturnType();
-                    if (List.class.isAssignableFrom(candidateClass)) {
-                        return true;
-                    } else if (payloadClass.isAssignableFrom(candidateClass) && !listRequired) {
-                        return true;
-                    }
-                } catch (NoSuchMethodException e) {
-                    return false;
-                }
-                return false;
             }
         }
 
@@ -252,18 +240,85 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
         }
 
         private static abstract class InputValidator<T extends AccessibleObject> extends Validator {
+
             public abstract boolean validate(T member, InputDescriptor<?> inputDescriptor);
+
+            protected static boolean checkType(Type candidateType, Class<? extends IData> bindingClass, boolean listRequired) {
+                try {
+                    Class<?> payloadClass = bindingClass.getMethod("getPayload", (Class<?>[])null).getReturnType();
+                    if (candidateType instanceof Class<?>) {
+                        Class<?> candidateClass = (Class<?>)candidateType;
+                        if (List.class.isAssignableFrom(candidateClass)) {
+                            return true;
+                        } else if (payloadClass.isAssignableFrom(candidateClass) && !listRequired) {
+                            return true;
+                        }
+                    } else if (candidateType instanceof ParameterizedType) {
+                        ParameterizedType parameterizedType = (ParameterizedType)candidateType;
+                        Class<?> rawClass = (Class<?>)parameterizedType.getRawType();
+                        if (List.class.isAssignableFrom(rawClass)) {
+                            Type typeArgument = parameterizedType.getActualTypeArguments()[0]; // assumes 1 args for List
+                            if (typeArgument instanceof Class<?>) {
+                                // i.e. List<String>
+                                return payloadClass.isAssignableFrom((Class<?>)typeArgument);
+                            } else if (typeArgument instanceof ParameterizedType) {
+                                // i.e. List<FeatureCollection<SimpleFeatureType,SimpleFeature>>
+                                return payloadClass.isAssignableFrom(((Class<?>)((ParameterizedType)typeArgument).getRawType()));
+                            } else if (typeArgument instanceof WildcardType) {
+                                // i.e. List<? extends String> or List<? super String>
+                                WildcardType typeArgumentWildcardType = (WildcardType)typeArgument;
+                                Type[] lowerBounds = typeArgumentWildcardType.getLowerBounds();
+                                Type[] upperBounds = typeArgumentWildcardType.getUpperBounds();
+                                Class<?> lowerBoundClass = null;
+                                Class<?> upperBoundClass = null;
+                                if (lowerBounds != null && lowerBounds.length > 0) {
+                                    if (lowerBounds[0] instanceof Class<?>) {
+                                        lowerBoundClass = (Class<?>)lowerBounds[0];
+                                    } else if (lowerBounds[0] instanceof ParameterizedType) {
+                                        lowerBoundClass = (Class<?>)((ParameterizedType)lowerBounds[0]).getRawType();
+                                    }
+                                }
+                                if (upperBounds != null && upperBounds.length > 0) {
+                                    if (upperBounds[0] instanceof Class<?>) {
+                                        upperBoundClass = (Class<?>)upperBounds[0];
+                                    } else if (upperBounds[0] instanceof ParameterizedType) {
+                                        upperBoundClass = (Class<?>)((ParameterizedType)upperBounds[0]).getRawType();
+                                    }
+                                }
+                                return ( upperBoundClass == null || upperBoundClass.isAssignableFrom(payloadClass)) &&
+                                       ( lowerBounds == null || payloadClass.isAssignableFrom(lowerBoundClass));
+                            }
+                        } else if (payloadClass.isAssignableFrom(rawClass) && !listRequired) {
+                            return true;
+                        }
+                    }
+                } catch (NoSuchMethodException e) {
+                    return false;
+                }
+                return false;
+            }
         }
 
         private static abstract class OutputValidator<T extends AccessibleObject> extends Validator {
             public abstract boolean  validate(T member, OutputDescriptor<?> outputDescriptor);
+            protected static boolean checkType(Class<?> candidateClass, Class<? extends IData> bindingClass) {
+                try {
+                    Class<?> payloadClass = bindingClass.getMethod("getPayload", (Class<?>[])null).getReturnType();
+                    if (payloadClass.isAssignableFrom(candidateClass)) {
+                        return true;
+                    }
+                } catch (NoSuchMethodException e) {
+                    return false;
+                }
+                return false;
+            }
         }
 
         private static class InputFieldValidator extends InputValidator<Field> {
             @Override
             public boolean validate(Field field, InputDescriptor<?> descriptor) {
                 return checkModifier(field) &&
-                        checkType(field.getType(),
+                        checkType(field.getGenericType(),
                             descriptor.getBinding(),
                             descriptor.getMaxOccurs().intValue() > 1);
             }
@@ -273,19 +328,17 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
             @Override
             public boolean validate(Field field, OutputDescriptor<?> descriptor) {
                 return checkModifier(field) &&
-                        checkType(field.getType(),
-                            descriptor.getBinding(),
-                            false);
+                        checkType(field.getType(), descriptor.getBinding());
             }
         }
         
         private class InputMethodValidator extends InputValidator<Method> {
             @Override
             public boolean validate(Method method, InputDescriptor<?> descriptor) {
-                Class<?>[] parameterTypes = method.getParameterTypes();
-                return parameterTypes.length == 1 &&
+                Type[] genericParameterTypes = method.getGenericParameterTypes();
+                return genericParameterTypes.length == 1 &&
                         checkModifier(method) &&
-                        checkType(parameterTypes[0],
+                        checkType(genericParameterTypes[0],
                             descriptor.getBinding(),
                             descriptor.getMaxOccurs().intValue() > 1);
             }
@@ -296,9 +349,7 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
             public boolean validate(Method method, OutputDescriptor<?> descriptor) {
                 return method.getParameterTypes().length == 0 &&
                         checkModifier(method) &&
-                        checkType(method.getReturnType(),
-                            descriptor.getBinding(),
-                            false);
+                        checkType(method.getReturnType(), descriptor.getBinding());
             }
         }
     }
@@ -322,58 +373,54 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
     private void processInputs(Object target, Map<String, List<IData>> inputMap) {
 
         Introspector introspector = getInstrospector(target.getClass());
+
         for (Map.Entry<String, Field> iEntry : introspector.getInputFieldMap().entrySet()) {
             String iIdentifier = iEntry.getKey();
             Field iField = iEntry.getValue();
+            InputDescriptor iDescriptor = getAlgorithmDescriptor().getInputDescriptor(iIdentifier);
+            List<IData> boundList = inputMap.get(iIdentifier);
+            Class unboundType = iField.getType();
             try {
-                List<IData> boundList = inputMap.get(iIdentifier);
-                // validate
-                InputDescriptor iDescriptor = getAlgorithmDescriptor().getInputDescriptor(iIdentifier);
-                int minOccurs = iDescriptor.getMinOccurs().intValue();
-                int maxOccurs = iDescriptor.getMaxOccurs().intValue();
-                if (boundList == null) {
-                    Arrays.asList(new IData[0]);
-                }
-                if (boundList.size() < minOccurs) {
-                    throw new RuntimeException("Found " + boundList.size() + " for INPUT " + iIdentifier + ", require minimum of " + minOccurs);
-                }
-                if (boundList.size() > maxOccurs) {
-                    throw new RuntimeException("Found " + boundList.size() + " for INPUT " + iIdentifier + ", maximum allowed is " + minOccurs);
-                }
-                Class unboundType = iField.getType();
                 iField.set(target, unbindInputValue(iDescriptor, boundList, unboundType));
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            } catch (IllegalArgumentException ex) {
+                throw new RuntimeException("Internal error processing inputs", ex);
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException("Internal error processing inputs", ex);
             }
+
         }
         for (Map.Entry<String, Method> iEntry : introspector.getInputMethodMap().entrySet()) {
             String iIdentifier = iEntry.getKey();
             Method iMethod = iEntry.getValue();
-            try {
-                List<IData> boundList = inputMap.get(iIdentifier);
-                // validate
                 InputDescriptor iDescriptor = getAlgorithmDescriptor().getInputDescriptor(iIdentifier);
-                int minOccurs = iDescriptor.getMinOccurs().intValue();
-                int maxOccurs = iDescriptor.getMaxOccurs().intValue();
-                if (boundList == null) {
-                    Arrays.asList(new IData[0]);
-                }
-                if (boundList.size() < minOccurs) {
-                    throw new RuntimeException("Found " + boundList.size() + " for INPUT " + iIdentifier + ", require minimum of " + minOccurs);
-                }
-                if (boundList.size() > maxOccurs) {
-                    throw new RuntimeException("Found " + boundList.size() + " for INPUT " + iIdentifier + ", maximum allowed is " + minOccurs);
-                }
+                List<IData> boundList = inputMap.get(iIdentifier);
                 Class unboundType = iMethod.getParameterTypes()[0];
+            try {
                 iMethod.invoke(target, unbindInputValue(iDescriptor, boundList, unboundType));
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException("Internal error processing inputs", ex);
+            } catch (IllegalArgumentException ex) {
+                throw new RuntimeException("Internal error processing inputs", ex);
+            } catch (InvocationTargetException ex) {
+                throw new RuntimeException("Internal error processing inputs", ex);
             }
+
         }
     }
 
     private Object unbindInputValue(InputDescriptor descriptor, List<IData> boundValueList, Class<?> unboundType) {
         Object value = null;
+        int minOccurs = descriptor.getMinOccurs().intValue();
+        int maxOccurs = descriptor.getMaxOccurs().intValue();
+        if (boundValueList == null) {
+            Arrays.asList(new IData[0]);
+        }
+        if (boundValueList.size() < minOccurs) {
+            throw new RuntimeException("Found " + boundValueList.size() + "values for INPUT " + descriptor.getIdentifier() + ", require minimum of " + minOccurs);
+        }
+        if (boundValueList.size() > maxOccurs) {
+            throw new RuntimeException("Found " + boundValueList.size() + "values for INPUT " + descriptor.getIdentifier() + ", maximum allowed is " + minOccurs);
+        }
         if (List.class.isAssignableFrom(unboundType)) {
             List valueList = new ArrayList(boundValueList.size());
             for (IData bound : boundValueList) {
@@ -398,11 +445,14 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
                 if (value != null) {
                     oMap.put(oEntry.getKey(), (IData) bindOutputValue(oDescriptor, value));
                 } else {
-                    // TODO: error
+                    // TODO: error? warning?
                 }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                // TODO: error
+            } catch (InvocationTargetException ex) {
+                throw new RuntimeException(ex.getMessage(), ex);
+            } catch (IllegalArgumentException ex) {
+                throw new RuntimeException("Internal error processing outputs", ex);
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException("Internal error processing outputs", ex);
             }
         }
         for (Map.Entry<String, Method> oEntry : introspector.getOutputMethodMap().entrySet()) {
@@ -414,40 +464,51 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
                 if (value != null) {
                     oMap.put(oEntry.getKey(), (IData) bindOutputValue(oDescriptor, value));
                 } else {
-                    // TODO: error
+                    // TODO: error? warning?
                 }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                // TODO: error
+            } catch (InvocationTargetException ex) {
+                throw new RuntimeException(ex.getMessage(), ex);
+            } catch (IllegalArgumentException ex) {
+                throw new RuntimeException("Internal error processing outputs", ex);
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException("Internal error processing outputs", ex);
             }
         }
         return oMap;
     }
 
     private Object bindOutputValue(OutputDescriptor descriptor, Object outputValue)
-            throws NoSuchMethodException,
-                InstantiationException,
-                IllegalAccessException,
-                IllegalArgumentException,
-                InvocationTargetException
-    {
-        Class<?> bindingClass = descriptor.getBinding();
-        Constructor bindingConstructor = bindingClass.getConstructor(outputValue.getClass());
-        return bindingConstructor.newInstance(outputValue);
+            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        Object binding = null;
+        try {
+            Class<?> bindingClass = descriptor.getBinding();
+            Constructor bindingConstructor = bindingClass.getConstructor(outputValue.getClass());
+            binding =  bindingConstructor.newInstance(outputValue);
+        } catch (InstantiationException ex) {
+                throw new RuntimeException("Internal error processing outputs", ex);
+        } catch (NoSuchMethodException ex) {
+                throw new RuntimeException("Internal error processing outputs", ex);
+        } catch (SecurityException ex) {
+                throw new RuntimeException("Internal error processing outputs", ex);
+        }
+        return binding;
     }
 
     @Override
     public Map<String, IData> run(Map<String, List<IData>> inputMap) {
-        // this is here as I plan on  separating the implementation
+        // this is where as I plan on  separating the implementation
         // from the annotated process/algorithm, there's no reason it needs to me
         // a subclass (simply that way not for development convenience)
         Object target = this;
         processInputs(target, inputMap);
         try {
             getInstrospector(target.getClass()).getProcessMethod().invoke(target);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            // TODO: error
+        } catch (IllegalAccessException ex) {
+            throw new RuntimeException("Internal error executing process", ex);
+        } catch (IllegalArgumentException ex) {
+            throw new RuntimeException("Internal error executing process", ex);
+        } catch (InvocationTargetException ex) {
+            throw new RuntimeException(ex.getMessage(), ex);
         }
         return processOutput(target);
     }

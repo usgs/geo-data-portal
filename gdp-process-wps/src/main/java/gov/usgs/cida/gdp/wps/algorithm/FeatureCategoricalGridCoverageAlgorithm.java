@@ -11,6 +11,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,33 +81,34 @@ public class FeatureCategoricalGridCoverageAlgorithm extends BaseAlgorithm {
             featureCollection = extractFeatureCollection(input, I_FEATURE_COLLECTION);
             String featureAttributeName = extractString(input, I_FEATURE_ATTRIBUTE_NAME);
 
-            featureDataset = extractFeatureDataset(input, I_DATASET_URI);
-            String featureDatasetID = extractString(input, I_DATASET_ID);
+            URI datasetURI = extractURI(input, I_DATASET_URI);
+            String datasetID = extractString(input, I_DATASET_ID);
+
+            GridDatatype gridDatatype = generateGridDataType(
+                    datasetURI,
+                    datasetID,
+                    featureCollection.getBounds());
+
 
             String delimiterString = extractString(input, I_DELIMITER);
                 Delimiter delimiter = delimiterString == null ?
                     Delimiter.getDefault() :
                     Delimiter.valueOf(delimiterString);
 
-            GridDatatype gridDatatype = null;
-            if (featureDataset instanceof GridDataset) {
-                gridDatatype = ((GridDataset)featureDataset).findGridDatatype(featureDatasetID);
+            File file = File.createTempFile("gdp", "csv");
+            writer = new BufferedWriter(new FileWriter(file));
 
-                File file = File.createTempFile("gdp", "csv");
-                writer = new BufferedWriter(new FileWriter(file));
+            FeatureCategoricalGridCoverage.execute(
+                    featureCollection,
+                    featureAttributeName,
+                    gridDatatype,
+                    writer,
+                    delimiter);
 
-                FeatureCategoricalGridCoverage.execute(
-                        featureCollection,
-                        featureAttributeName,
-                        gridDatatype,
-                        writer,
-                        delimiter);
+            writer.flush();
+            writer.close();
 
-                writer.flush();
-                writer.close();
-
-                output.put(O_OUTPUT, new CSVDataBinding(file));
-            }
+            output.put(O_OUTPUT, new CSVDataBinding(file));
 
         } catch (InvalidRangeException e) {
             throw new RuntimeException(e);

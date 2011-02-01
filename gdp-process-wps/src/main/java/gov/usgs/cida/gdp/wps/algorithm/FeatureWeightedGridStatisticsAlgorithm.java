@@ -13,12 +13,14 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.SchemaException;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
 import org.opengis.referencing.FactoryException;
@@ -101,21 +103,13 @@ public class FeatureWeightedGridStatisticsAlgorithm extends BaseAlgorithm {
                 return null;
             }
 
-            featureDataset = extractFeatureDataset(input, I_DATASET_URI);
-            String featureDatasetID = extractString(input, I_DATASET_ID);
+            URI datasetURI = extractURI(input, I_DATASET_URI);
+            String datasetID = extractString(input, I_DATASET_ID);
 
-            GridDatatype gridDatatype = null;
-            if (featureDataset instanceof GridDataset) {
-                gridDatatype = ((GridDataset)featureDataset).findGridDatatype(featureDatasetID);
-            } else {
-                addError(I_DATASET_URI + " does not resolve to gridded dataset");
-                return null;
-            }
-
-            if (gridDatatype == null) {
-                addError("Variable " +I_DATASET_ID + " not found in " + I_DATASET_URI);
-                return null;
-            }
+            GridDatatype gridDatatype = generateGridDataType(
+                    datasetURI,
+                    datasetID,
+                    featureCollection.getBounds());
 
             Range timeRange = generateTimeRange(
                     gridDatatype,
@@ -157,22 +151,16 @@ public class FeatureWeightedGridStatisticsAlgorithm extends BaseAlgorithm {
 
         } catch (InvalidRangeException e) {
             addError("Error subsetting gridded data :" + e.getMessage());
-//            throw new RuntimeException(e);
         } catch (IOException e) {
             addError("IO Error :" + e.getMessage());
-//            throw new RuntimeException(e);
         } catch (FactoryException e) {
             addError("Error initializing CRS factory:" + e.getMessage());
-//            throw new RuntimeException(e);
         } catch (TransformException e) {
             addError("Error attempting CRS transform:" + e.getMessage());
-//            throw new RuntimeException(e);
         } catch (SchemaException e) {
             addError("Error subsetting gridded data :" + e.getMessage());
-//            throw new RuntimeException(e);
         } catch (Exception e) {
             addError("General Error: " + e.getMessage());
-//            throw new RuntimeException(e);
         } finally {
             if (featureDataset != null) try { featureDataset.close(); } catch (IOException e) { }
             if (writer != null) try { writer.close(); } catch (IOException e) { }

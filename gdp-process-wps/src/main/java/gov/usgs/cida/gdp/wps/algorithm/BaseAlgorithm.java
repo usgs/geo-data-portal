@@ -1,5 +1,7 @@
 package gov.usgs.cida.gdp.wps.algorithm;
 
+import gov.usgs.cida.gdp.wps.util.WCSUtil;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -8,6 +10,7 @@ import java.util.Formatter;
 import java.util.List;
 import java.util.Map;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
 import org.n52.wps.io.data.binding.literal.LiteralAnyURIBinding;
@@ -17,6 +20,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
+import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
@@ -138,6 +142,41 @@ public abstract class BaseAlgorithm extends AbstractSelfDescribingAlgorithm {
         }
 		throw new RuntimeException("too many arguments for input id " + id);
 	}
+
+    protected GridDatatype generateGridDataType(URI datasetURI, String datasetId, ReferencedEnvelope featureBounds) {
+        GridDatatype gridDatatype = null;
+        try {
+            FeatureDataset featureDataset = null;
+            String featureDatasetScheme = datasetURI.getScheme();
+            if ("dods".equals(datasetURI.getScheme())) {
+                featureDataset = FeatureDatasetFactoryManager.open(
+                        FeatureType.GRID,
+                        datasetURI.toString(),
+                        null,
+                        new Formatter(System.err));
+                if (featureDataset instanceof GridDataset) {
+                    gridDatatype =  ((GridDataset)featureDataset).findGridDatatype(datasetId);
+                } else {
+                    throw new RuntimeException("Unable to open dataset at " + datasetURI + " with identifier " + datasetId);
+                }
+            } else if ("http".equals(featureDatasetScheme)) {
+                File tiffFile = WCSUtil.generateTIFFFile(datasetURI, datasetId, featureBounds);
+                featureDataset = FeatureDatasetFactoryManager.open(
+                        FeatureType.GRID,
+                        tiffFile.getCanonicalPath(),
+                        null,
+                        new Formatter(System.err));
+                if (featureDataset instanceof GridDataset) {
+                    ((GridDataset)featureDataset).findGridDatatype("I0B0");
+                } else {
+                    throw new RuntimeException("Unable to open dataset at " + datasetURI + " with identifier " + datasetId);
+                }
+            }
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+        return gridDatatype;
+    }
 
     protected Range generateTimeRange(GridDatatype GridDatatype, Date timeStart, Date timeEnd) {
         CoordinateAxis1DTime timeAxis = GridDatatype.getCoordinateSystem().getTimeAxis1D();
