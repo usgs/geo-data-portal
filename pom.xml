@@ -18,6 +18,7 @@
         <module>gdp-utility-wps</module>
         <module>gdp-process-wps</module>
         <module>geoserver</module>
+		<module>geonetwork</module>
     </modules>
     <repositories>
         <repository>
