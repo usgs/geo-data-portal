@@ -20,11 +20,6 @@
             <artifactId>gdp-common-utilities</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>gdp-geometry</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <!-- version numbers set in parent pom -->
         <dependency>
             <groupId>commons-io</groupId>

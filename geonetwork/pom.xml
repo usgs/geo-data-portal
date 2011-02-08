@@ -8,8 +8,7 @@
     </parent>
     <artifactId>geonetwork</artifactId>
     <packaging>war</packaging>
-    <name>gdp-geonetwork</name>
-    <url>http://maven.apache.org</url>
+    <name>geonetwork</name>
     <!-- Note:  This entry is needed as transitive repository resolution doesn't
          appear to work with war or warpath dependencies -->
     <repositories>

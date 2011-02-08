@@ -26,13 +26,6 @@
             <name>CIDA GDP Development</name>
 <!--            <url>http://internal.cida.usgs.gov/nexus/content/groups/cida-gdp-development</url>-->
             <url>http://igsarmewfsbbl.er.usgs.gov:8081/nexus/content/groups/cida-gdp-development</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
         </repository>
     </repositories>
     <properties>
@@ -65,11 +58,6 @@
     </dependencies>
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>gov.usgs.cida</groupId>
-                <artifactId>CSWClient</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
-            </dependency>
             <dependency>
                 <groupId>com.google.protobuf</groupId>
                 <artifactId>protobuf-java</artifactId>
