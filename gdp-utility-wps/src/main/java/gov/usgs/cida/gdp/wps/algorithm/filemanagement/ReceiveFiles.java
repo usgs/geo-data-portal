@@ -40,6 +40,7 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
 
         if (inputData == null)  throw new RuntimeException("Error while allocating input parameters.");
         if (!inputData.containsKey("file"))  throw new RuntimeException("Error: Missing input parameter 'file'");
+        if (!inputData.containsKey("wfs-url"))  throw new RuntimeException("Error: Missing input parameter 'wfs-url'");
         if (!inputData.containsKey("filename")) throw new RuntimeException("Error: Missing input parameter 'filename'");
 
         // "gdp.shapefile.temp.path" should be set in the tomcat startup script or setenv.sh as JAVA_OPTS="-Dgdp.shapefile.temp.path=/wherever/you/want/this/file/placed"
@@ -51,6 +52,9 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
 
         List<IData> dataList = inputData.get("filename");
         String desiredFilename = ((LiteralStringBinding) dataList.get(0)).getPayload();
+
+        List<IData> wfsEndpointList = inputData.get("wfs-url");
+        String wfsEndpoint = ((LiteralStringBinding) wfsEndpointList.get(0)).getPayload();
 
         dataList = inputData.get("file");
         IData data = dataList.get(0);
@@ -67,6 +71,8 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
             errors.add("Error while processing file: Does the zip file contain the .shp file?");
             throw new RuntimeException("Error while processing file: Does the zip file contain the .shp file?");
         }
+
+        
 
         File shapefileFile = new File(shapefilePath);
         File shapefileDir = shapefileFile.getParentFile();
@@ -123,10 +129,9 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
             throw new RuntimeException("Error while getting EPSG information from PRJ file. Function halted.");
         }
 
-        String geoServerURL = AppConstant.WFS_ENDPOINT.toString();
         String workspace = "upload";
         try {
-            ManageGeoserverWorkspace mws = new ManageGeoserverWorkspace(geoServerURL);
+            ManageGeoserverWorkspace mws = new ManageGeoserverWorkspace(wfsEndpoint);
             mws.createDataStore(renamedShpPath, desiredFilename, workspace, nativeCRS, declaredCRS);
         } catch (IOException ex) {
             errors.add(ex.getMessage());
@@ -137,7 +142,7 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
         
         // GeoServer has accepted the shapefile. Send the success response to the client.
         result.put("result", new LiteralStringBinding("OK: " + desiredFilename + " successfully uploaded to workspace '" + workspace + "'"));
-        result.put("wfs-url", new LiteralStringBinding(geoServerURL.toString() + "?Service=WFS&Version=1.0.0&"));
+        result.put("wfs-url", new LiteralStringBinding(wfsEndpoint + "?Service=WFS&Version=1.0.0&"));
         result.put("featuretype", new LiteralStringBinding(workspace + ":" + desiredFilename));
         return result;
     }
@@ -159,7 +164,7 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
     @Override
     public BigInteger getMinOccurs(String identifier) {
         if ("wfs-url".equals(identifier)) {
-            return BigInteger.valueOf(0);
+            return BigInteger.valueOf(1);
         }
         if ("filename".equals(identifier)) {
             return BigInteger.valueOf(1);
