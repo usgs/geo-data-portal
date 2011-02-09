@@ -1,0 +1,54 @@
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>gov.usgs.cida</groupId>
+    <artifactId>gdp-process-wps-JMeter</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>gdp-process-wps-JMeter</name>
+
+    <dependencies>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <!-- from http://www.ronniealleva.org/index.php/maven-jmeter-plugin/ Note that this is more up to date than the apache maven jmeter plugin page-->
+                <groupId>org.apache.jmeter</groupId>
+                <artifactId>maven-jmeter-plugin</artifactId>
+                <version>1.0</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                        <version>1.1.1</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>commons-codec</groupId>
+                        <artifactId>commons-codec</artifactId>
+                        <version>1.4</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>jmeter-tests</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jmeter</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <includes>
+                        <include>gdp-process-wps/gdp-process-wps-test.jmx</include>
+                    </includes>
+                    <reportDir>${project.build.directory}/jmeter-reports</reportDir>
+                    <jmeterUserProperties>
+                        <testHost>igsarm-cida-javadev1.er.usgs.gov</testHost>
+                        <testPort>8080</testPort>
+                        <testURI>gdp-process-wps</testURI>
+                        <reportDir>${project.build.directory}/jmeter-reports</reportDir>
+                    </jmeterUserProperties>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
