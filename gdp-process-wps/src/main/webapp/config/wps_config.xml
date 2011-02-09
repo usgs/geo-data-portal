@@ -40,8 +40,9 @@
 
 	</AlgorithmRepositoryList>
 
-
-	<Server hostname="localhost" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="gdp-process-wps">
+    <!-- @hostname@ and @hostport@ filtered and replaced by values derived from
+         HttpServelRequest instance getRequestURL() response -->
+	<Server hostname="@hostname@" hostport="@hostport@" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="gdp-process-wps">
         <Database/>
     </Server>
 
