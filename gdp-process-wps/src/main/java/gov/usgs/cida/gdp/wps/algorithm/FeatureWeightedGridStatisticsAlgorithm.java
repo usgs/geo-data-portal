@@ -20,14 +20,12 @@ import java.util.List;
 import java.util.Map;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.SchemaException;
-import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
-import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.ft.FeatureDataset;
 
@@ -131,7 +129,7 @@ public class FeatureWeightedGridStatisticsAlgorithm extends BaseAlgorithm {
                 GroupBy.STATISTIC :
                 GroupBy.valueOf(groupByString);
 
-            File file = File.createTempFile("gdp", "csv");
+            File file = File.createTempFile("gdp", ".csv");
             writer = new BufferedWriter(new FileWriter(file));
 
             FeatureCoverageWeightedGridStatistics.execute(

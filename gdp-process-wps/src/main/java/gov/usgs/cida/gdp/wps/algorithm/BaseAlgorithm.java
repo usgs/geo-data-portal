@@ -167,7 +167,7 @@ public abstract class BaseAlgorithm extends AbstractSelfDescribingAlgorithm {
                         null,
                         new Formatter(System.err));
                 if (featureDataset instanceof GridDataset) {
-                    ((GridDataset)featureDataset).findGridDatatype("I0B0");
+                    gridDatatype = ((GridDataset)featureDataset).findGridDatatype("I0B0");
                 } else {
                     throw new RuntimeException("Unable to open dataset at " + datasetURI + " with identifier " + datasetId);
                 }

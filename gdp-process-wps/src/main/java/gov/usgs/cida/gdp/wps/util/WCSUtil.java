@@ -10,6 +10,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.xml.namespace.NamespaceContext;
@@ -39,6 +42,8 @@ import org.opengis.referencing.operation.TransformException;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.iosp.geotiff.GeoTiffIOServiceProvider;
 
 /**
  *
@@ -109,7 +114,17 @@ public class WCSUtil {
         allowedFormats.add("image/geotiff");
         allowedFormats.add("application/geotiff");
         allowedFormats.add("application/x-geotiff");
+        allowedFormats.add("image/tiff");
+        allowedFormats.add("image/x-tiff");
         ALLOWED_FORMATS = Collections.unmodifiableSet(allowedFormats);
+        
+        try {
+            NetcdfFile.registerIOProvider(GeoTiffIOServiceProvider.class);
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(WCSUtil.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            Logger.getLogger(WCSUtil.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public static URI extractWCSBaseURI(URI wcsURI) throws URISyntaxException {
@@ -171,7 +186,8 @@ public class WCSUtil {
             }
 
             
-            List<String> sharedFormats = Arrays.asList(gridSupportedFormats);
+            List<String> sharedFormats = new ArrayList(gridSupportedFormats.length);
+            sharedFormats.addAll(Arrays.asList(gridSupportedFormats));
             sharedFormats.retainAll(ALLOWED_FORMATS);
             if (sharedFormats.size() < 1) {
                 throw new RuntimeException("WCS coverage not available in an allowed format (geotiff)");
@@ -241,6 +257,7 @@ public class WCSUtil {
                     * (featureBoundsTransformed.getHeight() / gridYOffset)
                     * gridDataType.getSizeBytes();
 
+            if (requestSizeBytes < 0) { requestSizeBytes = -requestSizeBytes; }
 
             double requestSamplingFactor = (requestSizeBytes > MAX_COVERAGE_SIZE)
                     ? Math.ceil(Math.sqrt((double) requestSizeBytes / MAX_COVERAGE_SIZE))
@@ -287,14 +304,16 @@ public class WCSUtil {
             }
 
             StringBuilder sb = new StringBuilder();
-            sb.append(wcsBaseURI)
-                    .append("?service=WCS&version=1.1.1&request=GetCoverage").
+            sb.append(wcsBaseURI).
+                    append("?service=WCS&version=1.1.1&request=GetCoverage").
                     append("&identifier=").append(wcsIdentifier).
                     append("&boundingBox=").append(requestBoundingBoxBuilder).
                     append("&gridBaseCRS=").append(gridBaseCRSString).
                     append("&gridOffsets=").append(requestGridOffsetsBuilder).
-                    append("&interpolationType=").append("nearest").
                     append("&format=").append(requestGridFormat);
+            if (requestSamplingFactor > 1.0) {
+                sb.append("&interpolationType=").append("nearest");
+            }
 
             URL wcsCoverageURL = new URL(sb.toString());
             HttpURLConnection wcsCoverageConnection = (HttpURLConnection) wcsCoverageURL.openConnection();
