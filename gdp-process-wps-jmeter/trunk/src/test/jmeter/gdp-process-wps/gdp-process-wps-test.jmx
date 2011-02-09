@@ -127,7 +127,7 @@
             </RegexExtractor>
             <hashTree/>
             <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
-              <stringProp name="ConstantTimer.delay">300</stringProp>
+              <stringProp name="ConstantTimer.delay">4000</stringProp>
             </ConstantTimer>
             <hashTree/>
             <XPathExtractor guiclass="XPathExtractorGui" testclass="XPathExtractor" testname="status extractor" enabled="true">
@@ -206,6 +206,38 @@ ALL TIMESTEPS,10.14438,10.19982,10.59650,31.13144,14.41096,21.29059,15.04279,17.
           </ResultCollector>
           <hashTree/>
         </hashTree>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>true</xml>
+              <fieldNames>false</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
       </hashTree>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="RFC Test" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">stoptest</stringProp>
@@ -310,7 +342,7 @@ ALL TIMESTEPS,10.14438,10.19982,10.59650,31.13144,14.41096,21.29059,15.04279,17.
             </RegexExtractor>
             <hashTree/>
             <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
-              <stringProp name="ConstantTimer.delay">300</stringProp>
+              <stringProp name="ConstantTimer.delay">4000</stringProp>
             </ConstantTimer>
             <hashTree/>
             <XPathExtractor guiclass="XPathExtractorGui" testclass="XPathExtractor" testname="status extractor" enabled="true">
@@ -501,7 +533,7 @@ ALL TIMESTEPS,2.981285,3.719150,3.372902,2.884375,2.241898,2.120453,2.664183,2.0
             </RegexExtractor>
             <hashTree/>
             <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
-              <stringProp name="ConstantTimer.delay">300</stringProp>
+              <stringProp name="ConstantTimer.delay">4000</stringProp>
             </ConstantTimer>
             <hashTree/>
             <XPathExtractor guiclass="XPathExtractorGui" testclass="XPathExtractor" testname="status extractor" enabled="true">
