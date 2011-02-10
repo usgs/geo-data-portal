@@ -19,12 +19,15 @@ import org.geotools.data.shapefile.dbf.DbaseFileHeader;
 import org.geotools.data.shapefile.dbf.DbaseFileWriter;
 import org.geotools.data.shapefile.shp.ShapeType;
 import org.geotools.data.shapefile.shp.ShapefileWriter;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 /**
  * @author razoerb
  */
 public class WatersService {
+
+    static org.slf4j.Logger log = LoggerFactory.getLogger(WatersService.class);
 
     public static File getGeometry(String lon, String lat, String name) throws Exception {
         
@@ -69,22 +72,29 @@ public class WatersService {
         shxFile.createNewFile();
         dbfFile.createNewFile();
 
-        FileOutputStream shpFileInputStream = new FileOutputStream(shpFile);
-        FileOutputStream shxFileInputStream = new FileOutputStream(shxFile);
-        FileOutputStream dbfFileInputStream = new FileOutputStream(dbfFile);
+        FileOutputStream shpFileOutputStream = new FileOutputStream(shpFile);
+        FileOutputStream shxFileOutputStream = new FileOutputStream(shxFile);
+        FileOutputStream dbfFileOutputStream = new FileOutputStream(dbfFile);
+
+        int numFeatures = g.getNumGeometries();
 
         // Write dbf file with simple placeholder attribute
         DbaseFileHeader header = new DbaseFileHeader();
         header.addColumn("ID", 'N', 4, 0);
-        header.setNumRecords(1);
+        header.setNumRecords(numFeatures);
 
-        DbaseFileWriter dfw = new DbaseFileWriter(header, dbfFileInputStream.getChannel());
-        dfw.write(new Object[] { 0 });
+        DbaseFileWriter dfw = new DbaseFileWriter(header, dbfFileOutputStream.getChannel());
+
+        // Need a dbf row for each feature, or GeoServer will fail to serve
+        // the shapefile's geometry.
+        for (int i = 0; i < numFeatures; i++) {
+            dfw.write(new Object[] { i });
+        }
         dfw.close();
 
         // Write geometry
-        ShapefileWriter sw = new ShapefileWriter(shpFileInputStream.getChannel(),
-                shxFileInputStream.getChannel());
+        ShapefileWriter sw = new ShapefileWriter(shpFileOutputStream.getChannel(),
+                shxFileOutputStream.getChannel());
         
         sw.write(g, ShapeType.POLYGON);
         sw.close();
