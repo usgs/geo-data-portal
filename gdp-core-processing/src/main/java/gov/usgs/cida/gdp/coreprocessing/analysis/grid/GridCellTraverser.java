@@ -6,6 +6,8 @@
 package gov.usgs.cida.gdp.coreprocessing.analysis.grid;
 
 import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.Index;
 import ucar.nc2.dataset.CoordinateAxis;
@@ -18,6 +20,8 @@ import ucar.nc2.dt.GridDatatype;
  * @author tkunicki
  */
 public class GridCellTraverser {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(GridCellTraverser.class);
 
     // used for GridDataType.readDataSlice(...) calls.  The docs say that
     // if a dimension fails to exist the value is ignored and if it does
@@ -68,19 +72,19 @@ public class GridCellTraverser {
 
         visitor.traverseStart(gridDataType.getCoordinateSystem());
         if (gridType == GridType.YX) {
-            Array array = gridDataType.readDataSlice(Integer.MAX_VALUE, INVALID_INDEX, -1, -1);
+            Array array = readDataSlice(INVALID_INDEX, INVALID_INDEX);
             doTraverseXY(visitor, array);
         } else if (gridType == GridType.ZYX) {
             for (int zCellIndex = 0; zCellIndex < zCellCount; ++zCellIndex) {
                 visitor.zStart(zCellIndex);
-                Array array = gridDataType.readDataSlice(INVALID_INDEX, zCellIndex, -1, -1);
+                Array array = readDataSlice(INVALID_INDEX, zCellIndex);
                 doTraverseXY(visitor, array);
                 visitor.zEnd(zCellIndex);
             }
         } else if (gridType == GridType.TYX) {
             for (int tCellIndex = 0; tCellIndex < tCellCount; ++tCellIndex) {
                 visitor.tStart(tCellIndex);
-                Array array = gridDataType.readDataSlice(tCellIndex, INVALID_INDEX, -1, -1);
+                Array array = readDataSlice(tCellIndex, INVALID_INDEX);
                 doTraverseXY(visitor, array);
                 visitor.tEnd(tCellIndex);
             }
@@ -89,7 +93,7 @@ public class GridCellTraverser {
                 visitor.tStart(tCellIndex);
                 for (int zCellIndex = 0; zCellIndex < zCellCount; ++zCellIndex) {
                     visitor.zStart(zCellIndex);
-                    Array array = gridDataType.readDataSlice(tCellIndex, zCellIndex, -1, -1);
+                    Array array = readDataSlice(tCellIndex, zCellIndex);
                     doTraverseXY(visitor, array);
                     visitor.zEnd(zCellIndex);
                 }
@@ -98,6 +102,26 @@ public class GridCellTraverser {
         }
         visitor.traverseEnd();
 
+    }
+
+    protected Array readDataSlice(int t_index, int z_index) throws java.io.IOException {
+        int failures = 0;
+        Array slice = null;
+        while (slice == null) {
+            try {
+                slice = gridDataType.readDataSlice(t_index, z_index, -1, -1);
+            } catch (IOException e) {
+                if (failures++ < 3) {
+                    LOGGER.warn("Error reading slice [t={}, z={}] from {}: failure {}, reattempting.  Exception was {}",
+                            new Object[] {t_index, z_index, gridDataType.getDescription(), failures, e});
+                } else {
+                    LOGGER.error("Unable to read slice [t={}, z={}] from {} after {} failures. Exception was {}",
+                            new Object[] {t_index, z_index, gridDataType.getDescription(), failures, e});
+                    throw e;
+                }
+            }
+        }
+        return slice;
     }
     
     protected void doTraverseXY(GridCellVisitor visitor, Array array) {
