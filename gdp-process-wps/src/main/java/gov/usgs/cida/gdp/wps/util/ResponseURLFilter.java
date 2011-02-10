@@ -3,7 +3,6 @@ package gov.usgs.cida.gdp.wps.util;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.ByteBuffer;
-import java.util.Enumeration;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -34,7 +33,7 @@ public class ResponseURLFilter implements Filter {
             WPSConfig.getInstance().getWPSConfig().getServer().getHostname() + ":" +
             WPSConfig.getInstance().getWPSConfig().getServer().getHostport() +
             filterConfig.getServletContext().getContextPath();
-        LOGGER.info("Response URL filter will replace {} with request URL base", configURLString);
+        LOGGER.info("Response URL filtering enabled using base URL of {}", configURLString);
     }
 
     @Override
@@ -44,11 +43,10 @@ public class ResponseURLFilter implements Filter {
         if (requestHTTP != null && responseHTTP != null) {
             String requestURLString = extractRequestURLString(requestHTTP);
             String baseURLString = requestURLString.replaceAll("/[^/]*$", "");
-            LOGGER.info("Response URL filtering enabled for request to {}, all instances of {} will be replaced with {}",
-                    new Object [] { requestURLString, configURLString, baseURLString });
+            LOGGER.info("Response URL filtering enabled for request to {}", requestURLString);
             chain.doFilter(request, new BaseURLFilterHttpServletResponse(responseHTTP, configURLString, baseURLString));
         } else {
-            LOGGER.warn("Unable to configure response URL filtering, unable to cast request and/or response instances");
+            LOGGER.warn("Unable to configure response URL filtering");
             chain.doFilter(request, response);
         }
     }
@@ -58,25 +56,17 @@ public class ResponseURLFilter implements Filter {
 
     }
 
-    private String extractRequestURLString(HttpServletRequest request) {
-//        String requestServerName = request.getHeader("X-SERVER-NAME");
-//        String requestServerPort = request.getHeader("X-SERVER-PORT");
-//        String requestPath = request.getHeader("X-REQUEST-PATH");
-//        String requestURI = request.getHeader("X-REQUEST-URI");
-        StringBuilder sb = new StringBuilder("\nRequest Header:\n");
-        Enumeration<String> headerNames = request.getHeaderNames();
-        while (headerNames.hasMoreElements()) {
-            String headerName = headerNames.nextElement();
-            sb.append("  ").append(headerName).append(" : ").append(request.getHeader(headerName)).append("\n");
+    private static String extractRequestURLString(HttpServletRequest request) {
+        // The "X-REQUEST-URL" HTTP Request Header is CIDA specific, added at
+        // the externally facing Apache HTTPd proxy if present.
+        String requestURLString = request.getHeader("X-REQUEST-URL");
+        if (requestURLString == null || requestURLString.length() == 0) {
+            requestURLString = request.getRequestURL().toString();
+            LOGGER.warn("HTTP request header \"X-REQUEST-URL\" is missing");
+        } else {
+            LOGGER.info("HTTP request header \"X-REQUEST-URL\" is {}", requestURLString);
         }
-        LOGGER.info(sb.toString());
-        LOGGER.info("getContextPath " + request.getContextPath());
-        LOGGER.info("getPathInfo " + request.getPathInfo());
-        LOGGER.info("getPathTranslated " + request.getPathTranslated());
-        LOGGER.info("getQueryString " + request.getQueryString());
-        LOGGER.info("getRequestURI " + request.getRequestURI());
-        LOGGER.info("getServletPath " + request.getServletPath());
-        return request.getRequestURL().toString();
+        return requestURLString;
     }
 
     private static class BaseURLFilterHttpServletResponse extends HttpServletResponseWrapper {
@@ -92,7 +82,10 @@ public class ResponseURLFilter implements Filter {
 
         @Override
         public ServletOutputStream getOutputStream() throws IOException {
-            return new OutputStreamWrapper(getResponse().getOutputStream(), configURLString, requestURLString);
+            return new ServletOutputStreamWrapper(
+                    getResponse().getOutputStream(),
+                    configURLString,
+                    requestURLString);
         }
 
         @Override
@@ -101,7 +94,7 @@ public class ResponseURLFilter implements Filter {
         }
     }
 
-    private static class OutputStreamWrapper extends ServletOutputStream {
+    private static class ServletOutputStreamWrapper extends ServletOutputStream {
 
         private final ServletOutputStream outputStream;
 
@@ -109,7 +102,7 @@ public class ResponseURLFilter implements Filter {
         private ByteBuffer replace;
         private boolean match;
 
-        public OutputStreamWrapper(ServletOutputStream outputStream, String find, String replace) {
+        public ServletOutputStreamWrapper(ServletOutputStream outputStream, String find, String replace) {
             this.outputStream = outputStream;
             this.find = ByteBuffer.wrap(find.getBytes());
             this.replace = ByteBuffer.wrap(replace.getBytes());
@@ -127,12 +120,12 @@ public class ResponseURLFilter implements Filter {
                         outputStream.write(replace.array());
                         match = false;
                     } else {
-                        // POTENTIAL MATCH ongoing, write deferred
+                        // POTENTIAL MATCH ongoing, writes deferred
                     }
                 } else {
                     // FAILED MATCH
                     // 1) write out portion of 'find' buffer that matched
-                    // 2) write out the current byte that cause mismatch
+                    // 2) write out the current byte that caused mismatch
                     // 3) unset 'match' flag
                     outputStream.write(find.array(), 0, find.position() - 1);
                     outputStream.write(b);
