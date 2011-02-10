@@ -63,13 +63,19 @@ public class ResponseURLFilter implements Filter {
 //        String requestServerPort = request.getHeader("X-SERVER-PORT");
 //        String requestPath = request.getHeader("X-REQUEST-PATH");
 //        String requestURI = request.getHeader("X-REQUEST-URI");
-        StringBuilder sb = new StringBuilder("Request Header:\n");
+        StringBuilder sb = new StringBuilder("\nRequest Header:\n");
         Enumeration<String> headerNames = request.getHeaderNames();
         while (headerNames.hasMoreElements()) {
             String headerName = headerNames.nextElement();
             sb.append("  ").append(headerName).append(" : ").append(request.getHeader(headerName)).append("\n");
         }
         LOGGER.info(sb.toString());
+        LOGGER.info("getContextPath " + request.getContextPath());
+        LOGGER.info("getPathInfo " + request.getPathInfo());
+        LOGGER.info("getPathTranslated " + request.getPathTranslated());
+        LOGGER.info("getQueryString " + request.getQueryString());
+        LOGGER.info("getRequestURI " + request.getRequestURI());
+        LOGGER.info("getServletPath " + request.getServletPath());
         return request.getRequestURL().toString();
     }
 
