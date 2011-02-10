@@ -3,6 +3,7 @@ package gov.usgs.cida.gdp.wps.util;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.ByteBuffer;
+import java.util.Enumeration;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -41,7 +42,7 @@ public class ResponseURLFilter implements Filter {
         HttpServletRequest requestHTTP = (request instanceof HttpServletRequest) ? (HttpServletRequest)request : null;
         HttpServletResponse responseHTTP = (response instanceof HttpServletResponse) ? (HttpServletResponse)response : null;
         if (requestHTTP != null && responseHTTP != null) {
-            String requestURLString = requestHTTP.getRequestURL().toString();
+            String requestURLString = extractRequestURLString(requestHTTP);
             String baseURLString = requestURLString.replaceAll("/[^/]*$", "");
             LOGGER.info("Response URL filtering enabled for request to {}, all instances of {} will be replaced with {}",
                     new Object [] { requestURLString, configURLString, baseURLString });
@@ -55,6 +56,21 @@ public class ResponseURLFilter implements Filter {
     @Override
     public void destroy() {
 
+    }
+
+    private String extractRequestURLString(HttpServletRequest request) {
+//        String requestServerName = request.getHeader("X-SERVER-NAME");
+//        String requestServerPort = request.getHeader("X-SERVER-PORT");
+//        String requestPath = request.getHeader("X-REQUEST-PATH");
+//        String requestURI = request.getHeader("X-REQUEST-URI");
+        StringBuilder sb = new StringBuilder("Request Header:\n");
+        Enumeration<String> headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String headerName = headerNames.nextElement();
+            sb.append("  ").append(headerName).append(" : ").append(request.getHeader(headerName)).append("\n");
+        }
+        LOGGER.info(sb.toString());
+        return request.getRequestURL().toString();
     }
 
     private static class BaseURLFilterHttpServletResponse extends HttpServletResponseWrapper {
