@@ -47,6 +47,10 @@
                         <testPort>${testPort}</testPort>
                         <testURI>${testURI}</testURI>
                         <reportDir>${project.build.directory}/jmeter-reports</reportDir>
+<!--                        <testHost>igsarm-cida-javadev1.er.usgs.gov</testHost>
+                        <testPort>8080</testPort>
+                        <testURI>gdp-process-wps</testURI>-->
+                        
 <!--                        http://${__P(testHost)}:${__P(testPort)}/${__P(testURI)}-->
                     </jmeterUserProperties>
                 </configuration>
