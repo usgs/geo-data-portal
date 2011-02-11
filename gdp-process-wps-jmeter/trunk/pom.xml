@@ -30,7 +30,8 @@
                 <executions>
                     <execution>
                         <id>jmeter-tests</id>
-                        <phase>verify</phase>
+<!--                        <phase>verify</phase>-->
+                        <phase>integration-test</phase>
                         <goals>
                             <goal>jmeter</goal>
                         </goals>
@@ -46,7 +47,36 @@
                         <testPort>8080</testPort>
                         <testURI>gdp-process-wps</testURI>
                         <reportDir>${project.build.directory}/jmeter-reports</reportDir>
+<!--                        http://${__P(testHost)}:${__P(testPort)}/${__P(testURI)}-->
                     </jmeterUserProperties>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>xml-maven-plugin</artifactId>
+                <version>1.0-beta-3</version>
+                <executions>
+                    <execution>
+<!--                        <phase>pre-site</phase>-->
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>transform</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <transformationSets>
+                        <transformationSet>
+                            <dir>${project.build.directory}/jmeter-reports</dir>
+                            <stylesheet>extras/jmeter-results-detail-report_21.xsl</stylesheet>
+                            <outputDir>${project.build.directory}/site/jmeter-results</outputDir>
+                            <fileMappers>
+                                <fileMapper implementation="org.codehaus.plexus.components.io.filemappers.FileExtensionMapper">
+                                    <targetExtension>html</targetExtension>
+                                </fileMapper>
+                            </fileMappers>
+                        </transformationSet>
+                    </transformationSets>
                 </configuration>
             </plugin>
         </plugins>
