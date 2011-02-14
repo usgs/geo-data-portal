@@ -11,7 +11,7 @@
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
     </TestPlan>
     <hashTree>
-      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Global User Variables" enabled="true">
         <collectionProp name="Arguments.arguments">
           <elementProp name="processURL" elementType="Argument">
             <stringProp name="Argument.name">processURL</stringProp>
@@ -28,17 +28,22 @@
             <stringProp name="Argument.value">10000</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="notUsedProcessURL" elementType="Argument">
+            <stringProp name="Argument.name">notUsedProcessURL</stringProp>
+            <stringProp name="Argument.value">http://igsarm-cida-javadev1.er.usgs.gov:8080/gdp-process-wps http://${__P(testHost)}:${__P(testPort)}/${__P(testURI)} http://igsarm-cida-javadev1.er.usgs.gov:8080/geoserver ${__P(testWfsEndpoint)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </Arguments>
       <hashTree/>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="GMO Test" enabled="true">
-        <stringProp name="ThreadGroup.on_sample_error">stoptest</stringProp>
+        <stringProp name="ThreadGroup.on_sample_error">stopthread</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">4</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">4</stringProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <longProp name="ThreadGroup.start_time">1294838330000</longProp>
         <longProp name="ThreadGroup.end_time">1294838330000</longProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
@@ -201,7 +206,7 @@
             <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Regular Expression Extractor" enabled="true">
               <stringProp name="RegexExtractor.useHeaders">false</stringProp>
               <stringProp name="RegexExtractor.refname">outputfileid</stringProp>
-              <stringProp name="RegexExtractor.regex">id=(\d+)</stringProp>
+              <stringProp name="RegexExtractor.regex">id=([^&quot;]+)</stringProp>
               <stringProp name="RegexExtractor.template">$0$</stringProp>
               <stringProp name="RegexExtractor.default">no_id</stringProp>
               <stringProp name="RegexExtractor.match_number">1</stringProp>
@@ -323,13 +328,13 @@ ALL TIMESTEPS,10.14438,10.19982,10.59650,31.13144,14.41096,21.29059,15.04279,17.
         <hashTree/>
       </hashTree>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="RFC Test" enabled="true">
-        <stringProp name="ThreadGroup.on_sample_error">stoptest</stringProp>
+        <stringProp name="ThreadGroup.on_sample_error">stopthread</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">4</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">4</stringProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <longProp name="ThreadGroup.start_time">1294838330000</longProp>
         <longProp name="ThreadGroup.end_time">1294838330000</longProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
@@ -399,7 +404,7 @@ ALL TIMESTEPS,10.14438,10.19982,10.59650,31.13144,14.41096,21.29059,15.04279,17.
 			&lt;wps:Reference xlink:href=&quot;http://${wfsEndpoint}/wfs&quot;&gt;
 				&lt;wps:Body&gt;
 					&lt;wfs:GetFeature service=&quot;WFS&quot; version=&quot;1.1.0&quot; outputFormat=&quot;text/xml; subtype=gml/3.1.1&quot; xmlns:myns=&quot;http://www.someserver.com/myns&quot; xmlns:wfs=&quot;http://www.opengis.net/wfs&quot; xmlns:ogc=&quot;http://www.opengis.net/ogc&quot; xmlns:gml=&quot;http://www.opengis.net/gml&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd&quot;&gt;
-						&lt;wfs:Query typeName=&quot;sample:Yahara_alb&quot;&gt;
+						&lt;wfs:Query typeName=&quot;sample:Yahara_River_HRUs_alb_eq&quot;&gt;
 							&lt;wfs:PropertyName&gt;the_geom&lt;/wfs:PropertyName&gt;
 							&lt;wfs:PropertyName&gt;ID&lt;/wfs:PropertyName&gt;
 						&lt;/wfs:Query&gt;
@@ -489,7 +494,7 @@ ALL TIMESTEPS,10.14438,10.19982,10.59650,31.13144,14.41096,21.29059,15.04279,17.
             <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Regular Expression Extractor" enabled="true">
               <stringProp name="RegexExtractor.useHeaders">false</stringProp>
               <stringProp name="RegexExtractor.refname">outputfileid</stringProp>
-              <stringProp name="RegexExtractor.regex">id=(\d+)</stringProp>
+              <stringProp name="RegexExtractor.regex">id=([^&quot;]+)</stringProp>
               <stringProp name="RegexExtractor.template">$0$</stringProp>
               <stringProp name="RegexExtractor.default">no_id</stringProp>
               <stringProp name="RegexExtractor.match_number">1</stringProp>
@@ -522,7 +527,7 @@ ALL TIMESTEPS,10.14438,10.19982,10.59650,31.13144,14.41096,21.29059,15.04279,17.
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">${processURL}//RetrieveResultServlet?${outputfileid}</stringProp>
+          <stringProp name="HTTPSampler.path">${processURL}/RetrieveResultServlet?${outputfileid}</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">true</boolProp>
@@ -619,13 +624,13 @@ ALL TIMESTEPS,2.981285,3.719150,3.372902,2.884375,2.241898,2.120453,2.664183,2.0
         <hashTree/>
       </hashTree>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Runoff Test" enabled="true">
-        <stringProp name="ThreadGroup.on_sample_error">stoptest</stringProp>
+        <stringProp name="ThreadGroup.on_sample_error">stopthread</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">4</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">4</stringProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <longProp name="ThreadGroup.start_time">1294838330000</longProp>
         <longProp name="ThreadGroup.end_time">1294838330000</longProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
@@ -695,7 +700,7 @@ ALL TIMESTEPS,2.981285,3.719150,3.372902,2.884375,2.241898,2.120453,2.664183,2.0
 			&lt;wps:Reference xlink:href=&quot;http://${wfsEndpoint}/wfs&quot;&gt;
 				&lt;wps:Body&gt;
 					&lt;wfs:GetFeature service=&quot;WFS&quot; version=&quot;1.1.0&quot; outputFormat=&quot;text/xml; subtype=gml/3.1.1&quot; xmlns:myns=&quot;http://www.someserver.com/myns&quot; xmlns:wfs=&quot;http://www.opengis.net/wfs&quot; xmlns:ogc=&quot;http://www.opengis.net/ogc&quot; xmlns:gml=&quot;http://www.opengis.net/gml&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd&quot;&gt;
-						&lt;wfs:Query typeName=&quot;sample:HUC12LM_alb&quot;&gt;
+						&lt;wfs:Query typeName=&quot;sample:lake_mich_12_alb_NAD83_Simpl1&quot;&gt;
 							&lt;wfs:PropertyName&gt;the_geom&lt;/wfs:PropertyName&gt;
 							&lt;wfs:PropertyName&gt;HUC_8&lt;/wfs:PropertyName&gt;
 						&lt;/wfs:Query&gt;
@@ -785,7 +790,7 @@ ALL TIMESTEPS,2.981285,3.719150,3.372902,2.884375,2.241898,2.120453,2.664183,2.0
             <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Regular Expression Extractor" enabled="true">
               <stringProp name="RegexExtractor.useHeaders">false</stringProp>
               <stringProp name="RegexExtractor.refname">outputfileid</stringProp>
-              <stringProp name="RegexExtractor.regex">id=(\d+)</stringProp>
+              <stringProp name="RegexExtractor.regex">id=([^&quot;]+)</stringProp>
               <stringProp name="RegexExtractor.template">$0$</stringProp>
               <stringProp name="RegexExtractor.default">no_id</stringProp>
               <stringProp name="RegexExtractor.match_number">1</stringProp>
@@ -907,7 +912,7 @@ ALL TIMESTEPS,23.15972,20.01588,22.38408,24.75175,25.61469,24.97271,30.12694,18.
         <hashTree/>
       </hashTree>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="NLCD Test" enabled="true">
-        <stringProp name="ThreadGroup.on_sample_error">stoptest</stringProp>
+        <stringProp name="ThreadGroup.on_sample_error">stopthread</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
@@ -960,7 +965,7 @@ ALL TIMESTEPS,23.15972,20.01588,22.38408,24.75175,25.61469,24.97271,30.12694,18.
 			&lt;wps:Reference xlink:href=&quot;http://${wfsEndpoint}/wfs&quot;&gt;
 				&lt;wps:Body&gt;
 					&lt;wfs:GetFeature service=&quot;WFS&quot; version=&quot;1.1.0&quot; outputFormat=&quot;text/xml; subtype=gml/3.1.1&quot; xmlns:myns=&quot;http://www.someserver.com/myns&quot; xmlns:wfs=&quot;http://www.opengis.net/wfs&quot; xmlns:ogc=&quot;http://www.opengis.net/ogc&quot; xmlns:gml=&quot;http://www.opengis.net/gml&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd&quot;&gt;
-						&lt;wfs:Query typeName=&quot;sample:trout_lake_alb&quot;&gt;
+						&lt;wfs:Query typeName=&quot;sample:trout_lake_hrus_alb&quot;&gt;
 							&lt;wfs:PropertyName&gt;the_geom&lt;/wfs:PropertyName&gt;
 							&lt;wfs:PropertyName&gt;ID&lt;/wfs:PropertyName&gt;
 						&lt;/wfs:Query&gt;
@@ -1050,7 +1055,7 @@ ALL TIMESTEPS,23.15972,20.01588,22.38408,24.75175,25.61469,24.97271,30.12694,18.
             <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Regular Expression Extractor" enabled="true">
               <stringProp name="RegexExtractor.useHeaders">false</stringProp>
               <stringProp name="RegexExtractor.refname">outputfileid</stringProp>
-              <stringProp name="RegexExtractor.regex">id=(\d+)</stringProp>
+              <stringProp name="RegexExtractor.regex">id=([^&quot;]+)</stringProp>
               <stringProp name="RegexExtractor.template">$0$</stringProp>
               <stringProp name="RegexExtractor.default">no_id</stringProp>
               <stringProp name="RegexExtractor.match_number">1</stringProp>
@@ -1317,7 +1322,7 @@ Attribute,11,21,22,23,24,41,42,43,52,71,90,95,Sample Count
         <hashTree/>
       </hashTree>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="NED Test" enabled="true">
-        <stringProp name="ThreadGroup.on_sample_error">stoptest</stringProp>
+        <stringProp name="ThreadGroup.on_sample_error">stopthread</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
@@ -1382,7 +1387,7 @@ Attribute,11,21,22,23,24,41,42,43,52,71,90,95,Sample Count
 			&lt;wps:Reference xlink:href=&quot;http://${wfsEndpoint}/wfs&quot;&gt;
 				&lt;wps:Body&gt;
 					&lt;wfs:GetFeature service=&quot;WFS&quot; version=&quot;1.1.0&quot; outputFormat=&quot;text/xml; subtype=gml/3.1.1&quot; xmlns:myns=&quot;http://www.someserver.com/myns&quot; xmlns:wfs=&quot;http://www.opengis.net/wfs&quot; xmlns:ogc=&quot;http://www.opengis.net/ogc&quot; xmlns:gml=&quot;http://www.opengis.net/gml&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd&quot;&gt;
-						&lt;wfs:Query typeName=&quot;sample:Yahara_alb&quot;&gt;
+						&lt;wfs:Query typeName=&quot;sample:Yahara_River_HRUs_alb_eq&quot;&gt;
 							&lt;wfs:PropertyName&gt;the_geom&lt;/wfs:PropertyName&gt;
 							&lt;wfs:PropertyName&gt;ID&lt;/wfs:PropertyName&gt;
 						&lt;/wfs:Query&gt;
@@ -1472,7 +1477,7 @@ Attribute,11,21,22,23,24,41,42,43,52,71,90,95,Sample Count
             <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Regular Expression Extractor" enabled="true">
               <stringProp name="RegexExtractor.useHeaders">false</stringProp>
               <stringProp name="RegexExtractor.refname">outputfileid</stringProp>
-              <stringProp name="RegexExtractor.regex">id=(\d+)</stringProp>
+              <stringProp name="RegexExtractor.regex">id=([^&quot;]+)</stringProp>
               <stringProp name="RegexExtractor.template">$0$</stringProp>
               <stringProp name="RegexExtractor.default">no_id</stringProp>
               <stringProp name="RegexExtractor.match_number">1</stringProp>

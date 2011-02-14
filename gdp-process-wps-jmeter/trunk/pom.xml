@@ -44,15 +44,14 @@
                     <reportDir>${project.build.directory}/jmeter-reports</reportDir>
                     <jmeterUserProperties>
                         <reportDir>${project.build.directory}/jmeter-reports</reportDir>
-                        <testHost>${testHost}</testHost>
+<!--                        <testHost>${testHost}</testHost>
                         <testPort>${testPort}</testPort>
                         <testURI>${testURI}</testURI>
-                        <testWfsEndpoint>${testWfsEndpoint}</testWfsEndpoint>
-<!--                        <testHost>igsarm-cida-javadev1.er.usgs.gov</testHost>
+                        <testWfsEndpoint>${testWfsEndpoint}</testWfsEndpoint>-->
+                        <testHost>igsarm-cida-javadev1.er.usgs.gov</testHost>
                         <testPort>8080</testPort>
                         <testURI>gdp-process-wps</testURI>
-                        <testWfsEndpoint>http://igsarm-cida-javadev1.er.usgs.gov:8080/geoserver</testWfsEndpoint>-->
-<!--                        http://${__P(testHost)}:${__P(testPort)}/${__P(testURI)} ${__P(testWfsEndpoint)}-->
+                        <testWfsEndpoint>igsarm-cida-javadev1.er.usgs.gov:8080/geoserver</testWfsEndpoint>
                     </jmeterUserProperties>
                 </configuration>
             </plugin>
