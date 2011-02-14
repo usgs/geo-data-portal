@@ -15,7 +15,17 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="processURL" elementType="Argument">
             <stringProp name="Argument.name">processURL</stringProp>
-            <stringProp name="Argument.value">http://${__P(testHost)}:${__P(testPort)}/${__P(testURI)}</stringProp>
+            <stringProp name="Argument.value">http://igsarm-cida-javadev1.er.usgs.gov:8080/gdp-process-wps</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="wfsEndpoint" elementType="Argument">
+            <stringProp name="Argument.name">wfsEndpoint</stringProp>
+            <stringProp name="Argument.value">http://igsarm-cida-javadev1.er.usgs.gov:8080/geoserver</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="timerLength" elementType="Argument">
+            <stringProp name="Argument.name">timerLength</stringProp>
+            <stringProp name="Argument.value">10000</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -42,7 +52,80 @@
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
           <stringProp name="SoapSampler.URL_DATA">${processURL}/WebProcessingService</stringProp>
-          <stringProp name="HTTPSamper.xml_data">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt; &lt;wps:Execute service=&quot;WPS&quot; version=&quot;1.0.0&quot; xmlns:wps=&quot;http://www.opengis.net/wps/1.0.0&quot; xmlns:ows=&quot;http://www.opengis.net/ows/1.1&quot; xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd&quot;&gt; &lt;ows:Identifier&gt;gov.usgs.cida.gdp.wps.algorithm.FeatureWeightedGridStatisticsAlgorithm&lt;/ows:Identifier&gt; &lt;wps:DataInputs&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;FEATURE_ATTRIBUTE_NAME&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;HUC_8&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;DATASET_URI&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;dods://internal.cida.usgs.gov/thredds/dodsC/gmo/GMO_w_meta.ncml&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;DATASET_ID&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;Prcp&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;TIME_START&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;1999-06-27T00:00:00.000Z&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;TIME_END&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;1999-06-27T00:00:00.000Z&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;STATISTICS&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;MEAN&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;GROUP_BY&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;STATISTIC&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;DELIMITER&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;COMMA&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;FEATURE_COLLECTION&lt;/ows:Identifier&gt;&lt;wps:Reference xlink:href=&quot;http://localhost:8080/geoserver/wfs&quot;&gt; &lt;wps:Body&gt;&lt;wfs:GetFeature service=&quot;WFS&quot; version=&quot;1.1.0&quot; outputFormat=&quot;text/xml; subtype=gml/3.1.1&quot; xmlns:myns=&quot;http://www.someserver.com/myns&quot; xmlns:wfs=&quot;http://www.opengis.net/wfs&quot; xmlns:ogc=&quot;http://www.opengis.net/ogc&quot; xmlns:gml=&quot;http://www.opengis.net/gml&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd&quot;&gt; &lt;wfs:Query typeName=&quot;upload:subbasin_alb&quot;&gt; &lt;wfs:PropertyName&gt;the_geom&lt;/wfs:PropertyName&gt; &lt;wfs:PropertyName&gt;HUC_8&lt;/wfs:PropertyName&gt;&lt;/wfs:Query&gt; &lt;/wfs:GetFeature&gt;&lt;/wps:Body&gt; &lt;/wps:Reference&gt;&lt;/wps:Input&gt;&lt;/wps:DataInputs&gt; &lt;wps:ResponseForm&gt; &lt;wps:ResponseDocument storeExecuteResponse=&quot;true&quot; status=&quot;true&quot;&gt;&lt;wps:Output asReference=&quot;true&quot;&gt; &lt;ows:Identifier&gt;OUTPUT&lt;/ows:Identifier&gt; &lt;/wps:Output&gt;&lt;/wps:ResponseDocument&gt; &lt;/wps:ResponseForm&gt; &lt;/wps:Execute&gt;</stringProp>
+          <stringProp name="HTTPSamper.xml_data">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;wps:Execute service=&quot;WPS&quot; version=&quot;1.0.0&quot; xmlns:wps=&quot;http://www.opengis.net/wps/1.0.0&quot; xmlns:ows=&quot;http://www.opengis.net/ows/1.1&quot; xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd&quot;&gt;
+	&lt;ows:Identifier&gt;gov.usgs.cida.gdp.wps.algorithm.FeatureWeightedGridStatisticsAlgorithm&lt;/ows:Identifier&gt;
+	&lt;wps:DataInputs&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;FEATURE_ATTRIBUTE_NAME&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;HUC_8&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;DATASET_URI&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;dods://internal.cida.usgs.gov/thredds/dodsC/gmo/GMO_w_meta.ncml&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;DATASET_ID&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;Prcp&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;TIME_START&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;1999-06-27T00:00:00.000Z&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;TIME_END&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;1999-06-27T00:00:00.000Z&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;STATISTICS&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;MEAN&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;GROUP_BY&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;STATISTIC&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;DELIMITER&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;COMMA&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;FEATURE_COLLECTION&lt;/ows:Identifier&gt;
+			&lt;wps:Reference xlink:href=&quot;http://${wfsEndpoint}/wfs&quot;&gt;
+				&lt;wps:Body&gt;
+					&lt;wfs:GetFeature service=&quot;WFS&quot; version=&quot;1.1.0&quot; outputFormat=&quot;text/xml; subtype=gml/3.1.1&quot; xmlns:myns=&quot;http://www.someserver.com/myns&quot; xmlns:wfs=&quot;http://www.opengis.net/wfs&quot; xmlns:ogc=&quot;http://www.opengis.net/ogc&quot; xmlns:gml=&quot;http://www.opengis.net/gml&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd&quot;&gt;
+						&lt;wfs:Query typeName=&quot;sample:subbasin_alb&quot;&gt;
+							&lt;wfs:PropertyName&gt;the_geom&lt;/wfs:PropertyName&gt;
+							&lt;wfs:PropertyName&gt;HUC_8&lt;/wfs:PropertyName&gt;
+						&lt;/wfs:Query&gt;
+					&lt;/wfs:GetFeature&gt;
+				&lt;/wps:Body&gt;
+			&lt;/wps:Reference&gt;
+		&lt;/wps:Input&gt;
+	&lt;/wps:DataInputs&gt;
+	&lt;wps:ResponseForm&gt;
+		&lt;wps:ResponseDocument storeExecuteResponse=&quot;true&quot; status=&quot;true&quot;&gt;
+			&lt;wps:Output asReference=&quot;true&quot;&gt;
+				&lt;ows:Identifier&gt;OUTPUT&lt;/ows:Identifier&gt;
+			&lt;/wps:Output&gt;
+		&lt;/wps:ResponseDocument&gt;
+	&lt;/wps:ResponseForm&gt;
+&lt;/wps:Execute&gt;</stringProp>
           <stringProp name="SoapSampler.xml_data_file"></stringProp>
           <stringProp name="SoapSampler.SOAP_ACTION"></stringProp>
           <stringProp name="SoapSampler.SEND_SOAP_ACTION">false</stringProp>
@@ -127,7 +210,7 @@
             </RegexExtractor>
             <hashTree/>
             <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
-              <stringProp name="ConstantTimer.delay">4000</stringProp>
+              <stringProp name="ConstantTimer.delay">${timerLength}</stringProp>
             </ConstantTimer>
             <hashTree/>
             <XPathExtractor guiclass="XPathExtractorGui" testclass="XPathExtractor" testname="status extractor" enabled="true">
@@ -259,7 +342,80 @@ ALL TIMESTEPS,10.14438,10.19982,10.59650,31.13144,14.41096,21.29059,15.04279,17.
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
           <stringProp name="SoapSampler.URL_DATA">${processURL}/WebProcessingService</stringProp>
-          <stringProp name="HTTPSamper.xml_data">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt; &lt;wps:Execute service=&quot;WPS&quot; version=&quot;1.0.0&quot; xmlns:wps=&quot;http://www.opengis.net/wps/1.0.0&quot; xmlns:ows=&quot;http://www.opengis.net/ows/1.1&quot; xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd&quot;&gt; &lt;ows:Identifier&gt;gov.usgs.cida.gdp.wps.algorithm.FeatureWeightedGridStatisticsAlgorithm&lt;/ows:Identifier&gt; &lt;wps:DataInputs&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;FEATURE_ATTRIBUTE_NAME&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;ID&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;DATASET_URI&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;dods://internal.cida.usgs.gov/thredds/dodsC/qpe/arfcqpe_w_meta.ncml&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;DATASET_ID&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;Total_precipitation&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;TIME_START&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;2010-06-21T00:00:00.000Z&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;TIME_END&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;2010-06-23T00:00:00.000Z&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;STATISTICS&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;MEAN&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;GROUP_BY&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;STATISTIC&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;DELIMITER&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;COMMA&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;FEATURE_COLLECTION&lt;/ows:Identifier&gt;&lt;wps:Reference xlink:href=&quot;http://localhost:8080/geoserver/wfs&quot;&gt; &lt;wps:Body&gt;&lt;wfs:GetFeature service=&quot;WFS&quot; version=&quot;1.1.0&quot; outputFormat=&quot;text/xml; subtype=gml/3.1.1&quot; xmlns:myns=&quot;http://www.someserver.com/myns&quot; xmlns:wfs=&quot;http://www.opengis.net/wfs&quot; xmlns:ogc=&quot;http://www.opengis.net/ogc&quot; xmlns:gml=&quot;http://www.opengis.net/gml&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd&quot;&gt; &lt;wfs:Query typeName=&quot;upload:Yahara_alb&quot;&gt; &lt;wfs:PropertyName&gt;the_geom&lt;/wfs:PropertyName&gt; &lt;wfs:PropertyName&gt;ID&lt;/wfs:PropertyName&gt;&lt;/wfs:Query&gt; &lt;/wfs:GetFeature&gt;&lt;/wps:Body&gt; &lt;/wps:Reference&gt;&lt;/wps:Input&gt;&lt;/wps:DataInputs&gt; &lt;wps:ResponseForm&gt; &lt;wps:ResponseDocument storeExecuteResponse=&quot;true&quot; status=&quot;true&quot;&gt;&lt;wps:Output asReference=&quot;true&quot;&gt; &lt;ows:Identifier&gt;OUTPUT&lt;/ows:Identifier&gt; &lt;/wps:Output&gt;&lt;/wps:ResponseDocument&gt; &lt;/wps:ResponseForm&gt; &lt;/wps:Execute&gt;</stringProp>
+          <stringProp name="HTTPSamper.xml_data">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;wps:Execute service=&quot;WPS&quot; version=&quot;1.0.0&quot; xmlns:wps=&quot;http://www.opengis.net/wps/1.0.0&quot; xmlns:ows=&quot;http://www.opengis.net/ows/1.1&quot; xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd&quot;&gt;
+	&lt;ows:Identifier&gt;gov.usgs.cida.gdp.wps.algorithm.FeatureWeightedGridStatisticsAlgorithm&lt;/ows:Identifier&gt;
+	&lt;wps:DataInputs&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;FEATURE_ATTRIBUTE_NAME&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;ID&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;DATASET_URI&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;dods://internal.cida.usgs.gov/thredds/dodsC/qpe/arfcqpe_w_meta.ncml&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;DATASET_ID&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;Total_precipitation&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;TIME_START&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;2010-06-21T00:00:00.000Z&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;TIME_END&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;2010-06-23T00:00:00.000Z&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;STATISTICS&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;MEAN&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;GROUP_BY&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;STATISTIC&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;DELIMITER&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;COMMA&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;FEATURE_COLLECTION&lt;/ows:Identifier&gt;
+			&lt;wps:Reference xlink:href=&quot;http://${wfsEndpoint}/wfs&quot;&gt;
+				&lt;wps:Body&gt;
+					&lt;wfs:GetFeature service=&quot;WFS&quot; version=&quot;1.1.0&quot; outputFormat=&quot;text/xml; subtype=gml/3.1.1&quot; xmlns:myns=&quot;http://www.someserver.com/myns&quot; xmlns:wfs=&quot;http://www.opengis.net/wfs&quot; xmlns:ogc=&quot;http://www.opengis.net/ogc&quot; xmlns:gml=&quot;http://www.opengis.net/gml&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd&quot;&gt;
+						&lt;wfs:Query typeName=&quot;sample:Yahara_alb&quot;&gt;
+							&lt;wfs:PropertyName&gt;the_geom&lt;/wfs:PropertyName&gt;
+							&lt;wfs:PropertyName&gt;ID&lt;/wfs:PropertyName&gt;
+						&lt;/wfs:Query&gt;
+					&lt;/wfs:GetFeature&gt;
+				&lt;/wps:Body&gt;
+			&lt;/wps:Reference&gt;
+		&lt;/wps:Input&gt;
+	&lt;/wps:DataInputs&gt;
+	&lt;wps:ResponseForm&gt;
+		&lt;wps:ResponseDocument storeExecuteResponse=&quot;true&quot; status=&quot;true&quot;&gt;
+			&lt;wps:Output asReference=&quot;true&quot;&gt;
+				&lt;ows:Identifier&gt;OUTPUT&lt;/ows:Identifier&gt;
+			&lt;/wps:Output&gt;
+		&lt;/wps:ResponseDocument&gt;
+	&lt;/wps:ResponseForm&gt;
+&lt;/wps:Execute&gt;</stringProp>
           <stringProp name="SoapSampler.xml_data_file"></stringProp>
           <stringProp name="SoapSampler.SOAP_ACTION"></stringProp>
           <stringProp name="SoapSampler.SEND_SOAP_ACTION">false</stringProp>
@@ -342,7 +498,7 @@ ALL TIMESTEPS,10.14438,10.19982,10.59650,31.13144,14.41096,21.29059,15.04279,17.
             </RegexExtractor>
             <hashTree/>
             <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
-              <stringProp name="ConstantTimer.delay">4000</stringProp>
+              <stringProp name="ConstantTimer.delay">${timerLength}</stringProp>
             </ConstantTimer>
             <hashTree/>
             <XPathExtractor guiclass="XPathExtractorGui" testclass="XPathExtractor" testname="status extractor" enabled="true">
@@ -429,6 +585,38 @@ ALL TIMESTEPS,2.981285,3.719150,3.372902,2.884375,2.241898,2.120453,2.664183,2.0
           </ResultCollector>
           <hashTree/>
         </hashTree>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>true</xml>
+              <fieldNames>false</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
       </hashTree>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Runoff Test" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">stoptest</stringProp>
@@ -450,7 +638,80 @@ ALL TIMESTEPS,2.981285,3.719150,3.372902,2.884375,2.241898,2.120453,2.664183,2.0
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
           <stringProp name="SoapSampler.URL_DATA">${processURL}/WebProcessingService</stringProp>
-          <stringProp name="HTTPSamper.xml_data">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt; &lt;wps:Execute service=&quot;WPS&quot; version=&quot;1.0.0&quot; xmlns:wps=&quot;http://www.opengis.net/wps/1.0.0&quot; xmlns:ows=&quot;http://www.opengis.net/ows/1.1&quot; xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd&quot;&gt; &lt;ows:Identifier&gt;gov.usgs.cida.gdp.wps.algorithm.FeatureWeightedGridStatisticsAlgorithm&lt;/ows:Identifier&gt; &lt;wps:DataInputs&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;FEATURE_ATTRIBUTE_NAME&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;HUC_8&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;DATASET_URI&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;dods://runoff.cr.usgs.gov:8086/thredds/dodsC/hydro/national/2.5arcmin&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;DATASET_ID&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;runoff&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;TIME_START&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;2009-07-10T00:00:00.000Z&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;TIME_END&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;2009-07-12T00:00:00.000Z&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;STATISTICS&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;MEAN&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;GROUP_BY&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;STATISTIC&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;DELIMITER&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;COMMA&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;FEATURE_COLLECTION&lt;/ows:Identifier&gt;&lt;wps:Reference xlink:href=&quot;http://localhost:8080/geoserver/wfs&quot;&gt; &lt;wps:Body&gt;&lt;wfs:GetFeature service=&quot;WFS&quot; version=&quot;1.1.0&quot; outputFormat=&quot;text/xml; subtype=gml/3.1.1&quot; xmlns:myns=&quot;http://www.someserver.com/myns&quot; xmlns:wfs=&quot;http://www.opengis.net/wfs&quot; xmlns:ogc=&quot;http://www.opengis.net/ogc&quot; xmlns:gml=&quot;http://www.opengis.net/gml&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd&quot;&gt; &lt;wfs:Query typeName=&quot;upload:HUC12LM_alb&quot;&gt; &lt;wfs:PropertyName&gt;the_geom&lt;/wfs:PropertyName&gt; &lt;wfs:PropertyName&gt;HUC_8&lt;/wfs:PropertyName&gt;&lt;/wfs:Query&gt; &lt;/wfs:GetFeature&gt;&lt;/wps:Body&gt; &lt;/wps:Reference&gt;&lt;/wps:Input&gt;&lt;/wps:DataInputs&gt; &lt;wps:ResponseForm&gt; &lt;wps:ResponseDocument storeExecuteResponse=&quot;true&quot; status=&quot;true&quot;&gt;&lt;wps:Output asReference=&quot;true&quot;&gt; &lt;ows:Identifier&gt;OUTPUT&lt;/ows:Identifier&gt; &lt;/wps:Output&gt;&lt;/wps:ResponseDocument&gt; &lt;/wps:ResponseForm&gt; &lt;/wps:Execute&gt;</stringProp>
+          <stringProp name="HTTPSamper.xml_data">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;wps:Execute service=&quot;WPS&quot; version=&quot;1.0.0&quot; xmlns:wps=&quot;http://www.opengis.net/wps/1.0.0&quot; xmlns:ows=&quot;http://www.opengis.net/ows/1.1&quot; xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd&quot;&gt;
+	&lt;ows:Identifier&gt;gov.usgs.cida.gdp.wps.algorithm.FeatureWeightedGridStatisticsAlgorithm&lt;/ows:Identifier&gt;
+	&lt;wps:DataInputs&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;FEATURE_ATTRIBUTE_NAME&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;HUC_8&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;DATASET_URI&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;dods://runoff.cr.usgs.gov:8086/thredds/dodsC/hydro/national/2.5arcmin&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;DATASET_ID&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;runoff&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;TIME_START&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;2009-07-10T00:00:00.000Z&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;TIME_END&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;2009-07-12T00:00:00.000Z&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;STATISTICS&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;MEAN&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;GROUP_BY&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;STATISTIC&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;DELIMITER&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;COMMA&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;FEATURE_COLLECTION&lt;/ows:Identifier&gt;
+			&lt;wps:Reference xlink:href=&quot;http://${wfsEndpoint}/wfs&quot;&gt;
+				&lt;wps:Body&gt;
+					&lt;wfs:GetFeature service=&quot;WFS&quot; version=&quot;1.1.0&quot; outputFormat=&quot;text/xml; subtype=gml/3.1.1&quot; xmlns:myns=&quot;http://www.someserver.com/myns&quot; xmlns:wfs=&quot;http://www.opengis.net/wfs&quot; xmlns:ogc=&quot;http://www.opengis.net/ogc&quot; xmlns:gml=&quot;http://www.opengis.net/gml&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd&quot;&gt;
+						&lt;wfs:Query typeName=&quot;sample:HUC12LM_alb&quot;&gt;
+							&lt;wfs:PropertyName&gt;the_geom&lt;/wfs:PropertyName&gt;
+							&lt;wfs:PropertyName&gt;HUC_8&lt;/wfs:PropertyName&gt;
+						&lt;/wfs:Query&gt;
+					&lt;/wfs:GetFeature&gt;
+				&lt;/wps:Body&gt;
+			&lt;/wps:Reference&gt;
+		&lt;/wps:Input&gt;
+	&lt;/wps:DataInputs&gt;
+	&lt;wps:ResponseForm&gt;
+		&lt;wps:ResponseDocument storeExecuteResponse=&quot;true&quot; status=&quot;true&quot;&gt;
+			&lt;wps:Output asReference=&quot;true&quot;&gt;
+				&lt;ows:Identifier&gt;OUTPUT&lt;/ows:Identifier&gt;
+			&lt;/wps:Output&gt;
+		&lt;/wps:ResponseDocument&gt;
+	&lt;/wps:ResponseForm&gt;
+&lt;/wps:Execute&gt;</stringProp>
           <stringProp name="SoapSampler.xml_data_file"></stringProp>
           <stringProp name="SoapSampler.SOAP_ACTION"></stringProp>
           <stringProp name="SoapSampler.SEND_SOAP_ACTION">false</stringProp>
@@ -533,7 +794,7 @@ ALL TIMESTEPS,2.981285,3.719150,3.372902,2.884375,2.241898,2.120453,2.664183,2.0
             </RegexExtractor>
             <hashTree/>
             <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
-              <stringProp name="ConstantTimer.delay">4000</stringProp>
+              <stringProp name="ConstantTimer.delay">${timerLength}</stringProp>
             </ConstantTimer>
             <hashTree/>
             <XPathExtractor guiclass="XPathExtractorGui" testclass="XPathExtractor" testname="status extractor" enabled="true">
@@ -612,6 +873,38 @@ ALL TIMESTEPS,23.15972,20.01588,22.38408,24.75175,25.61469,24.97271,30.12694,18.
           </ResultCollector>
           <hashTree/>
         </hashTree>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>true</xml>
+              <fieldNames>false</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
       </hashTree>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="NLCD Test" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
@@ -634,7 +927,56 @@ ALL TIMESTEPS,23.15972,20.01588,22.38408,24.75175,25.61469,24.97271,30.12694,18.
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
           <stringProp name="SoapSampler.URL_DATA">${processURL}/WebProcessingService</stringProp>
-          <stringProp name="HTTPSamper.xml_data">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt; &lt;wps:Execute service=&quot;WPS&quot; version=&quot;1.0.0&quot; xmlns:wps=&quot;http://www.opengis.net/wps/1.0.0&quot; xmlns:ows=&quot;http://www.opengis.net/ows/1.1&quot; xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd&quot;&gt; &lt;ows:Identifier&gt;gov.usgs.cida.gdp.wps.algorithm.FeatureCategoricalGridCoverageAlgorithm&lt;/ows:Identifier&gt; &lt;wps:DataInputs&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;FEATURE_ATTRIBUTE_NAME&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;ID&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;DATASET_URI&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;http://incus.cr.usgs.gov/ArcGIS/services/NLCD_2001/MapServer/WCSServer&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;DATASET_ID&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;2&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;DELIMITER&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;COMMA&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;FEATURE_COLLECTION&lt;/ows:Identifier&gt;&lt;wps:Reference xlink:href=&quot;http://igsarm-cida-gdp2.er.usgs.gov:8082/geoserver/wfs&quot;&gt; &lt;wps:Body&gt;&lt;wfs:GetFeature service=&quot;WFS&quot; version=&quot;1.1.0&quot; outputFormat=&quot;text/xml; subtype=gml/3.1.1&quot; xmlns:myns=&quot;http://www.someserver.com/myns&quot; xmlns:wfs=&quot;http://www.opengis.net/wfs&quot; xmlns:ogc=&quot;http://www.opengis.net/ogc&quot; xmlns:gml=&quot;http://www.opengis.net/gml&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd&quot;&gt; &lt;wfs:Query typeName=&quot;upload:trout_lake_alb&quot;&gt; &lt;wfs:PropertyName&gt;the_geom&lt;/wfs:PropertyName&gt; &lt;wfs:PropertyName&gt;ID&lt;/wfs:PropertyName&gt;&lt;/wfs:Query&gt; &lt;/wfs:GetFeature&gt;&lt;/wps:Body&gt; &lt;/wps:Reference&gt;&lt;/wps:Input&gt;&lt;/wps:DataInputs&gt; &lt;wps:ResponseForm&gt; &lt;wps:ResponseDocument storeExecuteResponse=&quot;true&quot; status=&quot;true&quot;&gt;&lt;wps:Output asReference=&quot;true&quot;&gt; &lt;ows:Identifier&gt;OUTPUT&lt;/ows:Identifier&gt; &lt;/wps:Output&gt;&lt;/wps:ResponseDocument&gt; &lt;/wps:ResponseForm&gt; &lt;/wps:Execute&gt;</stringProp>
+          <stringProp name="HTTPSamper.xml_data">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;wps:Execute service=&quot;WPS&quot; version=&quot;1.0.0&quot; xmlns:wps=&quot;http://www.opengis.net/wps/1.0.0&quot; xmlns:ows=&quot;http://www.opengis.net/ows/1.1&quot; xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd&quot;&gt;
+	&lt;ows:Identifier&gt;gov.usgs.cida.gdp.wps.algorithm.FeatureCategoricalGridCoverageAlgorithm&lt;/ows:Identifier&gt;
+	&lt;wps:DataInputs&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;FEATURE_ATTRIBUTE_NAME&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;ID&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;DATASET_URI&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;http://incus.cr.usgs.gov/ArcGIS/services/NLCD_2001/MapServer/WCSServer&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;DATASET_ID&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;2&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;DELIMITER&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;COMMA&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;FEATURE_COLLECTION&lt;/ows:Identifier&gt;
+			&lt;wps:Reference xlink:href=&quot;http://${wfsEndpoint}/wfs&quot;&gt;
+				&lt;wps:Body&gt;
+					&lt;wfs:GetFeature service=&quot;WFS&quot; version=&quot;1.1.0&quot; outputFormat=&quot;text/xml; subtype=gml/3.1.1&quot; xmlns:myns=&quot;http://www.someserver.com/myns&quot; xmlns:wfs=&quot;http://www.opengis.net/wfs&quot; xmlns:ogc=&quot;http://www.opengis.net/ogc&quot; xmlns:gml=&quot;http://www.opengis.net/gml&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd&quot;&gt;
+						&lt;wfs:Query typeName=&quot;sample:trout_lake_alb&quot;&gt;
+							&lt;wfs:PropertyName&gt;the_geom&lt;/wfs:PropertyName&gt;
+							&lt;wfs:PropertyName&gt;ID&lt;/wfs:PropertyName&gt;
+						&lt;/wfs:Query&gt;
+					&lt;/wfs:GetFeature&gt;
+				&lt;/wps:Body&gt;
+			&lt;/wps:Reference&gt;
+		&lt;/wps:Input&gt;
+	&lt;/wps:DataInputs&gt;
+	&lt;wps:ResponseForm&gt;
+		&lt;wps:ResponseDocument storeExecuteResponse=&quot;true&quot; status=&quot;true&quot;&gt;
+			&lt;wps:Output asReference=&quot;true&quot;&gt;
+				&lt;ows:Identifier&gt;OUTPUT&lt;/ows:Identifier&gt;
+			&lt;/wps:Output&gt;
+		&lt;/wps:ResponseDocument&gt;
+	&lt;/wps:ResponseForm&gt;
+&lt;/wps:Execute&gt;</stringProp>
           <stringProp name="SoapSampler.xml_data_file"></stringProp>
           <stringProp name="SoapSampler.SOAP_ACTION"></stringProp>
           <stringProp name="SoapSampler.SEND_SOAP_ACTION">false</stringProp>
@@ -717,7 +1059,7 @@ ALL TIMESTEPS,23.15972,20.01588,22.38408,24.75175,25.61469,24.97271,30.12694,18.
             </RegexExtractor>
             <hashTree/>
             <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
-              <stringProp name="ConstantTimer.delay">4000</stringProp>
+              <stringProp name="ConstantTimer.delay">${timerLength}</stringProp>
             </ConstantTimer>
             <hashTree/>
             <XPathExtractor guiclass="XPathExtractorGui" testclass="XPathExtractor" testname="status extractor" enabled="true">
@@ -995,7 +1337,68 @@ Attribute,11,21,22,23,24,41,42,43,52,71,90,95,Sample Count
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
           <stringProp name="SoapSampler.URL_DATA">${processURL}/WebProcessingService</stringProp>
-          <stringProp name="HTTPSamper.xml_data">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt; &lt;wps:Execute service=&quot;WPS&quot; version=&quot;1.0.0&quot; xmlns:wps=&quot;http://www.opengis.net/wps/1.0.0&quot; xmlns:ows=&quot;http://www.opengis.net/ows/1.1&quot; xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd&quot;&gt; &lt;ows:Identifier&gt;gov.usgs.cida.gdp.wps.algorithm.FeatureWeightedGridStatisticsAlgorithm&lt;/ows:Identifier&gt; &lt;wps:DataInputs&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;FEATURE_ATTRIBUTE_NAME&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;ID&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;DATASET_URI&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;http://incus.cr.usgs.gov/ArcGIS/services/NED_1/MapServer/WCSServer&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;DATASET_ID&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;1&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;STATISTICS&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;MEAN&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;GROUP_BY&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;STATISTIC&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;DELIMITER&lt;/ows:Identifier&gt; &lt;wps:Data&gt; &lt;wps:LiteralData&gt;COMMA&lt;/wps:LiteralData&gt; &lt;/wps:Data&gt; &lt;/wps:Input&gt;&lt;wps:Input&gt; &lt;ows:Identifier&gt;FEATURE_COLLECTION&lt;/ows:Identifier&gt;&lt;wps:Reference xlink:href=&quot;http://igsarm-cida-gdp2.er.usgs.gov:8082/geoserver/wfs&quot;&gt; &lt;wps:Body&gt;&lt;wfs:GetFeature service=&quot;WFS&quot; version=&quot;1.1.0&quot; outputFormat=&quot;text/xml; subtype=gml/3.1.1&quot; xmlns:myns=&quot;http://www.someserver.com/myns&quot; xmlns:wfs=&quot;http://www.opengis.net/wfs&quot; xmlns:ogc=&quot;http://www.opengis.net/ogc&quot; xmlns:gml=&quot;http://www.opengis.net/gml&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd&quot;&gt; &lt;wfs:Query typeName=&quot;upload:Yahara_alb&quot;&gt; &lt;wfs:PropertyName&gt;the_geom&lt;/wfs:PropertyName&gt; &lt;wfs:PropertyName&gt;ID&lt;/wfs:PropertyName&gt;&lt;/wfs:Query&gt; &lt;/wfs:GetFeature&gt;&lt;/wps:Body&gt; &lt;/wps:Reference&gt;&lt;/wps:Input&gt;&lt;/wps:DataInputs&gt; &lt;wps:ResponseForm&gt; &lt;wps:ResponseDocument storeExecuteResponse=&quot;true&quot; status=&quot;true&quot;&gt;&lt;wps:Output asReference=&quot;true&quot;&gt; &lt;ows:Identifier&gt;OUTPUT&lt;/ows:Identifier&gt; &lt;/wps:Output&gt;&lt;/wps:ResponseDocument&gt; &lt;/wps:ResponseForm&gt; &lt;/wps:Execute&gt;</stringProp>
+          <stringProp name="HTTPSamper.xml_data">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;wps:Execute service=&quot;WPS&quot; version=&quot;1.0.0&quot; xmlns:wps=&quot;http://www.opengis.net/wps/1.0.0&quot; xmlns:ows=&quot;http://www.opengis.net/ows/1.1&quot; xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd&quot;&gt;
+	&lt;ows:Identifier&gt;gov.usgs.cida.gdp.wps.algorithm.FeatureWeightedGridStatisticsAlgorithm&lt;/ows:Identifier&gt;
+	&lt;wps:DataInputs&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;FEATURE_ATTRIBUTE_NAME&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;ID&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;DATASET_URI&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;http://incus.cr.usgs.gov/ArcGIS/services/NED_1/MapServer/WCSServer&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;DATASET_ID&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;1&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;STATISTICS&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;MEAN&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;GROUP_BY&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;STATISTIC&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;DELIMITER&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;COMMA&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;FEATURE_COLLECTION&lt;/ows:Identifier&gt;
+			&lt;wps:Reference xlink:href=&quot;http://${wfsEndpoint}/wfs&quot;&gt;
+				&lt;wps:Body&gt;
+					&lt;wfs:GetFeature service=&quot;WFS&quot; version=&quot;1.1.0&quot; outputFormat=&quot;text/xml; subtype=gml/3.1.1&quot; xmlns:myns=&quot;http://www.someserver.com/myns&quot; xmlns:wfs=&quot;http://www.opengis.net/wfs&quot; xmlns:ogc=&quot;http://www.opengis.net/ogc&quot; xmlns:gml=&quot;http://www.opengis.net/gml&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd&quot;&gt;
+						&lt;wfs:Query typeName=&quot;sample:Yahara_alb&quot;&gt;
+							&lt;wfs:PropertyName&gt;the_geom&lt;/wfs:PropertyName&gt;
+							&lt;wfs:PropertyName&gt;ID&lt;/wfs:PropertyName&gt;
+						&lt;/wfs:Query&gt;
+					&lt;/wfs:GetFeature&gt;
+				&lt;/wps:Body&gt;
+			&lt;/wps:Reference&gt;
+		&lt;/wps:Input&gt;
+	&lt;/wps:DataInputs&gt;
+	&lt;wps:ResponseForm&gt;
+		&lt;wps:ResponseDocument storeExecuteResponse=&quot;true&quot; status=&quot;true&quot;&gt;
+			&lt;wps:Output asReference=&quot;true&quot;&gt;
+				&lt;ows:Identifier&gt;OUTPUT&lt;/ows:Identifier&gt;
+			&lt;/wps:Output&gt;
+		&lt;/wps:ResponseDocument&gt;
+	&lt;/wps:ResponseForm&gt;
+&lt;/wps:Execute&gt;</stringProp>
           <stringProp name="SoapSampler.xml_data_file"></stringProp>
           <stringProp name="SoapSampler.SOAP_ACTION"></stringProp>
           <stringProp name="SoapSampler.SEND_SOAP_ACTION">false</stringProp>
@@ -1078,7 +1481,7 @@ Attribute,11,21,22,23,24,41,42,43,52,71,90,95,Sample Count
             </RegexExtractor>
             <hashTree/>
             <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
-              <stringProp name="ConstantTimer.delay">4000</stringProp>
+              <stringProp name="ConstantTimer.delay">${timerLength}</stringProp>
             </ConstantTimer>
             <hashTree/>
             <XPathExtractor guiclass="XPathExtractorGui" testclass="XPathExtractor" testname="status extractor" enabled="true">
