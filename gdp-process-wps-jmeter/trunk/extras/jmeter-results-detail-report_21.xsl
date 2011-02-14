@@ -73,7 +73,7 @@
 				
 				.expand_link
 				{
-				   position=absolute;
+				   position: absolute;
 				   right: 0px;
 				   width: 27px;
 				   top: 1px;
