@@ -15,12 +15,12 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="processURL" elementType="Argument">
             <stringProp name="Argument.name">processURL</stringProp>
-            <stringProp name="Argument.value">http://igsarm-cida-javadev1.er.usgs.gov:8080/gdp-process-wps</stringProp>
+            <stringProp name="Argument.value">http://${__P(testHost)}:${__P(testPort)}/${__P(testURI)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="wfsEndpoint" elementType="Argument">
             <stringProp name="Argument.name">wfsEndpoint</stringProp>
-            <stringProp name="Argument.value">http://igsarm-cida-javadev1.er.usgs.gov:8080/geoserver</stringProp>
+            <stringProp name="Argument.value">${__P(testWfsEndpoint)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="timerLength" elementType="Argument">
@@ -907,7 +907,7 @@ ALL TIMESTEPS,23.15972,20.01588,22.38408,24.75175,25.61469,24.97271,30.12694,18.
         <hashTree/>
       </hashTree>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="NLCD Test" enabled="true">
-        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <stringProp name="ThreadGroup.on_sample_error">stoptest</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
@@ -1317,7 +1317,7 @@ Attribute,11,21,22,23,24,41,42,43,52,71,90,95,Sample Count
         <hashTree/>
       </hashTree>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="NED Test" enabled="true">
-        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <stringProp name="ThreadGroup.on_sample_error">stoptest</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
