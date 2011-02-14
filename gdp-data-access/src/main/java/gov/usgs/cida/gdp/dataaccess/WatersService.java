@@ -1,8 +1,10 @@
 package gov.usgs.cida.gdp.dataaccess;
 
+import com.vividsolutions.jts.geom.Geometry;
 import gov.usgs.cida.gdp.utilities.HTTPUtils;
 
 import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import gov.usgs.cida.gdp.constants.AppConstant;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -50,7 +52,7 @@ public class WatersService {
                 + "&pMaxDistance=999999999"), "GET");
 
         String gml = parseJSON(json, "shape");
-        GeometryCollection g = parseGML(gml);
+        GeometryCollection coll = parseGML(gml);
 
         // Write to a shapefile so GeoServer can load the geometry. As of 2.0.2,
         // Geoserver (GeoTools) GML datastores are unsupported. Hence the
@@ -76,27 +78,42 @@ public class WatersService {
         FileOutputStream shxFileOutputStream = new FileOutputStream(shxFile);
         FileOutputStream dbfFileOutputStream = new FileOutputStream(dbfFile);
 
-        int numFeatures = g.getNumGeometries();
+        int numFeatures = coll.getNumGeometries();
+
+        // The WATERS service returns one big polygon, along with a couple smaller
+        // polygons (3-4 vertices). We only care about the big polygon, so find
+        // which index it's at in the collection.
+        int maxNumPoints = -1;
+        int maxGeomIndex = -1;
+        for (int i = 0; i < numFeatures; i++) {
+            int numPoints = coll.getGeometryN(i).getNumPoints();
+
+            if (numPoints > maxNumPoints) {
+                maxNumPoints = numPoints;
+                maxGeomIndex = i;
+            }
+        }
+
+        Geometry bigPoly = coll.getGeometryN(maxGeomIndex);
+
+        GeometryFactory factory = coll.getFactory();
+        GeometryCollection bigPolyColl =
+                new GeometryCollection(new Geometry[] { bigPoly }, factory);
 
         // Write dbf file with simple placeholder attribute
         DbaseFileHeader header = new DbaseFileHeader();
         header.addColumn("ID", 'N', 4, 0);
-        header.setNumRecords(numFeatures);
+        header.setNumRecords(1);
 
         DbaseFileWriter dfw = new DbaseFileWriter(header, dbfFileOutputStream.getChannel());
-
-        // Need a dbf row for each feature, or GeoServer will fail to serve
-        // the shapefile's geometry.
-        for (int i = 0; i < numFeatures; i++) {
-            dfw.write(new Object[] { i });
-        }
+        dfw.write(new Object[] { 0 });
         dfw.close();
 
         // Write geometry
         ShapefileWriter sw = new ShapefileWriter(shpFileOutputStream.getChannel(),
                 shxFileOutputStream.getChannel());
         
-        sw.write(g, ShapeType.POLYGON);
+        sw.write(bigPolyColl, ShapeType.POLYGON);
         sw.close();
 
         return shpFile;
