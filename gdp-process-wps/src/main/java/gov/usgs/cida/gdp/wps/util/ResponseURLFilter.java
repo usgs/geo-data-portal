@@ -31,8 +31,8 @@ public class ResponseURLFilter implements Filter {
     public void init(FilterConfig filterConfig) throws ServletException {
         configURLString =  "http://" +
             WPSConfig.getInstance().getWPSConfig().getServer().getHostname() + ":" +
-            WPSConfig.getInstance().getWPSConfig().getServer().getHostport() +
-            filterConfig.getServletContext().getContextPath();
+            WPSConfig.getInstance().getWPSConfig().getServer().getHostport() + "/" +
+            WPSConfig.getInstance().getWPSConfig().getServer().getWebappPath();
         LOGGER.info("Response URL filtering enabled using base URL of {}", configURLString);
     }
 
@@ -43,10 +43,10 @@ public class ResponseURLFilter implements Filter {
         if (requestHTTP != null && responseHTTP != null) {
             String requestURLString = extractRequestURLString(requestHTTP);
             String baseURLString = requestURLString.replaceAll("/[^/]*$", "");
-            LOGGER.info("Response URL filtering enabled for request to {}", requestURLString);
+            LOGGER.info("Wrapping response for URL filtering");
             chain.doFilter(request, new BaseURLFilterHttpServletResponse(responseHTTP, configURLString, baseURLString));
         } else {
-            LOGGER.warn("Unable to configure response URL filtering");
+            LOGGER.warn("Unable to to wrap response for URL filtering");
             chain.doFilter(request, response);
         }
     }
@@ -82,10 +82,17 @@ public class ResponseURLFilter implements Filter {
 
         @Override
         public ServletOutputStream getOutputStream() throws IOException {
-            return new ServletOutputStreamWrapper(
-                    getResponse().getOutputStream(),
-                    configURLString,
-                    requestURLString);
+            String contentType = getResponse().getContentType();
+            if (contentType == null || contentType.endsWith("xml")) {
+                LOGGER.info("Content-type: {}, response URL filtering enabled for response to {}", contentType, requestURLString);
+                return new ServletOutputStreamWrapper(
+                        getResponse().getOutputStream(),
+                        configURLString,
+                        requestURLString);
+            } else {
+                LOGGER.info("Content-type: {}, response URL filtering disabled for response to {}", contentType, requestURLString);
+                return getResponse().getOutputStream();
+            }
         }
 
         @Override

@@ -16,7 +16,7 @@
   						xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   						xmlns:test="http://cida.usgs.gov/test"
   						xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd">
-						<wfs:Query typeName="test:test"/>
+						<wfs:Query typeName="sample:demo_HUCs"/>
 						<!-- <wfs:Query typeName="test:catchment0403"/> -->
 						<!-- <wfs:Query typeName="test:lkm_hru"/> -->
 					</wfs:GetFeature>
@@ -26,22 +26,23 @@
 			<wps:Input>
 				<ows:Identifier>FEATURE_ATTRIBUTE_NAME</ows:Identifier>
 				<wps:Data>
-					<wps:LiteralData>Id</wps:LiteralData>
+					<wps:LiteralData>OBJECTID</wps:LiteralData>
 				</wps:Data>
 			</wps:Input>
 		<wps:Input>
 			<ows:Identifier>DATASET_URI</ows:Identifier>
 			<wps:Data>
-				<wps:LiteralData>dods://internal.cida.usgs.gov/thredds/dodsC/gmo/gridded_obs.daily.Prcp.ncml</wps:LiteralData>
+<!--				<wps:LiteralData>dods://internal.cida.usgs.gov/thredds/dodsC/gmo/gridded_obs.daily.Prcp.ncml</wps:LiteralData>-->
+				<wps:LiteralData>http://incus.cr.usgs.gov/ArcGIS/services/NED_1/MapServer/WCSServer</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
 		<wps:Input>
 			<ows:Identifier>DATASET_ID</ows:Identifier>
 			<wps:Data>
-				<wps:LiteralData>Prcp</wps:LiteralData>
+				<wps:LiteralData>1</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
-		<wps:Input>
+<!--		<wps:Input>
 			<ows:Identifier>TIME_START</ows:Identifier>
 			<wps:Data>
 				<wps:LiteralData>1950-01-01T00:00:00Z</wps:LiteralData>
@@ -52,7 +53,7 @@
 			<wps:Data>
 				<wps:LiteralData>1950-01-02T00:00:00Z</wps:LiteralData>
 			</wps:Data>
-		</wps:Input>
+		</wps:Input>-->
 	</wps:DataInputs>
 	<wps:ResponseForm>
 		<wps:ResponseDocument storeExecuteResponse="true" status="true">

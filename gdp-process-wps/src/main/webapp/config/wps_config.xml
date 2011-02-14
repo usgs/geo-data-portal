@@ -40,10 +40,12 @@
 
 	</AlgorithmRepositoryList>
 
-    <!-- @hostname@ and @hostport@ filtered and replaced by values derived from
-         HttpServelRequest instance getRequestURL() response -->
-	<Server hostname="@hostname@" hostport="@hostport@" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="gdp-process-wps">
-        <Database/>
+    <!-- @hostname@, @hostport@ and @webappPath@ are filtered and replaced by values derived from
+         HttpServelRequest instance of getRequestURL() in response using a Filter -->
+	<Server hostname="@hostname@" hostport="@hostport@" webappPath="@webappPath@" includeDataInputsInResponse="true" computationTimeoutMilliSeconds="5" cacheCapabilites="false">
+        <Database>
+            <Property name="databaseClass" active="true">gov.usgs.cida.gdp.wps.database.ResultsDatabase</Property>
+        </Database>
     </Server>
 
 </WPSConfiguration>
