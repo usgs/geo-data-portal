@@ -1,0 +1,16 @@
+<layer>
+  <name>trout_lake_hrus_alb</name>
+  <id>LayerInfoImpl--1a3e72bf:12e24f2ed27:-7ffb</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-4e0b98bf:12475d46fdd:-7fe0</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl--1a3e72bf:12e24f2ed27:-7ffc</id>
+  </resource>
+  <enabled>true</enabled>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+</layer>
