@@ -25,15 +25,15 @@ public class RetrieveResultServlet extends HttpServlet {
 
 		String id = request.getParameter("id");
 
-		if(id == null || id.equals("")) {
-			errorResponse("response id missing", response);
+		if(id == null || id.length() == 0) {
+			errorResponse("id parameter missing", response);
 		} else {
             IDatabase db = DatabaseFactory.getDatabase();
             String mimeType = db.getMimeTypeForStoreResponse(id);
             InputStream is = db.lookupResponse(id);
             try {
                 if (mimeType == null || is == null) {
-                    errorResponse("response id invalid", response);
+                    errorResponse("id parameter invalid", response);
                 } else {
                     int suffixIndex = mimeType.lastIndexOf('/');
                     if (suffixIndex > -1) {
@@ -58,7 +58,7 @@ public class RetrieveResultServlet extends HttpServlet {
 			response.setContentType("text/html");
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			PrintWriter writer = response.getWriter();
-			writer.write("<html><title>" + error + "</title><body>" + error + "</body></html>");
+			writer.write("<html><title>Error</title><body>" + error + "</body></html>");
             writer.flush();
     }
 }

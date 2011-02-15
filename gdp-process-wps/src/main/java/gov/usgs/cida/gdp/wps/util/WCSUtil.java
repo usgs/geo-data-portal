@@ -12,13 +12,10 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -50,8 +47,6 @@ import ucar.nc2.iosp.geotiff.GeoTiffIOServiceProvider;
  * @author tkunicki
  */
 public class WCSUtil {
-
-    private final static Set<String> ALLOWED_FORMATS;
 
     private static final int MAX_COVERAGE_SIZE = 64 << 20; // 64 MB
 
@@ -107,16 +102,6 @@ public class WCSUtil {
             System.err.println(e);
         }
         DOCUMENT_BUILDER = documentBuilder;
-
-        // code below makes some assumptions that this is a tiff, validate logic
-        // below if adding non tiff formats...
-        Set<String> allowedFormats = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
-        allowedFormats.add("image/geotiff");
-        allowedFormats.add("application/geotiff");
-        allowedFormats.add("application/x-geotiff");
-        allowedFormats.add("image/tiff");
-        allowedFormats.add("image/x-tiff");
-        ALLOWED_FORMATS = Collections.unmodifiableSet(allowedFormats);
         
         try {
             NetcdfFile.registerIOProvider(GeoTiffIOServiceProvider.class);
@@ -188,7 +173,7 @@ public class WCSUtil {
             
             List<String> sharedFormats = new ArrayList(gridSupportedFormats.length);
             sharedFormats.addAll(Arrays.asList(gridSupportedFormats));
-            sharedFormats.retainAll(ALLOWED_FORMATS);
+            sharedFormats.retainAll(GeoTIFFUtil.getAllowedMimeTypes());
             if (sharedFormats.size() < 1) {
                 throw new RuntimeException("WCS coverage not available in an allowed format (geotiff)");
             }
@@ -342,7 +327,7 @@ public class WCSUtil {
             while (hasNext && tiffFile == null) {
                 Map<String, String> headerMap = mimeMultipartStream.readHeaders();
                 String contentType = headerMap.get("Content-Type");
-                if (ALLOWED_FORMATS.contains(contentType)) {
+                if (GeoTIFFUtil.isAllowedMimeType(contentType)) {
                     String contentTransferEncoding = headerMap.get("Content-Transfer-Encoding");
                     if (contentTransferEncoding != null) {
                         tiffFile = File.createTempFile("gdp", ".tiff");

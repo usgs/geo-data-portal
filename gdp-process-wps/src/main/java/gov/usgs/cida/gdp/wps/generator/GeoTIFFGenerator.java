@@ -1,6 +1,8 @@
 package gov.usgs.cida.gdp.wps.generator;
 
 import gov.usgs.cida.gdp.wps.binding.CSVDataBinding;
+import gov.usgs.cida.gdp.wps.binding.GeoTIFFFileBinding;
+import gov.usgs.cida.gdp.wps.util.GeoTIFFUtil;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -16,14 +18,14 @@ import org.n52.wps.io.datahandler.binary.LargeBufferStream;
  *
  * @author tkunicki
  */
-public class CSVGenerator implements IGenerator, IStreamableGenerator {
+public class GeoTIFFGenerator implements IGenerator, IStreamableGenerator {
 
-    public static final String FORMAT = "text/csv";
+    public static final String FORMAT = GeoTIFFUtil.getDefaultMimeType();
     public static final String ENCODING = "UTF-8";
 
     @Override
     public void writeToStream(IData data, OutputStream os) {
-        if (data instanceof CSVDataBinding) {
+        if (data instanceof GeoTIFFFileBinding) {
             Object payload = data.getPayload();
             if (payload instanceof File) {
                 InputStream is = null;
@@ -47,7 +49,7 @@ public class CSVGenerator implements IGenerator, IStreamableGenerator {
 
     @Override
     public Class[] getSupportedInternalInputDataType() {
-        return new Class[] { CSVDataBinding.class };
+        return new Class[] { GeoTIFFFileBinding.class };
     }
 
     @Override

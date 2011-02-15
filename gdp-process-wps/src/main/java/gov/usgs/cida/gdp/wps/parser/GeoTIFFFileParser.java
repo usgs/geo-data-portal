@@ -1,8 +1,8 @@
 package gov.usgs.cida.gdp.wps.parser;
 
 import gov.usgs.cida.gdp.wps.binding.GeoTIFFFileBinding;
+import gov.usgs.cida.gdp.wps.util.GeoTIFFUtil;
 import gov.usgs.cida.gdp.wps.util.MIMEMultipartStream;
-import gov.usgs.cida.gdp.wps.util.StreamUtil;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,6 +13,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.util.Map;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.n52.wps.io.datahandler.binary.AbstractBinaryParser;
 
 public class GeoTIFFFileParser extends AbstractBinaryParser {
@@ -28,12 +30,14 @@ public class GeoTIFFFileParser extends AbstractBinaryParser {
 	}
 
 	@Override
-	public GeoTIFFFileBinding parse(InputStream input, String mimeType) {
+	public GeoTIFFFileBinding parse(InputStream inputStream, String mimeType) {
 		File tempFile = null;
 		FileChannel tempChannel = null;
 
 		try {
-			tempFile = StreamUtil.copyInputStreamToTempFile(input, ".tmp");
+
+            tempFile = File.createTempFile(getClass().getSimpleName(), ".tmp");
+            FileUtils.copyInputStreamToFile(inputStream, tempFile);
 
 			ByteBuffer buffer = ByteBuffer.allocate(4 + MIMEMultipartStream.MAX_BOUNDARY_LENGTH);
 			tempChannel = new FileInputStream(tempFile).getChannel();
@@ -43,6 +47,7 @@ public class GeoTIFFFileParser extends AbstractBinaryParser {
 
 			short magic01 = buffer.getShort();
 			if (magic01 == TIFF_MAGIC_LE || magic01 == TIFF_MAGIC_BE) {
+                // InputStream references a GeoTIFF image
 				short magic23 = magic01 == TIFF_MAGIC_LE
 						? buffer.order(ByteOrder.LITTLE_ENDIAN).getShort()
 						: buffer.getShort();
@@ -59,6 +64,13 @@ public class GeoTIFFFileParser extends AbstractBinaryParser {
 					throw new RuntimeException("Unexpected value parsing tiff file.");
 				}
 			} else if (magic01 == MIME_MAGIC) {
+                // InputStream references a GeoTIFF image encoded in a multipart mime response.
+                
+                // this is tricky because if we were given an input stream as a result
+                // of a URL call the header for the mime response is missing.  the input stream
+                // be positioned at the beginning of the '--' part bounary, we read it so that
+                // we can pass the boundary to the multipart stream parser.  This code doesn't
+                // expect a full mime response header...
 				byte[] boundary = extractBoundaryFromBuffer(buffer);
 				if (boundary != null) {
 					File tiffFile = extractFromMIMEMultipartStream(tempFile, boundary);
@@ -117,19 +129,18 @@ public class GeoTIFFFileParser extends AbstractBinaryParser {
 			while (hasNext && extractedFile == null) {
 				Map<String, String> headerMap = mimeMultipartStream.readHeaders();
 				String contentType = headerMap.get("Content-Type");
-				if ("image/tiff".equals(contentType) || "image/geotiff".equals(contentType)) {
+				if (GeoTIFFUtil.isAllowedMimeType(contentType)) {
 					String extractedFileName = tempFile.getAbsolutePath().concat(".tiff");
 					extractedFile = new File(extractedFileName);
-					mimeMultipartStream.readBodyData(new FileOutputStream(extractedFile));
+                    String contentTransferEncoding = headerMap.get("Content-Transfer-Encoding");
+					mimeMultipartStream.readBodyData(new FileOutputStream(extractedFile), contentTransferEncoding);
 				} else {
 					mimeMultipartStream.discardBodyData();
 				}
 				hasNext = mimeMultipartStream.readBoundary();
 			}
 		} finally {
-			if (tempFileInputStream != null) {
-				tempFileInputStream.close();
-			}
+			IOUtils.closeQuietly(tempFileInputStream);
 		}
 		return extractedFile;
 	}

@@ -14,6 +14,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeUtility;
+import javax.swing.text.StyledEditorKit.ItalicAction;
+import org.apache.commons.io.IOUtils;
 
 
 /**
@@ -68,6 +70,10 @@ import javax.mail.internet.MimeUtility;
  *    }
  *
  * </pre>
+ *
+ * Inspired by org.apache.commons.fileupload.MultipartStream *but* heavily
+ * modified to account for non-compliant (but common) usage of LF instead of
+ * CRLF (RFC 1867)
  *
  */
 public final class MIMEMultipartStream {
@@ -283,16 +289,20 @@ public final class MIMEMultipartStream {
     }
 
     public void readBodyData(OutputStream outputStream) throws IOException {
-		StreamUtil.copy(new ItemInputStream(), outputStream);
+        IOUtils.copy(new ItemInputStream(), outputStream);
     }
 
     public void readBodyData(OutputStream outputStream, String contentTransferEncoding) throws IOException {
-		try {
-            StreamUtil.copy(
-                    MimeUtility.decode(new ItemInputStream(), contentTransferEncoding),
-                    outputStream);
-        } catch (MessagingException e) {
-            throw new IOException(e);
+        if (contentTransferEncoding == null || contentTransferEncoding.length() < 1) {
+            readBodyData(outputStream);
+        } else {
+            try {
+                IOUtils.copy(
+                        MimeUtility.decode(new ItemInputStream(), contentTransferEncoding),
+                        outputStream);
+            } catch (MessagingException e) {
+                throw new IOException(e);
+            }
         }
     }
 

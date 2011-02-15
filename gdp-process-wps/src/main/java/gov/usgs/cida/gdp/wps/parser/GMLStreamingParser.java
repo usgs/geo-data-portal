@@ -1,6 +1,6 @@
 package gov.usgs.cida.gdp.wps.parser;
 
-import gov.usgs.cida.gdp.wps.util.StreamUtil;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,14 +8,11 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
-
 import javax.xml.XMLConstants;
-
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.n52.wps.io.IStreamableParser;
 import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
-
-import java.io.ByteArrayInputStream;
 import org.n52.wps.io.datahandler.xml.AbstractXMLParser;
 
 public class GMLStreamingParser extends AbstractXMLParser implements IStreamableParser {
@@ -55,7 +52,9 @@ public class GMLStreamingParser extends AbstractXMLParser implements IStreamable
 	@Override
 	public GTVectorDataBinding parseXML(InputStream inputStream) {
 		try {
-			return parseXML(StreamUtil.copyInputStreamToTempFile(inputStream, ".xml"));
+            File tempFile = File.createTempFile(getClass().getSimpleName(), ".xml");
+            FileUtils.copyInputStreamToFile(inputStream, tempFile);
+			return parseXML(tempFile);
 		} catch (IOException e) {
 			throw new RuntimeException("Error creating temporary file", e);
 		}
