@@ -76,7 +76,7 @@ public final class ResultsDatabase implements IDatabase {
         long periodMillis = 1000 * 60 * 60;
         long thresholdMillis = 1000 * 60 * 60 * 24 * 7;
         wipeTimer = new Timer(getClass().getSimpleName() + " File Wiper", true);
-        wipeTimer.scheduleAtFixedRate(new WipeTimerTask(thresholdMillis), periodMillis, periodMillis);
+        wipeTimer.scheduleAtFixedRate(new WipeTimerTask(thresholdMillis), 0, periodMillis);
         LOGGER.info("Started {} file wiper timer; period {} ms, threshold {} ms",
                 new Object[] { getDatabaseName(), periodMillis, thresholdMillis});
     }
