@@ -4,7 +4,7 @@
     <description>52n prototype implementation of the WPS 1.0.0 spec.</description>
     <filter>
         <filter-name>ResponseURLFilter</filter-name>
-        <filter-class>gov.usgs.cida.gdp.wps.util.ResponseURLFilter</filter-class>
+        <filter-class>gov.usgs.cida.gdp.servlet.ResponseURLFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>ResponseURLFilter</filter-name>
