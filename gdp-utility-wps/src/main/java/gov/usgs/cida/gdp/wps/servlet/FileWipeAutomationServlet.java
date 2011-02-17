@@ -26,11 +26,11 @@ public class FileWipeAutomationServlet extends HttpServlet {
 
     static org.slf4j.Logger log = LoggerFactory.getLogger(FileWipeAutomationServlet.class);
     private static final long serialVersionUID = 1L;
-
+    private Timer task;
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-
+        
         initializeFilewipeTimer();
     }
 
@@ -59,7 +59,7 @@ public class FileWipeAutomationServlet extends HttpServlet {
         FileHelper.createDir(workSpaceDir);
 
         // Set up the tast to run every hour, starting 1 hour from now
-        Timer task = new Timer(true);
+        task = new Timer("File-Wipe-Timer",true);
         task.scheduleAtFixedRate(new ScanFileTask(userSpaceDir, uploadDirName, workSpaceDir, fileAgeLong), 0l, 3600000l);
 
         // One minute test timer
@@ -67,9 +67,6 @@ public class FileWipeAutomationServlet extends HttpServlet {
         log.info("File Wipe system started.");
         log.info("Will check " + uploadDirName.getPath() + " for files older than " + (fileAgeLong /  3600000) + " hour(s), every hour.");
         log.info("Will check " + userSpaceDir.getPath() +  " for files older than " + (fileAgeLong /  3600000) + " hour(s), every hour.");
-
-        Date created = new Date();
-        System.setProperty("tomcatStarted", Long.toString(created.getTime()));
     }
 
     class ScanFileTask extends TimerTask {
@@ -181,6 +178,14 @@ public class FileWipeAutomationServlet extends HttpServlet {
             this.workspaceDir = workspaceDir;
         }
 
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        this.task.cancel();
+        this.task.purge();
+        log.info("File Wipe system stopped.");
     }
 
 
