@@ -17,6 +17,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -29,7 +31,7 @@ import org.xml.sax.SAXException;
  *
  * @author jwalker
  */
-public class CheckProcessCompletion {
+public class CheckProcessCompletion implements ServletContextListener {
 	static org.slf4j.Logger log = LoggerFactory.getLogger(CheckProcessCompletion.class);
     private static final long serialVersionUID = 1L;
 	private static CheckProcessCompletion singleton = null;
@@ -37,14 +39,9 @@ public class CheckProcessCompletion {
 	private Timer timer;
 	private long recheckTime;
 
-	private CheckProcessCompletion() {
-		timer = new Timer("ProcessEmailCheck", true);
-		recheckTime = Long.parseLong(AppConstant.CHECK_COMPLETE_MILLIS.toString());
-	}
-
 	public static CheckProcessCompletion getInstance() {
 		if (singleton == null) {
-			singleton = new CheckProcessCompletion();
+			log.error("Context not initialized, try again later");
 		}
 		return singleton;
 	}
@@ -65,6 +62,18 @@ public class CheckProcessCompletion {
 		DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
 		Document document = documentBuilder.parse(is);
 		return document;
+	}
+
+	@Override
+	public void contextInitialized(ServletContextEvent sce) {
+		timer = new Timer("ProcessEmailCheck", true);
+		recheckTime = Long.parseLong(AppConstant.CHECK_COMPLETE_MILLIS.toString());
+		singleton = this;
+	}
+
+	@Override
+	public void contextDestroyed(ServletContextEvent sce) {
+		timer.cancel();
 	}
 }
 
