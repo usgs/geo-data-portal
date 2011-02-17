@@ -4,6 +4,10 @@
     <description>
     a 52n prototype implementation of the WPS 1.0.0 spec.
     </description>
+    <listener>
+        <description>Email Checker</description>
+        <listener-class>gov.usgs.cida.gdp.wps.completion.CompletionContextListener</listener-class>
+    </listener>
     <servlet>
         <servlet-name>wpsServlet</servlet-name>
         <servlet-class>org.n52.wps.server.WebProcessingService</servlet-class>

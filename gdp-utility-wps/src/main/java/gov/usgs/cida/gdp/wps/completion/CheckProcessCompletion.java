@@ -1,5 +1,6 @@
-package gov.usgs.cida.gdp.wps.servlet;
+package gov.usgs.cida.gdp.wps.completion;
 
+import gov.usgs.cida.gdp.wps.completion.ProcessStatus;
 import gov.usgs.cida.gdp.communication.EmailHandler;
 import gov.usgs.cida.gdp.communication.EmailMessage;
 import gov.usgs.cida.gdp.constants.AppConstant;
@@ -31,7 +32,7 @@ import org.xml.sax.SAXException;
  *
  * @author jwalker
  */
-public class CheckProcessCompletion implements ServletContextListener {
+public class CheckProcessCompletion {
 	static org.slf4j.Logger log = LoggerFactory.getLogger(CheckProcessCompletion.class);
     private static final long serialVersionUID = 1L;
 	private static CheckProcessCompletion singleton = null;
@@ -39,9 +40,14 @@ public class CheckProcessCompletion implements ServletContextListener {
 	private Timer timer;
 	private long recheckTime;
 
-	public static CheckProcessCompletion getInstance() {
+	private CheckProcessCompletion() {
+		timer = new Timer("ProcessEmailCheck", true);
+		recheckTime = Long.parseLong(AppConstant.CHECK_COMPLETE_MILLIS.toString());
+	}
+
+	public synchronized static CheckProcessCompletion getInstance() {
 		if (singleton == null) {
-			log.error("Context not initialized, try again later");
+			singleton = new CheckProcessCompletion();
 		}
 		return singleton;
 	}
@@ -56,6 +62,10 @@ public class CheckProcessCompletion implements ServletContextListener {
 		log.debug("Purged " + purged + " tasks from timer.");
 	}
 
+	public void destroy() {
+		timer.cancel();
+	}
+
 	public static Document parseDocument(InputStream is) throws IOException, SAXException, ParserConfigurationException {
 		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 		documentBuilderFactory.setNamespaceAware(true);
@@ -64,17 +74,6 @@ public class CheckProcessCompletion implements ServletContextListener {
 		return document;
 	}
 
-	@Override
-	public void contextInitialized(ServletContextEvent sce) {
-		timer = new Timer("ProcessEmailCheck", true);
-		recheckTime = Long.parseLong(AppConstant.CHECK_COMPLETE_MILLIS.toString());
-		singleton = this;
-	}
-
-	@Override
-	public void contextDestroyed(ServletContextEvent sce) {
-		timer.cancel();
-	}
 }
 
 class EmailCheckTask extends TimerTask {

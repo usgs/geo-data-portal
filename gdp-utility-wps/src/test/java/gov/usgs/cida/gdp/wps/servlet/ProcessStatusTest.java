@@ -1,5 +1,7 @@
 package gov.usgs.cida.gdp.wps.servlet;
 
+import gov.usgs.cida.gdp.wps.completion.CheckProcessCompletion;
+import gov.usgs.cida.gdp.wps.completion.ProcessStatus;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

@@ -1,6 +1,6 @@
 package gov.usgs.cida.gdp.wps.algorithm.communication;
 
-import gov.usgs.cida.gdp.wps.servlet.CheckProcessCompletion;
+import gov.usgs.cida.gdp.wps.completion.CheckProcessCompletion;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;

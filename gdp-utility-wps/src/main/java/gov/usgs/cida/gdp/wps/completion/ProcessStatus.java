@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package gov.usgs.cida.gdp.wps.servlet;
+package gov.usgs.cida.gdp.wps.completion;
 
 import java.util.HashMap;
 import java.util.Iterator;
