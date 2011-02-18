@@ -71,7 +71,7 @@ public class ShapeFileEPSGHelperTest {
                 assertTrue("Exception encountered: " + e.getMessage(), false);
             }
             try {
-                FileHelper.copyFileToFile(sampleFiles, this.tempDir + this.seperator);
+                FileHelper.copyFileToPath(sampleFiles, this.tempDir + this.seperator);
             } catch (IOException ex) {
                 Logger.getLogger(ShapeFileEPSGHelperTest.class.getName()).log(Level.SEVERE, null, ex);
                 fail(ex.getMessage());

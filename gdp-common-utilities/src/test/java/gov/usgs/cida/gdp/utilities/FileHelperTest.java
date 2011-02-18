@@ -66,7 +66,7 @@ public class FileHelperTest {
             } catch (URISyntaxException e) {
                 assertTrue("Exception encountered: " + e.getMessage(), false);
             }
-            FileHelper.copyFileToFile(sampleFiles, this.tempDir + this.seperator);
+            FileHelper.copyFileToPath(sampleFiles, this.tempDir + this.seperator);
         } else {
             assertTrue("Sample files could not be loaded for test", false);
         }
@@ -292,21 +292,21 @@ public class FileHelperTest {
     }
 
     @Test
-    public void testCopyFileToFileWithoutDeletingOriginal() {
+    public void testCopyFileToPathWithoutDeletingOriginal() {
         File fileToCopy = new File(testFilePath + ".shx");
 
         String fileToCopyTo = testFilePath + ".COPY";
 
         boolean result = false;
         try {
-            result = FileHelper.copyFileToFile(fileToCopy, fileToCopyTo);
+            result = FileHelper.copyFileToPath(fileToCopy, fileToCopyTo);
         } catch (IOException e) {
             fail(e.getMessage());
         }
         assertTrue(result);
 
         try {
-            result = FileHelper.copyFileToFile(new File("doesnt/exist"), "doesnt/exist");
+            result = FileHelper.copyFileToPath(new File("doesnt/exist"), "doesnt/exist");
         } catch (IOException e) {
             assertNotNull(e);
             result = false;
@@ -315,21 +315,21 @@ public class FileHelperTest {
     }
 
     @Test
-    public void testCopyFileToFileWithDeletingOriginal() {
+    public void testCopyFileToPathWithDeletingOriginal() {
         File fileToCopy = new File(testFilePath + ".shx");
 
         String fileToCopyTo = testFilePath + ".COPY";
 
         boolean result = false;
         try {
-            result = FileHelper.copyFileToFile(fileToCopy, fileToCopyTo, true);
+            result = FileHelper.copyFileToPath(fileToCopy, fileToCopyTo, true);
         } catch (IOException e) {
             fail(e.getMessage());
         }
         assertTrue(result);
 
         try {
-            result = FileHelper.copyFileToFile(new File("doesnt/exist"), "doesnt/exist");
+            result = FileHelper.copyFileToPath(new File("doesnt/exist"), "doesnt/exist");
         } catch (IOException e) {
             assertNotNull(e);
             result = false;

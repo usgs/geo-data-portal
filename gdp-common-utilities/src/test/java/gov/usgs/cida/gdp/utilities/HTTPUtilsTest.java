@@ -73,7 +73,7 @@ public class HTTPUtilsTest {
             } catch (URISyntaxException e) {
                 assertTrue("Exception encountered: " + e.getMessage(), false);
             }
-            FileHelper.copyFileToFile(sampleFiles, this.tempDir + this.seperator);
+            FileHelper.copyFileToPath(sampleFiles, this.tempDir + this.seperator);
         } else {
             assertTrue("Sample files could not be loaded for test", false);
         }

@@ -126,14 +126,14 @@ public class FileHelper {
     /**
      * Performs a filecopy without deleting the original file
      *
-     * @see FileHelper#copyFileToFile(java.io.File, java.lang.String, boolean)
+     * @see FileHelper#copyFileToPath(java.io.File, java.lang.String, boolean)
      * @param inFile
-     * @param outFileString
+     * @param outFilePath
      * @return
      * @throws IOException
      */
-    public static boolean copyFileToFile(final File inFile, final String outFileString) throws IOException {
-        return FileHelper.copyFileToFile(inFile, outFileString, false);
+    public static boolean copyFileToPath(final File inFile, final String outFilePath) throws IOException {
+        return FileHelper.copyFileToPath(inFile, outFilePath, false);
     }
 
     /**
@@ -146,7 +146,7 @@ public class FileHelper {
      * @return true if file properly copied, otherwise false
      * @throws IOException
      */
-    public static boolean copyFileToFile(final File inFile, final String outPath, boolean deleteOriginalFile) throws IOException {
+    public static boolean copyFileToPath(final File inFile, final String outPath, boolean deleteOriginalFile) throws IOException {
         if (inFile.isDirectory()) {
             FileUtils.copyDirectory(inFile, (new File(outPath + File.separator + inFile.getName())));
         } else {
