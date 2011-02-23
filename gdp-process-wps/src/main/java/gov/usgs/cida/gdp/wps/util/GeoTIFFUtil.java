@@ -23,6 +23,7 @@ public class GeoTIFFUtil {
         Set<String> allowedFormats = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
         // this list grows as we encounter new mime-types for geotiff.
         allowedFormats.add(MIMETYPE_DEFAULT);
+        allowedFormats.add("image/x-geotiff");
         allowedFormats.add("application/geotiff");
         allowedFormats.add("application/x-geotiff");
         allowedFormats.add("image/tiff");

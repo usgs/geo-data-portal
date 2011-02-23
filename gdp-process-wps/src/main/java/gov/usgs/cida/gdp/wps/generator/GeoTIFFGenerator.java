@@ -1,6 +1,5 @@
 package gov.usgs.cida.gdp.wps.generator;
 
-import gov.usgs.cida.gdp.wps.binding.CSVDataBinding;
 import gov.usgs.cida.gdp.wps.binding.GeoTIFFFileBinding;
 import gov.usgs.cida.gdp.wps.util.GeoTIFFUtil;
 import java.io.File;
