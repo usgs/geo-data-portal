@@ -20,5 +20,5 @@ public @interface LiteralDataInput {
     int maxOccurs() default 1;
     String defaultValue() default "";
     String[] allowedValues() default {};
-    Class <? extends ILiteralData> binding();
+    Class <? extends ILiteralData> binding() default ILiteralData.class;
 }

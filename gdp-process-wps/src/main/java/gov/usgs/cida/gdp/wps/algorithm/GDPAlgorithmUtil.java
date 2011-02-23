@@ -29,13 +29,13 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
  *
  * @author tkunicki
  */
-public abstract class BaseAlgorithm extends AbstractSelfDescribingAlgorithm {
+public abstract class GDPAlgorithmUtil extends AbstractSelfDescribingAlgorithm {
 
-    public BaseAlgorithm() {
+    public GDPAlgorithmUtil() {
             super();
     }
 	
-    protected FeatureCollection extractFeatureCollection(Map<String, List<IData>> input, String id) {
+    public static FeatureCollection extractFeatureCollection(Map<String, List<IData>> input, String id) {
             GTVectorDataBinding vectorDataBinding = null;
             List<IData> iDataList = input.get(id);
             if (iDataList != null && iDataList.size() == 1) {
@@ -47,28 +47,7 @@ public abstract class BaseAlgorithm extends AbstractSelfDescribingAlgorithm {
             return vectorDataBinding.getPayload();
     }
 
-    protected FeatureDataset extractFeatureDataset(Map<String, List<IData>> input, String id) {
-        URI featureDatasetURI = extractURI(input, id);
-        FeatureDataset featureDataset = null;
-        try {
-            String featureDatasetScheme = featureDatasetURI.getScheme();
-            if ("dods".equals(featureDatasetURI.getScheme())) {
-                featureDataset = FeatureDatasetFactoryManager.open(
-                        FeatureType.ANY,
-                        featureDatasetURI.toString(),
-                        null,
-                        new Formatter(System.err));
-
-            } else if ("http".equals(featureDatasetScheme)) {
-
-            }
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
-        return featureDataset;
-    }
-
-	protected List<String> extractStringList(Map<String, List<IData>> input, String id) {
+	public static List<String> extractStringList(Map<String, List<IData>> input, String id) {
 		List<String> stringList = new ArrayList<String>();
 		List<IData> iDataList = input.get(id);
 		if (iDataList != null) {
@@ -82,7 +61,7 @@ public abstract class BaseAlgorithm extends AbstractSelfDescribingAlgorithm {
 		return stringList;
 	}
 
-    protected List<Date> extractDateList(Map<String, List<IData>> input, String id) {
+    public static List<Date> extractDateList(Map<String, List<IData>> input, String id) {
 		List<Date> dateList = new ArrayList<Date>();
 		List<IData> iDataList = input.get(id);
 		if (iDataList != null) {
@@ -96,7 +75,7 @@ public abstract class BaseAlgorithm extends AbstractSelfDescribingAlgorithm {
 		return dateList;
 	}
 
-    protected List<URI> extractURIList(Map<String, List<IData>> input, String id) {
+    public static List<URI> extractURIList(Map<String, List<IData>> input, String id) {
 		List<URI> dateList = new ArrayList<URI>();
 		List<IData> iDataList = input.get(id);
 		if (iDataList != null) {
@@ -110,7 +89,7 @@ public abstract class BaseAlgorithm extends AbstractSelfDescribingAlgorithm {
 		return dateList;
 	}
 
-    protected String extractString(Map<String, List<IData>> input, String id) {
+    public static String extractString(Map<String, List<IData>> input, String id) {
 		List<String> stringList = extractStringList(input, id);
         if (stringList == null || stringList.size() < 1) {
             return null;
@@ -121,7 +100,7 @@ public abstract class BaseAlgorithm extends AbstractSelfDescribingAlgorithm {
 		throw new RuntimeException("too many arguments for input id " + id);
 	}
 
-    protected Date extractDate(Map<String, List<IData>> input, String id) {
+    public static Date extractDate(Map<String, List<IData>> input, String id) {
 		List<Date> dateList = extractDateList(input, id);
         if (dateList == null || dateList.size() < 1) {
             return null;
@@ -132,7 +111,7 @@ public abstract class BaseAlgorithm extends AbstractSelfDescribingAlgorithm {
 		throw new RuntimeException("too many arguments for input id " + id);
 	}
 
-    protected URI extractURI(Map<String, List<IData>> input, String id) {
+    public static URI extractURI(Map<String, List<IData>> input, String id) {
 		List<URI> uriList = extractURIList(input, id);
         if (uriList == null || uriList.size() < 1) {
             return null;
@@ -143,7 +122,7 @@ public abstract class BaseAlgorithm extends AbstractSelfDescribingAlgorithm {
 		throw new RuntimeException("too many arguments for input id " + id);
 	}
 
-    protected GridDatatype generateGridDataType(URI datasetURI, String datasetId, ReferencedEnvelope featureBounds) {
+    public static GridDatatype generateGridDataType(URI datasetURI, String datasetId, ReferencedEnvelope featureBounds) {
         GridDatatype gridDatatype = null;
         try {
             FeatureDataset featureDataset = null;
@@ -178,7 +157,7 @@ public abstract class BaseAlgorithm extends AbstractSelfDescribingAlgorithm {
         return gridDatatype;
     }
 
-    protected Range generateTimeRange(GridDatatype GridDatatype, Date timeStart, Date timeEnd) {
+    public static Range generateTimeRange(GridDatatype GridDatatype, Date timeStart, Date timeEnd) {
         CoordinateAxis1DTime timeAxis = GridDatatype.getCoordinateSystem().getTimeAxis1D();
         Range timeRange = null;
         if (timeAxis != null) {
@@ -197,16 +176,24 @@ public abstract class BaseAlgorithm extends AbstractSelfDescribingAlgorithm {
         return timeRange;
     }
 
-    protected <T extends Enum<T>> List<T> convertStringToEnumList(List<String> stringList, Class<T> enumType) {
+    public static <T extends Enum<T>> List<T> convertStringToEnumList(Class<T> enumType, List<String> stringList) {
         List<T> enumList = new ArrayList<T>();
-        
-        // since we don't have a handle to an enum instance, we grab one so
-        // that we can use the easy instance valueOf() call
-        T temp = enumType.getEnumConstants()[0];
         for (String string : stringList) {
-            enumList.add(temp.valueOf(enumType, string));
+            enumList.add(Enum.valueOf(enumType, string));
         }
         return enumList;
+    }
+
+    public static <T extends Enum<T>> String[] convertEnumToStringArray(Class<T> enumType) {
+        String[] strings = null;
+        T[] constants = enumType.getEnumConstants();
+        if (constants != null && constants.length > 0) {
+            strings = new String[constants.length];
+            for (int index = 0; index < constants.length; ++index) {
+                strings[index] = constants[index].name();
+            }
+        }
+        return strings;
     }
 
 }

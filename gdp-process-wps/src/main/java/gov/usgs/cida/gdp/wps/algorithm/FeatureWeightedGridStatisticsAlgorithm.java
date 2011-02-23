@@ -4,23 +4,23 @@ import gov.usgs.cida.gdp.coreprocessing.Delimiter;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCoverageWeightedGridStatistics;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCoverageWeightedGridStatistics.GroupBy;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCoverageWeightedGridStatisticsWriter.Statistic;
-import gov.usgs.cida.gdp.wps.algorithm.descriptor.AlgorithmDescriptor;
-import gov.usgs.cida.gdp.wps.algorithm.descriptor.ComplexDataInputDescriptor;
-import gov.usgs.cida.gdp.wps.algorithm.descriptor.ComplexDataOutputDescriptor;
-import gov.usgs.cida.gdp.wps.algorithm.descriptor.LiteralDataInputDescriptor;
-import gov.usgs.cida.gdp.wps.binding.CSVDataBinding;
+import gov.usgs.cida.gdp.wps.algorithm.annotation.Algorithm;
+import gov.usgs.cida.gdp.wps.algorithm.annotation.ComplexDataInput;
+import gov.usgs.cida.gdp.wps.algorithm.annotation.ComplexDataOutput;
+import gov.usgs.cida.gdp.wps.algorithm.annotation.LiteralDataInput;
+import gov.usgs.cida.gdp.wps.algorithm.annotation.Process;
+import gov.usgs.cida.gdp.wps.binding.CSVFileBinding;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
+import org.apache.commons.io.IOUtils;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.SchemaException;
-import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
@@ -33,119 +33,104 @@ import ucar.nc2.ft.FeatureDataset;
  *
  * @author tkunicki
  */
-public class FeatureWeightedGridStatisticsAlgorithm extends BaseAlgorithm {
+@Algorithm(title="Feature Weighted Grid Statistics", version="1.0.0")
+public class FeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotatedAlgorithm {
 
-    private final static String I_FEATURE_COLLECTION = "FEATURE_COLLECTION";
-    private final static String I_FEATURE_ATTRIBUTE_NAME = "FEATURE_ATTRIBUTE_NAME";
-    private final static String I_DATASET_URI = "DATASET_URI";
-    private final static String I_DATASET_ID = "DATASET_ID";
-    private final static String I_TIME_START = "TIME_START";
-    private final static String I_TIME_END = "TIME_END";
-    private final static String I_STATISTICS = "STATISTICS";
-    private final static String I_GROUP_BY = "GROUP_BY";
-    private final static String I_DELIMITER = "DELIMITER";
+    private FeatureCollection featureCollection;
+    private String featureAttributeName;
+    private URI datasetURI;
+    private String datasetId;
+    private Date timeStart;
+    private Date timeEnd;
+    private List<Statistic> statistics;
+    private GroupBy groupBy;
+    private Delimiter delimiter;
 
-    private final static String O_OUTPUT = "OUTPUT";
+    private File output;
 
-    private final static AlgorithmDescriptor ALGORITHM_DESCRIPTOR;
-
-    static {
-        ALGORITHM_DESCRIPTOR = AlgorithmDescriptor.builder(FeatureWeightedGridStatisticsAlgorithm.class).
-                version("1.0.0").
-                storeSupported(true).
-                statusSupported(true).
-                addInputDesciptor(
-                    ComplexDataInputDescriptor.builder(GTVectorDataBinding.class, I_FEATURE_COLLECTION)).
-                addInputDesciptor(
-                    LiteralDataInputDescriptor.stringBuilder(I_FEATURE_ATTRIBUTE_NAME)).
-                addInputDesciptor(
-                    LiteralDataInputDescriptor.anyURIBuilder(I_DATASET_URI)).
-                addInputDesciptor(
-                    LiteralDataInputDescriptor.stringBuilder(I_DATASET_ID)).
-                addInputDesciptor(
-                    LiteralDataInputDescriptor.dateTimeBuilder(I_TIME_START).minOccurs(0)).
-                addInputDesciptor(
-                    LiteralDataInputDescriptor.dateTimeBuilder(I_TIME_END).minOccurs(0)).
-                addInputDesciptor(
-                    LiteralDataInputDescriptor.stringBuilder(I_STATISTICS).minOccurs(0).maxOccurs(Statistic.class).allowedValues(Statistic.class)).
-                addInputDesciptor(
-                    LiteralDataInputDescriptor.stringBuilder(I_GROUP_BY).allowedValues(GroupBy.class)).
-                addInputDesciptor(
-                    LiteralDataInputDescriptor.stringBuilder(I_DELIMITER).allowedValues(Delimiter.class)).
-                addOutputDesciptor(ComplexDataOutputDescriptor.builder(CSVDataBinding.class, O_OUTPUT)).
-                build();
+    @ComplexDataInput(identifier="FEATURE_COLLECTION", binding=GTVectorDataBinding.class)
+    public void setFeatureCollection(FeatureCollection featureCollection) {
+        this.featureCollection = featureCollection;
     }
 
-    public FeatureWeightedGridStatisticsAlgorithm() {
-            super();
+    @LiteralDataInput(identifier="FEATURE_ATTRIBUTE_NAME")
+    public void setFeatureAttributeName(String featureAttributeName) {
+        this.featureAttributeName = featureAttributeName;
     }
 
-    @Override
-    protected AlgorithmDescriptor getAlgorithmDescriptor() {
-        return ALGORITHM_DESCRIPTOR;
+    @LiteralDataInput(identifier="DATASET_URI")
+    public void setDatasetURI(URI datasetURI) {
+        this.datasetURI = datasetURI;
     }
 
-    @Override
-    public Map<String, IData> run(Map<String, List<IData>> input) {
+    @LiteralDataInput(identifier="DATASET_ID")
+    public void setDatasetId(String datasetId) {
+        this.datasetId = datasetId;
+    }
 
-        Map<String, IData> output = new HashMap<String, IData>();
+    @LiteralDataInput(identifier="TIME_START", minOccurs=0)
+    public void setTimeStart(Date timeStart) {
+        this.timeStart = timeStart;
+    }
 
-        FeatureCollection featureCollection = null;
+    @LiteralDataInput(identifier="TIME_END", minOccurs=0)
+    public void setTimeEnd(Date timeEnd) {
+        this.timeEnd = timeEnd;
+    }
+
+    @LiteralDataInput(identifier="STATISTICS", minOccurs=0)
+    public void setStatistics(List<Statistic> statistics) {
+        this.statistics = statistics;
+    }
+
+    @LiteralDataInput(identifier="GROUP_BY", minOccurs=0)
+    public void setGroupBy(GroupBy groupBy) {
+        this.groupBy = groupBy;
+    }
+
+    @LiteralDataInput(identifier="DELIMITER", minOccurs=0)
+    public void setDelimiter(Delimiter delimiter) {
+        this.delimiter = delimiter;
+    }
+
+    @ComplexDataOutput(identifier="OUTPUT", binding=CSVFileBinding.class)
+    public File getOutput() {
+        return output;
+    }
+
+    @Process
+    public void process() {
+
         FeatureDataset featureDataset = null;
         BufferedWriter writer = null;
         try {
-            featureCollection = extractFeatureCollection(input, I_FEATURE_COLLECTION);
-            String featureAttributeName = extractString(input, I_FEATURE_ATTRIBUTE_NAME);
             if (featureCollection.getSchema().getDescriptor(featureAttributeName) == null) {
                 addError("Attribute " + featureAttributeName + " not found in feature collection");
-                return null;
+                return;
             }
 
-            URI datasetURI = extractURI(input, I_DATASET_URI);
-            String datasetID = extractString(input, I_DATASET_ID);
-
-            GridDatatype gridDatatype = generateGridDataType(
+            GridDatatype gridDatatype = GDPAlgorithmUtil.generateGridDataType(
                     datasetURI,
-                    datasetID,
+                    datasetId,
                     featureCollection.getBounds());
 
-            Range timeRange = generateTimeRange(
+            Range timeRange = GDPAlgorithmUtil.generateTimeRange(
                     gridDatatype,
-                    extractDate(input, I_TIME_START),
-                    extractDate(input, I_TIME_END));
+                    timeStart,
+                    timeEnd);
 
-            List<String> statisticStringList = extractStringList(input, I_STATISTICS);
-            List<Statistic> statisticList = statisticStringList.size() < 1 ?
-            Arrays.asList(Statistic.values()) :
-            convertStringToEnumList(statisticStringList, Statistic.class);
-
-            String delimiterString = extractString(input, I_DELIMITER);
-            Delimiter delimiter = delimiterString == null ?
-                Delimiter.COMMA :
-                Delimiter.valueOf(delimiterString);
-
-            String groupByString = extractString(input, I_GROUP_BY);
-            GroupBy groupBy = groupByString == null ?
-                GroupBy.STATISTIC :
-                GroupBy.valueOf(groupByString);
-
-            File file = File.createTempFile("gdp", ".csv");
-            writer = new BufferedWriter(new FileWriter(file));
+            output = File.createTempFile("gdp", ".csv");
+            writer = new BufferedWriter(new FileWriter(output));
 
             FeatureCoverageWeightedGridStatistics.execute(
                     featureCollection,
                     featureAttributeName,
                     gridDatatype,
                     timeRange,
-                    statisticList,
+                    statistics == null || statistics.isEmpty() ? Arrays.asList(Statistic.values()) : statistics,
                     writer,
-                    groupBy,
-                    delimiter);
-
-            writer.flush();
-            writer.close();
-
-            output.put(O_OUTPUT, new CSVDataBinding(file));
+                    groupBy == null ? GroupBy.STATISTIC : groupBy,
+                    delimiter == null ? Delimiter.COMMA : delimiter);
 
         } catch (InvalidRangeException e) {
             addError("Error subsetting gridded data :" + e.getMessage());
@@ -161,9 +146,8 @@ public class FeatureWeightedGridStatisticsAlgorithm extends BaseAlgorithm {
             addError("General Error: " + e.getMessage());
         } finally {
             if (featureDataset != null) try { featureDataset.close(); } catch (IOException e) { }
-            if (writer != null) try { writer.close(); } catch (IOException e) { }
+            IOUtils.closeQuietly(writer);
         }
-        return output;
     }
 	
 }

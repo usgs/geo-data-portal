@@ -2,22 +2,20 @@ package gov.usgs.cida.gdp.wps.algorithm;
 
 import gov.usgs.cida.gdp.coreprocessing.Delimiter;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCategoricalGridCoverage;
-import gov.usgs.cida.gdp.wps.algorithm.descriptor.AlgorithmDescriptor;
-import gov.usgs.cida.gdp.wps.algorithm.descriptor.ComplexDataInputDescriptor;
-import gov.usgs.cida.gdp.wps.algorithm.descriptor.ComplexDataOutputDescriptor;
-import gov.usgs.cida.gdp.wps.algorithm.descriptor.LiteralDataInputDescriptor;
-import gov.usgs.cida.gdp.wps.binding.CSVDataBinding;
+import gov.usgs.cida.gdp.wps.algorithm.annotation.Algorithm;
+import gov.usgs.cida.gdp.wps.algorithm.annotation.ComplexDataInput;
+import gov.usgs.cida.gdp.wps.algorithm.annotation.ComplexDataOutput;
+import gov.usgs.cida.gdp.wps.algorithm.annotation.LiteralDataInput;
+import gov.usgs.cida.gdp.wps.algorithm.annotation.Process;
+import gov.usgs.cida.gdp.wps.binding.CSVFileBinding;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.apache.commons.io.IOUtils;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.SchemaException;
-import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
@@ -29,85 +27,68 @@ import ucar.nc2.ft.FeatureDataset;
  *
  * @author tkunicki
  */
-public class FeatureCategoricalGridCoverageAlgorithm extends BaseAlgorithm {
+@Algorithm(title="Feature Categorical Grid Coverage", version="1.0.0")
+public class FeatureCategoricalGridCoverageAlgorithm extends AbstractAnnotatedAlgorithm {
 
-    private final static String I_FEATURE_COLLECTION = "FEATURE_COLLECTION";
-    private final static String I_FEATURE_ATTRIBUTE_NAME = "FEATURE_ATTRIBUTE_NAME";
-    private final static String I_DATASET_URI = "DATASET_URI";
-    private final static String I_DATASET_ID = "DATASET_ID";
-    private final static String I_DELIMITER = "DELIMITER";
-    private final static String O_OUTPUT = "OUTPUT";
+    private FeatureCollection featureCollection;
+    private String featureAttributeName;
+    private URI datasetURI;
+    private String datasetId;
+    private Delimiter delimiter;
 
-    private final static AlgorithmDescriptor ALGORITHM_DESCRIPTOR;
+    private File output;
 
-    static {
-        ALGORITHM_DESCRIPTOR = AlgorithmDescriptor.builder(FeatureCategoricalGridCoverageAlgorithm.class).
-                version("1.0.0").
-                storeSupported(true).
-                statusSupported(true).
-                addInputDesciptor(
-                    ComplexDataInputDescriptor.builder(GTVectorDataBinding.class, I_FEATURE_COLLECTION)).
-                addInputDesciptor(
-                    LiteralDataInputDescriptor.stringBuilder(I_FEATURE_ATTRIBUTE_NAME)).
-                addInputDesciptor(
-                    LiteralDataInputDescriptor.anyURIBuilder(I_DATASET_URI)).
-                addInputDesciptor(
-                    LiteralDataInputDescriptor.stringBuilder(I_DATASET_ID)).
-                addInputDesciptor(
-                    LiteralDataInputDescriptor.stringBuilder(I_DELIMITER).allowedValues(Delimiter.class)).
-                addOutputDesciptor(ComplexDataOutputDescriptor.builder(CSVDataBinding.class, O_OUTPUT)).
-                build();
+    @ComplexDataInput(identifier="FEATURE_COLLECTION", binding=GTVectorDataBinding.class)
+    public void setFeatureCollection(FeatureCollection featureCollection) {
+        this.featureCollection = featureCollection;
     }
 
-    @Override
-    protected AlgorithmDescriptor getAlgorithmDescriptor() {
-        return ALGORITHM_DESCRIPTOR;
+    @LiteralDataInput(identifier="FFEATURE_ATTRIBUTE_NAME")
+    public void setFeatureAttributeName(String featureAttributeName) {
+        this.featureAttributeName = featureAttributeName;
     }
 
-    public FeatureCategoricalGridCoverageAlgorithm() {
-            super();
+    @LiteralDataInput(identifier="DATASET_URI")
+    public void setDatasetURI(URI datasetURI) {
+        this.datasetURI = datasetURI;
     }
 
-    @Override
-    public Map<String, IData> run(Map<String, List<IData>> input) {
+    @LiteralDataInput(identifier="DATASET_ID")
+    public void setDatasetId(String datasetId) {
+        this.datasetId = datasetId;
+    }
 
-        Map<String, IData> output = new HashMap<String, IData>();
+    @LiteralDataInput(identifier="DELIMITER", defaultValue="COMMA")
+    public void setDelimiter(Delimiter delimiter) {
+        this.delimiter = delimiter;
+    }
 
-        FeatureCollection featureCollection = null;
+    @ComplexDataOutput(identifier="OUTPUT", binding=CSVFileBinding.class)
+    public File getOutput() {
+        return output;
+    }
+
+    @Process
+    public void process() {
+
         FeatureDataset featureDataset = null;
         BufferedWriter writer = null;
+
         try {
-            featureCollection = extractFeatureCollection(input, I_FEATURE_COLLECTION);
-            String featureAttributeName = extractString(input, I_FEATURE_ATTRIBUTE_NAME);
-
-            URI datasetURI = extractURI(input, I_DATASET_URI);
-            String datasetID = extractString(input, I_DATASET_ID);
-
-            GridDatatype gridDatatype = generateGridDataType(
+            GridDatatype gridDatatype = GDPAlgorithmUtil.generateGridDataType(
                     datasetURI,
-                    datasetID,
+                    datasetId,
                     featureCollection.getBounds());
 
-
-            String delimiterString = extractString(input, I_DELIMITER);
-                Delimiter delimiter = delimiterString == null ?
-                    Delimiter.getDefault() :
-                    Delimiter.valueOf(delimiterString);
-
-            File file = File.createTempFile("gdp", "csv");
-            writer = new BufferedWriter(new FileWriter(file));
+            output = File.createTempFile("gdp", "csv");
+            writer = new BufferedWriter(new FileWriter(output));
 
             FeatureCategoricalGridCoverage.execute(
                     featureCollection,
                     featureAttributeName,
                     gridDatatype,
                     writer,
-                    delimiter);
-
-            writer.flush();
-            writer.close();
-
-            output.put(O_OUTPUT, new CSVDataBinding(file));
+                    delimiter == null ? Delimiter.getDefault() : delimiter);
 
         } catch (InvalidRangeException e) {
             throw new RuntimeException(e);
@@ -121,9 +102,8 @@ public class FeatureCategoricalGridCoverageAlgorithm extends BaseAlgorithm {
             throw new RuntimeException(e);
         } finally {
             if (featureDataset != null) try { featureDataset.close(); } catch (IOException e) { }
-            if (writer != null) try { writer.close(); } catch (IOException e) { }
+            IOUtils.closeQuietly(writer);
         }
-        return output;
     }
 
 }

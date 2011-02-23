@@ -32,12 +32,18 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.n52.wps.io.data.IData;
+import org.n52.wps.io.data.ILiteralData;
+import org.n52.wps.util.BasicXMLTypeFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author tkunicki
  */
 public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingAlgorithm {
+
+    public final static Logger LOGGER = LoggerFactory.getLogger(AbstractAnnotatedAlgorithm.class);
 
     public static class Introspector {
 
@@ -47,18 +53,18 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
 
         private Method processMethod;
 
-        private Map<String, Field> inputFieldMap;
+        private Map<String, AnnotatedInputBinding<Field>> inputFieldMap;
         private Map<String, Field> outputFieldMap;
+        private Map<String, AnnotatedInputBinding<Method>> inputMethodMap;
         private Map<String, Method> outputMethodMap;
-        private Map<String, Method> inputMethodMap;
 
         public Introspector(Class<?> algorithmClass) {
 
             this.algorithmClass = algorithmClass;
 
-            inputFieldMap = new LinkedHashMap<String, Field>();
+            inputFieldMap = new LinkedHashMap<String, AnnotatedInputBinding<Field>>();
             outputFieldMap = new LinkedHashMap<String, Field>();
-            inputMethodMap = new LinkedHashMap<String, Method>();
+            inputMethodMap = new LinkedHashMap<String, AnnotatedInputBinding<Method>>();
             outputMethodMap = new LinkedHashMap<String, Method>();
 
             parseClass();
@@ -102,7 +108,7 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
                         algorithmClass.getDeclaredMethods());
 
                 Iterator<Method> methodIterator = Arrays.asList(algorithmClass.getDeclaredMethods()).iterator();
-                ProcessValidator processValidator = new ProcessValidator();
+                ProcessMethodValidator processValidator = new ProcessMethodValidator();
                 while (methodIterator.hasNext() && processMethod == null) {
                     Method method = methodIterator.next();
                     if (method.getAnnotation(Process.class) != null) {
@@ -123,7 +129,7 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
 
         protected <T extends AccessibleObject> void parseElements(
                 AlgorithmDescriptor.Builder<?> algorithmBuilder,
-                Map<String, T> inputElementMap,
+                Map<String, AnnotatedInputBinding<T>> inputElementMap,
                 Map<String, T> outputElementMap,
                 InputValidator<T> inputElementValidator,
                 OutputValidator<T> outputElementValidator,
@@ -163,25 +169,79 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
                 }
                 LiteralDataInput ldi = element.getAnnotation(LiteralDataInput.class);
                 if (ldi != null) {
-                    LiteralDataInputDescriptor ldid =
-                            LiteralDataInputDescriptor.builder(ldi.binding(), ldi.identifier()).
-                            title(ldi.title()).
-                            abstrakt(ldi.abstrakt()).
-                            minOccurs(ldi.minOccurs()).
-                            maxOccurs(ldi.maxOccurs()).
-                            defaultValue(ldi.defaultValue()).
-                            allowedValues(ldi.allowedValues()).
-                            build();
+                    AnnotatedInputBinding aib = inputElementValidator.getInputBinding(element);
+                    // auto generate binding if it's not explicitly declared
+                    Type payloadType = aib.getPayloadType();
+                    Class<? extends ILiteralData> binding = ldi.binding();
+                    if (binding == null || ILiteralData.class.equals(binding)) {
+                        if (payloadType instanceof Class<?>) {
+                            binding = BasicXMLTypeFactory.getBindingForType((Class<?>)payloadType);
+                            if (binding == null) {
+                                LOGGER.warn("Unable to locate binding class for {}; binding not found.", payloadType);
+                            }
+                        } else {
+                            if (aib.isMemberTypeList()) {
+                                LOGGER.warn("Unable to determine binding class for {}; List must be parameterized with a type matching a known binding payload to use auto-binding.", payloadType);
+                            } else {
+                                LOGGER.warn("Unable to determine binding class for {}; type must fully resolved to use auto-binding", payloadType);
+                            }
+                        }
+                    }
 
-                    if (inputElementValidator.validate(element, ldid)) {
-                        inputElementMap.put(ldi.identifier(), element);
-                        algorithmBuilder.addInputDesciptor(ldid);
-                    } else {
+                    // auto generate allowedValues if not explicitly declared for enum
+                    Type inputType = aib.getInputType();
+                    String[] allowedValues = ldi.allowedValues();
+                    if (inputType instanceof Class<?>) {
+                        Class<?> inputClass = (Class<?>)inputType;
+                        if (inputClass.isEnum()) {
+                            Class<? extends Enum> inputEnumClass = (Class<? extends Enum>)inputClass;
+                            // validate contents of allowed values mapes to enum
+                            if (allowedValues.length > 0) {
+                                List<String> invalidValues = new ArrayList<String>();
+                                for (String value : allowedValues) {
+                                    try {
+                                        Enum.valueOf(inputEnumClass, value);
+                                    } catch (IllegalArgumentException e) {
+                                        invalidValues.add(value);
+                                        LOGGER.warn("Invalid allowed value \"{}\" specified for for enumerated input type {}", value, inputType);
+                                    }
+                                }
+                                if (invalidValues.size() > 0) {
+                                    List<String> updatedValues = new ArrayList<String>(Arrays.asList(allowedValues));
+                                    updatedValues.removeAll(invalidValues);
+                                    allowedValues = updatedValues.toArray(new String[0]);
+                                }
+                            }
+                            // if list is empty, populated with values from enum
+                            if (allowedValues.length == 0) {
+                                allowedValues = GDPAlgorithmUtil.convertEnumToStringArray(inputEnumClass);
+                            }
+                        }
+                    }
+
+                    if (binding != null) {
+                        LiteralDataInputDescriptor ldid =
+                                LiteralDataInputDescriptor.builder(binding, ldi.identifier()).
+                                title(ldi.title()).
+                                abstrakt(ldi.abstrakt()).
+                                minOccurs(ldi.minOccurs()).
+                                maxOccurs(ldi.maxOccurs()).
+                                defaultValue(ldi.defaultValue()).
+                                allowedValues(allowedValues).
+                                build();
+                        if (inputElementValidator.validate(aib, ldid)) {
+                            inputElementMap.put(ldi.identifier(), aib);
+                            algorithmBuilder.addInputDesciptor(ldid);
+                        } else {
                         // TODO: error? warning?
+                        }
+                    } else {
+
                     }
                 }
                 ComplexDataInput cdi = element.getAnnotation(ComplexDataInput.class);
                 if (cdi != null) {
+                    AnnotatedInputBinding aib = inputElementValidator.getInputBinding(element);
                     ComplexDataInputDescriptor cdid =
                             ComplexDataInputDescriptor.builder(cdi.binding(), cdi.identifier()).
                             title(cdi.title()).
@@ -191,8 +251,8 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
                             maximumMegaBytes(cdi.maximumMegaBytes()).
                             build();
 
-                    if (inputElementValidator.validate(element, cdid)) {
-                        inputElementMap.put(cdi.identifier(), element);
+                    if (inputElementValidator.validate(aib, cdid)) {
+                        inputElementMap.put(cdi.identifier(), aib);
                         algorithmBuilder.addInputDesciptor(cdid);
                     } else {
                         // TODO: error? warning?
@@ -209,7 +269,7 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
             return processMethod;
         }
 
-        public Map<String, Field> getInputFieldMap() {
+        public Map<String, AnnotatedInputBinding<Field>> getInputFieldMap() {
             return inputFieldMap;
         }
 
@@ -217,7 +277,7 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
             return outputFieldMap;
         }
 
-        public Map<String, Method> getInputMethodMap() {
+        public Map<String, AnnotatedInputBinding<Method>> getInputMethodMap() {
             return inputMethodMap;
         }
 
@@ -231,7 +291,7 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
             }
         }
 
-        private static class ProcessValidator extends Validator {
+        private static class ProcessMethodValidator extends Validator {
             public boolean validate(Method method) {
                 return checkModifier(method) &&
                         (method.getReturnType().equals(void.class)) &&
@@ -241,62 +301,48 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
 
         private static abstract class InputValidator<T extends AccessibleObject> extends Validator {
 
-            public abstract boolean validate(T member, InputDescriptor<?> inputDescriptor);
+            public abstract boolean validate(AnnotatedInputBinding<T> annotatedBinding, InputDescriptor<?> inputDescriptor);
 
-            protected static boolean checkType(Type candidateType, Class<? extends IData> bindingClass, boolean listRequired) {
+            protected boolean checkInputType(AnnotatedInputBinding<T> annotatedBinding, Class<? extends IData> bindingClass) {
+                Type inputPayloadType = annotatedBinding.getPayloadType();
                 try {
-                    Class<?> payloadClass = bindingClass.getMethod("getPayload", (Class<?>[])null).getReturnType();
-                    if (candidateType instanceof Class<?>) {
-                        Class<?> candidateClass = (Class<?>)candidateType;
-                        if (List.class.isAssignableFrom(candidateClass)) {
-                            return true;
-                        } else if (payloadClass.isAssignableFrom(candidateClass) && !listRequired) {
-                            return true;
-                        }
-                    } else if (candidateType instanceof ParameterizedType) {
-                        ParameterizedType parameterizedType = (ParameterizedType)candidateType;
-                        Class<?> rawClass = (Class<?>)parameterizedType.getRawType();
-                        if (List.class.isAssignableFrom(rawClass)) {
-                            Type typeArgument = parameterizedType.getActualTypeArguments()[0]; // assumes 1 args for List
-                            if (typeArgument instanceof Class<?>) {
-                                // i.e. List<String>
-                                return payloadClass.isAssignableFrom((Class<?>)typeArgument);
-                            } else if (typeArgument instanceof ParameterizedType) {
-                                // i.e. List<FeatureCollection<SimpleFeatureType,SimpleFeature>>
-                                return payloadClass.isAssignableFrom(((Class<?>)((ParameterizedType)typeArgument).getRawType()));
-                            } else if (typeArgument instanceof WildcardType) {
-                                // i.e. List<? extends String> or List<? super String>
-                                WildcardType typeArgumentWildcardType = (WildcardType)typeArgument;
-                                Type[] lowerBounds = typeArgumentWildcardType.getLowerBounds();
-                                Type[] upperBounds = typeArgumentWildcardType.getUpperBounds();
-                                Class<?> lowerBoundClass = null;
-                                Class<?> upperBoundClass = null;
-                                if (lowerBounds != null && lowerBounds.length > 0) {
-                                    if (lowerBounds[0] instanceof Class<?>) {
-                                        lowerBoundClass = (Class<?>)lowerBounds[0];
-                                    } else if (lowerBounds[0] instanceof ParameterizedType) {
-                                        lowerBoundClass = (Class<?>)((ParameterizedType)lowerBounds[0]).getRawType();
-                                    }
-                                }
-                                if (upperBounds != null && upperBounds.length > 0) {
-                                    if (upperBounds[0] instanceof Class<?>) {
-                                        upperBoundClass = (Class<?>)upperBounds[0];
-                                    } else if (upperBounds[0] instanceof ParameterizedType) {
-                                        upperBoundClass = (Class<?>)((ParameterizedType)upperBounds[0]).getRawType();
-                                    }
-                                }
-                                return ( upperBoundClass == null || upperBoundClass.isAssignableFrom(payloadClass)) &&
-                                       ( lowerBounds == null || payloadClass.isAssignableFrom(lowerBoundClass));
+                    Class<?> bindingPayloadClass = bindingClass.getMethod("getPayload", (Class<?>[])null).getReturnType();
+                    if (inputPayloadType instanceof Class<?>) {
+                        return bindingPayloadClass.isAssignableFrom((Class<?>)inputPayloadType);
+                    } else if (inputPayloadType instanceof ParameterizedType) {
+                        // i.e. List<FeatureCollection<SimpleFeatureType,SimpleFeature>>
+                        return bindingPayloadClass.isAssignableFrom(((Class<?>)((ParameterizedType)inputPayloadType).getRawType()));
+                    } else if (inputPayloadType instanceof WildcardType) {
+                        // i.e. List<? extends String> or List<? super String>
+                        WildcardType inputTypeWildcardType = (WildcardType)inputPayloadType;
+                        Type[] lowerBounds = inputTypeWildcardType.getLowerBounds();
+                        Type[] upperBounds = inputTypeWildcardType.getUpperBounds();
+                        Class<?> lowerBoundClass = null;
+                        Class<?> upperBoundClass = null;
+                        if (lowerBounds != null && lowerBounds.length > 0) {
+                            if (lowerBounds[0] instanceof Class<?>) {
+                                lowerBoundClass = (Class<?>)lowerBounds[0];
+                            } else if (lowerBounds[0] instanceof ParameterizedType) {
+                                lowerBoundClass = (Class<?>)((ParameterizedType)lowerBounds[0]).getRawType();
                             }
-                        } else if (payloadClass.isAssignableFrom(rawClass) && !listRequired) {
-                            return true;
                         }
+                        if (upperBounds != null && upperBounds.length > 0) {
+                            if (upperBounds[0] instanceof Class<?>) {
+                                upperBoundClass = (Class<?>)upperBounds[0];
+                            } else if (upperBounds[0] instanceof ParameterizedType) {
+                                upperBoundClass = (Class<?>)((ParameterizedType)upperBounds[0]).getRawType();
+                            }
+                        }
+                        return ( upperBoundClass == null || upperBoundClass.isAssignableFrom(bindingPayloadClass)) &&
+                               ( lowerBounds == null || bindingPayloadClass.isAssignableFrom(lowerBoundClass));
                     }
                 } catch (NoSuchMethodException e) {
                     return false;
                 }
                 return false;
             }
+
+            public abstract AnnotatedInputBinding<T> getInputBinding(T Member);
         }
 
         private static abstract class OutputValidator<T extends AccessibleObject> extends Validator {
@@ -316,11 +362,15 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
 
         private static class InputFieldValidator extends InputValidator<Field> {
             @Override
-            public boolean validate(Field field, InputDescriptor<?> descriptor) {
-                return checkModifier(field) &&
-                        checkType(field.getGenericType(),
-                            descriptor.getBinding(),
-                            descriptor.getMaxOccurs().intValue() > 1);
+            public boolean validate(AnnotatedInputBinding<Field> binding, InputDescriptor<?> descriptor) {
+                return checkModifier(binding.getMember()) &&
+                       (descriptor.getMaxOccurs().intValue() < 2 || binding.isMemberTypeList()) &&
+                       checkInputType(binding, descriptor.getBinding());
+            }
+
+            @Override
+            public AnnotatedInputBinding<Field> getInputBinding(Field member) {
+                return new AnnotatedFieldInputBinding(member);
             }
         }
 
@@ -334,13 +384,17 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
         
         private class InputMethodValidator extends InputValidator<Method> {
             @Override
-            public boolean validate(Method method, InputDescriptor<?> descriptor) {
-                Type[] genericParameterTypes = method.getGenericParameterTypes();
+            public boolean validate(AnnotatedInputBinding<Method> binding, InputDescriptor<?> descriptor) {
+                Type[] genericParameterTypes = binding.getMember().getGenericParameterTypes();
                 return genericParameterTypes.length == 1 &&
-                        checkModifier(method) &&
-                        checkType(genericParameterTypes[0],
-                            descriptor.getBinding(),
-                            descriptor.getMaxOccurs().intValue() > 1);
+                       checkModifier(binding.getMember()) &&
+                       (descriptor.getMaxOccurs().intValue() < 2 || binding.isMemberTypeList()) &&
+                       checkInputType(binding, descriptor.getBinding());
+            }
+
+            @Override
+            public AnnotatedInputBinding<Method> getInputBinding(Method member) {
+                return new AnnotatedMethodInputBinding(member);
             }
         }
 
@@ -350,6 +404,92 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
                 return method.getParameterTypes().length == 0 &&
                         checkModifier(method) &&
                         checkType(method.getReturnType(), descriptor.getBinding());
+            }
+        }
+
+        public static abstract class AnnotatedInputBinding<T extends AccessibleObject> {
+
+            private T member;
+
+            public AnnotatedInputBinding(T member) {
+                this.member = member;
+            }
+
+            public T getMember() {
+                return member;
+            }
+            
+            public abstract Type getMemberType();
+
+            public Type getInputType() {
+                Type memberType = getMemberType();
+                Type inputType = memberType;
+                if (memberType instanceof Class<?>) {
+                    Class<?> memberClass = (Class<?>)memberType;
+                    if (List.class.isAssignableFrom(memberClass)) {
+                        // We treat List as List<? extends Object>
+                        inputType =  new WildcardType() {
+                            @Override public Type[] getUpperBounds() { return new Type[] { Object.class }; }
+                            @Override public Type[] getLowerBounds() { return new Type[0]; }
+                        };
+                    }
+                } else {
+                    if (memberType instanceof ParameterizedType) {
+                        ParameterizedType parameterizedMemberType =
+                                (ParameterizedType) memberType;
+                        Class<?> rawClass = (Class<?>) parameterizedMemberType.getRawType();
+                        if (List.class.isAssignableFrom(rawClass)) {
+                            inputType = parameterizedMemberType.getActualTypeArguments()[0];
+                        }
+                    } else {
+                        // can't do much with others
+                    }
+                }
+                return inputType;
+            }
+
+            public Type getPayloadType() {
+                Type inputType = getInputType();
+                return isInputTypeEnum() ? String.class : inputType;
+            }
+
+            public boolean isMemberTypeList() {
+                Type memberType = getMemberType();
+                if (memberType instanceof Class<?>) {
+                    return List.class.isAssignableFrom((Class<?>)memberType);
+                } else if (memberType instanceof ParameterizedType) {
+                    Class<?> rawClass = (Class<?>) ((ParameterizedType)memberType).getRawType();
+                    return List.class.isAssignableFrom(rawClass);
+                } else {
+                    // can't do much with others
+                }
+                return false;
+            }
+
+            public boolean isInputTypeEnum() {
+                Type inputType = getInputType();
+                return (inputType instanceof Class<?>) && ((Class<?>)inputType).isEnum();
+            }
+        }
+
+        public static class AnnotatedFieldInputBinding extends AnnotatedInputBinding<Field> {
+            public AnnotatedFieldInputBinding(Field field) {
+                super(field);
+            }
+            @Override public Type getMemberType() {
+                return getMember().getGenericType();
+            }
+        }
+
+        public static class AnnotatedMethodInputBinding extends AnnotatedInputBinding<Method> {
+            public AnnotatedMethodInputBinding(Method method) {
+                super(method);
+            }
+            @Override public Type getMemberType() {
+                Type[] genericParameterTypes = getMember().getGenericParameterTypes();
+                return (genericParameterTypes.length == 0) ?
+                    Void.class :
+                    genericParameterTypes[0];
             }
         }
     }
@@ -374,14 +514,13 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
 
         Introspector introspector = getInstrospector(target.getClass());
 
-        for (Map.Entry<String, Field> iEntry : introspector.getInputFieldMap().entrySet()) {
+        for (Map.Entry<String, Introspector.AnnotatedInputBinding<Field>> iEntry : introspector.getInputFieldMap().entrySet()) {
             String iIdentifier = iEntry.getKey();
-            Field iField = iEntry.getValue();
+            Introspector.AnnotatedInputBinding<Field> iAnnotatedBinding = iEntry.getValue();
             InputDescriptor iDescriptor = getAlgorithmDescriptor().getInputDescriptor(iIdentifier);
             List<IData> boundList = inputMap.get(iIdentifier);
-            Class unboundType = iField.getType();
             try {
-                iField.set(target, unbindInputValue(iDescriptor, boundList, unboundType));
+                iAnnotatedBinding.getMember().set(target, unbindInputValue(iDescriptor, boundList, iAnnotatedBinding));
             } catch (IllegalArgumentException ex) {
                 throw new RuntimeException("Internal error processing inputs", ex);
             } catch (IllegalAccessException ex) {
@@ -389,14 +528,13 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
             }
 
         }
-        for (Map.Entry<String, Method> iEntry : introspector.getInputMethodMap().entrySet()) {
+        for (Map.Entry<String, Introspector.AnnotatedInputBinding<Method>> iEntry : introspector.getInputMethodMap().entrySet()) {
             String iIdentifier = iEntry.getKey();
-            Method iMethod = iEntry.getValue();
-                InputDescriptor iDescriptor = getAlgorithmDescriptor().getInputDescriptor(iIdentifier);
-                List<IData> boundList = inputMap.get(iIdentifier);
-                Class unboundType = iMethod.getParameterTypes()[0];
+            Introspector.AnnotatedInputBinding<Method> iAnnotatedBinding = iEntry.getValue();
+            InputDescriptor iDescriptor = getAlgorithmDescriptor().getInputDescriptor(iIdentifier);
+            List<IData> boundList = inputMap.get(iIdentifier);
             try {
-                iMethod.invoke(target, unbindInputValue(iDescriptor, boundList, unboundType));
+                iAnnotatedBinding.getMember().invoke(target, unbindInputValue(iDescriptor, boundList, iAnnotatedBinding));
             } catch (IllegalAccessException ex) {
                 throw new RuntimeException("Internal error processing inputs", ex);
             } catch (IllegalArgumentException ex) {
@@ -408,7 +546,7 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
         }
     }
 
-    private Object unbindInputValue(InputDescriptor descriptor, List<IData> boundValueList, Class<?> unboundType) {
+    private Object unbindInputValue(InputDescriptor descriptor, List<IData> boundValueList, Introspector.AnnotatedInputBinding<?> annotatedBinding) {
         Object value = null;
         int minOccurs = descriptor.getMinOccurs().intValue();
         int maxOccurs = descriptor.getMaxOccurs().intValue();
@@ -421,14 +559,21 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
         if (boundValueList.size() > maxOccurs) {
             throw new RuntimeException("Found " + boundValueList.size() + "values for INPUT " + descriptor.getIdentifier() + ", maximum allowed is " + minOccurs);
         }
-        if (List.class.isAssignableFrom(unboundType)) {
+        if (annotatedBinding.isMemberTypeList()) {
             List valueList = new ArrayList(boundValueList.size());
             for (IData bound : boundValueList) {
-                valueList.add(bound.getPayload());
+                value = bound.getPayload();
+                if (annotatedBinding.isInputTypeEnum()) {
+                    value = Enum.valueOf((Class<? extends Enum>)annotatedBinding.getInputType(), (String)value);
+                }
+                valueList.add(value);
             }
             value = valueList;
         } else if (boundValueList.size() == 1) {
             value = boundValueList.get(0).getPayload();
+            if (annotatedBinding.isInputTypeEnum()) {
+                value = Enum.valueOf((Class<? extends Enum>)annotatedBinding.getInputType(), (String)value);
+            }
         }
         return value;
     }
