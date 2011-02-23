@@ -37,11 +37,13 @@ package org.n52.wps.util;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
+import java.util.Date;
 
 import org.apache.log4j.Logger;
 import org.apache.ws.security.util.XmlSchemaDateFormat;
 import org.apache.xmlbeans.impl.util.Base64;
 import org.n52.wps.io.data.IData;
+import org.n52.wps.io.data.ILiteralData;
 import org.n52.wps.io.data.binding.literal.LiteralAnyURIBinding;
 import org.n52.wps.io.data.binding.literal.LiteralBase64BinaryBinding;
 import org.n52.wps.io.data.binding.literal.LiteralBooleanBinding;
@@ -58,8 +60,8 @@ public class BasicXMLTypeFactory {
 
 	private static Logger LOGGER = Logger.getLogger(BasicXMLTypeFactory.class);
 	// List of supported basic XML datatypes.
-	public static String DOUBLE_URI = "xs:double";
 	public static String FLOAT_URI = "xs:float";
+	public static String DOUBLE_URI = "xs:double";
 	public static String INTEGER_URI = "xs:integer";
 	public static String LONG_URI = "xs:long";
 	public static String INT_URI = "xs:int";
@@ -122,6 +124,43 @@ public class BasicXMLTypeFactory {
 
    public static String getStringRepresentation(String xmlDataTypeURI, IData obj) {
 	   return obj.getPayload().toString();
+   }
+
+    public static Class<? extends ILiteralData> getBindingForType(Class<?> type) {
+        if (type.equals(float.class)) {
+            return LiteralFloatBinding.class;
+        }
+        if (type.equals(double.class)) {
+            return LiteralDoubleBinding.class;
+        }
+        if (type.equals(long.class)) {
+            return LiteralLongBinding.class;
+        }
+        if (type.equals(int.class)) {
+            return LiteralIntBinding.class;
+        }
+        if (type.equals(short.class)) {
+            return LiteralShortBinding.class;
+        }
+        if (type.equals(byte.class)) {
+            return LiteralByteBinding.class;
+        }
+        if (type.equals(boolean.class)) {
+            return LiteralBooleanBinding.class;
+        }
+        if (type.equals(String.class)) {
+            return LiteralStringBinding.class;
+        }
+        if (type.equals(Date.class)) {
+            return LiteralDateTimeBinding.class;
+        }
+        if (type.equals(byte[].class)) {
+            return LiteralBase64BinaryBinding.class;
+        }
+        if (type.equals(URI.class)) {
+            return LiteralAnyURIBinding.class;
+        }
+        return null;
     }
 
 }
