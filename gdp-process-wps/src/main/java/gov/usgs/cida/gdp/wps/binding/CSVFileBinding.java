@@ -3,11 +3,11 @@ package gov.usgs.cida.gdp.wps.binding;
 import java.io.File;
 import org.n52.wps.io.data.IComplexData;
 
-public class CSVDataBinding implements IComplexData {
+public class CSVFileBinding implements IComplexData {
 
     protected final File file;
 
-    public CSVDataBinding(File file) {
+    public CSVFileBinding(File file) {
         this.file = file;
     }
 

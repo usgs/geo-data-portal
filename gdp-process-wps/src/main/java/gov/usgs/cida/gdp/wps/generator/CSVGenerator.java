@@ -1,6 +1,6 @@
 package gov.usgs.cida.gdp.wps.generator;
 
-import gov.usgs.cida.gdp.wps.binding.CSVDataBinding;
+import gov.usgs.cida.gdp.wps.binding.CSVFileBinding;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -23,7 +23,7 @@ public class CSVGenerator implements IGenerator, IStreamableGenerator {
 
     @Override
     public void writeToStream(IData data, OutputStream os) {
-        if (data instanceof CSVDataBinding) {
+        if (data instanceof CSVFileBinding) {
             Object payload = data.getPayload();
             if (payload instanceof File) {
                 InputStream is = null;
@@ -47,7 +47,7 @@ public class CSVGenerator implements IGenerator, IStreamableGenerator {
 
     @Override
     public Class[] getSupportedInternalInputDataType() {
-        return new Class[] { CSVDataBinding.class };
+        return new Class[] { CSVFileBinding.class };
     }
 
     @Override
