@@ -117,64 +117,55 @@ public abstract class GridUtility {
 		int upperX = ranges[0].last();
 		int lowerY = ranges[1].first();
 		int upperY = ranges[1].last();
-		// Buffer X dimension to width of 3, otherwise grid cell width calc fails.
+
+		// Buffer X dimension, need minimum source width of 3, otherwise grid cell width calc fails.
         // NOTE: NetCDF ranges are upper edge inclusive
         int deltaX = upperX - lowerX;
-        if (deltaX < 2) {
-            CoordinateAxis xAxis = gcs.getXHorizAxis();
-            int maxX = xAxis.getShape(xAxis.getRank() - 1) - 1; // inclusive
-            if (maxX < 2) {
-                throw new InvalidRangeException("Source grid too small");
-            }
-            if (deltaX == 0) {
-                if (lowerX > 0 && upperX < maxX) {
-                    --lowerX;
-                    ++upperX;
-                } else {
-                    // we're on an border cell
-                    if (lowerX == 0) {
-                        upperX = 2;
-                    } else {
-                        lowerX = maxX - 2;
-                    }
-                }
-            } else if (deltaX == 1) {
+        CoordinateAxis xAxis = gcs.getXHorizAxis();
+        int maxX = xAxis.getShape(xAxis.getRank() - 1) - 1; // inclusive
+        if (maxX < 2) {
+            throw new InvalidRangeException("Source grid too small");
+        }
+        if (deltaX == 0) {
+            if (lowerX > 0 && upperX < maxX) {
+                --lowerX;
+                ++upperX;
+            } else {
+                // we're on an border cell
                 if (lowerX == 0) {
-                    ++upperX;
+                    upperX = 2;
                 } else {
-                    --lowerX;
+                    lowerX = maxX - 2;
                 }
             }
+        } else {
+            if (lowerX > 0) { --lowerX; }
+            if (upperX < maxX) { ++upperX; }
         }
 
-        // Buffer Y dimension to width of 3, otherwise grid cell width calc fails.
+        // Buffer Y dimension, need minimum source width of 3, otherwise grid cell width calc fails.
         // NOTE: NetCDF ranges are upper edge inclusive
         int deltaY = upperY - lowerY;
-        if (deltaY < 2) {
-            CoordinateAxis yAxis = gcs.getYHorizAxis();
-            int maxY = yAxis.getShape(0)  - 1 ; // inclusive
-            if (maxY < 2) {
-                throw new InvalidRangeException("Source grid too small");
-            }
-            if (deltaY == 0) {
-                if (lowerY > 0 && upperY < maxY) {
-                    --lowerY;
-                    ++upperY;
-                } else {
-                    // we're on an border cell
-                    if (lowerY == 0) {
-                        upperY = 2;
-                    } else {
-                        lowerY = maxY - 2;
-                    }
-                }
-            } else if (deltaY == 1) {
+        CoordinateAxis yAxis = gcs.getYHorizAxis();
+        int maxY = yAxis.getShape(0)  - 1 ; // inclusive
+        if (maxY < 2) {
+            throw new InvalidRangeException("Source grid too small");
+        }
+        if (deltaY == 0) {
+            if (lowerY > 0 && upperY < maxY) {
+                --lowerY;
+                ++upperY;
+            } else {
+                // we're on an border cell
                 if (lowerY == 0) {
-                    ++upperY;
+                    upperY = 2;
                 } else {
-                    --lowerY;
+                    lowerY = maxY - 2;
                 }
             }
+        } else {
+            if (lowerY > 0) { --lowerY; }
+            if (upperY < maxY) { ++upperY; }
         }
 
         return new Range[] {

@@ -154,7 +154,7 @@ public abstract class GridCellCoverageFactory {
 		final int xCellCount = gridCellGeometry.getCellCountX();
 
 		final Range[] ranges = GridUtility.getRangesFromBoundingBox(
-			new ReferencedEnvelope(geometry.getEnvelopeInternal(), geometryCRS),
+			feature.getBounds(),
 			gridCellGeometry.getGridCoordSystem());
 		final int xCellMin = ranges[0].first();
 		final int xCellMax = ranges[0].last() + 1; // last() returns inclusive, we want exclulsive
