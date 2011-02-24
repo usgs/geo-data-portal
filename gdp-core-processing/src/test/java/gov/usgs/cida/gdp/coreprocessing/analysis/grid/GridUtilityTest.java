@@ -3,7 +3,6 @@ package gov.usgs.cida.gdp.coreprocessing.analysis.grid;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import gov.usgs.cida.gdp.coreprocessing.analysis.GeoToolsNetCDFUtility;
-import gov.usgs.cida.gdp.utilities.FileHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -148,7 +147,7 @@ public class GridUtilityTest {
                 new LatLonPointImpl(42, -89));
         GridCoordSystem gcs = getGridCoordinateSystem();
         Range[] range = GridUtility.getRangesFromLatLonRect(llr, gcs);
-        assertTrue("Range should be 3x3 since they are buffered", (range[0].length() == 3 && range[1].length() == 3));
+        assertTrue("Range should be 4x4 since they are buffered", (range[0].length() == 4 && range[1].length() == 4));
     }
 
     @Test
@@ -160,7 +159,7 @@ public class GridUtilityTest {
                 new LatLonPointImpl(42, -89));
         GridCoordSystem gcs = getGridCoordinateSystem();
         Range[] range = GridUtility.getRangesFromLatLonRect(llr, gcs);
-        assertTrue("Range should be 3x3 since they are buffered", (range[0].length() == 3 && range[1].length() == 3));
+        assertTrue("Range should be 4x3 since they are buffered", (range[0].length() == 4 && range[1].length() == 3));
     }
 
     @Test
@@ -172,7 +171,7 @@ public class GridUtilityTest {
                 new LatLonPointImpl(40, -89));
         GridCoordSystem gcs = getGridCoordinateSystem();
         Range[] range = GridUtility.getRangesFromLatLonRect(llr, gcs);
-        assertTrue("Range should be 3x3 since they are buffered", (range[0].length() == 3 && range[1].length() == 3));
+        assertTrue("Range should be 4x3 since they are buffered", (range[0].length() == 4 && range[1].length() == 3));
     }
 
     @Test
@@ -184,7 +183,7 @@ public class GridUtilityTest {
                 new LatLonPointImpl(42, -90));
         GridCoordSystem gcs = getGridCoordinateSystem();
         Range[] range = GridUtility.getRangesFromLatLonRect(llr, gcs);
-        assertTrue("Range should be 3x3 since they are buffered", (range[0].length() == 3 && range[1].length() == 3));
+        assertTrue("Range should be 3x4 since they are buffered", (range[0].length() == 3 && range[1].length() == 4));
     }
 
     private FeatureCollection<SimpleFeatureType, SimpleFeature> getFeatureCollection(String ncLocation) throws IOException {
