@@ -31,6 +31,11 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
  */
 public abstract class GDPAlgorithmUtil extends AbstractSelfDescribingAlgorithm {
 
+    public final static String INPUT_FEATURE_COLLECTION = "FEATURE_COLLECTION";
+    public final static String INPUT_FEATURE_ATTRIBUTE_NAME = "FEATURE_ATTRIBUTE_NAME";
+    public final static String INPUT_DATASET_URI = "DATASET_URI";
+    public final static String INPUT_DATASET_ID = "DATASET_ID";
+
     public GDPAlgorithmUtil() {
             super();
     }

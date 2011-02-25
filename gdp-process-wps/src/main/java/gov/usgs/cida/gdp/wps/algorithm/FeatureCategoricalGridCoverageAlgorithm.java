@@ -38,22 +38,22 @@ public class FeatureCategoricalGridCoverageAlgorithm extends AbstractAnnotatedAl
 
     private File output;
 
-    @ComplexDataInput(identifier="FEATURE_COLLECTION", binding=GTVectorDataBinding.class)
+    @ComplexDataInput(identifier=GDPAlgorithmUtil.INPUT_FEATURE_COLLECTION, binding=GTVectorDataBinding.class)
     public void setFeatureCollection(FeatureCollection featureCollection) {
         this.featureCollection = featureCollection;
     }
 
-    @LiteralDataInput(identifier="FFEATURE_ATTRIBUTE_NAME")
+    @LiteralDataInput(identifier=GDPAlgorithmUtil.INPUT_FEATURE_ATTRIBUTE_NAME)
     public void setFeatureAttributeName(String featureAttributeName) {
         this.featureAttributeName = featureAttributeName;
     }
 
-    @LiteralDataInput(identifier="DATASET_URI")
+    @LiteralDataInput(identifier=GDPAlgorithmUtil.INPUT_DATASET_URI)
     public void setDatasetURI(URI datasetURI) {
         this.datasetURI = datasetURI;
     }
 
-    @LiteralDataInput(identifier="DATASET_ID")
+    @LiteralDataInput(identifier=GDPAlgorithmUtil.INPUT_DATASET_ID)
     public void setDatasetId(String datasetId) {
         this.datasetId = datasetId;
     }
