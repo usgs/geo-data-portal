@@ -29,6 +29,8 @@ import ucar.ma2.Range;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.ft.FeatureDataset;
 
+import static gov.usgs.cida.gdp.wps.algorithm.annotation.LiteralDataInput.ENUM_COUNT;
+
 /**
  *
  * @author tkunicki
@@ -78,17 +80,17 @@ public class FeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotatedAlg
         this.timeEnd = timeEnd;
     }
 
-    @LiteralDataInput(identifier="STATISTICS", minOccurs=0)
+    @LiteralDataInput(identifier="STATISTICS", maxOccurs=ENUM_COUNT)
     public void setStatistics(List<Statistic> statistics) {
         this.statistics = statistics;
     }
 
-    @LiteralDataInput(identifier="GROUP_BY", minOccurs=0)
+    @LiteralDataInput(identifier="GROUP_BY")
     public void setGroupBy(GroupBy groupBy) {
         this.groupBy = groupBy;
     }
 
-    @LiteralDataInput(identifier="DELIMITER", minOccurs=0)
+    @LiteralDataInput(identifier="DELIMITER")
     public void setDelimiter(Delimiter delimiter) {
         this.delimiter = delimiter;
     }

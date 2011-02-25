@@ -63,15 +63,15 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
             this.algorithmClass = algorithmClass;
 
             inputFieldMap = new LinkedHashMap<String, AnnotatedInputBinding<Field>>();
-            outputFieldMap = new LinkedHashMap<String, Field>();
             inputMethodMap = new LinkedHashMap<String, AnnotatedInputBinding<Method>>();
+            outputFieldMap = new LinkedHashMap<String, Field>();
             outputMethodMap = new LinkedHashMap<String, Method>();
 
             parseClass();
 
             inputFieldMap = Collections.unmodifiableMap(inputFieldMap);
-            outputFieldMap = Collections.unmodifiableMap(outputFieldMap);
             inputMethodMap = Collections.unmodifiableMap(inputMethodMap);
+            outputFieldMap = Collections.unmodifiableMap(outputFieldMap);
             outputMethodMap = Collections.unmodifiableMap(outputMethodMap);
         }
 
@@ -92,14 +92,14 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
                         storeSupported(algorithm.storeSupported()).
                         statusSupported(algorithm.statusSupported());
 
-                parseElements(
+                parseMembers(
                         algorithmBuilder,
                         inputFieldMap,
                         outputFieldMap,
                         new InputFieldValidator(),
                         new OutputFieldValidator(),
                         algorithmClass.getDeclaredFields());
-                parseElements(
+                parseMembers(
                         algorithmBuilder,
                         inputMethodMap,
                         outputMethodMap,
@@ -127,12 +127,12 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
             }
         }
 
-        protected <T extends AccessibleObject> void parseElements(
+        protected <T extends AccessibleObject & Member> void parseMembers(
                 AlgorithmDescriptor.Builder<?> algorithmBuilder,
-                Map<String, AnnotatedInputBinding<T>> inputElementMap,
-                Map<String, T> outputElementMap,
-                InputValidator<T> inputElementValidator,
-                OutputValidator<T> outputElementValidator,
+                Map<String, AnnotatedInputBinding<T>> inputMemberMap,
+                Map<String, T> outputMemberMap,
+                InputValidator<T> inputMemberValidator,
+                OutputValidator<T> outputMemberValidator,
                 T[] elements) {
 
             for (T element : elements) {
@@ -143,8 +143,8 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
                             title(ldo.title()).
                             abstrakt(ldo.abstrakt()).build();
 
-                    if (outputElementValidator.validate(element, ldod)) {
-                        outputElementMap.put(ldo.identifier(), element);
+                    if (outputMemberValidator.validate(element, ldod)) {
+                        outputMemberMap.put(ldo.identifier(), element);
                         algorithmBuilder.addOutputDesciptor(ldod);
                     } else {
                         // TODO: error? warning?
@@ -160,16 +160,18 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
                             abstrakt(cdo.abstrakt()).
                             build();
 
-                    if (outputElementValidator.validate(element, cdod)) {
-                        outputElementMap.put(cdo.identifier(), element);
+                    if (outputMemberValidator.validate(element, cdod)) {
+                        outputMemberMap.put(cdo.identifier(), element);
                         algorithmBuilder.addOutputDesciptor(cdod);
                     } else {
                         // TODO: error? warning?
                     }
                 }
+
                 LiteralDataInput ldi = element.getAnnotation(LiteralDataInput.class);
                 if (ldi != null) {
-                    AnnotatedInputBinding aib = inputElementValidator.getInputBinding(element);
+                    AnnotatedInputBinding aib = inputMemberValidator.getInputBinding(element);
+
                     // auto generate binding if it's not explicitly declared
                     Type payloadType = aib.getPayloadType();
                     Class<? extends ILiteralData> binding = ldi.binding();
@@ -188,34 +190,54 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
                         }
                     }
 
-                    // auto generate allowedValues if not explicitly declared for enum
-                    Type inputType = aib.getInputType();
                     String[] allowedValues = ldi.allowedValues();
-                    if (inputType instanceof Class<?>) {
-                        Class<?> inputClass = (Class<?>)inputType;
-                        if (inputClass.isEnum()) {
-                            Class<? extends Enum> inputEnumClass = (Class<? extends Enum>)inputClass;
-                            // validate contents of allowed values mapes to enum
-                            if (allowedValues.length > 0) {
-                                List<String> invalidValues = new ArrayList<String>();
-                                for (String value : allowedValues) {
-                                    try {
-                                        Enum.valueOf(inputEnumClass, value);
-                                    } catch (IllegalArgumentException e) {
-                                        invalidValues.add(value);
-                                        LOGGER.warn("Invalid allowed value \"{}\" specified for for enumerated input type {}", value, inputType);
-                                    }
-                                }
-                                if (invalidValues.size() > 0) {
-                                    List<String> updatedValues = new ArrayList<String>(Arrays.asList(allowedValues));
-                                    updatedValues.removeAll(invalidValues);
-                                    allowedValues = updatedValues.toArray(new String[0]);
+                    String defaultValue = ldi.defaultValue();
+                    int maxOccurs = ldi.maxOccurs();
+
+                    // If InputType is enum
+                    //  1) generate allowedValues if not explicitly declared
+                    //  2) validate allowedValues if explicitly declared
+                    //  3) validate defaultValue if declared
+                    //  4) check for special ENUM_COUNT maxOccurs flag
+                    Type inputType = aib.getInputType();
+                    if (aib.isInputTypeEnum()) {
+                        Class<? extends Enum> inputEnumClass = (Class<? extends Enum>)inputType;
+                        // validate contents of allowed values maps to enum
+                        if (allowedValues.length > 0) {
+                            List<String> invalidValues = new ArrayList<String>();
+                            for (String value : allowedValues) {
+                                try {
+                                    Enum.valueOf(inputEnumClass, value);
+                                } catch (IllegalArgumentException e) {
+                                    invalidValues.add(value);
+                                    LOGGER.warn("Invalid allowed value \"{}\" specified for for enumerated input type {}", value, inputType);
                                 }
                             }
-                            // if list is empty, populated with values from enum
-                            if (allowedValues.length == 0) {
-                                allowedValues = GDPAlgorithmUtil.convertEnumToStringArray(inputEnumClass);
+                            if (invalidValues.size() > 0) {
+                                List<String> updatedValues = new ArrayList<String>(Arrays.asList(allowedValues));
+                                updatedValues.removeAll(invalidValues);
+                                allowedValues = updatedValues.toArray(new String[0]);
                             }
+                        }
+                        // if list is empty, populated with values from enum
+                        if (allowedValues.length == 0) {
+                            allowedValues = GDPAlgorithmUtil.convertEnumToStringArray(inputEnumClass);
+                        }
+                        if (defaultValue.length() > 0) {
+                            try {
+                                Enum.valueOf(inputEnumClass, defaultValue);
+                            } catch (IllegalArgumentException e) {
+                                LOGGER.warn("Invalid default value \"{}\" specified for for enumerated input type {}", defaultValue, inputType);
+                                defaultValue = "";
+                            }
+                        }
+                        if (maxOccurs == LiteralDataInput.ENUM_COUNT) {
+                            maxOccurs = inputEnumClass.getEnumConstants().length;
+                        }
+                    } else {
+                        if (maxOccurs == LiteralDataInput.ENUM_COUNT) {
+                            maxOccurs = 1;
+                            LOGGER.warn("Invalid maxOccurs \"ENUM_COUNT\" specified for for input type {}", inputType);
                         }
                     }
 
@@ -225,12 +247,12 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
                                 title(ldi.title()).
                                 abstrakt(ldi.abstrakt()).
                                 minOccurs(ldi.minOccurs()).
-                                maxOccurs(ldi.maxOccurs()).
-                                defaultValue(ldi.defaultValue()).
+                                maxOccurs(maxOccurs).
+                                defaultValue(defaultValue).
                                 allowedValues(allowedValues).
                                 build();
-                        if (inputElementValidator.validate(aib, ldid)) {
-                            inputElementMap.put(ldi.identifier(), aib);
+                        if (inputMemberValidator.validate(aib, ldid)) {
+                            inputMemberMap.put(ldi.identifier(), aib);
                             algorithmBuilder.addInputDesciptor(ldid);
                         } else {
                         // TODO: error? warning?
@@ -239,9 +261,10 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
 
                     }
                 }
+
                 ComplexDataInput cdi = element.getAnnotation(ComplexDataInput.class);
                 if (cdi != null) {
-                    AnnotatedInputBinding aib = inputElementValidator.getInputBinding(element);
+                    AnnotatedInputBinding aib = inputMemberValidator.getInputBinding(element);
                     ComplexDataInputDescriptor cdid =
                             ComplexDataInputDescriptor.builder(cdi.binding(), cdi.identifier()).
                             title(cdi.title()).
@@ -251,8 +274,8 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
                             maximumMegaBytes(cdi.maximumMegaBytes()).
                             build();
 
-                    if (inputElementValidator.validate(aib, cdid)) {
-                        inputElementMap.put(cdi.identifier(), aib);
+                    if (inputMemberValidator.validate(aib, cdid)) {
+                        inputMemberMap.put(cdi.identifier(), aib);
                         algorithmBuilder.addInputDesciptor(cdid);
                     } else {
                         // TODO: error? warning?
@@ -299,7 +322,7 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
             }
         }
 
-        private static abstract class InputValidator<T extends AccessibleObject> extends Validator {
+        private static abstract class InputValidator<T extends AccessibleObject & Member> extends Validator {
 
             public abstract boolean validate(AnnotatedInputBinding<T> annotatedBinding, InputDescriptor<?> inputDescriptor);
 
@@ -345,7 +368,7 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
             public abstract AnnotatedInputBinding<T> getInputBinding(T Member);
         }
 
-        private static abstract class OutputValidator<T extends AccessibleObject> extends Validator {
+        private static abstract class OutputValidator<T extends AccessibleObject & Member> extends Validator {
             public abstract boolean  validate(T member, OutputDescriptor<?> outputDescriptor);
             protected static boolean checkType(Class<?> candidateClass, Class<? extends IData> bindingClass) {
                 try {
@@ -407,7 +430,7 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
             }
         }
 
-        public static abstract class AnnotatedInputBinding<T extends AccessibleObject> {
+        public static abstract class AnnotatedInputBinding<T extends AccessibleObject & Member> {
 
             private T member;
 

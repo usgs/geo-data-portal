@@ -21,4 +21,8 @@ public @interface LiteralDataInput {
     String defaultValue() default "";
     String[] allowedValues() default {};
     Class <? extends ILiteralData> binding() default ILiteralData.class;
+
+    //// special maxOccurs flags
+    // set maxOccurs to enum constant count
+    public final static int ENUM_COUNT = -1;
 }

@@ -1,7 +1,9 @@
 package gov.usgs.cida.gdp.wps.algorithm;
 
 import gov.usgs.cida.gdp.coreprocessing.Delimiter;
-import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCategoricalGridCoverage;
+import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCoverageWeightedGridStatistics;
+import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCoverageWeightedGridStatistics.GroupBy;
+import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCoverageWeightedGridStatisticsWriter.Statistic;
 import gov.usgs.cida.gdp.wps.algorithm.descriptor.AlgorithmDescriptor;
 import gov.usgs.cida.gdp.wps.algorithm.descriptor.ComplexDataInputDescriptor;
 import gov.usgs.cida.gdp.wps.algorithm.descriptor.ComplexDataOutputDescriptor;
@@ -12,6 +14,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +25,7 @@ import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.ft.FeatureDataset;
 
@@ -29,19 +33,24 @@ import ucar.nc2.ft.FeatureDataset;
  *
  * @author tkunicki
  */
-public class FeatureCategoricalGridCoverageAlgorithmSD extends AbstractSelfDescribingAlgorithm {
+public class FeatureWeightedGridStatisticsAlgorithmX extends AbstractSelfDescribingAlgorithm {
 
     private final static String I_FEATURE_COLLECTION = "FEATURE_COLLECTION";
     private final static String I_FEATURE_ATTRIBUTE_NAME = "FEATURE_ATTRIBUTE_NAME";
     private final static String I_DATASET_URI = "DATASET_URI";
     private final static String I_DATASET_ID = "DATASET_ID";
+    private final static String I_TIME_START = "TIME_START";
+    private final static String I_TIME_END = "TIME_END";
+    private final static String I_STATISTICS = "STATISTICS";
+    private final static String I_GROUP_BY = "GROUP_BY";
     private final static String I_DELIMITER = "DELIMITER";
+
     private final static String O_OUTPUT = "OUTPUT";
 
     private final static AlgorithmDescriptor ALGORITHM_DESCRIPTOR;
 
     static {
-        ALGORITHM_DESCRIPTOR = AlgorithmDescriptor.builder(FeatureCategoricalGridCoverageAlgorithmSD.class).
+        ALGORITHM_DESCRIPTOR = AlgorithmDescriptor.builder(FeatureWeightedGridStatisticsAlgorithmX.class).
                 version("1.0.0").
                 storeSupported(true).
                 statusSupported(true).
@@ -54,18 +63,26 @@ public class FeatureCategoricalGridCoverageAlgorithmSD extends AbstractSelfDescr
                 addInputDesciptor(
                     LiteralDataInputDescriptor.stringBuilder(I_DATASET_ID)).
                 addInputDesciptor(
+                    LiteralDataInputDescriptor.dateTimeBuilder(I_TIME_START).minOccurs(0)).
+                addInputDesciptor(
+                    LiteralDataInputDescriptor.dateTimeBuilder(I_TIME_END).minOccurs(0)).
+                addInputDesciptor(
+                    LiteralDataInputDescriptor.stringBuilder(I_STATISTICS).maxOccurs(Statistic.class).allowedValues(Statistic.class)).
+                addInputDesciptor(
+                    LiteralDataInputDescriptor.stringBuilder(I_GROUP_BY).allowedValues(GroupBy.class)).
+                addInputDesciptor(
                     LiteralDataInputDescriptor.stringBuilder(I_DELIMITER).allowedValues(Delimiter.class)).
                 addOutputDesciptor(ComplexDataOutputDescriptor.builder(CSVFileBinding.class, O_OUTPUT)).
                 build();
     }
 
+    public FeatureWeightedGridStatisticsAlgorithmX() {
+            super();
+    }
+
     @Override
     protected AlgorithmDescriptor getAlgorithmDescriptor() {
         return ALGORITHM_DESCRIPTOR;
-    }
-
-    public FeatureCategoricalGridCoverageAlgorithmSD() {
-            super();
     }
 
     @Override
@@ -79,6 +96,10 @@ public class FeatureCategoricalGridCoverageAlgorithmSD extends AbstractSelfDescr
         try {
             featureCollection = GDPAlgorithmUtil.extractFeatureCollection(input, I_FEATURE_COLLECTION);
             String featureAttributeName = GDPAlgorithmUtil.extractString(input, I_FEATURE_ATTRIBUTE_NAME);
+            if (featureCollection.getSchema().getDescriptor(featureAttributeName) == null) {
+                addError("Attribute " + featureAttributeName + " not found in feature collection");
+                return null;
+            }
 
             URI datasetURI = GDPAlgorithmUtil.extractURI(input, I_DATASET_URI);
             String datasetID = GDPAlgorithmUtil.extractString(input, I_DATASET_ID);
@@ -88,20 +109,37 @@ public class FeatureCategoricalGridCoverageAlgorithmSD extends AbstractSelfDescr
                     datasetID,
                     featureCollection.getBounds());
 
+            Range timeRange = GDPAlgorithmUtil.generateTimeRange(
+                    gridDatatype,
+                    GDPAlgorithmUtil.extractDate(input, I_TIME_START),
+                    GDPAlgorithmUtil.extractDate(input, I_TIME_END));
+
+            List<String> statisticStringList = GDPAlgorithmUtil.extractStringList(input, I_STATISTICS);
+            List<Statistic> statisticList = statisticStringList.size() < 1 ?
+            Arrays.asList(Statistic.values()) :
+            GDPAlgorithmUtil.convertStringToEnumList(Statistic.class, statisticStringList);
 
             String delimiterString = GDPAlgorithmUtil.extractString(input, I_DELIMITER);
-                Delimiter delimiter = delimiterString == null ?
-                    Delimiter.getDefault() :
-                    Delimiter.valueOf(delimiterString);
+            Delimiter delimiter = delimiterString == null ?
+                Delimiter.COMMA :
+                Delimiter.valueOf(delimiterString);
 
-            File file = File.createTempFile("gdp", "csv");
+            String groupByString = GDPAlgorithmUtil.extractString(input, I_GROUP_BY);
+            GroupBy groupBy = groupByString == null ?
+                GroupBy.STATISTIC :
+                GroupBy.valueOf(groupByString);
+
+            File file = File.createTempFile("gdp", ".csv");
             writer = new BufferedWriter(new FileWriter(file));
 
-            FeatureCategoricalGridCoverage.execute(
+            FeatureCoverageWeightedGridStatistics.execute(
                     featureCollection,
                     featureAttributeName,
                     gridDatatype,
+                    timeRange,
+                    statisticList,
                     writer,
+                    groupBy,
                     delimiter);
 
             writer.flush();
@@ -110,20 +148,22 @@ public class FeatureCategoricalGridCoverageAlgorithmSD extends AbstractSelfDescr
             output.put(O_OUTPUT, new CSVFileBinding(file));
 
         } catch (InvalidRangeException e) {
-            throw new RuntimeException(e);
+            addError("Error subsetting gridded data :" + e.getMessage());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            addError("IO Error :" + e.getMessage());
         } catch (FactoryException e) {
-            throw new RuntimeException(e);
+            addError("Error initializing CRS factory:" + e.getMessage());
         } catch (TransformException e) {
-            throw new RuntimeException(e);
+            addError("Error attempting CRS transform:" + e.getMessage());
         } catch (SchemaException e) {
-            throw new RuntimeException(e);
+            addError("Error subsetting gridded data :" + e.getMessage());
+        } catch (Exception e) {
+            addError("General Error: " + e.getMessage());
         } finally {
             if (featureDataset != null) try { featureDataset.close(); } catch (IOException e) { }
             if (writer != null) try { writer.close(); } catch (IOException e) { }
         }
         return output;
     }
-
+	
 }
