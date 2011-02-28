@@ -26,11 +26,12 @@
         <servlet-name>retrieveResultServlet</servlet-name>
         <url-pattern>/RetrieveResultServlet</url-pattern>
     </servlet-mapping>
-    <servlet>
+<!-- Commented out in anticipation of work being done for  -->
+<!--    <servlet>
         <servlet-name>AppInitializationServlet</servlet-name>
         <servlet-class>gov.usgs.cida.gdp.wps.servlet.FileWipeAutomationServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
-    </servlet>
+    </servlet>-->
     <welcome-file-list>
         <welcome-file>/index.html</welcome-file>
     </welcome-file-list>
