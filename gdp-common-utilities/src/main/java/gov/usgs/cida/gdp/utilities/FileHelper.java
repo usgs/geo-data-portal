@@ -217,15 +217,6 @@ public class FileHelper {
         result = new File(directory).mkdirs();
         return result;
     }
-
-    /**
-     * Get the types of files that are available to output to the user
-     * @return
-     */
-    public static List<String> getOutputFileTypesAvailable() {
-        return PropertyFactory.getValueList("out.file.type");
-    }
-
     /**
      * Recursively deletes a directory from the filesystem.
      * @param directory

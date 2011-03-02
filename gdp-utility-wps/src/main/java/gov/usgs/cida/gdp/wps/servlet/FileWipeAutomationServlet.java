@@ -48,10 +48,10 @@ public class FileWipeAutomationServlet extends HttpServlet {
     private void initializeFilewipeTimer() {
         log.info("File Wipe system starting.");
 
-        long fileAgeLong = Long.parseLong(AppConstant.FILE_WIPE_MILLIS.toString());
-        File uploadDirName = new File(AppConstant.SHAPEFILE_LOCATION.toString());
-        File userSpaceDir = new File(AppConstant.USERSPACE_LOCATION.toString());
-        File workSpaceDir = new File(AppConstant.WORK_LOCATION.toString());
+        long fileAgeLong = Long.parseLong(AppConstant.FILE_WIPE_MILLIS.getValue());
+        File uploadDirName = new File(AppConstant.SHAPEFILE_LOCATION.getValue());
+        File userSpaceDir = new File(AppConstant.USERSPACE_LOCATION.getValue());
+        File workSpaceDir = new File(AppConstant.WORK_LOCATION.getValue());
 
         // Ensure the directories exist - this won't recreate them if they already exist
         FileHelper.createDir(uploadDirName);
@@ -100,7 +100,7 @@ public class FileWipeAutomationServlet extends HttpServlet {
                 if (!filesDeleted.isEmpty()) {
                     log.info("Finished deleting repository directory files. " + filesDeleted.size() + " deleted.");
                     try {
-                        new ManageGeoserverWorkspace().updateGeoServer(AppConstant.WFS_ENDPOINT.toString());
+                        new ManageGeoserverWorkspace().updateGeoServer(AppConstant.WFS_ENDPOINT.getValue());
                         log.info("GeoServer has been reloaded after datastores were deleted.");
                     } catch (IOException ex) {
                         Logger.getLogger(FileWipeAutomationServlet.class.getName()).log(Level.WARNING, null, ex);

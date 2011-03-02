@@ -55,7 +55,7 @@ public final class ResultsDatabase implements IDatabase {
 
     protected ResultsDatabase() {
 
-        String baseDirectoryPath = Joiner.on(File.separator).join(AppConstant.WORK_LOCATION, "Database", "Results");
+        String baseDirectoryPath = Joiner.on(File.separator).join(AppConstant.WORK_LOCATION.getValue(), "Database", "Results");
         baseDirectory = new File(baseDirectoryPath);
         LOGGER.info("Using \"{}\" as base directory for results database", baseDirectoryPath);
         if (!baseDirectory.exists()) {

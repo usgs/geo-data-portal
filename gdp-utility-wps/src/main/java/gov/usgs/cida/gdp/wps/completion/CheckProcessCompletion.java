@@ -42,7 +42,7 @@ public class CheckProcessCompletion {
 
 	private CheckProcessCompletion() {
 		timer = new Timer("ProcessEmailCheck", true);
-		recheckTime = Long.parseLong(AppConstant.CHECK_COMPLETE_MILLIS.toString());
+		recheckTime = Long.parseLong(AppConstant.CHECK_COMPLETE_MILLIS.getValue());
 	}
 
 	public synchronized static CheckProcessCompletion getInstance() {
@@ -142,12 +142,12 @@ class EmailCheckTask extends TimerTask {
 	}
 
 	private void sendCompleteEmail(String fileLocation) throws AddressException, MessagingException {
-		String from = AppConstant.FROM_EMAIL.toString();
+		String from = AppConstant.FROM_EMAIL.getValue();
 		String subject = "Processing Complete";
 		String content = "The processing has completed on your request."
 				+ " You can retrieve your file at " + fileLocation;
 		List<String> bcc = new ArrayList<String>();
-		String bccAddr = AppConstant.TRACK_EMAIL.toString();
+		String bccAddr = AppConstant.TRACK_EMAIL.getValue();
 		if (!"".equals(bccAddr)) {
 			bcc.add(bccAddr);
 		}
@@ -157,13 +157,13 @@ class EmailCheckTask extends TimerTask {
 	}
 
 	private void sendFailedEmail(String errorMsg) throws AddressException, MessagingException {
-		String from = AppConstant.FROM_EMAIL.toString();
+		String from = AppConstant.FROM_EMAIL.getValue();
 		String subject = "Processing Failed";
 		String content = "The processing has failed on your request."
 				+ " The following errors occured: " + errorMsg;
 
 		List<String> bcc = new ArrayList<String>();
-		String bccAddr = AppConstant.TRACK_EMAIL.toString();
+		String bccAddr = AppConstant.TRACK_EMAIL.getValue();
 		if (!"".equals(bccAddr)) {
 			bcc.add(bccAddr);
 		}

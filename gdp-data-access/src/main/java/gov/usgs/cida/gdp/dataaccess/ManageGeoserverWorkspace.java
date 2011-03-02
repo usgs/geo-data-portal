@@ -28,7 +28,7 @@ public class ManageGeoserverWorkspace {
     private String geoServerURLString = "";
     
     public ManageGeoserverWorkspace() {
-        this.geoServerURLString = AppConstant.WFS_ENDPOINT.toString();
+        this.geoServerURLString = AppConstant.WFS_ENDPOINT.getValue();
     }
 
     public ManageGeoserverWorkspace(String geoServerURL) throws MalformedURLException {
@@ -221,8 +221,8 @@ public class ManageGeoserverWorkspace {
         httpConnection.setRequestMethod(requestMethod);
 
         //Set authentication
-        String u = (user == null || "".equals(user)) ? AppConstant.WFS_USER.toString() : user;
-        String p = (pass == null || "".equals(pass)) ? AppConstant.WFS_PASS.toString() : pass;
+        String u = (user == null || "".equals(user)) ? AppConstant.WFS_USER.getValue() : user;
+        String p = (pass == null || "".equals(pass)) ? AppConstant.WFS_PASS.getValue() : pass;
         String encoding = new sun.misc.BASE64Encoder().encode((u + ":" + p).getBytes());
         httpConnection.addRequestProperty("Authorization", "Basic " + encoding);
         

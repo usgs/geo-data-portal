@@ -46,7 +46,7 @@ public class GetWatersGeom extends AbstractSelfDescribingAlgorithm {
             throw new RuntimeException("Error getting geometry from WATERS");
         }
 
-        String geoServerURL = AppConstant.WFS_ENDPOINT.toString();
+        String geoServerURL = AppConstant.WFS_ENDPOINT.getValue();
         String geoServerWorkspace = "waters";
         String geoServerLayer = shapefile.getName().replace(".shp", "");
         try {

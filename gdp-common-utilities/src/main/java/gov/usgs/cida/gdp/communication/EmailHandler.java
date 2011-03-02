@@ -19,13 +19,8 @@ public class EmailHandler {
 	public static void sendMessage(EmailMessage message) throws AddressException, MessagingException {
 		Properties properties = System.getProperties();
 
-//		if (Boolean.parseBoolean(PropertyFactory.getProperty("development"))) {
-			properties.put("mail.smtp.host", AppConstant.EMAIL_HOST.toString());
-			properties.put("mail.smtp.port", AppConstant.EMAIL_PORT.toString());
-//		} else {
-//			properties.put("mail.smtp.host", PropertyFactory.getProperty("production.mail.smtp.host"));
-//			properties.put("mail.smtp.port", PropertyFactory.getProperty("production.mail.smtp.port"));
-//		}
+                properties.put("mail.smtp.host", AppConstant.EMAIL_HOST.getValue());
+                properties.put("mail.smtp.port", AppConstant.EMAIL_PORT.getValue());
 
 		Session session = Session.getInstance(properties, null);
 		session.setDebug(true);

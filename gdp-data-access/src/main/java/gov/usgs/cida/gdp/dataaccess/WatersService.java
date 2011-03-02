@@ -14,6 +14,7 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URL;
+import java.util.UUID;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.xerces.parsers.DOMParser;
 import org.codehaus.jackson.JsonFactory;
@@ -72,7 +73,7 @@ public class WatersService {
         // Write to a shapefile so GeoServer can load the geometry. As of 2.0.2,
         // Geoserver (GeoTools) GML datastores are unsupported. Hence the
         // GML -> Shapefile conversion.
-        String tempDir = AppConstant.NEW_SHAPEFILE_LOCATION.toString();
+        String tempDir = AppConstant.SHAPEFILE_LOCATION.getValue() + File.separator + UUID.randomUUID();;
 
         File shpFile = new File(tempDir, name + ".shp");
         File shxFile = new File(tempDir, name + ".shx");

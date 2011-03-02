@@ -502,13 +502,6 @@ public class FileHelperTest {
         boolean result = FileHelper.createDir(existingDirectory);
         assertTrue(result);
     }
-
-    @Test
-    public void testGetOutputFileTypesAvailable() {
-        List<String> result = FileHelper.getOutputFileTypesAvailable();
-        assertFalse(result.isEmpty());
-    }
-
     @Test
     public void testDeleteFileWithEmptyFilePath() {
         boolean result = FileHelper.deleteFile("");

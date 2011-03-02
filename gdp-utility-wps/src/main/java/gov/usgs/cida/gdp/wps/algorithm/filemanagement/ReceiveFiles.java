@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.n52.wps.io.data.GenericFileData;
 import org.n52.wps.io.data.IData;
@@ -44,7 +45,7 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
         if (!inputData.containsKey("filename")) throw new RuntimeException("Error: Missing input parameter 'filename'");
 
         // "gdp.shapefile.temp.path" should be set in the tomcat startup script or setenv.sh as JAVA_OPTS="-Dgdp.shapefile.temp.path=/wherever/you/want/this/file/placed"
-        String fileDump = AppConstant.NEW_SHAPEFILE_LOCATION.toString();
+        String fileDump = AppConstant.SHAPEFILE_LOCATION.getValue() + File.separator + UUID.randomUUID();
 
         // Ensure that the temp directory exists
         File temp = new File(fileDump);
