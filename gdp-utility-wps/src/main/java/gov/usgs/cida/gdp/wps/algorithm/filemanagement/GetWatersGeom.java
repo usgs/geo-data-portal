@@ -46,13 +46,16 @@ public class GetWatersGeom extends AbstractSelfDescribingAlgorithm {
             throw new RuntimeException("Error getting geometry from WATERS");
         }
 
+        String shapefilePath = shapefile.getAbsolutePath();
+        log.debug("WATERS shapefile path: '" + shapefilePath + "'");
+
         String geoServerURL = AppConstant.WFS_ENDPOINT.getValue();
         String geoServerWorkspace = "waters";
         String geoServerLayer = shapefile.getName().replace(".shp", "");
         try {
             ManageGeoserverWorkspace mws = new ManageGeoserverWorkspace(geoServerURL);
             String declaredCRS = "EPSG:4269";
-            mws.createDataStore(shapefile.getAbsolutePath(), geoServerLayer, geoServerWorkspace, declaredCRS, declaredCRS);
+            mws.createDataStore(shapefilePath, geoServerLayer, geoServerWorkspace, declaredCRS, declaredCRS);
         } catch (Exception ex) {
             log.error("Error creating datastore in GeoServer for WATERS geometry", ex);
             throw new RuntimeException("Error creating datastore in GeoServer for WATERS geometry");
