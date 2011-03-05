@@ -2,7 +2,6 @@ package gov.usgs.cida.gdp.dataaccess;
 
 import com.vividsolutions.jts.geom.Geometry;
 import gov.usgs.cida.gdp.utilities.HTTPUtils;
-
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import gov.usgs.cida.gdp.constants.AppConstant;
@@ -48,16 +47,17 @@ public class WatersService {
         "</gml:MultiPolygon>";
 
     public static File getGeometry(String lon, String lat, String name) throws Exception {
-        
-        // Get reachcode containing lat/lon point from the EPA WATERS web service
-        InputStream reachJson =
-                HTTPUtils.sendPacket(new URL("http://iaspub.epa.gov/waters10/"
-                + "waters_services.PointIndexingService?"
-                + "pGeometry=POINT(" + lon + "%20" + lat + ")"
-                + "&pGeometryMod=WKT,SRID=8307" + "&pPointIndexingMethod=RAINDROP"
-                + "&pPointIndexingRaindropDist=25"), "GET");
+        log.debug(new StringBuilder("Getting WATERS geometry for lat: ").append(lat).append(" lon: " ).append(lon).toString());
 
+        // Get reachcode containing lat/lon point from the EPA WATERS web service
+        StringBuilder reachJsonURL = new StringBuilder("http://iaspub.epa.gov/waters10/")
+                .append("waters_services.PointIndexingService?")
+                .append("pGeometry=POINT(").append(lon).append("%20").append(lat).append(")")
+                .append("&pGeometryMod=WKT,SRID=8307" + "&pPointIndexingMethod=RAINDROP")
+                .append("&pPointIndexingRaindropDist=25");
+        InputStream reachJson = HTTPUtils.sendPacket(new URL(reachJsonURL.toString()), "GET");
         String reachCode = parseJSON(reachJson, "reachcode");
+        log.debug(new StringBuilder("Got WATERS reach code for lat: ").append(lat).append(" lon: " ).append(lon).append(".  Reach code: ").append(reachCode).toString());
 
         // Get geometry of reachcode
         InputStream json =
@@ -73,11 +73,12 @@ public class WatersService {
         // Write to a shapefile so GeoServer can load the geometry. As of 2.0.2,
         // Geoserver (GeoTools) GML datastores are unsupported. Hence the
         // GML -> Shapefile conversion.
-        String tempDir = AppConstant.SHAPEFILE_LOCATION.getValue() + File.separator + UUID.randomUUID();;
-
+        String tempDir = AppConstant.SHAPEFILE_LOCATION.getValue() + File.separator + UUID.randomUUID();
         File shpFile = new File(tempDir, name + ".shp");
         File shxFile = new File(tempDir, name + ".shx");
         File dbfFile = new File(tempDir, name + ".dbf");
+        log.debug(new StringBuilder("Going to try to write WATERS shapefile to: ").append(tempDir).toString());
+
 
         // Make sure all parent directories exist
         shpFile.getParentFile().mkdirs();
@@ -131,6 +132,7 @@ public class WatersService {
         
         sw.write(bigPolyColl, ShapeType.POLYGON);
         sw.close();
+        log.debug(new StringBuilder("WATERS shapefile successfully written to: ").append(tempDir).toString());
 
         return shpFile;
     }
@@ -194,6 +196,8 @@ public class WatersService {
         Node root = gmlDoc.getFirstChild();
 
         if (root.getNodeName().equals("gml:Polygon")) {
+            log.debug("Attempting to convert GML to multipolygon");
+            log.trace("GML: " + gml);
             DOMParser wrapParser = new DOMParser();
             wrapParser.parse(new InputSource(new StringReader(multiPolyWrap)));
             Document wrapDoc = wrapParser.getDocument();

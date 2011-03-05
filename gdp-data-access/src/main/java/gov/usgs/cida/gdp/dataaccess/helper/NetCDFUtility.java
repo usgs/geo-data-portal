@@ -9,8 +9,6 @@ import java.util.Collections;
 import java.util.Formatter;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.catalog.InvAccess;
 import thredds.catalog.InvCatalog;
@@ -33,6 +31,7 @@ import ucar.nc2.util.NamedObject;
 
 public abstract class NetCDFUtility {
     // Private nullary ctor ensures non-instantiability.
+    static org.slf4j.Logger log = LoggerFactory.getLogger(NetCDFUtility.class);
 
     private NetCDFUtility() {
     }
@@ -183,6 +182,7 @@ public abstract class NetCDFUtility {
     public static String getDatasetType(String datasetUrl) throws IOException {
         FeatureDataset featureDataset = null;
         try {
+            log.debug(new StringBuilder("Getting dataset type from: ").append(datasetUrl).toString());
             featureDataset = FeatureDatasetFactoryManager.open(null, datasetUrl, null, new Formatter());
             return featureDataset.getFeatureType().toString();
         } finally {
@@ -231,6 +231,7 @@ public abstract class NetCDFUtility {
     public static List<String> getDateRange(String threddsURL, String variableName) throws IOException, IllegalArgumentException {
         Preconditions.checkNotNull(threddsURL, "location cannot be null");
         Preconditions.checkNotNull(variableName, "variable cannot be null");
+        log.debug(new StringBuilder("Attempting to get date range from: ").append(threddsURL).append(" using grid or station ").append(variableName).toString());
 
         FeatureDataset dataset = FeatureDatasetFactoryManager.open(null, threddsURL, null, new Formatter());
         List<String> dateRange = new ArrayList<String>(2);
@@ -276,6 +277,7 @@ public abstract class NetCDFUtility {
         } finally {
             dataset.close();
         }
+        log.trace(new StringBuilder("Attempt to get date range from: ").append(threddsURL).append(" successful. Date range").append(dateRange).toString());
         return dateRange;
     }
 

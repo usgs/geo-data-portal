@@ -5,19 +5,11 @@ import gov.usgs.cida.gdp.utilities.bean.Time;
 import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
-import java.net.Socket;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.slf4j.LoggerFactory;
 
-import thredds.catalog.*;
 import ucar.nc2.VariableSimpleIF;
 
 public class THREDDSServerHelper {

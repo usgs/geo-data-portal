@@ -18,12 +18,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author razoerb
  */
 public class ManageGeoserverWorkspace {
+    private static org.slf4j.Logger log = LoggerFactory.getLogger(ManageGeoserverWorkspace.class);
 
     private String geoServerURLString = "";
     
@@ -52,11 +54,14 @@ public class ManageGeoserverWorkspace {
     }
 
     public boolean createDataStore(String shapefilePath, String layerName, String workspace, String geoServerURL, String nativeCRS, String declaredCRS) throws IOException {
+        log.debug(new StringBuilder("Attempting to create datastore on WFS server located at: ").append(geoServerURL).toString());
         // create the workspace if it doesn't already exist
         URL workspacesURL = new URL(geoServerURL + "/rest/workspaces/");
         if (!workspaceExists(workspace)) {
+            log.debug(new StringBuilder("Workspace does not currently exist. Creating...").toString());
             String workspaceXML = createWorkspaceXML(workspace);
             sendPacket(workspacesURL, "POST", "text/xml", workspaceXML);
+            log.trace(new StringBuilder("...done.").toString());
         }
 
         URL dataStoresURL = new URL(workspacesURL + workspace + "/datastores/");
@@ -65,14 +70,17 @@ public class ManageGeoserverWorkspace {
         if (nsMatcher.matches()) namespace = nsMatcher.group(1);
         String dataStoreXML = createDataStoreXML(layerName, workspace, namespace, shapefilePath);
         if (!dataStoreExists(workspace, layerName)) {
+            log.debug(new StringBuilder("Data store does not currently exist. Creating...").toString());
             // send POST to create the datastore if it doesn't exist
             sendPacket(dataStoresURL, "POST", "text/xml", dataStoreXML);
+            log.trace(new StringBuilder("...done.").toString());
         } else {
             // otherwise send PUT to ensure that it's pointing to the correct shapefile
             sendPacket(new URL(dataStoresURL + layerName + ".xml"), "PUT", "text/xml", dataStoreXML);
         }
 
         if (!layerExists(workspace, layerName, layerName)) {
+            log.debug(new StringBuilder("Layer does not currently exist. Creating...").toString());
             // create featuretype based on the datastore
             String featureTypeXML = createFeatureTypeXML(layerName, workspace, nativeCRS, declaredCRS);
             URL featureTypesURL = new URL(dataStoresURL + layerName + "/featuretypes.xml");
@@ -83,6 +91,7 @@ public class ManageGeoserverWorkspace {
             URL featureTypeUpdateURL = new URL(dataStoresURL + layerName + "/featuretypes/" + layerName + ".xml");
             sendPacket(featureTypeUpdateURL, "PUT", "text/xml",
                     "<featureType><projectionPolicy>REPROJECT_TO_DECLARED</projectionPolicy></featureType>");
+            log.trace(new StringBuilder("...done.").toString());
         }
 
         // Make sure we render using the default polygon style, and not whatever
@@ -90,7 +99,7 @@ public class ManageGeoserverWorkspace {
         sendPacket(new URL(geoServerURL + "/rest/layers/" + workspace + ":" + layerName), "PUT", "text/xml",
                 "<layer><defaultStyle><name>polygon</name></defaultStyle>"
                 + "<enabled>true</enabled></layer>");
-
+        log.debug(new StringBuilder("Datastore successfully created on WFS server located at: ").append(geoServerURL).toString());
         return true;
     }
 
@@ -132,7 +141,6 @@ public class ManageGeoserverWorkspace {
         } catch (FileNotFoundException e) {
             return false;
         }
-
         return true;
     }
 
@@ -143,7 +151,6 @@ public class ManageGeoserverWorkspace {
         } catch (FileNotFoundException e) {
             return false;
         }
-
         return true;
     }
 
@@ -171,7 +178,7 @@ public class ManageGeoserverWorkspace {
 
     public void createColoredMap(String dataFileLoc, String workspace, String layer, String fromDateString,
             String toDateString, String stat, String attribute, String delim) throws IOException, ParseException {
-
+        log.debug(new StringBuilder("Attempting to create colored map on WFS server located at: ").append(this.getGeoServerURLString()).toString());
         File dataFile = new File(dataFileLoc);
         DateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
         Date fromDate, toDate = null;
@@ -181,6 +188,7 @@ public class ManageGeoserverWorkspace {
                 toDate = df.parse(toDateString);
             }
         } catch (ParseException e) {
+            log.error("ERROR: could not parse requested date.");
             System.err.println("ERROR: could not parse requested date.");
             return;
         }
@@ -212,10 +220,12 @@ public class ManageGeoserverWorkspace {
         sendPacket(new URL(this.getGeoServerURLString() + "/rest/layers/" + workspace + ":" + layer), "PUT", "text/xml",
                 "<layer><defaultStyle><name>" + styleName + "</name></defaultStyle>"
                 + "<enabled>true</enabled></layer>");
+        log.debug(new StringBuilder("Successfully created colored map on WFS server located at: ").append(this.getGeoServerURLString()).toString());
+
     }
 
     String getResponse(URL url, String requestMethod, String contentType, String content, String user, String pass, String... requestProperties) throws MalformedURLException, IOException {
-
+        
         HttpURLConnection httpConnection = (HttpURLConnection)url.openConnection();
         httpConnection.setDoOutput(true);
         httpConnection.setRequestMethod(requestMethod);
@@ -255,7 +265,9 @@ public class ManageGeoserverWorkspace {
         httpConnection.setDoOutput(true);
         httpConnection.setRequestMethod(requestMethod);
 
-        String encoding = new sun.misc.BASE64Encoder().encode("admin:geoserver".getBytes());
+        String u = (AppConstant.WFS_USER.getValue() == null || "".equals(AppConstant.WFS_USER.getValue())) ? "admin" : AppConstant.WFS_USER.getValue();
+        String p = (AppConstant.WFS_PASS.getValue() == null || "".equals(AppConstant.WFS_PASS.getValue())) ? "geoserver" : AppConstant.WFS_PASS.getValue();
+        String encoding = new sun.misc.BASE64Encoder().encode((u + ":" + p).getBytes());
         httpConnection.addRequestProperty("Authorization", "Basic " + encoding);
 
         if (contentType != null) {
