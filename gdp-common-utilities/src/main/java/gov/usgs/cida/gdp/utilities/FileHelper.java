@@ -56,6 +56,8 @@ public class FileHelper {
     public static byte[] base64Encode(final byte[] input) {
         if (input == null) return (byte[]) Array.newInstance(byte.class, 0);
 
+        log.trace(new StringBuilder("Attempting to base64 encode a byte array of ").append(input.length).append(" bytes.").toString());
+
         byte[] result = null;
 
         Base64 encoder = new Base64();
@@ -75,15 +77,15 @@ public class FileHelper {
     public static byte[] getByteArrayFromFile(File file) throws IOException {
         if (file == null) return (byte[]) Array.newInstance(byte.class, 0);
 
+        log.debug(new StringBuilder("Attempting to get a byte array from file: ").append(file.getPath()).toString());
+
         InputStream is = new FileInputStream(file);
 
         // Get the size of the file
         long length = file.length();
 
         // Maximum size of file cannot be larger than the Integer.MAX_VALUE
-        if (length > Integer.MAX_VALUE) {
-            throw new IOException("File is too large: File length: " + file.length() + " bytes. Maximum length: " + Integer.MAX_VALUE + " bytes.");
-        }
+        if (length > Integer.MAX_VALUE) throw new IOException("File is too large: File length: " + file.length() + " bytes. Maximum length: " + Integer.MAX_VALUE + " bytes.");
 
         // Create the byte array to hold the data
         byte[] bytes = new byte[(int) length];
@@ -101,7 +103,7 @@ public class FileHelper {
         if (offset < bytes.length) {
             throw new IOException("Could not completely read file " + file.getName());
         }
-
+        log.debug(new StringBuilder("Successfully attained a byte array from file: ").append(file.getPath()).toString());
         return bytes;
     }
 
@@ -431,19 +433,20 @@ public class FileHelper {
         final int BUFFER = 2048;
         while ((entry = zis.getNextEntry()) != null) {
             String fileName = entry.getName();
-            log.debug("Unzipping: " + fileName);
-
             int count = 0;
             byte data[] = new byte[BUFFER];
             // Get the final filename (even if it's within directories in the ZIP file)
             String destinationFileName = entry.getName().contains(File.pathSeparator) ? entry.getName().substring(entry.getName().lastIndexOf(File.pathSeparator)) : entry.getName();
-            FileOutputStream fos = new FileOutputStream(outputDirectory + java.io.File.separator + destinationFileName);
+            String destinationPath = outputDirectory + java.io.File.separator + destinationFileName;
+            FileOutputStream fos = new FileOutputStream(destinationPath);
             dest = new BufferedOutputStream(fos, BUFFER);
+            log.debug(new StringBuilder("Unzipping: ").append(fileName).append(" to ").append(destinationPath).toString());
             while ((count = zis.read(data, 0, BUFFER)) != -1) {
                 dest.write(data, 0, count);
             }
             dest.flush();
             dest.close();
+            log.trace(new StringBuilder("Unzipped: ").append(fileName).append(" to ").append(destinationPath).toString());
         }
         zis.close();
         return true;
@@ -460,13 +463,11 @@ public class FileHelper {
         //String applicationUserSpaceDir = System.getProperty("applicationUserSpaceDir");
         String seperator = File.separator;
         String userTempDir = applicationUserSpaceDir + seperator + userSubDir;
-        boolean wasCreated = FileHelper.createDir(userTempDir);
-        if (wasCreated) {
+        if (FileHelper.createDir(userTempDir)) {
             log.debug("User subdirectory created at: " + userTempDir);
             return userSubDir;
         }
-
-        log.debug("User subdirectory could not be created at: " + userSubDir);
+        log.warn(new StringBuilder("User subdirectory could not be created at: " + userSubDir).toString());
         log.debug("User will be unable to upload files for this session.");
         return "";
     }
@@ -488,13 +489,16 @@ public class FileHelper {
             return false;
         }
 
-        FileUtils.touch(new File(path));
         if (recursive) {
             Iterator<File> files = FileUtils.iterateFiles(new File(path), null, true);
             while (files.hasNext()) {
                 File file = files.next();
                 FileUtils.touch(file); // update date on file
+                log.debug(new StringBuilder("Updated timestamp on file: ").append(file.getPath()).toString());
             }
+        } else {
+            FileUtils.touch(new File(path));
+            log.debug(new StringBuilder("Updated timestamp on file: ").append(new File(path).getPath()).toString());
         }
         return true;
     }
@@ -526,6 +530,7 @@ public class FileHelper {
 
             if (file.lastModified() < date.getTime() - age.longValue()) {
                 result.add(file);
+                log.trace(new StringBuilder("Added ").append(file.getPath()).append(" to \"old files list\".").toString());
             }
         }
 

@@ -53,6 +53,12 @@ public class EmailHandler {
 		msg.setContent(message.getContent(), "text/plain");
 
 		Transport.send(msg);
-		log.info("Sent E-Mail From " + message.getFrom() + " to " + message.getTo());
+		log.info(new StringBuilder("Sent E-Mail From: ")
+                        .append(message.getFrom())
+                        .append(" To: ")
+                        .append(message.getTo())
+                        .append(" Content: " )
+                        .append(message.getContent()).toString()
+                        );
 	}
 }

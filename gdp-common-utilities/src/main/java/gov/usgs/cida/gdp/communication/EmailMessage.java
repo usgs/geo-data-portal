@@ -3,7 +3,7 @@ package gov.usgs.cida.gdp.communication;
 import java.util.*;
 
 /**
- * Represents and E-Mail message
+ * Represents an E-Mail message
  *
  * @author isuftin
  *

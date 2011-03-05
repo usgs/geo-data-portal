@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package gov.usgs.cida.gdp.utilities;
 
 import java.io.BufferedReader;
@@ -16,7 +11,8 @@ import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.List;
-import java.util.Map; 
+import java.util.Map;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -24,14 +20,16 @@ import java.util.Map;
  */
 public class HTTPUtils {
 
-	public static InputStream sendPacket(URL url, String requestMethod)
-			throws IOException {
+    private static org.slf4j.Logger log = LoggerFactory.getLogger(HTTPUtils.class);
 
-		HttpURLConnection httpConnection = openHttpConnection(url,
-				requestMethod);
+    public static InputStream sendPacket(URL url, String requestMethod)
+            throws IOException {
 
-		return getHttpConnectionInputStream(httpConnection);
-	}
+        HttpURLConnection httpConnection = openHttpConnection(url,
+                requestMethod);
+
+        return getHttpConnectionInputStream(httpConnection);
+    }
 
     public static String getStringFromInputStream(InputStream is) throws IOException {
         Writer writer = new StringWriter();
@@ -45,29 +43,34 @@ public class HTTPUtils {
         } finally {
             is.close();
         }
-
         return writer.toString();
     }
 
-	public static HttpURLConnection openHttpConnection(URL url,
-			String requestMethod) throws IOException, ProtocolException {
+    /**
+     * Opens and returns a HttpURLConnection to the provided URL
+     *
+     * @param url
+     * @param requestMethod
+     * @return
+     * @throws IOException
+     * @throws ProtocolException
+     */
+    public static HttpURLConnection openHttpConnection(URL url, String requestMethod) throws IOException, ProtocolException {
+        log.debug(new StringBuilder("Connecting to: ").append(url.toString()).append(" using " ).append(requestMethod).toString());
+        HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
+        httpConnection.setRequestMethod(requestMethod);
+        log.debug(new StringBuilder("Connected to: ").append(url.toString()).append(" using " ).append(requestMethod).toString());
 
-		HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
-		httpConnection.setRequestMethod(requestMethod);
+        return httpConnection;
+    }
 
-		return httpConnection;
-	}
+    public static InputStream getHttpConnectionInputStream(HttpURLConnection httpConnection) throws IOException {
+        return httpConnection.getInputStream();
+    }
 
-	public static InputStream getHttpConnectionInputStream(HttpURLConnection httpConnection)
-			throws IOException {
+    public static Map<String, List<String>> getHttpConnectionHeaderFields(HttpURLConnection httpConnection)
+            throws IOException {
 
-		return httpConnection.getInputStream();
-	}
-
-	public static Map<String, List<String>> getHttpConnectionHeaderFields(HttpURLConnection httpConnection)
-			throws IOException {
-
-		return httpConnection.getHeaderFields();
-	}
-
+        return httpConnection.getHeaderFields();
+    }
 }
