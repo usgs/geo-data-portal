@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package gov.usgs.cida.gdp.coreprocessing.analysis;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;

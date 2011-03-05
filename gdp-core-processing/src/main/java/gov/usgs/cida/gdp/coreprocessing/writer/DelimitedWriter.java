@@ -19,6 +19,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
+import org.slf4j.LoggerFactory;
 
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.ft.FeatureDataset;
@@ -27,7 +28,7 @@ import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
 import ucar.nc2.units.DateRange;
 
 public class DelimitedWriter {
-	
+	private static org.slf4j.Logger log = LoggerFactory.getLogger(DelimitedWriter.class);
 	public static boolean station(
             FeatureDataset featureDataset,
             FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection,
@@ -36,7 +37,8 @@ public class DelimitedWriter {
             throws FactoryException, SchemaException,
             org.opengis.coverage.grid.InvalidRangeException,
             TransformException, IOException {
-
+            String outputFilePath = new File(System.getProperty("applicationWorkDir"),outputFile).getPath();
+            log.debug(new StringBuilder("Attempting to write output to ").append(outputFilePath).toString());
         FeatureDatasetPoint fdp = (FeatureDatasetPoint) featureDataset;
         List<ucar.nc2.ft.FeatureCollection> fcl = fdp.getPointFeatureCollectionList();
         if (fcl != null && fcl.size() == 1) {
@@ -83,11 +85,14 @@ public class DelimitedWriter {
                     }
                 }
             } else {
+                log.debug(new StringBuilder("Failed to write output to ").append(outputFilePath).toString());
                 return false;
             }
         } else {
+            log.debug(new StringBuilder("Failed to write output to ").append(outputFilePath).toString());
             return false;
         }
+                log.debug(new StringBuilder("Successfully wrote output to ").append(outputFilePath).toString());
 		return true;
     }
 	
