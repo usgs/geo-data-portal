@@ -226,7 +226,6 @@
             <Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.discovery.ListTHREDDSGrids</Property>
             <Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.discovery.CalculateWCSCoverageInfo</Property>
             <Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.discovery.GetWcsCoverages</Property>
-            <Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.discovery.GetWmsCapabilities</Property>
             <Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.discovery.GetGridTimeRange</Property>
         </Repository>
 
