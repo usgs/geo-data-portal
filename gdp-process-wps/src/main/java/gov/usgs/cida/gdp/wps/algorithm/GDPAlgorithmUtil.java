@@ -181,24 +181,4 @@ public abstract class GDPAlgorithmUtil extends AbstractSelfDescribingAlgorithm {
         return timeRange;
     }
 
-    public static <T extends Enum<T>> List<T> convertStringToEnumList(Class<T> enumType, List<String> stringList) {
-        List<T> enumList = new ArrayList<T>();
-        for (String string : stringList) {
-            enumList.add(Enum.valueOf(enumType, string));
-        }
-        return enumList;
-    }
-
-    public static <T extends Enum<T>> String[] convertEnumToStringArray(Class<T> enumType) {
-        String[] strings = null;
-        T[] constants = enumType.getEnumConstants();
-        if (constants != null && constants.length > 0) {
-            strings = new String[constants.length];
-            for (int index = 0; index < constants.length; ++index) {
-                strings[index] = constants[index].name();
-            }
-        }
-        return strings;
-    }
-
 }

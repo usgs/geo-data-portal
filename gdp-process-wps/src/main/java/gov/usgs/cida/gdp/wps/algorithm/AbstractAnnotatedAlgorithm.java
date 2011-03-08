@@ -54,9 +54,9 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
         private Method processMethod;
 
         private Map<String, AnnotatedInputBinding<Field>> inputFieldMap;
-        private Map<String, Field> outputFieldMap;
+        private Map<String, AnnotatedOutputBinding<Field>> outputFieldMap;
         private Map<String, AnnotatedInputBinding<Method>> inputMethodMap;
-        private Map<String, Method> outputMethodMap;
+        private Map<String, AnnotatedOutputBinding<Method>> outputMethodMap;
 
         public Introspector(Class<?> algorithmClass) {
 
@@ -64,8 +64,8 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
 
             inputFieldMap = new LinkedHashMap<String, AnnotatedInputBinding<Field>>();
             inputMethodMap = new LinkedHashMap<String, AnnotatedInputBinding<Method>>();
-            outputFieldMap = new LinkedHashMap<String, Field>();
-            outputMethodMap = new LinkedHashMap<String, Method>();
+            outputFieldMap = new LinkedHashMap<String, AnnotatedOutputBinding<Field>>();
+            outputMethodMap = new LinkedHashMap<String, AnnotatedOutputBinding<Method>>();
 
             parseClass();
 
@@ -130,7 +130,7 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
         protected <T extends AccessibleObject & Member> void parseMembers(
                 AlgorithmDescriptor.Builder<?> algorithmBuilder,
                 Map<String, AnnotatedInputBinding<T>> inputMemberMap,
-                Map<String, T> outputMemberMap,
+                Map<String, AnnotatedOutputBinding<T>> outputMemberMap,
                 InputValidator<T> inputMemberValidator,
                 OutputValidator<T> outputMemberValidator,
                 T[] elements) {
@@ -138,13 +138,27 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
             for (T element : elements) {
                 LiteralDataOutput ldo = element.getAnnotation(LiteralDataOutput.class);
                 if (ldo != null) {
+                    AnnotatedOutputBinding aob = outputMemberValidator.getOutputBinding(element);
+                    // auto generate binding if it's not explicitly declared
+                    Type payloadType = aob.getPayloadType();
+                    Class<? extends ILiteralData> binding = ldo.binding();
+                    if (binding == null || ILiteralData.class.equals(binding)) {
+                        if (payloadType instanceof Class<?>) {
+                            binding = BasicXMLTypeFactory.getBindingForType((Class<?>)payloadType);
+                            if (binding == null) {
+                                LOGGER.warn("Unable to locate binding class for {}; binding not found.", payloadType);
+                            }
+                        } else {
+                            LOGGER.warn("Unable to determine binding class for {}; type must fully resolved to use auto-binding", payloadType);
+                        }
+                    }
                     LiteralDataOutputDescriptor ldod =
-                            LiteralDataOutputDescriptor.builder(ldo.binding(), ldo.identifier()).
+                            LiteralDataOutputDescriptor.builder(binding, ldo.identifier()).
                             title(ldo.title()).
                             abstrakt(ldo.abstrakt()).build();
 
-                    if (outputMemberValidator.validate(element, ldod)) {
-                        outputMemberMap.put(ldo.identifier(), element);
+                    if (outputMemberValidator.validate(aob, ldod)) {
+                        outputMemberMap.put(ldo.identifier(), aob);
                         algorithmBuilder.addOutputDesciptor(ldod);
                     } else {
                         // TODO: error? warning?
@@ -152,6 +166,7 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
                 }
                 ComplexDataOutput cdo = element.getAnnotation(ComplexDataOutput.class);
                 if (cdo != null) {
+                    AnnotatedOutputBinding aob = outputMemberValidator.getOutputBinding(element);
                     ComplexDataOutputDescriptor cdod =
                             ComplexDataOutputDescriptor.builder(
                             cdo.binding(),
@@ -160,8 +175,8 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
                             abstrakt(cdo.abstrakt()).
                             build();
 
-                    if (outputMemberValidator.validate(element, cdod)) {
-                        outputMemberMap.put(cdo.identifier(), element);
+                    if (outputMemberValidator.validate(aob, cdod)) {
+                        outputMemberMap.put(cdo.identifier(), aob);
                         algorithmBuilder.addOutputDesciptor(cdod);
                     } else {
                         // TODO: error? warning?
@@ -221,7 +236,7 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
                         }
                         // if list is empty, populated with values from enum
                         if (allowedValues.length == 0) {
-                            allowedValues = GDPAlgorithmUtil.convertEnumToStringArray(inputEnumClass);
+                            allowedValues = ClassUtil.convertEnumToStringArray(inputEnumClass);
                         }
                         if (defaultValue.length() > 0) {
                             try {
@@ -296,7 +311,7 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
             return inputFieldMap;
         }
 
-        public Map<String, Field> getOutputFieldMap() {
+        public Map<String, AnnotatedOutputBinding<Field>> getOutputFieldMap() {
             return outputFieldMap;
         }
 
@@ -304,7 +319,7 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
             return inputMethodMap;
         }
 
-        public Map<String, Method> getOutputMethodMap() {
+        public Map<String, AnnotatedOutputBinding<Method>> getOutputMethodMap() {
             return outputMethodMap;
         }
         
@@ -364,23 +379,24 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
                 }
                 return false;
             }
-
             public abstract AnnotatedInputBinding<T> getInputBinding(T Member);
         }
 
         private static abstract class OutputValidator<T extends AccessibleObject & Member> extends Validator {
-            public abstract boolean  validate(T member, OutputDescriptor<?> outputDescriptor);
-            protected static boolean checkType(Class<?> candidateClass, Class<? extends IData> bindingClass) {
+            public abstract boolean  validate(AnnotatedOutputBinding<T> annotatedBinding, OutputDescriptor<?> outputDescriptor);
+            protected boolean checkType(AnnotatedOutputBinding<T> annotatedBinding, Class<? extends IData> bindingClass) {
                 try {
-                    Class<?> payloadClass = bindingClass.getMethod("getPayload", (Class<?>[])null).getReturnType();
-                    if (payloadClass.isAssignableFrom(candidateClass)) {
-                        return true;
+                    Class<?> inputPayloadClass = bindingClass.getMethod("getPayload", (Class<?>[])null).getReturnType();
+                    Type bindingPayloadType = annotatedBinding.getPayloadType();
+                    if (bindingPayloadType instanceof Class<?>) {
+                       return ((Class<?>)inputPayloadClass).isAssignableFrom(inputPayloadClass);
                     }
                 } catch (NoSuchMethodException e) {
-                    return false;
+                    // error handling on fall-through
                 }
                 return false;
             }
+            public abstract AnnotatedOutputBinding<T> getOutputBinding(T Member);
         }
 
         private static class InputFieldValidator extends InputValidator<Field> {
@@ -399,9 +415,13 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
 
         private static class OutputFieldValidator extends OutputValidator<Field> {
             @Override
-            public boolean validate(Field field, OutputDescriptor<?> descriptor) {
-                return checkModifier(field) &&
-                        checkType(field.getType(), descriptor.getBinding());
+            public boolean validate(AnnotatedOutputBinding<Field> annotatedBinding, OutputDescriptor<?> descriptor) {
+                return checkModifier(annotatedBinding.getMember()) &&
+                        checkType(annotatedBinding, descriptor.getBinding());
+            }
+            @Override
+            public AnnotatedOutputBinding<Field> getOutputBinding(Field Member) {
+                return new AnnotatedFieldOutputBinding(Member);
             }
         }
         
@@ -414,7 +434,6 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
                        (descriptor.getMaxOccurs().intValue() < 2 || binding.isMemberTypeList()) &&
                        checkInputType(binding, descriptor.getBinding());
             }
-
             @Override
             public AnnotatedInputBinding<Method> getInputBinding(Method member) {
                 return new AnnotatedMethodInputBinding(member);
@@ -423,27 +442,63 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
 
         private class OutputMethodValidator extends OutputValidator<Method> {
             @Override
-            public boolean validate(Method method, OutputDescriptor<?> descriptor) {
+            public boolean validate(AnnotatedOutputBinding<Method> annotatedBinding, OutputDescriptor<?> descriptor) {
+                Method method = annotatedBinding.getMember();
                 return method.getParameterTypes().length == 0 &&
                         checkModifier(method) &&
-                        checkType(method.getReturnType(), descriptor.getBinding());
+                        checkType(annotatedBinding, descriptor.getBinding());
+            }
+            @Override
+            public AnnotatedOutputBinding<Method> getOutputBinding(Method method) {
+                return new AnnotatedMethodOutputBinding(method);
             }
         }
 
-        public static abstract class AnnotatedInputBinding<T extends AccessibleObject & Member> {
+        public static abstract class AnnotatedBinding<T extends AccessibleObject & Member> {
 
             private T member;
 
-            public AnnotatedInputBinding(T member) {
+            public AnnotatedBinding(T member) {
                 this.member = member;
             }
 
             public T getMember() {
                 return member;
             }
-            
+
             public abstract Type getMemberType();
 
+            public Type getInputType() {
+                return getMemberType();
+            }
+
+            public Type getPayloadType() {
+                Type inputType = getInputType();
+                if (isInputTypeEnum()) {
+                    return String.class;
+                }
+                if (inputType instanceof Class<?>) {
+                    Class<?> inputClass = (Class<?>)inputType;
+                    if (inputClass.isPrimitive()) {
+                        return ClassUtil.wrap(inputClass);
+                    }
+                }
+                return inputType;
+            }
+
+            public boolean isInputTypeEnum() {
+                Type inputType = getInputType();
+                return (inputType instanceof Class<?>) && ((Class<?>)inputType).isEnum();
+            }
+        }
+
+        public static abstract class AnnotatedInputBinding<T extends AccessibleObject & Member> extends AnnotatedBinding<T> {
+
+            public AnnotatedInputBinding(T member) {
+                super(member);
+            }
+            
+            @Override
             public Type getInputType() {
                 Type memberType = getMemberType();
                 Type inputType = memberType;
@@ -471,11 +526,6 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
                 return inputType;
             }
 
-            public Type getPayloadType() {
-                Type inputType = getInputType();
-                return isInputTypeEnum() ? String.class : inputType;
-            }
-
             public boolean isMemberTypeList() {
                 Type memberType = getMemberType();
                 if (memberType instanceof Class<?>) {
@@ -488,10 +538,11 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
                 }
                 return false;
             }
+        }
 
-            public boolean isInputTypeEnum() {
-                Type inputType = getInputType();
-                return (inputType instanceof Class<?>) && ((Class<?>)inputType).isEnum();
+        public static abstract class AnnotatedOutputBinding<T extends AccessibleObject & Member> extends AnnotatedBinding<T> {
+            public AnnotatedOutputBinding(T member) {
+                super(member);
             }
         }
 
@@ -515,16 +566,34 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
                     genericParameterTypes[0];
             }
         }
+        public static class AnnotatedFieldOutputBinding extends AnnotatedOutputBinding<Field> {
+            public AnnotatedFieldOutputBinding(Field field) {
+                super(field);
+            }
+            @Override public Type getMemberType() {
+                return getMember().getGenericType();
+            }
+        }
+
+        public static class AnnotatedMethodOutputBinding extends AnnotatedOutputBinding<Method> {
+            public AnnotatedMethodOutputBinding(Method method) {
+                super(method);
+            }
+            @Override public Type getMemberType() {
+                return getMember().getGenericReturnType();
+            }
+        }
+
     }
 
     private final static Map<Class<?>, Introspector> introspectorMap =
             new HashMap<Class<?>, Introspector>();
     public static synchronized Introspector getInstrospector(Class<?> algorithmClass) {
         Introspector introspector = introspectorMap.get(algorithmClass);
-        if (introspector == null) {
+//        if (introspector == null) {
             introspector = new Introspector(algorithmClass);
             introspectorMap.put(algorithmClass, introspector);
-        }
+//        }
         return introspector;
     }
 
@@ -543,7 +612,7 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
             InputDescriptor iDescriptor = getAlgorithmDescriptor().getInputDescriptor(iIdentifier);
             List<IData> boundList = inputMap.get(iIdentifier);
             try {
-                iAnnotatedBinding.getMember().set(target, unbindInputValue(iDescriptor, boundList, iAnnotatedBinding));
+                iAnnotatedBinding.getMember().set(target, unbindInputValue(iDescriptor, iAnnotatedBinding, boundList));
             } catch (IllegalArgumentException ex) {
                 throw new RuntimeException("Internal error processing inputs", ex);
             } catch (IllegalAccessException ex) {
@@ -557,7 +626,7 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
             InputDescriptor iDescriptor = getAlgorithmDescriptor().getInputDescriptor(iIdentifier);
             List<IData> boundList = inputMap.get(iIdentifier);
             try {
-                iAnnotatedBinding.getMember().invoke(target, unbindInputValue(iDescriptor, boundList, iAnnotatedBinding));
+                iAnnotatedBinding.getMember().invoke(target, unbindInputValue(iDescriptor, iAnnotatedBinding, boundList));
             } catch (IllegalAccessException ex) {
                 throw new RuntimeException("Internal error processing inputs", ex);
             } catch (IllegalArgumentException ex) {
@@ -569,12 +638,58 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
         }
     }
 
-    private Object unbindInputValue(InputDescriptor descriptor, List<IData> boundValueList, Introspector.AnnotatedInputBinding<?> annotatedBinding) {
+    private Map<String, IData> processOutput(Object target) {
+        Introspector introspector = getInstrospector(target.getClass());
+        Map<String, IData> oMap = new HashMap<String, IData>();
+        for (Map.Entry<String, Introspector.AnnotatedOutputBinding<Field>> oEntry : introspector.getOutputFieldMap().entrySet()) {
+            String oIdentifier = oEntry.getKey();
+            Introspector.AnnotatedOutputBinding<Field> oAnnotatedBinding = oEntry.getValue();
+            Field oField = oAnnotatedBinding.getMember();
+            OutputDescriptor<?> oDescriptor = getAlgorithmDescriptor().getOutputDescriptor(oIdentifier);
+            try {
+                Object value = oField.get(target);
+                if (value != null) {
+                    oMap.put(oEntry.getKey(), (IData) bindOutputValue(oDescriptor, oAnnotatedBinding, value));
+                } else {
+                    // TODO: error? warning?
+                }
+            } catch (InvocationTargetException ex) {
+                throw new RuntimeException(ex.getMessage(), ex);
+            } catch (IllegalArgumentException ex) {
+                throw new RuntimeException("Internal error processing outputs", ex);
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException("Internal error processing outputs", ex);
+            }
+        }
+        for (Map.Entry<String, Introspector.AnnotatedOutputBinding<Method>> oEntry : introspector.getOutputMethodMap().entrySet()) {
+            String oIdentifier = oEntry.getKey();
+            Introspector.AnnotatedOutputBinding<Method> oAnnotatedBinding = oEntry.getValue();
+            Method oMethod = oAnnotatedBinding.getMember();
+            OutputDescriptor<?> oDescriptor = getAlgorithmDescriptor().getOutputDescriptor(oIdentifier);
+            try {
+                Object value = oMethod.invoke(target);
+                if (value != null) {
+                    oMap.put(oEntry.getKey(), (IData) bindOutputValue(oDescriptor, oAnnotatedBinding, value));
+                } else {
+                    // TODO: error? warning?
+                }
+            } catch (InvocationTargetException ex) {
+                throw new RuntimeException(ex.getMessage(), ex);
+            } catch (IllegalArgumentException ex) {
+                throw new RuntimeException("Internal error processing outputs", ex);
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException("Internal error processing outputs", ex);
+            }
+        }
+        return oMap;
+    }
+
+    private Object unbindInputValue(InputDescriptor descriptor, Introspector.AnnotatedInputBinding annotatedBinding, List<IData> boundValueList) {
         Object value = null;
         int minOccurs = descriptor.getMinOccurs().intValue();
         int maxOccurs = descriptor.getMaxOccurs().intValue();
         if (boundValueList == null) {
-            Arrays.asList(new IData[0]);
+            boundValueList = Arrays.asList(new IData[0]);
         }
         if (boundValueList.size() < minOccurs) {
             throw new RuntimeException("Found " + boundValueList.size() + "values for INPUT " + descriptor.getIdentifier() + ", require minimum of " + minOccurs);
@@ -601,56 +716,15 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
         return value;
     }
 
-    private Map<String, IData> processOutput(Object target) {
-        Introspector introspector = getInstrospector(target.getClass());
-        Map<String, IData> oMap = new HashMap<String, IData>();
-        for (Map.Entry<String, Field> oEntry : introspector.getOutputFieldMap().entrySet()) {
-            String oIdentifier = oEntry.getKey();
-            Field oField = oEntry.getValue();
-            OutputDescriptor<?> oDescriptor = getAlgorithmDescriptor().getOutputDescriptor(oIdentifier);
-            try {
-                Object value = oField.get(target);
-                if (value != null) {
-                    oMap.put(oEntry.getKey(), (IData) bindOutputValue(oDescriptor, value));
-                } else {
-                    // TODO: error? warning?
-                }
-            } catch (InvocationTargetException ex) {
-                throw new RuntimeException(ex.getMessage(), ex);
-            } catch (IllegalArgumentException ex) {
-                throw new RuntimeException("Internal error processing outputs", ex);
-            } catch (IllegalAccessException ex) {
-                throw new RuntimeException("Internal error processing outputs", ex);
-            }
-        }
-        for (Map.Entry<String, Method> oEntry : introspector.getOutputMethodMap().entrySet()) {
-            String oIdentifier = oEntry.getKey();
-            Method oMethod = oEntry.getValue();
-            OutputDescriptor<?> oDescriptor = getAlgorithmDescriptor().getOutputDescriptor(oIdentifier);
-            try {
-                Object value = oMethod.invoke(target);
-                if (value != null) {
-                    oMap.put(oEntry.getKey(), (IData) bindOutputValue(oDescriptor, value));
-                } else {
-                    // TODO: error? warning?
-                }
-            } catch (InvocationTargetException ex) {
-                throw new RuntimeException(ex.getMessage(), ex);
-            } catch (IllegalArgumentException ex) {
-                throw new RuntimeException("Internal error processing outputs", ex);
-            } catch (IllegalAccessException ex) {
-                throw new RuntimeException("Internal error processing outputs", ex);
-            }
-        }
-        return oMap;
-    }
-
-    private Object bindOutputValue(OutputDescriptor descriptor, Object outputValue)
+    private Object bindOutputValue(OutputDescriptor descriptor, Introspector.AnnotatedOutputBinding annotatedBinding, Object outputValue)
             throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         Object binding = null;
         try {
             Class<?> bindingClass = descriptor.getBinding();
             Constructor bindingConstructor = bindingClass.getConstructor(outputValue.getClass());
+            if (annotatedBinding.isInputTypeEnum()) {
+                outputValue = ((Enum<?>)outputValue).name();
+            }
             binding =  bindingConstructor.newInstance(outputValue);
         } catch (InstantiationException ex) {
                 throw new RuntimeException("Internal error processing outputs", ex);
@@ -676,7 +750,8 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
         } catch (IllegalArgumentException ex) {
             throw new RuntimeException("Internal error executing process", ex);
         } catch (InvocationTargetException ex) {
-            throw new RuntimeException(ex.getMessage(), ex);
+            Throwable cause = ex.getCause() == null ? ex : ex.getCause();
+            throw new RuntimeException(cause.getMessage(), cause);
         }
         return processOutput(target);
     }

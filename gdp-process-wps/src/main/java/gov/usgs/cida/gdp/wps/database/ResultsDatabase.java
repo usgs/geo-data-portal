@@ -2,6 +2,7 @@ package gov.usgs.cida.gdp.wps.database;
 
 import com.google.common.base.Joiner;
 import gov.usgs.cida.gdp.constants.AppConstant;
+import gov.usgs.cida.gdp.wps.util.MIMEUtil;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
@@ -111,7 +112,7 @@ public final class ResultsDatabase implements IDatabase {
 
         String mimeType = getMimeTypeForStoreResponse(request_id);
         if (mimeType != null) {
-            String suffix = fileSuffixFromMimeType(mimeType);
+            String suffix = MIMEUtil.getSuffixFromMIMEType(mimeType);
             synchronized (this) {
                 File[] allFiles = baseDirectory.listFiles();
                 try {
@@ -142,7 +143,7 @@ public final class ResultsDatabase implements IDatabase {
     @Override
     public String storeComplexValue(String id, LargeBufferStream stream, String type, String mimeType) {
 
-        String suffix = fileSuffixFromMimeType(mimeType);
+        String suffix = MIMEUtil.getSuffixFromMIMEType(mimeType);
 
         String resultBaseFileName = fileNameJoiner.join(id, UUID.randomUUID().toString());
         String resultFileName = fileNameJoiner.join(resultBaseFileName, suffix);
@@ -178,7 +179,7 @@ public final class ResultsDatabase implements IDatabase {
     public String storeResponse(Response response) {
 
         String mimeType = "text/xml";
-        String suffix = fileSuffixFromMimeType(mimeType);
+        String suffix = MIMEUtil.getSuffixFromMIMEType(mimeType);
 
         String responseBaseFileName = Long.toString(response.getUniqueId());
         String responseFileName = fileNameJoiner.join(responseBaseFileName, suffix);
@@ -266,11 +267,6 @@ public final class ResultsDatabase implements IDatabase {
             }
             return new File(baseDirectory, id);
         }
-    }
-
-    private String fileSuffixFromMimeType(String mimeType) {
-        String[] mimeTypeSplit = mimeType.split("/");
-        return mimeTypeSplit[mimeTypeSplit.length - 1];
     }
 
     private class WipeTimerTask extends TimerTask {

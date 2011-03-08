@@ -117,7 +117,7 @@ public class FeatureWeightedGridStatisticsAlgorithmX extends AbstractSelfDescrib
             List<String> statisticStringList = GDPAlgorithmUtil.extractStringList(input, I_STATISTICS);
             List<Statistic> statisticList = statisticStringList.size() < 1 ?
             Arrays.asList(Statistic.values()) :
-            GDPAlgorithmUtil.convertStringToEnumList(Statistic.class, statisticStringList);
+            ClassUtil.convertStringToEnumList(Statistic.class, statisticStringList);
 
             String delimiterString = GDPAlgorithmUtil.extractString(input, I_DELIMITER);
             Delimiter delimiter = delimiterString == null ?

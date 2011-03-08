@@ -16,5 +16,5 @@ public @interface LiteralDataOutput {
     String identifier();  // identifier
     String title() default "";
     String abstrakt() default "";  // 'abstract' is java reserved keyword
-    Class <? extends ILiteralData> binding();
+    Class <? extends ILiteralData> binding() default ILiteralData.class;
 }

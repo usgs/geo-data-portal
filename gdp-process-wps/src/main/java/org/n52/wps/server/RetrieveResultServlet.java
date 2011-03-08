@@ -1,15 +1,14 @@
 package org.n52.wps.server;
 
+import gov.usgs.cida.gdp.wps.util.MIMEUtil;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.io.IOUtils;
 import org.n52.wps.server.database.DatabaseFactory;
 import org.n52.wps.server.database.IDatabase;
@@ -35,12 +34,9 @@ public class RetrieveResultServlet extends HttpServlet {
                 if (mimeType == null || is == null) {
                     errorResponse("id parameter invalid", response);
                 } else {
-                    int suffixIndex = mimeType.lastIndexOf('/');
-                    if (suffixIndex > -1) {
-                        String suffix = mimeType.substring(suffixIndex + 1);
-                        if (!suffix.endsWith("xml")) {
-                            response.addHeader("Content-Disposition", "attachment; filename= \"wps-response." + suffix + "\"");
-                        }
+                    String suffix = MIMEUtil.getSuffixFromMIMEType(mimeType);
+                    if (!"xml".equals(suffix)) {
+                        response.addHeader("Content-Disposition", "attachment; filename=\"wps-result." + suffix + "\"");
                     }
                     response.setContentType(mimeType);
                     OutputStream os = response.getOutputStream();

@@ -128,7 +128,17 @@ public class WCSUtil {
         try {
             URI wcsBaseURI = extractWCSBaseURI(wcsURI);
 
-            Document document = DOCUMENT_BUILDER.parse(wcsBaseURI.toString() + "?service=WCS&version=1.1.1&request=DescribeCoverage&Identifiers=" + wcsIdentifier);
+            Document document = null;
+            String wcsGetCapabilitiesURIString = wcsBaseURI.toString() + 
+                        "?service=WCS&version=1.1.1&request=DescribeCoverage&Identifiers=" +
+                        wcsIdentifier;
+            try {
+                document = DOCUMENT_BUILDER.parse(wcsGetCapabilitiesURIString);
+            } catch (IOException e) {
+                throw new RuntimeException("Error obtaining capabilities document from " +  wcsGetCapabilitiesURIString, e);
+            } catch (SAXException e) {
+                throw new RuntimeException("Error parsing capabilities document from " +  wcsGetCapabilitiesURIString, e);
+            }
 
             // XPath infrastructure is not thread-safe, nor renetrant... bah.
             XPath xpath = XPathFactory.newInstance().newXPath();
@@ -305,7 +315,7 @@ public class WCSUtil {
             String wcsCoverageContentType = wcsCoverageConnection.getContentType();
             String[] split = wcsCoverageContentType.split("\\s*;\\s*");
             if (!("multipart/related".equals(split[0].trim()))) {
-                throw new RuntimeException("Unexpected Content-Type on WCS getCoverage response");
+                throw new RuntimeException("Unexpected Content-Type, \"" + wcsCoverageContentType + "\", on WCS getCoverage response to " + sb.toString());
             }
             Pattern keyValuePattern = Pattern.compile("([^=]+)=\"([^\"]+)\"");
             String boundary = null;
@@ -350,8 +360,6 @@ public class WCSUtil {
         } catch (FactoryException e) {
             throw new RuntimeException(e);
         } catch (XPathExpressionException e) {
-            throw new RuntimeException(e);
-        } catch (SAXException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);

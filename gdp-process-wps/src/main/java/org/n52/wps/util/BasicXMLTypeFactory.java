@@ -126,38 +126,38 @@ public class BasicXMLTypeFactory {
 	   return obj.getPayload().toString();
    }
 
-    public static Class<? extends ILiteralData> getBindingForType(Class<?> type) {
-        if (type.equals(float.class)) {
+    public static Class<? extends ILiteralData> getBindingForType(Class<?> payloadType) {
+        if (payloadType.equals(float.class) || payloadType.equals(Float.class)) {
             return LiteralFloatBinding.class;
         }
-        if (type.equals(double.class)) {
+        if (payloadType.equals(double.class) || payloadType.equals(Double.class)) {
             return LiteralDoubleBinding.class;
         }
-        if (type.equals(long.class)) {
+        if (payloadType.equals(long.class) || payloadType.equals(Long.class)) {
             return LiteralLongBinding.class;
         }
-        if (type.equals(int.class)) {
+        if (payloadType.equals(int.class) || payloadType.equals(Integer.class)) {
             return LiteralIntBinding.class;
         }
-        if (type.equals(short.class)) {
+        if (payloadType.equals(short.class) || payloadType.equals(Short.class)) {
             return LiteralShortBinding.class;
         }
-        if (type.equals(byte.class)) {
+        if (payloadType.equals(byte.class) || payloadType.equals(Byte.class)) {
             return LiteralByteBinding.class;
         }
-        if (type.equals(boolean.class)) {
+        if (payloadType.equals(boolean.class) || payloadType.equals(Boolean.class)) {
             return LiteralBooleanBinding.class;
         }
-        if (type.equals(String.class)) {
+        if (payloadType.equals(String.class)) {
             return LiteralStringBinding.class;
         }
-        if (type.equals(Date.class)) {
+        if (payloadType.equals(Date.class)) {
             return LiteralDateTimeBinding.class;
         }
-        if (type.equals(byte[].class)) {
+        if (payloadType.equals(byte[].class)) {
             return LiteralBase64BinaryBinding.class;
         }
-        if (type.equals(URI.class)) {
+        if (payloadType.equals(URI.class)) {
             return LiteralAnyURIBinding.class;
         }
         return null;
