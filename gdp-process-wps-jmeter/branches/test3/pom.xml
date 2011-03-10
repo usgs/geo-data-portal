@@ -1,0 +1,97 @@
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>gov.usgs.cida</groupId>
+    <artifactId>gdp-process-wps-JMeter</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>gdp-process-wps-JMeter</name>
+
+    <dependencies>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <!-- from http://www.ronniealleva.org/index.php/maven-jmeter-plugin/
+                Note that this is more up to date than the apache maven jmeter plugin page -->
+                <groupId>org.apache.jmeter</groupId>
+                <artifactId>maven-jmeter-plugin</artifactId>
+                <version>1.0</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                        <version>1.1.1</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>commons-codec</groupId>
+                        <artifactId>commons-codec</artifactId>
+                        <version>1.4</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>jmeter-tests</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jmeter</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <includes>
+                        <include>GMO_Test.jmx</include>
+                    </includes>
+<!--                    <reportDir>${project.build.directory}/jmeter-reports</reportDir>-->
+                    <reportDir>target/jmeter-reports</reportDir>
+<!--                    <jmeterUserProperties>-->
+                        <!-- Comment this when testing locally -->
+                        <!-- Host where gdp-process-wps sits-->
+<!--                        <processHost>${processHost}</processHost>
+                         Port where gdp-process-wps sits
+                        <processPort>${processPort}</processPort>
+                         Host where gdp-utility-wps sits
+                        <utilityHost>${processHost}</utilityHost>
+                         Port where gdp-utility-wps sits
+                        <utilityPort>${processPort}</utilityPort>
+                         Host where geoserver sits
+                        <wfsHost>${wfsHost}</wfsHost>
+                         Port where geoserver sits
+                        <wfsPort>${wfsPort}</wfsPort>
+                         User name for the geoserver instance
+                        <wfsUsername>${wfsUsername}</wfsUsername>
+                         Password for the geoserver instance
+                        <wfsPassword>${wfsPassword}</wfsPassword>-->
+
+<!--                    </jmeterUserProperties>-->
+                </configuration>
+            </plugin>
+<!--            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>xml-maven-plugin</artifactId>
+                <version>1.0-beta-3</version>
+                <executions>
+                    <execution>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>transform</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <transformationSets>
+                        <transformationSet>
+                            <dir>${project.build.directory}/jmeter-reports</dir>
+                            <stylesheet>extras/jmeter-results-detail-report_21.xsl</stylesheet>
+                            <outputDir>${project.build.directory}/site/jmeter-results</outputDir>
+                            <fileMappers>
+                                <fileMapper implementation="org.codehaus.plexus.components.io.filemappers.FileExtensionMapper">
+                                    <targetExtension>html</targetExtension>
+                                </fileMapper>
+                            </fileMappers>
+                        </transformationSet>
+                    </transformationSets>
+                </configuration>
+            </plugin>-->
+        </plugins>
+    </build>
+</project>
