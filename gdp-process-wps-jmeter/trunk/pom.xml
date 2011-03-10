@@ -11,7 +11,8 @@
     <build>
         <plugins>
             <plugin>
-                <!-- from http://www.ronniealleva.org/index.php/maven-jmeter-plugin/ Note that this is more up to date than the apache maven jmeter plugin page-->
+                <!-- from http://www.ronniealleva.org/index.php/maven-jmeter-plugin/
+                Note that this is more up to date than the apache maven jmeter plugin page -->
                 <groupId>org.apache.jmeter</groupId>
                 <artifactId>maven-jmeter-plugin</artifactId>
                 <version>1.0</version>
@@ -30,8 +31,7 @@
                 <executions>
                     <execution>
                         <id>jmeter-tests</id>
-<!--                        <phase>verify</phase>-->
-                        <phase>integration-test</phase>
+                        <phase>verify</phase>
                         <goals>
                             <goal>jmeter</goal>
                         </goals>
@@ -39,29 +39,38 @@
                 </executions>
                 <configuration>
                     <includes>
-                        <include>gdp-process-wps/gdp-process-wps-test.jmx</include>
+                        <include>GMO_Test.jmx</include>
                     </includes>
-                    <reportDir>${project.build.directory}/jmeter-reports</reportDir>
-                    <jmeterUserProperties>
-                        <reportDir>${project.build.directory}/jmeter-reports</reportDir>
-<!--                        <testHost>${testHost}</testHost>
-                        <testPort>${testPort}</testPort>
-                        <testURI>${testURI}</testURI>
-                        <testWfsEndpoint>${testWfsEndpoint}</testWfsEndpoint>-->
-                        <testHost>igsarm-cida-javadev1.er.usgs.gov</testHost>
-                        <testPort>8080</testPort>
-                        <testURI>gdp-process-wps</testURI>
-                        <testWfsEndpoint>igsarm-cida-javadev1.er.usgs.gov:8080/geoserver</testWfsEndpoint>
-                    </jmeterUserProperties>
+<!--                    <reportDir>${project.build.directory}/jmeter-reports</reportDir>-->
+                    <reportDir>target/jmeter-reports</reportDir>
+<!--                    <jmeterUserProperties>-->
+                        <!-- Comment this when testing locally -->
+                        <!-- Host where gdp-process-wps sits-->
+<!--                        <processHost>${processHost}</processHost>
+                         Port where gdp-process-wps sits
+                        <processPort>${processPort}</processPort>
+                         Host where gdp-utility-wps sits
+                        <utilityHost>${processHost}</utilityHost>
+                         Port where gdp-utility-wps sits
+                        <utilityPort>${processPort}</utilityPort>
+                         Host where geoserver sits
+                        <wfsHost>${wfsHost}</wfsHost>
+                         Port where geoserver sits
+                        <wfsPort>${wfsPort}</wfsPort>
+                         User name for the geoserver instance
+                        <wfsUsername>${wfsUsername}</wfsUsername>
+                         Password for the geoserver instance
+                        <wfsPassword>${wfsPassword}</wfsPassword>-->
+
+<!--                    </jmeterUserProperties>-->
                 </configuration>
             </plugin>
-            <plugin>
+<!--            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>xml-maven-plugin</artifactId>
                 <version>1.0-beta-3</version>
                 <executions>
                     <execution>
-<!--                        <phase>pre-site</phase>-->
                         <phase>integration-test</phase>
                         <goals>
                             <goal>transform</goal>
@@ -82,7 +91,7 @@
                         </transformationSet>
                     </transformationSets>
                 </configuration>
-            </plugin>
+            </plugin>-->
         </plugins>
     </build>
 </project>
