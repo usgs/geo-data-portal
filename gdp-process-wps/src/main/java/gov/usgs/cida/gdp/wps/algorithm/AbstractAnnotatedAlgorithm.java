@@ -692,10 +692,10 @@ public abstract class AbstractAnnotatedAlgorithm extends AbstractSelfDescribingA
             boundValueList = Arrays.asList(new IData[0]);
         }
         if (boundValueList.size() < minOccurs) {
-            throw new RuntimeException("Found " + boundValueList.size() + "values for INPUT " + descriptor.getIdentifier() + ", require minimum of " + minOccurs);
+            throw new RuntimeException("Found " + boundValueList.size() + " values for INPUT " + descriptor.getIdentifier() + ", require minimum of " + minOccurs);
         }
         if (boundValueList.size() > maxOccurs) {
-            throw new RuntimeException("Found " + boundValueList.size() + "values for INPUT " + descriptor.getIdentifier() + ", maximum allowed is " + minOccurs);
+            throw new RuntimeException("Found " + boundValueList.size() + " values for INPUT " + descriptor.getIdentifier() + ", maximum allowed is " + minOccurs);
         }
         if (annotatedBinding.isMemberTypeList()) {
             List valueList = new ArrayList(boundValueList.size());
