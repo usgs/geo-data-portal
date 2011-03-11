@@ -1,10 +1,14 @@
 package gov.usgs.cida.gdp.coreprocessing.analysis.grid;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.measure.quantity.Angle;
 import javax.measure.unit.SI;
 import javax.measure.unit.Unit;
+import org.geotools.metadata.iso.extent.ExtentImpl;
+import org.geotools.metadata.iso.extent.GeographicBoundingBoxImpl;
 import org.geotools.parameter.DefaultParameterDescriptorGroup;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.referencing.crs.DefaultProjectedCRS;
@@ -16,11 +20,15 @@ import org.geotools.referencing.datum.DefaultPrimeMeridian;
 import org.geotools.referencing.operation.DefaultMathTransformFactory;
 import org.geotools.referencing.operation.transform.AbstractMathTransform;
 import org.geotools.referencing.operation.transform.ConcatenatedTransform;
+import org.geotools.referencing.crs.DefaultDerivedCRS;
+import org.opengis.metadata.extent.GeographicExtent;
 import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.parameter.ParameterDescriptorGroup;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.IdentifiedObject;
 import org.opengis.referencing.NoSuchIdentifierException;
+import org.opengis.referencing.ReferenceSystem;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.crs.GeographicCRS;
 import org.opengis.referencing.crs.ProjectedCRS;
@@ -28,10 +36,13 @@ import org.opengis.referencing.cs.CartesianCS;
 import org.opengis.referencing.datum.Ellipsoid;
 import org.opengis.referencing.datum.GeodeticDatum;
 import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.NoninvertibleTransformException;
+import org.opengis.referencing.operation.TransformException;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.util.Parameter;
 
 /**
@@ -68,16 +79,38 @@ public class CRSUtility {
 		GeographicCRS geographicCRS = (datum == DefaultGeodeticDatum.WGS84) ?
 				DefaultGeographicCRS.WGS84 :
 				new DefaultGeographicCRS(
-					"CF Derived Geographic CRS",
+					"CF-Derived Geographic CRS",
 					datum,
 					DefaultEllipsoidalCS.GEODETIC_2D);
 
 		if ("LatLon".equals(gridMappingName) || "longitude_latitude".equals(gridMappingName)) {
-			return geographicCRS;
+
+            ProjectionRect projectionRect = gcs.getBoundingBox();
+            boolean longitude360 = projectionRect.getMaxX() > 180;
+            if (longitude360) {
+                
+                Map<String, Object> crsPoperties = new HashMap<String, Object>();
+                
+                crsPoperties.put(IdentifiedObject.NAME_KEY, "CRS LON [0,360]");
+
+                ExtentImpl extent = new ExtentImpl();
+                List<GeographicExtent> extentList = new ArrayList<GeographicExtent>();
+                extentList.add(new GeographicBoundingBoxImpl(0, 360, -90, 90));
+                extent.setGeographicElements(extentList);
+                crsPoperties.put(ReferenceSystem.DOMAIN_OF_VALIDITY_KEY, extent);
+
+                return new DefaultDerivedCRS(
+                    "CF-Derived CRS LON [0,360]",
+                    geographicCRS,
+                    LongitudeDegreesTransform,
+                    DefaultEllipsoidalCS.GEODETIC_2D);
+            } else {
+                return geographicCRS;
+            }
 		}
 
 		try {
-			
+
 			DefaultMathTransformFactory transformFactory =
 						new DefaultMathTransformFactory();
 
@@ -213,7 +246,7 @@ public class CRSUtility {
 			 * in transform.  see below...
 			MathTransform transform = transformFactory.createParameterizedTransform(parameterGroup);
 			ProjectedCRS projectedCRS = new DefaultProjectedCRS(
-					"CF Derived Projected CRS",
+					"CF-Derived Projected CRS",
 					geographicCRS,
 					transform,
 					cartesianCS);
@@ -241,7 +274,7 @@ public class CRSUtility {
 			 *  to generate ConcatenatedTransform
 			 */
 			ProjectedCRS projectedCRS = new DefaultProjectedCRS(
-				"CF Derived Projected CRS",
+				"CF-Derived Projected CRS",
 				geographicCRS,
 				wrapped,
 				cartesianCS);
@@ -281,17 +314,17 @@ public class CRSUtility {
 		double inverseFlattening = inverseFlatteningParameter == null ? Double.NaN : inverseFlatteningParameter.getNumericValue();
 
 		if (earthRadius == earthRadius) {
-			return DefaultEllipsoid.createEllipsoid("CF Derived Sphere", earthRadius, earthRadius, SI.METER);
+			return DefaultEllipsoid.createEllipsoid("CF-Derived Sphere", earthRadius, earthRadius, SI.METER);
 		}
 		if (semiMajorAxis == semiMajorAxis && semiMinorAxis == semiMinorAxis) {
-			return DefaultEllipsoid.createEllipsoid("CF Derived Ellipsoid", semiMajorAxis, semiMinorAxis, SI.METER);
+			return DefaultEllipsoid.createEllipsoid("CF-Derived Ellipsoid", semiMajorAxis, semiMinorAxis, SI.METER);
 		}
 		if (semiMajorAxis == semiMajorAxis && inverseFlattening == inverseFlattening) {
-			return DefaultEllipsoid.createFlattenedSphere("CF Derived Ellipsoid", semiMajorAxis, inverseFlattening, SI.METER);
+			return DefaultEllipsoid.createFlattenedSphere("CF-Derived Ellipsoid", semiMajorAxis, inverseFlattening, SI.METER);
 		}
 		if (semiMinorAxis == semiMinorAxis && inverseFlattening == inverseFlattening) {
 			semiMajorAxis = semiMinorAxis / ( 1d - 1d / inverseFlattening );
-			return DefaultEllipsoid.createEllipsoid("CF Derived Ellipsoid", semiMajorAxis, semiMinorAxis, SI.METER);
+			return DefaultEllipsoid.createEllipsoid("CF-Derived Ellipsoid", semiMajorAxis, semiMinorAxis, SI.METER);
 		}
 		return DefaultEllipsoid.WGS84;
 	}
@@ -300,7 +333,7 @@ public class CRSUtility {
 		Parameter primeMeridianParameter =  parameterMap.get("longitude_of_prime_meridian");
 		double primeMeridian = primeMeridianParameter == null ? Double.NaN : primeMeridianParameter.getNumericValue();
 		if (primeMeridian == primeMeridian) {
-			return new DefaultPrimeMeridian("CF Derived Prime Meridian", primeMeridian, Angle.UNIT);
+			return new DefaultPrimeMeridian("CF-Derived Prime Meridian", primeMeridian, Angle.UNIT);
 		}
 		return DefaultPrimeMeridian.GREENWICH;
 	}
@@ -312,7 +345,7 @@ public class CRSUtility {
 			return DefaultGeodeticDatum.WGS84;
 		}
 		return new DefaultGeodeticDatum(
-				"CF Derived Datum",
+				"CF-Derived Datum",
 				generateEllipsoid(parameterMap),
 				generatePrimeMeridian(parameterMap));
 	}
@@ -356,11 +389,12 @@ public class CRSUtility {
 		}
 
 	}
-	
+
+    private final static ParameterDescriptorGroup EMPTY_PARAMETER_DESCRIPTORS =
+				new DefaultParameterDescriptorGroup("", new GeneralParameterDescriptor[0] );
+
 	private static class ConcatenatedTransformAdapter extends ConcatenatedTransform {
 
-		private final static ParameterDescriptorGroup PARAMETER_DESCRIPTORS =
-				new DefaultParameterDescriptorGroup("", new GeneralParameterDescriptor[0] );
 		public ConcatenatedTransformAdapter(ConcatenatedTransform delegate) {
 			super(delegate.transform1, delegate.transform2);
 		}
@@ -368,12 +402,65 @@ public class CRSUtility {
 		@Override
 		public ParameterDescriptorGroup getParameterDescriptors() {
 			if (transform1 instanceof AbstractMathTransform) {
-				// seems to preserve WKT produced by ProjectedCRS
+				// seems to preserve WKT produced by ProjectedCRS, but is it valid???
 				return ((AbstractMathTransform)transform1).getParameterDescriptors();
 			}
-			return PARAMETER_DESCRIPTORS;
+			return EMPTY_PARAMETER_DESCRIPTORS;
+		}
+	}
+
+    // Transform longitude from [-180...180] to [0...360]
+    private final static MathTransform LongitudeDegreesTransform = new AbstractMathTransform() {
+
+        @Override public int getSourceDimensions() { return 2; }
+        @Override public int getTargetDimensions() { return 2; }
+
+        @Override
+        public ParameterDescriptorGroup getParameterDescriptors() {
+			return EMPTY_PARAMETER_DESCRIPTORS;
 		}
 
-	}
+        @Override
+        public MathTransform inverse() throws NoninvertibleTransformException {
+            return LongitudeDegreesInverseTransform;
+        }
+
+        @Override
+        public void transform(double[] srcPts, int srcOff, double[] dstPts, int dstOff, int numPts) throws TransformException {
+            int count = numPts * 2;
+            for (int index = 0; index < count; index += 2) {
+                double lon = srcPts[srcOff + index];
+                dstPts[dstOff + index] = 180.0 + Math.IEEEremainder(lon - 180.0, 360.0);
+                dstPts[dstOff + index + 1] = srcPts[srcOff + index + 1];
+            }
+        }
+    };
+
+    // Transform longitude from [0...360] to [-180...180]
+    private final static MathTransform LongitudeDegreesInverseTransform = new AbstractMathTransform() {
+
+        @Override public int getSourceDimensions() { return 2; }
+        @Override public int getTargetDimensions() { return 2; }
+
+        @Override
+		public ParameterDescriptorGroup getParameterDescriptors() {
+			return EMPTY_PARAMETER_DESCRIPTORS;
+		}
+
+        @Override
+        public MathTransform inverse() throws NoninvertibleTransformException {
+            return LongitudeDegreesTransform;
+        }
+
+        @Override
+        public void transform(double[] srcPts, int srcOff, double[] dstPts, int dstOff, int numPts) throws TransformException {
+            int count = numPts * 2;
+            for (int index = srcOff; index < count; index += 2) {
+                double lon = srcPts[srcOff + index];
+                dstPts[dstOff + index] = Math.IEEEremainder(lon + 180.0, 360.0) - 180.0;
+                dstPts[dstOff + index + 1] = srcPts[srcOff + index + 1];
+            }
+        }
+    };
 
 }
