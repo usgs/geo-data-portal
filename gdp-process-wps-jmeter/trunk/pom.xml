@@ -39,7 +39,8 @@
                 </executions>
                 <configuration>
                     <includes>
-                        <include>GMO_Test.jmx</include>
+                        <include>UploadShapefileTest.jmx</include>
+<!--                        <include>GMO_Test.jmx</include>-->
                     </includes>
 <!--                    <reportDir>${project.build.directory}/jmeter-reports</reportDir>-->
                     <reportDir>target/jmeter-reports</reportDir>
