@@ -38,42 +38,55 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <!--
+                    The plugin uses alphabetic order to decide the order of the tests. (Yes, really).
+                    -->
                     <includes>
-<!--                        <include>UploadShapefileTest.jmx</include>-->
-<!--                        <include>GMOTest.jmx</include>-->
-                        <include>DeleteShapefile.jmx</include>
-                    </includes>
-<!--                    <reportDir>${project.build.directory}/jmeter-reports</reportDir>-->
-                    <reportDir>target/jmeter-reports</reportDir>
-<!--                    <jmeterUserProperties>-->
-                        <!-- Comment this when testing locally -->
-                        <!-- Host where gdp-process-wps sits-->
-<!--                        <processHost>${processHost}</processHost>
-                         Port where gdp-process-wps sits
-                        <processPort>${processPort}</processPort>
-                         Host where gdp-utility-wps sits
-                        <utilityHost>${processHost}</utilityHost>
-                         Port where gdp-utility-wps sits
-                        <utilityPort>${processPort}</utilityPort>
-                         Host where geoserver sits
-                        <wfsHost>${wfsHost}</wfsHost>
-                         Port where geoserver sits
-                        <wfsPort>${wfsPort}</wfsPort>
-                         User name for the geoserver instance
-                        <wfsUsername>${wfsUsername}</wfsUsername>
-                         Password for the geoserver instance
-                        <wfsPassword>${wfsPassword}</wfsPassword>-->
+                        <!--
+                        This test uploads the shapefile to the WFS server.
+                        Probably only needs to be run once as an initialization.
+                        -->
+                        <include>AAA_UploadShapefileTest.jmx</include>
 
-<!--                    </jmeterUserProperties>-->
+                        <include>GMOTest.jmx</include>
+
+                        <!--
+                        This test deletes the file we uploaded to the WFS server.
+                        Probably only needs to be run once as cleanup.
+                        -->
+                        <include>ZZZ_DeleteShapefile.jmx</include>
+                    </includes>
+                    <reportDir>${project.build.directory}/jmeter-reports</reportDir>
+                    <!--
+                    processHost = Host where gdp-process-wps sits
+                    processPort = Port where gdp-process-wps sits
+                    utilityHost = Host where gdp-utility-wps sits
+                    utilityPort = Port where gdp-utility-wps sits
+                    wfsHost = Host where geoserver sits
+                    wfsPort = Port where geoserver sits
+                    wfsUsername = User name for the geoserver instance
+                    wfsPassword = Password for the geoserver instance
+                    -->
+                    <!-- Comment this when testing locally -->
+                    <jmeterUserProperties>
+                        <processHost>${processHost}</processHost>
+                        <processPort>${processPort}</processPort>
+                        <utilityHost>${processHost}</utilityHost>
+                        <utilityPort>${processPort}</utilityPort>
+                        <wfsHost>${wfsHost}</wfsHost>
+                        <wfsPort>${wfsPort}</wfsPort>
+                        <wfsUsername>${wfsUsername}</wfsUsername>
+                        <wfsPassword>${wfsPassword}</wfsPassword>
+                    </jmeterUserProperties>
                 </configuration>
             </plugin>
-<!--            <plugin>
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>xml-maven-plugin</artifactId>
                 <version>1.0-beta-3</version>
                 <executions>
                     <execution>
-                        <phase>integration-test</phase>
+                        <phase>verify</phase>
                         <goals>
                             <goal>transform</goal>
                         </goals>
@@ -93,7 +106,7 @@
                         </transformationSet>
                     </transformationSets>
                 </configuration>
-            </plugin>-->
+            </plugin>
         </plugins>
     </build>
 </project>
