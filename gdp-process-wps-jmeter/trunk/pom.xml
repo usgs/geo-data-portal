@@ -49,13 +49,14 @@
                         <include>1.1_UPLOAD_GMO_Shapefile.jmx</include>
                         <include>1.2_UPLOAD_RFC_Shapefile.jmx</include> 
                         <include>1.3_UPLOAD_RUNOFF_Shapefile.jmx</include>
-<!--                        <include>1.4_UPLOAD_NLCD_Shapefile.jmx</include>-->
+                        <include>1.4_UPLOAD_NLCD_AND_NED_Shapefile.jmx</include>
 
                         <!-- Meat and potatoes -->
                         <include>2.1_GMOTest.jmx</include>
                         <include>2.2_RFCTest.jmx</include>
                         <include>2.3_RUNOFF_Test.jmx</include>
 <!--                        <include>2.4_NLCD_Test.jmx</include>-->
+                        <include>2.5_NED_Test.jmx</include>
 
                         <!--
                         These tests delete the file we uploaded to the WFS server.
@@ -64,7 +65,7 @@
                         <include>3.1_DELETE_GMO_Shapefile.jmx</include>
                         <include>3.2_DELETE_RFC_Shapefile.jmx</include>
                         <include>3.3_DELETE_RUNOFF_Shapefile.jmx</include>
-<!--                        <include>3.4_DELETE_NLCD_Shapefile.jmx</include>-->
+                        <include>3.4_DELETE_NLCD_AND_NED_Shapefile.jmx</include>
                     </includes>
                     <reportDir>${project.build.directory}/jmeter-reports</reportDir>
                     <!--
