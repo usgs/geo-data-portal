@@ -71,7 +71,7 @@
         </collectionProp>
       </Arguments>
       <hashTree/>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Upload Shapefile Thread" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Upload GMO Shapefile Thread" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">stoptest</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -98,6 +98,11 @@
               <stringProp name="Argument.value">http://${utilityHost}:${utilityPort}${utilityURI}</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
+            <elementProp name="shapefileName" elementType="Argument">
+              <stringProp name="Argument.name">shapefileName</stringProp>
+              <stringProp name="Argument.value">subbasin_alb_JMETER_TESTING_DELETEME</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
           </collectionProp>
         </Arguments>
         <hashTree/>
@@ -114,7 +119,7 @@
 		&lt;wps:Input&gt;
 			&lt;ows:Identifier&gt;filename&lt;/ows:Identifier&gt;
 			&lt;wps:Data&gt;
-				&lt;wps:LiteralData&gt;jmeterTestshape_deleteme&lt;/wps:LiteralData&gt;
+				&lt;wps:LiteralData&gt;${shapefileName}&lt;/wps:LiteralData&gt;
 			&lt;/wps:Data&gt;
 		&lt;/wps:Input&gt;
 		&lt;wps:Input&gt;
@@ -188,7 +193,7 @@
         <hashTree>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Layer Deleted Response Assertion" enabled="true">
             <collectionProp name="Asserion.test_strings">
-              <stringProp name="143919195">jmeterTestshape_deleteme.xml</stringProp>
+              <stringProp name="2130258037">${shapefileName}.xml</stringProp>
             </collectionProp>
             <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
             <boolProp name="Assertion.assume_success">false</boolProp>
@@ -224,7 +229,7 @@
         <hashTree>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Datastore Deleted Response Assertion" enabled="true">
             <collectionProp name="Asserion.test_strings">
-              <stringProp name="143919195">jmeterTestshape_deleteme.xml</stringProp>
+              <stringProp name="2130258037">${shapefileName}.xml</stringProp>
             </collectionProp>
             <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
             <boolProp name="Assertion.assume_success">false</boolProp>

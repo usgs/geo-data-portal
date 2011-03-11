@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="2.1">
+  <hashTree>
+    <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Global User Variables" enabled="true">
+      <collectionProp name="Arguments.arguments">
+        <elementProp name="timerLength" elementType="Argument">
+          <stringProp name="Argument.name">timerLength</stringProp>
+          <stringProp name="Argument.value">10000</stringProp>
+          <stringProp name="Argument.metadata">=</stringProp>
+        </elementProp>
+        <elementProp name="processHost" elementType="Argument">
+          <stringProp name="Argument.name">processHost</stringProp>
+          <stringProp name="Argument.value">${__P(processHost,localhost)}</stringProp>
+          <stringProp name="Argument.metadata">=</stringProp>
+        </elementProp>
+        <elementProp name="processPort" elementType="Argument">
+          <stringProp name="Argument.name">processPort</stringProp>
+          <stringProp name="Argument.value">${__P(processPort,8080)}</stringProp>
+          <stringProp name="Argument.metadata">=</stringProp>
+        </elementProp>
+        <elementProp name="processURI" elementType="Argument">
+          <stringProp name="Argument.name">processURI</stringProp>
+          <stringProp name="Argument.value">${__P(processUri,/gdp-process-wps)}</stringProp>
+          <stringProp name="Argument.metadata">=</stringProp>
+        </elementProp>
+        <elementProp name="utilityHost" elementType="Argument">
+          <stringProp name="Argument.name">utilityHost</stringProp>
+          <stringProp name="Argument.value">${__P(utilityHost,localhost)}</stringProp>
+          <stringProp name="Argument.metadata">=</stringProp>
+        </elementProp>
+        <elementProp name="utilityPort" elementType="Argument">
+          <stringProp name="Argument.name">utilityPort</stringProp>
+          <stringProp name="Argument.value">${__P(utilityPort,8080)}</stringProp>
+          <stringProp name="Argument.metadata">=</stringProp>
+        </elementProp>
+        <elementProp name="utilityURI" elementType="Argument">
+          <stringProp name="Argument.name">utilityURI</stringProp>
+          <stringProp name="Argument.value">${__P(utilityUri,/gdp-utility-wps)}</stringProp>
+          <stringProp name="Argument.metadata">=</stringProp>
+        </elementProp>
+        <elementProp name="wfsHost" elementType="Argument">
+          <stringProp name="Argument.name">wfsHost</stringProp>
+          <stringProp name="Argument.value">${__P(wfsHost,localhost)}</stringProp>
+          <stringProp name="Argument.metadata">=</stringProp>
+        </elementProp>
+        <elementProp name="wfsPort" elementType="Argument">
+          <stringProp name="Argument.name">wfsPort</stringProp>
+          <stringProp name="Argument.value">${__P(wfsPort,8081)}</stringProp>
+          <stringProp name="Argument.metadata">=</stringProp>
+        </elementProp>
+        <elementProp name="wfsUsername" elementType="Argument">
+          <stringProp name="Argument.name">wfsUsername</stringProp>
+          <stringProp name="Argument.value">${__P(wfsUsername,admin)}</stringProp>
+          <stringProp name="Argument.metadata">=</stringProp>
+        </elementProp>
+        <elementProp name="wfsPassword" elementType="Argument">
+          <stringProp name="Argument.name">wfsPassword</stringProp>
+          <stringProp name="Argument.value">${__P(wfsPassword,geoserver)}</stringProp>
+          <stringProp name="Argument.metadata">=</stringProp>
+        </elementProp>
+      </collectionProp>
+    </Arguments>
+    <hashTree/>
+  </hashTree>
+</jmeterTestPlan>

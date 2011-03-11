@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jmeterTestPlan version="1.2" properties="2.1">
   <hashTree>
-    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Delete Shapefile Testplan" enabled="true">
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Delete Runoff Testplan" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
       <boolProp name="TestPlan.functional_mode">false</boolProp>
       <boolProp name="TestPlan.serialize_threadgroups">true</boolProp>
@@ -98,6 +98,11 @@
               <stringProp name="Argument.value">http://${utilityHost}:${utilityPort}${utilityURI}</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
+            <elementProp name="shapefileName" elementType="Argument">
+              <stringProp name="Argument.name">shapefileName</stringProp>
+              <stringProp name="Argument.value">lake_mich_12_alb_NAD83_Simpl_JMETER_TESTING_DELETEME</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
           </collectionProp>
         </Arguments>
         <hashTree/>
@@ -137,7 +142,7 @@
 		&lt;wps:Input&gt;
 			&lt;ows:Identifier&gt;datastore&lt;/ows:Identifier&gt;
 			&lt;wps:Data&gt;
-				&lt;wps:LiteralData&gt;jmeterTestshape_deleteme&lt;/wps:LiteralData&gt;
+				&lt;wps:LiteralData&gt;${shapefileName}&lt;/wps:LiteralData&gt;
 			&lt;/wps:Data&gt;
 		&lt;/wps:Input&gt;		
 	&lt;/wps:DataInputs&gt;
@@ -187,7 +192,7 @@
         <hashTree>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Layer Deleted Response Assertion" enabled="true">
             <collectionProp name="Asserion.test_strings">
-              <stringProp name="282638386">jmeterTestshape_deleteme</stringProp>
+              <stringProp name="1622537548">${shapefileName}</stringProp>
             </collectionProp>
             <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
             <boolProp name="Assertion.assume_success">false</boolProp>
@@ -217,7 +222,7 @@
         <hashTree>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Datastore Deleted Response Assertion" enabled="true">
             <collectionProp name="Asserion.test_strings">
-              <stringProp name="282638386">jmeterTestshape_deleteme</stringProp>
+              <stringProp name="1622537548">${shapefileName}</stringProp>
             </collectionProp>
             <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
             <boolProp name="Assertion.assume_success">false</boolProp>

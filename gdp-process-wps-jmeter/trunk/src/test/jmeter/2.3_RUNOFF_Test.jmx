@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jmeterTestPlan version="1.2" properties="2.1">
   <hashTree>
-    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Full WPS Functional Test Plan" enabled="true">
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="RUNOFF Test Plan" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
       <boolProp name="TestPlan.functional_mode">false</boolProp>
-      <boolProp name="TestPlan.serialize_threadgroups">true</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
       <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
         <collectionProp name="Arguments.arguments"/>
       </elementProp>
@@ -71,7 +71,7 @@
         </collectionProp>
       </Arguments>
       <hashTree/>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="GMO Test" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Runoff Test" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">stoptest</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -84,7 +84,6 @@
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration"></stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
-        <stringProp name="TestPlan.comments">This test covers our THREDDS server using a </stringProp>
       </ThreadGroup>
       <hashTree>
         <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Local Vars" enabled="true">
@@ -102,6 +101,11 @@
             <elementProp name="wfsEndpoint" elementType="Argument">
               <stringProp name="Argument.name">wfsEndpoint</stringProp>
               <stringProp name="Argument.value">http://${wfsHost}:${wfsPort}/geoserver</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="shapefileName" elementType="Argument">
+              <stringProp name="Argument.name">shapefileName</stringProp>
+              <stringProp name="Argument.value">lake_mich_12_alb_NAD83_Simpl_JMETER_TESTING_DELETEME</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
           </collectionProp>
@@ -125,25 +129,25 @@
 		&lt;wps:Input&gt;
 			&lt;ows:Identifier&gt;DATASET_URI&lt;/ows:Identifier&gt;
 			&lt;wps:Data&gt;
-				&lt;wps:LiteralData&gt;dods://internal.cida.usgs.gov/thredds/dodsC/gmo/GMO_w_meta.ncml&lt;/wps:LiteralData&gt;
+				&lt;wps:LiteralData&gt;dods://runoff.cr.usgs.gov:8086/thredds/dodsC/hydro/national/2.5arcmin&lt;/wps:LiteralData&gt;
 			&lt;/wps:Data&gt;
 		&lt;/wps:Input&gt;
 		&lt;wps:Input&gt;
 			&lt;ows:Identifier&gt;DATASET_ID&lt;/ows:Identifier&gt;
 			&lt;wps:Data&gt;
-				&lt;wps:LiteralData&gt;Prcp&lt;/wps:LiteralData&gt;
+				&lt;wps:LiteralData&gt;runoff&lt;/wps:LiteralData&gt;
 			&lt;/wps:Data&gt;
 		&lt;/wps:Input&gt;
 		&lt;wps:Input&gt;
 			&lt;ows:Identifier&gt;TIME_START&lt;/ows:Identifier&gt;
 			&lt;wps:Data&gt;
-				&lt;wps:LiteralData&gt;1999-06-27T00:00:00.000Z&lt;/wps:LiteralData&gt;
+				&lt;wps:LiteralData&gt;2009-07-10T00:00:00.000Z&lt;/wps:LiteralData&gt;
 			&lt;/wps:Data&gt;
 		&lt;/wps:Input&gt;
 		&lt;wps:Input&gt;
 			&lt;ows:Identifier&gt;TIME_END&lt;/ows:Identifier&gt;
 			&lt;wps:Data&gt;
-				&lt;wps:LiteralData&gt;1999-06-27T00:00:00.000Z&lt;/wps:LiteralData&gt;
+				&lt;wps:LiteralData&gt;2009-07-12T00:00:00.000Z&lt;/wps:LiteralData&gt;
 			&lt;/wps:Data&gt;
 		&lt;/wps:Input&gt;
 		&lt;wps:Input&gt;
@@ -169,7 +173,7 @@
 			&lt;wps:Reference xlink:href=&quot;${wfsEndpoint}/wfs&quot;&gt;
 				&lt;wps:Body&gt;
 					&lt;wfs:GetFeature service=&quot;WFS&quot; version=&quot;1.1.0&quot; outputFormat=&quot;text/xml; subtype=gml/3.1.1&quot; xmlns:myns=&quot;http://www.someserver.com/myns&quot; xmlns:wfs=&quot;http://www.opengis.net/wfs&quot; xmlns:ogc=&quot;http://www.opengis.net/ogc&quot; xmlns:gml=&quot;http://www.opengis.net/gml&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd&quot;&gt;
-						&lt;wfs:Query typeName=&quot;upload:jmeterTestshape_deleteme&quot;&gt;
+						&lt;wfs:Query typeName=&quot;upload:${shapefileName}&quot;&gt;
 							&lt;wfs:PropertyName&gt;the_geom&lt;/wfs:PropertyName&gt;
 							&lt;wfs:PropertyName&gt;HUC_8&lt;/wfs:PropertyName&gt;
 						&lt;/wfs:Query&gt;
@@ -199,8 +203,6 @@
             <boolProp name="XPathExtractor.validate">false</boolProp>
             <boolProp name="XPathExtractor.tolerant">false</boolProp>
             <boolProp name="XPathExtractor.namespace">true</boolProp>
-            <boolProp name="XPathExtractor.show_warnings">true</boolProp>
-            <boolProp name="XPathExtractor.report_errors">true</boolProp>
           </XPathExtractor>
           <hashTree/>
           <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Get Response ID" enabled="true">
@@ -288,7 +290,7 @@
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">true</boolProp>
-          <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
           <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
           <boolProp name="HTTPSampler.monitor">false</boolProp>
           <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
@@ -296,10 +298,10 @@
         <hashTree>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
             <collectionProp name="Asserion.test_strings">
-              <stringProp name="-1726520702">,03160101,03160102,03160103,03160104,03160105,03160106,03160107,03160108,03160109,03160110,03160111,03160112,03160113,03160201,03160202,03160203,03160204,03160205,ALL ATTRIBUTES
-TIMESTEP,MEAN(mm/d),MEAN(mm/d),MEAN(mm/d),MEAN(mm/d),MEAN(mm/d),MEAN(mm/d),MEAN(mm/d),MEAN(mm/d),MEAN(mm/d),MEAN(mm/d),MEAN(mm/d),MEAN(mm/d),MEAN(mm/d),MEAN(mm/d),MEAN(mm/d),MEAN(mm/d),MEAN(mm/d),MEAN(mm/d),MEAN(mm/d)
-27 Jun 1999 00:00:00 GMT,10.14438,10.19982,10.59650,31.13144,14.41096,21.29059,15.04279,17.61506,31.55220,33.55880,48.28661,20.57657,32.58906,23.69412,11.63241,27.89012,39.08419,14.17255,23.75016
-ALL TIMESTEPS,10.14438,10.19982,10.59650,31.13144,14.41096,21.29059,15.04279,17.61506,31.55220,33.55880,48.28661,20.57657,32.58906,23.69412,11.63241,27.89012,39.08419,14.17255,23.75016
+              <stringProp name="506138570">,04030101,04030102,04030103,04030104,04030105,04030106,04030107,04030108,04030109,04030110,04030111,04030112,04030201,04030202,04030203,04030204,04040001,04040002,04040003,04050001,04050002,04050003,04050004,04050005,04050006,04050007,04060101,04060102,04060103,04060104,04060105,04060106,04060107,ALL ATTRIBUTES
+TIMESTEP,MEAN(mm/month),MEAN(mm/month),MEAN(mm/month),MEAN(mm/month),MEAN(mm/month),MEAN(mm/month),MEAN(mm/month),MEAN(mm/month),MEAN(mm/month),MEAN(mm/month),MEAN(mm/month),MEAN(mm/month),MEAN(mm/month),MEAN(mm/month),MEAN(mm/month),MEAN(mm/month),MEAN(mm/month),MEAN(mm/month),MEAN(mm/month),MEAN(mm/month),MEAN(mm/month),MEAN(mm/month),MEAN(mm/month),MEAN(mm/month),MEAN(mm/month),MEAN(mm/month),MEAN(mm/month),MEAN(mm/month),MEAN(mm/month),MEAN(mm/month),MEAN(mm/month),MEAN(mm/month),MEAN(mm/month),MEAN(mm/month)
+14 Jun 2009 00:00:00 GMT,23.15972,20.01588,22.38408,24.75175,25.61469,24.97271,30.12694,18.87595,27.09679,33.43524,41.71366,41.47189,25.02183,21.84015,21.63358,20.95296,42.39588,48.59838,35.73486,39.28805,43.03654,39.04195,38.66337,40.00179,44.37496,41.42781,62.49085,52.62422,56.73917,53.56325,40.84975,49.46491,43.24067,36.87481
+ALL TIMESTEPS,23.15972,20.01588,22.38408,24.75175,25.61469,24.97271,30.12694,18.87595,27.09679,33.43524,41.71366,41.47189,25.02183,21.84015,21.63358,20.95296,42.39588,48.59838,35.73486,39.28805,43.03654,39.04195,38.66337,40.00179,44.37496,41.42781,62.49085,52.62422,56.73917,53.56325,40.84975,49.46491,43.24067,36.87481
 </stringProp>
             </collectionProp>
             <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
@@ -335,7 +337,7 @@ ALL TIMESTEPS,10.14438,10.19982,10.59650,31.13144,14.41096,21.29059,15.04279,17.
                 <assertionsResultsToSave>0</assertionsResultsToSave>
               </value>
             </objProp>
-            <stringProp name="filename">${__P(reportDir)}/gdp_GMO_test_result.jtl</stringProp>
+            <stringProp name="filename">${__P(reportDir)}/gdp_RUNOFF_test_result.jtl</stringProp>
           </ResultCollector>
           <hashTree/>
         </hashTree>

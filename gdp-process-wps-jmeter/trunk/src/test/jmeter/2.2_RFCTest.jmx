@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="2.1">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="RFC Test Plan" enabled="true">
+      <stringProp name="TestPlan.comments"></stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">true</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+      <stringProp name="TestPlan.user_define_classpath"></stringProp>
+    </TestPlan>
+    <hashTree>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Global User Variables" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="timerLength" elementType="Argument">
+            <stringProp name="Argument.name">timerLength</stringProp>
+            <stringProp name="Argument.value">10000</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="processHost" elementType="Argument">
+            <stringProp name="Argument.name">processHost</stringProp>
+            <stringProp name="Argument.value">${__P(processHost,localhost)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="processPort" elementType="Argument">
+            <stringProp name="Argument.name">processPort</stringProp>
+            <stringProp name="Argument.value">${__P(processPort,8080)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="processURI" elementType="Argument">
+            <stringProp name="Argument.name">processURI</stringProp>
+            <stringProp name="Argument.value">${__P(processUri,/gdp-process-wps)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="utilityHost" elementType="Argument">
+            <stringProp name="Argument.name">utilityHost</stringProp>
+            <stringProp name="Argument.value">${__P(utilityHost,localhost)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="utilityPort" elementType="Argument">
+            <stringProp name="Argument.name">utilityPort</stringProp>
+            <stringProp name="Argument.value">${__P(utilityPort,8080)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="utilityURI" elementType="Argument">
+            <stringProp name="Argument.name">utilityURI</stringProp>
+            <stringProp name="Argument.value">${__P(utilityUri,/gdp-utility-wps)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="wfsHost" elementType="Argument">
+            <stringProp name="Argument.name">wfsHost</stringProp>
+            <stringProp name="Argument.value">${__P(wfsHost,localhost)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="wfsPort" elementType="Argument">
+            <stringProp name="Argument.name">wfsPort</stringProp>
+            <stringProp name="Argument.value">${__P(wfsPort,8081)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="wfsUsername" elementType="Argument">
+            <stringProp name="Argument.name">wfsUsername</stringProp>
+            <stringProp name="Argument.value">${__P(wfsUsername,admin)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="wfsPassword" elementType="Argument">
+            <stringProp name="Argument.name">wfsPassword</stringProp>
+            <stringProp name="Argument.value">${__P(wfsPassword,geoserver)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </Arguments>
+      <hashTree/>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="RFC Test" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">stoptest</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <longProp name="ThreadGroup.start_time">1294838330000</longProp>
+        <longProp name="ThreadGroup.end_time">1294838330000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Local Vars" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="processStatus" elementType="Argument">
+              <stringProp name="Argument.name">processStatus</stringProp>
+              <stringProp name="Argument.value">null</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="processURL" elementType="Argument">
+              <stringProp name="Argument.name">processURL</stringProp>
+              <stringProp name="Argument.value">http://${processHost}:${processPort}${processURI}</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="wfsEndpoint" elementType="Argument">
+              <stringProp name="Argument.name">wfsEndpoint</stringProp>
+              <stringProp name="Argument.value">http://${wfsHost}:${wfsPort}/geoserver</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="shapefileName" elementType="Argument">
+              <stringProp name="Argument.name">shapefileName</stringProp>
+              <stringProp name="Argument.value">Yahara_alb_JMETER_TESTING_DELETEME</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+        </Arguments>
+        <hashTree/>
+        <SoapSampler guiclass="SoapSamplerGui" testclass="SoapSampler" testname="SOAP/XML-RPC Request" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="SoapSampler.URL_DATA">${processURL}/WebProcessingService</stringProp>
+          <stringProp name="HTTPSamper.xml_data">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;wps:Execute service=&quot;WPS&quot; version=&quot;1.0.0&quot; xmlns:wps=&quot;http://www.opengis.net/wps/1.0.0&quot; xmlns:ows=&quot;http://www.opengis.net/ows/1.1&quot; xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd&quot;&gt;
+	&lt;ows:Identifier&gt;gov.usgs.cida.gdp.wps.algorithm.FeatureWeightedGridStatisticsAlgorithm&lt;/ows:Identifier&gt;
+	&lt;wps:DataInputs&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;FEATURE_ATTRIBUTE_NAME&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;ID&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;DATASET_URI&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;dods://internal.cida.usgs.gov/thredds/dodsC/qpe/arfcqpe_w_meta.ncml&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;DATASET_ID&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;Total_precipitation&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;TIME_START&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;2010-06-21T00:00:00.000Z&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;TIME_END&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;2010-06-23T00:00:00.000Z&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;STATISTICS&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;MEAN&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;GROUP_BY&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;STATISTIC&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;DELIMITER&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;COMMA&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;FEATURE_COLLECTION&lt;/ows:Identifier&gt;
+			&lt;wps:Reference xlink:href=&quot;${wfsEndpoint}/wfs&quot;&gt;
+				&lt;wps:Body&gt;
+					&lt;wfs:GetFeature service=&quot;WFS&quot; version=&quot;1.1.0&quot; outputFormat=&quot;text/xml; subtype=gml/3.1.1&quot; xmlns:myns=&quot;http://www.someserver.com/myns&quot; xmlns:wfs=&quot;http://www.opengis.net/wfs&quot; xmlns:ogc=&quot;http://www.opengis.net/ogc&quot; xmlns:gml=&quot;http://www.opengis.net/gml&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd&quot;&gt;
+						&lt;wfs:Query typeName=&quot;upload:${shapefileName}&quot;&gt;
+							&lt;wfs:PropertyName&gt;the_geom&lt;/wfs:PropertyName&gt;
+							&lt;wfs:PropertyName&gt;ID&lt;/wfs:PropertyName&gt;
+						&lt;/wfs:Query&gt;
+					&lt;/wfs:GetFeature&gt;
+				&lt;/wps:Body&gt;
+			&lt;/wps:Reference&gt;
+		&lt;/wps:Input&gt;
+	&lt;/wps:DataInputs&gt;
+	&lt;wps:ResponseForm&gt;
+		&lt;wps:ResponseDocument storeExecuteResponse=&quot;true&quot; status=&quot;true&quot;&gt;
+			&lt;wps:Output asReference=&quot;true&quot;&gt;
+				&lt;ows:Identifier&gt;OUTPUT&lt;/ows:Identifier&gt;
+			&lt;/wps:Output&gt;
+		&lt;/wps:ResponseDocument&gt;
+	&lt;/wps:ResponseForm&gt;
+&lt;/wps:Execute&gt;</stringProp>
+          <stringProp name="SoapSampler.xml_data_file"></stringProp>
+          <stringProp name="SoapSampler.SOAP_ACTION"></stringProp>
+          <stringProp name="SoapSampler.SEND_SOAP_ACTION">false</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
+        </SoapSampler>
+        <hashTree>
+          <XPathExtractor guiclass="XPathExtractorGui" testclass="XPathExtractor" testname="Get Status URL" enabled="true">
+            <stringProp name="XPathExtractor.default">statusURL Not Found</stringProp>
+            <stringProp name="XPathExtractor.refname">statusURL</stringProp>
+            <stringProp name="XPathExtractor.xpathQuery">/ns:ExecuteResponse/@statusLocation</stringProp>
+            <boolProp name="XPathExtractor.validate">false</boolProp>
+            <boolProp name="XPathExtractor.tolerant">false</boolProp>
+            <boolProp name="XPathExtractor.namespace">true</boolProp>
+          </XPathExtractor>
+          <hashTree/>
+          <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Get Response ID" enabled="true">
+            <stringProp name="RegexExtractor.useHeaders">unescaped</stringProp>
+            <stringProp name="RegexExtractor.refname">statusid</stringProp>
+            <stringProp name="RegexExtractor.regex">id=(\d+)</stringProp>
+            <stringProp name="RegexExtractor.template">$0$</stringProp>
+            <stringProp name="RegexExtractor.default">id not found</stringProp>
+            <stringProp name="RegexExtractor.match_number">1</stringProp>
+            <stringProp name="Sample.scope">variable</stringProp>
+            <stringProp name="Scope.variable">statusURL</stringProp>
+          </RegexExtractor>
+          <hashTree/>
+        </hashTree>
+        <WhileController guiclass="WhileControllerGui" testclass="WhileController" testname="While Controller" enabled="true">
+          <stringProp name="WhileController.condition">${__javaScript(&quot;${processStatus}&quot;!=&quot;Process successful&quot;)}</stringProp>
+        </WhileController>
+        <hashTree>
+          <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="HTTP Request" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain">${processHost}</stringProp>
+            <stringProp name="HTTPSampler.port">${processPort}</stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">${processURI}/RetrieveResultServlet?${statusid}</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSampler>
+          <hashTree>
+            <XPathExtractor guiclass="XPathExtractorGui" testclass="XPathExtractor" testname="XPath Extractor" enabled="true">
+              <stringProp name="XPathExtractor.default">no data url</stringProp>
+              <stringProp name="XPathExtractor.refname">dataURL</stringProp>
+              <stringProp name="XPathExtractor.xpathQuery">/ns:ExecuteResponse/ns:ProcessOutputs/ns:Output/ns:Reference/@href</stringProp>
+              <boolProp name="XPathExtractor.validate">false</boolProp>
+              <boolProp name="XPathExtractor.tolerant">false</boolProp>
+              <boolProp name="XPathExtractor.namespace">true</boolProp>
+            </XPathExtractor>
+            <hashTree/>
+            <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Regular Expression Extractor" enabled="true">
+              <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+              <stringProp name="RegexExtractor.refname">outputfileid</stringProp>
+              <stringProp name="RegexExtractor.regex">id=([^&quot;]+)</stringProp>
+              <stringProp name="RegexExtractor.template">$0$</stringProp>
+              <stringProp name="RegexExtractor.default">no_id</stringProp>
+              <stringProp name="RegexExtractor.match_number">1</stringProp>
+              <stringProp name="Sample.scope">variable</stringProp>
+              <stringProp name="Scope.variable">dataURL</stringProp>
+            </RegexExtractor>
+            <hashTree/>
+            <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
+              <stringProp name="ConstantTimer.delay">${timerLength}</stringProp>
+            </ConstantTimer>
+            <hashTree/>
+            <XPathExtractor guiclass="XPathExtractorGui" testclass="XPathExtractor" testname="status extractor" enabled="true">
+              <stringProp name="XPathExtractor.default">null</stringProp>
+              <stringProp name="XPathExtractor.refname">processStatus</stringProp>
+              <stringProp name="XPathExtractor.xpathQuery">/ns:ExecuteResponse/ns:Status/ns:ProcessSucceeded</stringProp>
+              <boolProp name="XPathExtractor.validate">false</boolProp>
+              <boolProp name="XPathExtractor.tolerant">false</boolProp>
+              <boolProp name="XPathExtractor.namespace">true</boolProp>
+            </XPathExtractor>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+        <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="HTTP Request" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${processHost}</stringProp>
+          <stringProp name="HTTPSampler.port">${processPort}</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">${processURI}/RetrieveResultServlet?${outputfileid}</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <boolProp name="HTTPSampler.monitor">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+        </HTTPSampler>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="-1210889389">,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,ALL ATTRIBUTES
+TIMESTEP,MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2),MEAN(kg/m^2)
+21 Jun 2010 00:00:00 GMT,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000
+21 Jun 2010 06:00:00 GMT,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000
+21 Jun 2010 12:00:00 GMT,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.003418857,0.000000,0.01996858,0.03108420,0.000000,0.004485751,0.2728870,0.000000,0.000000,0.000000,0.03677496,0.3161562,0.000000,0.2890211,0.000000,0.07693019,0.1250000,0.1250000,0.000000,0.1250000,0.04882590,0.1250000,0.1250000,3.895823,1.919394,0.000000,0.1250000,0.1250000,2.625000,2.625000,2.625000,0.6292792,0.02697593,0.8427960,0.2727465,0.0004824827,1.500000,1.977220,4.730517,1.158613,0.7995372,1.991189,0.7666601,4.689690,6.052327,0.6674026,1.011583,2.318460,3.940249,1.154338,2.418703,0.8677001,1.827093,1.890367,1.845185,2.182570,2.302228,1.120891,3.030914,4.875000,3.469287,4.634684,4.794352,1.118524
+21 Jun 2010 18:00:00 GMT,0.3750657,0.4280050,0.4684758,0.9204908,1.153565,1.455395,0.9310126,1.060688,1.629274,1.168575,1.786882,2.027546,2.065568,3.347256,2.484004,1.942159,3.227799,6.625000,4.315446,3.444835,6.625000,6.924697,6.070313,5.866655,8.125000,8.125000,5.750000,10.00000,6.913114,8.125000,8.125000,12.84510,12.80678,4.250000,4.750000,4.750000,5.125000,5.125000,5.125000,11.88502,5.895409,11.03336,5.361894,4.742188,5.250000,6.264027,3.145167,4.883606,3.704113,3.393002,3.280180,2.098172,1.366809,2.458167,2.769485,2.043673,2.758510,3.804977,6.526772,7.762501,1.768264,1.552184,2.985642,0.9504019,1.326550,5.802555,1.320538,0.2500000,1.368197,3.403621,2.875244,3.608136
+22 Jun 2010 00:00:00 GMT,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000
+22 Jun 2010 06:00:00 GMT,26.45650,33.04435,29.88765,25.03889,19.02352,17.62868,23.04664,17.52241,22.01815,19.03784,22.37672,30.31844,15.88515,16.98228,32.25616,21.11870,30.29134,31.50000,28.07468,28.74458,31.50000,32.16668,36.66037,34.87958,31.25000,31.25000,43.12500,27.00000,32.70082,31.25000,31.25000,26.08289,26.84017,39.00000,36.25000,36.25000,34.00000,34.00000,34.00000,26.56517,36.99806,29.66500,35.79603,39.75891,35.25000,32.37848,31.75464,36.09247,37.26500,35.40035,38.25501,31.97031,28.73603,39.48551,32.86507,29.41182,24.91090,27.95143,20.18358,22.44819,42.07822,32.63112,26.62383,29.30313,32.51157,23.55464,22.36276,12.37500,20.44580,19.16867,16.83323,28.43819
+22 Jun 2010 12:00:00 GMT,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000
+22 Jun 2010 18:00:00 GMT,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000
+23 Jun 2010 00:00:00 GMT,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000
+ALL TIMESTEPS,2.981285,3.719150,3.372902,2.884375,2.241898,2.120453,2.664183,2.064788,2.627872,2.245158,2.687063,3.597452,1.994524,2.259336,3.890339,2.562318,3.724348,4.236111,3.602989,3.611730,4.236111,4.375600,4.747854,4.535907,4.388889,4.388889,5.430556,4.125000,4.406973,4.388889,4.388889,4.758202,4.618483,4.805556,4.569444,4.569444,4.638889,4.638889,4.638889,4.342163,4.768938,4.615685,4.603408,4.944620,4.666667,4.513303,4.403369,4.681632,4.640961,4.531615,4.700206,4.306464,4.017241,4.734564,4.071793,3.752662,3.512185,3.656749,3.236562,3.453154,5.074842,4.008186,3.494962,3.604012,4.015594,3.386454,2.968246,1.944444,2.809254,3.022998,2.722536,3.684983
+</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">8</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <ResultCollector guiclass="AssertionVisualizer" testclass="ResultCollector" testname="Assertion Results" enabled="true">
+            <boolProp name="ResultCollector.error_logging">false</boolProp>
+            <objProp>
+              <name>saveConfig</name>
+              <value class="SampleSaveConfiguration">
+                <time>true</time>
+                <latency>false</latency>
+                <timestamp>true</timestamp>
+                <success>false</success>
+                <label>false</label>
+                <code>true</code>
+                <message>false</message>
+                <threadName>false</threadName>
+                <dataType>false</dataType>
+                <encoding>false</encoding>
+                <assertions>false</assertions>
+                <subresults>false</subresults>
+                <responseData>false</responseData>
+                <samplerData>false</samplerData>
+                <xml>true</xml>
+                <fieldNames>false</fieldNames>
+                <responseHeaders>false</responseHeaders>
+                <requestHeaders>false</requestHeaders>
+                <responseDataOnError>false</responseDataOnError>
+                <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+                <assertionsResultsToSave>0</assertionsResultsToSave>
+              </value>
+            </objProp>
+            <stringProp name="filename">${__P(reportDir)}/gdp_RFC_test_result.jtl</stringProp>
+          </ResultCollector>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>true</xml>
+            <fieldNames>false</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>
