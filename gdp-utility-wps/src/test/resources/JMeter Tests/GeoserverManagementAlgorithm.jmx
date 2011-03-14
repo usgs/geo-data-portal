@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="2.1">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="GeoserverManagementAlgorithm" enabled="true">
+      <stringProp name="TestPlan.comments"></stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+      <stringProp name="TestPlan.user_define_classpath"></stringProp>
+    </TestPlan>
+    <hashTree>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="processURL" elementType="Argument">
+            <stringProp name="Argument.name">processURL</stringProp>
+            <stringProp name="Argument.value">http://${__P(testHost,localhost)}:${__P(testPort,8080)}/${__P(testURI,gdp-utility-wps)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="wfsEndpoint" elementType="Argument">
+            <stringProp name="Argument.name">wfsEndpoint</stringProp>
+            <stringProp name="Argument.value">http://${__P(wfsEndpoint,localhost:8081/geoserver)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="wfsUsername" elementType="Argument">
+            <stringProp name="Argument.name">wfsUsername</stringProp>
+            <stringProp name="Argument.value">${__P(wfsUsername,admin)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="wfsPassword" elementType="Argument">
+            <stringProp name="Argument.name">wfsPassword</stringProp>
+            <stringProp name="Argument.value">${__P(wfsPassword,geoserver)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="wfsServer" elementType="Argument">
+            <stringProp name="Argument.name">wfsServer</stringProp>
+            <stringProp name="Argument.value">${__P(wfsServer, localhost)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="wfsPort" elementType="Argument">
+            <stringProp name="Argument.name">wfsPort</stringProp>
+            <stringProp name="Argument.value">${__P(wfsPort, 8081)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </Arguments>
+      <hashTree/>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Delete Tests" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">stoptest</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <longProp name="ThreadGroup.start_time">1299685122000</longProp>
+        <longProp name="ThreadGroup.end_time">1299685122000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <SoapSampler guiclass="SoapSamplerGui" testclass="SoapSampler" testname="Upload Request" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="SoapSampler.URL_DATA">${processURL}/WebProcessingService</stringProp>
+          <stringProp name="HTTPSamper.xml_data">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;wps:Execute service=&quot;WPS&quot; version=&quot;1.0.0&quot; xmlns:wps=&quot;http://www.opengis.net/wps/1.0.0&quot; xmlns:ows=&quot;http://www.opengis.net/ows/1.1&quot; xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd&quot;&gt;
+	&lt;ows:Identifier&gt;gov.usgs.cida.gdp.wps.algorithm.filemanagement.ReceiveFiles&lt;/ows:Identifier&gt;
+	&lt;wps:DataInputs&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;filename&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;jmeterTesting&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;wfs-url&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;${wfsEndpoint}&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;file&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:ComplexData mimeType=&quot;application/x-zipped-shp&quot; encoding=&quot;Base64&quot;&gt;UEsDBBQAAAAIABptsTzaJMcgIQAAAEkAAAALABwAbGtfbWljaC5kYmZVVAkAA7ON8UuzjfFLdXgLAAEE6AMAAAToAwAAY85jFWRkYGBwZGBnwADhDAyeKXCeH4hgQ1PCqwAGBlIAUEsDBBQAAAAIABhtsTxXSddgRQAAAIQAAAALABwAbGtfbWljaC5zYm5VVAkAA6+N8UuwjfFLdXgLAAEE6AMAAAToAwAAY2BQ5/r//18BAyZwAmLGA6GPXDp3GP9ycPl5+9eyixoHQiuvTXhvruXg9tLVdPnXRVj0YQOMQMwCxExQNhOE//8/iA8AUEsDBBQAAAAIABdtsTyjbqCrPQAAAHQAAAALABwAbGtfbWljaC5zYnhVVAkAA62N8UuujfFLdXgLAAEE6AMAAAToAwAAY2BQ5/r//18BAyawAmLGA6GPXDp3GP9ycPl5+9eyixoHQiuvTXhvruXg9tLVdPnXRVj0YQNGQMwCNZMFAFBLAwQUAAAACAAVbbE8ajBqMM8AAABMAQAACwAcAGxrX21pY2guc2hwVVQJAAOqjfFLq43xS3V4CwABBOgDAAAE6AMAAGNgUOdiwA6WvWBmYGAFMn4Z7+h0eRR6QOPisl+3f7o4aJm/n3CtMvTAoq/LTV1fujng0I8MGIG4gBizQAq5oZpmiyjWLZ6IkIOpNcoNKFG85ebA////c8NJoQc+GjcenDDNzeHIrh0TG5aEHpiwt8D1iI+bw7GnHp/nbwk9oPP9p8LRS64OCqkSN+euDj2gsvVR+3ZfVwenLj7xiQcQbjG6uGZ70r3QA3JmfaHvtFwdYG5Vv+4TP/+Kq0O45aMq4b2hB64y+sQITnJzQHcfAFBLAwQUAAAACAATbbE8zDWs2DoAAABsAAAACwAcAGxrX21pY2guc2h4VVQJAAOmjfFLp43xS3V4CwABBOgDAAAE6AMAAGNgUOdiwA7MXjAzMLACGb+Md3S6PAo9oHFx2a/bP10ctMzfT7hWGXpg0dflpq4v3Rxw6EcGRkBcAABQSwMEFAAAAAgAe22xPFV/Q695AAAAkQAAAAsAHABsa19taWNoLnByalVUCQADao7xS2uO8Ut1eAsAAQToAwAABOgDAABzd/V3dw6OVgIS8eHuwfGGlhYmSjoujiGhvtFKLkhCwQEerkH+ni7RSggxM2NzC0Njcz0DHSNLCz0jU3MjI2NTM+PYWJ2AIE9fV6AJ7kWpqXnlmckZSjoGegaxOqF+niFAc1PTgeJgIUNzE1NjI0sjU0NLSxNjoFYAUEsBAh4DFAAAAAgAGm2xPNokxyAhAAAASQAAAAsAGAAAAAAAAAAAAKSBAAAAAGxrX21pY2guZGJmVVQFAAOzjfFLdXgLAAEE6AMAAAToAwAAUEsBAh4DFAAAAAgAGG2xPFdJ12BFAAAAhAAAAAsAGAAAAAAAAAAAAKSBZgAAAGxrX21pY2guc2JuVVQFAAOvjfFLdXgLAAEE6AMAAAToAwAAUEsBAh4DFAAAAAgAF22xPKNuoKs9AAAAdAAAAAsAGAAAAAAAAAAAAKSB8AAAAGxrX21pY2guc2J4VVQFAAOtjfFLdXgLAAEE6AMAAAToAwAAUEsBAh4DFAAAAAgAFW2xPGowajDPAAAATAEAAAsAGAAAAAAAAAAAAKSBcgEAAGxrX21pY2guc2hwVVQFAAOqjfFLdXgLAAEE6AMAAAToAwAAUEsBAh4DFAAAAAgAE22xPMw1rNg6AAAAbAAAAAsAGAAAAAAAAAAAAKSBhgIAAGxrX21pY2guc2h4VVQFAAOmjfFLdXgLAAEE6AMAAAToAwAAUEsBAh4DFAAAAAgAe22xPFV/Q695AAAAkQAAAAsAGAAAAAAAAQAAAKSBBQMAAGxrX21pY2gucHJqVVQFAANqjvFLdXgLAAEE6AMAAAToAwAAUEsFBgAAAAAGAAYA5gEAAMMDAAAA&lt;/wps:ComplexData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+	&lt;/wps:DataInputs&gt;
+	&lt;wps:ResponseForm&gt;
+		&lt;wps:ResponseDocument&gt;
+			&lt;wps:Output&gt;
+				&lt;ows:Identifier&gt;result&lt;/ows:Identifier&gt;
+			&lt;/wps:Output&gt;
+			&lt;wps:Output&gt;
+				&lt;ows:Identifier&gt;wfs-url&lt;/ows:Identifier&gt;
+			&lt;/wps:Output&gt;
+			&lt;wps:Output&gt;
+				&lt;ows:Identifier&gt;featuretype&lt;/ows:Identifier&gt;
+			&lt;/wps:Output&gt;
+		&lt;/wps:ResponseDocument&gt;
+	&lt;/wps:ResponseForm&gt;
+&lt;/wps:Execute&gt;</stringProp>
+          <stringProp name="SoapSampler.xml_data_file"></stringProp>
+          <stringProp name="SoapSampler.SOAP_ACTION"></stringProp>
+          <stringProp name="SoapSampler.SEND_SOAP_ACTION">false</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
+        </SoapSampler>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Upload Response Assertion" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="-971000826">jmeterTesting successfully uploaded to workspace</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">2</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <ResultCollector guiclass="AssertionVisualizer" testclass="ResultCollector" testname="Assertion Results" enabled="true">
+            <boolProp name="ResultCollector.error_logging">false</boolProp>
+            <objProp>
+              <name>saveConfig</name>
+              <value class="SampleSaveConfiguration">
+                <time>true</time>
+                <latency>true</latency>
+                <timestamp>true</timestamp>
+                <success>true</success>
+                <label>true</label>
+                <code>true</code>
+                <message>true</message>
+                <threadName>true</threadName>
+                <dataType>true</dataType>
+                <encoding>false</encoding>
+                <assertions>true</assertions>
+                <subresults>true</subresults>
+                <responseData>false</responseData>
+                <samplerData>false</samplerData>
+                <xml>true</xml>
+                <fieldNames>false</fieldNames>
+                <responseHeaders>false</responseHeaders>
+                <requestHeaders>false</requestHeaders>
+                <responseDataOnError>false</responseDataOnError>
+                <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+                <assertionsResultsToSave>0</assertionsResultsToSave>
+                <bytes>true</bytes>
+              </value>
+            </objProp>
+            <stringProp name="filename"></stringProp>
+          </ResultCollector>
+          <hashTree/>
+        </hashTree>
+        <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="Layer Added Test" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${wfsServer}</stringProp>
+          <stringProp name="HTTPSampler.port">${wfsPort}</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/geoserver/rest/layers.xml</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <boolProp name="HTTPSampler.monitor">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+        </HTTPSampler>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Layer Deleted Response Assertion" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="1209758641">jmeterTesting</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">2</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+            <boolProp name="ResultCollector.error_logging">false</boolProp>
+            <objProp>
+              <name>saveConfig</name>
+              <value class="SampleSaveConfiguration">
+                <time>true</time>
+                <latency>true</latency>
+                <timestamp>true</timestamp>
+                <success>true</success>
+                <label>true</label>
+                <code>true</code>
+                <message>true</message>
+                <threadName>true</threadName>
+                <dataType>true</dataType>
+                <encoding>false</encoding>
+                <assertions>true</assertions>
+                <subresults>true</subresults>
+                <responseData>false</responseData>
+                <samplerData>false</samplerData>
+                <xml>true</xml>
+                <fieldNames>false</fieldNames>
+                <responseHeaders>false</responseHeaders>
+                <requestHeaders>false</requestHeaders>
+                <responseDataOnError>false</responseDataOnError>
+                <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+                <assertionsResultsToSave>0</assertionsResultsToSave>
+                <bytes>true</bytes>
+              </value>
+            </objProp>
+            <stringProp name="filename"></stringProp>
+          </ResultCollector>
+          <hashTree/>
+        </hashTree>
+        <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="Datastore Added Test" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${wfsServer}</stringProp>
+          <stringProp name="HTTPSampler.port">${wfsPort}</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/geoserver/rest/workspaces/upload/datastores.xml</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <boolProp name="HTTPSampler.monitor">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+        </HTTPSampler>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Datastore Deleted Response Assertion" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="1209758641">jmeterTesting</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">2</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+            <boolProp name="ResultCollector.error_logging">false</boolProp>
+            <objProp>
+              <name>saveConfig</name>
+              <value class="SampleSaveConfiguration">
+                <time>true</time>
+                <latency>true</latency>
+                <timestamp>true</timestamp>
+                <success>true</success>
+                <label>true</label>
+                <code>true</code>
+                <message>true</message>
+                <threadName>true</threadName>
+                <dataType>true</dataType>
+                <encoding>false</encoding>
+                <assertions>true</assertions>
+                <subresults>true</subresults>
+                <responseData>false</responseData>
+                <samplerData>false</samplerData>
+                <xml>true</xml>
+                <fieldNames>false</fieldNames>
+                <responseHeaders>false</responseHeaders>
+                <requestHeaders>false</requestHeaders>
+                <responseDataOnError>false</responseDataOnError>
+                <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+                <assertionsResultsToSave>0</assertionsResultsToSave>
+                <bytes>true</bytes>
+              </value>
+            </objProp>
+            <stringProp name="filename"></stringProp>
+          </ResultCollector>
+          <hashTree/>
+        </hashTree>
+        <SoapSampler guiclass="SoapSamplerGui" testclass="SoapSampler" testname="Delete Datastore" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="SoapSampler.URL_DATA">${processURL}/WebProcessingService</stringProp>
+          <stringProp name="HTTPSamper.xml_data">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;wps:Execute service=&quot;WPS&quot; version=&quot;1.0.0&quot; xmlns:wps=&quot;http://www.opengis.net/wps/1.0.0&quot; xmlns:ows=&quot;http://www.opengis.net/ows/1.1&quot; xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd&quot;&gt;
+	&lt;ows:Identifier&gt;gov.usgs.cida.gdp.wps.algorithm.communication.GeoserverManagementAlgorithm&lt;/ows:Identifier&gt;
+	&lt;wps:DataInputs&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;command&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;delete&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;username&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;${wfsUsername}&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;	
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;password&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;${wfsPassword}&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;	
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;workspace&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;upload&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;	
+		&lt;wps:Input&gt;
+			&lt;ows:Identifier&gt;datastore&lt;/ows:Identifier&gt;
+			&lt;wps:Data&gt;
+				&lt;wps:LiteralData&gt;jmeterTesting&lt;/wps:LiteralData&gt;
+			&lt;/wps:Data&gt;
+		&lt;/wps:Input&gt;		
+	&lt;/wps:DataInputs&gt;
+	&lt;wps:ResponseForm&gt;
+		&lt;wps:ResponseDocument&gt;
+			&lt;wps:Output&gt;
+				&lt;ows:Identifier&gt;result&lt;/ows:Identifier&gt;
+			&lt;/wps:Output&gt;
+		&lt;/wps:ResponseDocument&gt;
+	&lt;/wps:ResponseForm&gt;
+&lt;/wps:Execute&gt;</stringProp>
+          <stringProp name="SoapSampler.xml_data_file"></stringProp>
+          <stringProp name="SoapSampler.SOAP_ACTION"></stringProp>
+          <stringProp name="SoapSampler.SEND_SOAP_ACTION">false</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
+        </SoapSampler>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Upload Response Assertion" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="195431616">Your request has completed successfully</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">2</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+            <boolProp name="ResultCollector.error_logging">false</boolProp>
+            <objProp>
+              <name>saveConfig</name>
+              <value class="SampleSaveConfiguration">
+                <time>true</time>
+                <latency>true</latency>
+                <timestamp>true</timestamp>
+                <success>true</success>
+                <label>true</label>
+                <code>true</code>
+                <message>true</message>
+                <threadName>true</threadName>
+                <dataType>true</dataType>
+                <encoding>false</encoding>
+                <assertions>true</assertions>
+                <subresults>true</subresults>
+                <responseData>false</responseData>
+                <samplerData>false</samplerData>
+                <xml>true</xml>
+                <fieldNames>false</fieldNames>
+                <responseHeaders>false</responseHeaders>
+                <requestHeaders>false</requestHeaders>
+                <responseDataOnError>false</responseDataOnError>
+                <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+                <assertionsResultsToSave>0</assertionsResultsToSave>
+                <bytes>true</bytes>
+              </value>
+            </objProp>
+            <stringProp name="filename"></stringProp>
+          </ResultCollector>
+          <hashTree/>
+        </hashTree>
+        <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="Layer Deleted Test" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${wfsServer}</stringProp>
+          <stringProp name="HTTPSampler.port">${wfsPort}</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/geoserver/rest/layers.xml</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <boolProp name="HTTPSampler.monitor">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+        </HTTPSampler>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Layer Deleted Response Assertion" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="1209758641">jmeterTesting</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">6</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+            <boolProp name="ResultCollector.error_logging">false</boolProp>
+            <objProp>
+              <name>saveConfig</name>
+              <value class="SampleSaveConfiguration">
+                <time>true</time>
+                <latency>true</latency>
+                <timestamp>true</timestamp>
+                <success>true</success>
+                <label>true</label>
+                <code>true</code>
+                <message>true</message>
+                <threadName>true</threadName>
+                <dataType>true</dataType>
+                <encoding>false</encoding>
+                <assertions>true</assertions>
+                <subresults>true</subresults>
+                <responseData>false</responseData>
+                <samplerData>false</samplerData>
+                <xml>true</xml>
+                <fieldNames>false</fieldNames>
+                <responseHeaders>false</responseHeaders>
+                <requestHeaders>false</requestHeaders>
+                <responseDataOnError>false</responseDataOnError>
+                <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+                <assertionsResultsToSave>0</assertionsResultsToSave>
+                <bytes>true</bytes>
+              </value>
+            </objProp>
+            <stringProp name="filename"></stringProp>
+          </ResultCollector>
+          <hashTree/>
+        </hashTree>
+        <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="Datastore Deleted Test" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${wfsServer}</stringProp>
+          <stringProp name="HTTPSampler.port">${wfsPort}</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/geoserver/rest/workspaces/upload/datastores.xml</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <boolProp name="HTTPSampler.monitor">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+        </HTTPSampler>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Datastore Deleted Response Assertion" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="1209758641">jmeterTesting</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">6</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+            <boolProp name="ResultCollector.error_logging">false</boolProp>
+            <objProp>
+              <name>saveConfig</name>
+              <value class="SampleSaveConfiguration">
+                <time>true</time>
+                <latency>true</latency>
+                <timestamp>true</timestamp>
+                <success>true</success>
+                <label>true</label>
+                <code>true</code>
+                <message>true</message>
+                <threadName>true</threadName>
+                <dataType>true</dataType>
+                <encoding>false</encoding>
+                <assertions>true</assertions>
+                <subresults>true</subresults>
+                <responseData>false</responseData>
+                <samplerData>false</samplerData>
+                <xml>true</xml>
+                <fieldNames>false</fieldNames>
+                <responseHeaders>false</responseHeaders>
+                <requestHeaders>false</requestHeaders>
+                <responseDataOnError>false</responseDataOnError>
+                <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+                <assertionsResultsToSave>0</assertionsResultsToSave>
+                <bytes>true</bytes>
+              </value>
+            </objProp>
+            <stringProp name="filename"></stringProp>
+          </ResultCollector>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>
