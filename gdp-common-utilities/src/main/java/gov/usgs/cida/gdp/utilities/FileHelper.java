@@ -507,6 +507,7 @@ public class FileHelper {
      * Returns files and directories older that a specified date
      *
      * @param filePath System path to the directory
+     * @param age 
      * @param msPerDay
      * @param recursive
      * @return

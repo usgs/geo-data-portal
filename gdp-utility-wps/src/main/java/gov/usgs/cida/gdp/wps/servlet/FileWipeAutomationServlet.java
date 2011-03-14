@@ -16,8 +16,11 @@ import java.util.logging.Logger;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
 
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 /**
  * Servlet implementation class FileWipeAutomationServlet
@@ -79,11 +82,11 @@ public class FileWipeAutomationServlet extends HttpServlet {
         public void run() {
             log.info("Running File Wipe Task... ");
             Collection<File> filesDeleted = new ArrayList<File>();
+            
             if (getUserspaceDir() != null && getUserspaceDir().exists()) {
                 filesDeleted = FileHelper.wipeOldFiles(getUserspaceDir(), Long.valueOf(this.hoursToWipe), false);
                 if (!filesDeleted.isEmpty()) {
                     log.info("Finished deleting userspace files. " + filesDeleted.size() + " deleted.");
-                    filesDeleted = new ArrayList<File>();
                 }
             }
 
@@ -91,24 +94,37 @@ public class FileWipeAutomationServlet extends HttpServlet {
                 filesDeleted = FileHelper.wipeOldFiles(getWorkspaceDir(), Long.valueOf(this.hoursToWipe), false);
                 if (!filesDeleted.isEmpty()) {
                     log.info("Finished deleting workspace files. " + filesDeleted.size() + " deleted.");
-                    filesDeleted = new ArrayList<File>();
                 }
+            }
+
+            try {
+                ManageGeoserverWorkspace mgsw = new ManageGeoserverWorkspace(AppConstant.WFS_ENDPOINT.getValue());
+                mgsw.scanGeoserverWorkspacesForOutdatedDatastores(hoursToWipe, AppConstant.WFS_USER.getValue(), AppConstant.WFS_PASS.getValue(), "upload", "waters");
+            } catch (IOException ex) {
+                Logger.getLogger(FileWipeAutomationServlet.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SAXException ex) {
+                Logger.getLogger(FileWipeAutomationServlet.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ParserConfigurationException ex) {
+                Logger.getLogger(FileWipeAutomationServlet.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (XPathExpressionException ex) {
+                Logger.getLogger(FileWipeAutomationServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
 
             if (getRepositoryDir() != null && getRepositoryDir().exists()) {
                 filesDeleted = FileHelper.wipeOldFiles(getRepositoryDir(), Long.valueOf(this.hoursToWipe), false);
                 if (!filesDeleted.isEmpty()) {
                     log.info("Finished deleting repository directory files. " + filesDeleted.size() + " deleted.");
-                    try {
-                        new ManageGeoserverWorkspace().updateGeoServer(AppConstant.WFS_ENDPOINT.getValue());
-                        log.info("GeoServer has been reloaded after datastores were deleted.");
-                    } catch (IOException ex) {
-                        Logger.getLogger(FileWipeAutomationServlet.class.getName()).log(Level.WARNING, null, ex);
-                        log.warn("GeoServer could not be reloaded: \n" + ex);
-
-                    }
+//                    try {
+//                        new ManageGeoserverWorkspace().updateGeoServer(AppConstant.WFS_ENDPOINT.getValue());
+//                        log.info("GeoServer has been reloaded after datastores were deleted.");
+//                    } catch (IOException ex) {
+//                        Logger.getLogger(FileWipeAutomationServlet.class.getName()).log(Level.WARNING, null, ex);
+//                        log.warn("GeoServer could not be reloaded: \n" + ex);
+//
+//                    }
                 }
             }
+
         }
 
         public ScanFileTask(File userspaceDir, File repositoryDir, File workspaceDir, long hoursToWipe) {
