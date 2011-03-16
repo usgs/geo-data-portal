@@ -71,7 +71,6 @@ public class ManageGeoserverWorkspaceTest {
     }
 
     @Test
-    @Ignore
     public void deleteDataStoreTest() throws MalformedURLException, IOException, XPathExpressionException {
         boolean result = obj.deleteDatastore("sample", "dbshapefileszz", "admin", "geoserver",  true);
         assertThat(result, is(false)); 

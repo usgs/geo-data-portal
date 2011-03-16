@@ -157,7 +157,7 @@ public class ManageGeoserverWorkspace {
                     }
 
                     if (deleteFromGeoserver) {
-                        if(!this.deleteDatastoreFromGeoserver(workspace, datastore, username, password, false)) {
+                        if(!this.deleteDatastoreFromGeoserver(workspace, datastore, username, password, true)) {
                             log.warn("Successfully deleted datastore '"+datastore+"' from geoserver or file from disk.");
                         }
                         else {
