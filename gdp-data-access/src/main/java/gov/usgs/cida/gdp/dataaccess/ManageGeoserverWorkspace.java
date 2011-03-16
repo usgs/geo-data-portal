@@ -355,14 +355,11 @@ public class ManageGeoserverWorkspace {
             // We must first delete all featuretypes for this datastore - we should be using recursive but if it's an
             // earlier version of Geoserver, this is not available
             List<String> featureTypeList = this.retrieveFeatureTypeListFromDatastore(workspace, datastoreName);
-            boolean allFeaturetypesDeleted = true;
             for (String featureType : featureTypeList) {
-                if (!this.deleteFeatureType(workspace, datastoreName, featureType, username, password, true)) allFeaturetypesDeleted = false;
-            }
-
-            if (!allFeaturetypesDeleted) { // The server wouldn't let go of a resource. Abort.
-                log.warn("One or more feature types under datastore " + datastoreName + " under workspace " + workspace + " could not be deleted. Aborting attempt to delete datastore.");
-                return false;
+                if (!this.deleteFeatureType(workspace, datastoreName, featureType, username, password, true)) {
+                    log.warn("One or more feature types under datastore " + datastoreName + " under workspace " + workspace + " could not be deleted. Aborting attempt to delete datastore.");
+                    return false;
+                }
             }
         }
         log.info("Attempting to delete datastore '"+datastoreName+"' under workspace '"+workspace+"'");

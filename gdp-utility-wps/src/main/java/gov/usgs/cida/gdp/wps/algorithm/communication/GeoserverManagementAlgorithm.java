@@ -27,14 +27,26 @@ public class GeoserverManagementAlgorithm extends AbstractSelfDescribingAlgorith
         if (!inputData.containsKey("command")) throw new RuntimeException("Error: Missing input parameter 'command'");
         if (!inputData.containsKey("username")) throw new RuntimeException("Error: Missing input parameter 'username'");
         if (!inputData.containsKey("password")) throw new RuntimeException("Error: Missing input parameter 'password'");
+        if (!inputData.containsKey("wfsHost")) throw new RuntimeException("Error: Missing input parameter 'wfsHost'");
+        if (!inputData.containsKey("wfsPort")) throw new RuntimeException("Error: Missing input parameter 'wfsPort'");
 
-        String command, username, password, workspace = null;
+        String command, username, password, workspace, wfsHost, wfsPort = null;
         List<String> datastoreList = new ArrayList<String>();
         
         // Pull in our command
         List<IData> dataList = inputData.get("command");
         command = ((LiteralStringBinding)dataList.get(0)).getPayload();
         if (StringUtils.isBlank(command)) throw new RuntimeException("Error: Missing input parameter 'command'");
+
+        // Pull in our host
+        dataList = inputData.get("wfsHost");
+        wfsHost = ((LiteralStringBinding)dataList.get(0)).getPayload();
+        if (StringUtils.isBlank(command)) throw new RuntimeException("Error: Missing input parameter 'wfsHost'");
+
+        // Pull in our host
+        dataList = inputData.get("wfsPort");
+        wfsPort = ((LiteralStringBinding)dataList.get(0)).getPayload();
+        if (StringUtils.isBlank(command)) throw new RuntimeException("Error: Missing input parameter 'wfsPort'");
 
         // Pull in our username
         dataList = inputData.get("username");
@@ -59,7 +71,7 @@ public class GeoserverManagementAlgorithm extends AbstractSelfDescribingAlgorith
             if (StringUtils.isBlank(workspace)) throw new RuntimeException("Error: 'delete' called but no workspace was provided");
             ManageGeoserverWorkspace mgw = null;
             
-            try { mgw = new ManageGeoserverWorkspace(new URL(AppConstant.WFS_ENDPOINT.getValue())); }
+            try { mgw = new ManageGeoserverWorkspace(new URL("http://" + wfsHost + ":" + wfsPort + "/geoserver")); }
             catch (MalformedURLException ex) { throw new RuntimeException("Error: Unable to delete datastore. Cause is incorrect Geoserver URL. Error follows.\n" + ex.getMessage()); }
 
             for (String datastore : datastoreList) {
@@ -79,6 +91,8 @@ public class GeoserverManagementAlgorithm extends AbstractSelfDescribingAlgorith
     public List<String> getInputIdentifiers() {
         List<String> result = new ArrayList<String>();
         result.add("command");
+        result.add("wfsHost");
+        result.add("wfsPort");
         result.add("username");
         result.add("password");
         result.add("workspace");
@@ -89,6 +103,8 @@ public class GeoserverManagementAlgorithm extends AbstractSelfDescribingAlgorith
     @Override
     public BigInteger getMaxOccurs(String identifier) {
         if ("command".equals(identifier)) return BigInteger.valueOf(1);
+        if ("wfsHost".equals(identifier)) return BigInteger.valueOf(1);
+        if ("wfsPort".equals(identifier)) return BigInteger.valueOf(1);
         if ("username".equals(identifier)) return BigInteger.valueOf(1);
         if ("password".equals(identifier)) return BigInteger.valueOf(1);
         if ("workspace".equals(identifier)) return BigInteger.valueOf(1);
@@ -99,6 +115,8 @@ public class GeoserverManagementAlgorithm extends AbstractSelfDescribingAlgorith
     @Override
     public BigInteger getMinOccurs(String identifier) {
         if ("command".equals(identifier)) return BigInteger.valueOf(1);
+        if ("wfsHost".equals(identifier)) return BigInteger.valueOf(1);
+        if ("wfsPort".equals(identifier)) return BigInteger.valueOf(1);
         if ("username".equals(identifier)) return BigInteger.valueOf(1);
         if ("password".equals(identifier)) return BigInteger.valueOf(1);
         if ("workspace".equals(identifier)) return BigInteger.valueOf(0);
@@ -116,6 +134,8 @@ public class GeoserverManagementAlgorithm extends AbstractSelfDescribingAlgorith
     @Override
     public Class getInputDataType(String id) {
         if ("command".equals(id)) return LiteralStringBinding.class;
+        if ("wfsHost".equals(id)) return LiteralStringBinding.class;
+        if ("wfsPort".equals(id)) return LiteralStringBinding.class;
         if ("username".equals(id)) return LiteralStringBinding.class;
         if ("password".equals(id)) return LiteralStringBinding.class;
         if ("workspace".equals(id)) return LiteralStringBinding.class;
