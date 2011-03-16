@@ -69,8 +69,8 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
 
         String shapefilePath = file.writeData(temp);
         if (shapefilePath == null) { // Not sure if that is the only reason newFilename would be null
-            errors.add("Error while processing file: Does the zip file contain the .shp file?");
-            throw new RuntimeException("Error while processing file: Does the zip file contain the .shp file?");
+            errors.add("Error while processing file: Malformed zip file or incomplete shapefile");
+            throw new RuntimeException("Error while processing file: Malformed zip file or incomplete shapefile");
         }
 
         
