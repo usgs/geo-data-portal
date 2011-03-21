@@ -88,7 +88,7 @@ public class ManageGeoserverWorkspace {
             sendPacket(new URL(dataStoresURL + layerName + ".xml"), "PUT", "text/xml", dataStoreXML);
         }
 
-        if (!layerExists(layerName)) {
+        if (!layerExists(workspace, layerName, layerName)) {
             log.debug(new StringBuilder("Layer does not currently exist. Creating...").toString());
             // create featuretype based on the datastore
             String featureTypeXML = createFeatureTypeXML(layerName, workspace, nativeCRS, declaredCRS);
@@ -265,11 +265,13 @@ public class ManageGeoserverWorkspace {
      * @return
      * @throws IOException
      */
-    boolean layerExists(String layerName) throws IOException {
+    boolean layerExists(String workspace, String dataStore, String layerName) throws IOException {
         int responseCode = 0;
 
         // First check to see that a layer exists on the server
-        responseCode = getResponseCode(new URL(this.getGeoServerURLString() + "/rest/layers/" + layerName), "GET", "text/xml", null, null, null);
+        responseCode = getResponseCode(new URL(this.getGeoServerURLString() + "/rest/workspaces/"
+                    + workspace + "/datastores/" + dataStore + "/featuretypes/" + layerName + ".xml"),
+                    "GET", "text/xml", null, null, null);
 
         switch(responseCode) {
             case 200: return true;

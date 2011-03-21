@@ -83,10 +83,10 @@ public class ManageGeoserverWorkspaceTest {
     @Test
     @Ignore
     public void layerExistsTest() throws MalformedURLException, IOException {
-        boolean result = obj.layerExists("demo_HUCss");
+        boolean result = obj.layerExists("sample", "demo_HUCss", "demo_HUCss");
         assertThat(result, is(false));
 
-        result = obj.layerExists("demo_HUCs");
+        result = obj.layerExists("sample", "demo_HUCs","demo_HUCs");
         assertThat(result, is(true));
     }
 
