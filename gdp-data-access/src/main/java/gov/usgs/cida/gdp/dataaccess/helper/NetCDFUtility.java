@@ -1,6 +1,7 @@
 package gov.usgs.cida.gdp.dataaccess.helper;
 
 import com.google.common.base.Preconditions;
+import gov.usgs.cida.gdp.dataaccess.bean.DataTypeCollection;
 import gov.usgs.cida.gdp.utilities.bean.Time;
 import java.io.IOException;
 import java.text.ParseException;
@@ -84,110 +85,136 @@ public abstract class NetCDFUtility {
         return handles;
     }
 
-    public static List<VariableSimpleIF> getDataVariableNames(String location) throws IOException {
-        if (location == null) {
-            throw new IllegalArgumentException("location can't be null");
+    public static List<VariableSimpleIF> getDataVariableNames(String url) throws IOException {
+        if (url == null) {
+            throw new IllegalArgumentException("URL can't be null");
         }
 
-        List<VariableSimpleIF> variableList = null;
         FeatureDataset dataset = null;
+
+        List<VariableSimpleIF> variables;
+
         try {
-            dataset = FeatureDatasetFactoryManager.open(
-                    null, location, null, new Formatter());
-            switch (dataset.getFeatureType()) {
-                case POINT:
-                case PROFILE:
-                case SECTION:
-                case STATION:
-                case STATION_PROFILE:
-                case STATION_RADIAL:
-                case TRAJECTORY:
-
-                    variableList = new ArrayList<VariableSimpleIF>();
-
-                    // Try Unidata Observation Dataset convention where observation
-                    // dimension is declared as global attribute...
-                    Attribute convAtt = dataset.findGlobalAttributeIgnoreCase("Conventions");
-                    if (convAtt != null && convAtt.isString()) {
-                        String convName = convAtt.getStringValue();
-
-                        //// Unidata Observation Dataset Convention
-                        //   http://www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html
-                        if (convName.contains("Unidata Observation Dataset")) {
-                            Attribute obsDimAtt = dataset.findGlobalAttributeIgnoreCase("observationDimension");
-                            String obsDimName = (obsDimAtt != null && obsDimAtt.isString())
-                                    ? obsDimAtt.getStringValue() : null;
-                            if (obsDimName != null && obsDimName.length() > 0) {
-                                String psuedoRecordPrefix = obsDimName + '.';
-                                for (VariableSimpleIF var : dataset.getDataVariables()) {
-                                    if (var.findAttributeIgnoreCase("_CoordinateAxisType") == null) {
-                                        if (var.getName().startsWith(psuedoRecordPrefix)) {
-                                            // doesn't appear to be documented, this
-                                            // is observed behavior...
-                                            variableList.add(var);
-                                        } else {
-                                            for (Dimension dim : var.getDimensions()) {
-                                                if (obsDimName.equalsIgnoreCase(dim.getName())) {
-                                                    variableList.add(var);
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            if (variableList.size() == 0) {
-                                // no explicit observation dimension found? look for
-                                // variables with unlimited dimension
-                                for (VariableSimpleIF var : dataset.getDataVariables()) {
-                                    for (Dimension dim : var.getDimensions()) {
-                                        if (dim.isUnlimited()) {
-                                            variableList.add(var);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    //// CF Conventions
-                    //   https://cf-pcmdi.llnl.gov/trac/wiki/PointObservationConventions
-                    // 
-                    //  Don't try explicit :Conventions attribute check since this
-                    //  doesnt seem to be coming through TDS with cdmremote when
-                    //  CF conventions are used (?!)
-                    if (variableList.size() == 0) {
-                        // Try CF convention where range variable has coordinate attribute
-                        for (VariableSimpleIF variable : dataset.getDataVariables()) {
-                            if (variable.findAttributeIgnoreCase("coordinates") != null) {
-                                variableList.add(variable);
-                            }
-                        }
-                    }
-                    break;
-                default:
-                    variableList = dataset.getDataVariables();
-                    break;
-            }
+            dataset = FeatureDatasetFactoryManager.open(null, url, null, new Formatter());
+            variables = getDataVariableNames(dataset);
         } finally {
             if (dataset != null) {
                 dataset.close();
             }
         }
+
+        return variables;
+    }
+
+    public static List<VariableSimpleIF> getDataVariableNames(FeatureDataset dataset) throws IOException {
+
+        List<VariableSimpleIF> variableList = null;
+
+        switch (dataset.getFeatureType()) {
+            case POINT:
+            case PROFILE:
+            case SECTION:
+            case STATION:
+            case STATION_PROFILE:
+            case STATION_RADIAL:
+            case TRAJECTORY:
+
+                variableList = new ArrayList<VariableSimpleIF>();
+
+                // Try Unidata Observation Dataset convention where observation
+                // dimension is declared as global attribute...
+                Attribute convAtt = dataset.findGlobalAttributeIgnoreCase("Conventions");
+                if (convAtt != null && convAtt.isString()) {
+                    String convName = convAtt.getStringValue();
+
+                    //// Unidata Observation Dataset Convention
+                    //   http://www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html
+                    if (convName.contains("Unidata Observation Dataset")) {
+                        Attribute obsDimAtt = dataset.findGlobalAttributeIgnoreCase("observationDimension");
+                        String obsDimName = (obsDimAtt != null && obsDimAtt.isString())
+                                ? obsDimAtt.getStringValue() : null;
+                        if (obsDimName != null && obsDimName.length() > 0) {
+                            String psuedoRecordPrefix = obsDimName + '.';
+                            for (VariableSimpleIF var : dataset.getDataVariables()) {
+                                if (var.findAttributeIgnoreCase("_CoordinateAxisType") == null) {
+                                    if (var.getName().startsWith(psuedoRecordPrefix)) {
+                                        // doesn't appear to be documented, this
+                                        // is observed behavior...
+                                        variableList.add(var);
+                                    } else {
+                                        for (Dimension dim : var.getDimensions()) {
+                                            if (obsDimName.equalsIgnoreCase(dim.getName())) {
+                                                variableList.add(var);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (variableList.isEmpty()) {
+                            // no explicit observation dimension found? look for
+                            // variables with unlimited dimension
+                            for (VariableSimpleIF var : dataset.getDataVariables()) {
+                                for (Dimension dim : var.getDimensions()) {
+                                    if (dim.isUnlimited()) {
+                                        variableList.add(var);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //// CF Conventions
+                //   https://cf-pcmdi.llnl.gov/trac/wiki/PointObservationConventions
+                //
+                //  Don't try explicit :Conventions attribute check since this
+                //  doesnt seem to be coming through TDS with cdmremote when
+                //  CF conventions are used (?!)
+                if (variableList.isEmpty()) {
+                    // Try CF convention where range variable has coordinate attribute
+                    for (VariableSimpleIF variable : dataset.getDataVariables()) {
+                        if (variable.findAttributeIgnoreCase("coordinates") != null) {
+                            variableList.add(variable);
+                        }
+                    }
+                }
+                break;
+            default:
+                variableList = dataset.getDataVariables();
+                break;
+        }
+
         if (variableList == null) {
             variableList = Collections.emptyList();
         }
         return variableList;
     }
 
-    public static String getDatasetType(String datasetUrl) throws IOException {
-        FeatureDataset featureDataset = null;
-        try {
-            log.debug(new StringBuilder("Getting dataset type from: ").append(datasetUrl).toString());
-            featureDataset = FeatureDatasetFactoryManager.open(null, datasetUrl, null, new Formatter());
-            return featureDataset.getFeatureType().toString();
-        } finally {
-            featureDataset.close();
+    public static DataTypeCollection getDataTypeCollection(String datasetUrl) throws IOException {
+
+        if (datasetUrl == null) {
+            throw new IllegalArgumentException("URL can't be null");
         }
+
+        FeatureDataset dataset = null;
+
+        String type;
+        List<VariableSimpleIF> variables;
+
+        try {
+            dataset = FeatureDatasetFactoryManager.open(null, datasetUrl, null, new Formatter());
+
+            type = dataset.getFeatureType().toString();
+            variables = getDataVariableNames(dataset);
+        } finally {
+            if (dataset != null) {
+                dataset.close();
+            }
+        }
+
+        DataTypeCollection dtcb = new DataTypeCollection(type, variables.toArray(new VariableSimpleIF[0]));
+        return dtcb;
     }
 
     public static boolean hasTimeCoordinate(String location) throws IOException {

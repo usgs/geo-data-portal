@@ -121,9 +121,8 @@ public class THREDDSServerHelper {
             throws IllegalArgumentException, IOException {
 
         List<XmlResponse> result = new ArrayList<XmlResponse>();
-        List<VariableSimpleIF> variables = NetCDFUtility.getDataVariableNames(datasetUrl);
-        String type = NetCDFUtility.getDatasetType(datasetUrl);
-        DataTypeCollection dtcb = new DataTypeCollection(type, variables.toArray(new VariableSimpleIF[0]));
+
+        DataTypeCollection dtcb = NetCDFUtility.getDataTypeCollection(datasetUrl);
         result.add(dtcb);
         return result;
     }
