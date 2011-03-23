@@ -113,14 +113,6 @@ public class FileWipeAutomationServlet extends HttpServlet {
                 filesDeleted = FileHelper.wipeOldFiles(getRepositoryDir(), Long.valueOf(this.hoursToWipe), false);
                 if (!filesDeleted.isEmpty()) {
                     log.info("Finished deleting repository directory files. " + filesDeleted.size() + " deleted.");
-//                    try {
-//                        new ManageGeoserverWorkspace().updateGeoServer(AppConstant.WFS_ENDPOINT.getValue());
-//                        log.info("GeoServer has been reloaded after datastores were deleted.");
-//                    } catch (IOException ex) {
-//                        Logger.getLogger(FileWipeAutomationServlet.class.getName()).log(Level.WARNING, null, ex);
-//                        log.warn("GeoServer could not be reloaded: \n" + ex);
-//
-//                    }
                 }
             }
 
