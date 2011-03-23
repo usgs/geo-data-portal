@@ -130,11 +130,10 @@ public class ManageGeoserverWorkspace {
         log.info("Beginning wipe old files task for existing workspaces.");
         long now = new Date().getTime();
         for (String workspace : workspaces) {
-            log.info("Checking workspace: " + workspace);
-
             // Check that the workspace exists
             if (!this.workspaceExists(workspace)) log.info("Workspace '" + workspace + "' does not exist on Geoserver. Skipping.");
             else {
+                log.info("Checking workspace: " + workspace);
                 List<String> dataStoreNames = this.createDatastoreListFromWorkspace(workspace);
                 // Check the data stores in this workspace
                 for (String datastore : dataStoreNames) {
