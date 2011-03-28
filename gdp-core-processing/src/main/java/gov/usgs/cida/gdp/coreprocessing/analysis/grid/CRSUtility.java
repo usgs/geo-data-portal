@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.measure.converter.UnitConverter;
 import javax.measure.quantity.Angle;
+import javax.measure.quantity.Length;
 import javax.measure.unit.SI;
 import javax.measure.unit.Unit;
 import org.geotools.metadata.iso.extent.ExtentImpl;
@@ -102,7 +104,7 @@ public class CRSUtility {
                 return new DefaultDerivedCRS(
                     "CF-Derived CRS LON [0,360]",
                     geographicCRS,
-                    LongitudeDegreesTransform,
+                    longitudeCenter180Modulo360Transform,
                     DefaultEllipsoidalCS.GEODETIC_2D);
             } else {
                 return geographicCRS;
@@ -110,6 +112,8 @@ public class CRSUtility {
 		}
 
 		try {
+
+            Unit<Length> axisLengthUnit = generateAxisLengthUnit(gcs);
 
 			DefaultMathTransformFactory transformFactory =
 						new DefaultMathTransformFactory();
@@ -120,11 +124,11 @@ public class CRSUtility {
 
 				parameterGroup =
 						transformFactory.getDefaultParameters("Albers_Conic_Equal_Area");
-				ParameterAdapter adapter = new ParameterAdapter(parameterMap, parameterGroup);
-				adapter.transferNumeric("longitude_of_central_meridian", "longitude_of_center");
-				adapter.transferNumeric("latitude_of_projection_origin", "latitude_of_center");
-				adapter.transferNumeric("false_easting", "false_easting");
-				adapter.transferNumeric("false_northing", "false_northing");
+				ProjectionParameterAdapter adapter = new ProjectionParameterAdapter(axisLengthUnit, parameterMap, parameterGroup);
+				adapter.transferAngle("longitude_of_central_meridian", "longitude_of_center");
+				adapter.transferAngle("latitude_of_projection_origin", "latitude_of_center");
+				adapter.transferLength("false_easting", "false_easting");
+				adapter.transferLength("false_northing", "false_northing");
 				adapter.transferStandardParallels();
 				adapter.transferEllipsoid(datum.getEllipsoid());
 
@@ -136,23 +140,29 @@ public class CRSUtility {
 
 				parameterGroup =
 						transformFactory.getDefaultParameters("Lambert_Azimuthal_Equal_Area");
-				ParameterAdapter adapter = new ParameterAdapter(parameterMap, parameterGroup);
-				adapter.transferNumeric("longitude_of_projection_origin", "longitude_of_center");
-				adapter.transferNumeric("latitude_of_projection_origin", "latitude_of_center");
-				adapter.transferNumeric("false_easting", "false_easting");
-				adapter.transferNumeric("false_northing", "false_northing");
+				ProjectionParameterAdapter adapter = new ProjectionParameterAdapter(axisLengthUnit, parameterMap, parameterGroup);
+				adapter.transferAngle("longitude_of_projection_origin", "longitude_of_center");
+				adapter.transferAngle("latitude_of_projection_origin", "latitude_of_center");
+				adapter.transferLength("false_easting", "false_easting");
+				adapter.transferLength("false_northing", "false_northing");
 				adapter.transferEllipsoid(datum.getEllipsoid());
 
 			} else if ("lambert_conformal_conic".equals(gridMappingName)) {
 
-				parameterGroup =
-						transformFactory.getDefaultParameters("Lambert_Conformal_Conic_2SP");
-				ParameterAdapter adapter = new ParameterAdapter(parameterMap, parameterGroup);
-				adapter.transferNumeric("longitude_of_central_meridian", "central_meridian");
-				adapter.transferNumeric("latitude_of_projection_origin", "latitude_of_origin");
-				adapter.transferNumeric("false_easting", "false_easting");
-				adapter.transferNumeric("false_northing", "false_northing");
-				adapter.transferStandardParallels();
+                boolean is2SP = ProjectionParameterAdapter.getStandardParallelCount(parameterMap) == 2;
+				parameterGroup = is2SP ?
+                        transformFactory.getDefaultParameters("Lambert_Conformal_Conic_2SP") :
+						transformFactory.getDefaultParameters("Lambert_Conformal_Conic_1SP");
+				ProjectionParameterAdapter adapter = new ProjectionParameterAdapter(axisLengthUnit, parameterMap, parameterGroup);
+				adapter.transferAngle("longitude_of_central_meridian", "central_meridian");
+				adapter.transferAngle("latitude_of_projection_origin", "latitude_of_origin");
+				adapter.transferLength("false_easting", "false_easting");
+				adapter.transferLength("false_northing", "false_northing");
+                if (is2SP) { 
+                    adapter.transferStandardParallels();
+                } else {
+                    // scale_factor parameter is default of 1.0.
+                }
 				adapter.transferEllipsoid(datum.getEllipsoid());
 
 			} else if ("lambert_cylindrical_equal_area".equals(gridMappingName)) {
@@ -163,40 +173,42 @@ public class CRSUtility {
 
 				// presence of "standard_parallel" indicates Mercator_2SP while
 				// "scale_factor_at_projection_origin" indicates Mercator_1SP
-				parameterGroup = parameterMap.containsKey("standard_parallel") ?
+                boolean is2SP = parameterMap.containsKey("standard_parallel");
+				parameterGroup = is2SP ?
 						transformFactory.getDefaultParameters("Mercator_2SP") :
 						transformFactory.getDefaultParameters("Mercator_1SP");
-				ParameterAdapter adapter = new ParameterAdapter(parameterMap, parameterGroup);
-				adapter.transferNumeric("longitude_of_projection_origin", "central_meridian");
-				// Mercator_1SP only
-				adapter.transferNumeric("scale_factor_at_projection_origin", "scale_factor");
-				adapter.transferNumeric("false_easting", "false_easting");
-				adapter.transferNumeric("false_northing", "false_northing");
-				// Mercator_2SP only, only expect one standard parallel to exists
-				adapter.transferStandardParallels();
+				ProjectionParameterAdapter adapter = new ProjectionParameterAdapter(axisLengthUnit, parameterMap, parameterGroup);
+				adapter.transferAngle("longitude_of_projection_origin", "central_meridian");
+				adapter.transferLength("false_easting", "false_easting");
+				adapter.transferLength("false_northing", "false_northing");
+				if (is2SP) {
+                    adapter.transferStandardParallels();
+                } else {
+                    adapter.transferUnitless("scale_factor_at_projection_origin", "scale_factor");
+                }
 				adapter.transferEllipsoid(datum.getEllipsoid());
 
 			} else if ("orthographic".equals(gridMappingName)) {
 
 				parameterGroup =
 						transformFactory.getDefaultParameters("Orthographic");
-				ParameterAdapter adapter = new ParameterAdapter(parameterMap, parameterGroup);
-				adapter.transferNumeric("longitude_of_projection_origin", "central_meridian");
-				adapter.transferNumeric("latitude_of_projection_origin", "latitude_of_origin");
-				adapter.transferNumeric("false_easting", "false_easting");
-				adapter.transferNumeric("false_northing", "false_northing");
+				ProjectionParameterAdapter adapter = new ProjectionParameterAdapter(axisLengthUnit, parameterMap, parameterGroup);
+				adapter.transferAngle("longitude_of_projection_origin", "central_meridian");
+				adapter.transferAngle("latitude_of_projection_origin", "latitude_of_origin");
+				adapter.transferLength("false_easting", "false_easting");
+				adapter.transferLength("false_northing", "false_northing");
 				adapter.transferEllipsoid(datum.getEllipsoid());
 
 			} else if ("polar_stereographic".equals(gridMappingName)) {
 
 				parameterGroup =
 						transformFactory.getDefaultParameters("Polar_Stereographic");
-				ParameterAdapter adapter = new ParameterAdapter(parameterMap, parameterGroup);
-				adapter.transferNumeric("straight_vertical_longitude_from_pole", "central_meridian");
-				adapter.transferNumeric("latitude_of_projection_origin", "latitude_of_origin");
-				adapter.transferNumeric("scale_factor_at_projection_origin", "scale_factor");
-				adapter.transferNumeric("false_easting", "false_easting");
-				adapter.transferNumeric("false_northing", "false_northing");
+				ProjectionParameterAdapter adapter = new ProjectionParameterAdapter(axisLengthUnit, parameterMap, parameterGroup);
+				adapter.transferAngle("straight_vertical_longitude_from_pole", "central_meridian");
+				adapter.transferAngle("latitude_of_projection_origin", "latitude_of_origin");
+				adapter.transferUnitless("scale_factor_at_projection_origin", "scale_factor");
+				adapter.transferLength("false_easting", "false_easting");
+				adapter.transferLength("false_northing", "false_northing");
 				adapter.transferStandardParallels();
 				adapter.transferEllipsoid(datum.getEllipsoid());
 
@@ -208,39 +220,37 @@ public class CRSUtility {
 
 				parameterGroup =
 						transformFactory.getDefaultParameters("Stereographic");
-				ParameterAdapter adapter = new ParameterAdapter(parameterMap, parameterGroup);
-				adapter.transferNumeric("longitude_of_projection_origin", "central_meridian");
-				adapter.transferNumeric("latitude_of_projection_origin", "latitude_of_origin");
-				adapter.transferNumeric("scale_factor_at_projection_origin", "scale_factor");
-				adapter.transferNumeric("false_easting", "false_easting");
-				adapter.transferNumeric("false_northing", "false_northing");
+				ProjectionParameterAdapter adapter = new ProjectionParameterAdapter(axisLengthUnit, parameterMap, parameterGroup);
+				adapter.transferAngle("longitude_of_projection_origin", "central_meridian");
+				adapter.transferAngle("latitude_of_projection_origin", "latitude_of_origin");
+				adapter.transferUnitless("scale_factor_at_projection_origin", "scale_factor");
+				adapter.transferLength("false_easting", "false_easting");
+				adapter.transferLength("false_northing", "false_northing");
 				adapter.transferEllipsoid(datum.getEllipsoid());
 
 			} else if ("transverse_mercator".equals(gridMappingName)) {
 
 				parameterGroup =
 						transformFactory.getDefaultParameters("Transverse_Mercator");
-				ParameterAdapter adapter = new ParameterAdapter(parameterMap, parameterGroup);
-				adapter.transferNumeric("scale_factor_at_central_meridian", "scale_factor");
-				adapter.transferNumeric("longitude_of_central_meridian", "central_meridian");
-				adapter.transferNumeric("latitude_of_projection_origin", "latitude_of_origin");
-				adapter.transferNumeric("false_easting", "false_easting");
-				adapter.transferNumeric("false_northing", "false_northing");
+				ProjectionParameterAdapter adapter = new ProjectionParameterAdapter(axisLengthUnit, parameterMap, parameterGroup);
+				adapter.transferUnitless("scale_factor_at_central_meridian", "scale_factor");
+				adapter.transferAngle("longitude_of_central_meridian", "central_meridian");
+				adapter.transferAngle("latitude_of_projection_origin", "latitude_of_origin");
+				adapter.transferLength("false_easting", "false_easting");
+				adapter.transferLength("false_northing", "false_northing");
 				adapter.transferEllipsoid(datum.getEllipsoid());
 
 			} else if ("vertical_perspective".equals(gridMappingName)) {
 
 				throw new RuntimeException("vertical_perspective projection is not supported");
 
-			}
+            }
 
 			if (parameterGroup == null) {
 				throw new RuntimeException("unknown grid_mapping_name");
 			}
 
-			Unit axisUnit = generateAxisUnit(gcs);
-
-			CartesianCS cartesianCS = DefaultCartesianCS.PROJECTED.usingUnit(axisUnit);
+			CartesianCS cartesianCS = DefaultCartesianCS.PROJECTED.usingUnit(axisLengthUnit);
 
 			/* DOESN'T WORK - settings axis units is not enough, must also perform operation
 			 * in transform.  see below...
@@ -288,18 +298,22 @@ public class CRSUtility {
 		}
 	}
 
-	private static Unit generateAxisUnit(GridCoordSystem gcs) {
+	private static Unit<Length> generateAxisLengthUnit(GridCoordSystem gcs) {
 		CoordinateAxis xAxis = gcs.getXHorizAxis();
 		CoordinateAxis yAxis = gcs.getYHorizAxis();
 		String xUnits = xAxis.getUnitsString();
 		String yUnits = yAxis.getUnitsString();
 		if (xUnits == null || yUnits == null) {
-			throw new RuntimeException("one or more axes missing units.");
+			throw new RuntimeException("One or more axes missing units.");
 		}
 		if (!xUnits.equals(yUnits)) {
-			throw new RuntimeException("axis units mismatch.");
+			throw new RuntimeException("Axis units mismatch.");
 		}
-		return Unit.valueOf(xUnits);
+        try {
+            return Unit.valueOf(xUnits).asType(Length.class);
+        } catch (ClassCastException e) {
+            throw new RuntimeException("axit unit is not length unit.");
+        }
 	}
 
 	private static DefaultEllipsoid generateEllipsoid(Map<String, Parameter> parameterMap) {
@@ -350,23 +364,44 @@ public class CRSUtility {
 				generatePrimeMeridian(parameterMap));
 	}
 
-	private static class ParameterAdapter {
+	private static class ProjectionParameterAdapter {
 
-		private Map<String, Parameter> parameterMap;
-		private ParameterValueGroup parameterValueGroup;
+        private final UnitConverter lengthUnitConverter;
+        private final UnitConverter angleUnitConverter; // placeholder now...
+		private final Map<String, Parameter> parameterMap;
+		private final ParameterValueGroup parameterValueGroup;
 
-		public ParameterAdapter(
-				Map<String, Parameter> parameterMap,
+		public ProjectionParameterAdapter(
+                Unit<Length> lengthUnitCF,
+				Map<String, Parameter> parameterMapCF,
 				ParameterValueGroup parameterValueGroup) {
-			this.parameterMap = parameterMap;
+            this.lengthUnitConverter = lengthUnitCF.getConverterTo(SI.METER);
+            this.angleUnitConverter = UnitConverter.IDENTITY; // placeholder now...
+			this.parameterMap = parameterMapCF;
 			this.parameterValueGroup = parameterValueGroup;
 		}
 
-		public void transferNumeric(String in, String out) {
-			Parameter parameter = parameterMap.get(in);
+		public void transferUnitless(String from, String to) {
+			Parameter parameter = parameterMap.get(from);
 			if (parameter != null) {
 				double value = parameter.getNumericValue();
-				parameterValueGroup.parameter(out).setValue(value);
+				parameterValueGroup.parameter(to).setValue(value);
+			}
+		}
+
+        public void transferAngle(String from, String to) {
+			Parameter parameter = parameterMap.get(from);
+			if (parameter != null) {
+				double value = parameter.getNumericValue();
+				parameterValueGroup.parameter(to).setValue(angleUnitConverter.convert(value));
+			}
+		}
+
+        public void transferLength(String from, String to) {
+			Parameter parameter = parameterMap.get(from);
+			if (parameter != null) {
+				double value = parameter.getNumericValue();
+				parameterValueGroup.parameter(to).setValue(lengthUnitConverter.convert(value));
 			}
 		}
 
@@ -374,20 +409,46 @@ public class CRSUtility {
 			Parameter parameter = parameterMap.get("standard_parallel");
 			if (parameter != null) {
 				double[] values = parameter.getNumericValues();
-				parameterValueGroup.parameter("standard_parallel_1").setValue(values[0]);
-				if (values.length > 1) {
-					parameterValueGroup.parameter("standard_parallel_2").setValue(values[1]);
+				parameterValueGroup.parameter("standard_parallel_1").setValue(
+                        angleUnitConverter.convert(values[0]));
+				if (values.length > 1 && values[0] != values[1]) {
+					parameterValueGroup.parameter("standard_parallel_2").setValue(
+                            angleUnitConverter.convert(values[1]));
 				}
 			}
 		}
 
 		public void transferEllipsoid(Ellipsoid ellipsoid) {
 			if (ellipsoid != null) {
-				parameterValueGroup.parameter("semi_major").setValue(ellipsoid.getSemiMajorAxis());
-				parameterValueGroup.parameter("semi_minor").setValue(ellipsoid.getSemiMinorAxis());
+                double semiMajorAxis = ellipsoid.getSemiMajorAxis();
+                double semiMinorAxis = ellipsoid.getSemiMinorAxis();
+                Unit<Length> axisLengthUnit = ellipsoid.getAxisUnit();
+                if (!axisLengthUnit.equals(SI.METER)) {
+                    UnitConverter converter = axisLengthUnit.getConverterTo(SI.METER);
+                    semiMajorAxis = converter.convert(semiMajorAxis);
+                    semiMinorAxis = converter.convert(semiMinorAxis);
+                }
+				parameterValueGroup.parameter("semi_major").setValue(semiMajorAxis);
+				parameterValueGroup.parameter("semi_minor").setValue(semiMinorAxis);
 			}
 		}
 
+        public static int getStandardParallelCount(Map<String, Parameter> parameterMap) {
+            Parameter parameter = parameterMap.get("standard_parallel");
+			if (parameter != null) {
+				double[] values = parameter.getNumericValues();
+				if (values == null || values.length == 0) {
+                    return 0;
+                }
+				if (values.length == 1) {
+                    return 1;
+				}
+                if (values.length == 2) {
+                    return values[0] == values[1] ? 1 : 2;
+                }
+			}
+            return 0;
+        }
 	}
 
     private final static ParameterDescriptorGroup EMPTY_PARAMETER_DESCRIPTORS =
@@ -410,7 +471,7 @@ public class CRSUtility {
 	}
 
     // Transform longitude from [-180...180] to [0...360]
-    private final static MathTransform LongitudeDegreesTransform = new AbstractMathTransform() {
+    private final static MathTransform longitudeCenter180Modulo360Transform = new AbstractMathTransform() {
 
         @Override public int getSourceDimensions() { return 2; }
         @Override public int getTargetDimensions() { return 2; }
@@ -422,22 +483,21 @@ public class CRSUtility {
 
         @Override
         public MathTransform inverse() throws NoninvertibleTransformException {
-            return LongitudeDegreesInverseTransform;
+            return longitudeCenter0Modulo360Transform;
         }
 
         @Override
         public void transform(double[] srcPts, int srcOff, double[] dstPts, int dstOff, int numPts) throws TransformException {
             int count = numPts * 2;
             for (int index = 0; index < count; index += 2) {
-                double lon = srcPts[srcOff + index];
-                dstPts[dstOff + index] = 180.0 + Math.IEEEremainder(lon - 180.0, 360.0);
+                dstPts[dstOff + index] = transformLongitudeCenter180Modulo360(srcPts[srcOff + index]);
                 dstPts[dstOff + index + 1] = srcPts[srcOff + index + 1];
             }
         }
     };
 
     // Transform longitude from [0...360] to [-180...180]
-    private final static MathTransform LongitudeDegreesInverseTransform = new AbstractMathTransform() {
+    private final static MathTransform longitudeCenter0Modulo360Transform = new AbstractMathTransform() {
 
         @Override public int getSourceDimensions() { return 2; }
         @Override public int getTargetDimensions() { return 2; }
@@ -449,18 +509,26 @@ public class CRSUtility {
 
         @Override
         public MathTransform inverse() throws NoninvertibleTransformException {
-            return LongitudeDegreesTransform;
+            return longitudeCenter180Modulo360Transform;
         }
 
         @Override
         public void transform(double[] srcPts, int srcOff, double[] dstPts, int dstOff, int numPts) throws TransformException {
             int count = numPts * 2;
             for (int index = srcOff; index < count; index += 2) {
-                double lon = srcPts[srcOff + index];
-                dstPts[dstOff + index] = Math.IEEEremainder(lon + 180.0, 360.0) - 180.0;
+                dstPts[dstOff + index] = transformLongitudeCenter0Modulo360(srcPts[srcOff + index]);
                 dstPts[dstOff + index + 1] = srcPts[srcOff + index + 1];
             }
         }
     };
 
+    // Transform longitude from [-180...180] to [0...360]
+    private static double transformLongitudeCenter180Modulo360(double longitude) {
+        return 180.0 + Math.IEEEremainder(longitude - 180.0, 360.0);
+    }
+
+    // Transform longitude from [0...360] to [-180...180]
+    private static double transformLongitudeCenter0Modulo360(double longitude) {
+        return Math.IEEEremainder(longitude + 180.0, 360.0) - 180.0;
+    }
 }
