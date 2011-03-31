@@ -5,6 +5,7 @@ import gov.usgs.cida.gdp.communication.EmailHandler;
 import gov.usgs.cida.gdp.communication.EmailMessage;
 import gov.usgs.cida.gdp.constants.AppConstant;
 import gov.usgs.cida.gdp.utilities.HTTPUtils;
+import gov.usgs.cida.gdp.utilities.XMLUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -114,7 +115,7 @@ class EmailCheckTask extends TimerTask {
 
 	}
 
-	public void checkAndSend(Document document) throws XPathExpressionException, AddressException, MessagingException {
+	public void checkAndSend(Document document) throws XPathExpressionException, AddressException, MessagingException, IOException {
 
 		ProcessStatus procStat = new ProcessStatus(document);
 		if (procStat.isAccepted()) {
@@ -128,7 +129,7 @@ class EmailCheckTask extends TimerTask {
 		}
 		else if (procStat.isSuccess()) {
 			log.debug("Process (started " + taskStarted + ") complete, sending email");
-			sendCompleteEmail(procStat.getOutputReference());
+			sendCompleteEmail(procStat.getOutputReference(), XMLUtils.createPrettyXML(document));
 			this.cancel();
 		}
 		else if (procStat.isFailed()) {
@@ -141,11 +142,13 @@ class EmailCheckTask extends TimerTask {
 		}
 	}
 
-	private void sendCompleteEmail(String fileLocation) throws AddressException, MessagingException {
+	private void sendCompleteEmail(String fileLocation, String prettyXML) throws AddressException, MessagingException {
 		String from = AppConstant.FROM_EMAIL.getValue();
 		String subject = "Processing Complete";
 		String content = "The processing has completed on your request."
-				+ " You can retrieve your file at " + fileLocation;
+				+ " You can retrieve your file at " + fileLocation
+                                + "\n\n\nProcess Information Follows:\n"
+                                + prettyXML;
 		List<String> bcc = new ArrayList<String>();
 		String bccAddr = AppConstant.TRACK_EMAIL.getValue();
 		if (!"".equals(bccAddr)) {

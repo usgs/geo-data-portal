@@ -200,10 +200,15 @@ public class WCSCoverageInfoHelper {
     }
 
     public static String getWcsDescribeCoverages(String wcsURL) throws IOException {
-        InputStream is = HTTPUtils.sendPacket(
-                new URL(wcsURL + "?SERVICE=WCS&VERSION=1.1.1&REQUEST=DescribeCoverage"), "GET");
-
-        return HTTPUtils.getStringFromInputStream(is);
+        InputStream is = null;
+        try {
+            is = HTTPUtils.sendPacket(
+                    new URL(wcsURL + "?SERVICE=WCS&VERSION=1.1.1&REQUEST=DescribeCoverage"), "GET");
+            String result = HTTPUtils.getStringFromInputStream(is);
+            return result;
+        } finally {
+            is.close();
+        }
     }
 
     private static class GetObservationNamespaceContext implements NamespaceContext {

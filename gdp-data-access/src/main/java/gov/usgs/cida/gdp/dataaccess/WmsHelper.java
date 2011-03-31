@@ -11,9 +11,15 @@ import java.net.URL;
 public class WmsHelper {
 
     public static String getCapabilities(String wmsURL) throws IOException {
-        InputStream is = HTTPUtils.sendPacket(
+        InputStream is = null;
+        try {
+            is = HTTPUtils.sendPacket(
                 new URL(wmsURL + "?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities"), "GET");
-
-        return HTTPUtils.getStringFromInputStream(is);
+            String result = HTTPUtils.getStringFromInputStream(is);
+            return result;
+        } finally {
+            is.close();
+        }
+        
     }
 }
