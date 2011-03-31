@@ -46,11 +46,42 @@ public class HTTPUtils {
         return writer.toString();
     }
 
+    public static enum HTTPConnectionMethods {
+
+        GET("GET"),
+        POST("POST"),
+        HEAD("HEAD"),
+        OPTIONS("OPTIONS"),
+        PUT("PUT"),
+        DELETE("DELETE"),
+        TRACE("TRACE");
+        String value;
+
+        HTTPConnectionMethods(final String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return this.value;
+        }
+    }
+
+    public static HttpURLConnection openHttpConnection(final URL url, final HTTPConnectionMethods httpConnectionMethod) throws IOException, ProtocolException {
+        return HTTPUtils.openHttpConnection(url, httpConnectionMethod.getValue());
+    }
+    
     /**
      * Opens and returns a HttpURLConnection to the provided URL
      *
      * @param url
-     * @param requestMethod
+     * @param requestMethod Set the method for the URL request, one of:
+     *  GET
+     *  POST
+     *  HEAD
+     *  OPTIONS
+     *  PUT
+     *  DELETE
+     *  TRACE
      * @return
      * @throws IOException
      * @throws ProtocolException
