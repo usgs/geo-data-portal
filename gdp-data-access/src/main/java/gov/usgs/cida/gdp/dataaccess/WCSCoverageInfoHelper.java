@@ -207,7 +207,7 @@ public class WCSCoverageInfoHelper {
             String result = HTTPUtils.getStringFromInputStream(is);
             return result;
         } finally {
-            is.close();
+            if (is != null) is.close();
         }
     }
 
