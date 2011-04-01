@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.n52.wps.server.database.DatabaseFactory;
 import org.n52.wps.server.database.IDatabase;
 
@@ -23,7 +24,9 @@ public class RetrieveResultServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		String id = request.getParameter("id");
-
+                String asAttachmentParam = request.getParameter("asattachment");
+                boolean asAttachment = (StringUtils.isNotBlank(asAttachmentParam) || Boolean.parseBoolean(asAttachmentParam)) ? true : false;
+                
 		if(id == null || id.length() == 0) {
 			errorResponse("id parameter missing", response);
 		} else {
@@ -35,7 +38,7 @@ public class RetrieveResultServlet extends HttpServlet {
                     errorResponse("id parameter invalid", response);
                 } else {
                     String suffix = MIMEUtil.getSuffixFromMIMEType(mimeType);
-                    if (!"xml".equals(suffix)) {
+                    if (!"xml".equals(suffix) || asAttachment) {
                         response.addHeader("Content-Disposition", "attachment; filename=\"wps-result." + suffix + "\"");
                     }
                     response.setContentType(mimeType);
