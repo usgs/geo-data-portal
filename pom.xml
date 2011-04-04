@@ -8,7 +8,7 @@
     <name>gdp</name>
     <description>
         Owner: NB
-        Coders: TK, JW, RZ, IS
+Coders: TK, JW, RZ, IS
     </description>
     <modules>
         <module>gdp-common-utilities</module>
@@ -18,7 +18,7 @@
         <module>gdp-utility-wps</module>
         <module>gdp-process-wps</module>
         <module>geoserver</module>
-		<module>geonetwork</module>
+        <module>geonetwork</module>
     </modules>
     <repositories>
         <repository>
