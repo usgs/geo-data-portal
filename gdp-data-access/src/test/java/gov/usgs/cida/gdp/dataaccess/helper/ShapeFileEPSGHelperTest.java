@@ -10,9 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.After;
@@ -48,7 +46,7 @@ public class ShapeFileEPSGHelperTest {
     }
 
  @Before
-    public void setUp() {
+    public void setUp() throws IOException{
         this.tempDir = System.getProperty("java.io.tmpdir");
 
         if (!(this.tempDir.endsWith("/") || this.tempDir.endsWith("\\"))) {
@@ -70,12 +68,7 @@ public class ShapeFileEPSGHelperTest {
             } catch (URISyntaxException e) {
                 assertTrue("Exception encountered: " + e.getMessage(), false);
             }
-            try {
-                FileHelper.copyFileToPath(sampleFiles, this.tempDir + this.seperator);
-            } catch (IOException ex) {
-                Logger.getLogger(ShapeFileEPSGHelperTest.class.getName()).log(Level.SEVERE, null, ex);
-                fail(ex.getMessage());
-            }
+            FileHelper.copyFileToPath(sampleFiles, this.tempDir + this.seperator);
         } else {
             assertTrue("Sample files could not be loaded for test", false);
         }
@@ -92,13 +85,9 @@ public class ShapeFileEPSGHelperTest {
     }
 
     @After
-    public void tearDown() {
+    public void tearDown() throws IOException {
         File delDir = new File(this.tempDir);
-        try {
-            FileHelper.deleteDirRecursively(delDir);
-        } catch (IOException ex) {
-            Logger.getLogger(ShapeFileEPSGHelperTest.class.getName()).log(Level.SEVERE, "Failed to delete: " + delDir.getPath() + "  -- Remember to clean project or remove this file/dir.", ex);
-        }
+        FileHelper.deleteDirRecursively(delDir);
     }
 
     /**
