@@ -5,7 +5,14 @@
 
 package gov.usgs.cida.gdp.utilities;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -14,6 +21,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -41,6 +49,35 @@ public class XMLUtilsTest {
     public static void tearDownClass() throws Exception {
     }
 
+    @Test
+    public void transformXMLTest() throws FileNotFoundException, TransformerConfigurationException, TransformerException {
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        String fileSeparator = System.getProperty("file.separator");
+        URL xmlFileLocation = cl.getResource("Sample_Files"+fileSeparator+"XSLT"+fileSeparator+"sample.xml");
+        URL xsltFileLocation = cl.getResource("Sample_Files"+fileSeparator+"XSLT"+fileSeparator+"sample.xsl");
+        File sampleXMLFile = null;
+        File xsltFile = null;
+        try {
+            sampleXMLFile = new File(xmlFileLocation.toURI());
+            xsltFile = new File(xsltFileLocation.toURI());
+        } catch (URISyntaxException e) {
+            assertTrue("Exception encountered: " + e.getMessage(), false);
+        }
+        
+        assertTrue(sampleXMLFile.exists());
+        assertTrue(xsltFile.exists());
+        
+        FileInputStream xmlFis = new FileInputStream(sampleXMLFile);
+        FileInputStream xslFis = new FileInputStream(xsltFile);
+        String result = XMLUtils.transformXML(xmlFis, xslFis);
+        assertTrue(result != null);
+        assertTrue(result.contains("Input: FEATURE_ATTRIBUTE_NAME"));
+        assertTrue(result.contains("Data: 1999-12-30T00:00:00.000Z"));
+        assertTrue(result.contains("Input: FEATURE_COLLECTION"));
+        assertTrue(result.contains("< Complex Value Reference (not shown) >"));
+        assertTrue(result.contains("Mime Type: text/csv"));
+    }
+    
     @Test
     public void createNodeUsingXPathExpressionTest() throws XPathExpressionException, UnsupportedEncodingException {
         Node result = XMLUtils.createNodeUsingXPathExpression("/parentNode/childNode[1]", testXml);
