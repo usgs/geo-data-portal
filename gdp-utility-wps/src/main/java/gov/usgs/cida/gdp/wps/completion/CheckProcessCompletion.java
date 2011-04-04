@@ -1,29 +1,34 @@
 package gov.usgs.cida.gdp.wps.completion;
 
-import gov.usgs.cida.gdp.wps.completion.ProcessStatus;
+import java.io.File;
 import gov.usgs.cida.gdp.communication.EmailHandler;
 import gov.usgs.cida.gdp.communication.EmailMessage;
 import gov.usgs.cida.gdp.constants.AppConstant;
 import gov.usgs.cida.gdp.utilities.HTTPUtils;
 import gov.usgs.cida.gdp.utilities.XMLUtils;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPathExpressionException;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -115,7 +120,7 @@ class EmailCheckTask extends TimerTask {
 
 	}
 
-	public void checkAndSend(Document document) throws XPathExpressionException, AddressException, MessagingException, IOException {
+	public void checkAndSend(Document document) throws URISyntaxException, XPathExpressionException, AddressException, MessagingException, IOException, TransformerConfigurationException, TransformerException {
 
 		ProcessStatus procStat = new ProcessStatus(document);
 		if (procStat.isAccepted()) {
@@ -142,21 +147,47 @@ class EmailCheckTask extends TimerTask {
 		}
 	}
 
-	private void sendCompleteEmail(String fileLocation, String prettyXML) throws AddressException, MessagingException {
-		String from = AppConstant.FROM_EMAIL.getValue();
-		String subject = "Processing Complete";
-		String content = "The processing has completed on your request."
-				+ " You can retrieve your file at " + fileLocation
-                                + "\n\n\nProcess Information Follows:\n"
-                                + prettyXML;
-		List<String> bcc = new ArrayList<String>();
-		String bccAddr = AppConstant.TRACK_EMAIL.getValue();
-		if (!"".equals(bccAddr)) {
-			bcc.add(bccAddr);
-		}
+	private void sendCompleteEmail(String fileLocation, String prettyXML) throws AddressException, MessagingException, TransformerConfigurationException, TransformerException, URISyntaxException {
+            // Set up the StreamSource input
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            File xslFile = null;
+            try {
+                URL xsltFileLocation = cl.getResource("wps-result.xsl");
+                xslFile = new File(xsltFileLocation.toURI());
+            } catch (URISyntaxException ex) {
+                // Could not load the XSL. We will default to the prettyXML
+                log.warn(ex.getMessage());
+            }
+            
+            String processInfo = null;
+            if (xslFile != null && xslFile.exists()) {
+                // Do the transformation
+                TransformerFactory tFact = TransformerFactory.newInstance();
+                Transformer trans = tFact.newTransformer(new StreamSource(xslFile));
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                trans.transform(
+                        new StreamSource(new StringReader(prettyXML)),
+                        new StreamResult(bos)
+                    );
+                processInfo = bos.toString();
+            } else {
+                processInfo = prettyXML;
+            }
+            
+            String from = AppConstant.FROM_EMAIL.getValue();
+            String subject = "Processing Complete";
+            String content = "The processing has completed on your request."
+                            + " You can retrieve your file at " + fileLocation
+                            + "\n\n\nProcess Information Follows:\n"
+                            + processInfo;
+            List<String> bcc = new ArrayList<String>();
+            String bccAddr = AppConstant.TRACK_EMAIL.getValue();
+            if (!"".equals(bccAddr)) {
+                    bcc.add(bccAddr);
+            }
 
-		EmailMessage message = new EmailMessage(from, addr, null, bcc, subject, content);
-		EmailHandler.sendMessage(message);
+            EmailMessage message = new EmailMessage(from, addr, null, bcc, subject, content);
+            EmailHandler.sendMessage(message);
 	}
 
 	private void sendFailedEmail(String errorMsg) throws AddressException, MessagingException {
