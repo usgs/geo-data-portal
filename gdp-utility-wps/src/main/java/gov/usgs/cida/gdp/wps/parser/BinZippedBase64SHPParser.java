@@ -1,10 +1,10 @@
 package gov.usgs.cida.gdp.wps.parser;
 
+import gov.usgs.cida.gdp.io.data.ZippedGenericFileData;
+import gov.usgs.cida.gdp.io.data.ZippedGenericFileDataBinding;
 import java.io.InputStream;
 import org.apache.commons.codec.binary.Base64InputStream;
-import org.n52.wps.io.data.GenericFileData;
 import org.n52.wps.io.data.IData;
-import org.n52.wps.io.data.binding.complex.GenericFileDataBinding;
 
 /**
  *
@@ -17,10 +17,13 @@ public class BinZippedBase64SHPParser extends AbstractBinZippedSHPParser {
     }
 
     /**
+     * @param input 
+     * @param mimeType 
+     * @return 
      * @see org.n52.wps.io.IParser#parse(java.io.InputStream)
      */
     @Override
     public IData parse(InputStream input, String mimeType) {
-        return new GenericFileDataBinding(new GenericFileData(new Base64InputStream(input), mimeType));
+        return new ZippedGenericFileDataBinding(new ZippedGenericFileData(new Base64InputStream(input), mimeType));
     }
 }

@@ -3,6 +3,7 @@ package gov.usgs.cida.gdp.wps.algorithm.filemanagement;
 import gov.usgs.cida.gdp.constants.AppConstant;
 import gov.usgs.cida.gdp.dataaccess.helper.ShapeFileEPSGHelper;
 import gov.usgs.cida.gdp.dataaccess.ManageGeoserverWorkspace;
+import gov.usgs.cida.gdp.io.data.ZippedGenericFileDataBinding;
 import gov.usgs.cida.gdp.utilities.FileHelper;
 import java.io.File;
 import java.io.FileFilter;
@@ -32,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * @author isuftin
  */
 public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
-    Logger log = LoggerFactory.getLogger(ReceiveFiles.class);
+    private Logger log = LoggerFactory.getLogger(ReceiveFiles.class);
     private List<String> errors = new ArrayList<String>();
 
 
@@ -61,7 +62,7 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
         IData data = dataList.get(0);
 
         // Process each input one at a time
-        GenericFileData file = ((GenericFileDataBinding) data).getPayload();
+        GenericFileData file = ((ZippedGenericFileDataBinding) data).getPayload();
         if (file == null) {
             errors.add("Error while processing file: Could not get file from server");
             throw new RuntimeException("Error while processing file: Could not get file from server");
@@ -226,5 +227,19 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
     @Override
     public List<String> getErrors() {
         return errors;
+    }
+
+    /**
+     * @return the log
+     */
+    public Logger getLog() {
+        return log;
+    }
+
+    /**
+     * @param log the log to set
+     */
+    public void setLog(Logger log) {
+        this.log = log;
     }
 }
