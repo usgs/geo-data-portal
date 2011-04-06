@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.net.URL;
 import java.util.UUID;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +38,7 @@ public class ZippedGenericFileDataTest {
 
     @After
     public  void afterTest() throws Exception {
-        fis.close();
+        IOUtils.closeQuietly(fis);
         FileUtils.deleteQuietly(tempArea);
     }
 
