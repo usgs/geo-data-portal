@@ -111,6 +111,9 @@ public class FeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotatedAlg
                 return;
             }
 
+            output = File.createTempFile("gdp", ".csv");
+            writer = new BufferedWriter(new FileWriter(output));
+            
             for (String currentDatasetId : datasetId) {
                 GridDatatype gridDatatype = GDPAlgorithmUtil.generateGridDataType(
                         datasetURI,
@@ -121,9 +124,6 @@ public class FeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotatedAlg
                         gridDatatype,
                         timeStart,
                         timeEnd);
-
-                output = File.createTempFile("gdp", ".csv");
-                writer = new BufferedWriter(new FileWriter(output));
 
                 writer.write("# " + currentDatasetId);
                 FeatureCoverageWeightedGridStatistics.execute(
