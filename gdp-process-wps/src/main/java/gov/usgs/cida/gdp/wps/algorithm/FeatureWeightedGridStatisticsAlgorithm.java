@@ -126,6 +126,7 @@ public class FeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotatedAlg
                         timeEnd);
 
                 writer.write("# " + currentDatasetId);
+                writer.newLine();
                 FeatureCoverageWeightedGridStatistics.execute(
                         featureCollection,
                         featureAttributeName,

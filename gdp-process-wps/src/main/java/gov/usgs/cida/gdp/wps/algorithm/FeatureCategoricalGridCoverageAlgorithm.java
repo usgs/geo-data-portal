@@ -87,6 +87,7 @@ public class FeatureCategoricalGridCoverageAlgorithm extends AbstractAnnotatedAl
                         featureCollection.getBounds());
                 
                 writer.write("# " + currentDatasetId);
+                writer.newLine();
                 FeatureCategoricalGridCoverage.execute(
                         featureCollection,
                         featureAttributeName,
