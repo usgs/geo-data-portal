@@ -43,7 +43,7 @@ public class ZippedGenericFileDataTest {
     }
 
     @Test
-    public void testSomeMethod() {
+    public void testZippedGenericFileData() {
         ZippedGenericFileData test = new ZippedGenericFileData(fis, "application/x-zipped-shp");
         test.writeData(tempArea);
         assertFalse(FileUtils.listFiles(tempArea, null, true).isEmpty());
