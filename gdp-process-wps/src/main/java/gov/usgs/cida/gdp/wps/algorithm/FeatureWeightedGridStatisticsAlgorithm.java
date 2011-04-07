@@ -41,7 +41,7 @@ public class FeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotatedAlg
     private FeatureCollection featureCollection;
     private String featureAttributeName;
     private URI datasetURI;
-    private String datasetId;
+    private List<String> datasetId;
     private Date timeStart;
     private Date timeEnd;
     private List<Statistic> statistics;
@@ -65,8 +65,8 @@ public class FeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotatedAlg
         this.datasetURI = datasetURI;
     }
 
-    @LiteralDataInput(identifier=GDPAlgorithmUtil.INPUT_DATASET_ID)
-    public void setDatasetId(String datasetId) {
+    @LiteralDataInput(identifier=GDPAlgorithmUtil.INPUT_DATASET_ID, maxOccurs= Integer.MAX_VALUE)
+    public void setDatasetId(List<String> datasetId) {
         this.datasetId = datasetId;
     }
 
@@ -111,29 +111,31 @@ public class FeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotatedAlg
                 return;
             }
 
-            GridDatatype gridDatatype = GDPAlgorithmUtil.generateGridDataType(
-                    datasetURI,
-                    datasetId,
-                    featureCollection.getBounds());
+            for (String currentDatasetId : datasetId) {
+                GridDatatype gridDatatype = GDPAlgorithmUtil.generateGridDataType(
+                        datasetURI,
+                        currentDatasetId,
+                        featureCollection.getBounds());
 
-            Range timeRange = GDPAlgorithmUtil.generateTimeRange(
-                    gridDatatype,
-                    timeStart,
-                    timeEnd);
+                Range timeRange = GDPAlgorithmUtil.generateTimeRange(
+                        gridDatatype,
+                        timeStart,
+                        timeEnd);
 
-            output = File.createTempFile("gdp", ".csv");
-            writer = new BufferedWriter(new FileWriter(output));
+                output = File.createTempFile("gdp", ".csv");
+                writer = new BufferedWriter(new FileWriter(output));
 
-            FeatureCoverageWeightedGridStatistics.execute(
-                    featureCollection,
-                    featureAttributeName,
-                    gridDatatype,
-                    timeRange,
-                    statistics == null || statistics.isEmpty() ? Arrays.asList(Statistic.values()) : statistics,
-                    writer,
-                    groupBy == null ? GroupBy.STATISTIC : groupBy,
-                    delimiter == null ? Delimiter.COMMA : delimiter);
-
+                writer.write("# " + currentDatasetId);
+                FeatureCoverageWeightedGridStatistics.execute(
+                        featureCollection,
+                        featureAttributeName,
+                        gridDatatype,
+                        timeRange,
+                        statistics == null || statistics.isEmpty() ? Arrays.asList(Statistic.values()) : statistics,
+                        writer,
+                        groupBy == null ? GroupBy.STATISTIC : groupBy,
+                        delimiter == null ? Delimiter.COMMA : delimiter);
+            }
         } catch (InvalidRangeException e) {
             addError("Error subsetting gridded data :" + e.getMessage());
         } catch (IOException e) {
