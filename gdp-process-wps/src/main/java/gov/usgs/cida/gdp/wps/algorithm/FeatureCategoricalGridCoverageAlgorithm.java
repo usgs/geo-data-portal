@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.SchemaException;
@@ -33,7 +34,7 @@ public class FeatureCategoricalGridCoverageAlgorithm extends AbstractAnnotatedAl
     private FeatureCollection featureCollection;
     private String featureAttributeName;
     private URI datasetURI;
-    private String datasetId;
+    private List<String> datasetId;
     private Delimiter delimiter;
 
     private File output;
@@ -53,8 +54,8 @@ public class FeatureCategoricalGridCoverageAlgorithm extends AbstractAnnotatedAl
         this.datasetURI = datasetURI;
     }
 
-    @LiteralDataInput(identifier=GDPAlgorithmUtil.INPUT_DATASET_ID)
-    public void setDatasetId(String datasetId) {
+    @LiteralDataInput(identifier=GDPAlgorithmUtil.INPUT_DATASET_ID, maxOccurs= Integer.MAX_VALUE)
+    public void setDatasetId(List<String> datasetId) {
         this.datasetId = datasetId;
     }
 
@@ -75,20 +76,24 @@ public class FeatureCategoricalGridCoverageAlgorithm extends AbstractAnnotatedAl
         BufferedWriter writer = null;
 
         try {
-            GridDatatype gridDatatype = GDPAlgorithmUtil.generateGridDataType(
-                    datasetURI,
-                    datasetId,
-                    featureCollection.getBounds());
 
             output = File.createTempFile("gdp", "csv");
             writer = new BufferedWriter(new FileWriter(output));
 
-            FeatureCategoricalGridCoverage.execute(
-                    featureCollection,
-                    featureAttributeName,
-                    gridDatatype,
-                    writer,
-                    delimiter == null ? Delimiter.getDefault() : delimiter);
+            for (String currentDatasetId : datasetId) {
+                GridDatatype gridDatatype = GDPAlgorithmUtil.generateGridDataType(
+                        datasetURI,
+                        currentDatasetId,
+                        featureCollection.getBounds());
+                
+                writer.write("# " + currentDatasetId);
+                FeatureCategoricalGridCoverage.execute(
+                        featureCollection,
+                        featureAttributeName,
+                        gridDatatype,
+                        writer,
+                        delimiter == null ? Delimiter.getDefault() : delimiter);
+            }
 
         } catch (InvalidRangeException e) {
             throw new RuntimeException(e);
