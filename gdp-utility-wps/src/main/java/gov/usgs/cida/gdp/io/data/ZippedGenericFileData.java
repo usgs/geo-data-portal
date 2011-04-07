@@ -86,7 +86,8 @@ public class ZippedGenericFileData extends GenericFileData {
 
         while ((entry = zipInputStream.getNextEntry()) != null) {
             String currentExtension = entry.getName();
-            if (!currentExtension.endsWith(File.separator)) {  
+            // We want to skip past directories and metadata files (MACOSX ZIPPING FIX)
+            if (!currentExtension.endsWith(File.separator) && !currentExtension.startsWith(".")) {  
                 int beginIndex = currentExtension.lastIndexOf(".") + 1;
                 currentExtension = currentExtension.substring(beginIndex);
              
