@@ -53,7 +53,7 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
         temp.mkdirs();
 
         List<IData> dataList = inputData.get("filename");
-        String desiredFilename = ((LiteralStringBinding) dataList.get(0)).getPayload();
+        String desiredFilename = (((LiteralStringBinding) dataList.get(0)).getPayload()).replace(" ", "_");
 
         List<IData> wfsEndpointList = inputData.get("wfs-url");
         String wfsEndpoint = ((LiteralStringBinding) wfsEndpointList.get(0)).getPayload();

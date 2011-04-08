@@ -93,7 +93,7 @@ public class ZippedGenericFileData extends GenericFileData {
                 int beginIndex = currentExtension.lastIndexOf(".") + 1;
                 currentExtension = currentExtension.substring(beginIndex);
              
-                String fileName = baseFileName + "." + currentExtension;
+                String fileName = (baseFileName + "." + currentExtension).replace(" ", "_");
                 File currentFile = new File(writeDirectory, fileName);
             
                 currentFile.createNewFile();
