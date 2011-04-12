@@ -16,7 +16,10 @@ import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
  *
  * @author tkunicki
  */
-@Algorithm(title = "Feature Coverage Intersection", version = "1.0.0")
+@Algorithm(
+    version = "1.0.0",
+    title = "Feature Coverage Intersection",
+    abstrakt="This service returns the subset of data that intersects a set of vector polygon features and time range, if specified. Given a Web Coverage Service data source, a GeoTIFF file will be returned. Given an OPeNDAP data source, a NetCDF file will be returned.")
 public class FeatureCoverageIntersectionAlgorithm extends AbstractAnnotatedAlgorithm {
 
     private FeatureCollection featureCollection;

@@ -35,7 +35,10 @@ import static gov.usgs.cida.gdp.wps.algorithm.annotation.LiteralDataInput.ENUM_C
  *
  * @author tkunicki
  */
-@Algorithm(title="Feature Weighted Grid Statistics", version="1.0.0")
+@Algorithm(
+    version="1.0.0",
+    title="Feature Weighted Grid Statistics",
+    abstrakt="This algorithm generates area weighted statistics of a gridded dataset for a set of vector polygon features. Using the bounding-box that encloses the feature data and the time range, if provided, a subset of the gridded dataset is requested from the remote gridded data server. Polygon representations are generated for cells in the retrieved grid. The polygon grid-cell representations are then projected to the feature data coordinate reference system. The grid-cells are used to calculate per grid-cell feature coverage fractions. Area-weighted statistics are then calculated for each feature using the grid values and fractions as weights. If the gridded dataset has a time range the last step is repeated for each time step within the time range or all time steps if a time range was not supplied.")
 public class FeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotatedAlgorithm {
 
     private FeatureCollection featureCollection;
