@@ -17,8 +17,8 @@ Coders: TK, JW, RZ, IS
         <module>gdp-geotiff</module>
         <module>gdp-utility-wps</module>
         <module>gdp-process-wps</module>
-        <module>geoserver</module>
-        <module>geonetwork</module>
+<!--        <module>geoserver</module>-->
+<!--        <module>geonetwork</module>-->
     </modules>
     <repositories>
         <repository>
@@ -31,7 +31,7 @@ Coders: TK, JW, RZ, IS
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <n52-wps.version>2.0-RC6</n52-wps.version>
-        <geotools.version>2.6.5</geotools.version>
+        <geotools.version>2.6.6</geotools.version>
         <netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
     </properties>
     <dependencies>
