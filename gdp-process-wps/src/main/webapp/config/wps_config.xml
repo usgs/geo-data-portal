@@ -16,7 +16,7 @@
 				<Property name="supportedFormat" active="true">text/xml</Property>
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
 			</Parser>
-            <Parser name="GeoTIFFFileParser" className="gov.usgs.cida.gdp.wps.parser.GeoTIFFFileParser" active="true">
+            <Parser name="GeoTIFFParser" className="gov.usgs.cida.gdp.wps.parser.GeoTIFFParser" active="true">
                 <Property name="supportedFormat" active="true">image/geotiff</Property>
                 <Property name="supportedFormat" active="true">image/x-geotiff</Property>
                 <Property name="supportedFormat" active="true">application/geotiff</Property>
