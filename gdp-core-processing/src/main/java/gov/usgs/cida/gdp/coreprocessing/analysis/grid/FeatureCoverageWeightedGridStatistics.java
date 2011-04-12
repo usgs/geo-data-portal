@@ -6,11 +6,14 @@ import gov.usgs.cida.gdp.coreprocessing.analysis.statistics.WeightedStatistics1D
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.GridCellCoverageFactory.GridCellCoverageByIndex;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.GridCellCoverageFactory.GridCellIndexCoverage;
 
+import java.util.Date;
+import java.text.SimpleDateFormat;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -76,6 +79,8 @@ public class FeatureCoverageWeightedGridStatistics {
             throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException
     {
 
+        boolean includeSummaries = false;  // here in case we want to add to argument list in future...
+        
         GridType gt = GridType.findGridType(gridDatatype.getCoordinateSystem());
         if( !(gt == GridType.YX || gt == GridType.TYX) ) {
             throw new IllegalStateException("Currently require y-x or t-y-x grid for this operation");
@@ -110,6 +115,7 @@ public class FeatureCoverageWeightedGridStatistics {
                     statisticList,
                     groupBy != groupBy.FEATURE_ATTRIBUTE,  // != in case value equals null, default to GroupBy.STATISTIC
                     delimiter.delimiter,
+                    includeSummaries,
                     writer);
 
         WeightedGridStatisticsVisitor v = null;
@@ -218,10 +224,12 @@ public class FeatureCoverageWeightedGridStatistics {
         @Override
         public void traverseEnd() {
             try {
-                writer.writeRow(
-                        null,
-                        perAttributeStatistics.values(),
-                        allAttributeStatistics);
+                if (writer.isSummaryIncluded()) {
+                    writer.writeRow(
+                            null,
+                            perAttributeStatistics.values(),
+                            allAttributeStatistics);
+                }
             } catch (IOException ex) {
                 // TODO
             }
@@ -230,6 +238,9 @@ public class FeatureCoverageWeightedGridStatistics {
     }
 
     protected static class WeightedGridStatisticsVisitor_TYX extends WeightedGridStatisticsVisitor {
+        
+        public final static String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+        public final static String TIMEZONE = "UTC";
 
         protected Map<Object, WeightedStatistics1D> allTimestepPerAttributeStatistics;
         protected WeightedStatistics1D allTimestepAllAttributeStatistics;
@@ -238,6 +249,8 @@ public class FeatureCoverageWeightedGridStatistics {
         
         protected CoordinateAxis1DTime tAxis;
         protected int tIndexOffset;
+        
+        protected SimpleDateFormat dateFormat;
 
         public WeightedGridStatisticsVisitor_TYX(
                 GridCellCoverageByIndex coverageByIndex,
@@ -248,6 +261,9 @@ public class FeatureCoverageWeightedGridStatistics {
             this.writer = writer;
             this.tAxis = tAxis;
             this.tIndexOffset = tRange.first();
+            
+            dateFormat = new SimpleDateFormat(DATE_FORMAT);
+            dateFormat.setTimeZone(TimeZone.getTimeZone(TIMEZONE));
         }
 
         @Override
@@ -279,8 +295,9 @@ public class FeatureCoverageWeightedGridStatistics {
         @Override
         public void tEnd(int tIndex) {
             try {
+                Date date = tAxis.getTimeDate(tIndexOffset + tIndex);
                 writer.writeRow(
-                        tAxis.getTimeDate(tIndexOffset + tIndex).toGMTString(),
+                        dateFormat.format(date),
                         perAttributeStatistics.values(),
                         allAttributeStatistics);
             } catch (IOException e) {
@@ -291,10 +308,12 @@ public class FeatureCoverageWeightedGridStatistics {
         @Override
         public void traverseEnd() {
             try {
-                writer.writeRow(
-                        FeatureCoverageWeightedGridStatisticsWriter.ALL_TIMESTEPS_LABEL,
-                        allTimestepPerAttributeStatistics.values(),
-                        allTimestepAllAttributeStatistics);
+                if (writer.isSummaryIncluded()) {
+                    writer.writeRow(
+                            FeatureCoverageWeightedGridStatisticsWriter.ALL_TIMESTEPS_LABEL,
+                            allTimestepPerAttributeStatistics.values(),
+                            allTimestepAllAttributeStatistics);
+                }
             } catch (IOException ex) {
                 // TODO
             }

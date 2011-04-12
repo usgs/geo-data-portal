@@ -5,29 +5,29 @@ import gov.usgs.cida.gdp.coreprocessing.analysis.statistics.WeightedStatistics1D
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Formatter;
+import java.util.Collections;
 import java.util.List;
 
 public class FeatureCoverageWeightedGridStatisticsWriter {
-
+    
     public final static String ALL_ATTRIBUTES_LABEL = "ALL ATTRIBUTES";
     public final static String ALL_TIMESTEPS_LABEL = "ALL TIMESTEPS";
     public final static String TIMESTEPS_LABEL = "TIMESTEP";
 
     public enum Statistic {
 
-        MEAN("%.7g", "%s")
-        { @Override public Number getValue(WeightedStatistics1D wsa) { return wsa.getMean(); } },
-        MINIMUM("%.7g", "%s")
-        { @Override public Number getValue(WeightedStatistics1D wsa) { return wsa.getMinimum(); } },
-        MAXIMUM("%.7g", "%s")
-        { @Override public Number getValue(WeightedStatistics1D wsa) { return wsa.getMaximum(); } },
-        VARIANCE("%.7g", "%s^2")
-        { @Override public Number getValue(WeightedStatistics1D wsa) { return wsa.getSampleVariance(); } },
-        STD_DEV("%.7g", "%s")
-        { @Override public Number getValue(WeightedStatistics1D wsa) { return wsa.getSampleStandardDeviation(); } },
-        WEIGHT_SUM("%.7g")
-        { @Override public Number getValue(WeightedStatistics1D wsa) { return wsa.getWeightSum(); } },
+        MEAN("%f", "%s")
+        { @Override public Number getValue(WeightedStatistics1D wsa) { return (float)wsa.getMean(); } },
+        MINIMUM("%f", "%s")
+        { @Override public Number getValue(WeightedStatistics1D wsa) { return (float)wsa.getMinimum(); } },
+        MAXIMUM("%f", "%s")
+        { @Override public Number getValue(WeightedStatistics1D wsa) { return (float)wsa.getMaximum(); } },
+        VARIANCE("%f", "%s^2")
+        { @Override public Number getValue(WeightedStatistics1D wsa) { return (float)wsa.getSampleVariance(); } },
+        STD_DEV("%f", "%s")
+        { @Override public Number getValue(WeightedStatistics1D wsa) { return (float)wsa.getSampleStandardDeviation(); } },
+        WEIGHT_SUM("%f")
+        { @Override public Number getValue(WeightedStatistics1D wsa) { return (float)wsa.getWeightSum(); } },
         COUNT("%d")
         { @Override public Number getValue(WeightedStatistics1D wsa) { return wsa.getCount(); } };
 
@@ -45,16 +45,17 @@ public class FeatureCoverageWeightedGridStatisticsWriter {
         public abstract Number getValue(WeightedStatistics1D wsa);
     }
 
-    private List<Object> attributeList;
-    private String variableName;
-    private String variableUnits;
-    private List<Statistic> statisticList;
-    private boolean groupByStatistic;
-    private String delimiter;
-    private BufferedWriter writer;
+    private final List<Object> attributeList;
+    private final String variableName;
+    private final String variableUnits;
+    private final List<Statistic> statisticList;
+    private final boolean groupByStatistic;
+    private final String delimiter;
+    private final boolean summaryIncluded;
+    private final BufferedWriter writer;
 
-    private StringBuilder lineSB = new StringBuilder();
-    private Formatter formatter = new Formatter(lineSB);
+    private final StringBuilder lineSB;
+//    private final Formatter formatter;
 
     public FeatureCoverageWeightedGridStatisticsWriter(
             List<Object> attributeList,
@@ -64,19 +65,36 @@ public class FeatureCoverageWeightedGridStatisticsWriter {
             boolean groupByStatistic,
             String delimiter,
             BufferedWriter writer) {
+        this(attributeList,variableName,variableUnits,statisticList,groupByStatistic,delimiter, false, writer);
+    }
+    
+    public FeatureCoverageWeightedGridStatisticsWriter(
+            List<Object> attributeList,
+            String variableName,
+            String variableUnits,
+            List<Statistic> statisticList,
+            boolean groupByStatistic,
+            String delimiter,
+            boolean summaryIncluded,
+            BufferedWriter writer) {
 
-        this.attributeList = attributeList;
+        this.attributeList = Collections.unmodifiableList(attributeList);
         this.variableName = variableName;
         this.variableUnits = variableUnits;
-        this.statisticList = statisticList;
+        this.statisticList = Collections.unmodifiableList(statisticList);
         this.groupByStatistic = groupByStatistic;
         this.delimiter = delimiter;
+        this.summaryIncluded = summaryIncluded;
         this.writer = writer;
 
         lineSB = new StringBuilder();
-        formatter = new Formatter(lineSB);
+//        formatter = new Formatter(lineSB);
 
 
+    }
+    
+    public boolean isSummaryIncluded() {
+        return summaryIncluded;
     }
 
     public void writerHeader(String rowLabel) throws IOException {
@@ -108,7 +126,9 @@ public class FeatureCoverageWeightedGridStatisticsWriter {
                 for (int aIndex = 0; aIndex < aCount; ++aIndex ) {
                     lineSB.append(delimiter).append(attributeLabel[aIndex]);
                 }
-                lineSB.append(delimiter).append(ALL_ATTRIBUTES_LABEL);
+                if (summaryIncluded) { 
+                    lineSB.append(delimiter).append(ALL_ATTRIBUTES_LABEL);
+                }
             }
         } else {
             for (int aIndex = 0; aIndex < aCount; ++aIndex )
@@ -116,8 +136,10 @@ public class FeatureCoverageWeightedGridStatisticsWriter {
                     lineSB.append(delimiter).append(attributeLabel[aIndex]);
                 }
             }
-            for (int sIndex = 0; sIndex < statisticLabel.length; ++sIndex) {
-                lineSB.append(delimiter).append(ALL_ATTRIBUTES_LABEL);
+            if (summaryIncluded) {
+                for (int sIndex = 0; sIndex < statisticLabel.length; ++sIndex) {
+                    lineSB.append(delimiter).append(ALL_ATTRIBUTES_LABEL);
+                }
             }
         }
         writer.write(lineSB.toString());
@@ -130,14 +152,14 @@ public class FeatureCoverageWeightedGridStatisticsWriter {
         
         if (groupByStatistic) {
             for (int sIndex = 0; sIndex < sCount; ++sIndex) {
-                // +1 for ALL
-                for (int aIndex = 0; aIndex < aCount + 1; ++ aIndex) {
+                int aCountX = summaryIncluded ? aCount + 1 : aCount; 
+                for (int aIndex = 0; aIndex < aCountX; ++ aIndex) {
                     lineSB.append(delimiter).append(statisticLabel[sIndex]);
                 }
             }
         } else {
-            // +1 for ALL
-            for (int aIndex = 0; aIndex < aCount + 1; ++ aIndex) {
+            int aCountX = summaryIncluded ? aCount + 1 : aCount;
+            for (int aIndex = 0; aIndex < aCountX; ++ aIndex) {
                 for (int sIndex = 0; sIndex < sCount; ++sIndex) {
                     lineSB.append(delimiter).append(statisticLabel[sIndex]);
                 }
@@ -161,24 +183,24 @@ public class FeatureCoverageWeightedGridStatisticsWriter {
         if (groupByStatistic) {
             for (Statistic field : statisticList) {
                 for (WeightedStatistics1D rowValue : rowValues) {
-                    lineSB.append(delimiter);
-                    formatter.format(field.getValueFormat(), field.getValue(rowValue));
+                    lineSB.append(delimiter).append(field.getValue(rowValue));
                 }
-                // value for ALL features across timestep
-                lineSB.append(delimiter);
-                formatter.format(field.getValueFormat(), field.getValue(rowSummary));
+                if (summaryIncluded) {
+                    // value for ALL features across timestep
+                    lineSB.append(delimiter).append(field.getValue(rowSummary));
+                }
             }
         } else {
             for (WeightedStatistics1D rowValue : rowValues) {
                 for (Statistic field : statisticList) {
-                    lineSB.append(delimiter);
-                    formatter.format(field.getValueFormat(), field.getValue(rowValue));
+                    lineSB.append(delimiter).append(field.getValue(rowValue));
                 }
             }
-            // value for ALL features across timestep
-            for (Statistic field : statisticList) {
-                lineSB.append(delimiter);
-                formatter.format(field.getValueFormat(), field.getValue(rowSummary));
+            if (summaryIncluded) {
+                // value for ALL features across timestep
+                for (Statistic field : statisticList) {
+                    lineSB.append(delimiter).append(field.getValue(rowSummary));
+                }
             }
         }
         

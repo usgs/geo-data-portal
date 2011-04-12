@@ -19,7 +19,7 @@
     <values>-96 -92 -88</values>
   </variable>
   <variable name="time" shape="time" type="int">
-    <attribute name="units" value="hours since 0001-01-01 00:00:00" />
+    <attribute name="units" value="hours since 2001-01-01 00:00:00" />
     <values start="1" increment="1" />
   </variable>
 </netcdf>
