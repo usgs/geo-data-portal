@@ -34,7 +34,6 @@ Muenster, Germany
  ***************************************************************/
 package org.n52.wps.server.request;
 
-import gov.usgs.cida.gdp.wps.algorithm.annotation.Algorithm;
 import java.net.URLDecoder;
 import java.util.Map;
 
