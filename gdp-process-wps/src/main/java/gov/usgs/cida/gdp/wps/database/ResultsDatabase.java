@@ -20,8 +20,11 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 import org.apache.commons.io.IOUtils;
 import org.n52.wps.commons.WPSConfig;
 import org.n52.wps.io.datahandler.binary.LargeBufferStream;
@@ -43,6 +46,7 @@ public final class ResultsDatabase implements IDatabase {
     private final static String SUFFIX_MIMETYPE = "mime-type";
     private final static String SUFFIX_XML = "xml";
     private final static String SUFFIX_TEMP = "tmp";
+    private final static String SUFFIX_GZIP = "gz";
 
     // If the delimiter changes, examine Patterns below.
     private final static Joiner JOINER = Joiner.on(".");
@@ -64,8 +68,13 @@ public final class ResultsDatabase implements IDatabase {
 
     protected final File baseDirectory;
     protected final String baseResultURL;
+
+    protected final boolean gzipComplexValues = true;
+
+    protected final Object storeResponseSerialNumberLock;
+    protected final Set<Thread> storeResponseReentrantCheckSet;
+
     protected final Timer wipeTimer;
-    protected final Set<Thread> threadReentrantCheckSet;
 
     protected ResultsDatabase() {
 
@@ -85,14 +94,15 @@ public final class ResultsDatabase implements IDatabase {
                 + RetrieveResultServlet.SERVLET_PATH + "?id=";
         LOGGER.info("Using \"{}\" as base URL for results", baseResultURL);
 
-        long periodMillis = 1000 * 60 * 60;
-        long thresholdMillis = 1000 * 60 * 60 * 24 * 7;
+        long periodMillis = 1000 * 60 * 60; // 1h
+        long thresholdMillis = 1000 * 60 * 60 * 24 * 7; // 7d
         wipeTimer = new Timer(getClass().getSimpleName() + " File Wiper", true);
         wipeTimer.scheduleAtFixedRate(new WipeTimerTask(thresholdMillis), 0, periodMillis);
         LOGGER.info("Started {} file wiper timer; period {} ms, threshold {} ms",
                 new Object[] { getDatabaseName(), periodMillis, thresholdMillis});
 
-        threadReentrantCheckSet = Collections.synchronizedSet(new HashSet<Thread>());
+        storeResponseSerialNumberLock = new Object();
+        storeResponseReentrantCheckSet = Collections.synchronizedSet(new HashSet<Thread>());
     }
 
     @Override
@@ -123,11 +133,17 @@ public final class ResultsDatabase implements IDatabase {
     @Override
     public InputStream lookupResponse(String id) {
         File responseFile = lookupResponseAsFile(id);
-        if (responseFile != null) {
+        LOGGER.info("response file for {} is {}", id, responseFile.getPath());
+        if (responseFile != null && responseFile.exists()) {
             try {
-                return new FileInputStream(responseFile);
+                return responseFile.getName().endsWith(SUFFIX_GZIP) ?
+                    new GZIPInputStream(new FileInputStream(responseFile)) :
+                    new FileInputStream(responseFile);
             } catch (FileNotFoundException ex) {
-                // error logged on fall through...
+                // should never get here do to checks above...
+                LOGGER.warn("Response not found for id {}", id);
+            } catch (IOException ex) {
+                LOGGER.warn("Error processing response for id {}", id);
             }
         }
         LOGGER.warn("Response not found for id {}", id);
@@ -139,13 +155,21 @@ public final class ResultsDatabase implements IDatabase {
         File responseFile = null;
         File responseDirectory = generateResponseDirectory(id);
         if (responseDirectory.exists()) {
-            synchronized (this) {
+            synchronized (storeResponseSerialNumberLock) {
                 return findLatestResponseFile(responseDirectory);
             }
         } else {
             String mimeType = getMimeTypeForStoreResponse(id);
             if (mimeType != null) {
-                return generateComplexDataFile(id, mimeType);
+                // ignore gzipComplexValues in case file was stored when value
+                // was inconsistent with current value;
+                responseFile = generateComplexDataFile(id, mimeType, false);
+                if (!responseFile.exists()) {
+                    responseFile = generateComplexDataFile(id, mimeType, true);
+                }
+                if (!responseFile.exists()) {
+                    responseFile = null;
+                }
             }
         }
         return responseFile;
@@ -161,12 +185,16 @@ public final class ResultsDatabase implements IDatabase {
 
         String resultId = JOINER.join(id, UUID.randomUUID().toString());
         try {
-            File resultFile = generateComplexDataFile(resultId, mimeType);
+            File resultFile = generateComplexDataFile(resultId, mimeType, gzipComplexValues);
             File mimeTypeFile = generateComplexDataMimeTypeFile(resultId);
 
+            LOGGER.info("initiating storage of complex value for {} as {}", id, resultFile.getPath());
+            
             OutputStream resultOutputStream = null;
             try {
-                resultOutputStream = new BufferedOutputStream(new FileOutputStream(resultFile));
+                resultOutputStream = gzipComplexValues ?
+                    new GZIPOutputStream(new FileOutputStream(resultFile)):
+                    new BufferedOutputStream(new FileOutputStream(resultFile));
                 stream.close();
                 stream.writeTo(resultOutputStream);
                 stream.destroy();
@@ -181,6 +209,16 @@ public final class ResultsDatabase implements IDatabase {
             } finally {
                 IOUtils.closeQuietly(mimeTypeOutputStream);
             }
+            
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException ex) {
+                java.util.logging.Logger.getLogger(ResultsDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+
+            LOGGER.info("completed storage of complex value for {} as {}", id, resultFile.getPath());
+            
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -192,9 +230,10 @@ public final class ResultsDatabase implements IDatabase {
 
         String reponseId = Long.toString(response.getUniqueId());
         
-        // detect reentrant calls...
-        if (threadReentrantCheckSet.add(Thread.currentThread()) == false) {
-            // thread already added, we're reentrant...
+        // Detect reentrant calls.
+        if (storeResponseReentrantCheckSet.add(Thread.currentThread()) == false) {
+            // If the call above returns false, this set was not modified meaning
+            // this thread has already called storeResponse.
             return generateRetrieveResultURL(reponseId);
         }
 
@@ -202,33 +241,36 @@ public final class ResultsDatabase implements IDatabase {
 
             File responseTempFile = null;
             File responseFile = null;
-            synchronized (this) {
+            synchronized (storeResponseSerialNumberLock) {
                 File responseDirectory = generateResponseDirectory(reponseId);
                 boolean created = responseDirectory.mkdir();
-                int responseIndex = created ? 0 : findLatestResponseIndex(responseDirectory, true) + 1;
+                int responseIndex = created ? 0 : (findLatestResponseIndex(responseDirectory, true) + 1);
                 responseFile = generateResponseFile(responseDirectory, responseIndex);
                 responseTempFile = generateResponseTempFile(responseDirectory, responseIndex);
                 try {
+                    // create the file so that the reponse serial number is correctly
+                    // incremented if this method is called again for this reponse
+                    // before this reponse is completed.
                     responseTempFile.createNewFile();
                 } catch (IOException e) {
                     throw new RuntimeException("Error storing response to {}", e);
                 }
+                LOGGER.info("creating temp file for {} as {}", reponseId, responseTempFile.getPath());
             }
             OutputStream responseOutputStream = null;
             try {
                 responseOutputStream = new BufferedOutputStream(new FileOutputStream(responseTempFile));
-                // this call effectively will remove a stored response if it already
-                // exists and block until the new reponse is created.  If the reponse is
-                // to include a referenced complex output (calls storeComplexValue() above)
-                // this could take a significant amount of time.  In order to allow
-                // the prior response to be available we write to temp files and remame these when completed.
+                // In order to allow the prior response to be available we write
+                // to a temp file and rename these when completed.  Large responses
+                // can cause the call below to take a significant amount of time.
                 response.save(responseOutputStream);
             } finally {
                 IOUtils.closeQuietly(responseOutputStream);
             }
 
-            synchronized (this) {
+            synchronized (storeResponseSerialNumberLock) {
                 responseTempFile.renameTo(responseFile);
+                LOGGER.info("renamed temp file for {} to {}", reponseId, responseFile.getPath());
             }
 
             return generateRetrieveResultURL(reponseId);
@@ -240,7 +282,7 @@ public final class ResultsDatabase implements IDatabase {
         } catch (IOException e) {
                 throw new RuntimeException("Error storing response to {}", e);
         } finally {
-            threadReentrantCheckSet.remove(Thread.currentThread());
+            storeResponseReentrantCheckSet.remove(Thread.currentThread());
         }
     }
 
@@ -310,12 +352,15 @@ public final class ResultsDatabase implements IDatabase {
         return new File(baseDirectory, id);
     }
 
-    private File generateComplexDataFile(String id, String mimeType) {
-        return  new File(baseDirectory, JOINER.join(id, MIMEUtil.getSuffixFromMIMEType(mimeType)));
+    private File generateComplexDataFile(String id, String mimeType, boolean gzip) {
+        String fileName = gzip ?
+            JOINER.join(id, MIMEUtil.getSuffixFromMIMEType(mimeType), SUFFIX_GZIP) :
+            JOINER.join(id, MIMEUtil.getSuffixFromMIMEType(mimeType));
+        return new File(baseDirectory, fileName);
     }
 
     private File generateComplexDataMimeTypeFile(String id) {
-        return  new File(baseDirectory, JOINER.join(id, SUFFIX_MIMETYPE));
+        return new File(baseDirectory, JOINER.join(id, SUFFIX_MIMETYPE));
     }
 
     private class WipeTimerTask extends TimerTask {
