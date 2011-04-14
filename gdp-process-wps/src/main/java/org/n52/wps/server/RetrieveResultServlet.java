@@ -46,7 +46,7 @@ public class RetrieveResultServlet extends HttpServlet {
                     errorResponse("id parameter invalid", response);
                 } else {
                     String suffix = MIMEUtil.getSuffixFromMIMEType(mimeType).toLowerCase();
-                    boolean useAttachment = (attachment.isEmpty() && !"xml".equals(suffix)) || Boolean.parseBoolean(attachment);
+                    boolean useAttachment = (StringUtils.isEmpty(attachment) && !"xml".equals(suffix)) || Boolean.parseBoolean(attachment);
                     if (useAttachment) {
                         response.addHeader("Content-Disposition", "attachment; filename=\"wps-result." + suffix + "\"");
                     }
