@@ -10,7 +10,6 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-//import org.apache.xml.dtm.ref.DTMNodeList;
 import org.w3c.dom.Document;
 
 /**
@@ -79,7 +78,6 @@ public class ProcessStatus {
      * @throws XPathExpressionException
      */
     public String getFailureMessage() throws XPathExpressionException {
-        // TODO test out a failure, since the error may not be simple text probably will need to do nodeset and print it out
         String XPATH_failed = "/wps:ExecuteResponse/wps:Status/wps:ProcessFailed/ows:ExceptionReport//ows:Exception/ows:ExceptionText";
         XPathExpression failedExpression = xpath.compile(XPATH_failed);
         DTMNodeList exceptions = (DTMNodeList) failedExpression.evaluate(document, XPathConstants.NODESET);

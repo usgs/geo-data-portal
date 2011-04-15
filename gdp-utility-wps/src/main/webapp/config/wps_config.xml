@@ -225,7 +225,7 @@
             <Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.filemanagement.CreateNewShapefileDataStore</Property>
             <Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.communication.EmailWhenFinishedAlgorithm</Property>
             <Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.communication.GeoserverManagementAlgorithm</Property>
-            <Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.discovery.ListTHREDDSGrids</Property>
+            <Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.discovery.ListOpendapGrids</Property>
             <Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.discovery.CalculateWCSCoverageInfo</Property>
             <Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.discovery.GetWcsCoverages</Property>
             <Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.discovery.GetGridTimeRange</Property>

@@ -1,6 +1,6 @@
 package gov.usgs.cida.gdp.wps.algorithm.discovery;
 
-import gov.usgs.cida.gdp.dataaccess.helper.THREDDSServerHelper;
+import gov.usgs.cida.gdp.dataaccess.helper.OpendapServerHelper;
 import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -18,9 +18,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author isuftin
  */
-public class ListTHREDDSGrids extends AbstractSelfDescribingAlgorithm {
+public class ListOpendapGrids extends AbstractSelfDescribingAlgorithm {
 
-    Logger log = LoggerFactory.getLogger(ListTHREDDSGrids.class);
+    Logger log = LoggerFactory.getLogger(ListOpendapGrids.class);
     private List<String> errors = new ArrayList<String>();
 
     @Override
@@ -36,7 +36,7 @@ public class ListTHREDDSGrids extends AbstractSelfDescribingAlgorithm {
         StringBuilder response = new StringBuilder();
         List<XmlResponse> xmlResponseList = null;
         try {
-            xmlResponseList = THREDDSServerHelper.getGridBeanListFromServer(catalogUrl);
+            xmlResponseList = OpendapServerHelper.getGridBeanListFromServer(catalogUrl);
         } catch (IllegalArgumentException ex) {
             getErrors().add(ex.getMessage());
             throw new RuntimeException("An error has occured while processing response. Error: " + ex.getMessage());

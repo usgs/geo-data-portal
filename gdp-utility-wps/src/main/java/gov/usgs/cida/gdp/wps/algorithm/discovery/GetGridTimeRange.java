@@ -1,6 +1,6 @@
 package gov.usgs.cida.gdp.wps.algorithm.discovery;
 
-import gov.usgs.cida.gdp.dataaccess.helper.THREDDSServerHelper;
+import gov.usgs.cida.gdp.dataaccess.helper.OpendapServerHelper;
 import gov.usgs.cida.gdp.utilities.bean.Time;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -39,7 +39,7 @@ public class GetGridTimeRange extends AbstractSelfDescribingAlgorithm  {
         String gridSelection = grid.get(0);
         Time timeBean = null;
         try {
-            timeBean = THREDDSServerHelper.getTimeBean(datasetUrl, gridSelection);
+            timeBean = OpendapServerHelper.getTimeBean(datasetUrl, gridSelection);
         } catch (IOException ex) {
             log.error(ex.getMessage());
             throw new RuntimeException("Error occured while getting time range.  Function halted.");
