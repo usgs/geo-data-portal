@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gov.usgs.cida.gdp.wps.completion;
 
 import com.sun.org.apache.xml.internal.dtm.ref.DTMNodeList;
