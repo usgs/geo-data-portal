@@ -208,14 +208,7 @@ public final class ResultsDatabase implements IDatabase {
                 IOUtils.write(mimeType, mimeTypeOutputStream);
             } finally {
                 IOUtils.closeQuietly(mimeTypeOutputStream);
-            }
-            
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException ex) {
-                java.util.logging.Logger.getLogger(ResultsDatabase.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            
+            }            
 
             LOGGER.info("completed storage of complex value for {} as {}", id, resultFile.getPath());
             
