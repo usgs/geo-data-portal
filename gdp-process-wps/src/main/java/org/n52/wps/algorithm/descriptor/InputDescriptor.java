@@ -1,5 +1,6 @@
-package gov.usgs.cida.gdp.wps.algorithm.descriptor;
+package org.n52.wps.algorithm.descriptor;
 
+import com.google.common.base.Preconditions;
 import java.math.BigInteger;
 import org.n52.wps.io.data.IData;
 
@@ -16,6 +17,7 @@ public abstract class InputDescriptor<T extends Class<? extends IData>> extends 
         super(builder);
 		this.minOccurs = builder.minOccurs;
 		this.maxOccurs = builder.maxOccurs;
+        Preconditions.checkState(maxOccurs.longValue() >= minOccurs.longValue(), "maxOccurs must be >= minOccurs");
     }
 
     public BigInteger getMinOccurs() {
@@ -31,8 +33,8 @@ public abstract class InputDescriptor<T extends Class<? extends IData>> extends 
         private BigInteger minOccurs = BigInteger.ONE;
         private BigInteger maxOccurs = BigInteger.ONE;
 
-        protected Builder(T binding, String identifier) {
-            super(binding, identifier);
+        protected Builder(String identifier, T binding) {
+            super(identifier, binding);
         }
 
         public B minOccurs(int minOccurs) {
@@ -40,6 +42,7 @@ public abstract class InputDescriptor<T extends Class<? extends IData>> extends 
         }
 
         public B minOccurs(BigInteger minOccurs) {
+            Preconditions.checkArgument(minOccurs.longValue() >= 0, "minOccurs must be >= 0");
             this.minOccurs = minOccurs;
             return self();
         }
@@ -49,6 +52,7 @@ public abstract class InputDescriptor<T extends Class<? extends IData>> extends 
         }
 
         public B maxOccurs(BigInteger maxOccurs) {
+            Preconditions.checkArgument(maxOccurs.longValue() > 0, "maxOccurs must be > 0");
             this.maxOccurs = maxOccurs;
             return self();
         }
@@ -59,5 +63,4 @@ public abstract class InputDescriptor<T extends Class<? extends IData>> extends 
 
         public abstract InputDescriptor<T> build();
     }
-    
 }

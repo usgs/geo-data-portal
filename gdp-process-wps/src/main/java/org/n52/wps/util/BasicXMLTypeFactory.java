@@ -36,11 +36,12 @@ package org.n52.wps.util;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.ParseException;
 import java.util.Date;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import org.apache.log4j.Level;
 
 import org.apache.log4j.Logger;
-import org.apache.ws.security.util.XmlSchemaDateFormat;
 import org.apache.xmlbeans.impl.util.Base64;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.ILiteralData;
@@ -58,21 +59,41 @@ import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
 
 public class BasicXMLTypeFactory {
 
-	private static Logger LOGGER = Logger.getLogger(BasicXMLTypeFactory.class);
+	private final static Logger LOGGER = Logger.getLogger(BasicXMLTypeFactory.class);
+    
 	// List of supported basic XML datatypes.
-	public static String FLOAT_URI = "xs:float";
-	public static String DOUBLE_URI = "xs:double";
-	public static String INTEGER_URI = "xs:integer";
-	public static String LONG_URI = "xs:long";
-	public static String INT_URI = "xs:int";
-	public static String SHORT_URI = "xs:short";
-	public static String BYTE_URI = "xs:byte";
-	public static String BOOLEAN_URI = "xs:boolean";
-	public static String STRING_URI = "xs:string";
-	public static String DATETIME_URI = "xs:dateTime";
-	public static String BASE64BINARY_URI = "xs:base64Binary";
+	public static final String DOUBLE_URI = "xs:double";
+	public static final String FLOAT_URI = "xs:float";
+	public static final String INTEGER_URI = "xs:integer";
+	public static final String LONG_URI = "xs:long";
+	public static final String INT_URI = "xs:int";
+	public static final String SHORT_URI = "xs:short";
+	public static final String BYTE_URI = "xs:byte";
+	public static final String BOOLEAN_URI = "xs:boolean";
+	public static final String STRING_URI = "xs:string";
+	public static final String DATETIME_URI = "xs:dateTime";
+	public static final String DATE_URI = "xs:date";
+	public static final String BASE64BINARY_URI = "xs:base64Binary";
     public static String ANYURI_URI = "xs:anyURI";
+    
+    private final static DatatypeFactory DATATYPE_FACTORY;
 
+    static {
+        DatatypeFactory datatypeFactory = null;
+        try {
+            // Is this thread safe?
+            // bah, a checked exception on factory instantiation?
+            datatypeFactory = DatatypeFactory.newInstance();
+        } catch (DatatypeConfigurationException ex) {
+            LOGGER.log(Level.ERROR, "Error creating DatatypeFactory for xs:datTime and xs:dateParsing");
+        }
+        DATATYPE_FACTORY = datatypeFactory;
+    }
+	
+	private BasicXMLTypeFactory(){
+		
+	}
+	
 	/**
 	 * This is a helper method to create always the correct Java Type out of a string.
 	 * It is based on the basic schema datatypes.
@@ -100,14 +121,13 @@ public class BasicXMLTypeFactory {
 			return new LiteralBooleanBinding(Boolean.parseBoolean(obj));
 		} else if (xmlDataTypeURI.equals(STRING_URI)) {
 			return new LiteralStringBinding(obj);
-		} else if (xmlDataTypeURI.equals(DATETIME_URI)) {
-			try {
-				return new LiteralDateTimeBinding(new XmlSchemaDateFormat()
-						.parse(obj));
-			} catch (ParseException e) {
-				LOGGER.error("Could not parse dateTime data", e);
+		} else if (xmlDataTypeURI.equals(DATETIME_URI) || xmlDataTypeURI.equals(DATE_URI)) {
+            try {
+                return new LiteralDateTimeBinding(DATATYPE_FACTORY.newXMLGregorianCalendar(obj).toGregorianCalendar().getTime());
+            } catch (Exception e) {
+				LOGGER.error("Could not parse xs:dateTime or xs:date data", e);
 				return null;
-			}
+            }
 		} else if (xmlDataTypeURI.equals(BASE64BINARY_URI)) {
 			return new LiteralBase64BinaryBinding(Base64.decode(obj.getBytes()));
 		} else if (xmlDataTypeURI.equals(ANYURI_URI)) {
@@ -126,7 +146,7 @@ public class BasicXMLTypeFactory {
 	   return obj.getPayload().toString();
    }
 
-    public static Class<? extends ILiteralData> getBindingForType(Class<?> payloadType) {
+    public static Class<? extends ILiteralData> getBindingForPayloadType(Class<?> payloadType) {
         if (payloadType.equals(float.class) || payloadType.equals(Float.class)) {
             return LiteralFloatBinding.class;
         }
@@ -163,4 +183,32 @@ public class BasicXMLTypeFactory {
         return null;
     }
 
+    public static String getXMLDataTypeforBinding(Class<? extends ILiteralData> clazz) {
+        if (LiteralFloatBinding.class.isAssignableFrom(clazz)) {
+            return FLOAT_URI;
+        } else if (LiteralDoubleBinding.class.isAssignableFrom(clazz)) {
+            return DOUBLE_URI;
+        } else if (LiteralLongBinding.class.isAssignableFrom(clazz)) {
+            return LONG_URI;
+        } else if (LiteralIntBinding.class.isAssignableFrom(clazz)) {
+            return INT_URI;
+//            return INTEGER_URI;
+        } else if (LiteralShortBinding.class.isAssignableFrom(clazz)) {
+            return SHORT_URI;
+        } else if (LiteralByteBinding.class.isAssignableFrom(clazz)) {
+            return BYTE_URI;
+        } else if (LiteralBooleanBinding.class.isAssignableFrom(clazz)) {
+            return BOOLEAN_URI;
+        } else if (LiteralStringBinding.class.isAssignableFrom(clazz)) {
+            return STRING_URI;
+        } else if (LiteralDateTimeBinding.class.isAssignableFrom(clazz)) {
+            return DATETIME_URI;
+//            return DATE_URI;
+        } else if (LiteralBase64BinaryBinding.class.isAssignableFrom(clazz)) {
+            return  BASE64BINARY_URI;
+        } else if (LiteralAnyURIBinding.class.isAssignableFrom(clazz)) {
+            return ANYURI_URI;
+        }
+        return null;
+    }
 }

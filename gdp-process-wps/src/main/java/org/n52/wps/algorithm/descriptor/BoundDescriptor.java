@@ -1,4 +1,6 @@
-package gov.usgs.cida.gdp.wps.algorithm.descriptor;
+package org.n52.wps.algorithm.descriptor;
+
+import com.google.common.base.Preconditions;
 
 /**
  *
@@ -21,14 +23,10 @@ public abstract class BoundDescriptor<T extends Class<?>> extends Descriptor {
 
         private final T binding;
 
-        protected Builder(T binding) {
+        protected Builder(String identifier, T binding) {
+            super(identifier);
+            Preconditions.checkArgument(binding != null, "binding may not be null");
             this.binding = binding;
         }
-        
-        protected Builder(T binding, String identifier) {
-            this(binding);
-            identifier(identifier);
-        }
     }
-    
 }

@@ -1,5 +1,6 @@
-package gov.usgs.cida.gdp.wps.algorithm.descriptor;
+package org.n52.wps.algorithm.descriptor;
 
+import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,6 +26,10 @@ public class AlgorithmDescriptor extends Descriptor {
         this.storeSupported = builder.storeSupported;
         this.statusSupported = builder.statusSupported;
 
+        Preconditions.checkState(
+                builder.outputDescriptors.size() > 0,
+                "Need at minimum 1 output for algorithm.");
+        
         // LinkedHaskMap to preserve order
         Map<String, InputDescriptor> iMap = new LinkedHashMap<String, InputDescriptor>();
         for (InputDescriptor iDescriptor : builder.inputDescriptors) {
@@ -50,13 +55,21 @@ public class AlgorithmDescriptor extends Descriptor {
     public boolean getStatusSupported() {
         return statusSupported;
     }
-    
+
+    public List<String> getInputIdentifiers() {
+        return Collections.unmodifiableList(new ArrayList<String>(inputDescriptorMap.keySet()));
+    }
+
     public InputDescriptor getInputDescriptor(String identifier) {
         return inputDescriptorMap.get(identifier);
     }
 
     public Collection<InputDescriptor> getInputDescriptors() {
         return inputDescriptorMap.values();
+    }
+
+    public List<String> getOutputIdentifiers() {
+        return Collections.unmodifiableList(new ArrayList<String>(outputDescriptorMap.keySet()));
     }
 
     public OutputDescriptor getOutputDescriptor(String identifier) {
@@ -72,6 +85,7 @@ public class AlgorithmDescriptor extends Descriptor {
     }
 
     public static Builder<?> builder(Class<?> clazz) {
+        Preconditions.checkNotNull(clazz, "clazz may not be null");
         return new BuilderTyped(clazz.getCanonicalName());
     }
 
@@ -94,8 +108,7 @@ public class AlgorithmDescriptor extends Descriptor {
         private List<OutputDescriptor> outputDescriptors;
 
         protected Builder(String identifier) {
-            super();
-            identifier(identifier);
+            super(identifier);
             title(identifier);
             inputDescriptors = new ArrayList<InputDescriptor>();
             outputDescriptors = new ArrayList<OutputDescriptor>();
@@ -116,30 +129,30 @@ public class AlgorithmDescriptor extends Descriptor {
             return self();
         }
 
-        public B addInputDesciptor(InputDescriptor.Builder inputDescriptorBuilder) {
-            return addInputDesciptor(inputDescriptorBuilder.build());
+        public B addInputDescriptor(InputDescriptor.Builder inputDescriptorBuilder) {
+            return addInputDescriptor(inputDescriptorBuilder.build());
         }
 
-        public B addInputDesciptor(InputDescriptor inputDescriptor) {
+        public B addInputDescriptor(InputDescriptor inputDescriptor) {
             this.inputDescriptors.add(inputDescriptor);
             return self();
         }
 
-        public B addInputDesciptors(List<? extends InputDescriptor> inputDescriptors) {
+        public B addInputDescriptors(List<? extends InputDescriptor> inputDescriptors) {
             this.inputDescriptors.addAll(inputDescriptors);
             return self();
         }
 
-        public B addOutputDesciptor(OutputDescriptor.Builder outputDescriptorBuilder) {
-            return addOutputDesciptor(outputDescriptorBuilder.build());
+        public B addOutputDescriptor(OutputDescriptor.Builder outputDescriptorBuilder) {
+            return addOutputDescriptor(outputDescriptorBuilder.build());
         }
 
-        public B addOutputDesciptor(OutputDescriptor outputDescriptor) {
+        public B addOutputDescriptor(OutputDescriptor outputDescriptor) {
             this.outputDescriptors.add(outputDescriptor);
             return self();
         }
 
-        public B addOutputDesciptors(List<? extends OutputDescriptor> outputDescriptors) {
+        public B addOutputDescriptors(List<? extends OutputDescriptor> outputDescriptors) {
             this.outputDescriptors.addAll(outputDescriptors);
             return self();
         }

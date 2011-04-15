@@ -1,4 +1,4 @@
-package gov.usgs.cida.gdp.wps.algorithm.annotation;
+package org.n52.wps.algorithm.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,5 +1,6 @@
-package gov.usgs.cida.gdp.wps.algorithm.descriptor;
+package org.n52.wps.algorithm.descriptor;
 
+import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -13,8 +14,10 @@ import org.n52.wps.io.data.binding.literal.LiteralDateTimeBinding;
 import org.n52.wps.io.data.binding.literal.LiteralDoubleBinding;
 import org.n52.wps.io.data.binding.literal.LiteralFloatBinding;
 import org.n52.wps.io.data.binding.literal.LiteralIntBinding;
+import org.n52.wps.io.data.binding.literal.LiteralLongBinding;
 import org.n52.wps.io.data.binding.literal.LiteralShortBinding;
 import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
+import org.n52.wps.util.BasicXMLTypeFactory;
 
 /**
  *
@@ -28,11 +31,15 @@ public class LiteralDataInputDescriptor<T extends Class<? extends ILiteralData>>
 
 	protected LiteralDataInputDescriptor(Builder builder) {
 		super(builder);
-        this.dataType = builder.schemaType;
+        this.dataType = builder.dataType;
 		this.defaultValue = builder.defaultValue;
 		this.allowedValues = builder.allowedValues != null ?
             Collections.unmodifiableList(builder.allowedValues) :
-            null;
+            Collections.EMPTY_LIST;
+        // if allowedValues and defaultValue are set, make sure defaultValue is in set of allowedValues
+        Preconditions.checkState(
+                !hasAllowedValues() || !hasDefaultValue() || allowedValues.contains(defaultValue),
+                "defaultValue of %s not in set of allowedValues", defaultValue);
 	}
 
     public String getDataType() {
@@ -40,70 +47,73 @@ public class LiteralDataInputDescriptor<T extends Class<? extends ILiteralData>>
     }
 
     public boolean hasDefaultValue() {
-        return getDefaultValue() != null && getDefaultValue().length() > 0;
+        return defaultValue != null && defaultValue.length() > 0;
     }
 
     public String getDefaultValue() {
-        return this.defaultValue;
+        return defaultValue;
     }
 
     public boolean hasAllowedValues() {
-        return getAllowedValues() != null && getAllowedValues().size() > 0;
+        return allowedValues != null && allowedValues.size() > 0;
     }
 
     public List<String> getAllowedValues() {
-        return this.allowedValues;
+        return allowedValues;
     }
 
-    public static <T extends Class<? extends ILiteralData>> Builder<?,T> builder(T binding, String identifier) {
-        return new BuilderTyped(binding, identifier, LiteralDataDescriptorUtility.dataTypeForBinding(binding));
+    public static <T extends Class<? extends ILiteralData>> Builder<?,T> builder(String identifier, T binding) {
+        return new BuilderTyped(identifier, binding);
     }
 
-    // utility functions, quite verbose...  should have some factory method somewhere to
-    // match binding class and schema type.  see analot in LiteralDataOutputDescriptor
+    // utility functions, quite verbose...
     public static Builder<?,Class<LiteralAnyURIBinding>> anyURIBuilder(String identifier) {
-        return builder(LiteralAnyURIBinding.class, identifier);
+        return builder(identifier, LiteralAnyURIBinding.class);
     }
 
     public static Builder<?,Class<LiteralBase64BinaryBinding>> base64BinaryBuilder(String identifier) {
-        return builder(LiteralBase64BinaryBinding.class, identifier);
+        return builder(identifier, LiteralBase64BinaryBinding.class);
     }
 
     public static Builder<?,Class<LiteralBooleanBinding>> booleanBuilder(String identifier) {
-        return builder(LiteralBooleanBinding.class, identifier);
+        return builder(identifier, LiteralBooleanBinding.class);
     }
 
     public static Builder<?,Class<LiteralByteBinding>> byteBuilder(String identifier) {
-        return builder(LiteralByteBinding.class, identifier);
+        return builder(identifier, LiteralByteBinding.class);
     }
 
     public static Builder<?,Class<LiteralDateTimeBinding>> dateTimeBuilder(String identifier) {
-        return builder(LiteralDateTimeBinding.class, identifier);
+        return builder(identifier, LiteralDateTimeBinding.class);
     }
     
     public static Builder<?,Class<LiteralDoubleBinding>> doubleBuilder(String identifier) {
-        return builder(LiteralDoubleBinding.class, identifier);
+        return builder(identifier, LiteralDoubleBinding.class);
     }
 
     public static Builder<?,Class<LiteralFloatBinding>> floatBuilder(String identifier) {
-        return builder(LiteralFloatBinding.class, identifier);
+        return builder(identifier, LiteralFloatBinding.class);
     }
 
     public static Builder<?,Class<LiteralIntBinding>> intBuilder(String identifier) {
-        return builder(LiteralIntBinding.class, identifier);
+        return builder(identifier, LiteralIntBinding.class);
+    }
+
+    public static Builder<?,Class<LiteralLongBinding>> longBuilder(String identifier) {
+        return builder(identifier, LiteralLongBinding.class);
     }
 
     public static Builder<?,Class<LiteralShortBinding>> shortBuilder(String identifier) {
-        return builder(LiteralShortBinding.class, identifier);
+        return builder(identifier, LiteralShortBinding.class);
     }
 
     public static Builder<?,Class<LiteralStringBinding>> stringBuilder(String identifier) {
-        return builder(LiteralStringBinding.class, identifier);
+        return builder(identifier, LiteralStringBinding.class);
     }
 
     private static class BuilderTyped<T extends Class<? extends ILiteralData>> extends Builder<BuilderTyped<T>, T> {
-        public BuilderTyped(T binding, String identifier, String dataType) {
-            super(binding, identifier, dataType);
+        public BuilderTyped(String identifier, T binding) {
+            super(identifier, binding);
         }
         @Override
         protected BuilderTyped self() {
@@ -113,13 +123,16 @@ public class LiteralDataInputDescriptor<T extends Class<? extends ILiteralData>>
 
     public static abstract class Builder<B extends Builder<B,T>, T extends Class<? extends ILiteralData>> extends InputDescriptor.Builder<B,T> {
 
-        private final String schemaType;
+        private final String dataType;
         private String defaultValue;
         private List<String> allowedValues;
         
-        protected Builder(T binding, String identifier, String schemaType) {
-            super(binding, identifier);
-            this.schemaType = schemaType;
+        protected Builder(String identifier, T binding) {
+            super(identifier, binding);
+            this.dataType = Preconditions.checkNotNull(
+                    BasicXMLTypeFactory.getXMLDataTypeforBinding(binding),
+                    "Unable to resolve XML DataType for binding class %s",
+                    binding);
         }
 
         public B defaultValue(String defaultValue) {
@@ -148,5 +161,4 @@ public class LiteralDataInputDescriptor<T extends Class<? extends ILiteralData>>
             return new LiteralDataInputDescriptor<T>(this);
         }
     }
-
 }

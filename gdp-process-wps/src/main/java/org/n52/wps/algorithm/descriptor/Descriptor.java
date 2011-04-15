@@ -1,4 +1,6 @@
-package gov.usgs.cida.gdp.wps.algorithm.descriptor;
+package org.n52.wps.algorithm.descriptor;
+
+import com.google.common.base.Preconditions;
 
 /**
  *
@@ -16,16 +18,12 @@ public abstract class Descriptor {
         this.abstrakt = builder.abstrakt;
     }
 
-    public boolean hasIdentifier() {
-        return identifier != null && identifier.length() > 0;
-    }
-
     public String getIdentifier() {
         return identifier;
     }
 
     public boolean hasTitle() {
-        return getTitle() != null && title.length() > 0;
+        return title != null && title.length() > 0;
     }
 
     public String getTitle() {
@@ -33,7 +31,7 @@ public abstract class Descriptor {
     }
 
     public boolean hasAbstract() {
-        return getAbstract() != null && abstrakt.length() > 0;
+        return abstrakt != null && abstrakt.length() > 0;
     }
 
     public String getAbstract() {
@@ -42,13 +40,15 @@ public abstract class Descriptor {
 
     public static abstract class Builder<B extends Builder<B>> {
 
-        private String identifier;
+        private final String identifier;
         private String title;
         private String abstrakt; // want 'abstract' but it's a java keyword
 
-        public B identifier(String identifier) {
+        public Builder(String identifier) {
+            Preconditions.checkArgument(
+                    !(identifier == null || identifier.isEmpty()),
+                    "identifier may not be null or an empty String");
             this.identifier = identifier;
-            return self();
         }
 
         public B title(String title) {
@@ -64,5 +64,4 @@ public abstract class Descriptor {
 
         protected abstract B self();
     }
-    
 }

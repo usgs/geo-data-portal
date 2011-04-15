@@ -1,14 +1,15 @@
 package gov.usgs.cida.gdp.wps.algorithm;
 
+import org.n52.wps.server.AbstractAnnotatedAlgorithm;
 import gov.usgs.cida.gdp.coreprocessing.Delimiter;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCoverageWeightedGridStatistics;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCoverageWeightedGridStatistics.GroupBy;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCoverageWeightedGridStatisticsWriter.Statistic;
-import gov.usgs.cida.gdp.wps.algorithm.annotation.Algorithm;
-import gov.usgs.cida.gdp.wps.algorithm.annotation.ComplexDataInput;
-import gov.usgs.cida.gdp.wps.algorithm.annotation.ComplexDataOutput;
-import gov.usgs.cida.gdp.wps.algorithm.annotation.LiteralDataInput;
-import gov.usgs.cida.gdp.wps.algorithm.annotation.Process;
+import org.n52.wps.algorithm.annotation.Algorithm;
+import org.n52.wps.algorithm.annotation.ComplexDataInput;
+import org.n52.wps.algorithm.annotation.ComplexDataOutput;
+import org.n52.wps.algorithm.annotation.LiteralDataInput;
+import org.n52.wps.algorithm.annotation.Process;
 import gov.usgs.cida.gdp.wps.binding.CSVFileBinding;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -29,7 +30,7 @@ import ucar.ma2.Range;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.ft.FeatureDataset;
 
-import static gov.usgs.cida.gdp.wps.algorithm.annotation.LiteralDataInput.ENUM_COUNT;
+import static org.n52.wps.algorithm.annotation.LiteralDataInput.ENUM_COUNT;
 
 /**
  *

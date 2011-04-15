@@ -1,12 +1,13 @@
 package gov.usgs.cida.gdp.wps.algorithm;
 
+import org.n52.wps.server.AbstractAnnotatedAlgorithm;
 import gov.usgs.cida.gdp.coreprocessing.Delimiter;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCategoricalGridCoverage;
-import gov.usgs.cida.gdp.wps.algorithm.annotation.Algorithm;
-import gov.usgs.cida.gdp.wps.algorithm.annotation.ComplexDataInput;
-import gov.usgs.cida.gdp.wps.algorithm.annotation.ComplexDataOutput;
-import gov.usgs.cida.gdp.wps.algorithm.annotation.LiteralDataInput;
-import gov.usgs.cida.gdp.wps.algorithm.annotation.Process;
+import org.n52.wps.algorithm.annotation.Algorithm;
+import org.n52.wps.algorithm.annotation.ComplexDataInput;
+import org.n52.wps.algorithm.annotation.ComplexDataOutput;
+import org.n52.wps.algorithm.annotation.LiteralDataInput;
+import org.n52.wps.algorithm.annotation.Process;
 import gov.usgs.cida.gdp.wps.binding.CSVFileBinding;
 import java.io.BufferedWriter;
 import java.io.File;

@@ -1,10 +1,10 @@
-package gov.usgs.cida.gdp.wps.algorithm.annotation;
+package org.n52.wps.algorithm.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import org.n52.wps.io.data.ILiteralData;
+import org.n52.wps.io.data.IComplexData;
 
 /**
  *
@@ -12,9 +12,12 @@ import org.n52.wps.io.data.ILiteralData;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.FIELD})
-public @interface LiteralDataOutput {
+public @interface ComplexDataInput {
     String identifier();  // identifier
     String title() default "";
     String abstrakt() default "";  // 'abstract' is java reserved keyword
-    Class <? extends ILiteralData> binding() default ILiteralData.class;
+    int minOccurs() default 1;
+    int maxOccurs() default 1;
+    int maximumMegaBytes() default 0;
+    Class <? extends IComplexData> binding();
 }
