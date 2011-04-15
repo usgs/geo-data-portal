@@ -10,11 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.LoggerFactory;
 
-import ucar.nc2.VariableSimpleIF;
+public class OpendapServerHelper {
 
-public class THREDDSServerHelper {
-
-    static org.slf4j.Logger log = LoggerFactory.getLogger(THREDDSServerHelper.class);
+    static org.slf4j.Logger log = LoggerFactory.getLogger(OpendapServerHelper.class);
 
 //    /**
 //     * Tests whether or not a THREDDS server is reachable
