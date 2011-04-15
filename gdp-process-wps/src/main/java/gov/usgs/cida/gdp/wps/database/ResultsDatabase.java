@@ -405,10 +405,5 @@ public final class ResultsDatabase implements IDatabase {
             file.delete();
         }
     }
-    public static void main(String... args) {
-        Matcher m = PATTERN_RESPONSE.matcher("1.xml.tmp");
-        Matcher m1 = PATTERN_RESPONSE_TEMP.matcher("1.xml.tmp");
-        Matcher m2 = PATTERN_RESPONSE.matcher("1.xml.tmp");
-        Matcher m3 = PATTERN_RESPONSE.matcher("1.xml.tmp");
-    }
+    
 }
