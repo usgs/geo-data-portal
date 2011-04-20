@@ -1,6 +1,5 @@
 package gov.usgs.cida.gdp.wps.completion;
 
-import com.sun.org.apache.xml.internal.dtm.ref.DTMNodeList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -11,6 +10,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 /**
  *
@@ -80,7 +80,7 @@ public class ProcessStatus {
     public String getFailureMessage() throws XPathExpressionException {
         String XPATH_failed = "/wps:ExecuteResponse/wps:Status/wps:ProcessFailed/ows:ExceptionReport//ows:Exception/ows:ExceptionText";
         XPathExpression failedExpression = xpath.compile(XPATH_failed);
-        DTMNodeList exceptions = (DTMNodeList) failedExpression.evaluate(document, XPathConstants.NODESET);
+        NodeList exceptions = (NodeList) failedExpression.evaluate(document, XPathConstants.NODESET);
         StringBuilder builder = new StringBuilder();
         String newline = System.getProperty("line.separator");
         for (int i = 0; i < exceptions.getLength(); i++) {
