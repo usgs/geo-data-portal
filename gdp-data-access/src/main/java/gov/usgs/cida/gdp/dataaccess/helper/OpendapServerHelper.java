@@ -8,23 +8,36 @@ import java.io.FileNotFoundException;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import opendap.dap.Attribute;
 import opendap.dap.AttributeTable;
 import opendap.dap.BaseType;
+import opendap.dap.BaseTypePrimitiveVector;
 import opendap.dap.DAP2Exception;
 import opendap.dap.DAS;
 import opendap.dap.DArray;
 import opendap.dap.DArrayDimension;
 import opendap.dap.DConnect2;
 import opendap.dap.DDS;
+import opendap.dap.DDSException;
 import opendap.dap.DGrid;
+import opendap.dap.DInt32;
+import opendap.dap.DataDDS;
+import opendap.dap.Int32PrimitiveVector;
+import opendap.dap.PrimitiveVector;
+import opendap.dap.StatusUI;
 import org.slf4j.LoggerFactory;
+import ucar.nc2.units.DateUnit;
 
 public class OpendapServerHelper {
 
@@ -73,7 +86,8 @@ public class OpendapServerHelper {
 //    }
 	public static Time getTimeBean(String datasetUrl, String gridSelection) throws IOException, ParseException {
 
-		List<String> dateRange = NetCDFUtility.getDateRange(datasetUrl, gridSelection);
+		//List<String> dateRangeOld = NetCDFUtility.getDateRange(datasetUrl, gridSelection);
+		List<String> dateRange = getOPeNDAPTimeRange(datasetUrl, gridSelection);
 		if (dateRange.isEmpty()) {
 			boolean hasTimeCoord = NetCDFUtility.hasTimeCoordinate(datasetUrl);
 			if (hasTimeCoord) { // This occurs when there is no date range
@@ -88,10 +102,96 @@ public class OpendapServerHelper {
 
 		return timeBean;
 	}
-        
-        public static List<String> getOPeNDAPTimeRange(String datasetUrl, String gridSelection) {
-            return Collections.EMPTY_LIST;
-        }
+
+	public static List<String> getOPeNDAPTimeRange(String datasetUrl, String gridSelection) throws IOException {
+		//Date minDate = new Date(Long.MAX_VALUE);
+		//Date maxDate = new Date(Long.MIN_VALUE);
+		List<String> returnList = new LinkedList<String>();
+		try {
+			// call das, dds
+			String finalUrl = "";
+			if (datasetUrl.startsWith("dods:")) {
+				finalUrl = "http:" + datasetUrl.substring(5);
+			}
+			else {
+				if (datasetUrl.startsWith("http:")) {
+					//this.location = "dods:" + datasetURL.substring(5);
+				}
+				else {
+					throw new java.net.MalformedURLException(datasetUrl + " must start with dods: or http:");
+				}
+			}
+			DConnect2 dodsConnection = new DConnect2(finalUrl, false);
+			//DataDDS dds = dodsConnection.getData("?" + gridSelection, null);
+			DDS dds = dodsConnection.getDDS(gridSelection);
+			
+			//dodsConnection.getData(gridSelection, null);
+//			DArray var = (DArray)dds.getVar(2);
+//			Int32PrimitiveVector primitiveVector = (Int32PrimitiveVector)var.getPrimitiveVector();
+//			primitiveVector.getValue(3);
+			DAS das = dodsConnection.getDAS();
+			DGrid grid = (DGrid)dds.getVariable(gridSelection);
+			DArray array = (DArray)grid.getVar(grid.ARRAY);
+			Enumeration<DArrayDimension> dimensions = array.getDimensions();
+
+			while (dimensions.hasMoreElements()) {
+				DArrayDimension nextDim = dimensions.nextElement();
+				String name = nextDim.getName();
+				AttributeTable attributeTable = das.getAttributeTable(name);
+				BaseType dimVar = dds.getVariable(name);
+				Attribute units = attributeTable.getAttribute("units");
+				if (units != null) {
+					try {
+						DateUnit dateUnit = new DateUnit(units.getValueAt(0));
+//						BaseTypePrimitiveVector times = (BaseTypePrimitiveVector)dimVar.newPrimitiveVector();
+//						DArray outer = (DArray)times.getTemplate();
+//						PrimitiveVector inheritVector = outer.getPrimitiveVector();
+//						inheritVector.getLength();
+						//DInt32 inner = (DInt32)inheritVector.getTemplate();
+						//PrimitiveVector primitiveVector = inner.getPrimitiveVector();
+						//PrimitiveVector arrayVector = arrayTemplate.newPrimitiveVector();
+						
+						//template.newPrimitiveVector()
+						//for (int i=0; i<inheritVector.getLength(); i++) {
+							//BaseType valTemp = times.getTemplate();
+							//PrimitiveVector newPrimitiveVector = template.newPrimitiveVector();
+							//DInt32 val = (DInt32)times.getValue(i);
+						// HACK, will only work for strides
+							int first = nextDim.getStart()+1; // TODO indexing issue?
+							int last = nextDim.getStop()+1 * nextDim.getStride(); // TODO same as above
+//				            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//							Date d1 = dateUnit.makeDate(first);
+//							Date d2 = dateUnit.makeDate(last);
+//							returnList.add(sdf.format(d1));
+//							returnList.add(sdf.format(d2));
+							returnList.add(dateUnit.makeStandardDateString(first));
+							returnList.add(dateUnit.makeStandardDateString(last));
+							return returnList;
+							//if (d.before(minDate)) minDate = d;
+							//if (d.after(maxDate)) maxDate = d;
+						//}
+					}
+					catch (Exception e) {
+						e.getMessage();
+						// not time unit
+					}
+				}
+			}
+			return returnList;
+		}
+		catch (opendap.dap.parser.ParseException ex) {
+			Logger.getLogger(OpendapServerHelper.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		catch (DAP2Exception ex) {
+			Logger.getLogger(OpendapServerHelper.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		catch (Exception ex) {
+			Logger.getLogger(OpendapServerHelper.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		finally {
+			return returnList;
+		}
+	}
 
 //    /**
 //     * Returns a list of dataset handles from the specified server.
@@ -149,10 +249,14 @@ public class OpendapServerHelper {
 		String finalUrl = "";
 		if (datasetUrl.startsWith("dods:")) {
 			finalUrl = "http:" + datasetUrl.substring(5);
-		} else if (datasetUrl.startsWith("http:")) {
-			//this.location = "dods:" + datasetURL.substring(5);
-		} else {
-			throw new java.net.MalformedURLException(datasetUrl + " must start with dods: or http:");
+		}
+		else {
+			if (datasetUrl.startsWith("http:")) {
+				//this.location = "dods:" + datasetURL.substring(5);
+			}
+			else {
+				throw new java.net.MalformedURLException(datasetUrl + " must start with dods: or http:");
+			}
 		}
 		DConnect2 dodsConnection = new DConnect2(finalUrl, false);
 		List<DataTypeBean> dtbList = new LinkedList<DataTypeBean>();
@@ -167,7 +271,7 @@ public class OpendapServerHelper {
 					DGrid grid = (DGrid) nextElement;
 					DataTypeBean dtb = new DataTypeBean();
 					//Enumeration<BaseType> variables1 = grid.getVariables();
-					DArray array = (DArray)grid.getVar(0); // Array, not map
+					DArray array = (DArray) grid.getVar(grid.ARRAY); // Array, not map
 					Enumeration<DArrayDimension> dimensions = array.getDimensions();
 					int[] dims = new int[array.numDimensions()];
 					int i = 0;
@@ -178,9 +282,10 @@ public class OpendapServerHelper {
 					}
 					String name = grid.getLongName();
 					AttributeTable dasAttrs = das.getAttributeTable(name);
-					String long_name = dasAttrs.getAttribute("long_name").getValueAt(0);
+					Attribute long_name = dasAttrs.getAttribute("long_name");
+					String long_val = (long_name == null) ? name : long_name.getValueAt(0);
 					String units = dasAttrs.getAttribute("units").getValueAt(0);
-					dtb.setDescription(long_name);
+					dtb.setDescription(long_val);
 					dtb.setName(name);
 					dtb.setRank(dims.length);
 					dtb.setShape(dims);
