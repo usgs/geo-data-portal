@@ -20,7 +20,6 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
@@ -133,7 +132,7 @@ public final class ResultsDatabase implements IDatabase {
     @Override
     public InputStream lookupResponse(String id) {
         File responseFile = lookupResponseAsFile(id);
-        LOGGER.info("response file for {} is {}", id, responseFile.getPath());
+        LOGGER.info("Response file for {} is {}", id, responseFile.getPath());
         if (responseFile != null && responseFile.exists()) {
             try {
                 return responseFile.getName().endsWith(SUFFIX_GZIP) ?
@@ -248,7 +247,7 @@ public final class ResultsDatabase implements IDatabase {
                 } catch (IOException e) {
                     throw new RuntimeException("Error storing response to {}", e);
                 }
-                LOGGER.info("creating temp file for {} as {}", reponseId, responseTempFile.getPath());
+                LOGGER.info("Creating temp file for {} as {}", reponseId, responseTempFile.getPath());
             }
             OutputStream responseOutputStream = null;
             try {
@@ -263,7 +262,7 @@ public final class ResultsDatabase implements IDatabase {
 
             synchronized (storeResponseSerialNumberLock) {
                 responseTempFile.renameTo(responseFile);
-                LOGGER.info("renamed temp file for {} to {}", reponseId, responseFile.getPath());
+                LOGGER.info("Renamed temp file for {} to {}", reponseId, responseFile.getPath());
             }
 
             return generateRetrieveResultURL(reponseId);
@@ -398,5 +397,4 @@ public final class ResultsDatabase implements IDatabase {
             file.delete();
         }
     }
-    
 }

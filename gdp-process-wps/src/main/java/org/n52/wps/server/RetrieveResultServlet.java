@@ -38,12 +38,16 @@ public class RetrieveResultServlet extends HttpServlet {
         if (StringUtils.isEmpty(id)) {
             errorResponse("id parameter missing", response);
         } else {
+            
             IDatabase db = DatabaseFactory.getDatabase();
             String mimeType = db.getMimeTypeForStoreResponse(id);
-            InputStream is = db.lookupResponse(id);
+                
+            InputStream is = null;
             try {
+                 db.lookupResponse(id);
+
                 if (mimeType == null || is == null) {
-                    errorResponse("id parameter invalid", response);
+                    errorResponse("id parameter of " + id + " is unknown to server", response);
                 } else {
                     String suffix = MIMEUtil.getSuffixFromMIMEType(mimeType).toLowerCase();
                     boolean useAttachment = (StringUtils.isEmpty(attachment) && !"xml".equals(suffix)) || Boolean.parseBoolean(attachment);
@@ -55,10 +59,8 @@ public class RetrieveResultServlet extends HttpServlet {
                     response.setContentType(mimeType);
                     OutputStream os = response.getOutputStream();
                     long bytes = IOUtils.copyLarge(is, os);
-                    if (bytes <= 0) {
-                        LOGGER.warn("Empty response returned for id {}", id);
-                    }
                     os.flush();
+                    LOGGER.info("{} bytes written in response to id {}", bytes, id);
                 }
             } finally {
                 IOUtils.closeQuietly(is);
@@ -73,5 +75,6 @@ public class RetrieveResultServlet extends HttpServlet {
         PrintWriter writer = response.getWriter();
         writer.write("<html><title>Error</title><body>" + error + "</body></html>");
         writer.flush();
+        LOGGER.warn("Error processing response: " + error);
     }
 }
