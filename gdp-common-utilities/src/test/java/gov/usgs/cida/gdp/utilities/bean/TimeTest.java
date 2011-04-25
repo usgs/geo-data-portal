@@ -41,8 +41,8 @@ public class TimeTest {
     @Test
     public void testCreateTimeWithDateRangeStringList() {
         List<String> input = new ArrayList<String>();
-        input.add("2001-07-01 01:01:01");
-        input.add("2002-07-15 01:01:01");
+        input.add("2001-07-01T01:01:01Z");
+        input.add("2002-07-15T01:01:01Z");
         Time result = null;
         try {
             result = new Time(input);

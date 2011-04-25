@@ -83,7 +83,7 @@ public class Time extends XmlResponse {
         }
 
         public TimeBreakdown(String dateInstance) throws ParseException {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"); // HACK can we use JODA?
             Date dateInstanceDate = null;
             try {
                 dateInstanceDate = sdf.parse(dateInstance);
