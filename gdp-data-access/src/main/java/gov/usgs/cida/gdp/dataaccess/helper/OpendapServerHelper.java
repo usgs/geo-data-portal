@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
@@ -87,6 +88,10 @@ public class OpendapServerHelper {
 
 		return timeBean;
 	}
+        
+        public static List<String> getOPeNDAPTimeRange(String datasetUrl, String gridSelection) {
+            return Collections.EMPTY_LIST;
+        }
 
 //    /**
 //     * Returns a list of dataset handles from the specified server.
