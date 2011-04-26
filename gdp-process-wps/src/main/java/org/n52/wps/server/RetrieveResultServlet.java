@@ -44,7 +44,7 @@ public class RetrieveResultServlet extends HttpServlet {
                 
             InputStream is = null;
             try {
-                 db.lookupResponse(id);
+                is = db.lookupResponse(id);
 
                 if (mimeType == null || is == null) {
                     errorResponse("id parameter of " + id + " is unknown to server", response);
