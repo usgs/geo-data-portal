@@ -4,21 +4,12 @@ import gov.usgs.cida.gdp.dataaccess.bean.DataTypeCollection;
 import gov.usgs.cida.gdp.dataaccess.bean.DataTypeCollection.DataTypeBean;
 import gov.usgs.cida.gdp.utilities.bean.Time;
 import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
-import java.io.FileNotFoundException;
-
 import java.io.IOException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import opendap.dap.Attribute;
 import opendap.dap.AttributeTable;
 import opendap.dap.BaseType;
@@ -29,13 +20,10 @@ import opendap.dap.DArray;
 import opendap.dap.DArrayDimension;
 import opendap.dap.DConnect2;
 import opendap.dap.DDS;
-import opendap.dap.DDSException;
 import opendap.dap.DGrid;
-import opendap.dap.DInt32;
 import opendap.dap.DataDDS;
 import opendap.dap.Int32PrimitiveVector;
 import opendap.dap.PrimitiveVector;
-import opendap.dap.StatusUI;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.units.DateUnit;
 
@@ -122,16 +110,13 @@ public class OpendapServerHelper {
 				}
 			}
 			DConnect2 dodsConnection = new DConnect2(finalUrl, false);
-			//DataDDS dds = dodsConnection.getData("?" + gridSelection, null);
+
 			DDS dds = dodsConnection.getDDS(gridSelection);
-			
-			//dodsConnection.getData(gridSelection, null);
-//			DArray var = (DArray)dds.getVar(2);
-//			Int32PrimitiveVector primitiveVector = (Int32PrimitiveVector)var.getPrimitiveVector();
-//			primitiveVector.getValue(3);
+
+			// TODO Can't assume this format
 			DAS das = dodsConnection.getDAS();
-			DGrid grid = (DGrid)dds.getVariable(gridSelection);
-			DArray array = (DArray)grid.getVar(grid.ARRAY);
+			DGrid grid = (DGrid) dds.getVariable(gridSelection);
+			DArray array = (DArray) grid.getVar(grid.ARRAY);
 			Enumeration<DArrayDimension> dimensions = array.getDimensions();
 
 			while (dimensions.hasMoreElements()) {
@@ -142,34 +127,18 @@ public class OpendapServerHelper {
 				Attribute units = attributeTable.getAttribute("units");
 				if (units != null) {
 					try {
+						DataDDS datadds = dodsConnection.getData("?" + name); // time dimension
 						DateUnit dateUnit = new DateUnit(units.getValueAt(0));
-//						BaseTypePrimitiveVector times = (BaseTypePrimitiveVector)dimVar.newPrimitiveVector();
-//						DArray outer = (DArray)times.getTemplate();
-//						PrimitiveVector inheritVector = outer.getPrimitiveVector();
-//						inheritVector.getLength();
-						//DInt32 inner = (DInt32)inheritVector.getTemplate();
-						//PrimitiveVector primitiveVector = inner.getPrimitiveVector();
-						//PrimitiveVector arrayVector = arrayTemplate.newPrimitiveVector();
-						
-						//template.newPrimitiveVector()
-						//for (int i=0; i<inheritVector.getLength(); i++) {
-							//BaseType valTemp = times.getTemplate();
-							//PrimitiveVector newPrimitiveVector = template.newPrimitiveVector();
-							//DInt32 val = (DInt32)times.getValue(i);
-						// HACK, will only work for strides
-							int first = nextDim.getStart()+1; // TODO indexing issue?
-							int last = nextDim.getStop()+1 * nextDim.getStride(); // TODO same as above
-//				            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//							Date d1 = dateUnit.makeDate(first);
-//							Date d2 = dateUnit.makeDate(last);
-//							returnList.add(sdf.format(d1));
-//							returnList.add(sdf.format(d2));
-							returnList.add(dateUnit.makeStandardDateString(first));
-							returnList.add(dateUnit.makeStandardDateString(last));
-							return returnList;
-							//if (d.before(minDate)) minDate = d;
-							//if (d.after(maxDate)) maxDate = d;
-						//}
+						DArray variable = (DArray)datadds.getVariable(name);
+						// TODO make utility to cast this stuff for me
+						Int32PrimitiveVector primitiveVector = (Int32PrimitiveVector)variable.getPrimitiveVector();
+						int first = primitiveVector.getValue(0);
+						int last = primitiveVector.getValue(primitiveVector.getLength() - 1);
+
+						returnList.add(dateUnit.makeStandardDateString(first));
+						returnList.add(dateUnit.makeStandardDateString(last));
+						return returnList;
+
 					}
 					catch (Exception e) {
 						e.getMessage();
@@ -180,13 +149,13 @@ public class OpendapServerHelper {
 			return returnList;
 		}
 		catch (opendap.dap.parser.ParseException ex) {
-			Logger.getLogger(OpendapServerHelper.class.getName()).log(Level.SEVERE, null, ex);
+			log.error("Parser exception caught" + ex);
 		}
 		catch (DAP2Exception ex) {
-			Logger.getLogger(OpendapServerHelper.class.getName()).log(Level.SEVERE, null, ex);
+			log.error("OPeNDAP exception caught" + ex);
 		}
 		catch (Exception ex) {
-			Logger.getLogger(OpendapServerHelper.class.getName()).log(Level.SEVERE, null, ex);
+			log.error("General exception caught" + ex);
 		}
 		finally {
 			return returnList;
@@ -267,6 +236,7 @@ public class OpendapServerHelper {
 			Enumeration<BaseType> variables = dds.getVariables();
 			while (variables.hasMoreElements()) {
 				BaseType nextElement = variables.nextElement();
+				// TODO Not always a grid, actually check the Array types
 				if ("Grid".equals(nextElement.getTypeName())) {
 					DGrid grid = (DGrid) nextElement;
 					DataTypeBean dtb = new DataTypeBean();
