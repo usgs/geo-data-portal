@@ -13,7 +13,6 @@ import java.util.List;
 import opendap.dap.Attribute;
 import opendap.dap.AttributeTable;
 import opendap.dap.BaseType;
-import opendap.dap.BaseTypePrimitiveVector;
 import opendap.dap.DAP2Exception;
 import opendap.dap.DAS;
 import opendap.dap.DArray;
@@ -23,7 +22,6 @@ import opendap.dap.DDS;
 import opendap.dap.DGrid;
 import opendap.dap.DataDDS;
 import opendap.dap.Int32PrimitiveVector;
-import opendap.dap.PrimitiveVector;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.units.DateUnit;
 
@@ -103,7 +101,7 @@ public class OpendapServerHelper {
 			}
 			else {
 				if (datasetUrl.startsWith("http:")) {
-					//this.location = "dods:" + datasetURL.substring(5);
+					finalUrl = datasetUrl;
 				}
 				else {
 					throw new java.net.MalformedURLException(datasetUrl + " must start with dods: or http:");
@@ -123,7 +121,6 @@ public class OpendapServerHelper {
 				DArrayDimension nextDim = dimensions.nextElement();
 				String name = nextDim.getName();
 				AttributeTable attributeTable = das.getAttributeTable(name);
-				BaseType dimVar = dds.getVariable(name);
 				Attribute units = attributeTable.getAttribute("units");
 				if (units != null) {
 					try {
