@@ -26,13 +26,15 @@ public class CSVGenerator implements IGenerator, IStreamableGenerator {
         if (data instanceof CSVFileBinding) {
             Object payload = data.getPayload();
             if (payload instanceof File) {
+                File payloadFile = (File) payload;
                 InputStream is = null;
                 try {
-                    is = new FileInputStream((File)payload);
+                    is = new FileInputStream(payloadFile);
                     IOUtils.copy(is, os);
                 } catch (IOException ex) {
                 } finally {
                     IOUtils.closeQuietly(is);
+                    payloadFile.delete();
                 }
             }
         }

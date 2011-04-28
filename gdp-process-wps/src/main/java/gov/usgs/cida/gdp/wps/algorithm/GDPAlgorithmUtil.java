@@ -26,25 +26,45 @@ public abstract class GDPAlgorithmUtil {
     public final static String INPUT_FEATURE_ATTRIBUTE_NAME = "FEATURE_ATTRIBUTE_NAME";
     public final static String INPUT_DATASET_URI = "DATASET_URI";
     public final static String INPUT_DATASET_ID = "DATASET_ID";
+    public final static String INPUT_TIME_START = "TIME_START";
+    public final static String INPUT_TIME_END = "TIME_END";
 
     private GDPAlgorithmUtil() { }
 
-    public static GridDatatype generateGridDataType(URI datasetURI, String datasetId, ReferencedEnvelope featureBounds) {
-        GridDatatype gridDatatype = null;
+    public static GridDataset generateGridDataSet(URI datasetURI) {
         try {
             FeatureDataset featureDataset = null;
             String featureDatasetScheme = datasetURI.getScheme();
-            if ("dods".equals(datasetURI.getScheme())) {
+            if ("dods".equals(featureDatasetScheme)) {
                 featureDataset = FeatureDatasetFactoryManager.open(
                         FeatureType.GRID,
                         datasetURI.toString(),
                         null,
                         new Formatter(System.err));
                 if (featureDataset instanceof GridDataset) {
-                    gridDatatype =  ((GridDataset)featureDataset).findGridDatatype(datasetId);
+                    return (GridDataset)featureDataset;
                 } else {
+                    throw new RuntimeException("Unable to open gridded dataset at " + datasetURI);
+                }
+            } else {
+                throw new RuntimeException("Unable to open gridded dataset at " + datasetURI);
+            }
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
+    public static GridDatatype generateGridDataType(URI datasetURI, String datasetId, ReferencedEnvelope featureBounds) {
+        try {
+            FeatureDataset featureDataset = null;
+            String featureDatasetScheme = datasetURI.getScheme();
+            if ("dods".equals(featureDatasetScheme)) {
+                GridDataset gridDataSet = generateGridDataSet(datasetURI);
+                GridDatatype gridDatatype =  gridDataSet.findGridDatatype(datasetId);
+                if (gridDatatype == null) {
                     throw new RuntimeException("Unable to open dataset at " + datasetURI + " with identifier " + datasetId);
                 }
+                return gridDatatype;
             } else if ("http".equals(featureDatasetScheme)) {
                 File tiffFile = WCSUtil.generateTIFFFile(datasetURI, datasetId, featureBounds);
                 featureDataset = FeatureDatasetFactoryManager.open(
@@ -53,15 +73,19 @@ public abstract class GDPAlgorithmUtil {
                         null,
                         new Formatter(System.err));
                 if (featureDataset instanceof GridDataset) {
-                    gridDatatype = ((GridDataset)featureDataset).findGridDatatype("I0B0");
+                    GridDatatype gridDatatype = ((GridDataset)featureDataset).findGridDatatype("I0B0");
+                    if (gridDatatype == null) {
+                        throw new RuntimeException("Unable to open dataset at " + datasetURI + " with identifier " + datasetId);
+                    }
+                    return gridDatatype;
                 } else {
                     throw new RuntimeException("Unable to open dataset at " + datasetURI + " with identifier " + datasetId);
                 }
             }
+            throw new RuntimeException("Unable to open dataset at " + datasetURI + " with identifier " + datasetId);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
-        return gridDatatype;
     }
 
     public static Range generateTimeRange(GridDatatype GridDatatype, Date timeStart, Date timeEnd) {
@@ -82,5 +106,5 @@ public abstract class GDPAlgorithmUtil {
         }
         return timeRange;
     }
-
+    
 }

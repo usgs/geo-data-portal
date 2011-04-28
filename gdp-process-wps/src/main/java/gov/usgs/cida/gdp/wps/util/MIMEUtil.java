@@ -9,8 +9,10 @@ public class MIMEUtil {
     public static String getSuffixFromMIMEType(String mimeType) {
         String[] mimeTypeSplit = mimeType.split("/");
         String suffix =  mimeTypeSplit[mimeTypeSplit.length - 1];
-        if (suffix.equalsIgnoreCase("geotiff")) {
+        if ("geotiff".equalsIgnoreCase(suffix) || "x-geotiff".equalsIgnoreCase(suffix)) {
             suffix = "tiff";
+        } else if ("netcdf".equalsIgnoreCase(suffix) || "x-netcdf".equalsIgnoreCase(suffix)) {
+            suffix = "nc";
         }
         return suffix;
     }

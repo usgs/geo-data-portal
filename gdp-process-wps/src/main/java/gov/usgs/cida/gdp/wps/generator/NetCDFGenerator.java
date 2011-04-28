@@ -1,7 +1,6 @@
 package gov.usgs.cida.gdp.wps.generator;
 
-import gov.usgs.cida.gdp.wps.binding.GeoTIFFFileBinding;
-import gov.usgs.cida.gdp.wps.util.GeoTIFFUtil;
+import gov.usgs.cida.gdp.wps.binding.NetCDFFileBinding;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -17,20 +16,20 @@ import org.n52.wps.io.datahandler.binary.LargeBufferStream;
  *
  * @author tkunicki
  */
-public class GeoTIFFGenerator implements IGenerator, IStreamableGenerator {
+public class NetCDFGenerator implements IGenerator, IStreamableGenerator {
 
-    public static final String FORMAT = GeoTIFFUtil.getDefaultMimeType();
+    public static final String FORMAT = "application/netcdf";
     public static final String ENCODING = "UTF-8";  // temporary HACK
 
     @Override
     public void writeToStream(IData data, OutputStream os) {
-        if (data instanceof GeoTIFFFileBinding) {
+        if (data instanceof NetCDFFileBinding) {
             Object payload = data.getPayload();
             if (payload instanceof File) {
                 File payloadFile = (File) payload;
                 InputStream is = null;
                 try {
-                    is = new FileInputStream(payloadFile);
+                    is = new FileInputStream((File)payload);
                     IOUtils.copy(is, os);
                 } catch (IOException ex) {
                 } finally {
@@ -50,7 +49,7 @@ public class GeoTIFFGenerator implements IGenerator, IStreamableGenerator {
 
     @Override
     public Class[] getSupportedInternalInputDataType() {
-        return new Class[] { GeoTIFFFileBinding.class };
+        return new Class[] { NetCDFFileBinding.class };
     }
 
     @Override
@@ -80,7 +79,7 @@ public class GeoTIFFGenerator implements IGenerator, IStreamableGenerator {
 
     @Override
     public String[] getSupportedEncodings() {
-        return new String[] { ENCODING };
+        return null;
     }
 
 }

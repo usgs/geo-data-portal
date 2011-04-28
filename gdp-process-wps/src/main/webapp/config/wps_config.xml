@@ -36,6 +36,10 @@
                 <Property name="supportedFormat" active="true">image/geotiff</Property>
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
 			</Generator>
+			<Generator name="NetCDFGenerator" className="gov.usgs.cida.gdp.wps.generator.NetCDFGenerator" active="true">
+                <Property name="supportedFormat" active="true">application/netcdf</Property>
+				<Property name="supportedEncoding" active="true">UTF-8</Property>
+			</Generator>
 		</GeneratorList>
 	</Datahandlers>
 
@@ -45,6 +49,7 @@
             <Property name="Algorithm" active="true">gov.usgs.cida.gdp.wps.algorithm.FeatureCategoricalGridCoverageAlgorithm</Property>
             <Property name="Algorithm" active="true">gov.usgs.cida.gdp.wps.algorithm.FeatureWeightedGridStatisticsAlgorithm</Property>
             <Property name="Algorithm" active="true">gov.usgs.cida.gdp.wps.algorithm.FeatureCoverageIntersectionAlgorithm</Property>
+            <Property name="Algorithm" active="true">gov.usgs.cida.gdp.wps.algorithm.FeatureCoverageOPeNDAPIntersectionAlgorithm</Property>
 		</Repository>
 
 	</AlgorithmRepositoryList>
