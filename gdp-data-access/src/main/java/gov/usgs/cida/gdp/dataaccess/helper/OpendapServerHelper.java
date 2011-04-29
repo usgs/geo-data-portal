@@ -9,8 +9,10 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import opendap.dap.Attribute;
 import opendap.dap.AttributeTable;
 import opendap.dap.BaseType;
@@ -111,10 +113,7 @@ public class OpendapServerHelper {
 				}
 			}
 			DConnect2 dodsConnection = new DConnect2(finalUrl, false);
-
 			DDS dds = dodsConnection.getDDS(gridSelection);
-
-			// TODO Can't assume this format
 
 			DAS das = dodsConnection.getDAS();
 			BaseType selection = dds.getVariable(gridSelection);
@@ -129,26 +128,29 @@ public class OpendapServerHelper {
 			else {
 				throw new UnsupportedOperationException("This dataset type is not yet supported");
 			}
-			Enumeration<DArrayDimension> dimensions = array.getDimensions();
-
-			while (dimensions.hasMoreElements()) {
-				DArrayDimension nextDim = dimensions.nextElement();
-				String name = nextDim.getName();
-				AttributeTable attributeTable = das.getAttributeTable(name);
-				Attribute units = attributeTable.getAttribute("units");
-				if (units != null) {
+			//Enumeration<DArrayDimension> dimensions = array.getDimensions();
+			String timeDim = getTimeDim(das, array);
+//			while (dimensions.hasMoreElements()) {
+//				DArrayDimension nextDim = dimensions.nextElement();
+//				String name = nextDim.getName();
+//				AttributeTable attributeTable = das.getAttributeTable(name);
+//				Attribute units = attributeTable.getAttribute("units");
+//				if (units != null) {
 					try {
-						DataDDS datadds = dodsConnection.getData("?" + name); // time dimension
+						
+						AttributeTable attributeTable = das.getAttributeTable(timeDim);
+						Attribute units = attributeTable.getAttribute("units");
 						DateUnit dateUnit = new DateUnit(units.getValueAt(0));
-						DArray variable = (DArray)datadds.getVariable(name);
+						DataDDS datadds = dodsConnection.getData("?" + timeDim); // time dimension
+						DArray variable = (DArray)datadds.getVariable(timeDim);
 						return getDatesFromTimeVariable(variable, dateUnit);
 					}
 					catch (Exception e) {
 						e.getMessage();
 						// not time unit
 					}
-				}
-			}
+				//}
+			//}
 		}
 		catch (opendap.dap.parser.ParseException ex) {
 			log.error("Parser exception caught" + ex);
@@ -262,30 +264,43 @@ public class OpendapServerHelper {
 			}
 		}
 		DConnect2 dodsConnection = new DConnect2(finalUrl, false);
-		List<DataTypeBean> dtbList = new LinkedList<DataTypeBean>();
+		List<DataTypeBean> dtbListWithTimes = new LinkedList<DataTypeBean>();
+		List<DataTypeBean> dtbListNoTimes = new LinkedList<DataTypeBean>();
 		try {
 			DDS dds = dodsConnection.getDDS();
 			DAS das = dodsConnection.getDAS();
-
+			
 			Enumeration<BaseType> variables = dds.getVariables();
 			while (variables.hasMoreElements()) {
 				BaseType nextElement = variables.nextElement();
+				String timeDim = null;
 				DataTypeBean dtb = null;
 				if ("Grid".equals(nextElement.getTypeName())) {
 					DGrid grid = (DGrid) nextElement;
 					String longName = grid.getLongName();
 					DArray array = (DArray) grid.getVar(0); // ARRAY section
+					timeDim = getTimeDim(das, array);
 					dtb = createDataTypeBean(array, longName, das);
 				}
 				if ("Array".equals(nextElement.getTypeName())) {
 					DArray array = (DArray) nextElement;
 					String longName = nextElement.getLongName();
+					AttributeTable attributeTable = das.getAttributeTable(longName);
+					if (!attributeTable.hasAttribute("coordinates")) {
+						continue;
+					}
 					int rank = array.numDimensions();
-					if (rank > 1) {
-						dtb = createDataTypeBean(array, longName, das);
+					timeDim = getTimeDim(das, array);
+					dtb = createDataTypeBean(array, longName, das);
+				}
+				if (dtb != null) {
+					if (timeDim == null) {
+						dtbListNoTimes.add(dtb);
+					}
+					else {
+						dtbListWithTimes.add(dtb);
 					}
 				}
-				dtbList.add(dtb);
 			}
 		}
 		catch (opendap.dap.parser.ParseException ex) {
@@ -294,10 +309,9 @@ public class OpendapServerHelper {
 		catch (DAP2Exception ex) {
 			// do something with exceptions
 		}
-		// build datatypebeans
-		// put them in new DataTypeCollection
-		DataTypeBean[] dtbArr = new DataTypeBean[dtbList.size()];
-		dtbList.toArray(dtbArr);
+		dtbListWithTimes.addAll(dtbListNoTimes);
+		DataTypeBean[] dtbArr = new DataTypeBean[dtbListWithTimes.size()];
+		dtbListWithTimes.toArray(dtbArr);
 		DataTypeCollection dtc = new DataTypeCollection("GRID", dtbArr); // TODO shouldn't be explicit GRID, didn't know where to get it
 		// return
 		return dtc;
@@ -314,15 +328,48 @@ public class OpendapServerHelper {
 		}
 		AttributeTable dasAttrs = das.getAttributeTable(name);
 		Attribute long_name = dasAttrs.getAttribute("long_name");
-		String long_val = (long_name == null) ? name : long_name.getValueAt(0);
-		String units = dasAttrs.getAttribute("units").getValueAt(0);
+		String longVal = (long_name == null) ? name : long_name.getValueAt(0);
+		Attribute unitAttr = dasAttrs.getAttribute("units");
+		if (unitAttr == null) {
+			return null; // no units = not a datatype
+		}
+		String units = unitAttr.getValueAt(0);
 		DataTypeBean dtb = new DataTypeBean();
-		dtb.setDescription(long_val);
+		dtb.setDescription(longVal);
 		dtb.setName(name);
 		dtb.setRank(dims.length);
 		dtb.setShape(dims);
 		dtb.setShortname(name);
 		dtb.setUnitsstring(units);
 		return dtb;
+	}
+
+	/**
+	 * This tries to get the time dimension from a variable
+	 * Note, it will fail if there are two "time" dimensions in a variable
+	 * This could happen if there is a runHour, forecastHour type dataset
+	 * @param das Attributes from earlier that hold the information
+	 * @param variable Variable to inspect for time
+	 * @return name of the time dimension variable
+	 */
+	private static String getTimeDim(DAS das, DArray variable) {
+		String timeVarName = null;
+		Enumeration<DArrayDimension> dimensions = variable.getDimensions();
+		while (dimensions.hasMoreElements()) {
+			DArrayDimension nextDim = dimensions.nextElement();
+			String name = nextDim.getName();
+			try {
+				AttributeTable attributeTable = das.getAttributeTable(name);
+				Attribute units = attributeTable.getAttribute("units");
+				if (units != null) {
+					DateUnit dateUnit = new DateUnit(units.getValueAt(0));
+				}
+				timeVarName = name;
+			}
+			catch (Exception ioe) {
+				// dimension not a date, keep trying
+			}
+		}
+		return timeVarName;
 	}
 }
