@@ -7,6 +7,7 @@ import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,7 +22,12 @@ import opendap.dap.DConnect2;
 import opendap.dap.DDS;
 import opendap.dap.DGrid;
 import opendap.dap.DataDDS;
+import opendap.dap.Float32PrimitiveVector;
+import opendap.dap.Float64PrimitiveVector;
+import opendap.dap.Int16PrimitiveVector;
 import opendap.dap.Int32PrimitiveVector;
+import opendap.dap.NoSuchAttributeException;
+import opendap.dap.PrimitiveVector;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.units.DateUnit;
 
@@ -90,9 +96,6 @@ public class OpendapServerHelper {
 	}
 
 	public static List<String> getOPeNDAPTimeRange(String datasetUrl, String gridSelection) throws IOException {
-		//Date minDate = new Date(Long.MAX_VALUE);
-		//Date maxDate = new Date(Long.MIN_VALUE);
-		List<String> returnList = new LinkedList<String>();
 		try {
 			// call das, dds
 			String finalUrl = "";
@@ -112,9 +115,20 @@ public class OpendapServerHelper {
 			DDS dds = dodsConnection.getDDS(gridSelection);
 
 			// TODO Can't assume this format
+
 			DAS das = dodsConnection.getDAS();
-			DGrid grid = (DGrid) dds.getVariable(gridSelection);
-			DArray array = (DArray) grid.getVar(grid.ARRAY);
+			BaseType selection = dds.getVariable(gridSelection);
+			DArray array = null;
+			if ("Grid".equals(selection.getTypeName())) {
+				DGrid grid = (DGrid)selection;
+				array = (DArray)grid.getVar(0);
+			}
+			else if ("Array".equals(selection.getTypeName())) {
+				array = (DArray)selection;
+			}
+			else {
+				throw new UnsupportedOperationException("This dataset type is not yet supported");
+			}
 			Enumeration<DArrayDimension> dimensions = array.getDimensions();
 
 			while (dimensions.hasMoreElements()) {
@@ -127,15 +141,7 @@ public class OpendapServerHelper {
 						DataDDS datadds = dodsConnection.getData("?" + name); // time dimension
 						DateUnit dateUnit = new DateUnit(units.getValueAt(0));
 						DArray variable = (DArray)datadds.getVariable(name);
-						// TODO make utility to cast this stuff for me
-						Int32PrimitiveVector primitiveVector = (Int32PrimitiveVector)variable.getPrimitiveVector();
-						int first = primitiveVector.getValue(0);
-						int last = primitiveVector.getValue(primitiveVector.getLength() - 1);
-
-						returnList.add(dateUnit.makeStandardDateString(first));
-						returnList.add(dateUnit.makeStandardDateString(last));
-						return returnList;
-
+						return getDatesFromTimeVariable(variable, dateUnit);
 					}
 					catch (Exception e) {
 						e.getMessage();
@@ -143,7 +149,6 @@ public class OpendapServerHelper {
 					}
 				}
 			}
-			return returnList;
 		}
 		catch (opendap.dap.parser.ParseException ex) {
 			log.error("Parser exception caught" + ex);
@@ -154,9 +159,41 @@ public class OpendapServerHelper {
 		catch (Exception ex) {
 			log.error("General exception caught" + ex);
 		}
-		finally {
-			return returnList;
+		return Collections.EMPTY_LIST;  // Could not get time, fall through
+	}
+
+	private static List<String> getDatesFromTimeVariable(DArray variable, DateUnit dateUnit) {
+		// TODO make utility to cast this stuff for me
+		List<String> dateList = new ArrayList<String>();
+		PrimitiveVector pVector = variable.getPrimitiveVector();
+		double first = 0.0;
+		double last = 0.0;
+		if (pVector instanceof Int32PrimitiveVector) {
+			Int32PrimitiveVector i32Vector = (Int32PrimitiveVector)pVector;
+			first = i32Vector.getValue(0);
+			last = i32Vector.getValue(i32Vector.getLength() - 1);
 		}
+		else if (pVector instanceof Int16PrimitiveVector) {
+			Int16PrimitiveVector i16Vector = (Int16PrimitiveVector)pVector;
+			first = i16Vector.getValue(0);
+			last = i16Vector.getValue(i16Vector.getLength() - 1);
+		}
+		else if (pVector instanceof Float32PrimitiveVector) {
+			Float32PrimitiveVector f32Vector = (Float32PrimitiveVector)pVector;
+			first = f32Vector.getValue(0);
+			last = f32Vector.getValue(f32Vector.getLength() - 1);
+		}
+		else if (pVector instanceof Float64PrimitiveVector) {
+			Float64PrimitiveVector f64Vector = (Float64PrimitiveVector)pVector;
+			first = f64Vector.getValue(0);
+			last = f64Vector.getValue(f64Vector.getLength() - 1);
+		}
+		else {
+			throw new UnsupportedOperationException("This primitive type for time is not yet supported");
+		}
+		dateList.add(dateUnit.makeStandardDateString(first));
+		dateList.add(dateUnit.makeStandardDateString(last));
+		return dateList;
 	}
 
 //    /**
@@ -233,33 +270,22 @@ public class OpendapServerHelper {
 			Enumeration<BaseType> variables = dds.getVariables();
 			while (variables.hasMoreElements()) {
 				BaseType nextElement = variables.nextElement();
-				// TODO Not always a grid, actually check the Array types
+				DataTypeBean dtb = null;
 				if ("Grid".equals(nextElement.getTypeName())) {
 					DGrid grid = (DGrid) nextElement;
-					DataTypeBean dtb = new DataTypeBean();
-					//Enumeration<BaseType> variables1 = grid.getVariables();
-					DArray array = (DArray) grid.getVar(grid.ARRAY); // Array, not map
-					Enumeration<DArrayDimension> dimensions = array.getDimensions();
-					int[] dims = new int[array.numDimensions()];
-					int i = 0;
-					while (dimensions.hasMoreElements()) {
-						DArrayDimension dim = dimensions.nextElement();
-						dims[i] = dim.getSize();
-						i++;
-					}
-					String name = grid.getLongName();
-					AttributeTable dasAttrs = das.getAttributeTable(name);
-					Attribute long_name = dasAttrs.getAttribute("long_name");
-					String long_val = (long_name == null) ? name : long_name.getValueAt(0);
-					String units = dasAttrs.getAttribute("units").getValueAt(0);
-					dtb.setDescription(long_val);
-					dtb.setName(name);
-					dtb.setRank(dims.length);
-					dtb.setShape(dims);
-					dtb.setShortname(name);
-					dtb.setUnitsstring(units);
-					dtbList.add(dtb);
+					String longName = grid.getLongName();
+					DArray array = (DArray) grid.getVar(0); // ARRAY section
+					dtb = createDataTypeBean(array, longName, das);
 				}
+				if ("Array".equals(nextElement.getTypeName())) {
+					DArray array = (DArray) nextElement;
+					String longName = nextElement.getLongName();
+					int rank = array.numDimensions();
+					if (rank > 1) {
+						dtb = createDataTypeBean(array, longName, das);
+					}
+				}
+				dtbList.add(dtb);
 			}
 		}
 		catch (opendap.dap.parser.ParseException ex) {
@@ -275,5 +301,28 @@ public class OpendapServerHelper {
 		DataTypeCollection dtc = new DataTypeCollection("GRID", dtbArr); // TODO shouldn't be explicit GRID, didn't know where to get it
 		// return
 		return dtc;
+	}
+
+	private static DataTypeBean createDataTypeBean(DArray array, String name, DAS das) throws NoSuchAttributeException {
+		int[] dims = new int[array.numDimensions()];
+		int i = 0;
+		Enumeration<DArrayDimension> dimensions = array.getDimensions();
+		while (dimensions.hasMoreElements()) {
+			DArrayDimension dim = dimensions.nextElement();
+			dims[i] = dim.getSize();
+			i++;
+		}
+		AttributeTable dasAttrs = das.getAttributeTable(name);
+		Attribute long_name = dasAttrs.getAttribute("long_name");
+		String long_val = (long_name == null) ? name : long_name.getValueAt(0);
+		String units = dasAttrs.getAttribute("units").getValueAt(0);
+		DataTypeBean dtb = new DataTypeBean();
+		dtb.setDescription(long_val);
+		dtb.setName(name);
+		dtb.setRank(dims.length);
+		dtb.setShape(dims);
+		dtb.setShortname(name);
+		dtb.setUnitsstring(units);
+		return dtb;
 	}
 }
