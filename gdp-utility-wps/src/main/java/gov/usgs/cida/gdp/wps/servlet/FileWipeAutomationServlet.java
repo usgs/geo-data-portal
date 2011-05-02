@@ -68,8 +68,8 @@ public class FileWipeAutomationServlet implements ServletContextListener {
 
         // Set up the tast to run every hour, starting 1 hour from now
         task = new Timer("File-Wipe-Timer",true);
-//        task.scheduleAtFixedRate(new ScanFileTask(userSpaceDir, uploadDirName, workSpaceDir, fileAgeLong), 0l, 3600000l);
-        task.scheduleAtFixedRate(new ScanFileTask(userSpaceDir, uploadDirName, workSpaceDir, fileAgeLong), 0l, 30000l);
+        task.scheduleAtFixedRate(new ScanFileTask(userSpaceDir, uploadDirName, workSpaceDir, fileAgeLong), 0l, 3600000l);
+//        task.scheduleAtFixedRate(new ScanFileTask(userSpaceDir, uploadDirName, workSpaceDir, fileAgeLong), 0l, 30000l);
 
         // One minute test timer
         //task.scheduleAtFixedRate(new ScanFileTask(userSpaceDir, uploadDirName, 60000l), 0l, 60000l);
@@ -107,7 +107,7 @@ public class FileWipeAutomationServlet implements ServletContextListener {
 
             try {
                 ManageGeoserverWorkspace mgsw = new ManageGeoserverWorkspace(AppConstant.WFS_ENDPOINT.getValue());
-                mgsw.scanGeoserverWorkspacesForOutdatedDatastores(hoursToWipe, AppConstant.WFS_USER.getValue(), AppConstant.WFS_PASS.getValue(), "upload", "waters");
+                mgsw.scanGeoserverWorkspacesForOutdatedDatastores(hoursToWipe, AppConstant.WFS_USER.getValue(), AppConstant.WFS_PASS.getValue(), "upload", "waters", "draw");
             } catch (IOException ex) {
                 Logger.getLogger(FileWipeAutomationServlet.class.getName()).log(Level.SEVERE, null, ex);
             } catch (SAXException ex) {
