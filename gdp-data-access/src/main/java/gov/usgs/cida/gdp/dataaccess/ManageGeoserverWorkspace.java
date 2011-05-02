@@ -119,6 +119,8 @@ public class ManageGeoserverWorkspace{
     /**
      * @See http://internal.cida.usgs.gov/jira/browse/GDP-174?focusedCommentId=18712&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#action_18712
      * @param workspaces
+     * @param username 
+     * @param password 
      * @param maximumFileAge
      * @throws IOException
      * @throws SAXException
