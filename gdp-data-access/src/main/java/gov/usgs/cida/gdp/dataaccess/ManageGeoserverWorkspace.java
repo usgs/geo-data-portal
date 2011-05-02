@@ -33,7 +33,7 @@ import org.xml.sax.SAXException;
  *
  * @author razoerb
  */
-public class ManageGeoserverWorkspace {
+public class ManageGeoserverWorkspace{
     private static org.slf4j.Logger log = LoggerFactory.getLogger(ManageGeoserverWorkspace.class);
 
     private String geoServerURLString = "";
@@ -156,8 +156,8 @@ public class ManageGeoserverWorkspace {
                     }
 
                     if (deleteFromGeoserver) {
-                        if(!this.deleteDatastoreFromGeoserver(workspace, datastore, username, password, true)) {
-                            log.warn("Successfully deleted datastore '"+datastore+"' from geoserver or file from disk.");
+                        if(this.deleteDatastoreFromGeoserver(workspace, datastore, username, password, true)) {
+                            log.info("Successfully deleted datastore '"+datastore+"' from geoserver or file from disk.");
                         }
                         else {
                             log.warn("An error occured while attempting to delete datastore '"+datastore+"'from geoserver or file from disk.");
