@@ -12,8 +12,8 @@ import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 import javax.servlet.http.HttpServlet;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
@@ -24,17 +24,11 @@ import org.xml.sax.SAXException;
 /**
  * Servlet implementation class FileWipeAutomationServlet
  */
-public class FileWipeAutomationServlet extends HttpServlet {
+public class FileWipeAutomationServlet implements ServletContextListener {
 
     static org.slf4j.Logger log = LoggerFactory.getLogger(FileWipeAutomationServlet.class);
     private static final long serialVersionUID = 1L;
     private Timer task;
-    @Override
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
-        
-        initializeFilewipeTimer();
-    }
 
     /**
      * @see HttpServlet#HttpServlet()
@@ -43,6 +37,18 @@ public class FileWipeAutomationServlet extends HttpServlet {
         super();
     }
 
+    @Override
+    public void contextInitialized(ServletContextEvent sce) {
+        initializeFilewipeTimer();
+    }
+
+    @Override
+    public void contextDestroyed(ServletContextEvent sce) {
+        this.task.cancel();
+        this.task.purge();
+        log.info("File Wipe system stopped.");
+    }
+    
     /**
      * Initializes a timer that will check the file system every hour and wipes any files
      * over 48 hours long.
@@ -62,13 +68,14 @@ public class FileWipeAutomationServlet extends HttpServlet {
 
         // Set up the tast to run every hour, starting 1 hour from now
         task = new Timer("File-Wipe-Timer",true);
-        task.scheduleAtFixedRate(new ScanFileTask(userSpaceDir, uploadDirName, workSpaceDir, fileAgeLong), 0l, 3600000l);
+//        task.scheduleAtFixedRate(new ScanFileTask(userSpaceDir, uploadDirName, workSpaceDir, fileAgeLong), 0l, 3600000l);
+        task.scheduleAtFixedRate(new ScanFileTask(userSpaceDir, uploadDirName, workSpaceDir, fileAgeLong), 0l, 30000l);
 
         // One minute test timer
         //task.scheduleAtFixedRate(new ScanFileTask(userSpaceDir, uploadDirName, 60000l), 0l, 60000l);
         log.info("File Wipe system started.");
-        log.info("Will check " + uploadDirName.getPath() + " for files older than " + (fileAgeLong /  3600000) + " hour(s), every hour.");
-        log.info("Will check " + userSpaceDir.getPath() +  " for files older than " + (fileAgeLong /  3600000) + " hour(s), every hour.");
+        log.info("Will check " + uploadDirName.getPath() + " for files older than " + (Long.valueOf(fileAgeLong) /  3600000) + " hour(s), every hour.");
+        log.info("Will check " + userSpaceDir.getPath() +  " for files older than " + (Long.valueOf(fileAgeLong) /  3600000) + " hour(s), every hour.");
     }
 
     class ScanFileTask extends TimerTask {
@@ -83,6 +90,7 @@ public class FileWipeAutomationServlet extends HttpServlet {
             Collection<File> filesDeleted = new ArrayList<File>();
             
             if (getUserspaceDir() != null && getUserspaceDir().exists()) {
+                log.info("Checking user space directory " + getUserspaceDir().getPath() + " for files older than " + Long.valueOf(this.hoursToWipe) + "ms");
                 filesDeleted = FileHelper.wipeOldFiles(getUserspaceDir(), Long.valueOf(this.hoursToWipe), false);
                 if (!filesDeleted.isEmpty()) {
                     log.info("Finished deleting userspace files. " + filesDeleted.size() + " deleted.");
@@ -90,6 +98,7 @@ public class FileWipeAutomationServlet extends HttpServlet {
             }
 
             if (getWorkspaceDir() != null && getWorkspaceDir().exists()) {
+                log.info("Checking work space directory " + getUserspaceDir().getPath() + " for files older than " + Long.valueOf(this.hoursToWipe) + "ms");
                 filesDeleted = FileHelper.wipeOldFiles(getWorkspaceDir(), Long.valueOf(this.hoursToWipe), false);
                 if (!filesDeleted.isEmpty()) {
                     log.info("Finished deleting workspace files. " + filesDeleted.size() + " deleted.");
@@ -186,14 +195,4 @@ public class FileWipeAutomationServlet extends HttpServlet {
         }
 
     }
-
-    @Override
-    public void destroy() {
-        super.destroy();
-        this.task.cancel();
-        this.task.purge();
-        log.info("File Wipe system stopped.");
-    }
-
-
 }
