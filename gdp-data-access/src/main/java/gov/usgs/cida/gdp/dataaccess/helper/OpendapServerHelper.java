@@ -9,10 +9,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import opendap.dap.Attribute;
 import opendap.dap.AttributeTable;
 import opendap.dap.BaseType;
@@ -119,38 +117,31 @@ public class OpendapServerHelper {
 			BaseType selection = dds.getVariable(gridSelection);
 			DArray array = null;
 			if ("Grid".equals(selection.getTypeName())) {
-				DGrid grid = (DGrid)selection;
-				array = (DArray)grid.getVar(0);
-			}
-			else if ("Array".equals(selection.getTypeName())) {
-				array = (DArray)selection;
+				DGrid grid = (DGrid) selection;
+				array = (DArray) grid.getVar(0);
 			}
 			else {
-				throw new UnsupportedOperationException("This dataset type is not yet supported");
+				if ("Array".equals(selection.getTypeName())) {
+					array = (DArray) selection;
+				}
+				else {
+					throw new UnsupportedOperationException("This dataset type is not yet supported");
+				}
 			}
-			//Enumeration<DArrayDimension> dimensions = array.getDimensions();
+
 			String timeDim = getTimeDim(das, array);
-//			while (dimensions.hasMoreElements()) {
-//				DArrayDimension nextDim = dimensions.nextElement();
-//				String name = nextDim.getName();
-//				AttributeTable attributeTable = das.getAttributeTable(name);
-//				Attribute units = attributeTable.getAttribute("units");
-//				if (units != null) {
-					try {
-						
-						AttributeTable attributeTable = das.getAttributeTable(timeDim);
-						Attribute units = attributeTable.getAttribute("units");
-						DateUnit dateUnit = new DateUnit(units.getValueAt(0));
-						DataDDS datadds = dodsConnection.getData("?" + timeDim); // time dimension
-						DArray variable = (DArray)datadds.getVariable(timeDim);
-						return getDatesFromTimeVariable(variable, dateUnit);
-					}
-					catch (Exception e) {
-						e.getMessage();
-						// not time unit
-					}
-				//}
-			//}
+			try {
+				AttributeTable attributeTable = das.getAttributeTable(timeDim);
+				Attribute units = attributeTable.getAttribute("units");
+				DateUnit dateUnit = new DateUnit(units.getValueAt(0));
+				DataDDS datadds = dodsConnection.getData("?" + timeDim); // time dimension
+				DArray variable = (DArray) datadds.getVariable(timeDim);
+				return getDatesFromTimeVariable(variable, dateUnit);
+			}
+			catch (Exception e) {
+				e.getMessage();
+				// not time unit
+			}
 		}
 		catch (opendap.dap.parser.ParseException ex) {
 			log.error("Parser exception caught" + ex);
@@ -171,28 +162,30 @@ public class OpendapServerHelper {
 		double first = 0.0;
 		double last = 0.0;
 		if (pVector instanceof Int32PrimitiveVector) {
-			Int32PrimitiveVector i32Vector = (Int32PrimitiveVector)pVector;
+			Int32PrimitiveVector i32Vector = (Int32PrimitiveVector) pVector;
 			first = i32Vector.getValue(0);
 			last = i32Vector.getValue(i32Vector.getLength() - 1);
 		}
 		else if (pVector instanceof Int16PrimitiveVector) {
-			Int16PrimitiveVector i16Vector = (Int16PrimitiveVector)pVector;
+			Int16PrimitiveVector i16Vector = (Int16PrimitiveVector) pVector;
 			first = i16Vector.getValue(0);
 			last = i16Vector.getValue(i16Vector.getLength() - 1);
 		}
 		else if (pVector instanceof Float32PrimitiveVector) {
-			Float32PrimitiveVector f32Vector = (Float32PrimitiveVector)pVector;
+			Float32PrimitiveVector f32Vector = (Float32PrimitiveVector) pVector;
 			first = f32Vector.getValue(0);
 			last = f32Vector.getValue(f32Vector.getLength() - 1);
 		}
 		else if (pVector instanceof Float64PrimitiveVector) {
-			Float64PrimitiveVector f64Vector = (Float64PrimitiveVector)pVector;
+			Float64PrimitiveVector f64Vector = (Float64PrimitiveVector) pVector;
 			first = f64Vector.getValue(0);
 			last = f64Vector.getValue(f64Vector.getLength() - 1);
 		}
 		else {
 			throw new UnsupportedOperationException("This primitive type for time is not yet supported");
 		}
+
+
 		dateList.add(dateUnit.makeStandardDateString(first));
 		dateList.add(dateUnit.makeStandardDateString(last));
 		return dateList;
@@ -269,7 +262,7 @@ public class OpendapServerHelper {
 		try {
 			DDS dds = dodsConnection.getDDS();
 			DAS das = dodsConnection.getDAS();
-			
+
 			Enumeration<BaseType> variables = dds.getVariables();
 			while (variables.hasMoreElements()) {
 				BaseType nextElement = variables.nextElement();
