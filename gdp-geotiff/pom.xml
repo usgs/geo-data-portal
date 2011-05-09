@@ -12,9 +12,12 @@
     <name>gdp-geotiff</name>
     <dependencies>
         <dependency>
+            <artifactId>slf4j-api</artifactId>
+            <groupId>org.slf4j</groupId>
+        </dependency>
+        <dependency>
             <groupId>edu.ucar</groupId>
             <artifactId>netcdf</artifactId>
-            <version>4.2</version>
         </dependency>
         <dependency>
             <groupId>net.sf.opencsv</groupId>
