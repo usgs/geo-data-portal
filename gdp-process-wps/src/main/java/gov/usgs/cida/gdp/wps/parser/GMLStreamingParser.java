@@ -10,6 +10,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import javax.xml.XMLConstants;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.n52.wps.io.IStreamableParser;
 import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
@@ -75,12 +76,7 @@ public class GMLStreamingParser extends AbstractXMLParser implements IStreamable
 		} catch (IOException e) {
 			throw new RuntimeException("Error creating temporary file", e);
 		} finally {
-			if (inputStream != null) {
-				try {
-					inputStream.close();
-				} catch (IOException e) {
-				}
-			}
+			IOUtils.closeQuietly(inputStream);
 		}
 	}
 
