@@ -32,6 +32,7 @@ Coders: TK, JW, RZ, IS
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <n52-wps.version>2.0-RC6</n52-wps.version>
         <geotools.version>2.6.6</geotools.version>
+        <slf4j.version>1.6.1</slf4j.version>
         <netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
     </properties>
     <dependencies>
@@ -53,11 +54,6 @@ Coders: TK, JW, RZ, IS
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <artifactId>slf4j-api</artifactId>
             <groupId>org.slf4j</groupId>
             <scope>test</scope>
@@ -70,11 +66,6 @@ Coders: TK, JW, RZ, IS
     </dependencies>
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>com.google.protobuf</groupId>
-                <artifactId>protobuf-java</artifactId>
-                <version>2.1.0</version>
-            </dependency>
             <dependency>
                 <groupId>com.google.collections</groupId>
                 <artifactId>google-collections</artifactId>
@@ -111,19 +102,27 @@ Coders: TK, JW, RZ, IS
                 <version>2.0</version>
             </dependency>
             <dependency>
-                <groupId>log4j</groupId>
-                <artifactId>log4j</artifactId>
-                <version>1.2.16</version>
-            </dependency>
-            <dependency>
                 <artifactId>slf4j-api</artifactId>
                 <groupId>org.slf4j</groupId>
-                <version>1.5.11</version>
+                <version>${slf4j.version}</version>
             </dependency>
             <dependency>
-                <artifactId>slf4j-log4j12</artifactId>
                 <groupId>org.slf4j</groupId>
-                <version>1.4.3</version>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>${slf4j.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jul-to-slf4j</artifactId>
+                <version>${slf4j.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jcl-over-slf4j</artifactId>
+                <version>${slf4j.version}</version>
+                <scope>runtime</scope>
             </dependency>
             <dependency>
                 <groupId>org.geotools</groupId>
@@ -164,11 +163,18 @@ Coders: TK, JW, RZ, IS
                 <groupId>javax.servlet</groupId>
                 <artifactId>servlet-api</artifactId>
                 <version>2.5</version>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>javax.servlet.jsp</groupId>
                 <artifactId>jsp-api</artifactId>
                 <version>2.1</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>joda-time</groupId>
+                <artifactId>joda-time</artifactId>
+                <version>1.6.2</version>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.jackson</groupId>
@@ -184,13 +190,35 @@ Coders: TK, JW, RZ, IS
             <dependency>
                 <groupId>edu.ucar</groupId>
                 <artifactId>netcdf</artifactId>
-                <version>4.2</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>slf4j-log4j</artifactId>
-                        <groupId>org.slf4j12</groupId>
-                    </exclusion>
-                </exclusions>
+                <version>4.2.20</version>
+            </dependency>
+            <dependency>
+                <groupId>edu.ucar</groupId>
+                <artifactId>opendap</artifactId>
+                <version>2.2.2</version>
+            </dependency>
+            <!-- needed for NcStream/CDMRemote -->
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>2.3.0</version>
+            </dependency>
+            <!-- needed for NcML  -->
+            <dependency>
+                <groupId>org.jdom</groupId>
+                <artifactId>jdom</artifactId>
+                <version>1.1</version>
+            </dependency>
+            <dependency>
+                <groupId>jdom</groupId>
+                <artifactId>jdom</artifactId>
+                <version>1.1</version>
+            </dependency>
+            <!-- needed for NcML  -->
+            <dependency>
+                <artifactId>je</artifactId>
+                <groupId>com.sleepycat</groupId>
+                <version>4.0.92</version>
             </dependency>
             <!-- 52North WPS dependencies -->
             <dependency>

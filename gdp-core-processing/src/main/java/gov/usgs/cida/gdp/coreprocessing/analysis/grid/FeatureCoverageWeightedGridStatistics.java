@@ -124,7 +124,7 @@ public class FeatureCoverageWeightedGridStatistics {
                 v = new WeightedGridStatisticsVisitor_YX(coverageByIndex, writerX);
             break;
             case TYX:
-                v = new WeightedGridStatisticsVisitor_TYX(coverageByIndex, writerX, gcs.getTimeAxis1D(), timeRange);
+                v = new WeightedGridStatisticsVisitor_TYX(coverageByIndex, writerX);
             break;
             default:
                 throw new IllegalStateException("Currently require y-x or t-y-x grid for this operation");
@@ -248,19 +248,14 @@ public class FeatureCoverageWeightedGridStatistics {
         protected FeatureCoverageWeightedGridStatisticsWriter writer;
         
         protected CoordinateAxis1DTime tAxis;
-        protected int tIndexOffset;
         
         protected SimpleDateFormat dateFormat;
 
         public WeightedGridStatisticsVisitor_TYX(
                 GridCellCoverageByIndex coverageByIndex,
-                FeatureCoverageWeightedGridStatisticsWriter writer,
-                CoordinateAxis1DTime tAxis,
-                Range tRange) {
+                FeatureCoverageWeightedGridStatisticsWriter writer) {
             super(coverageByIndex);
             this.writer = writer;
-            this.tAxis = tAxis;
-            this.tIndexOffset = tRange.first();
             
             dateFormat = new SimpleDateFormat(DATE_FORMAT);
             dateFormat.setTimeZone(TimeZone.getTimeZone(TIMEZONE));
@@ -278,6 +273,8 @@ public class FeatureCoverageWeightedGridStatistics {
             allTimestepPerAttributeStatistics =
                     createPerAttributeStatisticsMap();
             allTimestepAllAttributeStatistics = new WeightedStatistics1D();
+            
+            tAxis = gridCoordSystem.getTimeAxis1D();
         }
 
         @Override
@@ -295,7 +292,7 @@ public class FeatureCoverageWeightedGridStatistics {
         @Override
         public void tEnd(int tIndex) {
             try {
-                Date date = tAxis.getTimeDate(tIndexOffset + tIndex);
+                Date date = tAxis.getTimeDate(tIndex);
                 writer.writeRow(
                         dateFormat.format(date),
                         perAttributeStatistics.values(),

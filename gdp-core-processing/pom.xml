@@ -38,6 +38,27 @@
             <artifactId>netcdf</artifactId>
         </dependency>
         <dependency>
+            <groupId>edu.ucar</groupId>
+            <artifactId>opendap</artifactId>
+        </dependency>
+        <!-- needed for NCStream/CDMRemote -->
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+        </dependency>
+        <!-- needed for NcML -->
+        <dependency>
+            <groupId>org.jdom</groupId>
+            <artifactId>jdom</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- needed for NcML -->
+        <dependency>
+            <artifactId>je</artifactId>
+            <groupId>com.sleepycat</groupId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-main</artifactId>
         </dependency>

@@ -15,7 +15,7 @@
     <servlet>
         <servlet-name>wpsServlet</servlet-name>
         <servlet-class>org.n52.wps.server.WebProcessingService</servlet-class>
-        <load-on-startup>0</load-on-startup>
+        <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
         <servlet-name>wpsServlet</servlet-name>
@@ -24,7 +24,6 @@
     <servlet>
         <servlet-name>retrieveResultServlet</servlet-name>
         <servlet-class>org.n52.wps.server.RetrieveResultServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
         <servlet-name>retrieveResultServlet</servlet-name>

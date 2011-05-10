@@ -85,7 +85,7 @@ public class CRSUtility {
 					datum,
 					DefaultEllipsoidalCS.GEODETIC_2D);
 
-		if ("LatLon".equals(gridMappingName) || "longitude_latitude".equals(gridMappingName)) {
+		if ("LatLon".equals(gridMappingName) || "latitude_longitude".equals(gridMappingName)) {
 
             ProjectionRect projectionRect = gcs.getBoundingBox();
             boolean longitude360 = projectionRect.getMaxX() > 180;

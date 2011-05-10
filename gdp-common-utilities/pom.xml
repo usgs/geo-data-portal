@@ -43,10 +43,6 @@
             <artifactId>gt-shapefile</artifactId>
         </dependency>
         <dependency>
-            <groupId>edu.ucar</groupId>
-            <artifactId>netcdf</artifactId>
-        </dependency>
-        <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
         </dependency>
