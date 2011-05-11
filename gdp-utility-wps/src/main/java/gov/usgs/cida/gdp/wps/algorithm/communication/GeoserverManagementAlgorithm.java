@@ -1,10 +1,7 @@
 package gov.usgs.cida.gdp.wps.algorithm.communication;
 
-import gov.usgs.cida.gdp.constants.AppConstant;
-import gov.usgs.cida.gdp.dataaccess.ManageGeoserverWorkspace;
+import gov.usgs.cida.gdp.dataaccess.GeoserverManager;
 import java.math.BigInteger;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -69,13 +66,12 @@ public class GeoserverManagementAlgorithm extends AbstractSelfDescribingAlgorith
         if ("delete".equalsIgnoreCase(command)) {
             if (datastoreList.isEmpty()) throw new RuntimeException("Error: 'delete' called but no datastore was provided");
             if (StringUtils.isBlank(workspace)) throw new RuntimeException("Error: 'delete' called but no workspace was provided");
-            ManageGeoserverWorkspace mgw = null;
             
-            try { mgw = new ManageGeoserverWorkspace(new URL("http://" + wfsHost + ":" + wfsPort + "/geoserver")); }
-            catch (MalformedURLException ex) { throw new RuntimeException("Error: Unable to delete datastore. Cause is incorrect Geoserver URL. Error follows.\n" + ex.getMessage()); }
-
+            GeoserverManager gm = new GeoserverManager(
+                    "http://" + wfsHost + ":" + wfsPort + "/geoserver", username, password);
+            
             for (String datastore : datastoreList) {
-                try { mgw.deleteDatastoreFromGeoserver(workspace, datastore, username, password, true); }
+                try { gm.deleteAndWipeDataStore(workspace, datastore); }
                 catch (Exception ex) { getErrors().add("Error: Unable to delete datastore '"+datastore+"'. Error follows.\n" + ex.getMessage()); }
             }
         } else throw new RuntimeException("Error: Unrecognized command: " + command);

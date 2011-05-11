@@ -1,7 +1,7 @@
 package gov.usgs.cida.gdp.wps.servlet;
 
 import gov.usgs.cida.gdp.constants.AppConstant;
-import gov.usgs.cida.gdp.dataaccess.ManageGeoserverWorkspace;
+import gov.usgs.cida.gdp.dataaccess.GeoserverManager;
 import gov.usgs.cida.gdp.utilities.FileHelper;
 import java.io.File;
 import java.io.IOException;
@@ -15,11 +15,9 @@ import java.util.logging.Logger;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.http.HttpServlet;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 /**
  * Servlet implementation class FileWipeAutomationServlet
@@ -106,13 +104,11 @@ public class FileWipeAutomationServlet implements ServletContextListener {
             }
 
             try {
-                ManageGeoserverWorkspace mgsw = new ManageGeoserverWorkspace(AppConstant.WFS_ENDPOINT.getValue());
-                mgsw.scanGeoserverWorkspacesForOutdatedDatastores(hoursToWipe, AppConstant.WFS_USER.getValue(), AppConstant.WFS_PASS.getValue(), "upload", "waters", "draw");
+                GeoserverManager gm = new GeoserverManager(AppConstant.WFS_ENDPOINT.getValue(),
+                        AppConstant.WFS_USER.getValue(), AppConstant.WFS_PASS.getValue());
+                
+                gm.deleteOutdatedDatastores(hoursToWipe, "upload", "waters", "draw");
             } catch (IOException ex) {
-                Logger.getLogger(FileWipeAutomationServlet.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SAXException ex) {
-                Logger.getLogger(FileWipeAutomationServlet.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ParserConfigurationException ex) {
                 Logger.getLogger(FileWipeAutomationServlet.class.getName()).log(Level.SEVERE, null, ex);
             } catch (XPathExpressionException ex) {
                 Logger.getLogger(FileWipeAutomationServlet.class.getName()).log(Level.SEVERE, null, ex);

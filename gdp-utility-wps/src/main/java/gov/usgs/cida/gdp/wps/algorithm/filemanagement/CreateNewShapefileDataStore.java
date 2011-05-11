@@ -1,7 +1,7 @@
 package gov.usgs.cida.gdp.wps.algorithm.filemanagement;
 
 import gov.usgs.cida.gdp.constants.AppConstant;
-import gov.usgs.cida.gdp.dataaccess.ManageGeoserverWorkspace;
+import gov.usgs.cida.gdp.dataaccess.GeoserverManager;
 import gov.usgs.cida.gdp.utilities.GeoToolsUtils;
 import java.io.File;
 import java.math.BigInteger;
@@ -48,11 +48,14 @@ public class CreateNewShapefileDataStore extends AbstractSelfDescribingAlgorithm
         String shapefilePath = shapefile.getAbsolutePath();
 
         String geoServerURL = AppConstant.WFS_ENDPOINT.getValue();
+        String geoServerUser = AppConstant.WFS_USER.getValue();
+        String geoServerPass = AppConstant.WFS_PASS.getValue();
         String geoServerWorkspace = "draw";
         try {
-            ManageGeoserverWorkspace mws = new ManageGeoserverWorkspace(geoServerURL);
+            GeoserverManager gm = new GeoserverManager(geoServerURL, geoServerUser, geoServerPass);
+            
             String declaredCRS = "EPSG:4326";
-            mws.createDataStore(shapefilePath, name, geoServerWorkspace, declaredCRS, declaredCRS);
+            gm.createDataStore(shapefilePath, name, geoServerWorkspace, declaredCRS, declaredCRS);
         } catch (Exception ex) {
             log.error("Error creating datastore in GeoServer for draw geometry", ex);
             throw new RuntimeException("Error creating datastore in GeoServer for draw geometry");
