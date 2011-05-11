@@ -9,8 +9,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import org.apache.log4j.Logger;
 import org.n52.wps.io.data.GenericFileDataConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class extends the GenericFileData class so we can unzip files with arbitrary
@@ -20,7 +21,7 @@ import org.n52.wps.io.data.GenericFileDataConstants;
  */
 public class ZippedGenericFileData extends GenericFileData {
 
-    private static Logger LOGGER = Logger.getLogger(ZippedGenericFileData.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(ZippedGenericFileData.class);
 
     public ZippedGenericFileData(InputStream stream, String mimeType) {
         super(stream, mimeType);

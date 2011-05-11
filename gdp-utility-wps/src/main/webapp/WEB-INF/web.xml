@@ -12,6 +12,10 @@
         <description>Sets up file wipe timer</description>
         <listener-class>gov.usgs.cida.gdp.wps.servlet.FileWipeAutomationServlet </listener-class>
     </listener>
+    <listener>
+        <description>Allows dynamic Log4J log level changes via JMX</description>
+        <listener-class>gov.usgs.cida.gdp.jmx.log4j.JMXLog4JLoggerServletContextListener</listener-class>
+    </listener>
     <servlet>
         <servlet-name>wpsServlet</servlet-name>
         <servlet-class>org.n52.wps.server.WebProcessingService</servlet-class>
@@ -24,6 +28,7 @@
     <servlet>
         <servlet-name>retrieveResultServlet</servlet-name>
         <servlet-class>org.n52.wps.server.RetrieveResultServlet</servlet-class>
+        <load-on-startup>2</load-on-startup>
     </servlet>
     <servlet-mapping>
         <servlet-name>retrieveResultServlet</servlet-name>

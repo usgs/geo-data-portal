@@ -17,9 +17,10 @@ Coders: TK, JW, RZ, IS
         <module>gdp-geotiff</module>
         <module>gdp-utility-wps</module>
         <module>gdp-process-wps</module>
+        <module>gdp-jmx-log4j</module>
 <!--        <module>geoserver</module>-->
 <!--        <module>geonetwork</module>-->
-    </modules>
+  </modules>
     <repositories>
         <repository>
             <id>cida-gdp-development</id>
@@ -110,6 +111,12 @@ Coders: TK, JW, RZ, IS
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-log4j12</artifactId>
                 <version>${slf4j.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>1.2.16</version>
                 <scope>runtime</scope>
             </dependency>
             <dependency>
