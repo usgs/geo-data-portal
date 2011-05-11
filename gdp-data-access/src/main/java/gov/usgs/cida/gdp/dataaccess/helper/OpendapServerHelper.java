@@ -168,7 +168,7 @@ public class OpendapServerHelper {
 		}
 		else {
 			if (datasetUrl.startsWith("http:")) {
-				//this.location = "dods:" + datasetURL.substring(5);
+				finalUrl = datasetUrl;
 			}
 			else {
 				throw new java.net.MalformedURLException(datasetUrl + " must start with dods: or http:");
