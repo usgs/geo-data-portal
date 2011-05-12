@@ -17,7 +17,8 @@ Coders: TK, JW, RZ, IS
         <module>gdp-geotiff</module>
         <module>gdp-utility-wps</module>
         <module>gdp-process-wps</module>
-        <module>gdp-jmx-log4j</module>
+        <module>jmx-log4j</module>
+        <module>jmx</module>
 <!--        <module>geoserver</module>-->
 <!--        <module>geonetwork</module>-->
   </modules>

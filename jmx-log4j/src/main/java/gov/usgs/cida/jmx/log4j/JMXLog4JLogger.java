@@ -1,4 +1,4 @@
-package gov.usgs.cida.gdp.jmx.log4j;
+package gov.usgs.cida.jmx.log4j;
 
 import javax.management.Attribute;
 import javax.management.AttributeList;
