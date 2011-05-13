@@ -32,6 +32,7 @@ public class FeatureCoverageOPeNDAPIntersectionAlgorithm extends AbstractAnnotat
     private FeatureCollection featureCollection;
     private URI datasetURI;
     private List<String> datasetId;
+    private boolean requireFullCoverage;
     private Date dateTimeStart;
     private Date dateTimeEnd;
 
@@ -50,6 +51,11 @@ public class FeatureCoverageOPeNDAPIntersectionAlgorithm extends AbstractAnnotat
     @LiteralDataInput(identifier=GDPAlgorithmUtil.INPUT_DATASET_ID, maxOccurs=Integer.MAX_VALUE)
     public void setDatasetId(List<String> datasetId) {
         this.datasetId = datasetId;
+    }
+    
+    @LiteralDataInput(identifier=GDPAlgorithmUtil.INPUT_REQUIRE_FULL_COVERAGE, defaultValue="true")
+    public void setRequireFullCoverage(boolean requireFullCoverage) {
+        this.requireFullCoverage = requireFullCoverage;
     }
     
     @LiteralDataInput(identifier=GDPAlgorithmUtil.INPUT_TIME_START, minOccurs=0)
@@ -72,13 +78,14 @@ public class FeatureCoverageOPeNDAPIntersectionAlgorithm extends AbstractAnnotat
         GridDataset gridDataSet = GDPAlgorithmUtil.generateGridDataSet(datasetURI);
         try { 
             output = File.createTempFile(getClass().getSimpleName(), ".nc");
-            NetCDFGridSubSetWriter.makeFile(
+            NetCDFGridWriter.makeFile(
                     output.getAbsolutePath(),
                     gridDataSet,
                     datasetId,
                     featureCollection,
                     dateTimeStart,
                     dateTimeEnd,
+                    requireFullCoverage,
                     "Grid sub-setted by USGS/CIDA Geo Data Portal");
         } catch (IOException e) {
             throw new RuntimeException("Unable to generate NetCDF File");

@@ -26,6 +26,7 @@ public class FeatureCoverageIntersectionAlgorithm extends AbstractAnnotatedAlgor
     private FeatureCollection featureCollection;
     private URI datasetURI;
     private String datasetId;
+    private boolean requireFullCoverage = true;
 
     private File output;
 
@@ -43,6 +44,11 @@ public class FeatureCoverageIntersectionAlgorithm extends AbstractAnnotatedAlgor
     public void setDatasetId(String datasetId) {
         this.datasetId = datasetId;
     }
+    
+    @LiteralDataInput(identifier=GDPAlgorithmUtil.INPUT_REQUIRE_FULL_COVERAGE, defaultValue="true")
+    public void setRequireFullCoverage(boolean requireFullCoverage) {
+        this.requireFullCoverage = requireFullCoverage;
+    }
 
     @ComplexDataOutput(identifier="OUTPUT", binding=GeoTIFFFileBinding.class)
     public File getOutput() {
@@ -51,7 +57,7 @@ public class FeatureCoverageIntersectionAlgorithm extends AbstractAnnotatedAlgor
 
     @Process
     public void process() {
-        output = WCSUtil.generateTIFFFile(datasetURI, datasetId, featureCollection.getBounds());
+        output = WCSUtil.generateTIFFFile(datasetURI, datasetId, featureCollection.getBounds(), requireFullCoverage);
     }
 
 

@@ -43,46 +43,64 @@ public abstract class GridUtility {
 				gridCRS);
 	}
 
-	public static Range[] getRangesFromBoundingBox(BoundingBox bounds, GridCoordSystem gcs)
+    public static Range[] getRangesFromBoundingBox(BoundingBox bounds, GridCoordSystem gcs)
+            throws InvalidRangeException, TransformException, FactoryException {
+        return getRangesFromBoundingBox(bounds, gcs, true);
+    }
+    
+	public static Range[] getRangesFromBoundingBox(BoundingBox bounds, GridCoordSystem gcs, boolean requireFullCoverage)
 			throws InvalidRangeException, TransformException, FactoryException {
 
-		CoordinateReferenceSystem gridCRS = CRSUtility.getCRSFromGridCoordSystem(gcs);
+        CoordinateReferenceSystem gridCRS = CRSUtility.getCRSFromGridCoordSystem(gcs);
 
-		bounds = bounds.toBounds(gridCRS);
+        bounds = bounds.toBounds(gridCRS);
 
-		double[][] coords = {
-			{ bounds.getMinX(), bounds.getMinY() },
-			{ bounds.getMinX(), bounds.getMaxY() },
-			{ bounds.getMaxX(), bounds.getMaxY() },
-			{ bounds.getMaxX(), bounds.getMinY() },
-		};
-		int[] currentIndices = new int[2];
-		int lowerX = Integer.MAX_VALUE;
-		int upperX = Integer.MIN_VALUE;
-		int lowerY = Integer.MAX_VALUE;
-		int upperY = Integer.MIN_VALUE;
+        double[][] coords = {
+            { bounds.getMinX(), bounds.getMinY() },
+            { bounds.getMinX(), bounds.getMaxY() },
+            { bounds.getMaxX(), bounds.getMaxY() },
+            { bounds.getMaxX(), bounds.getMinY() },
+        };
+        int[] currentIndices = new int[2];
+        int lowerX = Integer.MAX_VALUE;
+        int upperX = Integer.MIN_VALUE;
+        int lowerY = Integer.MAX_VALUE;
+        int upperY = Integer.MIN_VALUE;
 
-		for (int i = 0; i < coords.length; ++i) {
-			gcs.findXYindexFromCoord(coords[i][0], coords[i][1], currentIndices);
-			if (currentIndices[0] < lowerX) { lowerX = currentIndices[0] ; }
-			if (currentIndices[0] > upperX) { upperX = currentIndices[0] ; }
-			if (currentIndices[1] < lowerY) { lowerY = currentIndices[1] ; }
-			if (currentIndices[1] > upperY) { upperY = currentIndices[1] ; }
-		}
+        for (int i = 0; i < coords.length; ++i) {
+            gcs.findXYindexFromCoord(coords[i][0], coords[i][1], currentIndices);
+            if (currentIndices[0] < lowerX) { lowerX = currentIndices[0] ; }
+            if (currentIndices[0] > upperX) { upperX = currentIndices[0] ; }
+            if (currentIndices[1] < lowerY) { lowerY = currentIndices[1] ; }
+            if (currentIndices[1] > upperY) { upperY = currentIndices[1] ; }
+        }
 
-		return bufferXYRanges(gcs, new Range[] {
+        if ((lowerX < 0 && upperX < 0) || (lowerY < 0 && upperY < 0)) {
+            throw new InvalidRangeException("Grid doesn't intersect bounding box.");
+        }
+        
+        if (requireFullCoverage) {
+            if (lowerX < 0 || upperX < 0 || lowerY < 0 || upperY < 0) {
+                throw new InvalidRangeException("Grid doesn't cover bounding box.");
+            }
+        } else {
+            if (lowerX < 0) lowerX = 0;
+            if (upperX < 0) upperX = gcs.getXHorizAxis().getShape(gcs.getXHorizAxis().getRank() - 1);
+            if (lowerY < 0) lowerY = 0;
+            if (upperY < 0) upperY = gcs.getYHorizAxis().getShape(0);
+        }
+       
+        return bufferXYRanges(gcs, new Range[] {
             new Range(lowerX, upperX),
             new Range(lowerY, upperY),
         } );
-
     }
 
-    // Handle bugs in NetCDF 4.1 for X and Y CoordinateAxis2D (c2d) with
+    // Handle bug in NetCDF 4.1 for X and Y CoordinateAxis2D with
     // shapefile bound (LatLonRect) that doesn't interect any grid center
-    // (aka midpoint) *and* issue calculating edges for c2d axes with  < 3
-    // grid cells in any dimension.
+    // (aka midpoint)
 	@Deprecated
-    public static Range[] getRangesFromLatLonRect(LatLonRect llr, GridCoordSystem gcs)
+    public static Range[] getXYRangesFromLatLonRect(LatLonRect llr, GridCoordSystem gcs)
             throws InvalidRangeException
     {
 
@@ -112,6 +130,9 @@ public abstract class GridUtility {
         } );
     }
 
+    // Handle bugs in NetCDF 4.1 for X or Y CoordinateAxis with < 3 grid cells 
+    // in any dimension, Edges being were incorrectly calculated without 
+    // addition of buffer cells.
 	public static Range[] bufferXYRanges(GridCoordSystem gcs, Range[] ranges) throws InvalidRangeException {
 		int lowerX = ranges[0].first();
 		int upperX = ranges[0].last();
@@ -175,7 +196,7 @@ public abstract class GridUtility {
 
 	}
 
-
+    @Deprecated
     public static CoordinateBuilder generateCoordinateBuilder(GridCoordSystem gridCoordSystem) {
         return gridCoordSystem.isLatLon()
                 ? new CoordinateBuilder()
@@ -226,13 +247,15 @@ public abstract class GridUtility {
         }
     }
 
-   public static IndexToCoordinateBuilder generateIndexToCellCenterLatLonCoordinateBuilder(GridCoordSystem gridCoordSystem) {
+    @Deprecated
+    public static IndexToCoordinateBuilder generateIndexToCellCenterLatLonCoordinateBuilder(GridCoordSystem gridCoordSystem) {
         return new IndexToCoordinateBuilder(
                 generateCoordinateBuilder(gridCoordSystem),
                 generateGridCellCenterAdapterX(gridCoordSystem),
                 generateGridCellCenterAdapterY(gridCoordSystem));
     }
 
+    @Deprecated
     public static IndexToCoordinateBuilder generateIndexToCellEdgeLatLonCoordinateBuilder(GridCoordSystem gridCoordSystem) {
         return new IndexToCoordinateBuilder(
                 generateCoordinateBuilder(gridCoordSystem),
@@ -290,6 +313,7 @@ public abstract class GridUtility {
         }
     }
 
+    @Deprecated
     public static class ProjectedCoordinateBuilder extends CoordinateBuilder {
 
         private final Projection projection;

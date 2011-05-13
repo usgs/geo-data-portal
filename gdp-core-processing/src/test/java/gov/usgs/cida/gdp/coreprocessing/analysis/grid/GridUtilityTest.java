@@ -76,7 +76,7 @@ public class GridUtilityTest {
     public void testRangesFromLatLonRect_Standard() throws TransformException, IOException, InvalidRangeException {
         LatLonRect llr = makeLatLonRect(ncLocation);
         GridCoordSystem gcs = getGridCoordinateSystem();
-        Range[] range = GridUtility.getRangesFromLatLonRect(llr, gcs);
+        Range[] range = GridUtility.getXYRangesFromLatLonRect(llr, gcs);
         assertNotNull(range);
     }
 
@@ -87,7 +87,7 @@ public class GridUtilityTest {
                 new LatLonPointImpl(-1, -1),
                 new LatLonPointImpl(-1, -1));
         GridCoordSystem gcs = getGridCoordinateSystem();
-        GridUtility.getRangesFromLatLonRect(llr, gcs);
+        GridUtility.getXYRangesFromLatLonRect(llr, gcs);
     }
 
     @Test
@@ -98,7 +98,7 @@ public class GridUtilityTest {
                 new LatLonPointImpl(42, -91),
                 new LatLonPointImpl(42, -89));
         GridCoordSystem gcs = getGridCoordinateSystem();
-        Range[] range = GridUtility.getRangesFromLatLonRect(llr, gcs);
+        Range[] range = GridUtility.getXYRangesFromLatLonRect(llr, gcs);
         assertTrue("Range should be 3x3 since they are buffered", (range[0].length() == 3 && range[1].length() == 3));
     }
 
@@ -110,7 +110,7 @@ public class GridUtilityTest {
                 new LatLonPointImpl(40, -91),
                 new LatLonPointImpl(40, -89));
         GridCoordSystem gcs = getGridCoordinateSystem();
-        Range[] range = GridUtility.getRangesFromLatLonRect(llr, gcs);
+        Range[] range = GridUtility.getXYRangesFromLatLonRect(llr, gcs);
         assertTrue("Range should be 3x3 since they are buffered", (range[0].length() == 3 && range[1].length() == 3));
     }
 
@@ -122,7 +122,7 @@ public class GridUtilityTest {
                 new LatLonPointImpl(40, -91),
                 new LatLonPointImpl(42, -91));
         GridCoordSystem gcs = getGridCoordinateSystem();
-        Range[] range = GridUtility.getRangesFromLatLonRect(llr, gcs);
+        Range[] range = GridUtility.getXYRangesFromLatLonRect(llr, gcs);
         assertTrue("Range should be 3x3 since they are buffered", (range[0].length() == 3 && range[1].length() == 3));
     }
 
@@ -134,7 +134,7 @@ public class GridUtilityTest {
                 new LatLonPointImpl(41, -90),
                 new LatLonPointImpl(41, -90));
         GridCoordSystem gcs = getGridCoordinateSystem();
-        Range[] range = GridUtility.getRangesFromLatLonRect(llr, gcs);
+        Range[] range = GridUtility.getXYRangesFromLatLonRect(llr, gcs);
         assertTrue("Range should be 3x3 since they are buffered", (range[0].length() == 3 && range[1].length() == 3));
     }
 
@@ -146,7 +146,7 @@ public class GridUtilityTest {
                 new LatLonPointImpl(41, -90),
                 new LatLonPointImpl(42, -89));
         GridCoordSystem gcs = getGridCoordinateSystem();
-        Range[] range = GridUtility.getRangesFromLatLonRect(llr, gcs);
+        Range[] range = GridUtility.getXYRangesFromLatLonRect(llr, gcs);
         assertTrue("Range should be 4x4 since they are buffered", (range[0].length() == 4 && range[1].length() == 4));
     }
 
@@ -158,7 +158,7 @@ public class GridUtilityTest {
                 new LatLonPointImpl(43, -90),
                 new LatLonPointImpl(42, -89));
         GridCoordSystem gcs = getGridCoordinateSystem();
-        Range[] range = GridUtility.getRangesFromLatLonRect(llr, gcs);
+        Range[] range = GridUtility.getXYRangesFromLatLonRect(llr, gcs);
         assertTrue("Range should be 4x3 since they are buffered", (range[0].length() == 4 && range[1].length() == 3));
     }
 
@@ -170,7 +170,7 @@ public class GridUtilityTest {
                 new LatLonPointImpl(41, -90),
                 new LatLonPointImpl(40, -89));
         GridCoordSystem gcs = getGridCoordinateSystem();
-        Range[] range = GridUtility.getRangesFromLatLonRect(llr, gcs);
+        Range[] range = GridUtility.getXYRangesFromLatLonRect(llr, gcs);
         assertTrue("Range should be 4x3 since they are buffered", (range[0].length() == 4 && range[1].length() == 3));
     }
 
@@ -182,7 +182,7 @@ public class GridUtilityTest {
                 new LatLonPointImpl(41, -91),
                 new LatLonPointImpl(42, -90));
         GridCoordSystem gcs = getGridCoordinateSystem();
-        Range[] range = GridUtility.getRangesFromLatLonRect(llr, gcs);
+        Range[] range = GridUtility.getXYRangesFromLatLonRect(llr, gcs);
         assertTrue("Range should be 3x4 since they are buffered", (range[0].length() == 3 && range[1].length() == 4));
     }
 

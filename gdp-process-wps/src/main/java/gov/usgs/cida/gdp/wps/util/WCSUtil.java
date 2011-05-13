@@ -5,6 +5,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -28,6 +29,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import org.apache.commons.io.IOUtils;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.opengis.geometry.BoundingBox;
@@ -122,8 +124,8 @@ public class WCSUtil {
                     null /* drop query */,
                     null /* drop fragement */);
     }
-
-    public static File generateTIFFFile(URI wcsURI, String wcsIdentifier, ReferencedEnvelope featureBounds) {
+    
+    public static File generateTIFFFile(URI wcsURI, String wcsIdentifier, ReferencedEnvelope featureBounds, boolean requireFullCoverage) {
         File tiffFile = null;
         try {
             URI wcsBaseURI = extractWCSBaseURI(wcsURI);
@@ -132,12 +134,18 @@ public class WCSUtil {
             String wcsGetCapabilitiesURIString = wcsBaseURI.toString() + 
                         "?service=WCS&version=1.1.1&request=DescribeCoverage&Identifiers=" +
                         wcsIdentifier;
+            
+            InputStream wcsCapabilitiesInputStream = null;
             try {
-                document = DOCUMENT_BUILDER.parse(wcsGetCapabilitiesURIString);
+                URL wcsCapabilitiesURL = new URL(wcsGetCapabilitiesURIString);
+                wcsCapabilitiesInputStream = wcsCapabilitiesURL.openStream();
+                document = DOCUMENT_BUILDER.parse(wcsCapabilitiesInputStream);
             } catch (IOException e) {
                 throw new RuntimeException("Error obtaining capabilities document from " +  wcsGetCapabilitiesURIString, e);
             } catch (SAXException e) {
                 throw new RuntimeException("Error parsing capabilities document from " +  wcsGetCapabilitiesURIString, e);
+            } finally {
+                IOUtils.closeQuietly(wcsCapabilitiesInputStream);
             }
 
             // XPath infrastructure is not thread-safe, nor renetrant... bah.
@@ -208,9 +216,14 @@ public class WCSUtil {
 
             ReferencedEnvelope featureBoundsTransformed = featureBounds.transform(gridBaseCRS, true);
 
-            boolean fullyCovers = gridBounds.contains((BoundingBox) featureBoundsTransformed);
-            if (!fullyCovers) {
-                throw new RuntimeException("WCS Coverage does not fully cover feature bounding box");
+            if (requireFullCoverage) {
+                if (!gridBounds.contains((BoundingBox) featureBoundsTransformed)) {
+                    throw new RuntimeException("WCS Coverage does not fully cover feature bounding box");
+                }
+            } else {
+                if (!gridBounds.intersects((BoundingBox) featureBoundsTransformed)) {
+                    throw new RuntimeException("WCS Coverage does not intersect the feature bounding box");
+                }
             }
 
             CoverageMetaData.DataType gridDataType = CoverageMetaData.findCoverageDataType(gridDataTypeString);
@@ -312,43 +325,49 @@ public class WCSUtil {
 
             URL wcsCoverageURL = new URL(sb.toString());
             HttpURLConnection wcsCoverageConnection = (HttpURLConnection) wcsCoverageURL.openConnection();
-            String wcsCoverageContentType = wcsCoverageConnection.getContentType();
-            String[] split = wcsCoverageContentType.split("\\s*;\\s*");
-            if (!("multipart/related".equals(split[0].trim()))) {
-                throw new RuntimeException("Unexpected Content-Type, \"" + wcsCoverageContentType + "\", on WCS getCoverage response to " + sb.toString());
-            }
-            Pattern keyValuePattern = Pattern.compile("([^=]+)=\"([^\"]+)\"");
-            String boundary = null;
-            for (int i = 1; i < split.length && boundary == null; ++i) {
-                Matcher keyValueMatcher = keyValuePattern.matcher(split[i]);
-                if (keyValueMatcher.matches()) {
-                    String key = keyValueMatcher.group(1);
-                    if ("boundary".equals(key)) {
-                        boundary = keyValueMatcher.group(2);
+            InputStream wcsCoverageInputStream = null;
+            try {
+            
+                String wcsCoverageContentType = wcsCoverageConnection.getContentType();
+                String[] split = wcsCoverageContentType.split("\\s*;\\s*");
+                if (!("multipart/related".equals(split[0].trim()))) {
+                    throw new RuntimeException("Unexpected Content-Type, \"" + wcsCoverageContentType + "\", on WCS getCoverage response to " + sb.toString());
+                }
+                Pattern keyValuePattern = Pattern.compile("([^=]+)=\"([^\"]+)\"");
+                String boundary = null;
+                for (int i = 1; i < split.length && boundary == null; ++i) {
+                    Matcher keyValueMatcher = keyValuePattern.matcher(split[i]);
+                    if (keyValueMatcher.matches()) {
+                        String key = keyValueMatcher.group(1);
+                        if ("boundary".equals(key)) {
+                            boundary = keyValueMatcher.group(2);
+                        }
                     }
                 }
-            }
 
-            MIMEMultipartStream mimeMultipartStream = new MIMEMultipartStream(
-                    wcsCoverageConnection.getInputStream(),
-                    boundary.getBytes());
-            mimeMultipartStream.skipPreamble();
-            boolean hasNext = true;
-            while (hasNext && tiffFile == null) {
-                Map<String, String> headerMap = mimeMultipartStream.readHeaders();
-                String contentType = headerMap.get("Content-Type");
-                if (GeoTIFFUtil.isAllowedMimeType(contentType)) {
-                    String contentTransferEncoding = headerMap.get("Content-Transfer-Encoding");
-                    if (contentTransferEncoding != null) {
-                        tiffFile = File.createTempFile("gdp", ".tiff");
-                        OutputStream tiffOutputStream = new BufferedOutputStream(new FileOutputStream(tiffFile));
-                        mimeMultipartStream.readBodyData(tiffOutputStream, contentTransferEncoding);
-                        tiffOutputStream.close();
+                MIMEMultipartStream mimeMultipartStream = new MIMEMultipartStream(
+                        wcsCoverageConnection.getInputStream(),
+                        boundary.getBytes());
+                mimeMultipartStream.skipPreamble();
+                boolean hasNext = true;
+                while (hasNext && tiffFile == null) {
+                    Map<String, String> headerMap = mimeMultipartStream.readHeaders();
+                    String contentType = headerMap.get("Content-Type");
+                    if (GeoTIFFUtil.isAllowedMimeType(contentType)) {
+                        String contentTransferEncoding = headerMap.get("Content-Transfer-Encoding");
+                        if (contentTransferEncoding != null) {
+                            tiffFile = File.createTempFile("gdp", ".tiff");
+                            OutputStream tiffOutputStream = new BufferedOutputStream(new FileOutputStream(tiffFile));
+                            mimeMultipartStream.readBodyData(tiffOutputStream, contentTransferEncoding);
+                            tiffOutputStream.close();
+                        }
+                    } else {
+                        mimeMultipartStream.discardBodyData();
                     }
-                } else {
-                    mimeMultipartStream.discardBodyData();
+                    hasNext = mimeMultipartStream.readBoundary();
                 }
-                hasNext = mimeMultipartStream.readBoundary();
+            } finally {
+                IOUtils.closeQuietly(wcsCoverageInputStream);
             }
 
         } catch (URISyntaxException e) {

@@ -46,6 +46,7 @@ public class FeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotatedAlg
     private String featureAttributeName;
     private URI datasetURI;
     private List<String> datasetId;
+    private boolean requireFullCoverage;
     private Date timeStart;
     private Date timeEnd;
     private List<Statistic> statistics;
@@ -72,6 +73,11 @@ public class FeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotatedAlg
     @LiteralDataInput(identifier=GDPAlgorithmUtil.INPUT_DATASET_ID, maxOccurs= Integer.MAX_VALUE)
     public void setDatasetId(List<String> datasetId) {
         this.datasetId = datasetId;
+    }
+    
+    @LiteralDataInput(identifier=GDPAlgorithmUtil.INPUT_REQUIRE_FULL_COVERAGE, defaultValue="true")
+    public void setRequireFullCoverage(boolean requireFullCoverage) {
+        this.requireFullCoverage = requireFullCoverage;
     }
 
     @LiteralDataInput(identifier="TIME_START", minOccurs=0)
@@ -122,7 +128,8 @@ public class FeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotatedAlg
                 GridDatatype gridDatatype = GDPAlgorithmUtil.generateGridDataType(
                         datasetURI,
                         currentDatasetId,
-                        featureCollection.getBounds());
+                        featureCollection.getBounds(),
+                        requireFullCoverage);
 
                 Range timeRange = GDPAlgorithmUtil.generateTimeRange(
                         gridDatatype,

@@ -58,7 +58,7 @@ public class FeatureCategoricalGridCoverage {
                     gridDataset.findGridDatatype(
                         checkNotNull(variableName, "variableName argument may not be null")),
                     "Variable named %s not found in girdded dataset %s", variableName);
-        execute(featureCollection, attributeName, gridDatatype, writer, delimiter);
+        execute(featureCollection, attributeName, gridDatatype, writer, delimiter, true);
     }
 
     public static void execute(
@@ -66,15 +66,31 @@ public class FeatureCategoricalGridCoverage {
             String attributeName,
             GridDatatype gridDataType,
             BufferedWriter writer,
-            Delimiter delimiter)
+            Delimiter delimiter,
+            boolean requireFullCoverage)
             throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException
     {
 
-        GridType gt = GridType.findGridType(gridDataType.getCoordinateSystem());
+        GridCoordSystem gcs = gridDataType.getCoordinateSystem();
+        GridType gt = GridType.findGridType(gcs);
         if (gt != GridType.YX) {
             throw new IllegalStateException("Currently require y-x or t-y-x grid for this operation");
         }
 
+        // these two calls are used to test for coverage/intersection based on 'requireFullCoverage',
+        // if required coverage criterea is not fufilled an exception will be thrown.
+        Range[] featureCollectionRanges = GridUtility.getRangesFromBoundingBox(featureCollection.getBounds(), gcs, requireFullCoverage);
+        gridDataType = gridDataType.makeSubset(null, null, null, null, featureCollectionRanges[1], featureCollectionRanges[0]);
+        
+        CoordinateReferenceSystem gridCRS = CRSUtility.getCRSFromGridCoordSystem(gcs);        
+		CoordinateReferenceSystem featureCRS =
+				featureCollection.getSchema().getCoordinateReferenceSystem();
+
+		MathTransform gridToFeatureTransform = CRS.findMathTransform(
+				gridCRS,
+				featureCRS,
+				true);
+        
         AttributeDescriptor attributeDescriptor =
                 featureCollection.getSchema().getDescriptor(attributeName);
         if (attributeDescriptor == null) {
@@ -91,15 +107,6 @@ public class FeatureCategoricalGridCoverage {
                 // use order from FeatureCollection.iterator();
                 new LinkedHashMap<Object, Map<Integer, Integer>>();
         SortedSet<Integer> categorySet = new TreeSet<Integer>();
-
-		CoordinateReferenceSystem gridCRS = CRSUtility.getCRSFromGridDatatype(gridDataType);
-		CoordinateReferenceSystem featureCRS =
-				featureCollection.getSchema().getCoordinateReferenceSystem();
-
-		MathTransform gridToFeatureTransform = CRS.findMathTransform(
-				gridCRS,
-				featureCRS,
-				true);
 
         Iterator<SimpleFeature> featureIterator = featureCollection.iterator();
 
@@ -122,20 +129,24 @@ public class FeatureCategoricalGridCoverage {
 
                     Geometry featureGeometry = (Geometry)feature.getDefaultGeometry();
 
-                    Range[] ranges = GridUtility.getRangesFromBoundingBox(
-                            featureBoundingBox, gridDataType.getCoordinateSystem());
+                    try {
+                        Range[] featureRanges = GridUtility.getRangesFromBoundingBox(
+                                featureBoundingBox, gridDataType.getCoordinateSystem(), requireFullCoverage);
 
-                    GridDatatype featureGridDataType = gridDataType.makeSubset(null, null, null, null, ranges[1], ranges[0]);
+                        GridDatatype featureGridDataType = gridDataType.makeSubset(null, null, null, null, featureRanges[1], featureRanges[0]);
 
-                    PreparedGeometry preparedGeometry = PreparedGeometryFactory.prepare(featureGeometry);
+                        PreparedGeometry preparedGeometry = PreparedGeometryFactory.prepare(featureGeometry);
 
-                    GridCellTraverser traverser = new GridCellTraverser(featureGridDataType);
-                    traverser.traverse(new FeatureGridCellVisitor(
-							preparedGeometry,
-							gridToFeatureTransform,
-							categoricalCoverageMap));
+                        GridCellTraverser traverser = new GridCellTraverser(featureGridDataType);
+                        traverser.traverse(new FeatureGridCellVisitor(
+                                preparedGeometry,
+                                gridToFeatureTransform,
+                                categoricalCoverageMap));
 
-                    categorySet.addAll(categoricalCoverageMap.keySet());
+                        categorySet.addAll(categoricalCoverageMap.keySet());
+                    } catch (InvalidRangeException e) {
+                        /* this may happen if the feature doesn't intersect the grid */
+                    }
                 }
             }
         } finally {

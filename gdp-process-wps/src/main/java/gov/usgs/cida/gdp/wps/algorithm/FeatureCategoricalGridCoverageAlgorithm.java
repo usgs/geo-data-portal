@@ -39,6 +39,7 @@ public class FeatureCategoricalGridCoverageAlgorithm extends AbstractAnnotatedAl
     private String featureAttributeName;
     private URI datasetURI;
     private List<String> datasetId;
+    private boolean requireFullCoverage = true;
     private Delimiter delimiter;
 
     private File output;
@@ -58,9 +59,14 @@ public class FeatureCategoricalGridCoverageAlgorithm extends AbstractAnnotatedAl
         this.datasetURI = datasetURI;
     }
 
-    @LiteralDataInput(identifier=GDPAlgorithmUtil.INPUT_DATASET_ID, maxOccurs= Integer.MAX_VALUE)
+    @LiteralDataInput(identifier=GDPAlgorithmUtil.INPUT_DATASET_ID, maxOccurs=Integer.MAX_VALUE)
     public void setDatasetId(List<String> datasetId) {
         this.datasetId = datasetId;
+    }
+    
+    @LiteralDataInput(identifier=GDPAlgorithmUtil.INPUT_REQUIRE_FULL_COVERAGE, defaultValue="true")
+    public void setRequireFullCoverage(boolean requireFullCoverage) {
+        this.requireFullCoverage = requireFullCoverage;
     }
 
     @LiteralDataInput(identifier="DELIMITER", defaultValue="COMMA")
@@ -88,7 +94,7 @@ public class FeatureCategoricalGridCoverageAlgorithm extends AbstractAnnotatedAl
                 GridDatatype gridDatatype = GDPAlgorithmUtil.generateGridDataType(
                         datasetURI,
                         currentDatasetId,
-                        featureCollection.getBounds());
+                        featureCollection.getBounds(), requireFullCoverage);
                 
                 writer.write("# " + currentDatasetId);
                 writer.newLine();
@@ -97,7 +103,8 @@ public class FeatureCategoricalGridCoverageAlgorithm extends AbstractAnnotatedAl
                         featureAttributeName,
                         gridDatatype,
                         writer,
-                        delimiter == null ? Delimiter.getDefault() : delimiter);
+                        delimiter == null ? Delimiter.getDefault() : delimiter,
+                        requireFullCoverage);
             }
 
         } catch (InvalidRangeException e) {
