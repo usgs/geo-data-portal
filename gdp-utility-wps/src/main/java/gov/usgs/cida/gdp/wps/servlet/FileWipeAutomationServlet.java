@@ -107,7 +107,7 @@ public class FileWipeAutomationServlet implements ServletContextListener {
                 GeoserverManager gm = new GeoserverManager(AppConstant.WFS_ENDPOINT.getValue(),
                         AppConstant.WFS_USER.getValue(), AppConstant.WFS_PASS.getValue());
                 
-                gm.deleteOutdatedDatastores(hoursToWipe, "upload", "waters", "draw");
+                gm.deleteOutdatedDataStores(hoursToWipe, "upload", "waters", "draw");
             } catch (IOException ex) {
                 Logger.getLogger(FileWipeAutomationServlet.class.getName()).log(Level.SEVERE, null, ex);
             } catch (XPathExpressionException ex) {

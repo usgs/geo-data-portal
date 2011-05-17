@@ -5,7 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,7 +40,6 @@ public class GeoserverManager {
     private String password;
 
     public GeoserverManager(String url, String user, String password) {
-        //geoServerURLString = AppConstant.WFS_ENDPOINT.getValue();
         this.url = fixURL(url); // ensure url ends with a '/'
         this.user = user;
         this.password = password;
@@ -65,7 +63,7 @@ public class GeoserverManager {
         String dataStoresPath = workspacesPath + workspace + "/datastores/";
         
         String namespace = "";
-        Matcher nsMatcher = Pattern.compile(".*<uri>(.*)</uri>.*").matcher(getNameSpace(workspace));
+        Matcher nsMatcher = Pattern.compile(".*<uri>(.*)</uri>.*").matcher(getNameSpaceXML(workspace));
         if (nsMatcher.matches()) namespace = nsMatcher.group(1);
         
         String dataStoreXML = createDataStoreXML(layer, workspace, namespace, shapefilePath);
@@ -99,14 +97,14 @@ public class GeoserverManager {
         log.debug("Datastore successfully created on WFS server located at: " + url);
     }
 
-    public String getNameSpace(String workspace) throws IOException {
-        return getResponse("rest/namespaces/" + workspace + ".xml", "GET", null, null);
+    String getNameSpaceXML(String workspace) throws IOException {
+        return getResponse("rest/namespaces/" + workspace + ".xml");
     }
 
     /**
      * @See http://internal.cida.usgs.gov/jira/browse/GDP-174?focusedCommentId=18712&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#action_18712
      */
-    public void deleteOutdatedDatastores(long maximumFileAge, String... workspaces)
+    public void deleteOutdatedDataStores(long maximumFileAge, String... workspaces)
             throws IOException, XPathExpressionException {
 
         log.info("Wiping old files task for existing workspaces.");
@@ -122,9 +120,9 @@ public class GeoserverManager {
             log.info("Checking workspace: " + workspace);
             List<String> dataStoreNames = listDataStores(workspace);
             // Check the data stores in this workspace
-            for (String datastore : dataStoreNames) {
+            for (String dataStore : dataStoreNames) {
                 // Let's get the disk location for this store -- We must remove the "file:" part of the return string
-                String diskLocation = retrieveDiskLocationOfDatastore(workspace, datastore).split("file:")[1];
+                String diskLocation = retrieveDiskLocationOfDataStore(workspace, dataStore).split("file:")[1];
                 File diskLocationFileObject = new File(diskLocation);
 
                 // If either the file is on Geoserver and is old or
@@ -146,7 +144,7 @@ public class GeoserverManager {
                 }
 
                 if (deleteFromGeoserver) {
-                    deleteAndWipeDataStore(workspace, datastore);
+                    deleteAndWipeDataStore(workspace, dataStore);
                 }
             }
         }
@@ -155,161 +153,121 @@ public class GeoserverManager {
     /**
      * Deletes the directory the shapefiles are located in on disk.
      */
-    public void deleteAndWipeDataStore(String workspace, String datastore)
+    public void deleteAndWipeDataStore(String workspace, String dataStore)
             throws IOException, XPathExpressionException {
         
-        String diskLocation = retrieveDiskLocationOfDatastore(workspace, datastore).split("file:")[1];
+        String diskLocation = retrieveDiskLocationOfDataStore(workspace, dataStore).split("file:")[1];
         
-        deleteDataStore(workspace, datastore, true);
+        deleteDataStore(workspace, dataStore);
 
         // Get the location of the file from GeoServer
         File diskLocationFileObject = new File(diskLocation);
-        if (diskLocationFileObject.isDirectory() &&  diskLocationFileObject.listFiles().length == 0) {
+        if (diskLocationFileObject.isDirectory() && diskLocationFileObject.listFiles().length == 0) {
             // The location is a directory. Delete it
             try { FileUtils.deleteDirectory(diskLocationFileObject); }
-            catch (IOException e) { log.warn("An error occurred while trying to delete directory" + diskLocationFileObject.getPath() + ". This may need to be deleted manually. \nError: "+e.getMessage()+"\nContinuing."); }
+            catch (IOException e) { 
+                log.warn("An error occurred while trying to delete directory" + 
+                         diskLocationFileObject.getPath() + ". This may need to " +
+                         "be deleted manually. \nError: "+e.getMessage()+"\nContinuing."); 
+            }
         } else {
             if(!FileUtils.deleteQuietly(new File(diskLocationFileObject.getParent()))) {
-                log.warn("Could not fully remove the directory: " + diskLocationFileObject.getParent() + "\nPossibly files left over.");
+                log.warn("Could not fully remove the directory: " + 
+                         diskLocationFileObject.getParent() + "\nPossibly files left over.");
             }
         }
     }
 
-    boolean workspaceExists(String workspace) throws MalformedURLException, IOException {
+    boolean workspaceExists(String workspace) throws IOException {
         int responseCode = getResponseCode("rest/workspaces/" + workspace, "GET");
-
-        switch(responseCode) {
-            case 200: return true;
-            case 404: return false;
-            default: return false;
-        }
+        
+        return isSuccessResponse(responseCode);
     }
 
 
     boolean dataStoreExists(String workspace, String dataStore) throws IOException {
         int responseCode = getResponseCode("rest/workspaces/" + workspace + 
                 "/datastores/" + dataStore, "GET");
-
-        switch(responseCode) {
-            case 200: return true;
-            case 404: return false;
-            default: return false;
-        }
+        
+        return isSuccessResponse(responseCode);
     }
 
     boolean layerExists(String workspace, String dataStore, String layerName) throws IOException {
         int responseCode = getResponseCode("rest/workspaces/" + workspace + 
                 "/datastores/" + dataStore + "/featuretypes/" + layerName + ".xml", "GET");
 
-        switch(responseCode) {
-            case 200: return true;
-            case 404: return false;
-            default: return false;
-        }
+        return isSuccessResponse(responseCode);
     }
 
     boolean styleExists(String styleName) throws IOException {
         int responseCode = getResponseCode("rest/styles/" + styleName, "GET");
 
+        return isSuccessResponse(responseCode);
+    }
+    
+    boolean isSuccessResponse(int responseCode) {
         switch(responseCode) {
             case 200: return true;
-            case 404: return false;
             default: return false;
         }
     }
 
     boolean deleteLayer(String layerName, boolean recursive) throws IOException {
-
-        log.info("Attempting to delete layer '"+layerName+"'");
+        log.info("Deleting layer '"+layerName+"'");
         int responseCode = getResponseCode("rest/layers/" + layerName + 
                 ((recursive) ? "?recurse=true" : ""), "DELETE");
         
         switch (responseCode) {
-            case 200: {
-                log.info("Layer '"+layerName+"' was successfully deleted.");
-                return true;
-            } // Layer successfully removed
-            case 404: {
-                log.info("Layer '"+layerName+"' was not found on server.");
-                return false;
-            }
-            default: {
-                log.info("Layer '"+layerName+"' could not be deleted.");
-                return false;
-            }
+            case 200: log.info("Layer '"+layerName+"' was successfully deleted.");
+            case 404: log.info("Layer '"+layerName+"' was not found on server.");
+            default:  log.info("Layer '"+layerName+"' could not be deleted.");
         }
+        
+        return isSuccessResponse(responseCode);
     }
 
-    boolean deleteDataStore(String workspace, String dataStore, boolean recursive)
+    boolean deleteDataStore(String workspace, String dataStore)
             throws IOException, XPathExpressionException {
         
-        int responseCode = 0;
-        if (!recursive) {
-            // We must first delete all featuretypes for this datastore - we should be using recursive but if it's an
-            // earlier version of Geoserver, this is not available
-            List<String> featureTypeList = listFeatureTypes(workspace, dataStore);
-            for (String featureType : featureTypeList) {
-                if (!deleteFeatureType(workspace, dataStore, featureType, true)) {
-                    log.warn("One or more feature types under datastore " + dataStore + " under workspace " + workspace + " could not be deleted. Aborting attempt to delete datastore.");
-                    return false;
-                }
-            }
-        }
         log.info("Deleting datastore '"+dataStore+"' under workspace '"+workspace+"'");
-        responseCode = getResponseCode("rest/workspaces/" + workspace + "/datastores/" + dataStore + ((recursive) ? "?recurse=true" : ""), "DELETE");
+        
+        int responseCode = getResponseCode("rest/workspaces/" + workspace + 
+                "/datastores/" + dataStore + "?recurse=true", "DELETE");
 
         switch (responseCode) {
-            case 200: {
-                log.info("Datastore '"+dataStore+"' under workspace '"+workspace+"' was successfully deleted.");
-                return true;
-            }
-            case 404: {
-                log.info("Datastore '"+dataStore+"' under workspace '"+workspace+"' was not found on server.");
-                return false;
-            }
-            default: {
-                log.info("Datastore '"+dataStore+"' under workspace '"+workspace+"' could not be deleted.");
-                return false;
-            }
+            case 200: log.info("Datastore '"+workspace+":"+dataStore+"' was successfully deleted.");
+            case 404: log.info("Datastore '"+workspace+":"+dataStore+"' was not found on server.");
+            default:  log.info("Datastore '"+workspace+":"+dataStore+"' could not be deleted.");
         }
+        
+        return isSuccessResponse(responseCode);
     }
 
     /**
      * Attempts to remove a featuretype from underneath a datastore on the Geoserver server.
      */
-    boolean deleteFeatureType(String workspace, String datastore, String featuretype, boolean recursive) 
+    boolean deleteFeatureType(String workspace, String dataStore, String featureType, boolean recursive) 
             throws IOException {
 
-        log.info("Attempting to delete feature type '"+featuretype+"' under datastore '"+datastore+"' under workspace '"+workspace+"'");
+        log.info("Deleting feature type '"+workspace+":"+featureType+"'");
 
-        int responseCode = 0;
-
-        responseCode = getResponseCode("rest/workspaces/" + workspace + "/datastores/" + datastore + "/featuretypes/" + featuretype + ((recursive) ? "?recurse=true" : ""), "DELETE");
+        int responseCode = getResponseCode("rest/workspaces/" + workspace + 
+                "/datastores/" + dataStore + "/featuretypes/" + featureType + 
+                ((recursive) ? "?recurse=true" : ""), "DELETE");
+        
         switch (responseCode) {
-            case 200: {
-                log.info("Feature type '"+featuretype+"' under datastore '"+datastore+"' under workspace '"+workspace+"' was successfully deleted.");
-                return true;
-            } // Layer successfully removed
-            case 404: {
-                log.info("Feature type '"+featuretype+"' under datastore '"+datastore+"' under workspace '"+workspace+"' was not found on server.");
-                return true;
-            }
-            case 500: {
-                log.info("Feature type '"+featuretype+"' under datastore '"+datastore+"' under workspace '"+workspace+"' could not be deleted.");
-                return false;
-            }
-            default: {
-                log.info("Feature type '"+featuretype+"' under datastore '"+datastore+"' under workspace '"+workspace+"' could not be deleted.");
-                return false;
-            }
+            case 200: log.info("Feature type '"+workspace+":"+featureType+"' was successfully deleted.");
+            case 404: log.info("Feature type '"+workspace+":"+featureType+"' was not found on server.");
+            default:  log.info("Feature type '"+workspace+":"+featureType+"' could not be deleted.");
         }
+        
+        return isSuccessResponse(responseCode);
     }
 
-    public String retrieveDiskLocationOfDatastore(String workspace, String datastore) 
+    String retrieveDiskLocationOfDataStore(String workspace, String dataStore) 
             throws IOException, XPathExpressionException {
         
-        String responseXML = getResponse("rest/workspaces/" + workspace + "/datastores/" + datastore + ".xml",
-                "GET", null, null);
+        String responseXML = getResponse("rest/workspaces/" + workspace + "/datastores/" + dataStore + ".xml");
         
         String result = XMLUtils.createNodeUsingXPathExpression(
                 "/dataStore/connectionParameters/entry[@key='url']", responseXML).getTextContent();
@@ -331,15 +289,15 @@ public class GeoserverManager {
         return createListFromXML("/dataStores/dataStore/name", getDataStoresXML(workspace));
     }
     
-    public List<String> listFeatureTypes(String workspace, String datastore)
+    public List<String> listFeatureTypes(String workspace, String dataStore)
             throws XPathExpressionException, IOException {
         
-        if (!workspaceExists(workspace) || !dataStoreExists(workspace, datastore)) {
+        if (!workspaceExists(workspace) || !dataStoreExists(workspace, dataStore)) {
             return new ArrayList<String>();
         }
         
         return createListFromXML("/featureTypes/featureType/name", 
-                getFeatureTypesXML(workspace, datastore));
+                getFeatureTypesXML(workspace, dataStore));
     }
     
     List<String> createListFromXML(String expression, String xml) 
@@ -356,18 +314,16 @@ public class GeoserverManager {
         return result;
     }
 
-    public String getWorkspacesXML() throws IOException {
-        return getResponse("rest/workspaces.xml", "GET", null, null);
+    String getWorkspacesXML() throws IOException {
+        return getResponse("rest/workspaces.xml");
     }
 
-    public String getDataStoresXML(String workspace) throws IOException {
-        return getResponse("rest/workspaces/" + workspace + "/datastores.xml",
-                "GET", null, null);
+    String getDataStoresXML(String workspace) throws IOException {
+        return getResponse("rest/workspaces/" + workspace + "/datastores.xml");
     }
 
-    public String getFeatureTypesXML(String workspace, String datastore) throws IOException {
-        return getResponse("rest/workspaces/" + workspace + "/datastores/" + datastore + "/featuretypes.xml",
-                "GET", null, null);
+    String getFeatureTypesXML(String workspace, String dataStore) throws IOException {
+        return getResponse("rest/workspaces/" + workspace + "/datastores/" + dataStore + "/featuretypes.xml");
     }
     
     int getResponseCode(String path, String requestMethod) throws IOException {
@@ -375,17 +331,19 @@ public class GeoserverManager {
         return response.getStatusLine().getStatusCode();
     }
     
-    String getResponse(String path, String requestMethod, String contentType, String content)
-            throws IOException {
+    String getResponse(String path) throws IOException {
         
-        HttpResponse response = sendRequest(path, requestMethod, contentType, content);
+        HttpResponse response = sendRequest(path, "GET", null, null);
         
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        
-        HttpEntity entity = response.getEntity();
-        entity.writeTo(baos);
-        
-        baos.close();
+        ByteArrayOutputStream baos = null;
+        try {
+            baos = new ByteArrayOutputStream();
+
+            HttpEntity entity = response.getEntity();
+            entity.writeTo(baos);
+        } finally {
+            baos.close();
+        }
         
         return baos.toString();
     }
@@ -422,10 +380,6 @@ public class GeoserverManager {
         if (contentType != null) {
             request.addHeader("Content-Type", contentType);
         }
-
-        /*for (int i = 0; i < requestProperties.length; i += 2) {
-            httpConnection.addRequestProperty(requestProperties[i], requestProperties[i + 1]);
-        }*/
 
         if (content != null) {
             if (request instanceof HttpEntityEnclosingRequestBase) {
