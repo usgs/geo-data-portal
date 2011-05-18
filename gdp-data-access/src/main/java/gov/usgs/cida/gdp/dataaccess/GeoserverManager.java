@@ -49,8 +49,8 @@ public class GeoserverManager {
         sendRequest("rest/reload/", "POST", null, null);
     }
 
-    public void createDataStore(String shapefilePath, String workspace,
-            String layer, String nativeCRS, String declaredCRS) throws IOException {
+    public void createDataStore(String shapefilePath, String layer,
+            String workspace, String nativeCRS, String declaredCRS) throws IOException {
         
         log.debug("Creating data store on WFS server located at: " + url);
         
