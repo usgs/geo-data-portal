@@ -1,7 +1,7 @@
 package gov.usgs.cida.gdp.wps.algorithm.filemanagement;
 
 import gov.usgs.cida.gdp.constants.AppConstant;
-import gov.usgs.cida.gdp.dataaccess.ManageGeoserverWorkspace;
+import gov.usgs.cida.gdp.dataaccess.GeoserverManager;
 import gov.usgs.cida.gdp.dataaccess.WatersService;
 import java.io.File;
 import java.math.BigInteger;
@@ -53,7 +53,9 @@ public class GetWatersGeom extends AbstractSelfDescribingAlgorithm {
         String geoServerWorkspace = "waters";
         String geoServerLayer = shapefile.getName().replace(".shp", "");
         try {
-            ManageGeoserverWorkspace mws = new ManageGeoserverWorkspace(geoServerURL);
+            GeoserverManager mws = new GeoserverManager(geoServerURL,
+                    AppConstant.WFS_USER.getValue(), AppConstant.WFS_PASS.getValue());
+            
             String declaredCRS = "EPSG:4269";
             mws.createDataStore(shapefilePath, geoServerLayer, geoServerWorkspace, declaredCRS, declaredCRS);
         } catch (Exception ex) {
