@@ -82,8 +82,8 @@ public class ResponseURLFilter implements Filter {
 
         @Override
         public ServletOutputStream getOutputStream() throws IOException {
-            String contentType = getResponse().getContentType();
-            if (contentType == null || contentType.endsWith("xml")) {
+            String contentType = getContentType();
+            if (enableFiltering(contentType)) {
                 LOGGER.info("Content-type: {}, response URL filtering enabled for response to {}", contentType, requestURLString);
                 return new ServletOutputStreamWrapper(
                         getResponse().getOutputStream(),
@@ -96,8 +96,21 @@ public class ResponseURLFilter implements Filter {
         }
 
         @Override
+        public void setHeader(String name, String value) {
+            if (!("Content-Length".equalsIgnoreCase(name) && enableFiltering(getContentType()))) {
+                super.setHeader(name, value);
+            } else {
+                LOGGER.info("Refusing to set \"Content-Length\" response header, response filtering is enabled and reponse length could change.");
+            }
+        }
+
+        @Override
         public PrintWriter getWriter() throws IOException {
             return new PrintWriter(getOutputStream()); 
+        }
+        
+        private boolean enableFiltering(String contentType) {
+            return contentType == null || contentType.endsWith("xml");
         }
     }
 

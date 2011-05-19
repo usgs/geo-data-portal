@@ -43,6 +43,7 @@ public final class ResultsDatabase implements IDatabase {
     private final static Logger LOGGER = LoggerFactory.getLogger(ResultsDatabase.class);
 
     private final static String SUFFIX_MIMETYPE = "mime-type";
+    private final static String SUFFIX_CONTENT_LENGTH = "content-length";
     private final static String SUFFIX_XML = "xml";
     private final static String SUFFIX_TEMP = "tmp";
     private final static String SUFFIX_GZIP = "gz";
@@ -186,8 +187,11 @@ public final class ResultsDatabase implements IDatabase {
         try {
             File resultFile = generateComplexDataFile(resultId, mimeType, gzipComplexValues);
             File mimeTypeFile = generateComplexDataMimeTypeFile(resultId);
-
+            File contentLengthFile = generateComplexDataContentLengthFile(resultId);
+            
             LOGGER.info("initiating storage of complex value for {} as {}", id, resultFile.getPath());
+            
+            long contentLength = -1;
             
             OutputStream resultOutputStream = null;
             try {
@@ -195,9 +199,10 @@ public final class ResultsDatabase implements IDatabase {
                     new GZIPOutputStream(new FileOutputStream(resultFile)):
                     new BufferedOutputStream(new FileOutputStream(resultFile));
                 stream.close();
+                contentLength = stream.length();
                 stream.writeTo(resultOutputStream);
-                stream.destroy();
             } finally {
+                if (stream != null) { stream.destroy(); }
                 IOUtils.closeQuietly(resultOutputStream);
             }
 
@@ -207,7 +212,15 @@ public final class ResultsDatabase implements IDatabase {
                 IOUtils.write(mimeType, mimeTypeOutputStream);
             } finally {
                 IOUtils.closeQuietly(mimeTypeOutputStream);
-            }            
+            }
+            
+            OutputStream contentLengthOutputStream = null;
+            try {
+                contentLengthOutputStream = new BufferedOutputStream(new FileOutputStream(contentLengthFile));
+                IOUtils.write(Long.toString(contentLength), contentLengthOutputStream);
+            } finally {
+                IOUtils.closeQuietly(contentLengthOutputStream);
+            }
 
             LOGGER.info("completed storage of complex value for {} as {}", id, resultFile.getPath());
             
@@ -302,7 +315,36 @@ public final class ResultsDatabase implements IDatabase {
                     IOUtils.closeQuietly(mimeTypeInputStream);
                 }
             }
-            return null;
+        }
+        return null;
+    }
+    
+    public long getContentLengthForStoreResponse(String id) {
+
+        File responseDirectory = generateResponseDirectory(id);
+        if (responseDirectory.exists()) {
+            synchronized (storeResponseSerialNumberLock) {
+                File responseFile = findLatestResponseFile(responseDirectory);
+                return responseFile.length();
+            }
+        } else {
+            File contentLengthFile = generateComplexDataContentLengthFile(id);
+            if (contentLengthFile.canRead()) {
+                InputStream contentLengthInputStream = null;
+                try {
+                    contentLengthInputStream = new FileInputStream(contentLengthFile);
+                    return Long.parseLong(IOUtils.toString(contentLengthInputStream));
+                } catch (IOException e) {
+                    LOGGER.error("Unable to extract content-length for response id {} from {}, exception message: {}",
+                            new Object[] {id, contentLengthFile.getAbsolutePath(), e.getMessage()});
+                } catch (NumberFormatException e) {
+                    LOGGER.error("Unable to parse content-length for response id {} from {}, exception message: {}",
+                            new Object[] {id, contentLengthFile.getAbsolutePath(), e.getMessage()});
+                } finally {
+                    IOUtils.closeQuietly(contentLengthInputStream);
+                }
+            }
+            return -1;
         }
     }
 
@@ -353,6 +395,10 @@ public final class ResultsDatabase implements IDatabase {
 
     private File generateComplexDataMimeTypeFile(String id) {
         return new File(baseDirectory, JOINER.join(id, SUFFIX_MIMETYPE));
+    }
+    
+    private File generateComplexDataContentLengthFile(String id) {
+        return new File(baseDirectory, JOINER.join(id, SUFFIX_CONTENT_LENGTH));
     }
 
     private class WipeTimerTask extends TimerTask {
