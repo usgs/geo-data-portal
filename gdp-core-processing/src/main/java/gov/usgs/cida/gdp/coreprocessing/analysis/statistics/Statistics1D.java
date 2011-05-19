@@ -46,26 +46,33 @@ public class Statistics1D {
             return;
         }
         
-        double r = (double) count++;
-        double n = (double) count;
-        double n_inverse = 1d / n;
+        if (count > 0) {
+            double r = (double) count++;
+            double n = (double) count;
+            double n_inverse = 1d / n;
 
-        double delta = value - mean;
+            double delta = value - mean;
 
-        double A = delta * n_inverse;
-        mean += A;
-        m4 += A * (A * A * delta * r * ( n * ( n - 3d ) + 3d ) + 6d * A * m2 - 4d * m3);
+            double A = delta * n_inverse;
+            mean += A;
+            m4 += A * (A * A * delta * r * ( n * ( n - 3d ) + 3d ) + 6d * A * m2 - 4d * m3);
 
-        double B = value - mean;
-        m3 += A * ( B * delta * ( n - 2d ) - 3d * m2);
-        m2 += delta * B;
+            double B = value - mean;
+            m3 += A * ( B * delta * ( n - 2d ) - 3d * m2);
+            m2 += delta * B;
 
-        if(value < minimum) {
-        	minimum = value;
-        }
+            if(value < minimum) {
+                minimum = value;
+            }
 
-        if(value > maximum) {
-        	maximum = value;
+            if(value > maximum) {
+                maximum = value;
+            }
+        } else {
+            count = 1;
+            mean = value;
+            minimum = value;
+            maximum = value;
         }
     }
 
@@ -126,7 +133,7 @@ public class Statistics1D {
     }
 
     public double getMean() {
-        return mean;
+        return count > 0 ? mean : Double.NaN;
     }
 
     public double getM2() {
@@ -143,7 +150,7 @@ public class Statistics1D {
 
 
     public double getSampleVariance() {
-        return count > 1 ?  m2 / (double) (count - 1) : 0d;
+        return count > 1 ?  m2 / (double) (count - 1) : Double.NaN;
     }
 
     public double getSampleStandardDeviation() {
@@ -151,19 +158,19 @@ public class Statistics1D {
     }
 
     public double getPopulationVariance() {
-        return count > 1 ? m2 / (double) count : 0d;
+        return count > 0 ? m2 / (double) count : Double.NaN;
     }
 
     public double getPopulationStandardDeviation() {
-        return Math.sqrt(getSampleVariance());
+        return Math.sqrt(getPopulationVariance());
     }
 
     public double getMinimum() {
-        return minimum;
+        return count > 0 ? minimum : Double.NaN;
     }
 
     public double getMaximum() {
-        return maximum;
+        return count > 0 ? maximum : Double.NaN;
     }
 
     @Override

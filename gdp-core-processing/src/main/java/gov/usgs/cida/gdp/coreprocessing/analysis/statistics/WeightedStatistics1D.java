@@ -62,14 +62,15 @@ public class WeightedStatistics1D {
     public void accumulate(WeightedStatistics1D wsa) {
         if (wsa != null && wsa.count > 0) {
             if (count > 0) {
+                // need to derive this...
                 throw new UnsupportedOperationException();
             } else {
-			count = wsa.count;
-			weightSum = wsa.weightSum;
-			mean = wsa.mean;
-			S = wsa.S;
-			minimum = wsa.minimum;
-			maximum = wsa.maximum;
+                count = wsa.count;
+                weightSum = wsa.weightSum;
+                mean = wsa.mean;
+                S = wsa.S;
+                minimum = wsa.minimum;
+                maximum = wsa.maximum;
             }
         }
     }
@@ -83,12 +84,12 @@ public class WeightedStatistics1D {
     }
 
     public double getMean() {
-        return mean;
+        return count > 0 ? mean : Double.NaN;
     }
 
 
     public double getSampleVariance() {
-        return count > 1 ? S * (double) count / ( (double) (count - 1) * weightSum) : 0d;
+        return count > 1 ? S * (double) count / ( (double) (count - 1) * weightSum) : Double.NaN;
     }
 
     public double getSampleStandardDeviation() {
@@ -96,7 +97,7 @@ public class WeightedStatistics1D {
     }
 
     public double getPopulationVariance() {
-        return weightSum > 0d ? S / weightSum : 0d;
+        return weightSum > 0d ? S / weightSum : Double.NaN;
     }
 
     public double getPopulationStandardDeviation() {
@@ -104,11 +105,11 @@ public class WeightedStatistics1D {
     }
 
     public double getMinimum() {
-        return minimum;
+        return count > 0 ? minimum : Double.NaN;
     }
 
     public double getMaximum() {
-        return maximum;
+        return count > 0 ? maximum : Double.NaN;
     }
 
     @Override
