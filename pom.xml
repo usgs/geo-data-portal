@@ -199,6 +199,17 @@ Coders: TK, JW, RZ, IS
                 <artifactId>easymock</artifactId>
                 <version>3.0</version>
             </dependency>
+            <dependency>
+                <groupId>net.java.dev.stax-utils</groupId>
+                <artifactId>stax-utils</artifactId>
+                <version>20060502</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>jsr173-ri</artifactId>
+                        <groupId>com.bea.xml</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
             <!-- NetCDF-Java and dependencies -->
             <dependency>
                 <groupId>edu.ucar</groupId>
@@ -243,12 +254,22 @@ Coders: TK, JW, RZ, IS
                         <artifactId>stax-api</artifactId>
                         <groupId>stax</groupId>
                     </exclusion>
+                    <exclusion>
+                        <artifactId>jsr173_api</artifactId>
+                        <groupId>javax.xml.bind</groupId>
+                    </exclusion>
                 </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.n52.wps</groupId>
                 <artifactId>52n-wps-io</artifactId>
                 <version>${n52-wps.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>jsr173_api</artifactId>
+                        <groupId>javax.xml.bind</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.n52.wps</groupId>
@@ -269,7 +290,14 @@ Coders: TK, JW, RZ, IS
                 <groupId>org.n52.wps</groupId>
                 <artifactId>52n-wps-transactional</artifactId>
                 <version>${n52-wps.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>jsr173_api</artifactId>
+                        <groupId>javax.xml.bind</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
+            <!-- GeoTools Dependencies -->
             <dependency>
                 <groupId>org.geotools</groupId>
                 <artifactId>gt-arcgrid</artifactId>
