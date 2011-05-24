@@ -46,12 +46,14 @@ public class FeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotatedAlg
     private String featureAttributeName;
     private URI datasetURI;
     private List<String> datasetId;
-    private boolean requireFullCoverage;
+    private boolean requireFullCoverage = true;
     private Date timeStart;
     private Date timeEnd;
     private List<Statistic> statistics;
     private GroupBy groupBy;
     private Delimiter delimiter;
+    private boolean summarizeTimeStep = false;
+    private boolean summarizeFeatureAttribute = false;
 
     private File output;
 
@@ -104,6 +106,16 @@ public class FeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotatedAlg
     public void setDelimiter(Delimiter delimiter) {
         this.delimiter = delimiter;
     }
+    
+    @LiteralDataInput(identifier="SUMMARIZE_TIMESTEP", defaultValue="false")
+    public void setSummarizeTimeStep(boolean summarizeTimeStep) {
+        this.summarizeTimeStep = summarizeTimeStep;
+    }
+    
+    @LiteralDataInput(identifier="SUMMARIZE_FEATURE_ATTRIBUTE", defaultValue="false")
+    public void setSummarizeFeatureAttribute(boolean summarizeFeatureAttribute) {
+        this.summarizeFeatureAttribute = summarizeFeatureAttribute;
+    }
 
     @ComplexDataOutput(identifier="OUTPUT", binding=CSVFileBinding.class)
     public File getOutput() {
@@ -146,7 +158,9 @@ public class FeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotatedAlg
                         statistics == null || statistics.isEmpty() ? Arrays.asList(Statistic.values()) : statistics,
                         writer,
                         groupBy == null ? GroupBy.STATISTIC : groupBy,
-                        delimiter == null ? Delimiter.COMMA : delimiter);
+                        delimiter == null ? Delimiter.COMMA : delimiter,
+                        summarizeTimeStep,
+                        summarizeFeatureAttribute);
             }
         } catch (InvalidRangeException e) {
             addError("Error subsetting gridded data :" + e.getMessage());

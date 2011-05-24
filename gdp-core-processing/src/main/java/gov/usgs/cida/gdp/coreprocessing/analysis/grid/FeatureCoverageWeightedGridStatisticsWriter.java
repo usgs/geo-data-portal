@@ -51,7 +51,8 @@ public class FeatureCoverageWeightedGridStatisticsWriter {
     private final List<Statistic> statisticList;
     private final boolean groupByStatistic;
     private final String delimiter;
-    private final boolean summaryIncluded;
+    private final boolean summarizeTimeStep;
+    private final boolean summarizeFeatureAttribute;
     private final BufferedWriter writer;
 
     private final StringBuilder lineSB;
@@ -65,7 +66,7 @@ public class FeatureCoverageWeightedGridStatisticsWriter {
             boolean groupByStatistic,
             String delimiter,
             BufferedWriter writer) {
-        this(attributeList,variableName,variableUnits,statisticList,groupByStatistic,delimiter, false, writer);
+        this(attributeList,variableName,variableUnits,statisticList,groupByStatistic,delimiter, false, false, writer);
     }
     
     public FeatureCoverageWeightedGridStatisticsWriter(
@@ -75,7 +76,8 @@ public class FeatureCoverageWeightedGridStatisticsWriter {
             List<Statistic> statisticList,
             boolean groupByStatistic,
             String delimiter,
-            boolean summaryIncluded,
+            boolean summarizeTimeStep,
+            boolean summarizeFeatureAttribute,
             BufferedWriter writer) {
 
         this.attributeList = Collections.unmodifiableList(attributeList);
@@ -84,7 +86,8 @@ public class FeatureCoverageWeightedGridStatisticsWriter {
         this.statisticList = Collections.unmodifiableList(statisticList);
         this.groupByStatistic = groupByStatistic;
         this.delimiter = delimiter;
-        this.summaryIncluded = summaryIncluded;
+        this.summarizeTimeStep = summarizeTimeStep;
+        this.summarizeFeatureAttribute = summarizeFeatureAttribute;
         this.writer = writer;
 
         lineSB = new StringBuilder();
@@ -93,8 +96,12 @@ public class FeatureCoverageWeightedGridStatisticsWriter {
 
     }
     
-    public boolean isSummaryIncluded() {
-        return summaryIncluded;
+    public boolean isSummarizeTimeStep() {
+        return summarizeTimeStep;
+    }
+    
+    public boolean isSummarizeFeatureAttribute() {
+        return summarizeFeatureAttribute;
     }
 
     public void writerHeader(String rowLabel) throws IOException {
@@ -126,7 +133,7 @@ public class FeatureCoverageWeightedGridStatisticsWriter {
                 for (int aIndex = 0; aIndex < aCount; ++aIndex ) {
                     lineSB.append(delimiter).append(attributeLabel[aIndex]);
                 }
-                if (summaryIncluded) { 
+                if (summarizeTimeStep) { 
                     lineSB.append(delimiter).append(ALL_ATTRIBUTES_LABEL);
                 }
             }
@@ -136,7 +143,7 @@ public class FeatureCoverageWeightedGridStatisticsWriter {
                     lineSB.append(delimiter).append(attributeLabel[aIndex]);
                 }
             }
-            if (summaryIncluded) {
+            if (summarizeTimeStep) {
                 for (int sIndex = 0; sIndex < statisticLabel.length; ++sIndex) {
                     lineSB.append(delimiter).append(ALL_ATTRIBUTES_LABEL);
                 }
@@ -152,13 +159,13 @@ public class FeatureCoverageWeightedGridStatisticsWriter {
         
         if (groupByStatistic) {
             for (int sIndex = 0; sIndex < sCount; ++sIndex) {
-                int aCountX = summaryIncluded ? aCount + 1 : aCount; 
+                int aCountX = summarizeTimeStep ? aCount + 1 : aCount; 
                 for (int aIndex = 0; aIndex < aCountX; ++ aIndex) {
                     lineSB.append(delimiter).append(statisticLabel[sIndex]);
                 }
             }
         } else {
-            int aCountX = summaryIncluded ? aCount + 1 : aCount;
+            int aCountX = summarizeTimeStep ? aCount + 1 : aCount;
             for (int aIndex = 0; aIndex < aCountX; ++ aIndex) {
                 for (int sIndex = 0; sIndex < sCount; ++sIndex) {
                     lineSB.append(delimiter).append(statisticLabel[sIndex]);
@@ -185,7 +192,7 @@ public class FeatureCoverageWeightedGridStatisticsWriter {
                 for (WeightedStatistics1D rowValue : rowValues) {
                     lineSB.append(delimiter).append(field.getValue(rowValue));
                 }
-                if (summaryIncluded) {
+                if (summarizeTimeStep) {
                     // value for ALL features across timestep
                     lineSB.append(delimiter).append(field.getValue(rowSummary));
                 }
@@ -196,7 +203,7 @@ public class FeatureCoverageWeightedGridStatisticsWriter {
                     lineSB.append(delimiter).append(field.getValue(rowValue));
                 }
             }
-            if (summaryIncluded) {
+            if (summarizeTimeStep) {
                 // value for ALL features across timestep
                 for (Statistic field : statisticList) {
                     lineSB.append(delimiter).append(field.getValue(rowSummary));

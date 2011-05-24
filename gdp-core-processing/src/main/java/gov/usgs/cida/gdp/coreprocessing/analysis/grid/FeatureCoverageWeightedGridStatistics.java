@@ -64,7 +64,9 @@ public class FeatureCoverageWeightedGridStatistics {
                 statisticList,
                 writer,
                 groupBy,
-                delimiter);
+                delimiter,
+                false,
+                false);
     }
 
     public static void execute(
@@ -75,11 +77,11 @@ public class FeatureCoverageWeightedGridStatistics {
             List<Statistic> statisticList,
             BufferedWriter writer,
             GroupBy groupBy,
-            Delimiter delimiter)
+            Delimiter delimiter,
+            boolean summarizeTimeStep,
+            boolean summarizeFeatures)
             throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException
     {
-
-        boolean includeSummaries = false;  // here in case we want to add to argument list in future...
         
         GridType gt = GridType.findGridType(gridDatatype.getCoordinateSystem());
         if( !(gt == GridType.YX || gt == GridType.TYX) ) {
@@ -115,7 +117,8 @@ public class FeatureCoverageWeightedGridStatistics {
                     statisticList,
                     groupBy != groupBy.FEATURE_ATTRIBUTE,  // != in case value equals null, default to GroupBy.STATISTIC
                     delimiter.delimiter,
-                    includeSummaries,
+                    summarizeTimeStep,
+                    summarizeFeatures,
                     writer);
 
         WeightedGridStatisticsVisitor v = null;
@@ -224,7 +227,7 @@ public class FeatureCoverageWeightedGridStatistics {
         @Override
         public void traverseEnd() {
             try {
-                if (writer.isSummaryIncluded()) {
+                if (writer.isSummarizeTimeStep()) {
                     writer.writeRow(
                             null,
                             perAttributeStatistics.values(),
@@ -305,7 +308,7 @@ public class FeatureCoverageWeightedGridStatistics {
         @Override
         public void traverseEnd() {
             try {
-                if (writer.isSummaryIncluded()) {
+                if (writer.isSummarizeFeatureAttribute()) {
                     writer.writeRow(
                             FeatureCoverageWeightedGridStatisticsWriter.ALL_TIMESTEPS_LABEL,
                             allTimestepPerAttributeStatistics.values(),
