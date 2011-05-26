@@ -38,22 +38,22 @@ public class GeoserverManagementAlgorithm extends AbstractSelfDescribingAlgorith
         // Pull in our host
         dataList = inputData.get("wfsHost");
         wfsHost = ((LiteralStringBinding)dataList.get(0)).getPayload();
-        if (StringUtils.isBlank(command)) throw new RuntimeException("Error: Missing input parameter 'wfsHost'");
+        if (StringUtils.isBlank(wfsHost)) throw new RuntimeException("Error: Missing input parameter 'wfsHost'");
 
         // Pull in our host
         dataList = inputData.get("wfsPort");
         wfsPort = ((LiteralStringBinding)dataList.get(0)).getPayload();
-        if (StringUtils.isBlank(command)) throw new RuntimeException("Error: Missing input parameter 'wfsPort'");
+        if (StringUtils.isBlank(wfsPort)) throw new RuntimeException("Error: Missing input parameter 'wfsPort'");
 
         // Pull in our username
         dataList = inputData.get("username");
         username = ((LiteralStringBinding)dataList.get(0)).getPayload();
-        if (StringUtils.isBlank(command)) throw new RuntimeException("Error: Missing input parameter 'username'");
+        if (StringUtils.isBlank(username)) throw new RuntimeException("Error: Missing input parameter 'username'");
 
         // Pull in our password
         dataList = inputData.get("password");
         password = ((LiteralStringBinding)dataList.get(0)).getPayload();
-        if (StringUtils.isBlank(command)) throw new RuntimeException("Error: Missing input parameter 'password'");
+        if (StringUtils.isBlank(password)) throw new RuntimeException("Error: Missing input parameter 'password'");
 
         // Pull in our workspace, if any
         dataList = inputData.get("workspace");
