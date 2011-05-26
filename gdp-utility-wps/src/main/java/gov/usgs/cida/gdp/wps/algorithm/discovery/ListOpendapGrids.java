@@ -54,16 +54,16 @@ public class ListOpendapGrids extends AbstractSelfDescribingAlgorithm {
     @Override
     public List<String> getInputIdentifiers() {
         List<String> result = new ArrayList<String>();
-        result.add("service-type");
+//        result.add("service-type");
         result.add("catalog-url");
         return result;
     }
 
     @Override
     public Class getInputDataType(String id) {
-        if (id.equalsIgnoreCase("service-type")) {
-            return LiteralStringBinding.class;
-        }
+//        if (id.equalsIgnoreCase("service-type")) {
+//            return LiteralStringBinding.class;
+//        }
         if (id.equalsIgnoreCase("catalog-url")) {
             return LiteralStringBinding.class;
         }
@@ -88,9 +88,9 @@ public class ListOpendapGrids extends AbstractSelfDescribingAlgorithm {
 
     @Override
     public BigInteger getMaxOccurs(String identifier) {
-        if ("service-type".equals(identifier)) {
-            return BigInteger.valueOf(1);
-        }
+//        if ("service-type".equals(identifier)) {
+//            return BigInteger.valueOf(1);
+//        }
         if ("catalog-url".equals(identifier)) {
             return BigInteger.valueOf(1);
         }
@@ -99,9 +99,9 @@ public class ListOpendapGrids extends AbstractSelfDescribingAlgorithm {
 
     @Override
     public BigInteger getMinOccurs(String identifier) {
-        if ("service-type".equals(identifier)) {
-            return BigInteger.valueOf(0);
-        }
+//        if ("service-type".equals(identifier)) {
+//            return BigInteger.valueOf(0);
+//        }
         if ("catalog-url".equals(identifier)) {
             return BigInteger.valueOf(1);
         }
