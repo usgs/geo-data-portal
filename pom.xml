@@ -21,7 +21,11 @@ Coders: TK, JW, RZ, IS
         <module>jmx</module>
 <!--        <module>geoserver</module>-->
 <!--        <module>geonetwork</module>-->
-  </modules>
+    </modules>
+    <ciManagement>
+		<system>Hudson</system>
+		<url>http://igsarm-cida-hudson1.er.usgs.gov:8080/hudson/job/GeoDataPortal/</url>
+	</ciManagement>
     <repositories>
         <repository>
             <id>cida-gdp-development</id>
