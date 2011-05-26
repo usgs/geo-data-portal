@@ -79,7 +79,7 @@ public class FeatureCategoricalGridCoverage {
 
         // these two calls are used to test for coverage/intersection based on 'requireFullCoverage',
         // if required coverage criterea is not fufilled an exception will be thrown.
-        Range[] featureCollectionRanges = GridUtility.getRangesFromBoundingBox(featureCollection.getBounds(), gcs, requireFullCoverage);
+        Range[] featureCollectionRanges = GridUtility.getXYRangesFromBoundingBox(featureCollection.getBounds(), gcs, requireFullCoverage);
         gridDataType = gridDataType.makeSubset(null, null, null, null, featureCollectionRanges[1], featureCollectionRanges[0]);
         
         CoordinateReferenceSystem gridCRS = CRSUtility.getCRSFromGridCoordSystem(gcs);        
@@ -130,7 +130,7 @@ public class FeatureCategoricalGridCoverage {
                     Geometry featureGeometry = (Geometry)feature.getDefaultGeometry();
 
                     try {
-                        Range[] featureRanges = GridUtility.getRangesFromBoundingBox(
+                        Range[] featureRanges = GridUtility.getXYRangesFromBoundingBox(
                                 featureBoundingBox, gridDataType.getCoordinateSystem(), requireFullCoverage);
 
                         GridDatatype featureGridDataType = gridDataType.makeSubset(null, null, null, null, featureRanges[1], featureRanges[0]);

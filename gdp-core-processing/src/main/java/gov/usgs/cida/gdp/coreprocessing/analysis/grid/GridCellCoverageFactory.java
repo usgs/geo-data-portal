@@ -13,7 +13,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.JTS;
-import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -153,9 +152,10 @@ public abstract class GridCellCoverageFactory {
 
 		final int xCellCount = gridCellGeometry.getCellCountX();
 
-		final Range[] ranges = GridUtility.getRangesFromBoundingBox(
+		final Range[] ranges = GridUtility.getXYRangesFromBoundingBox(
 			feature.getBounds(),
-			gridCellGeometry.getGridCoordSystem());
+			gridCellGeometry.getGridCoordSystem(),
+            false);
 		final int xCellMin = ranges[0].first();
 		final int xCellMax = ranges[0].last() + 1; // last() returns inclusive, we want exclulsive
 		final int yCellMin = ranges[1].first();

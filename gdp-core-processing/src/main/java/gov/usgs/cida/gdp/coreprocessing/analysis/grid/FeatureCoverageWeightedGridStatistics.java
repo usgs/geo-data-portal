@@ -1,5 +1,6 @@
 package gov.usgs.cida.gdp.coreprocessing.analysis.grid;
 
+import org.slf4j.Logger;
 import gov.usgs.cida.gdp.coreprocessing.Delimiter;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCoverageWeightedGridStatisticsWriter.Statistic;
 import gov.usgs.cida.gdp.coreprocessing.analysis.statistics.WeightedStatistics1D;
@@ -14,8 +15,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.SchemaException;
@@ -23,6 +22,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
+import org.slf4j.LoggerFactory;
 
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
@@ -34,6 +34,8 @@ import ucar.nc2.dt.GridDatatype;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class FeatureCoverageWeightedGridStatistics {
+    
+    public final static Logger LOGGER = LoggerFactory.getLogger(FeatureCoverageWeightedGridStatistics.class);
 
     public enum GroupBy {
         STATISTIC,
@@ -65,6 +67,7 @@ public class FeatureCoverageWeightedGridStatistics {
                 writer,
                 groupBy,
                 delimiter,
+                true,
                 false,
                 false);
     }
@@ -78,6 +81,7 @@ public class FeatureCoverageWeightedGridStatistics {
             BufferedWriter writer,
             GroupBy groupBy,
             Delimiter delimiter,
+            boolean requireFullCoverage,
             boolean summarizeTimeStep,
             boolean summarizeFeatures)
             throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException
@@ -88,14 +92,11 @@ public class FeatureCoverageWeightedGridStatistics {
             throw new IllegalStateException("Currently require y-x or t-y-x grid for this operation");
         }
 
-        try {
-            Range[] ranges = GridUtility.getRangesFromBoundingBox(
-                    featureCollection.getBounds(), gridDatatype.getCoordinateSystem());
-            gridDatatype = gridDatatype.makeSubset(null, null, timeRange, null, ranges[1], ranges[0]);
-        } catch (InvalidRangeException ex) {
-            Logger.getLogger(FeatureCoverageWeightedGridStatistics.class.getName()).log(Level.SEVERE, null, ex);
-            throw ex;  // rethrow requested by IS
-        }
+        Range[] ranges = GridUtility.getXYRangesFromBoundingBox(
+                featureCollection.getBounds(),
+                gridDatatype.getCoordinateSystem(),
+                requireFullCoverage);
+        gridDatatype = gridDatatype.makeSubset(null, null, timeRange, null, ranges[1], ranges[0]);
 
         GridCoordSystem gcs = gridDatatype.getCoordinateSystem();
 

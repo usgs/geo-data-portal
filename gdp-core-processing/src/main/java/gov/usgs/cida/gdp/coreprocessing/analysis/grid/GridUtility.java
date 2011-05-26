@@ -43,12 +43,12 @@ public abstract class GridUtility {
 				gridCRS);
 	}
 
-    public static Range[] getRangesFromBoundingBox(BoundingBox bounds, GridCoordSystem gcs)
+    public static Range[] getXYRangesFromBoundingBox(BoundingBox bounds, GridCoordSystem gcs)
             throws InvalidRangeException, TransformException, FactoryException {
-        return getRangesFromBoundingBox(bounds, gcs, true);
+        return getXYRangesFromBoundingBox(bounds, gcs, true);
     }
     
-	public static Range[] getRangesFromBoundingBox(BoundingBox bounds, GridCoordSystem gcs, boolean requireFullCoverage)
+	public static Range[] getXYRangesFromBoundingBox(BoundingBox bounds, GridCoordSystem gcs, boolean requireFullCoverage)
 			throws InvalidRangeException, TransformException, FactoryException {
 
         CoordinateReferenceSystem gridCRS = CRSUtility.getCRSFromGridCoordSystem(gcs);
@@ -85,9 +85,9 @@ public abstract class GridUtility {
             }
         } else {
             if (lowerX < 0) lowerX = 0;
-            if (upperX < 0) upperX = gcs.getXHorizAxis().getShape(gcs.getXHorizAxis().getRank() - 1);
+            if (upperX < 0) upperX = gcs.getXHorizAxis().getShape(gcs.getXHorizAxis().getRank() - 1) - 1;
             if (lowerY < 0) lowerY = 0;
-            if (upperY < 0) upperY = gcs.getYHorizAxis().getShape(0);
+            if (upperY < 0) upperY = gcs.getYHorizAxis().getShape(0) - 1;
         }
        
         return bufferXYRanges(gcs, new Range[] {

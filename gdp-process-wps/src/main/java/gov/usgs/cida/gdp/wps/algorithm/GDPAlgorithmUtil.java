@@ -71,7 +71,7 @@ public abstract class GDPAlgorithmUtil {
                     throw new RuntimeException("Unable to open dataset at " + datasetURI + " with identifier " + datasetId);
                 }
                 try {
-                    Range[] ranges = GridUtility.getRangesFromBoundingBox(featureBounds, gridDatatype.getCoordinateSystem(), requireFullCoverage);
+                    Range[] ranges = GridUtility.getXYRangesFromBoundingBox(featureBounds, gridDatatype.getCoordinateSystem(), requireFullCoverage);
                     gridDatatype = gridDatatype.makeSubset(
                             null,       /* runtime */
                             null,       /* ensemble */

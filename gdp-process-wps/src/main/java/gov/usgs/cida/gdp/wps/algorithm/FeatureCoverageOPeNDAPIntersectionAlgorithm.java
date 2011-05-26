@@ -75,8 +75,9 @@ public class FeatureCoverageOPeNDAPIntersectionAlgorithm extends AbstractAnnotat
 
     @Process
     public void process() {
-        GridDataset gridDataSet = GDPAlgorithmUtil.generateGridDataSet(datasetURI);
+        GridDataset gridDataSet = null;
         try { 
+            gridDataSet = GDPAlgorithmUtil.generateGridDataSet(datasetURI);
             output = File.createTempFile(getClass().getSimpleName(), ".nc");
             NetCDFGridWriter.makeFile(
                     output.getAbsolutePath(),
@@ -87,14 +88,18 @@ public class FeatureCoverageOPeNDAPIntersectionAlgorithm extends AbstractAnnotat
                     dateTimeEnd,
                     requireFullCoverage,
                     "Grid sub-setted by USGS/CIDA Geo Data Portal");
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to generate NetCDF File");
         } catch (InvalidRangeException e) {
-            throw new RuntimeException("Unable to generate NetCDF File, error sub setting grid");
-        } catch (TransformException e) {
-            throw new RuntimeException("Unable to generate NetCDF File, error transforming feature collection coordinates");
+            addError("Error subsetting gridded data: " + e.getMessage());
+        } catch (IOException e) {
+            addError("IO Error :" + e.getMessage());
         } catch (FactoryException e) {
-            throw new RuntimeException("Unable to generate NetCDF File, error intitializing coordinate transformation sub system");
+            addError("Error initializing CRS factory: " + e.getMessage());
+        } catch (TransformException e) {
+            addError("Error attempting CRS transform: " + e.getMessage());
+        } catch (Exception e) {
+            addError("General Error: " + e.getMessage());
+        } finally {
+            if (gridDataSet != null) try { gridDataSet.close(); } catch (IOException e) { }
         }
     }
 

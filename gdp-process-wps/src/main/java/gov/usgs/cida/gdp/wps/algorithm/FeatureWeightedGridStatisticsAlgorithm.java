@@ -159,19 +159,20 @@ public class FeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotatedAlg
                         writer,
                         groupBy == null ? GroupBy.STATISTIC : groupBy,
                         delimiter == null ? Delimiter.COMMA : delimiter,
+                        requireFullCoverage,
                         summarizeTimeStep,
                         summarizeFeatureAttribute);
             }
         } catch (InvalidRangeException e) {
-            addError("Error subsetting gridded data :" + e.getMessage());
+            addError("Error subsetting gridded data: " + e.getMessage());
         } catch (IOException e) {
             addError("IO Error :" + e.getMessage());
         } catch (FactoryException e) {
-            addError("Error initializing CRS factory:" + e.getMessage());
+            addError("Error initializing CRS factory: " + e.getMessage());
         } catch (TransformException e) {
-            addError("Error attempting CRS transform:" + e.getMessage());
+            addError("Error attempting CRS transform: " + e.getMessage());
         } catch (SchemaException e) {
-            addError("Error subsetting gridded data :" + e.getMessage());
+            addError("Error subsetting gridded data : " + e.getMessage());
         } catch (Exception e) {
             addError("General Error: " + e.getMessage());
         } finally {

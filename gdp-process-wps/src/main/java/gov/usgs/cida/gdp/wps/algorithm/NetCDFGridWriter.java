@@ -72,7 +72,7 @@ public class NetCDFGridWriter {
 
                 // generate sub-set
                 Range tRange = GDPAlgorithmUtil.generateTimeRange(gridDataType, dateTimeStart, dateTimeEnd);
-                Range[] xyRanges = GridUtility.getRangesFromBoundingBox(featureCollection.getBounds(), gridCoordSystem, requireFullCoverage); 
+                Range[] xyRanges = GridUtility.getXYRangesFromBoundingBox(featureCollection.getBounds(), gridCoordSystem, requireFullCoverage); 
                 gridDataType = gridDataType.makeSubset(null, null, tRange, null, xyRanges[1], xyRanges[0]);
 
                 Variable gridV = (Variable) gridDataType.getVariable();
