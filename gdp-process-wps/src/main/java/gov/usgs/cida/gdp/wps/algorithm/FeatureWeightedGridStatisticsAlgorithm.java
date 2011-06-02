@@ -133,7 +133,7 @@ public class FeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotatedAlg
                 return;
             }
 
-            output = File.createTempFile("gdp", ".csv");
+            output = File.createTempFile(getClass().getSimpleName(), ".csv");
             writer = new BufferedWriter(new FileWriter(output));
             
             for (String currentDatasetId : datasetId) {
