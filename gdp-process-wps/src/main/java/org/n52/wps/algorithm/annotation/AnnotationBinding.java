@@ -211,20 +211,22 @@ public abstract class AnnotationBinding<M extends AccessibleObject & Member> {
         
         public Object unbindInput(List<IData> boundValueList) {
             Object value = null;
-            if (isMemberTypeList()) {
-                List valueList = new ArrayList(boundValueList.size());
-                for (IData bound : boundValueList) {
-                    value = bound.getPayload();
+            if (boundValueList != null && boundValueList.size() > 0) {
+                if (isMemberTypeList()) {
+                    List valueList = new ArrayList(boundValueList.size());
+                    for (IData bound : boundValueList) {
+                        value = bound.getPayload();
+                        if (isTypeEnum()) {
+                            value = Enum.valueOf((Class<? extends Enum>)getType(), (String)value);
+                        }
+                        valueList.add(value);
+                    }
+                    value = valueList;
+                } else if (boundValueList.size() == 1) {
+                    value = boundValueList.get(0).getPayload();
                     if (isTypeEnum()) {
                         value = Enum.valueOf((Class<? extends Enum>)getType(), (String)value);
                     }
-                    valueList.add(value);
-                }
-                value = valueList;
-            } else if (boundValueList.size() == 1) {
-                value = boundValueList.get(0).getPayload();
-                if (isTypeEnum()) {
-                    value = Enum.valueOf((Class<? extends Enum>)getType(), (String)value);
                 }
             }
             return value;
