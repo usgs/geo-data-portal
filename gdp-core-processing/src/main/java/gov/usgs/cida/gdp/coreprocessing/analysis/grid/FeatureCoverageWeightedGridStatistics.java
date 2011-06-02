@@ -228,12 +228,10 @@ public class FeatureCoverageWeightedGridStatistics {
         @Override
         public void traverseEnd() {
             try {
-                if (writer.isSummarizeTimeStep()) {
-                    writer.writeRow(
-                            null,
-                            perAttributeStatistics.values(),
-                            allAttributeStatistics);
-                }
+                writer.writeRow(
+                        null,
+                        perAttributeStatistics.values(),
+                        allAttributeStatistics);
             } catch (IOException ex) {
                 // TODO
             }
