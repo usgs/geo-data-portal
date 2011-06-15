@@ -24,19 +24,19 @@
   UNIT[&quot;m&quot;, 1.0], 
   AXIS[&quot;x&quot;, EAST], 
   AXIS[&quot;y&quot;, NORTH]]</nativeCRS>
-  <srs>EPSG:4269</srs>
+  <srs>EPSG:5070</srs>
   <nativeBoundingBox>
     <minx>-2341005.0</minx>
     <maxx>2218365.0</maxx>
     <miny>467775.0</miny>
     <maxy>3127155.0</maxy>
-    <crs class="projected">EPSG:42303</crs>
+    <crs class="projected">EPSG:5070</crs>
   </nativeBoundingBox>
   <latLonBoundingBox>
-    <minx>0.0</minx>
-    <maxx>0.0</maxx>
-    <miny>90.0</miny>
-    <maxy>90.0</maxy>
+    <minx>-127.501</minx>
+    <maxx>-66.039</maxx>
+    <miny>24.674</miny>
+    <maxy>51.184</maxy>
     <crs>EPSG:4326</crs>
   </latLonBoundingBox>
   <projectionPolicy>REPROJECT_TO_DECLARED</projectionPolicy>
