@@ -28,6 +28,14 @@
     </dependency>
   </dependencies>
 
+  <repositories>
+    <repository>
+      <id>opengeo</id>
+      <name>OpenGeo</name>
+      <url>http://repo.opengeo.org/</url>
+    </repository>
+  </repositories>
+
   <build>
     <resources>
       <resource>
