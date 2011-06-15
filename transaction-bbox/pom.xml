@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.geoserver</groupId>
+  <artifactId>transaction-bbox</artifactId>
+  <packaging>jar</packaging>
+  <version>2.1.0</version>
+  <name>WFS Transaction Bounding Box Module</name>
+
+  <!-- These dependencies must have scope 'provided' so their transitive
+       dependencies don't overwrite the standard GeoServer release jars
+       and cause problems. -->
+  <dependencies>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>main</artifactId>
+      <version>2.1.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>wfs</artifactId>
+      <version>2.1.0</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>${basedir}/src/main/java</directory>
+        <includes>
+          <include>applicationContext.xml</include>
+        </includes>
+      </resource>
+    </resources>
+  </build>
+
+</project>
