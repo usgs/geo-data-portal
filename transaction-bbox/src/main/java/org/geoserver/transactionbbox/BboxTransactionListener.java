@@ -33,6 +33,9 @@ public class BboxTransactionListener implements TransactionListener {
 
             ReferencedEnvelope bounds = event.getAffectedFeatures().getBounds();
 
+            // TODO: Convert native bounds to lat lon. Right now they're the same
+            // thing, but if we ever draw polygons in a projected CRS, we'll
+            // need to project these bounds as well.
             resourceInfo.setLatLonBoundingBox(bounds);
             resourceInfo.setNativeBoundingBox(bounds);
 
