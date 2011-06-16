@@ -30,6 +30,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPathExpressionException;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -76,8 +77,7 @@ public class CheckProcessCompletion {
 		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 		documentBuilderFactory.setNamespaceAware(true);
 		DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-		Document document = documentBuilder.parse(is);
-		return document;
+		return documentBuilder.parse(is);
 	}
 
 }
@@ -100,8 +100,9 @@ class EmailCheckTask extends TimerTask {
 
 	@Override
 	public void run() {
+        InputStream is = null;
 		try {
-			InputStream is = HTTPUtils.sendPacket(new URL(wpsCheckPoint), "GET");
+			is = HTTPUtils.sendPacket(new URL(wpsCheckPoint), "GET");
 			Document document = CheckProcessCompletion.parseDocument(is);
 			checkAndSend(document);
 		}
@@ -117,6 +118,9 @@ class EmailCheckTask extends TimerTask {
 			}
 			this.cancel();
 		}
+        finally {
+            IOUtils.closeQuietly(is);
+        }
 
 	}
 
