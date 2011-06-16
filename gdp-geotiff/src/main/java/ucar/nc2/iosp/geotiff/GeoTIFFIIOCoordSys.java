@@ -147,9 +147,7 @@ public class GeoTIFFIIOCoordSys {
             } else {
                 csHandler = geogCSHandler;
             }
-        } else {
-            // log don't support geocentric yet.
-        }
+        } // else { /* don't support geocentric yet. */ }
     }
 
     private GeogCSHandler generateGeogCSHandler(GeoTiffIIOMetadataAdapter metadata) {

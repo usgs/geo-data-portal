@@ -115,7 +115,7 @@ public abstract class AnnotationParser<A extends Annotation, M extends Accessibl
                             Enum.valueOf(inputEnumClass, value);
                         } catch (IllegalArgumentException e) {
                             invalidValues.add(value);
-                            LOGGER.error("Invalid allowed value \"{}\" specified for for enumerated input type {}", value, inputType);
+                            LOGGER.warn("Invalid allowed value \"{}\" specified for for enumerated input type {}", value, inputType);
                         }
                     }
                     if (invalidValues.size() > 0) {
@@ -132,7 +132,7 @@ public abstract class AnnotationParser<A extends Annotation, M extends Accessibl
                     try {
                         Enum.valueOf(inputEnumClass, defaultValue);
                     } catch (IllegalArgumentException e) {
-                        LOGGER.error("Invalid default value \"{}\" specified for for enumerated input type {}", defaultValue, inputType);
+                        LOGGER.warn("Invalid default value \"{}\" specified for for enumerated input type {}, ignoring.", defaultValue, inputType);
                         defaultValue = "";
                     }
                 }
@@ -142,7 +142,7 @@ public abstract class AnnotationParser<A extends Annotation, M extends Accessibl
             } else {
                 if (maxOccurs == LiteralDataInput.ENUM_COUNT) {
                     maxOccurs = 1;
-                    LOGGER.error("Invalid maxOccurs \"ENUM_COUNT\" specified for for input type {}", inputType);
+                    LOGGER.warn("Invalid maxOccurs \"ENUM_COUNT\" specified for for input type {}, setting maxOccurs to {}", inputType, maxOccurs);
                 }
             }
             if (binding != null) {
@@ -157,7 +157,7 @@ public abstract class AnnotationParser<A extends Annotation, M extends Accessibl
                         build();
                 annotatedBinding.setDescriptor(descriptor);
             } else {
-                // TODO: error? warning?
+                LOGGER.error("Unable to generate binding for input identifier \"{}\"", annotation.identifier());
             }
             return annotatedBinding.validate() ? annotatedBinding : null;
         }
@@ -195,7 +195,7 @@ public abstract class AnnotationParser<A extends Annotation, M extends Accessibl
                         build();
                 annotatedBinding.setDescriptor(descriptor);
             } else {
-                // TODO: error? warning?
+                LOGGER.error("Unable to generate binding for output identifier \"{}\"", annotation.identifier());
             }
             return annotatedBinding.validate() ? annotatedBinding : null;
         }

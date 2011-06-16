@@ -240,7 +240,8 @@ public final class MIMEMultipartStream {
 		if (boundary.length + 5 > channelBuffer.capacity()) {
 			throw new IllegalArgumentException("boundary too small for current buffer size");
 		}
-        this.boundary = boundary;
+        this.boundary = new byte[boundary.length];
+        System.arraycopy(boundary, 0, this.boundary, 0, boundary.length);
 		this.ddboundary = new byte[boundary.length + 2];
 		System.arraycopy(DASH_DASH, 0, ddboundary, 0, 2);
 		System.arraycopy(boundary, 0, ddboundary, 2, boundary.length);

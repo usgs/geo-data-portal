@@ -139,9 +139,7 @@ public class ResponseURLFilter implements Filter {
                         // 2) unset 'match' flag
                         outputStream.write(replace.array());
                         match = false;
-                    } else {
-                        // POTENTIAL MATCH ongoing, writes deferred
-                    }
+                    } // else { /* POTENTIAL MATCH ongoing, writes deferred */ } 
                 } else {
                     // FAILED MATCH
                     // 1) write out portion of 'find' buffer that matched

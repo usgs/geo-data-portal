@@ -160,9 +160,7 @@ public class CRSUtility {
 				adapter.transferLength("false_northing", "false_northing");
                 if (is2SP) { 
                     adapter.transferStandardParallels();
-                } else {
-                    // scale_factor parameter is default of 1.0.
-                }
+                } // else { /* scale_factor parameter is default of 1.0. */ }
 				adapter.transferEllipsoid(datum.getEllipsoid());
 
 			} else if ("lambert_cylindrical_equal_area".equals(gridMappingName)) {

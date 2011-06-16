@@ -190,7 +190,7 @@ public abstract class AbstractSelfDescribingAlgorithm extends AbstractAlgorithm 
             ProcessOutputs dataOutputs = processDescription.addNewProcessOutputs();
             Collection<OutputDescriptor> outputDescriptors = algorithmDescriptor.getOutputDescriptors();
             if (outputDescriptors.size() < 1) {
-               // TODO:  Log?  Exception?
+               LOGGER.error("No outputs found for algorithm {}", algorithmDescriptor.getIdentifier());
             }
             for (OutputDescriptor outputDescriptor : outputDescriptors) {
 
