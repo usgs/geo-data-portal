@@ -106,7 +106,7 @@ public class DataTypeCollection extends XmlResponse {
 			return shape;
 		}
 		public void setShape(int[] shape) {
-			this.shape = shape;
+			this.shape = shape.clone();
 		}
 		public String getShortname() {
 			return shortname;
