@@ -43,11 +43,6 @@ Coders: TK, JW, RZ, IS
     </properties>
     <dependencies>
         <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>2.5</version>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.8.1</version>
@@ -60,13 +55,8 @@ Coders: TK, JW, RZ, IS
             <scope>test</scope>
         </dependency>
         <dependency>
-            <artifactId>slf4j-api</artifactId>
             <groupId>org.slf4j</groupId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <artifactId>slf4j-log4j12</artifactId>
-            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -113,7 +103,17 @@ Coders: TK, JW, RZ, IS
                 <version>2.0</version>
             </dependency>
             <dependency>
+                <groupId>commons-lang</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>2.5</version>
+            </dependency>
+            <dependency>
                 <artifactId>slf4j-api</artifactId>
+                <groupId>org.slf4j</groupId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <artifactId>slf4j-simple</artifactId>
                 <groupId>org.slf4j</groupId>
                 <version>${slf4j.version}</version>
             </dependency>
