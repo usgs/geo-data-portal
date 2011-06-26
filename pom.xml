@@ -358,16 +358,33 @@ Coders: TK, JW, RZ, IS
     <build>
         <pluginManagement>
             <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>2.0.2</version>
-                    <configuration>
-                        <source>1.6</source>
-                        <target>1.6</target>
-                    </configuration>
-                </plugin>
-            </plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<configuration>
+						<source>1.6</source>
+						<target>1.6</target>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<configuration>
+						<testFailureIgnore>true</testFailureIgnore>
+                        <!-- NOTE: extra properties required for unit tests using our log4j.properties -->
+						<systemProperties>
+							<property>
+								<name>catalina.base</name>
+								<value>target/test-classes</value>
+							</property>
+							<property>
+								<name>catalina.home</name>
+								<value>target/test-classes</value>
+							</property>
+						</systemProperties>
+					</configuration>
+				</plugin>
+			</plugins>
         </pluginManagement>
     </build>
 </project>
