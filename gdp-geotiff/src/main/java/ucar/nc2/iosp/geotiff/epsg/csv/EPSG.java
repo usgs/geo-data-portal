@@ -3,6 +3,7 @@ package ucar.nc2.iosp.geotiff.epsg.csv;
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.bean.CsvToBean;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
@@ -45,10 +46,16 @@ public class EPSG {
             cm.put("ELLIPSOID_CODE", "ellipsoidCode");
             cm.put("PRIME_MERIDIAN_CODE", "primeMeridianCode");
 
-            InputStream is = DatumEntry.class.getClassLoader().
-                    getResourceAsStream(RESOURCE_GCS);
+            InputStream is = null;
+            try {
+                is = getResourceAsStream(RESOURCE_GCS);
+                
+                loadBeansFromCSV(GeogCSEntry.class, geogCSMap, cm, null, is);
+            } finally {
+                if (is != null) try { is.close(); } catch (IOException e) {}
+            }
 
-            loadBeansFromCSV(GeogCSEntry.class, geogCSMap, cm, null, is);
+            
         }
         return geogCSMap.get(code);
     }
@@ -111,10 +118,13 @@ public class EPSG {
             cm.put("PARAMETER_UOM_7", "parameter7UnitOfMeasureCode");
             cm.put("PARAMETER_VALUE_7", "parameter7Value");
 
-            InputStream is = DatumEntry.class.getClassLoader().
-                    getResourceAsStream(RESOURCE_PCS);
-
-            loadBeansFromCSV(ProjCSEntry.class, projCSMap, cm, null, is);
+            InputStream is = null;
+            try {
+                is = getResourceAsStream(RESOURCE_PCS);
+                loadBeansFromCSV(ProjCSEntry.class, projCSMap, cm, null, is);
+            } finally {
+                if (is != null) try { is.close(); } catch (IOException e) {}
+            }
         }
         return projCSMap.get(code);
     }
@@ -133,10 +143,13 @@ public class EPSG {
             cm.put("ellipsoid_code", "ellipsoidCode");
             cm.put("prime_meridian_code", "primeMeridianCode");
 
-            InputStream is = DatumEntry.class.getClassLoader().
-                    getResourceAsStream(RESOURCE_DATUM);
-
-            loadBeansFromCSV(DatumEntry.class, datumMap, cm, null, is);
+            InputStream is = null;
+            try {
+                is = getResourceAsStream(RESOURCE_DATUM);
+                loadBeansFromCSV(DatumEntry.class, datumMap, cm, null, is);
+            } finally {
+                if (is != null) try { is.close(); } catch (IOException e) {}
+            }
         }
         return datumMap.get(code);
     }
@@ -155,10 +168,13 @@ public class EPSG {
             cm.put("inv_flattening", "inverseFlattening");
             cm.put("uom_code", "unitOfMeasureCode");
 
-            InputStream is = EllipsoidEntry.class.getClassLoader().
-                    getResourceAsStream(RESOURCE_ELLIPSOID);
-
-            loadBeansFromCSV(EllipsoidEntry.class, ellipsoidMap, cm, null, is);
+            InputStream is = null;
+            try {
+                is = getResourceAsStream(RESOURCE_ELLIPSOID);
+                loadBeansFromCSV(EllipsoidEntry.class, ellipsoidMap, cm, null, is);
+            } finally {
+                if (is != null) try { is.close(); } catch (IOException e) {}
+            }
         }
         return ellipsoidMap.get(code);
     }
@@ -175,10 +191,13 @@ public class EPSG {
             cm.put("GREENWICH_LONGITUDE", "longitude");
             cm.put("UOM_CODE", "unitOfMeasureCode");
 
-            InputStream is = PrimeMeridianEntry.class.getClassLoader().
-                    getResourceAsStream(RESOURCE_PRIMEMERIDIAN);
-
-            loadBeansFromCSV(PrimeMeridianEntry.class, primeMeridianMap, cm, null, is);
+            InputStream is = null;
+            try {
+                is = getResourceAsStream(RESOURCE_PRIMEMERIDIAN);
+                loadBeansFromCSV(PrimeMeridianEntry.class, primeMeridianMap, cm, null, is);
+            } finally {
+                if (is != null) try { is.close(); } catch (IOException e) {}
+            }
         }
         return primeMeridianMap.get(code);
     }
@@ -197,14 +216,20 @@ public class EPSG {
             cm.put("factor_b", "factorB");
             cm.put("factor_c", "factorC");
 
-            InputStream is = UnitOfMeasureEntry.class.getClassLoader().
-                    getResourceAsStream(RESOURCE_UNITOFMEASURE);
-
-            loadBeansFromCSV(UnitOfMeasureEntry.class, unitOfMeasureMap, cm, null, is);
+            InputStream is = null;
+            try {
+                is = getResourceAsStream(RESOURCE_UNITOFMEASURE);
+                loadBeansFromCSV(UnitOfMeasureEntry.class, unitOfMeasureMap, cm, null, is);
+            } finally {
+                if (is != null) try { is.close(); } catch (IOException e) {}
+            }
         }
         return unitOfMeasureMap.get(code);
     }
 
+    private static InputStream getResourceAsStream(String resource) {
+        return EPSG.class.getClassLoader().getResourceAsStream(resource);
+    }
 
     private synchronized static <T extends CSVEntry> void loadBeansFromCSV (
             Class<T> beanClass,
