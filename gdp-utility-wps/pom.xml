@@ -9,7 +9,7 @@
     </parent>
     <artifactId>gdp-utility-wps</artifactId>
     <packaging>war</packaging>
-    <name>gdp-utility-wps</name>
+    <name>GDP Utility WPS</name>
     <build>
         <finalName>gdp-utility-wps</finalName>
         <plugins>
