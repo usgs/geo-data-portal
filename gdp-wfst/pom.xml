@@ -9,7 +9,6 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
     <artifactId>gdp-wfst</artifactId>
-    <version>2.1.0</version>
     <name>GDP GeoServer WFS-T</name>
     <properties>
         <gs.version>2.1.0</gs.version>
