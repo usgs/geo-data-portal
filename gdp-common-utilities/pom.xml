@@ -7,7 +7,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
     <artifactId>gdp-common-utilities</artifactId>
-    <name>gdp-common-utilities</name>
+    <name>GDP Common Utilities</name>
     <dependencies>
         <!-- version numbers set in parent pom -->
         <dependency>

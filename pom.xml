@@ -5,7 +5,7 @@
     <artifactId>gdp</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
-    <name>gdp</name>
+    <name>GDP</name>
     <description>
         Owner: NB
 Coders: TK, JW, RZ, IS
@@ -19,8 +19,9 @@ Coders: TK, JW, RZ, IS
         <module>gdp-process-wps</module>
         <module>jmx-log4j</module>
         <module>jmx</module>
-<!--        <module>geoserver</module>-->
+        <module>geoserver</module>
 <!--        <module>geonetwork</module>-->
+        <module>gdp-wfst</module>
     </modules>
     <ciManagement>
 		<system>Hudson</system>

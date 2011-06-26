@@ -7,7 +7,10 @@ package org.geoserver.transactionbbox;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.wfs.*;
+import org.geoserver.wfs.TransactionEvent;
+import org.geoserver.wfs.TransactionEventType;
+import org.geoserver.wfs.TransactionListener;
+import org.geoserver.wfs.WFSException;
 import org.geotools.feature.NameImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 

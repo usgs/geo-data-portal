@@ -7,19 +7,27 @@
     </parent>
     <artifactId>geoserver</artifactId>
     <packaging>war</packaging>
-    <name>geoserver</name>
+    <name>GDP GeoServer</name>
+    <properties>
+        <gs.version>2.1.0</gs.version>
+        <gt.version>2.7.1</gt.version>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.geoserver</groupId>
             <artifactId>geoserver</artifactId>
-            <version>2.1.0</version>
+            <version>${gs.version}</version>
             <type>war</type>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-epsg-extension</artifactId>
-            <!-- don't want to inherit from parent dependency management -->
-            <version>2.6.5</version>
+            <!--
+              Don't want to inherit from GDP parent dependency management.
+              This version should match the version shipped with GeoServer
+              *NOT* the neccessarily the version in use by the GDP
+              -->
+            <version>${gt.version}</version>
             <exclusions>
                 <exclusion>
                     <artifactId>gt-referencing</artifactId>
@@ -28,21 +36,9 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-epsg-hsql</artifactId>
-            <!-- don't want to inherit from parent dependency management -->
-            <version>2.6.5</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>gt-referencing</artifactId>
-                    <groupId>org.geotools</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.geoserver</groupId>
-            <artifactId>transaction-bbox</artifactId>
-            <version>2.1.0</version>
+            <groupId>gov.usgs.cida.gdp</groupId>
+            <artifactId>gdp-wfst</artifactId>
+            <version>${gs.version}</version>
         </dependency>
     </dependencies>
     <build>
@@ -77,7 +73,6 @@
                                 <exclude>data/coverages/**</exclude>
                                 <exclude>data/layergroups/**</exclude>
                                 <exclude>data/workspaces/**</exclude>
-                                <exclude>WEB-INF/lib/gt-epsg-hsql-2.6.4.jar</exclude>
                             </excludes>
                         </overlay>
                     </overlays>

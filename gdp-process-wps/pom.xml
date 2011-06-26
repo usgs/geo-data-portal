@@ -8,7 +8,7 @@
     </parent>
     <artifactId>gdp-process-wps</artifactId>
     <packaging>war</packaging>
-    <name>gdp-process-wps</name>
+    <name>GDP Process WPS</name>
     <build>
         <finalName>gdp-process-wps</finalName>
         <plugins>
