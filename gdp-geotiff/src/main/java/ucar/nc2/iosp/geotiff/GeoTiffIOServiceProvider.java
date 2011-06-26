@@ -133,7 +133,7 @@ public class GeoTiffIOServiceProvider extends AbstractIOServiceProvider {
                                 "I" + imageIndex + "B" + bandIndex);
                         dataVariable.setDataType(bandDataType);
                         dataVariable.setDimensions(bandDimensions);
-                        dataVariable.addAttribute(new Attribute(ATTRIBUTE_IMAGE, 0));
+                        dataVariable.addAttribute(new Attribute(ATTRIBUTE_IMAGE, imageIndex));
                         dataVariable.addAttribute(new Attribute(ATTRIBUTE_BAND, bandIndex));
                         dataVariable.addAttribute(new Attribute("grid_mapping", crsHandler.getName()));
                         dataVariable.addAttribute(new Attribute("coordinates", bandCoordinates));
@@ -141,7 +141,7 @@ public class GeoTiffIOServiceProvider extends AbstractIOServiceProvider {
                     }
                 }
             }
-            ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.4"));
+            ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.5"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (Exception e) {
@@ -195,7 +195,7 @@ public class GeoTiffIOServiceProvider extends AbstractIOServiceProvider {
                 throw new IllegalArgumentException(
                         "ERROR:  Data corruption bug in Java JAI ImageIO TIFF "
                         + " ImageReader with floating point data and X strides > "
-                        + " 1.  To utilize this functionality please obatain another"
+                        + " 1.  To utilize this functionality please obtain another"
                         + "JAI TIFF implementation such as ImageIO-Ext and place"
                         + "in the application classpath");
             }
