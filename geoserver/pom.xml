@@ -36,10 +36,9 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>gov.usgs.cida.gdp</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>gdp-wfst</artifactId>
-<!--            <version>${gs.version}</version>-->
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
     <build>
