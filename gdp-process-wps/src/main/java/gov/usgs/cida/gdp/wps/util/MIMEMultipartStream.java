@@ -14,11 +14,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeUtility;
-import javax.swing.text.StyledEditorKit.ItalicAction;
 import org.apache.commons.io.IOUtils;
 
 
 /**
+ *
+ * @author tkunicki
+ *
  * <p> Low level API for processing mime encoded streams.
  *
  * <p> This class can be used to process data streams conforming to MIME
@@ -57,7 +59,7 @@ import org.apache.commons.io.IOUtils;
  *        boolean nextPart = multipartStream.skipPreamble();
  *        OutputStream output;
  *        while(nextPart) {
- *            header = chunks.readHeader();
+ *            header = multipartStream.readHeader();
  *            // process headers
  *            // create some output stream
  *            multipartStream.readBodyPart(output);
@@ -73,16 +75,16 @@ import org.apache.commons.io.IOUtils;
  *
  * Inspired by org.apache.commons.fileupload.MultipartStream *but* heavily
  * modified to account for non-compliant (but common) usage of LF instead of
- * CRLF (RFC 1867)
+ * CRLF (RFC 1867) for line delimiter.
  *
  */
 public final class MIMEMultipartStream {
 
-	/**
+    /**
      * The maximum length of a boundary, not including trailing/leading CRLF
-	 * or trailing/leading '--' characters
+     * or trailing/leading '--' characters
      */
-	public final static int MAX_BOUNDARY_LENGTH = 70;
+    public final static int MAX_BOUNDARY_LENGTH = 70;
 
 	/**
      * The Carriage Return ASCII character value.
@@ -99,21 +101,21 @@ public final class MIMEMultipartStream {
      */
     public static final byte DASH = 0x2D;
 
-	/**
+    /**
      * byte array of two <code>DASH</code> characters for implementation convenience.
      */
-	public static final byte[] DASH_DASH = new byte[] { DASH, DASH };
+    public static final byte[] DASH_DASH = new byte[] { DASH, DASH };
 
     /**
      * The default length of the buffer used for processing a request.
      */
     public static final int DEFAULT_BUFFERSIZE = 8192;
 
-	private final ReadableByteChannel channel;
-	private ByteBuffer channelBuffer;
+    private final ReadableByteChannel channel;
+    private ByteBuffer channelBuffer;
 
     private byte[] boundary;
-	private byte[] ddboundary;
+    private byte[] ddboundary;
 
     private String headerEncoding;
 
@@ -163,36 +165,36 @@ public final class MIMEMultipartStream {
 
     private byte readByte() throws IOException {
         if (channelBuffer.remaining() == 0) {
-			fill();
+            fill();
         }
         return channelBuffer.get();
     }
 
 	private void fill() throws IOException {
         channelBuffer.compact();
-		int read = channel.read(channelBuffer);
-		if (read < 0) {
-			// No more data available.
-			throw new IOException("No more data is available");
-		} else {
-			channelBuffer.flip();
-		}
+        int read = channel.read(channelBuffer);
+        if (read < 0 && channelBuffer.position() == 0) {
+            // No more data available.
+            throw new IOException("No more data is available");
+        } else {
+            channelBuffer.flip();
+        }
     }
 
     public boolean skipPreamble() throws IOException {
         try {
-			fill();
-			boolean match = true;
-			ByteBuffer boundaryBuffer = ByteBuffer.wrap(ddboundary);
-			// duplicate as we don't want to consume
-			ByteBuffer preambleBuffer = channelBuffer.duplicate();
-			while (preambleBuffer.hasRemaining() && boundaryBuffer.hasRemaining() && match) {
-				match = boundaryBuffer.get() == preambleBuffer.get();
-			}
-			if (!match) {
-				// Discard all data up to the delimiter.
-				discardBodyData();
-			}
+            fill();
+            boolean match = true;
+            ByteBuffer boundaryBuffer = ByteBuffer.wrap(ddboundary);
+            // duplicate as we don't want to consume
+            ByteBuffer preambleBuffer = channelBuffer.duplicate();
+            while (preambleBuffer.hasRemaining() && boundaryBuffer.hasRemaining() && match) {
+                match = boundaryBuffer.get() == preambleBuffer.get();
+            }
+            if (!match) {
+                // Discard all data up to the delimiter.
+                discardBodyData();
+            }
             // Read boundary - if succeded, the stream contains an encapsulation.
             return readBoundary();
         } catch (MalformedStreamException e) {
@@ -202,29 +204,29 @@ public final class MIMEMultipartStream {
 
     public boolean readBoundary() throws MalformedStreamException {
         try {
-			byte b = readByte();
-			if (b == CR) { b = readByte(); }
-			if (b == LF) { b = readByte(); }
-			if (b == DASH && readByte() == DASH ) {
-				boolean match = true;
-				ByteBuffer boundaryBuffer = ByteBuffer.wrap(boundary);
-				while (boundaryBuffer.hasRemaining() && match) {
-					match = (readByte() == boundaryBuffer.get());
-				}
-				if (match) {
-					b = readByte();
-					if (b == DASH && readByte() == DASH) {
-						// boundary was valid but no more content
-						return false;
-					} else {
-						if (b == CR) { b = readByte(); }
-						if (b == LF) {
-							// boundary was valid and more content
-							return true;
-						}
-					}
-				}
-			}
+            byte b = readByte();
+            if (b == CR) { b = readByte(); }
+            if (b == LF) { b = readByte(); }
+            if (b == DASH && readByte() == DASH ) {
+                boolean match = true;
+                ByteBuffer boundaryBuffer = ByteBuffer.wrap(boundary);
+                while (boundaryBuffer.hasRemaining() && match) {
+                    match = (readByte() == boundaryBuffer.get());
+                }
+                if (match) {
+                    b = readByte();
+                    if (b == DASH && readByte() == DASH) {
+                        // boundary was valid but no more content
+                        return false;
+                    } else {
+                        if (b == CR) { b = readByte(); }
+                        if (b == LF) {
+                            // boundary was valid and more content
+                            return true;
+                        }
+                    }
+                }
+            }
             throw new MalformedStreamException("Unexpected characters while parsing boundary");
         } catch (IOException e) {
             throw new MalformedStreamException("Stream ended unexpectedly");
@@ -308,12 +310,16 @@ public final class MIMEMultipartStream {
     }
 
     public void discardBodyData() throws MalformedStreamException, IOException {
-		InputStream inputStream = new ItemInputStream();
-		int available = 0;
-		while ((available = inputStream.available()) > 0) {
-			inputStream.skip(available);
-		}
-		inputStream.close();
+		InputStream inputStream = null;
+        try {
+            inputStream = new ItemInputStream();
+            int available = 0;
+            while ((available = inputStream.available()) > 0) {
+                inputStream.skip(available);
+            }
+		} finally {
+            IOUtils.closeQuietly(inputStream);
+        }
     }
 
     /**
