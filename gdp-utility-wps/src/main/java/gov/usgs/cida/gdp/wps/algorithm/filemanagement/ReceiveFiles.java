@@ -39,11 +39,25 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
 
     @Override
     public Map<String, IData> run(Map<String, List<IData>> inputData) {
-
+        String shpSuffix = ".shp";
+        String shxSuffix = ".shx";
+        String prjSuffix = ".prj";
+        String dbfSuffix = ".dbf";
+        String uploadWorkspace = "upload";
+        String fileParam = "file";
+        String wfsUrl = "wfs-url";
+        String filename = "filename";
+        
         if (inputData == null)  throw new RuntimeException("Error while allocating input parameters.");
-        if (!inputData.containsKey("file"))  throw new RuntimeException("Error: Missing input parameter 'file'");
-        if (!inputData.containsKey("wfs-url"))  throw new RuntimeException("Error: Missing input parameter 'wfs-url'");
-        if (!inputData.containsKey("filename")) throw new RuntimeException("Error: Missing input parameter 'filename'");
+        if (!inputData.containsKey(fileParam))  {
+            throw new RuntimeException("Error: Missing input parameter 'file'");
+        }
+        if (!inputData.containsKey(wfsUrl))  {
+            throw new RuntimeException("Error: Missing input parameter 'wfs-url'");
+        }
+        if (!inputData.containsKey(filename)) {
+            throw new RuntimeException("Error: Missing input parameter 'filename'");
+        }
 
         // "gdp.shapefile.temp.path" should be set in the tomcat startup script or setenv.sh as JAVA_OPTS="-Dgdp.shapefile.temp.path=/wherever/you/want/this/file/placed"
         String fileDump = AppConstant.SHAPEFILE_LOCATION.getValue() + File.separator + UUID.randomUUID();
@@ -52,13 +66,13 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
         File temp = new File(fileDump);
         temp.mkdirs();
 
-        List<IData> dataList = inputData.get("filename");
+        List<IData> dataList = inputData.get(filename);
         String desiredFilename = (((LiteralStringBinding) dataList.get(0)).getPayload()).replace(" ", "_");
 
-        List<IData> wfsEndpointList = inputData.get("wfs-url");
+        List<IData> wfsEndpointList = inputData.get(wfsUrl);
         String wfsEndpoint = ((LiteralStringBinding) wfsEndpointList.get(0)).getPayload();
 
-        dataList = inputData.get("file");
+        dataList = inputData.get(fileParam);
         IData data = dataList.get(0);
 
         // Process each input one at a time
@@ -90,10 +104,10 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
         List<String> filenamesList = Arrays.asList(filenames);
 
         // Make sure required files are present
-        String[] requiredFiles = { ".shp", ".shx", ".prj", ".dbf" };
-        for (String s : requiredFiles) {
-            if (!filenamesList.contains(shapefileNamePrefix + s)) {
-                throw new RuntimeException("Zip file missing " + s + " file.");
+        String[] requiredFiles = { shpSuffix, shxSuffix, prjSuffix, dbfSuffix };
+        for (String requiredFile : requiredFiles) {
+            if (!filenamesList.contains(shapefileNamePrefix + requiredFile)) {
+                throw new RuntimeException("Zip file missing " + requiredFile + " file.");
             }
         }
 
@@ -106,8 +120,8 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
             f.renameTo(new File(shapefileDir.getPath() + File.separator + desiredFilename + extension));
         }
 
-        String renamedShpPath = shapefileDir.getPath() + File.separator + desiredFilename + ".shp";
-        String renamedPrjPath = shapefileDir.getPath() + File.separator + desiredFilename + ".prj";
+        String renamedShpPath = shapefileDir.getPath() + File.separator + desiredFilename + shpSuffix;
+        String renamedPrjPath = shapefileDir.getPath() + File.separator + desiredFilename + prjSuffix;
 
         // Do EPSG processing
         String declaredCRS = null;
@@ -131,7 +145,8 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
             throw new RuntimeException("Error while getting EPSG information from PRJ file. Function halted.");
         }
 
-        String workspace = "upload";
+        
+        String workspace = uploadWorkspace;
         try {
             GeoserverManager mws = new GeoserverManager(wfsEndpoint,
                     AppConstant.WFS_USER.getValue(), AppConstant.WFS_PASS.getValue());
