@@ -133,8 +133,8 @@ public final class ResultsDatabase implements IDatabase {
     @Override
     public InputStream lookupResponse(String id) {
         File responseFile = lookupResponseAsFile(id);
-        LOGGER.info("Response file for {} is {}", id, responseFile.getPath());
         if (responseFile != null && responseFile.exists()) {
+            LOGGER.info("Response file for {} is {}", id, responseFile.getPath());
             try {
                 return responseFile.getName().endsWith(SUFFIX_GZIP) ?
                     new GZIPInputStream(new FileInputStream(responseFile)) :
