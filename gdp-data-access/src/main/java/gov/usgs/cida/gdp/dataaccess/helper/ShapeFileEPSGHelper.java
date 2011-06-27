@@ -18,9 +18,11 @@ public class ShapeFileEPSGHelper {
     private static Logger log = LoggerFactory.getLogger(ShapeFileEPSGHelper.class);
 
     public static String getDeclaredEPSGFromPrj(final File prjFile) throws IOException, FactoryException {
-        log.debug(new StringBuilder("Attempting to get EPSG from file: ").append(prjFile.getPath()).toString());
         String result = null;
-        if (prjFile == null || !prjFile.exists()) return result;
+        if (prjFile == null || !prjFile.exists()) {
+            return result;
+        }
+        log.debug(new StringBuilder("Attempting to get EPSG from file: ").append(prjFile.getPath()).toString());
 
         byte[] wktByteArray = FileHelper.getByteArrayFromFile(prjFile);
         result = ShapeFileEPSGHelper.getDeclaredEPSGFromWKT(new String(wktByteArray));
@@ -30,7 +32,9 @@ public class ShapeFileEPSGHelper {
     public static String getDeclaredEPSGFromWKT(final String wkt) throws FactoryException {
         log.debug(new StringBuilder("Attempting to get EPSG from WKT: ").append(wkt).toString());
         String result = null;
-        if (wkt == null || "".equals(wkt)) return result;
+        if (wkt == null || "".equals(wkt)) {
+            return result;
+        }
 
         CoordinateReferenceSystem crs = null;
         try {
