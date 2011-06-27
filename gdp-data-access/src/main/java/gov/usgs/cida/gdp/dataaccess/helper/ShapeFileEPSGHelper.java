@@ -45,7 +45,7 @@ public class ShapeFileEPSGHelper {
         if (result == null && crs instanceof ProjectedCRS) {
             result = CRS.lookupIdentifier(((ProjectedCRS)crs).getBaseCRS(), true);
         }
-
+        log.debug("Found " + result);
         return result;
     }
 
