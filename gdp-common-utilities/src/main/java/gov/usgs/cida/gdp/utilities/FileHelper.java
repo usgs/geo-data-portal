@@ -20,6 +20,7 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.slf4j.LoggerFactory;
 
@@ -79,8 +80,6 @@ public class FileHelper {
 
         log.debug(new StringBuilder("Attempting to get a byte array from file: ").append(file.getPath()).toString());
 
-        InputStream is = new FileInputStream(file);
-
         // Get the size of the file
         long length = file.length();
 
@@ -92,8 +91,10 @@ public class FileHelper {
 
         // Read in the bytes
         int offset = 0, numRead = 0;
-
+        
+        InputStream is = null;
         try {
+            is = new FileInputStream(file);
             while (offset < bytes.length && (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0) {
                 offset += numRead;
             }
@@ -426,29 +427,35 @@ public class FileHelper {
      */
     public static boolean unzipFile(String outputDirectory, File zipFile) throws FileNotFoundException, IOException {
         FileInputStream fis = new FileInputStream(zipFile);
-        ZipInputStream zis = new ZipInputStream(new BufferedInputStream(fis));
-        ZipEntry entry = null;
+        ZipInputStream zis = null;
         BufferedOutputStream dest = null;
+        try {
+            zis = new ZipInputStream(new BufferedInputStream(fis));
+            ZipEntry entry = null;
+            
 
-        final int BUFFER = 2048;
-        while ((entry = zis.getNextEntry()) != null) {
-            String fileName = entry.getName();
-            int count = 0;
-            byte data[] = new byte[BUFFER];
-            // Get the final filename (even if it's within directories in the ZIP file)
-            String destinationFileName = entry.getName().contains(File.pathSeparator) ? entry.getName().substring(entry.getName().lastIndexOf(File.pathSeparator)) : entry.getName();
-            String destinationPath = outputDirectory + java.io.File.separator + destinationFileName;
-            FileOutputStream fos = new FileOutputStream(destinationPath);
-            dest = new BufferedOutputStream(fos, BUFFER);
-            log.debug(new StringBuilder("Unzipping: ").append(fileName).append(" to ").append(destinationPath).toString());
-            while ((count = zis.read(data, 0, BUFFER)) != -1) {
-                dest.write(data, 0, count);
+            final int BUFFER = 2048;
+            while ((entry = zis.getNextEntry()) != null) {
+                String fileName = entry.getName();
+                int count = 0;
+                byte data[] = new byte[BUFFER];
+                // Get the final filename (even if it's within directories in the ZIP file)
+                String destinationFileName = entry.getName().contains(File.pathSeparator) ? entry.getName().substring(entry.getName().lastIndexOf(File.pathSeparator)) : entry.getName();
+                String destinationPath = outputDirectory + java.io.File.separator + destinationFileName;
+                FileOutputStream fos = new FileOutputStream(destinationPath);
+                dest = new BufferedOutputStream(fos, BUFFER);
+                log.debug(new StringBuilder("Unzipping: ").append(fileName).append(" to ").append(destinationPath).toString());
+                while ((count = zis.read(data, 0, BUFFER)) != -1) {
+                    dest.write(data, 0, count);
+                }
+                dest.flush();
+                dest.close();
+                log.trace(new StringBuilder("Unzipped: ").append(fileName).append(" to ").append(destinationPath).toString());
             }
-            dest.flush();
-            dest.close();
-            log.trace(new StringBuilder("Unzipped: ").append(fileName).append(" to ").append(destinationPath).toString());
+        } finally {
+            if (zis != null) IOUtils.closeQuietly(zis);
+            if (dest != null) IOUtils.closeQuietly(dest);
         }
-        zis.close();
         return true;
     }
 
