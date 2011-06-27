@@ -58,7 +58,7 @@ public class CalculateWCSCoverageInfo extends AbstractSelfDescribingAlgorithm {
         	wcsCoverageInfoBean = WCSCoverageInfoHelper.calculateWCSCoverageInfo(wfsURL, dataStore,
                     lowerCorner, upperCorner, crs, gridOffsets, dataTypeString);
         } catch (Exception e) {
-        	System.out.println(e.getMessage());
+        	log.error(e.getMessage());
         }
 
         result.put("result", new LiteralStringBinding(wcsCoverageInfoBean.toXML()));
