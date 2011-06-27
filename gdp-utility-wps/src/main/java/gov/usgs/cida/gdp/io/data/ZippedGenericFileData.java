@@ -51,7 +51,7 @@ public class ZippedGenericFileData extends GenericFileData {
         int bufferLength = 2048;
         byte buffer[] = new byte[bufferLength];
         String fileName = null;
-        String baseFileName = new Long(System.currentTimeMillis()).toString();
+        String baseFileName = Long.valueOf(System.currentTimeMillis()).toString();
 
         fileName = baseFileName + "." + extension;
         File currentFile = new File(writeDirectory, fileName);
@@ -81,7 +81,7 @@ public class ZippedGenericFileData extends GenericFileData {
     private String unzipData(InputStream is, String extension, File writeDirectory) throws IOException {
         int bufferLength = 2048;
         byte buffer[] = new byte[bufferLength];
-        String baseFileName = new Long(System.currentTimeMillis()).toString();
+        String baseFileName = Long.valueOf(System.currentTimeMillis()).toString();
 
         ZipInputStream zipInputStream = new ZipInputStream(
                 new BufferedInputStream(is));
