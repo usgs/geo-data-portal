@@ -61,6 +61,7 @@ public class CalculateWCSCoverageInfo extends AbstractSelfDescribingAlgorithm {
         	log.error(e.getMessage());
         }
 
+        //TODO- The wcsCoverageInfoBean variable may be null here. What do we do if it is? Currently this would cause an NPE
         result.put("result", new LiteralStringBinding(wcsCoverageInfoBean.toXML()));
         return result;
     }
