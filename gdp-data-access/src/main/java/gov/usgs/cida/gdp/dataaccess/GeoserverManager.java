@@ -57,7 +57,8 @@ public class GeoserverManager {
         String workspacesPath = "rest/workspaces/";
         if (!workspaceExists(workspace)) {
             String workspaceXML = createWorkspaceXML(workspace);
-            sendRequest(workspacesPath, "POST", "text/xml", workspaceXML);
+            log.debug("Sending XML to GeoServer to create workspace: " + workspace + ". Response follows.");
+            HttpResponse htr = sendRequest(workspacesPath, "POST", "text/xml", workspaceXML);
         }
 
         String dataStoresPath = workspacesPath + workspace + "/datastores/";
@@ -152,6 +153,10 @@ public class GeoserverManager {
 
     /**
      * Deletes the directory the shapefiles are located in on disk.
+     * @param workspace 
+     * @param dataStore 
+     * @throws IOException
+     * @throws XPathExpressionException  
      */
     public void deleteAndWipeDataStore(String workspace, String dataStore)
             throws IOException, XPathExpressionException {
@@ -387,8 +392,9 @@ public class GeoserverManager {
                 ((HttpEntityEnclosingRequestBase) request).setEntity(contentEntity);
             }
         }
-        
-        return client.execute(request);
+        HttpResponse response = client.execute(request);
+        log.debug("Geoserver Response: " + response.getStatusLine().getReasonPhrase() + " " + response.getStatusLine().getStatusCode());
+        return response;
     }
   
     static String createWorkspaceXML(String workspace) {
