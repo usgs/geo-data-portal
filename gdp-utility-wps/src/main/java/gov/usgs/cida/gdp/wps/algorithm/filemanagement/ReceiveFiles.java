@@ -35,27 +35,29 @@ import org.slf4j.LoggerFactory;
 public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
     private Logger log = LoggerFactory.getLogger(ReceiveFiles.class);
     private List<String> errors = new ArrayList<String>();
-
+    private final static String SUFFIX_SHP = ".shp";
+    private final static String SUFFIX_SHX = ".shx";
+    private final static String SUFFIX_PRJ = ".prj";
+    private final static String SUFFIX_DBF = ".dbf";
+    private final static String UPLOAD_WORKSPACE = "upload";
+    private final static String PARAM_FILE = "file";
+    private final static String PARAM_WFS_URL = "wfs-url";
+    private final static String PARAM_FILENAME = "filename";
+    private final static String PARAM_RESULT = "result";
+    private final static String PARAM_FEATURETYPE = "featuretype";
+        
 
     @Override
     public Map<String, IData> run(Map<String, List<IData>> inputData) {
-        String shpSuffix = ".shp";
-        String shxSuffix = ".shx";
-        String prjSuffix = ".prj";
-        String dbfSuffix = ".dbf";
-        String uploadWorkspace = "upload";
-        String fileParam = "file";
-        String wfsUrl = "wfs-url";
-        String filename = "filename";
         
         if (inputData == null)  throw new RuntimeException("Error while allocating input parameters.");
-        if (!inputData.containsKey(fileParam))  {
+        if (!inputData.containsKey(PARAM_FILE))  {
             throw new RuntimeException("Error: Missing input parameter 'file'");
         }
-        if (!inputData.containsKey(wfsUrl))  {
+        if (!inputData.containsKey(PARAM_WFS_URL))  {
             throw new RuntimeException("Error: Missing input parameter 'wfs-url'");
         }
-        if (!inputData.containsKey(filename)) {
+        if (!inputData.containsKey(PARAM_FILENAME)) {
             throw new RuntimeException("Error: Missing input parameter 'filename'");
         }
 
@@ -66,13 +68,13 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
         File temp = new File(fileDump);
         temp.mkdirs();
 
-        List<IData> dataList = inputData.get(filename);
+        List<IData> dataList = inputData.get(PARAM_FILENAME);
         String desiredFilename = (((LiteralStringBinding) dataList.get(0)).getPayload()).replace(" ", "_");
 
-        List<IData> wfsEndpointList = inputData.get(wfsUrl);
+        List<IData> wfsEndpointList = inputData.get(PARAM_WFS_URL);
         String wfsEndpoint = ((LiteralStringBinding) wfsEndpointList.get(0)).getPayload();
 
-        dataList = inputData.get(fileParam);
+        dataList = inputData.get(PARAM_FILE);
         IData data = dataList.get(0);
 
         // Process each input one at a time
@@ -104,7 +106,7 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
         List<String> filenamesList = Arrays.asList(filenames);
 
         // Make sure required files are present
-        String[] requiredFiles = { shpSuffix, shxSuffix, prjSuffix, dbfSuffix };
+        String[] requiredFiles = { SUFFIX_SHP, SUFFIX_SHX, SUFFIX_PRJ, SUFFIX_DBF };
         for (String requiredFile : requiredFiles) {
             if (!filenamesList.contains(shapefileNamePrefix + requiredFile)) {
                 throw new RuntimeException("Zip file missing " + requiredFile + " file.");
@@ -120,8 +122,8 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
             f.renameTo(new File(shapefileDir.getPath() + File.separator + desiredFilename + extension));
         }
 
-        String renamedShpPath = shapefileDir.getPath() + File.separator + desiredFilename + shpSuffix;
-        String renamedPrjPath = shapefileDir.getPath() + File.separator + desiredFilename + prjSuffix;
+        String renamedShpPath = shapefileDir.getPath() + File.separator + desiredFilename + SUFFIX_SHP;
+        String renamedPrjPath = shapefileDir.getPath() + File.separator + desiredFilename + SUFFIX_PRJ;
 
         // Do EPSG processing
         String declaredCRS = null;
@@ -146,7 +148,7 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
         }
 
         
-        String workspace = uploadWorkspace;
+        String workspace = UPLOAD_WORKSPACE;
         try {
             GeoserverManager mws = new GeoserverManager(wfsEndpoint,
                     AppConstant.WFS_USER.getValue(), AppConstant.WFS_PASS.getValue());
@@ -160,21 +162,21 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
         Map<String, IData> result = new HashMap<String, IData>();
         
         // GeoServer has accepted the shapefile. Send the success response to the client.
-        result.put("result", new LiteralStringBinding("OK: " + desiredFilename + " successfully uploaded to workspace '" + workspace + "'"));
-        result.put("wfs-url", new LiteralStringBinding(wfsEndpoint + "?Service=WFS&Version=1.0.0&"));
-        result.put("featuretype", new LiteralStringBinding(workspace + ":" + desiredFilename));
+        result.put(PARAM_RESULT, new LiteralStringBinding("OK: " + desiredFilename + " successfully uploaded to workspace '" + workspace + "'"));
+        result.put(PARAM_WFS_URL, new LiteralStringBinding(wfsEndpoint + "?Service=WFS&Version=1.0.0&"));
+        result.put(PARAM_FEATURETYPE, new LiteralStringBinding(workspace + ":" + desiredFilename));
         return result;
     }
 
     @Override
     public BigInteger getMaxOccurs(String identifier) {
-        if ("wfs-url".equals(identifier)) {
+        if (PARAM_WFS_URL.equals(identifier)) {
             return BigInteger.valueOf(1);
         }
-        if ("filename".equals(identifier)) {
+        if (PARAM_FILENAME.equals(identifier)) {
             return BigInteger.valueOf(1);
         }
-        if ("file".equals(identifier)) {
+        if (PARAM_FILE.equals(identifier)) {
             return BigInteger.valueOf(1);
         }
         return super.getMaxOccurs(identifier);
@@ -182,13 +184,13 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
 
     @Override
     public BigInteger getMinOccurs(String identifier) {
-        if ("wfs-url".equals(identifier)) {
+        if (PARAM_WFS_URL.equals(identifier)) {
             return BigInteger.valueOf(1);
         }
-        if ("filename".equals(identifier)) {
+        if (PARAM_FILENAME.equals(identifier)) {
             return BigInteger.valueOf(1);
         }
-        if ("file".equals(identifier)) {
+        if (PARAM_FILE.equals(identifier)) {
             return BigInteger.valueOf(1);
         }
 
@@ -198,30 +200,30 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
     @Override
     public List<String> getInputIdentifiers() {
         List<String> result = new ArrayList<String>();
-        result.add("wfs-url");
-        result.add("filename");
-        result.add("file");
+        result.add(PARAM_WFS_URL);
+        result.add(PARAM_FILENAME);
+        result.add(PARAM_FILE);
         return result;
     }
 
     @Override
     public List<String> getOutputIdentifiers() {
         List<String> result = new ArrayList<String>();
-        result.add("result");
-        result.add("wfs-url");
-        result.add("featuretype");
+        result.add(PARAM_RESULT);
+        result.add(PARAM_WFS_URL);
+        result.add(PARAM_FEATURETYPE);
         return result;
     }
 
     @Override
     public Class getInputDataType(String id) {
-        if ("wfs-url".equals(id)) {
+        if (PARAM_WFS_URL.equals(id)) {
             return LiteralStringBinding.class;
         }
-        if ("filename".equals(id)) {
+        if (PARAM_FILENAME.equals(id)) {
             return LiteralStringBinding.class;
         }
-        if ("file".equals(id)) {
+        if (PARAM_FILE.equals(id)) {
             return GenericFileDataBinding.class;
         }
         return null;
@@ -229,13 +231,13 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
 
     @Override
     public Class getOutputDataType(String id) {
-        if (id.equals("result")) {
+        if (id.equals(PARAM_RESULT)) {
             return LiteralStringBinding.class;
         }
-        if (id.equals("wfs-url")) {
+        if (id.equals(PARAM_WFS_URL)) {
             return LiteralStringBinding.class;
         }
-        if (id.equals("featuretype")) {
+        if (id.equals(PARAM_FEATURETYPE)) {
             return LiteralStringBinding.class;
         }
         return null;
