@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import org.apache.commons.io.IOUtils;
 import org.n52.wps.io.data.GenericFileDataConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,16 +60,19 @@ public class ZippedGenericFileData extends GenericFileData {
         fileName = currentFile.getAbsolutePath();
 
         FileOutputStream fos = new FileOutputStream(currentFile);
-        BufferedOutputStream bos = new BufferedOutputStream(fos, bufferLength);
+        BufferedOutputStream bos = null;
+        try {
+            bos = new BufferedOutputStream(fos, bufferLength);
 
-        int cnt;
-        while ((cnt = is.read(buffer, 0, bufferLength)) != -1) {
-            bos.write(buffer, 0, cnt);
+            int cnt;
+            while ((cnt = is.read(buffer, 0, bufferLength)) != -1) {
+                bos.write(buffer, 0, cnt);
+            }
+        } finally {
+            if (bos != null) {
+               IOUtils.closeQuietly(bos); 
+            }
         }
-
-        bos.flush();
-        bos.close();
-
         System.gc();
 
         return fileName;
@@ -99,17 +103,18 @@ public class ZippedGenericFileData extends GenericFileData {
             
                 currentFile.createNewFile();
                 FileOutputStream fos = new FileOutputStream(currentFile);
-                BufferedOutputStream bos = new BufferedOutputStream(fos,
-                        bufferLength);
-
-                int cnt;
-                while ((cnt = zipInputStream.read(buffer, 0, bufferLength)) != -1) {
-                    bos.write(buffer, 0, cnt);
+                BufferedOutputStream bos = null;
+                try {
+                    bos = new BufferedOutputStream(fos, bufferLength);
+                    int cnt;
+                    while ((cnt = zipInputStream.read(buffer, 0, bufferLength)) != -1) {
+                        bos.write(buffer, 0, cnt);
+                    }
+                } finally {
+                    if (bos != null) {
+                        IOUtils.closeQuietly(bos);
+                    }
                 }
-
-                bos.flush();
-                bos.close();
-
                 if (currentExtension.equalsIgnoreCase(extension)) {
                     returnFile = currentFile.getAbsolutePath();
                 }
