@@ -125,7 +125,7 @@ public class FeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotatedAlg
     @Process
     public void process() {
 
-        FeatureDataset featureDataset = null;
+//        FeatureDataset featureDataset = null;
         BufferedWriter writer = null;
         try {
             if (featureCollection.getSchema().getDescriptor(featureAttributeName) == null) {
@@ -176,7 +176,7 @@ public class FeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotatedAlg
         } catch (Exception e) {
             addError("General Error: " + e.getMessage());
         } finally {
-            if (featureDataset != null) try { featureDataset.close(); } catch (IOException e) { }
+//            if (featureDataset != null) try { featureDataset.close(); } catch (IOException e) { }
             IOUtils.closeQuietly(writer);
         }
     }

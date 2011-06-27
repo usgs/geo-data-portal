@@ -81,8 +81,7 @@ public class FeatureCategoricalGridCoverageAlgorithm extends AbstractAnnotatedAl
 
     @Process
     public void process() {
-
-        FeatureDataset featureDataset = null;
+//        FeatureDataset featureDataset = null;
         BufferedWriter writer = null;
 
         try {
@@ -118,7 +117,7 @@ public class FeatureCategoricalGridCoverageAlgorithm extends AbstractAnnotatedAl
         } catch (SchemaException e) {
             throw new RuntimeException(e);
         } finally {
-            if (featureDataset != null) try { featureDataset.close(); } catch (IOException e) { }
+//            if (featureDataset != null) try { featureDataset.close(); } catch (IOException e) { }
             IOUtils.closeQuietly(writer);
         }
     }
