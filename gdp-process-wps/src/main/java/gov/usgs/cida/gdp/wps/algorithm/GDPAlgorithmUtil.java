@@ -27,14 +27,6 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
  */
 public abstract class GDPAlgorithmUtil {
 
-    public final static String INPUT_FEATURE_COLLECTION = "FEATURE_COLLECTION";
-    public final static String INPUT_FEATURE_ATTRIBUTE_NAME = "FEATURE_ATTRIBUTE_NAME";
-    public final static String INPUT_DATASET_URI = "DATASET_URI";
-    public final static String INPUT_DATASET_ID = "DATASET_ID";
-    public final static String INPUT_REQUIRE_FULL_COVERAGE = "REQUIRE_FULL_COVERAGE";
-    public final static String INPUT_TIME_START = "TIME_START";
-    public final static String INPUT_TIME_END = "TIME_END";
-
     private GDPAlgorithmUtil() { }
 
     public static GridDataset generateGridDataSet(URI datasetURI) {

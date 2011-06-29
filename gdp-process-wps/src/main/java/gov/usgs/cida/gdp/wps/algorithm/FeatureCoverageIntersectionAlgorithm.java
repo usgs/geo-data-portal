@@ -30,27 +30,45 @@ public class FeatureCoverageIntersectionAlgorithm extends AbstractAnnotatedAlgor
 
     private File output;
 
-    @ComplexDataInput(identifier=GDPAlgorithmUtil.INPUT_FEATURE_COLLECTION, binding=GTVectorDataBinding.class)
+    @ComplexDataInput(
+            identifier=GDPAlgorithmConstants.FEATURE_COLLECTION_IDENTIFIER,
+            title=GDPAlgorithmConstants.FEATURE_COLLECTION_TITLE,
+            abstrakt=GDPAlgorithmConstants.FEATURE_COLLECTION_ABSTRACT,
+            binding=GTVectorDataBinding.class)
     public void setFeatureCollection(FeatureCollection featureCollection) {
         this.featureCollection = featureCollection;
     }
 
-    @LiteralDataInput(identifier=GDPAlgorithmUtil.INPUT_DATASET_URI)
+    @LiteralDataInput(
+            identifier=GDPAlgorithmConstants.DATASET_URI_IDENTIFIER,
+            title=GDPAlgorithmConstants.DATASET_URI_TITLE,
+            abstrakt=GDPAlgorithmConstants.DATASET_URI_ABSTRACT + " The data web service must adhere to the Web Coverage Service standard.")
     public void setDatasetURI(URI datasetURI) {
         this.datasetURI = datasetURI;
     }
 
-    @LiteralDataInput(identifier=GDPAlgorithmUtil.INPUT_DATASET_ID)
+    @LiteralDataInput(
+            identifier=GDPAlgorithmConstants.DATASET_ID_IDENTIFIER,
+            title=GDPAlgorithmConstants.DATASET_ID_TITLE,
+            abstrakt=GDPAlgorithmConstants.DATASET_ID_ABSTRACT,
+            maxOccurs= Integer.MAX_VALUE)
     public void setDatasetId(String datasetId) {
         this.datasetId = datasetId;
     }
     
-    @LiteralDataInput(identifier=GDPAlgorithmUtil.INPUT_REQUIRE_FULL_COVERAGE, defaultValue="true")
+    @LiteralDataInput(
+            identifier=GDPAlgorithmConstants.REQUIRE_FULL_COVERAGE_IDENTIFIER,
+            title=GDPAlgorithmConstants.REQUIRE_FULL_COVERAGE_TITLE,
+            abstrakt=GDPAlgorithmConstants.REQUIRE_FULL_COVERAGE_ABSTRACT,
+            defaultValue="true")
     public void setRequireFullCoverage(boolean requireFullCoverage) {
         this.requireFullCoverage = requireFullCoverage;
     }
 
-    @ComplexDataOutput(identifier="OUTPUT", binding=GeoTIFFFileBinding.class)
+    @ComplexDataOutput(identifier="OUTPUT",
+            title="Output File",
+            abstrakt="A GeoTIFF file containing the requested data.",
+            binding=GeoTIFFFileBinding.class)
     public File getOutput() {
         return output;
     }
