@@ -148,6 +148,7 @@ public class FeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotatedAlg
             identifier="SUMMARIZE_TIMESTEP",
             title="Summarize Timestep",
             abstrakt="If selected, processing output will include a final row summarizing all time steps.",
+            minOccurs=0,
             defaultValue="false")
     public void setSummarizeTimeStep(boolean summarizeTimeStep) {
         this.summarizeTimeStep = summarizeTimeStep;
@@ -157,6 +158,7 @@ public class FeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotatedAlg
             identifier="SUMMARIZE_FEATURE_ATTRIBUTE",
             title="Summarize Feature Attribute",
             abstrakt="If selected, processing output will include a final set of statistics summarizing all polygon analysis features.",
+            minOccurs=0,
             defaultValue="false")
     public void setSummarizeFeatureAttribute(boolean summarizeFeatureAttribute) {
         this.summarizeFeatureAttribute = summarizeFeatureAttribute;
