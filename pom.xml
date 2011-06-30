@@ -4,7 +4,7 @@
     <groupId>gov.usgs.cida.gdp</groupId>
     <artifactId>gdp</artifactId>
     <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>10.0-SNAPSHOT</version>
     <name>GDP</name>
     <description>
         Owner: NB
@@ -27,6 +27,29 @@ Coders: TK, JW, RZ, IS
 		<system>Hudson</system>
 		<url>http://igsarm-cida-hudson1.er.usgs.gov:8080/hudson/job/GeoDataPortal/</url>
 	</ciManagement>
+    <scm>
+		<developerConnection>scm:svn:https://cida-svn.er.usgs.gov/repos/dev/usgs/gdp/trunk</developerConnection>
+	</scm>
+	<distributionManagement>
+		<repository>
+			<id>cida-gdp-releases</id>
+			<name>CIDA GDP Releases</name>
+            <url>http://igsarmewfsbbl.er.usgs.gov:8081/nexus/content/repositories/cida-gdp-releases</url>
+            <!-- intermittent artifact transfer failures -->
+<!--			<url>http://internal.cida.usgs.gov/nexus/content/repositories/cida-gdp-releases</url>-->
+            <!-- may change to URL below in future -->
+<!--			<url>http://internal.cida.usgs.gov/maven/content/repositories/cida-gdp-releases</url>-->
+		</repository>
+		<snapshotRepository>
+			<id>cida-gdp-snapshots</id>
+			<name>CIDA GDP Snapshots</name>
+            <url>http://igsarmewfsbbl.er.usgs.gov:8081/nexus/content/repositories/cida-gdp-snapshots</url>
+            <!-- intermittent artifact transfer failures -->
+<!--			<url>http://internal.cida.usgs.gov/nexus/content/repositories/cida-gdp-snapshots</url>-->
+            <!-- may change to URL below in future -->
+<!--            <url>http://internal.cida.usgs.gov/maven/content/repositories/cida-gdp-snapshots</url>-->
+		</snapshotRepository>
+	</distributionManagement>
     <repositories>
         <repository>
             <id>cida-gdp-development</id>
@@ -353,6 +376,13 @@ Coders: TK, JW, RZ, IS
     <build>
         <pluginManagement>
             <plugins>
+				<plugin>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>2.1</version>
+					<configuration>
+						<tagBase>https://cida-svn.er.usgs.gov/repos/dev/usgs/gdp/tags</tagBase>
+					</configuration>
+				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
