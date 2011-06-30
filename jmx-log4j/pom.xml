@@ -4,7 +4,7 @@
     <parent>
         <groupId>gov.usgs.cida.gdp</groupId>
         <artifactId>gdp</artifactId>
-        <version>10-SNAPSHOT</version>
+        <version>10</version>
     </parent>
 <!--    <groupId>gov.usgs.cida.jmx</groupId>-->
     <artifactId>jmx-log4j</artifactId>
