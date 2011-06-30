@@ -4,7 +4,7 @@
     <parent>
         <artifactId>gdp</artifactId>
         <groupId>gov.usgs.cida.gdp</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>10.0-SNAPSHOT</version>
     </parent>
     <artifactId>gdp-process-wps</artifactId>
     <packaging>war</packaging>
@@ -43,7 +43,7 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>gov.usgs.cida.jmx</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>jmx-log4j</artifactId>
             <version>${project.version}</version>
         </dependency>
