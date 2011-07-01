@@ -22,6 +22,18 @@
     </properties>    
     <profiles>
         <profile>
+            <!-- set property from environmnet variable if present -->
+            <id>cargo-deploy-version</id>
+            <activation>
+                <property>
+                    <name>env.CARGO_DEPLOY_VERSION</name>
+                </property>
+            </activation>
+            <properties>
+                <cargo.deploy.version>${env.CARGO_DEPLOY_VERSION}</cargo.deploy.version>
+            </properties>
+        </profile>
+        <profile>
             <id>development</id>
             <activation>
                 <property>
