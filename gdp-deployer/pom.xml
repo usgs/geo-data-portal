@@ -15,11 +15,18 @@
 Coders: TK, JW, RZ, IS
     </description>
     <modules>
-        <module>gdp-process-utility</module>
+        <module>gdp-utility-wps</module>
         <module>gdp-process-wps</module>
+        <module>geoserver</module>
     </modules>
     <build>
-<!--        <pluginManagement>-->
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.cargo</groupId>
+                <artifactId>cargo-maven2-plugin</artifactId>
+            </plugin>
+        </plugins>
+        <pluginManagement>
             <plugins>
                 <plugin>
                     <groupId>org.codehaus.cargo</groupId>
@@ -27,6 +34,6 @@ Coders: TK, JW, RZ, IS
                     <version>1.1.1</version>
                 </plugin>
             </plugins>
-<!--        </pluginManagement>-->
+        </pluginManagement>
     </build>
 </project>

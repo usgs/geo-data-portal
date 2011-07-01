@@ -19,9 +19,10 @@ Coders: TK, JW, RZ, IS
         <module>gdp-process-wps</module>
         <module>jmx-log4j</module>
         <module>jmx</module>
+        <module>gdp-wfst</module>
         <module>geoserver</module>
 <!--        <module>geonetwork</module>-->
-        <module>gdp-wfst</module>
+        <module>gdp-deployer</module>
     </modules>
     <ciManagement>
 		<system>Hudson</system>

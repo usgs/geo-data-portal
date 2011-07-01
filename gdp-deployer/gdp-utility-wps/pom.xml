@@ -22,17 +22,45 @@
     </properties>
     <profiles>
         <profile>
-            <id>cargo-localhost</id>
+            <id>development</id>
+            <activation>
+                <property>
+                    <name>env.CARGO_PROFILE</name>
+                    <value>development</value>
+                </property>
+            </activation>
             <properties>
                 <cargo.containerId>tomcat6x</cargo.containerId>
-                <cargo.server.settings>cargo-localhost</cargo.server.settings>
+                <!-- references server id in settings.xml -->
+                <cargo.server.settings>cargo-javadev1-8080</cargo.server.settings>
             </properties>
         </profile>
         <profile>
-            <id>cargo-javadev1</id>
+            <id>staging</id>
+            <activation>
+                <property>
+                    <name>env.CARGO_PROFILE</name>
+                    <value>staging</value>
+                </property>
+            </activation>
             <properties>
                 <cargo.containerId>tomcat6x</cargo.containerId>
-                <cargo.server.settings>cargo-javadev1</cargo.server.settings>
+                <!-- references server id in settings.xml -->
+                <cargo.server.settings><!-- set when we have staging --></cargo.server.settings>
+            </properties>
+        </profile>
+        <profile>
+            <id>production</id>
+            <activation>
+                <property>
+                    <name>env.CARGO_PROFILE</name>
+                    <value>production</value>
+                </property>
+            </activation>
+            <properties>
+                <cargo.containerId>tomcat6x</cargo.containerId>
+                <!-- references server id in settings.xml -->
+                <cargo.server.settings>cargo-gdp2-8080</cargo.server.settings>
             </properties>
         </profile>
     </profiles>
@@ -41,7 +69,6 @@
             <plugin>
                 <groupId>org.codehaus.cargo</groupId>
                 <artifactId>cargo-maven2-plugin</artifactId>
-                <version>1.1.1</version>
                 <configuration>
                     <container>
                         <containerId>${cargo.containerId}</containerId>
@@ -60,7 +87,7 @@
                                 <artifactId>${project.artifactId}</artifactId>
                                 <type>war</type>
                                 <properties>
-                                  <context>${project.artifactId}</context>
+                                    <context>${project.artifactId}</context>
                                 </properties>
                             </deployable>
                         </deployables>
