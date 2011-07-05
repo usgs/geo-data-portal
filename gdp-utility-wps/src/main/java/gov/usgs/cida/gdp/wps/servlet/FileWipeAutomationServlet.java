@@ -66,8 +66,8 @@ public class FileWipeAutomationServlet implements ServletContextListener {
 
         // Set up the tast to run every hour, starting 1 hour from now
         task = new Timer("File-Wipe-Timer",true);
-//        task.scheduleAtFixedRate(new ScanFileTask(workSpaceDir, fileAgeLong), 0l, 3600000l);
-        task.scheduleAtFixedRate(new ScanFileTask(workSpaceDir, fileAgeLong), 0l, 30000l); // Half minute test timer
+        task.scheduleAtFixedRate(new ScanFileTask(workSpaceDir, fileAgeLong), 0l, 3600000l);
+//        task.scheduleAtFixedRate(new ScanFileTask(workSpaceDir, fileAgeLong), 0l, 30000l); // Half minute test timer
         
         log.info("File Wipe system started.");
     }
