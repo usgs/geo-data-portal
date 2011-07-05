@@ -17,8 +17,6 @@ Coders: TK, JW, RZ, IS
         <module>gdp-geotiff</module>
         <module>gdp-utility-wps</module>
         <module>gdp-process-wps</module>
-        <module>jmx-log4j</module>
-        <module>jmx</module>
         <module>gdp-wfst</module>
         <module>geoserver</module>
 <!--        <module>geonetwork</module>-->
@@ -233,6 +231,11 @@ Coders: TK, JW, RZ, IS
                         <groupId>com.bea.xml</groupId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>gov.usgs.cida.jmx</groupId>
+                <artifactId>jmx-log4j</artifactId>
+                <version>1.0</version>
             </dependency>
             <!-- NetCDF-Java and dependencies -->
             <dependency>
