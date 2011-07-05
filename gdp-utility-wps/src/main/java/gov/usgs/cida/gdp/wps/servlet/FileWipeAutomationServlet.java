@@ -66,42 +66,20 @@ public class FileWipeAutomationServlet implements ServletContextListener {
 
         // Set up the tast to run every hour, starting 1 hour from now
         task = new Timer("File-Wipe-Timer",true);
-        task.scheduleAtFixedRate(new ScanFileTask(userSpaceDir, uploadDirName, workSpaceDir, fileAgeLong), 0l, 3600000l);
-//        task.scheduleAtFixedRate(new ScanFileTask(userSpaceDir, uploadDirName, workSpaceDir, fileAgeLong), 0l, 30000l);
-
-        // One minute test timer
-        //task.scheduleAtFixedRate(new ScanFileTask(userSpaceDir, uploadDirName, 60000l), 0l, 60000l);
+        task.scheduleAtFixedRate(new ScanFileTask(workSpaceDir, fileAgeLong), 0l, 3600000l);
+        //task.scheduleAtFixedRate(new ScanFileTask(workSpaceDir, fileAgeLong), 0l, 60000l); // One minute test timer
+        
         log.info("File Wipe system started.");
-        log.info("Will check " + uploadDirName.getPath() + " for files older than " + (Long.valueOf(fileAgeLong) /  3600000) + " hour(s), every hour.");
-        log.info("Will check " + userSpaceDir.getPath() +  " for files older than " + (Long.valueOf(fileAgeLong) /  3600000) + " hour(s), every hour.");
     }
 
-    class ScanFileTask extends TimerTask {
+    private class ScanFileTask extends TimerTask {
         private long hoursToWipe;
-        private File userspaceDir;
         private File workspaceDir;
-        private File repositoryDir;
 
         @Override
         public void run() {
             log.info("Running File Wipe Task... ");
             Collection<File> filesDeleted = new ArrayList<File>();
-            
-            if (getUserspaceDir() != null && getUserspaceDir().exists()) {
-                log.info("Checking user space directory " + getUserspaceDir().getPath() + " for files older than " + Long.valueOf(this.hoursToWipe) + "ms");
-                filesDeleted = FileHelper.wipeOldFiles(getUserspaceDir(), Long.valueOf(this.hoursToWipe), false);
-                if (!filesDeleted.isEmpty()) {
-                    log.info("Finished deleting userspace files. " + filesDeleted.size() + " deleted.");
-                }
-            }
-
-            if (getWorkspaceDir() != null && getWorkspaceDir().exists()) {
-                log.info("Checking work space directory " + getUserspaceDir().getPath() + " for files older than " + Long.valueOf(this.hoursToWipe) + "ms");
-                filesDeleted = FileHelper.wipeOldFiles(getWorkspaceDir(), Long.valueOf(this.hoursToWipe), false);
-                if (!filesDeleted.isEmpty()) {
-                    log.info("Finished deleting workspace files. " + filesDeleted.size() + " deleted.");
-                }
-            }
 
             try {
                 GeoserverManager gm = new GeoserverManager(AppConstant.WFS_ENDPOINT.getValue(),
@@ -114,18 +92,17 @@ public class FileWipeAutomationServlet implements ServletContextListener {
                 Logger.getLogger(FileWipeAutomationServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-            if (getRepositoryDir() != null && getRepositoryDir().exists()) {
-                filesDeleted = FileHelper.wipeOldFiles(getRepositoryDir(), Long.valueOf(this.hoursToWipe), false);
+            if (getWorkspaceDir() != null && getWorkspaceDir().exists()) {
+                log.info("Checking work space directory " + getWorkspaceDir().getPath() + " for files older than " + Long.valueOf(this.hoursToWipe) + "ms");
+                filesDeleted = FileHelper.wipeOldFiles(getWorkspaceDir(), Long.valueOf(this.hoursToWipe), false);
                 if (!filesDeleted.isEmpty()) {
-                    log.info("Finished deleting repository directory files. " + filesDeleted.size() + " deleted.");
+                    log.info("Finished deleting workspace files. " + filesDeleted.size() + " deleted.");
                 }
             }
 
         }
 
-        public ScanFileTask(File userspaceDir, File repositoryDir, File workspaceDir, long hoursToWipe) {
-            this.userspaceDir = userspaceDir;
-            this.repositoryDir = repositoryDir;
+        public ScanFileTask(File workspaceDir, long hoursToWipe) {
             this.workspaceDir = workspaceDir;
             this.hoursToWipe = hoursToWipe;
         }
@@ -146,34 +123,6 @@ public class FileWipeAutomationServlet implements ServletContextListener {
          */
         public void setHoursToWipe(@SuppressWarnings("hiding") long hoursToWipe) {
             this.hoursToWipe = hoursToWipe;
-        }
-
-        /**
-         * @return the userspaceDir
-         */
-        public File getUserspaceDir() {
-            return this.userspaceDir;
-        }
-
-        /**
-         * @param userspaceDir the userspaceDir to set
-         */
-        public void getUserspaceDir(@SuppressWarnings("hiding") File userspaceDir) {
-            this.userspaceDir = userspaceDir;
-        }
-
-        /**
-         * @return the repositoryDir
-         */
-        public File getRepositoryDir() {
-            return this.repositoryDir;
-        }
-
-        /**
-         * @param repositoryDir the repositoryDir to set
-         */
-        public void setRepositoryDir(@SuppressWarnings("hiding") File repositoryDir) {
-            this.repositoryDir = repositoryDir;
         }
 
         /**
