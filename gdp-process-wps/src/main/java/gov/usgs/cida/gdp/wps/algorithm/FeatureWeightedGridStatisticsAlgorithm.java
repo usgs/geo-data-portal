@@ -147,7 +147,7 @@ public class FeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotatedAlg
     @LiteralDataInput(
             identifier="SUMMARIZE_TIMESTEP",
             title="Summarize Timestep",
-            abstrakt="If selected, processing output will include a final row summarizing all time steps.",
+            abstrakt="If selected, processing output will include columns with summarized statistics for all feature attribute values for each timestep",
             minOccurs=0,
             defaultValue="false")
     public void setSummarizeTimeStep(boolean summarizeTimeStep) {
@@ -157,7 +157,7 @@ public class FeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotatedAlg
     @LiteralDataInput(
             identifier="SUMMARIZE_FEATURE_ATTRIBUTE",
             title="Summarize Feature Attribute",
-            abstrakt="If selected, processing output will include a final set of statistics summarizing all polygon analysis features.",
+            abstrakt="If selected, processing output will include a final row of statistics summarizing all timesteps for each feature attribute value",
             minOccurs=0,
             defaultValue="false")
     public void setSummarizeFeatureAttribute(boolean summarizeFeatureAttribute) {
