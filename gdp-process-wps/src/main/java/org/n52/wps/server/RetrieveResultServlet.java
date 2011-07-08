@@ -89,9 +89,20 @@ public class RetrieveResultServlet extends HttpServlet {
                     
                     response.setContentType(mimeType);
                     
+                    if (contentLength > -1) {
+                        // Can't use response.setContentLength(...) as it accepts an int (max of 2^31 - 1) ?!
+                        response.addHeader("Content-Length", Long.toString(contentLength));
+                    } else {
+                        LOGGER.warn("Content-Length unknown for response to id {}", id);
+                    }
+                    
                     if ("xml".equals(suffix)) {
-                        // Don't set content-length as XML will have spacing removed,
-                        // 
+                        
+                        // need these to work around aggressive IE 8 caching.
+                        response.addHeader("Cache-Control", "no-cache, no-store");
+                        response.addHeader("Pragma", "no-cache");
+                        response.addHeader("Expires", "-1");
+                        
                         try {
                             outputStream = response.getOutputStream();
                         } catch (IOException e) {
@@ -99,12 +110,6 @@ public class RetrieveResultServlet extends HttpServlet {
                         }
                         copyResponseAsXML(inputStream, outputStream, id, useAttachment);
                     } else {
-                        if (contentLength > -1) {
-                            // Can't use response.setContentLength(...) as it accepts an int (max of 2^31 - 1) ?!
-                            response.addHeader("Content-Length", Long.toString(contentLength));
-                        } else {
-                            LOGGER.warn("Content-Length unknown for response to id {}", id);
-                        }
                         try {
                             outputStream = response.getOutputStream();
                         } catch (IOException e) {
