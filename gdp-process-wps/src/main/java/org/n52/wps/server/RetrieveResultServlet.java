@@ -89,14 +89,9 @@ public class RetrieveResultServlet extends HttpServlet {
                     
                     response.setContentType(mimeType);
                     
-                    if (contentLength > -1) {
-                        // Can't use response.setContentLength(...) as it accepts an int (max of 2^31 - 1) ?!
-                        response.addHeader("Content-Length", Long.toString(contentLength));
-                    } else {
-                        LOGGER.warn("Content-Length unknown for response to id {}", id);
-                    }
-                    
                     if ("xml".equals(suffix)) {
+                        
+                        // NOTE:  We don't set "Content-Length" header, xml may be modified
                         
                         // need these to work around aggressive IE 8 caching.
                         response.addHeader("Cache-Control", "no-cache, no-store");
@@ -110,6 +105,14 @@ public class RetrieveResultServlet extends HttpServlet {
                         }
                         copyResponseAsXML(inputStream, outputStream, id, useAttachment);
                     } else {
+                        
+                        if (contentLength > -1) {
+                            // Can't use response.setContentLength(...) as it accepts an int (max of 2^31 - 1) ?!
+                            response.setHeader("Content-Length", Long.toString(contentLength));
+                        } else {
+                            LOGGER.warn("Content-Length unknown for response to id {}", id);
+                        }
+                        
                         try {
                             outputStream = response.getOutputStream();
                         } catch (IOException e) {

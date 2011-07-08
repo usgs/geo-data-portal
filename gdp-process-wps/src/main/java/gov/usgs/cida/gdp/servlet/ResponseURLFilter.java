@@ -22,6 +22,8 @@ import org.slf4j.LoggerFactory;
  * @author tkunicki
  */
 public class ResponseURLFilter implements Filter {
+    
+    private final static String HEADER_CONTENT_LENGTH = "Content-Length";
 
     private final static Logger LOGGER = LoggerFactory.getLogger(ResponseURLFilter.class);
 
@@ -96,11 +98,56 @@ public class ResponseURLFilter implements Filter {
         }
 
         @Override
+        public void setContentLength(int len) {
+            if (allowHeader(HEADER_CONTENT_LENGTH, len)) {
+                super.setContentLength(len);
+            }
+        }
+        
+        @Override
+        public void addHeader(String name, String value) {
+            if (allowHeader(name, value)) {
+                super.addHeader(name, value);
+            }
+        }
+
+        @Override
         public void setHeader(String name, String value) {
-            if (!("Content-Length".equalsIgnoreCase(name) && enableFiltering(getContentType()))) {
-                super.setHeader(name, value);
-            } else {
+            if (allowHeader(name, value)) {
+                super.addHeader(name, value);
+            }
+        }
+        
+        @Override
+        public void addIntHeader(String name, int value) {
+            if (allowHeader(name, value)) {
+                super.addIntHeader(name, value);
+            }
+        }
+        
+        @Override
+        public void setIntHeader(String name, int value) {
+            if (allowHeader(name, value)) {
+                super.setIntHeader(name, value);
+            }
+        }
+
+        
+        private boolean allowHeader(String name, String value) {
+            if (HEADER_CONTENT_LENGTH.equalsIgnoreCase(name) && enableFiltering(getContentType())) {
                 LOGGER.info("Refusing to set \"Content-Length\" response header, response filtering is enabled and reponse length could change.");
+                return false;
+            } else {
+                return true;
+            }
+        }
+        
+        private boolean allowHeader(String name, int value) {
+            if (HEADER_CONTENT_LENGTH.equalsIgnoreCase(name) && enableFiltering(getContentType())) {
+                LOGGER.info("Refusing to set \"Content-Length\" response header, response filtering is enabled and reponse length could change.");
+                return false;
+            } else {
+                return true;
             }
         }
 
