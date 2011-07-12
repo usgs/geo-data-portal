@@ -5,7 +5,6 @@ import gov.usgs.cida.gdp.dataaccess.GeoserverManager;
 import gov.usgs.cida.gdp.utilities.FileHelper;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -14,7 +13,6 @@ import java.util.logging.Logger;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.servlet.http.HttpServlet;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.slf4j.LoggerFactory;
@@ -24,9 +22,10 @@ import org.slf4j.LoggerFactory;
  */
 public class FileWipeAutomationServlet implements ServletContextListener {
 
-    static org.slf4j.Logger log = LoggerFactory.getLogger(FileWipeAutomationServlet.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(FileWipeAutomationServlet.class);
     private static final long serialVersionUID = 1L;
-    private Timer task;
+    private static final long MAX_FILE_AGE = 3600000l;//30000l;
+    private static Timer task;
 
     /**
      * @see HttpServlet#HttpServlet()
@@ -42,9 +41,9 @@ public class FileWipeAutomationServlet implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        this.task.cancel();
-        this.task.purge();
-        log.info("File Wipe system stopped.");
+        FileWipeAutomationServlet.task.cancel();
+        FileWipeAutomationServlet.task.purge();
+        LOG.info("File Wipe system stopped.");
     }
     
     /**
@@ -52,7 +51,7 @@ public class FileWipeAutomationServlet implements ServletContextListener {
      * over 48 hours long.
      */
     private void initializeFilewipeTimer() {
-        log.info("File Wipe system starting.");
+        LOG.info("File Wipe system starting.");
 
         long fileAgeLong = Long.parseLong(AppConstant.FILE_WIPE_MILLIS.getValue());
         File uploadDirName = new File(AppConstant.SHAPEFILE_LOCATION.getValue());
@@ -64,22 +63,19 @@ public class FileWipeAutomationServlet implements ServletContextListener {
         FileHelper.createDir(userSpaceDir);
         FileHelper.createDir(workSpaceDir);
 
-        // Set up the tast to run every hour, starting 1 hour from now
         task = new Timer("File-Wipe-Timer",true);
-        task.scheduleAtFixedRate(new ScanFileTask(workSpaceDir, fileAgeLong), 0l, 3600000l);
-//        task.scheduleAtFixedRate(new ScanFileTask(workSpaceDir, fileAgeLong), 0l, 30000l); // Half minute test timer
+        task.scheduleAtFixedRate(new ScanFileTask(workSpaceDir, fileAgeLong), 0l, MAX_FILE_AGE);
         
-        log.info("File Wipe system started.");
+        LOG.info("File Wipe system started.");
     }
 
-    private class ScanFileTask extends TimerTask {
+    private static class ScanFileTask extends TimerTask {
         private long hoursToWipe;
         private File workspaceDir;
 
         @Override
         public void run() {
-            log.info("Running File Wipe Task... ");
-            Collection<File> filesDeleted = new ArrayList<File>();
+            LOG.info("Running File Wipe Task... ");
 
             try {
                 GeoserverManager gm = new GeoserverManager(AppConstant.WFS_ENDPOINT.getValue(),
@@ -91,23 +87,23 @@ public class FileWipeAutomationServlet implements ServletContextListener {
             } catch (XPathExpressionException ex) {
                 Logger.getLogger(FileWipeAutomationServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
-
+            
             if (getWorkspaceDir() != null && getWorkspaceDir().exists()) {
-                log.info("Checking work space directory " + getWorkspaceDir().getPath() + " for files older than " + Long.valueOf(this.hoursToWipe) + "ms");
-                filesDeleted = FileHelper.wipeOldFiles(getWorkspaceDir(), Long.valueOf(this.hoursToWipe), false);
+                LOG.info("Checking work space directory " + getWorkspaceDir().getPath() + " for files older than " + Long.valueOf(this.hoursToWipe) + "ms");
+                Collection<File> filesDeleted = FileHelper.wipeOldFiles(getWorkspaceDir(), Long.valueOf(this.hoursToWipe), false);
                 if (!filesDeleted.isEmpty()) {
-                    log.info("Finished deleting workspace files. " + filesDeleted.size() + " deleted.");
+                    LOG.info("Finished deleting workspace files. " + filesDeleted.size() + " deleted.");
                 }
             }
 
         }
 
-        public ScanFileTask(File workspaceDir, long hoursToWipe) {
+        ScanFileTask(File workspaceDir, long hoursToWipe) {
             this.workspaceDir = workspaceDir;
             this.hoursToWipe = hoursToWipe;
         }
 
-        public ScanFileTask() {
+        ScanFileTask() {
             this.hoursToWipe = Long.getLong(AppConstant.FILE_WIPE_MILLIS.toString());
         }
 
