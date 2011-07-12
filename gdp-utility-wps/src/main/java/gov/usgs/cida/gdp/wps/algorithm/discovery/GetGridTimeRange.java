@@ -20,21 +20,31 @@ import org.slf4j.LoggerFactory;
  * @author isuftin
  */
 public class GetGridTimeRange extends AbstractSelfDescribingAlgorithm  {
-    Logger log = LoggerFactory.getLogger(GetGridTimeRange.class);
-
+    private static final Logger log = LoggerFactory.getLogger(GetGridTimeRange.class);
+    private static final String PARAM_CATALOG_URL = "catalog-url";
+    private static final String PARAM_GRID = "grid";
+    private static final String PARAM_RESULT = "result";
+    
     @Override
     public Map<String, IData> run(Map<String, List<IData>> inputData) {
-        Map<String, IData> result = new HashMap<String, IData>();
+        
 
         String datasetUrl;
-        List<String> grid = new ArrayList();
-        if (inputData == null)  throw new RuntimeException("Error while allocating input parameters: Unable to find input parameters");
-        if (!inputData.containsKey("catalog-url"))  throw new RuntimeException("Error while allocating input parameters: missing required parameter: 'catalog-url'");
-        if (!inputData.containsKey("grid"))  throw new RuntimeException("Error while allocating input parameters: missing required parameter(s): 'grid'");
-        datasetUrl = ((LiteralStringBinding) inputData.get("catalog-url").get(0)).getPayload();
+        
+        if (inputData == null)  {
+            throw new RuntimeException("Error while allocating input parameters: Unable to find input parameters");
+        }
+        if (!inputData.containsKey(PARAM_CATALOG_URL))  {
+            throw new RuntimeException("Error while allocating input parameters: missing required parameter: '"+PARAM_CATALOG_URL+"'");
+        }
+        if (!inputData.containsKey(PARAM_GRID)) {
+            throw new RuntimeException("Error while allocating input parameters: missing required parameter(s): '"+PARAM_GRID+"'");
+        }
+        datasetUrl = ((LiteralStringBinding) inputData.get(PARAM_CATALOG_URL).get(0)).getPayload();
 
-        for (int index = 0;index < inputData.get("grid").size();index++) {
-            grid.add(((LiteralStringBinding) inputData.get("grid").get(index)).getPayload());
+        List<String> grid = new ArrayList<String>(inputData.get(PARAM_GRID).size());
+        for (int index = 0;index < inputData.get(PARAM_GRID).size();index++) {
+            grid.add(((LiteralStringBinding) inputData.get(PARAM_GRID).get(index)).getPayload());
         }
         String gridSelection = grid.get(0);
         Time timeBean = null;
@@ -42,28 +52,29 @@ public class GetGridTimeRange extends AbstractSelfDescribingAlgorithm  {
             timeBean = OpendapServerHelper.getTimeBean(datasetUrl, gridSelection);
         } catch (IOException ex) {
             log.error(ex.getMessage());
-            throw new RuntimeException("Error occured while getting time range.  Function halted.");
+            throw new RuntimeException("Error occured while getting time range.  Function halted.",ex);
         } catch (ParseException ex) {
             log.error(ex.getMessage());
-            throw new RuntimeException("Error occured while getting time range.  Function halted.");
+            throw new RuntimeException("Error occured while getting time range.  Function halted.",ex);
         }
 
-        result.put("result", new LiteralStringBinding(timeBean.toXML()));
+        Map<String, IData> result = new HashMap<String, IData>(1);
+        result.put(PARAM_RESULT, new LiteralStringBinding(timeBean.toXML()));
         return result;
     }
 
     @Override
     public List<String> getInputIdentifiers() {
-        List<String> result = new ArrayList<String>();
-        result.add("catalog-url");
-        result.add("grid");
+        List<String> result = new ArrayList<String>(2);
+        result.add(PARAM_CATALOG_URL);
+        result.add(PARAM_GRID);
         return result;
     }
 
     @Override
     public List<String> getOutputIdentifiers() {
-        List<String> result = new ArrayList<String>();
-        result.add("result");
+        List<String> result = new ArrayList<String>(1);
+        result.add(PARAM_GRID);
         return result;
     }
 
@@ -81,10 +92,10 @@ public class GetGridTimeRange extends AbstractSelfDescribingAlgorithm  {
 
     @Override
     public BigInteger getMaxOccurs(String identifier) {
-        if ("catalog-url".equals(identifier)) {
+        if (PARAM_CATALOG_URL.equals(identifier)) {
             return BigInteger.valueOf(1);
         }
-        if ("grid".equals(identifier)) {
+        if (PARAM_GRID.equals(identifier)) {
             return BigInteger.valueOf(Long.MAX_VALUE);
         }
         return super.getMaxOccurs(identifier);
@@ -92,10 +103,10 @@ public class GetGridTimeRange extends AbstractSelfDescribingAlgorithm  {
 
     @Override
     public BigInteger getMinOccurs(String identifier) {
-        if ("catalog-url".equals(identifier)) {
+        if (PARAM_CATALOG_URL.equals(identifier)) {
             return BigInteger.valueOf(1);
         }
-        if ("grid".equals(identifier)) {
+        if (PARAM_GRID.equals(identifier)) {
             return BigInteger.valueOf(1);
         }
         return super.getMaxOccurs(identifier);
