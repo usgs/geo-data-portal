@@ -29,7 +29,24 @@ public class ShapeFileEPSGHelper {
         return result;
     }
 
+    /**
+     * 
+     * @param wkt
+     * @return
+     * @throws FactoryException 
+     */
     public static String getDeclaredEPSGFromWKT(final String wkt) throws FactoryException {
+        return ShapeFileEPSGHelper.getDeclaredEPSGFromWKT(wkt, true);
+    }
+    
+    /**
+     * 
+     * @param wkt
+     * @param useBaseCRSFailover Use base CRS to do a lookup
+     * @return
+     * @throws FactoryException 
+     */
+    public static String getDeclaredEPSGFromWKT(final String wkt, boolean useBaseCRSFailover) throws FactoryException {
         log.debug(new StringBuilder("Attempting to get EPSG from WKT: ").append(wkt).toString());
         String result = null;
         if (wkt == null || "".equals(wkt)) {
@@ -46,7 +63,7 @@ public class ShapeFileEPSGHelper {
 
         result = CRS.lookupIdentifier(crs, true);
 
-        if (result == null && crs instanceof ProjectedCRS) {
+        if (result == null && crs instanceof ProjectedCRS && useBaseCRSFailover) {
             result = CRS.lookupIdentifier(((ProjectedCRS)crs).getBaseCRS(), true);
         }
         log.debug("Found " + result);

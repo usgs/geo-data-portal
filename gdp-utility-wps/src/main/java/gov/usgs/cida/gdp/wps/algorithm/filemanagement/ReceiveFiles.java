@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.apache.commons.io.filefilter.RegexFileFilter;
+import org.apache.commons.lang.StringUtils;
 import org.n52.wps.io.data.GenericFileData;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.complex.GenericFileDataBinding;
@@ -130,6 +131,7 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
         // Do EPSG processing
         String declaredCRS = null;
         String nativeCRS = null;
+        String warning = "";
         try {
             nativeCRS = new String(FileHelper.getByteArrayFromFile(new File(renamedPrjPath)));
             if (nativeCRS == null || nativeCRS.isEmpty()) {
@@ -137,7 +139,11 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
             }
             // The behavior of this method requires that the layer always force
             // projection from native to declared...
-            declaredCRS = ShapeFileEPSGHelper.getDeclaredEPSGFromWKT(nativeCRS);
+            declaredCRS = ShapeFileEPSGHelper.getDeclaredEPSGFromWKT(nativeCRS, false);
+            if (declaredCRS == null || declaredCRS.isEmpty()) {
+                declaredCRS = ShapeFileEPSGHelper.getDeclaredEPSGFromWKT(nativeCRS, true);
+                warning = "Could not find EPSG code for prj definition. The geographic coordinate system '"+declaredCRS+"' will be used";
+            }
             if (declaredCRS == null || declaredCRS.isEmpty()) {
                 throw new RuntimeException("Could not attain EPSG code from shapefile. Please ensure proper projection and a valid PRJ file.");
             }
@@ -162,9 +168,12 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
         }
         
         Map<String, IData> result = new HashMap<String, IData>(3);
-        
         // GeoServer has accepted the shapefile. Send the success response to the client.
-        result.put(PARAM_RESULT, new LiteralStringBinding("OK: " + desiredFilename + " successfully uploaded to workspace '" + workspace + "'"));
+        if (StringUtils.isBlank(warning)) {
+            result.put(PARAM_RESULT, new LiteralStringBinding("OK: " + desiredFilename + " successfully uploaded to workspace '" + workspace + "'!"));
+        } else {
+            result.put(PARAM_RESULT, new LiteralStringBinding("WARNING: " + warning));
+        }
         result.put(PARAM_WFS_URL, new LiteralStringBinding(wfsEndpoint + "?Service=WFS&Version=1.0.0&"));
         result.put(PARAM_FEATURETYPE, new LiteralStringBinding(workspace + ":" + desiredFilename));
         return result;
