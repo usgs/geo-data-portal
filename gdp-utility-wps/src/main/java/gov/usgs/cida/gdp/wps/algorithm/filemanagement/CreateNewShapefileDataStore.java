@@ -22,14 +22,18 @@ import org.slf4j.LoggerFactory;
  * @author razoerb
  */
 public class CreateNewShapefileDataStore extends AbstractSelfDescribingAlgorithm {
-    Logger log = LoggerFactory.getLogger(CreateNewShapefileDataStore.class);
+    private static final Logger log = LoggerFactory.getLogger(CreateNewShapefileDataStore.class);
 
     @Override
     public Map<String, IData> run(Map<String, List<IData>> inputData) {
 
-        if (inputData == null) throw new RuntimeException("Error while allocating input parameters.");
+        if (inputData == null) {
+            throw new RuntimeException("Error while allocating input parameters.");
+        }
 
-        if (!inputData.containsKey("name")) throw new RuntimeException("Error: Missing input parameter 'name'");
+        if (!inputData.containsKey("name")) {
+            throw new RuntimeException("Error: Missing input parameter 'name'");
+        }
 
         String name = ((LiteralStringBinding) inputData.get("name").get(0)).getPayload();
 
@@ -42,7 +46,7 @@ public class CreateNewShapefileDataStore extends AbstractSelfDescribingAlgorithm
             shapefile = GeoToolsUtils.createEmptyShapefile(outputDir, name);
         } catch (Exception ex) {
             log.error("Error creating shapefile", ex);
-            throw new RuntimeException("Error creating shapefile");
+            throw new RuntimeException("Error creating shapefile",ex);
         }
 
         String shapefilePath = shapefile.getAbsolutePath();
@@ -58,7 +62,7 @@ public class CreateNewShapefileDataStore extends AbstractSelfDescribingAlgorithm
             gm.createDataStore(shapefilePath, name, geoServerWorkspace, declaredCRS, declaredCRS);
         } catch (Exception ex) {
             log.error("Error creating datastore in GeoServer for draw geometry", ex);
-            throw new RuntimeException("Error creating datastore in GeoServer for draw geometry");
+            throw new RuntimeException("Error creating datastore in GeoServer for draw geometry",ex);
         }
         
         result.put("layer-name", new LiteralStringBinding(geoServerWorkspace + ":" + name));
