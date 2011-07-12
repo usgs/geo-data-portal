@@ -20,51 +20,46 @@ import org.slf4j.LoggerFactory;
  */
 public class ListOpendapGrids extends AbstractSelfDescribingAlgorithm {
 
-    Logger log = LoggerFactory.getLogger(ListOpendapGrids.class);
+    private static final Logger log = LoggerFactory.getLogger(ListOpendapGrids.class);
+    private static final String PARAM_CATALOG_URL = "catalog-url";
+    private static final String PARAM_RESULT = "result";
     private List<String> errors = new ArrayList<String>();
 
     @Override
     public Map<String, IData> run(Map<String, List<IData>> inputData) {
-        Map<String, IData> result = new HashMap<String, IData>();
+        String catalogUrl = ((LiteralStringBinding) inputData.get(PARAM_CATALOG_URL).get(0)).getPayload();
 
-        String catalogUrl = ((LiteralStringBinding) inputData.get("catalog-url").get(0)).getPayload();
-
-        // Get the optional service type
-        /*String serviceType = ((LiteralStringBinding) inputData.get("service-type").get(0)).getPayload();
-        if ("cdmremote".equals(serviceType) && !catalogUrl.contains("cdmremote:")) catalogUrl = "cdmremote:" + catalogUrl;*/
-        
         StringBuilder response = new StringBuilder();
         List<XmlResponse> xmlResponseList = null;
         try {
             xmlResponseList = OpendapServerHelper.getGridBeanListFromServer(catalogUrl);
         } catch (IllegalArgumentException ex) {
             getErrors().add(ex.getMessage());
-            throw new RuntimeException("An error has occured while processing response. Error: " + ex.getMessage());
+            throw new RuntimeException("An error has occured while processing response. Error: " + ex.getMessage(),ex);
         } catch (IOException ex) {
             getErrors().add(ex.getMessage());
-            throw new RuntimeException("An error has occured while processing response. Error: " + ex.getMessage());
+            throw new RuntimeException("An error has occured while processing response. Error: " + ex.getMessage(),ex);
         }
 
-        for (XmlResponse xmlResponse : xmlResponseList) response.append(xmlResponse.toXML()).append("\n");
+        for (XmlResponse xmlResponse : xmlResponseList) {
+            response.append(xmlResponse.toXML()).append("\n");
+        }
 
-        result.put("result", new LiteralStringBinding(response.toString()));
+        Map<String, IData> result = new HashMap<String, IData>(1);
+        result.put(PARAM_RESULT, new LiteralStringBinding(response.toString()));
         return result;
     }
 
     @Override
     public List<String> getInputIdentifiers() {
-        List<String> result = new ArrayList<String>();
-//        result.add("service-type");
-        result.add("catalog-url");
+        List<String> result = new ArrayList<String>(1);
+        result.add(PARAM_CATALOG_URL);
         return result;
     }
 
     @Override
     public Class getInputDataType(String id) {
-//        if (id.equalsIgnoreCase("service-type")) {
-//            return LiteralStringBinding.class;
-//        }
-        if (id.equalsIgnoreCase("catalog-url")) {
+        if (id.equalsIgnoreCase(PARAM_CATALOG_URL)) {
             return LiteralStringBinding.class;
         }
         return null;
@@ -73,14 +68,14 @@ public class ListOpendapGrids extends AbstractSelfDescribingAlgorithm {
 
     @Override
     public List<String> getOutputIdentifiers() {
-        List<String> result = new ArrayList<String>();
-        result.add("result");
+        List<String> result = new ArrayList<String>(1);
+        result.add(PARAM_RESULT);
         return result;
     }
 
     @Override
     public Class getOutputDataType(String id) {
-        if (id.equalsIgnoreCase("result")) {
+        if (id.equalsIgnoreCase(PARAM_RESULT)) {
             return LiteralStringBinding.class;
         }
         return null;
@@ -88,10 +83,7 @@ public class ListOpendapGrids extends AbstractSelfDescribingAlgorithm {
 
     @Override
     public BigInteger getMaxOccurs(String identifier) {
-//        if ("service-type".equals(identifier)) {
-//            return BigInteger.valueOf(1);
-//        }
-        if ("catalog-url".equals(identifier)) {
+        if (PARAM_CATALOG_URL.equals(identifier)) {
             return BigInteger.valueOf(1);
         }
         return super.getMaxOccurs(identifier);
@@ -99,10 +91,7 @@ public class ListOpendapGrids extends AbstractSelfDescribingAlgorithm {
 
     @Override
     public BigInteger getMinOccurs(String identifier) {
-//        if ("service-type".equals(identifier)) {
-//            return BigInteger.valueOf(0);
-//        }
-        if ("catalog-url".equals(identifier)) {
+        if (PARAM_CATALOG_URL.equals(identifier)) {
             return BigInteger.valueOf(1);
         }
         return super.getMaxOccurs(identifier);
