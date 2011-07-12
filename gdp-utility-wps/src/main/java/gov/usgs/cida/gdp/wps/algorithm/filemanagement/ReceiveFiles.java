@@ -35,22 +35,24 @@ import org.slf4j.LoggerFactory;
 public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
     private Logger log = LoggerFactory.getLogger(ReceiveFiles.class);
     private List<String> errors = new ArrayList<String>();
-    private final static String SUFFIX_SHP = ".shp";
-    private final static String SUFFIX_SHX = ".shx";
-    private final static String SUFFIX_PRJ = ".prj";
-    private final static String SUFFIX_DBF = ".dbf";
-    private final static String UPLOAD_WORKSPACE = "upload";
-    private final static String PARAM_FILE = "file";
-    private final static String PARAM_WFS_URL = "wfs-url";
-    private final static String PARAM_FILENAME = "filename";
-    private final static String PARAM_RESULT = "result";
-    private final static String PARAM_FEATURETYPE = "featuretype";
+    private static final String SUFFIX_SHP = ".shp";
+    private static final String SUFFIX_SHX = ".shx";
+    private static final String SUFFIX_PRJ = ".prj";
+    private static final String SUFFIX_DBF = ".dbf";
+    private static final String UPLOAD_WORKSPACE = "upload";
+    private static final String PARAM_FILE = "file";
+    private static final String PARAM_WFS_URL = "wfs-url";
+    private static final String PARAM_FILENAME = "filename";
+    private static final String PARAM_RESULT = "result";
+    private static final String PARAM_FEATURETYPE = "featuretype";
         
 
     @Override
     public Map<String, IData> run(Map<String, List<IData>> inputData) {
         
-        if (inputData == null)  throw new RuntimeException("Error while allocating input parameters.");
+        if (inputData == null)  {
+            throw new RuntimeException("Error while allocating input parameters.");
+        }
         if (!inputData.containsKey(PARAM_FILE))  {
             throw new RuntimeException("Error: Missing input parameter 'file'");
         }
@@ -141,10 +143,10 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
             }
         } catch (IOException ex) {
             errors.add(ex.getMessage());
-            throw new RuntimeException("Error while getting EPSG information from PRJ file. Function halted.");
+            throw new RuntimeException("Error while getting EPSG information from PRJ file. Function halted.",ex);
         } catch (FactoryException ex) {
             errors.add(ex.getMessage());
-            throw new RuntimeException("Error while getting EPSG information from PRJ file. Function halted.");
+            throw new RuntimeException("Error while getting EPSG information from PRJ file. Function halted.",ex);
         }
 
         
@@ -159,7 +161,7 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
             throw new RuntimeException("Error while communicating with WFS server. Please try again or contact system administrator.");
         }
         
-        Map<String, IData> result = new HashMap<String, IData>();
+        Map<String, IData> result = new HashMap<String, IData>(3);
         
         // GeoServer has accepted the shapefile. Send the success response to the client.
         result.put(PARAM_RESULT, new LiteralStringBinding("OK: " + desiredFilename + " successfully uploaded to workspace '" + workspace + "'"));
@@ -199,7 +201,7 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
 
     @Override
     public List<String> getInputIdentifiers() {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<String>(3);
         result.add(PARAM_WFS_URL);
         result.add(PARAM_FILENAME);
         result.add(PARAM_FILE);
@@ -208,7 +210,7 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
 
     @Override
     public List<String> getOutputIdentifiers() {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<String>(3);
         result.add(PARAM_RESULT);
         result.add(PARAM_WFS_URL);
         result.add(PARAM_FEATURETYPE);
