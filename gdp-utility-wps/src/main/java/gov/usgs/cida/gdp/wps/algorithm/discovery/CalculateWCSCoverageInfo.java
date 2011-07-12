@@ -19,30 +19,54 @@ import org.slf4j.LoggerFactory;
  * @author isuftin
  */
 public class CalculateWCSCoverageInfo extends AbstractSelfDescribingAlgorithm {
-    Logger log = LoggerFactory.getLogger(CalculateWCSCoverageInfo.class);
-
+    private static final Logger log = LoggerFactory.getLogger(CalculateWCSCoverageInfo.class);
+    private final static String PARAM_CRS = "crs";
+    private final static String PARAM_LOWER_CORNER = "lower-corner";
+    private final static String PARAM_UPPER_CORNER = "upper-corner";
+    private final static String PARAM_GRID_OFFSETS = "grid-offsets";
+    private final static String PARAM_DATA_TYPE = "data-type";
+    private final static String PARAM_WFS_URL = "wfs-url";
+    private final static String PARAM_DATASTORE = "datastore";
+    private final static String PARAM_LAT = "lat";
+    private final static String PARAM_LON = "lon";
+    private final static String PARAM_RESULT = "result";
+    
     @Override
     public Map<String, IData> run(Map<String, List<IData>> inputData) {
-        Map<String, IData> result = new HashMap<String, IData>();
-
         String dataStore, crs, lowerCorner, upperCorner, gridOffsets, dataTypeString, wfsURL;
 
-        if (inputData == null)  throw new RuntimeException("Error while allocating input parameters: Unable to find input parameters");
-        if (!inputData.containsKey("crs"))  throw new RuntimeException("Error while allocating input parameters: missing required parameter: 'crs'");
-        if (!inputData.containsKey("lower-corner")) throw new RuntimeException("Error while allocating input parameters: missing required parameter: 'lower-corner'");
-        if (!inputData.containsKey("upper-corner")) throw new RuntimeException("Error while allocating input parameters: missing required parameter: 'upper-corner'");
-        if (!inputData.containsKey("grid-offsets")) throw new RuntimeException("Error while allocating input parameters: missing required parameter: 'grid-offsets'");
-        if (!inputData.containsKey("data-type")) throw new RuntimeException("Error while allocating input parameters: missing required parameter: 'data-type'");
-        if (!inputData.containsKey("wfs-url")) throw new RuntimeException("Error while allocating input parameters: missing required parameter: 'wfs-url'");
-        if (!inputData.containsKey("datastore")) throw new RuntimeException("Error while allocating input parameters: missing required parameter: 'datastore'");
+        if (inputData == null)  {
+            throw new RuntimeException("Error while allocating input parameters: Unable to find input parameters");
+        }
+        if (!inputData.containsKey(PARAM_CRS))  {
+            throw new RuntimeException("Error while allocating input parameters: missing required parameter: '"+PARAM_CRS+"'");
+        }
+        if (!inputData.containsKey(PARAM_LOWER_CORNER)) {
+            throw new RuntimeException("Error while allocating input parameters: missing required parameter: '"+PARAM_LOWER_CORNER+"'");
+        }
+        if (!inputData.containsKey(PARAM_UPPER_CORNER)) {
+            throw new RuntimeException("Error while allocating input parameters: missing required parameter: '"+PARAM_UPPER_CORNER+"'");
+        }
+        if (!inputData.containsKey(PARAM_GRID_OFFSETS)) {
+            throw new RuntimeException("Error while allocating input parameters: missing required parameter: '"+PARAM_GRID_OFFSETS+"'");
+        }
+        if (!inputData.containsKey(PARAM_DATA_TYPE)) {
+            throw new RuntimeException("Error while allocating input parameters: missing required parameter: '"+PARAM_DATA_TYPE+"'");
+        }
+        if (!inputData.containsKey(PARAM_WFS_URL)) {
+            throw new RuntimeException("Error while allocating input parameters: missing required parameter: '"+PARAM_WFS_URL+"'");
+        }
+        if (!inputData.containsKey(PARAM_DATASTORE)) {
+            throw new RuntimeException("Error while allocating input parameters: missing required parameter: '"+PARAM_DATASTORE+"'");
+        }
 
-        dataStore = ((LiteralStringBinding) inputData.get("datastore").get(0)).getPayload();
-        crs = ((LiteralStringBinding) inputData.get("crs").get(0)).getPayload();
-        lowerCorner = ((LiteralStringBinding) inputData.get("lower-corner").get(0)).getPayload();
-        upperCorner = ((LiteralStringBinding) inputData.get("upper-corner").get(0)).getPayload();
-        gridOffsets = ((LiteralStringBinding) inputData.get("grid-offsets").get(0)).getPayload();
-        dataTypeString = ((LiteralStringBinding) inputData.get("data-type").get(0)).getPayload();
-        wfsURL = ((LiteralStringBinding) inputData.get("wfs-url").get(0)).getPayload();
+        dataStore = ((LiteralStringBinding) inputData.get(PARAM_DATASTORE).get(0)).getPayload();
+        crs = ((LiteralStringBinding) inputData.get(PARAM_CRS).get(0)).getPayload();
+        lowerCorner = ((LiteralStringBinding) inputData.get(PARAM_LOWER_CORNER).get(0)).getPayload();
+        upperCorner = ((LiteralStringBinding) inputData.get(PARAM_UPPER_CORNER).get(0)).getPayload();
+        gridOffsets = ((LiteralStringBinding) inputData.get(PARAM_GRID_OFFSETS).get(0)).getPayload();
+        dataTypeString = ((LiteralStringBinding) inputData.get(PARAM_DATA_TYPE).get(0)).getPayload();
+        wfsURL = ((LiteralStringBinding) inputData.get(PARAM_WFS_URL).get(0)).getPayload();
 
         if ("".equals(crs) ||
                 "".equals(lowerCorner) ||
@@ -62,22 +86,23 @@ public class CalculateWCSCoverageInfo extends AbstractSelfDescribingAlgorithm {
         }
 
         //TODO- The wcsCoverageInfoBean variable may be null here. What do we do if it is? Currently this would cause an NPE
-        result.put("result", new LiteralStringBinding(wcsCoverageInfoBean.toXML()));
+        Map<String, IData> result = new HashMap<String, IData>(1);
+        result.put(PARAM_RESULT, new LiteralStringBinding(wcsCoverageInfoBean.toXML()));
         return result;
     }
 
     @Override
     public List<String> getInputIdentifiers() {
-        List<String> result = new ArrayList<String>();
-        result.add("wfs-url");
-        result.add("datastore");
-        result.add("lat");
-        result.add("lon");
-        result.add("crs");
-        result.add("lower-corner");
-        result.add("upper-corner");
-        result.add("grid-offsets");
-        result.add("data-type");
+        List<String> result = new ArrayList<String>(9);
+        result.add(PARAM_WFS_URL);
+        result.add(PARAM_DATASTORE);
+        result.add(PARAM_LAT);
+        result.add(PARAM_LON);
+        result.add(PARAM_CRS);
+        result.add(PARAM_LOWER_CORNER);
+        result.add(PARAM_UPPER_CORNER);
+        result.add(PARAM_GRID_OFFSETS);
+        result.add(PARAM_DATA_TYPE);
         return result;
     }
 
@@ -89,13 +114,13 @@ public class CalculateWCSCoverageInfo extends AbstractSelfDescribingAlgorithm {
 
     @Override
     public BigInteger getMinOccurs(String identifier) {
-        if ("datastore".equals(identifier)) {
+        if (PARAM_DATASTORE.equals(identifier)) {
             return BigInteger.valueOf(0);
         }
-        if ("lat".equals(identifier)) {
+        if (PARAM_LON.equals(identifier)) {
             return BigInteger.valueOf(0);
         }
-        if ("lon".equals(identifier)) {
+        if (PARAM_LAT.equals(identifier)) {
             return BigInteger.valueOf(0);
         }
         return super.getMaxOccurs(identifier);
@@ -103,8 +128,8 @@ public class CalculateWCSCoverageInfo extends AbstractSelfDescribingAlgorithm {
 
     @Override
     public List<String> getOutputIdentifiers() {
-        List<String> result = new ArrayList<String>();
-        result.add("result");
+        List<String> result = new ArrayList<String>(1);
+        result.add(PARAM_RESULT);
         return result;
     }
 
