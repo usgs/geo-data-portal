@@ -18,39 +18,39 @@ import org.slf4j.LoggerFactory;
  */
 public class GetWcsCoverages extends AbstractSelfDescribingAlgorithm {
 
-    Logger log = LoggerFactory.getLogger(GetWcsCoverages.class);
-
+    private static final Logger log = LoggerFactory.getLogger(GetWcsCoverages.class);
+    private static final String PARAM_WCS_URL = "wcs-url";
+    private static final String PARAM_RESULT = "result";
     @Override
     public Map<String, IData> run(Map<String, List<IData>> inputData) {
-        Map<String, IData> result = new HashMap<String, IData>();
+        if (!inputData.containsKey(PARAM_WCS_URL)){
+            throw new RuntimeException("Missing required parameter: " + PARAM_WCS_URL);
+        }
 
-        if (!inputData.containsKey("wcs-url"))
-            throw new RuntimeException("Missing required parameter: wcs-url");
-
-        String wcsURL = ((LiteralStringBinding) inputData.get("wcs-url").get(0)).getPayload();
+        String wcsURL = ((LiteralStringBinding) inputData.get(PARAM_WCS_URL).get(0)).getPayload();
 
         String xml;
         try {
             xml = WCSCoverageInfoHelper.getWcsDescribeCoverages(wcsURL);
         } catch (IOException ex) {
-            log.error("An error occurred in algorithm GetWcsCoverages", ex);
-            throw new RuntimeException("An error occured while processing request: " + ex.getMessage());
+            throw new RuntimeException("An error occured while processing request: " + ex.getMessage(),ex);
         }
 
-        result.put("result", new LiteralStringBinding(xml));
+        Map<String, IData> result = new HashMap<String, IData>(1);
+        result.put(PARAM_RESULT, new LiteralStringBinding(xml));
         return result;
     }
 
     @Override
     public List<String> getInputIdentifiers() {
-        List<String> result = new ArrayList<String>();
-        result.add("wcs-url");
+        List<String> result = new ArrayList<String>(1);
+        result.add(PARAM_WCS_URL);
         return result;
     }
 
     @Override
     public Class getInputDataType(String id) {
-        if (id.equalsIgnoreCase("wcs-url")) {
+        if (id.equalsIgnoreCase(PARAM_WCS_URL)) {
             return LiteralStringBinding.class;
         }
         return null;
@@ -60,13 +60,13 @@ public class GetWcsCoverages extends AbstractSelfDescribingAlgorithm {
     @Override
     public List<String> getOutputIdentifiers() {
         List<String> result = new ArrayList<String>();
-        result.add("result");
+        result.add(PARAM_RESULT);
         return result;
     }
 
     @Override
     public Class getOutputDataType(String id) {
-        if (id.equalsIgnoreCase("result")) {
+        if (id.equalsIgnoreCase(PARAM_RESULT)) {
             return LiteralStringBinding.class;
         }
         return null;
@@ -74,7 +74,7 @@ public class GetWcsCoverages extends AbstractSelfDescribingAlgorithm {
 
     @Override
     public BigInteger getMaxOccurs(String identifier) {
-        if ("wcs-url".equals(identifier)) {
+        if (PARAM_WCS_URL.equals(identifier)) {
             return BigInteger.valueOf(1);
         }
         return super.getMaxOccurs(identifier);
@@ -82,7 +82,7 @@ public class GetWcsCoverages extends AbstractSelfDescribingAlgorithm {
 
     @Override
     public BigInteger getMinOccurs(String identifier) {
-        if ("wcs-url".equals(identifier)) {
+        if (PARAM_WCS_URL.equals(identifier)) {
             return BigInteger.valueOf(1);
         }
         return super.getMaxOccurs(identifier);
