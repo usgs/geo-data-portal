@@ -21,16 +21,24 @@ import org.slf4j.LoggerFactory;
  * @author razoerb
  */
 public class GetWatersGeom extends AbstractSelfDescribingAlgorithm {
-    Logger log = LoggerFactory.getLogger(GetWatersGeom.class);
+    private static final Logger log = LoggerFactory.getLogger(GetWatersGeom.class);
 
     @Override
     public Map<String, IData> run(Map<String, List<IData>> inputData) {
 
-        if (inputData == null) throw new RuntimeException("Error while allocating input parameters.");
+        if (inputData == null) {
+            throw new RuntimeException("Error while allocating input parameters.");
+        }
 
-        if (!inputData.containsKey("lat")) throw new RuntimeException("Error: Missing input parameter 'lat'");
-        if (!inputData.containsKey("lon")) throw new RuntimeException("Error: Missing input parameter 'lon'");
-        if (!inputData.containsKey("name")) throw new RuntimeException("Error: Missing input parameter 'name'");
+        if (!inputData.containsKey("lat")) {
+            throw new RuntimeException("Error: Missing input parameter 'lat'");
+        }
+        if (!inputData.containsKey("lon")) {
+            throw new RuntimeException("Error: Missing input parameter 'lon'");
+        }
+        if (!inputData.containsKey("name")) {
+            throw new RuntimeException("Error: Missing input parameter 'name'");
+        }
 
         String lat = ((LiteralStringBinding) inputData.get("lat").get(0)).getPayload();
         String lon = ((LiteralStringBinding) inputData.get("lon").get(0)).getPayload();
@@ -43,7 +51,7 @@ public class GetWatersGeom extends AbstractSelfDescribingAlgorithm {
             shapefile = WatersService.getGeometry(lon, lat, name);
         } catch (Exception ex) {
             log.error("Error getting geometry from WATERS", ex);
-            throw new RuntimeException("Error getting geometry from WATERS");
+            throw new RuntimeException("Error getting geometry from WATERS", ex);
         }
 
         String shapefilePath = shapefile.getAbsolutePath();
@@ -60,7 +68,7 @@ public class GetWatersGeom extends AbstractSelfDescribingAlgorithm {
             mws.createDataStore(shapefilePath, geoServerLayer, geoServerWorkspace, declaredCRS, declaredCRS);
         } catch (Exception ex) {
             log.error("Error creating datastore in GeoServer for WATERS geometry", ex);
-            throw new RuntimeException("Error creating datastore in GeoServer for WATERS geometry");
+            throw new RuntimeException("Error creating datastore in GeoServer for WATERS geometry", ex);
         }
         
         result.put("layer-name", new LiteralStringBinding(geoServerWorkspace + ":" + geoServerLayer));
@@ -97,7 +105,7 @@ public class GetWatersGeom extends AbstractSelfDescribingAlgorithm {
 
     @Override
     public List<String> getInputIdentifiers() {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<String>(3);
         result.add("lat");
         result.add("lon");
         result.add("name");
@@ -106,7 +114,7 @@ public class GetWatersGeom extends AbstractSelfDescribingAlgorithm {
 
     @Override
     public List<String> getOutputIdentifiers() {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<String>(1);
         result.add("layer-name");
         return result;
     }
