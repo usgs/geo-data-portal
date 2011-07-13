@@ -5,9 +5,12 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
+        <script src="js/log4javascript/log4javascript.js" type="text/javascript"></script>
+        <script src="js/jquery/jquery.js" type="text/javascript"></script>
+        <script src="js/derivative_portal/root.js" type="text/javascript"></script>
+        <title>Derivative Portal</title>
     </head>
     <body>
-        <h1>Hello World!</h1>
+        
     </body>
 </html>
