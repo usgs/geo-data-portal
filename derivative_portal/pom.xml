@@ -42,8 +42,8 @@
     </properties>
     
     <scm>
-        <connection>scm:svn:${cida.svn.url}/usgs/derivative_portal/trunk/</connection>
-        <developerConnection>scm:svn:${cida.svn.url}/usgs/derivative_portal/trunk/</developerConnection>
+        <connection>scm:svn:${cida.svn.url}/usgs/gdp/trunk/derivative_portal/trunk/</connection>
+        <developerConnection>scm:svn:${cida.svn.url}/usgs/gdp/trunk/derivative_portal/trunk/</developerConnection>
         <url>${cida.svn.url}/usgs/derivative_portal</url>
         <tag>HEAD</tag>
     </scm>
@@ -135,6 +135,15 @@
             <groupId>javax.servlet.jsp</groupId>
             <artifactId>jsp-api</artifactId>
             <version>2.1</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+            <type>jar</type>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <artifactId>slf4j-api</artifactId>
@@ -155,6 +164,11 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>${logback.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.9.1</version>
         </dependency>
     </dependencies>
 
