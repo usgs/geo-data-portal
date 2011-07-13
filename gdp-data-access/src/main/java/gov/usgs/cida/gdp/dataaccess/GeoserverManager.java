@@ -92,12 +92,6 @@ public class GeoserverManager {
             String featureTypeXML = createFeatureTypeXML(layer, workspace, nativeCRS, declaredCRS);
             String featureTypesPath = dataStoresPath + layer + "/featuretypes.xml";
             sendRequest(featureTypesPath, PARAM_POST, PARAM_TEXT_XML, featureTypeXML);
-
-            // This directive generates an error when included with initial POST, we have to include
-            // in separate update via PUT.
-            String featureTypeUpdatePath = dataStoresPath + layer + "/featuretypes/" + layer + PARAM_DOT_XML;
-            sendRequest(featureTypeUpdatePath, PARAM_PUT, PARAM_TEXT_XML,
-                    "<featureType><projectionPolicy>REPROJECT_TO_DECLARED</projectionPolicy></featureType>");
         }
 
         // Make sure we render using the default polygon style, and not whatever
@@ -458,15 +452,19 @@ public class GeoserverManager {
                 "    <name>" + workspace + "</name>" +
                 "  </namespace>" +
                 "  <title>" + name + "</title>" +
-                "  <enabled>true</enabled>" +
                 // use CDATA as this may contain WKT with XML reserved characters
                 "  <nativeCRS><![CDATA[" + nativeCRS + "]]></nativeCRS>" +
                 "  <srs>" + declaredCRS + "</srs>" +
+                "  <projectionPolicy>REPROJECT_TO_DECLARED</projectionPolicy>" +
+                "  <enabled>true</enabled>" +
+                "  <metadata>"+
+                "    <entry key=\"cachingEnabled\">true</entry>" +
+                "  </metadata>" +
                 "  <store class=\"dataStore\">" +
                 "    <name>" + name + "</name>" + // this is actually the datastore name (we keep it the same as the layer name)
                 "  </store>" +
                 "</featureType>";
-    }
+}
     
     /**
      *  Ensure url ends with a '/'

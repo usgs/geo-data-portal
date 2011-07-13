@@ -9,7 +9,7 @@
     <packaging>war</packaging>
     <name>GDP GeoServer</name>
     <properties>
-        <gs.version>2.1.0</gs.version>
+        <gs.version>2.1.1</gs.version>
         <gt.version>2.7.1</gt.version>
     </properties>
     <dependencies>
