@@ -1,16 +1,15 @@
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>gov.usgs.cida</groupId>
     <artifactId>derivative_portal</artifactId>
-    <version>12-SNAPSHOT</version>
+    <version>11.1-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>Derivative Portal</name>
     <parent>
         <groupId>gov.usgs.cida.gdp</groupId>
         <artifactId>gdp</artifactId>
-        <version>12-SNAPSHOT</version>
+        <version>11.1-SNAPSHOT</version>
     </parent>
     <!-- ### Identification -->
     <description>
@@ -46,9 +45,9 @@
     </properties>
     
     <scm>
-        <connection>scm:svn:${cida.svn.url}/usgs/gdp/trunk/derivative_portal/trunk/</connection>
-        <developerConnection>scm:svn:${cida.svn.url}/usgs/gdp/trunk/derivative_portal/trunk/</developerConnection>
-        <url>${cida.svn.url}/usgs/derivative_portal</url>
+        <connection>scm:svn:https://cida-svn.er.usgs.gov/repos/dev/usgs/gdp/trunk/derivative_portal/branches/11.x/trunk</connection>
+        <developerConnection>scm:svn:https://cida-svn.er.usgs.gov/repos/dev/usgs/gdp/trunk/derivative_portal/branches/11.x/trunk</developerConnection>
+        <url>https://cida-svn.er.usgs.gov/repos/dev/usgs/derivative_portal/branches/11.x/derivative_portal</url>
         <tag>HEAD</tag>
     </scm>
     
