@@ -74,7 +74,7 @@ public class GetGridTimeRange extends AbstractSelfDescribingAlgorithm  {
     @Override
     public List<String> getOutputIdentifiers() {
         List<String> result = new ArrayList<String>(1);
-        result.add(PARAM_GRID);
+        result.add(PARAM_RESULT);
         return result;
     }
 
