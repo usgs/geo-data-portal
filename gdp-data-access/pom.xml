@@ -4,7 +4,7 @@
     <parent>
         <artifactId>gdp</artifactId>
         <groupId>gov.usgs.cida.gdp</groupId>
-        <version>11-SNAPSHOT</version>
+        <version>11</version>
     </parent>
     <artifactId>gdp-data-access</artifactId>
     <name>GDP Data Access</name>
