@@ -21,7 +21,7 @@ Coders: TK, JW, RZ, IS
         <module>geoserver</module>
 <!--        <module>geonetwork</module>-->
         <module>gdp-deployer</module>
-        <module>derivative-portal</module>
+        <module>derivative_portal</module>
     </modules>
     <ciManagement>
 		<system>Hudson</system>
