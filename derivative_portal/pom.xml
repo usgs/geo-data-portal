@@ -3,13 +3,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>gov.usgs.cida</groupId>
     <artifactId>derivative_portal</artifactId>
-    <version>11.1-SNAPSHOT</version>
+    <version>12-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>Derivative Portal</name>
     <parent>
         <groupId>gov.usgs.cida.gdp</groupId>
         <artifactId>gdp</artifactId>
-        <version>11.1-SNAPSHOT</version>
+        <version>12-SNAPSHOT</version>
     </parent>
     <!-- ### Identification -->
     <description>
@@ -45,10 +45,9 @@
     </properties>
     
     <scm>
-        <connection>scm:svn:https://cida-svn.er.usgs.gov/repos/dev/usgs/gdp/trunk/derivative_portal/branches/11.x/trunk</connection>
-        <developerConnection>scm:svn:https://cida-svn.er.usgs.gov/repos/dev/usgs/gdp/trunk/derivative_portal/branches/11.x/trunk</developerConnection>
-        <url>https://cida-svn.er.usgs.gov/repos/dev/usgs/derivative_portal/branches/11.x/derivative_portal</url>
-        <tag>HEAD</tag>
+        <connection>scm:svn:https://cida-svn.er.usgs.gov/repos/dev/usgs/gdp/trunk/derivative_portal/trunk/</connection>
+        <developerConnection>scm:svn:https://cida-svn.er.usgs.gov/repos/dev/usgs/gdp/trunk/derivative_portal/trunk/</developerConnection>
+        <url>https://cida-svn.er.usgs.gov/repos/dev/usgs/derivative_portal</url>
     </scm>
     
     <distributionManagement>
