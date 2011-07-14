@@ -4,7 +4,7 @@
     <groupId>gov.usgs.cida.gdp</groupId>
     <artifactId>gdp</artifactId>
     <packaging>pom</packaging>
-    <version>11</version>
+    <version>12-SNAPSHOT</version>
     <name>GDP</name>
     <description>
         Owner: NB
@@ -27,7 +27,7 @@ Coders: TK, JW, RZ, IS
 		<url>http://igsarm-cida-hudson1.er.usgs.gov:8080/hudson/job/GeoDataPortal/</url>
 	</ciManagement>
     <scm>
-		<developerConnection>scm:svn:https://cida-svn.er.usgs.gov/repos/dev/usgs/gdp/tags/gdp-11</developerConnection>
+		<developerConnection>scm:svn:https://cida-svn.er.usgs.gov/repos/dev/usgs/gdp/trunk</developerConnection>
 	</scm>
 	<distributionManagement>
 		<repository>
