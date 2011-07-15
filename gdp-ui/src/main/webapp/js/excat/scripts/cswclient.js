@@ -262,7 +262,7 @@ var CSWClient = function() {
     return {
         capabilitiesMap : _capabilitiesMap,
         init : function(_cswhost, host) {
-            logger.debug("GDP: Initializing CSW client.");
+            logger.info("GDP: Initializing CSW client.");
             if (typeof _cswhost != "undefined") {
                 cswhost = _cswhost;
             }
