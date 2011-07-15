@@ -83,7 +83,14 @@
                     <jsp:include page="jsp/dataset.jsp" />
                 </div>
             </div>
-            <jsp:include page="template/footer.jsp" />
+            <jsp:include page="template/footer.jsp">
+                <jsp:param name="footer-class" value="x-hidden"/>
+                <jsp:param name="serviceDir" value="service"/>
+            </jsp:include>
+            <jsp:include page="jsp/feedback/feedback.jsp">
+                <jsp:param name="securityimageDir" value="securityimage"/>
+                <jsp:param name="imageDir" value="images"/>
+            </jsp:include>
         </div>
     </body>
 </html>
