@@ -34,7 +34,7 @@
         <filter-name>XClientIPFilter</filter-name>
         <url-pattern>/proxy/*</url-pattern>
     </filter-mapping>
-        <filter>
+    <filter>
         <description>Returns the X-REQUEST-URL Header on getRequestURL()</description>
         <filter-name>URLFilter</filter-name>
         <filter-class>gov.usgs.service.URLFilter</filter-class>
@@ -47,6 +47,14 @@
         <description>Allows dynamic Log4J log level changes via JMX</description>
         <listener-class>gov.usgs.cida.jmx.log4j.JMXLog4JLoggerServletContextListener</listener-class>
     </listener>
+    <servlet>
+        <servlet-name>SecurityImageGenerator</servlet-name>
+        <servlet-class>gov.usgs.service.SecurityImageGenerator</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SecurityImageGenerator</servlet-name>
+        <url-pattern>/securityimage/*</url-pattern>
+    </servlet-mapping>
     <servlet>
         <servlet-name>OWSProxy</servlet-name>
         <servlet-class>gov.usgs.service.OWSProxyServletX</servlet-class>
@@ -85,7 +93,7 @@
     <servlet>
         <description>
 			Handles blacklist management
-		</description>
+        </description>
         <servlet-name>BlacklistServlet</servlet-name>
         <servlet-class>gov.usgs.cida.blacklist.BlacklistServlet</servlet-class>
     </servlet>
