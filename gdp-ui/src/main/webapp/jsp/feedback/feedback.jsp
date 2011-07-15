@@ -5,11 +5,31 @@
 --%>
 <script type="text/javascript">
     var FEEDBACK = new function() {
-        var _contactForm = $('#contact-form');
+        var _contactForm = '#contact-form';
+        var _captchaImageDiv = '#captchaImageDiv';
+        var _contactPopupContainer = '#contact-popup-container';
+        
+        var _captchaValidationUrl = '${param["securityimageDir"]}/validatecaptcha/';
+        var _commentSubmittalUrl = '${param["serviceDir"]}/contact/';
+        var _serverErrorMessage = '${param["serverErrorMessage"]}';
+        var defaultComment = 'Please enter your comment here.';
+        var captchaFailureMessage = 'Either the text did not match the security image or it has expired. Please try again with a new security image.';
         
         return {
             init : function() {
                 logger.info('GDP: Initializing Contact Form');
+                
+            },
+            popEmailPanel : function() {
+                $(_contactPopupContainer).dialog({
+                    title: 'User Feedback',
+                    width: 'auto',
+                    height: 'auto',
+                    modal: true,
+                    resizable: false,
+                    draggable: true,
+                    zIndex: 9999
+                });
             }
         }
     }();
@@ -63,8 +83,7 @@
                                   onkeyup="FEEDBACK.commentEntry();" 
                                   rows="10" 
                                   cols="40" 
-                                  name="comment">
-								Please enter your comment here.
+                                  name="comment">Please enter your comment here.
                         </textarea>
                     </td>
                 </tr>
