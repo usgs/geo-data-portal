@@ -41,6 +41,8 @@ public class SecurityImageGenerator extends HttpServlet {
     private static final Color BORDER_COLOR = Color.black;
     private static final Color TEXT_COLOR = Color.white;
     
+    private static final String ELIGIBLE_CHARACTERS = "ABCDEFGHJKLMPQRSTUVWXY23456789";
+    
     public static enum Operations {
         getImage, validatecaptcha
     };
@@ -143,7 +145,7 @@ public class SecurityImageGenerator extends HttpServlet {
                 int fontHeight = fontMetrics.getHeight();
                 //String elegibleChars 		= "ABCDEFGHJKLMPQRSTUVWXYabcdefhjkmnpqrstuvwxy23456789";
                 // All lowercase
-                String elegibleChars = "ABCDEFGHJKLMPQRSTUVWXY23456789";
+                String elegibleChars = ELIGIBLE_CHARACTERS;
                 char[] chars = elegibleChars.toCharArray();
                 float spaceForLetters = -horizMargin * 2 + width;
                 float spacePerChar = spaceForLetters / (charsToPrint - 1.0f);

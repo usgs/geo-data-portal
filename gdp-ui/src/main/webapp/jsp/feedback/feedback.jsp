@@ -5,23 +5,44 @@
 --%>
 <script type="text/javascript">
     var FEEDBACK = new function() {
-        var _contactForm = '#contact-form';
-        var _captchaImageDiv = '#captchaImageDiv';
-        var _contactPopupContainer = '#contact-popup-container';
-        
+        var _contactPopupContainer;
+        var _commentField;
+        var _captchaImageDiv;
         var _captchaValidationUrl = '${param["securityimageDir"]}/validatecaptcha/';
         var _commentSubmittalUrl = '${param["serviceDir"]}/contact/';
         var _serverErrorMessage = '${param["serverErrorMessage"]}';
-        var defaultComment = 'Please enter your comment here.';
+        var _defaultComment = 'Please enter your comment here.';
         var captchaFailureMessage = 'Either the text did not match the security image or it has expired. Please try again with a new security image.';
+        
+        var _submitButton;
+        var _resetSecurityImageButton;
         
         return {
             init : function() {
                 logger.info('GDP: Initializing Contact Form');
+                _submitButton = $('#submit');
+                _resetSecurityImageButton = $('#resetSecurityTextButton');
+                _contactPopupContainer = $('#contact-popup-container');
+                _commentField = $('#comment');
+                _captchaImageDiv = $('#captchaImageDiv');
+                
+                // Create button objects 
+                _submitButton.button({'label' : 'Submit', 'disabled' : true});
+                _resetSecurityImageButton.button({'label':'Reset Security Image'});
+                
+                // Set the default text
+                _commentField.text(_defaultComment);
+                
+                // Binds
+                _resetSecurityImageButton.click(function() {
+                    var cacheBreak =  new Date().getMilliseconds();
+                    _captchaImageDiv.find('img').prop('src', '${param["securityimageDir"]}/getImage/?width=300&height=50&charsToPrint=6&circlesToDraw=30&cacheBreak=' + cacheBreak);
+//                    _captchaImageDiv.innerHTML = '<img id="captchaImage" alt="Security Check Image" src="${param["securityimageDir"]}/getImage/?width=300&height=50&charsToPrint=6&circlesToDraw=30&cacheBreak=' + cacheBreak + '"   />';
+                });
                 
             },
             popEmailPanel : function() {
-                $(_contactPopupContainer).dialog({
+                _contactPopupContainer.dialog({
                     title: 'User Feedback',
                     width: 'auto',
                     height: 'auto',
@@ -83,7 +104,7 @@
                                   onkeyup="FEEDBACK.commentEntry();" 
                                   rows="10" 
                                   cols="40" 
-                                  name="comment">Please enter your comment here.
+                                  name="comment">
                         </textarea>
                     </td>
                 </tr>
@@ -130,7 +151,6 @@
                     </td>	   
                     <td>
                         <input id="resetSecurityTextButton"
-                               onclick="FEEDBACK.retrieveSecurityImage();" 
                                type="button" 
                                value="Reset Security Image" />
                     </td>
