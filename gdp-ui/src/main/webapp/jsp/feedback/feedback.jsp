@@ -35,9 +35,7 @@
                 
                 // Binds
                 _resetSecurityImageButton.click(function() {
-                    var cacheBreak =  new Date().getMilliseconds();
-                    _captchaImageDiv.find('img').prop('src', '${param["securityimageDir"]}/getImage/?width=300&height=50&charsToPrint=6&circlesToDraw=30&cacheBreak=' + cacheBreak);
-//                    _captchaImageDiv.innerHTML = '<img id="captchaImage" alt="Security Check Image" src="${param["securityimageDir"]}/getImage/?width=300&height=50&charsToPrint=6&circlesToDraw=30&cacheBreak=' + cacheBreak + '"   />';
+                    FEEDBACK.updateCaptchaImage();
                 });
                 
             },
@@ -51,6 +49,10 @@
                     draggable: true,
                     zIndex: 9999
                 });
+            },
+            updateCaptchaImage : function() {
+                var cacheBreak =  new Date().getMilliseconds();
+                _captchaImageDiv.find('img').prop('src', '${param["securityimageDir"]}/getImage/?width=300&height=50&charsToPrint=6&circlesToDraw=30&cacheBreak=' + cacheBreak);
             }
         }
     }();
