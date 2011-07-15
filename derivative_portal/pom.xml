@@ -8,7 +8,7 @@
     </parent>
     <artifactId>derivative_portal</artifactId>
     <packaging>war</packaging>
-    <name>GDP Derivative Portal</name>
+    <name>GDP Derivative UI</name>
     <properties>
     </properties>
     <dependencies>
