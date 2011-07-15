@@ -6,10 +6,6 @@
     <packaging>pom</packaging>
     <version>12-SNAPSHOT</version>
     <name>GDP</name>
-    <description>
-        Owner: NB
-Coders: TK, JW, RZ, IS
-    </description>
     <modules>
         <module>gdp-common-utilities</module>
         <module>gdp-data-access</module>
@@ -20,51 +16,108 @@ Coders: TK, JW, RZ, IS
         <module>gdp-wfst</module>
         <module>geoserver</module>
 <!--        <module>geonetwork</module>-->
-        <module>gdp-deployer</module>
+        <module>gdp-ui</module>
         <module>derivative_portal</module>
+        <module>gdp-deployer</module>
     </modules>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- intermittent artifact transfer failures -->
+<!--        <cida.maven.url>http://internal.cida.usgs.gov/nexus<cida.maven.url>-->
+        <!-- may change to URL below in future -->
+<!--	    <cida.maven.url>http://internal.cida.usgs.gov/maven<cida.maven.url>-->
+        <cida.maven.url>http://igsarmewfsbbl.er.usgs.gov:8081/nexus</cida.maven.url>
+        <cida.svn.url>https://cida-svn.er.usgs.gov/repos/dev</cida.svn.url>
+        <n52-wps.version>2.0-RC6</n52-wps.version>
+        <geotools.version>2.6.6</geotools.version>
+        <slf4j.version>1.6.1</slf4j.version>
+        <logback.version>0.9.26</logback.version>
+        <netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
+    </properties>
+    <description>
+        Owner: NB
+        Coders: IS, JW, DS, TK
+    </description>
+    <url>http://cida.usgs.gov</url>
+    <inceptionYear>2011</inceptionYear>
+    <organization>
+        <name>Center for Integrated Data Analytics</name>
+        <url>http://cida.usgs.gov</url>
+    </organization>    <developers>
+        <developer>
+            <name>Jordan Walker</name>
+            <email>jiwalker@usgs.gov</email>
+            <id>jiwalker</id>
+            <organization>Center for Integrated Data Analytics</organization>
+            <organizationUrl>http://cida.usgs.gov</organizationUrl>
+            <timezone>-6</timezone>
+        </developer>
+        <developer>
+            <name>Ivan Suftin</name>
+            <email>isuftin@usgs.gov</email>
+            <id>isuftin</id>
+            <organization>Center for Integrated Data Analytics</organization>
+            <organizationUrl>http://cida.usgs.gov</organizationUrl>
+            <timezone>-6</timezone>
+        </developer>
+        <developer>
+            <name>David Sibley</name>
+            <email>dmsibley@usgs.gov</email>
+            <id>dmsibley</id>
+            <organization>Center for Integrated Data Analytics</organization>
+            <organizationUrl>http://cida.usgs.gov</organizationUrl>
+            <timezone>-6</timezone>
+        </developer>
+        <developer>
+            <name>Tom Kunicki</name>
+            <email>tkunicki@usgs.gov</email>
+            <id>tkunicki</id>
+            <organization>Center for Integrated Data Analytics</organization>
+            <organizationUrl>http://cida.usgs.gov</organizationUrl>
+            <timezone>-6</timezone>
+        </developer>
+    </developers>
+    <licenses>
+        <license>
+            <name>Public Domain</name>
+            <url>http://en.wikipedia.org/wiki/Public_domain_software</url>
+            <comments>
+                All work of the US Government enter into the Public Domain within
+                the United States.  Whether that work is public domain outside of
+                the United States depends on various factors.
+            </comments>
+        </license>
+    </licenses>
     <ciManagement>
-		<system>Hudson</system>
-		<url>http://igsarm-cida-hudson1.er.usgs.gov:8080/hudson/job/GeoDataPortal/</url>
-	</ciManagement>
+        <system>Hudson</system>
+        <url>http://igsarm-cida-hudson1.er.usgs.gov:8080/hudson/job/GeoDataPortal/</url>
+    </ciManagement>
     <scm>
-		<developerConnection>scm:svn:https://cida-svn.er.usgs.gov/repos/dev/usgs/gdp/trunk</developerConnection>
-	</scm>
-	<distributionManagement>
-		<repository>
-			<id>cida-gdp-releases</id>
-			<name>CIDA GDP Releases</name>
-            <url>http://igsarmewfsbbl.er.usgs.gov:8081/nexus/content/repositories/cida-gdp-releases</url>
-            <!-- intermittent artifact transfer failures -->
-<!--			<url>http://internal.cida.usgs.gov/nexus/content/repositories/cida-gdp-releases</url>-->
-            <!-- may change to URL below in future -->
-<!--			<url>http://internal.cida.usgs.gov/maven/content/repositories/cida-gdp-releases</url>-->
-		</repository>
-		<snapshotRepository>
-			<id>cida-gdp-snapshots</id>
-			<name>CIDA GDP Snapshots</name>
-            <url>http://igsarmewfsbbl.er.usgs.gov:8081/nexus/content/repositories/cida-gdp-snapshots</url>
-            <!-- intermittent artifact transfer failures -->
-<!--			<url>http://internal.cida.usgs.gov/nexus/content/repositories/cida-gdp-snapshots</url>-->
-            <!-- may change to URL below in future -->
-<!--            <url>http://internal.cida.usgs.gov/maven/content/repositories/cida-gdp-snapshots</url>-->
-		</snapshotRepository>
-	</distributionManagement>
+        <developerConnection>scm:svn:${cida.svn.url}/usgs/gdp/trunk</developerConnection>
+    </scm>
+    <issueManagement>
+        <system>JIRA</system>
+        <url>http://internal.cida.usgs.gov/jira/browse/GDP</url>
+    </issueManagement>
+    <distributionManagement>
+        <repository>
+            <id>cida-gdp-releases</id>
+            <name>CIDA GDP Releases</name>
+            <url>${cida.maven.url}/content/repositories/cida-gdp-releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>cida-gdp-snapshots</id>
+            <name>CIDA GDP Snapshots</name>
+            <url>${cida.maven.url}/content/repositories/cida-gdp-snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
     <repositories>
         <repository>
             <id>cida-gdp-development</id>
             <name>CIDA GDP Development</name>
-<!--            <url>http://internal.cida.usgs.gov/nexus/content/groups/cida-gdp-development</url>-->
-            <url>http://igsarmewfsbbl.er.usgs.gov:8081/nexus/content/groups/cida-gdp-development</url>
+            <url>${cida.maven.url}/content/groups/cida-gdp-development</url>
         </repository>
     </repositories>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <n52-wps.version>2.0-RC6</n52-wps.version>
-        <geotools.version>2.6.6</geotools.version>
-        <slf4j.version>1.6.1</slf4j.version>
-        <netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -117,6 +170,11 @@ Coders: TK, JW, RZ, IS
                 <version>4.1.1</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient-cache</artifactId>
+                <version>4.1.1</version>
+            </dependency>
+            <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>2.0</version>
@@ -143,12 +201,6 @@ Coders: TK, JW, RZ, IS
                 <scope>runtime</scope>
             </dependency>
             <dependency>
-                <groupId>log4j</groupId>
-                <artifactId>log4j</artifactId>
-                <version>1.2.16</version>
-                <scope>runtime</scope>
-            </dependency>
-            <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>jul-to-slf4j</artifactId>
                 <version>${slf4j.version}</version>
@@ -158,6 +210,27 @@ Coders: TK, JW, RZ, IS
                 <groupId>org.slf4j</groupId>
                 <artifactId>jcl-over-slf4j</artifactId>
                 <version>${slf4j.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>log4j-over-slf4j</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>1.2.16</version>
                 <scope>runtime</scope>
             </dependency>
             <dependency>
@@ -206,6 +279,11 @@ Coders: TK, JW, RZ, IS
                 <artifactId>jsp-api</artifactId>
                 <version>2.1</version>
                 <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>xerces</groupId>
+                <artifactId>xercesImpl</artifactId>
+                <version>2.9.1</version>
             </dependency>
             <dependency>
                 <groupId>joda-time</groupId>
@@ -381,40 +459,74 @@ Coders: TK, JW, RZ, IS
     <build>
         <pluginManagement>
             <plugins>
-				<plugin>
-					<artifactId>maven-release-plugin</artifactId>
-					<version>2.1</version>
-					<configuration>
-						<tagBase>https://cida-svn.er.usgs.gov/repos/dev/usgs/gdp/tags</tagBase>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<configuration>
-						<source>1.6</source>
-						<target>1.6</target>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-surefire-plugin</artifactId>
-					<configuration>
-						<testFailureIgnore>true</testFailureIgnore>
+                <plugin>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>2.1</version>
+                    <configuration>
+                        <tagBase>${cida.svn.url}/usgs/gdp/tags</tagBase>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <source>1.6</source>
+                        <target>1.6</target>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>2.1.1</version>
+                    <configuration>
+                        <failOnMissingWebXml>false</failOnMissingWebXml>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <configuration>
+                        <testFailureIgnore>true</testFailureIgnore>
                         <!-- NOTE: extra properties required for unit tests using our log4j.properties -->
-						<systemProperties>
-							<property>
-								<name>catalina.base</name>
-								<value>target/test-classes</value>
-							</property>
-							<property>
-								<name>catalina.home</name>
-								<value>target/test-classes</value>
-							</property>
-						</systemProperties>
-					</configuration>
-				</plugin>
-			</plugins>
+                        <systemProperties>
+                            <property>
+                                <name>catalina.base</name>
+                                <value>target/test-classes</value>
+                            </property>
+                            <property>
+                                <name>catalina.home</name>
+                                <value>target/test-classes</value>
+                            </property>
+                        </systemProperties>
+                    </configuration>
+                </plugin>
+            </plugins>
         </pluginManagement>
     </build>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-changelog-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <type>range</type>
+                    <range>30</range>
+                </configuration>
+                <inherited>true</inherited>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.8</version>
+                <inherited>true</inherited>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>2.8.1</version>
+                <inherited>true</inherited>
+            </plugin>
+        </plugins>
+    </reporting>
 </project>

@@ -10,20 +10,22 @@
     <artifactId>gdp-deployer</artifactId>
     <packaging>pom</packaging>
     <name>GDP Deployer</name>
-    <description>
-        Owner: NB
-Coders: TK, JW, RZ, IS
-    </description>
     <modules>
-        <module>gdp-utility-wps</module>
-        <module>gdp-process-wps</module>
         <module>geoserver</module>
+        <module>gdp-process-wps</module>
+        <module>gdp-utility-wps</module>
+        <module>gdp-ui</module>
+        <module>gdp-ui-climate</module>
     </modules>
     <build>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.cargo</groupId>
                 <artifactId>cargo-maven2-plugin</artifactId>
+                <inherited>false</inherited>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
             </plugin>
         </plugins>
         <pluginManagement>
@@ -31,9 +33,46 @@ Coders: TK, JW, RZ, IS
                 <plugin>
                     <groupId>org.codehaus.cargo</groupId>
                     <artifactId>cargo-maven2-plugin</artifactId>
-                    <version>1.1.1</version>
+                    <configuration>
+                        <skip>${cargo.deploy.skip}</skip>
+                        <container>
+                            <containerId>${cargo.containerId}</containerId>
+                            <type>remote</type>
+                        </container>
+                        <configuration>
+                            <type>runtime</type>
+                            <properties>
+                                <cargo.server.settings>cargo-localhost</cargo.server.settings>
+                            </properties>
+                        </configuration>
+                        <deployer>
+                            <deployables>
+                                <deployable>
+                                    <groupId>${cargo.deploy.groupId}</groupId>
+                                    <artifactId>${cargo.deploy.artifactId}</artifactId>
+                                    <type>war</type>
+                                    <properties>
+                                        <context>${cargo.deploy.context}</context>
+                                    </properties>
+                                </deployable>
+                            </deployables>
+                        </deployer>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
     </build>
+    <profiles>
+        <profile>
+            <id>cargo-deploy-version</id>
+            <activation>
+                <property>
+                    <name>env.CARGO_DEPLOY_VERSION</name>
+                </property>
+            </activation>
+            <properties>
+                <cargo.deploy.version>${env.CARGO_DEPLOY_VERSION}</cargo.deploy.version>
+            </properties>
+        </profile>
+    </profiles>
 </project>

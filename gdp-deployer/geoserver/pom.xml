@@ -9,49 +9,55 @@
     <artifactId>geoserver</artifactId>
     <packaging>pom</packaging>
     <name>GDP Geoserver Deployer</name>
+    <properties>
+        <cargo.deploy.groupId>gov.usgs.cida.gdp</cargo.deploy.groupId>
+        <cargo.deploy.artifactId>geoserver</cargo.deploy.artifactId>
+        <cargo.deploy.version>${project.version}</cargo.deploy.version>
+        <cargo.deploy.context>${cargo.deploy.artifactId}</cargo.deploy.context>
+        <cargo.deploy.skip>false</cargo.deploy.skip>
+    </properties>
     <dependencies>
         <dependency>
-            <groupId>gov.usgs.cida.gdp</groupId>
-            <artifactId>${project.artifactId}</artifactId>
+            <groupId>${cargo.deploy.groupId}</groupId>
+            <artifactId>${cargo.deploy.artifactId}</artifactId>
             <type>war</type>
             <version>${cargo.deploy.version}</version>
         </dependency>
     </dependencies>
-    <properties>
-        <cargo.deploy.version>${project.version}</cargo.deploy.version>
-    </properties>
     <profiles>
         <profile>
-            <!-- set property from environmnet variable if present -->
-            <id>cargo-deploy-version</id>
+            <id>localhost</id>
             <activation>
                 <property>
-                    <name>env.CARGO_DEPLOY_VERSION</name>
+                    <name>env.CARGO_DEPLOY_PROFILE</name>
+                    <value>localhost</value>
                 </property>
             </activation>
             <properties>
-                <cargo.deploy.version>${env.CARGO_DEPLOY_VERSION}</cargo.deploy.version>
+                <cargo.containerId>tomcat6x</cargo.containerId>
+                <!-- references server id in settings.xml -->
+                <cargo.server.settings>cargo-localhost</cargo.server.settings>
             </properties>
         </profile>
         <profile>
             <id>development</id>
             <activation>
                 <property>
-                    <name>env.CARGO_PROFILE</name>
+                    <name>env.CARGO_DEPLOY_PROFILE</name>
                     <value>development</value>
                 </property>
             </activation>
             <properties>
                 <cargo.containerId>tomcat6x</cargo.containerId>
                 <!-- references server id in settings.xml -->
-                <cargo.server.settings>cargo-javadev1-8081</cargo.server.settings>
+                <cargo.server.settings>cargo-localhost</cargo.server.settings>
             </properties>
         </profile>
         <profile>
             <id>staging</id>
             <activation>
                 <property>
-                    <name>env.CARGO_PROFILE</name>
+                    <name>env.CARGO_DEPLOY_PROFILE</name>
                     <value>staging</value>
                 </property>
             </activation>
@@ -65,7 +71,7 @@
             <id>production</id>
             <activation>
                 <property>
-                    <name>env.CARGO_PROFILE</name>
+                    <name>env.CARGO_DEPLOY_PROFILE</name>
                     <value>production</value>
                 </property>
             </activation>
@@ -76,36 +82,4 @@
             </properties>
         </profile>
     </profiles>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.cargo</groupId>
-                <artifactId>cargo-maven2-plugin</artifactId>
-                <configuration>
-                    <container>
-                        <containerId>${cargo.containerId}</containerId>
-                        <type>remote</type>
-                    </container>
-                    <configuration>
-                        <type>runtime</type>
-                        <properties>
-                            <cargo.server.settings>${cargo.server.settings}</cargo.server.settings>
-                        </properties>
-                    </configuration>
-                    <deployer>
-                        <deployables>
-                            <deployable>
-                                <groupId>gov.usgs.cida.gdp</groupId>
-                                <artifactId>${project.artifactId}</artifactId>
-                                <type>war</type>
-                                <properties>
-                                    <context>${project.artifactId}</context>
-                                </properties>
-                            </deployable>
-                        </deployables>
-                    </deployer>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

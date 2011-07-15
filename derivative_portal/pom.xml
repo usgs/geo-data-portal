@@ -1,200 +1,49 @@
-
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>gov.usgs.cida</groupId>
-    <artifactId>derivative_portal</artifactId>
-    <version>12-SNAPSHOT</version>
-    <packaging>war</packaging>
-    <name>Derivative Portal</name>
     <parent>
-        <groupId>gov.usgs.cida.gdp</groupId>
         <artifactId>gdp</artifactId>
+        <groupId>gov.usgs.cida.gdp</groupId>
         <version>12-SNAPSHOT</version>
     </parent>
-    <!-- ### Identification -->
-    <description>
-        Owner: NB
-        Coders: IS, JW, DS, TK
-    </description>
-    <url>http://cida.usgs.gov</url>
-    <inceptionYear>2011</inceptionYear>
-    <organization>
-        <name>Center for Integrated Data Analytics</name>
-        <url>http://cida.usgs.gov</url>
-    </organization>
-    <licenses>
-        <license>
-            <name>Public Domain</name>
-            <url>http://en.wikipedia.org/wiki/Public_domain_software</url>
-            <comments>
-                All work of the US Government enter into the Public Domain within
-                the United States.  Whether that work is public domain outside of
-                the United States depends on various factors.
-            </comments>
-        </license>
-    </licenses>
-    <!-- ### End Identification -->
-    
+    <artifactId>derivative_portal</artifactId>
+    <packaging>war</packaging>
+    <name>GDP Derivative Portal</name>
     <properties>
-        <cida.maven.url>http://igsarmewfsbbl.er.usgs.gov:8081/nexus</cida.maven.url>
-        <cida.svn.url>https://cida-svn.er.usgs.gov/repos/dev</cida.svn.url>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
-        <logback.version>0.9.26</logback.version>
-        <slf4j.version>1.6.1</slf4j.version>
     </properties>
-    
-    <scm>
-        <connection>scm:svn:https://cida-svn.er.usgs.gov/repos/dev/usgs/gdp/trunk/derivative_portal/trunk/</connection>
-        <developerConnection>scm:svn:https://cida-svn.er.usgs.gov/repos/dev/usgs/gdp/trunk/derivative_portal/trunk/</developerConnection>
-        <url>https://cida-svn.er.usgs.gov/repos/dev/usgs/derivative_portal</url>
-    </scm>
-    
-    <distributionManagement>
-        <repository>
-            <id>cida-releases</id>
-            <name>CIDA Releases</name>
-            <url>${cida.maven.url}/content/repositories/cida-releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>cida-snapshots</id>
-            <name>CIDA Snapshots</name>
-            <url>${cida.maven.url}/content/repositories/cida-snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
-    
-    <repositories>
-        <repository>
-            <id>nexus</id>
-            <name>CIDA Nexus</name>
-            <url>${cida.maven.url}/content/groups/public/</url>
-        </repository>
-    </repositories>
-    
-    <ciManagement>
-        <system>Hudson</system>
-        <url>http://igsarm-cida-hudson1.er.usgs.gov:8080/hudson/job/Derivative%20Portal</url>
-        <notifiers>
-            <notifier>
-                <type>mail</type>
-                <address>isuftin@usgs.gov</address>
-                <sendOnError>true</sendOnError>
-                <sendOnFailure>true</sendOnFailure>
-                <sendOnSuccess>false</sendOnSuccess>
-                <sendOnWarning>false</sendOnWarning>
-            </notifier>
-        </notifiers>
-    </ciManagement>
-    
-    <issueManagement>
-        <system>JIRA</system>
-        <url>http://internal.cida.usgs.gov/jira/browse/GDP/component/10292</url>
-    </issueManagement>
-    
-    <developers>
-        <developer>
-            <name>Jordan Walker</name>
-            <email>jiwalker@usgs.gov</email>
-            <id>jiwalker</id>
-            <organization>Center for Integrated Data Analytics</organization>
-            <organizationUrl>http://cida.usgs.gov</organizationUrl>
-            <timezone>-6</timezone>
-        </developer>
-        <developer>
-            <name>Ivan Suftin</name>
-            <email>isuftin@usgs.gov</email>
-            <id>isuftin</id>
-            <organization>Center for Integrated Data Analytics</organization>
-            <organizationUrl>http://cida.usgs.gov</organizationUrl>
-            <timezone>-6</timezone>
-        </developer>
-        <developer>
-            <name>David Sibley</name>
-            <email>dmsibley@usgs.gov</email>
-            <id>dmsibley</id>
-            <organization>Center for Integrated Data Analytics</organization>
-            <organizationUrl>http://cida.usgs.gov</organizationUrl>
-            <timezone>-6</timezone>
-        </developer>
-        <developer>
-            <name>Tom Kunicki</name>
-            <email>tkunicki@usgs.gov</email>
-            <id>tkunicki</id>
-            <organization>Center for Integrated Data Analytics</organization>
-            <organizationUrl>http://cida.usgs.gov</organizationUrl>
-            <timezone>-6</timezone>
-        </developer>
-    </developers>
-    
     <dependencies>
-        <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-web-api</artifactId>
-            <version>6.0</version>
-            <scope>provided</scope>
-        </dependency>
         <dependency>
             <groupId>javax.servlet.jsp</groupId>
             <artifactId>jsp-api</artifactId>
-            <version>2.1</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.5</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <artifactId>slf4j-api</artifactId>
-            <groupId>org.slf4j</groupId>
-            <version>${slf4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>log4j-over-slf4j</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-            <version>${logback.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
         </dependency>
         <dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
-            <version>2.9.1</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+        </dependency>
+        <dependency>
+            <artifactId>slf4j-api</artifactId>
+            <groupId>org.slf4j</groupId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>log4j-over-slf4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
         </dependency>
     </dependencies>
-
     <build>
         <finalName>derivative-portal</finalName>
-        
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>2.1.1</version>
-                <configuration>
-                    <failOnMissingWebXml>false</failOnMissingWebXml>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.codehaus.cargo</groupId>
                 <artifactId>cargo-maven2-plugin</artifactId>
@@ -212,48 +61,6 @@
                     </configuration>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-scm-plugin</artifactId>
-                <version>1.5</version>
-                <configuration>
-                    <connectionType>developerConnection</connectionType>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>2.1</version>
-                <configuration>
-                    <tagBase>${cida.svn.url}/usgs/derivative_portal/tags</tagBase>
-                </configuration>
-            </plugin>
         </plugins>
-        
     </build>
-    
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-changelog-plugin</artifactId>
-                <version>2.2</version>
-                <configuration>
-                    <type>range</type>
-                    <range>30</range>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.8</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-report-plugin</artifactId>
-                <version>2.8.1</version>
-            </plugin>
-        </plugins>
-    </reporting>
-
 </project>
