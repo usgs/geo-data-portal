@@ -425,7 +425,7 @@ var AOI = function() {
     return {
         htmlID: _HTML_ID,
         init: function() {
-            logger.debug("GDP: Initializing Area of Interest.");
+            logger.info("GDP: Initializing Area of Interest.");
             
             setupShapefileServices();
             

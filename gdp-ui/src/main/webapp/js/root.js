@@ -47,7 +47,7 @@ $(window).load(function() {
 })
 
 function init() {
-    logger.debug("GDP: Beginning application initialization.");
+    logger.info("GDP: Beginning application initialization.");
     
     // Add htmlDecode function to the JS String object
     String.prototype.htmlDecode = function() {
@@ -72,7 +72,7 @@ function initializeLogging() {
 }
 
 function initializeOverlay() {
-    logger.debug("GDP: Initializing overlay.");
+    logger.info("GDP: Initializing overlay.");
     
     logger.trace("GDP: Adding CSS rules to the overlay content");
     $(OVERLAY_CONTENT).css({
@@ -91,7 +91,7 @@ function initializeOverlay() {
 
 function removeOverlay() {
     $(OVERLAY).fadeOut(Constant.ui.fadespeed, function() {
-        logger.debug('GDP: Application initialization has completed. Removing overlay.');
+        logger.info('GDP: Application initialization has completed. Removing overlay.');
         $(OVERLAY).remove();
         
         if (parseInt(Constant.ui.view_popup_info) && Constant.ui.view_popup_info_txt.length > 0) {
@@ -103,7 +103,7 @@ function removeOverlay() {
 }
 
 function initializeSteps() {
-    logger.debug('GDP: Initializing steps (creating global JS objects)');
+    logger.info('GDP: Initializing steps (creating global JS objects)');
     Constant = new Constant(); // important that this gets initialized first
     WPS = WPS();
     WFS = WFS();
@@ -136,7 +136,7 @@ function initializeSteps() {
  * steps
  */
 function initializeView() {
-    logger.debug('GDP: Initializing view.');
+    logger.info('GDP: Initializing view.');
     $(window).resize(function() {resizeElements()});
     
     loadStep(0);
@@ -183,7 +183,7 @@ function sortListbox(listbox) {
 }
 
 function initializeAjax() {
-    logger.debug("GDP: Initializing AJAX timeout functionality. Setting to: " + AJAX_TIMEOUT + "ms");
+    logger.info("GDP: Initializing AJAX timeout functionality. Setting to: " + AJAX_TIMEOUT + "ms");
     $.ajaxSetup({
         timeout: AJAX_TIMEOUT,
         error: function(jqXHR, textStatus, errorThrown) {
@@ -246,7 +246,7 @@ function initializeThrobbers() {
  * Set up the tooltip functionality throughout the UI
  */
 function initializeTips() {
-    logger.debug("GDP: Initializing Tips.");
+    logger.info("GDP: Initializing Tips.");
     $(".tooltip img").hover(
         function() {$(this).attr('src', 'images/question-mark-hover.png')},
         function() {$(this).attr('src', 'images/question-mark.png')}

@@ -323,7 +323,7 @@ function onMapZoom() {
  * Create the map layer. 
  */
 function initMap(options) {
-    logger.debug('GDP: Initializing map.');
+    logger.info('GDP: Initializing map.');
     OpenLayers.IMAGE_RELOAD_ATTEMPTS = 3;
 
     map = new OpenLayers.Map('map-div', {
@@ -382,7 +382,7 @@ function initMap(options) {
     });
 
     map.setCenter(new OpenLayers.LonLat(-96, 38), 4);
-    logger.debug('GDP: Map initialized.');
+    logger.info('GDP: Map initialized.');
     // Change layer based on zoom level.
     //map.events.register("zoomend", null, onMapZoom);
 }

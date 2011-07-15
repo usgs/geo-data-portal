@@ -1379,7 +1379,7 @@ var Dataset = function() {
         datasetTypeEnum : _datasetTypeEnum,
         
         init: function() {
-            logger.debug("GDP: Initializing Dataset/Submit View.");
+            logger.info("GDP: Initializing Dataset/Submit View.");
             
             _algorithmList = (Constant.ui.view_algorithm_list.length > 0) ? Constant.ui.view_algorithm_list.split(',') : new Array();
             logger.debug('GDP: We are working with ' + ((_algorithmList.length == 0) ? 'all' : _algorithmList.length) + ' algorithm(s).');
