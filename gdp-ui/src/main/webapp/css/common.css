@@ -1,0 +1,185 @@
+#bottom-div {
+    position: relative;
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+    background-color: #e8e8e8;
+    height: auto;
+    min-height: 400px;
+}
+.button {
+    padding: 5px;
+    border: 1px solid #3372a1;
+    text-align: center;
+    border-radius: 5px; /* Does not work in IE8 */
+}
+
+.button:hover {
+    background-color: #ccc;
+    cursor: pointer;
+}
+
+
+.center {
+    text-align: center;
+}
+
+.centered {
+    margin:0 auto;
+    width:768px;
+    text-align: left;
+}
+
+.element-wrapper {
+    margin-top: 10px; margin-bottom: 10px;
+    padding: 5px;
+    clear: both;
+    border-color: #3372a1;
+    background-color: #e1effb;
+    border-width: 1px;
+    border-radius: 5px;
+    border-style: solid;
+}
+
+#tiptip_holder a    { color: #9CF }
+
+.bold-link, .bold-link:link {
+    color: #258; /* 75% saturation */
+    text-decoration: none; font-weight: bold;
+}
+.bold-link:active  { color: #EFEFEF; }
+.bold-link:visited { color: #526066; /* 20% saturation */ }
+.bold-link:hover   { color: #039; }
+
+
+.di_hidden {
+    visibility : hidden;
+}
+
+#gov-buttons img {
+    max-height: 50px;
+}
+
+#header #banner-area {
+    background: #FFFFFF url(../images/gdp-banner.jpg) no-repeat; /* Modify for alternate banner images */
+    background-position: 0px 0px;
+}
+
+#info_popup_modal_window_hide_popup_option {
+    text-align: right;
+    font-size: x-small;
+}
+
+#info_popup_modal_window_hide_popup_option input{
+    height: 10px;
+}
+#overlay {
+    background-color: #FFFFFF;
+    z-index: 10000;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#overlay-content {
+    font-family:  'Gill Sans', sans-serif;
+    font-size: 36px;
+    line-height: 36px;
+    letter-spacing: 0.1em;
+    color: #444;
+    font-weight: 100;
+    position: absolute;
+    font-weight: 200;
+}
+
+#show-info-link {
+    font-size: small;
+    display: block;
+    float: right;
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+#slider {
+    margin-top: 3px;
+    margin-bottom: 3px;
+}
+
+/* OpenLayers */
+#srsCode {
+    width: 120px;
+}
+
+#page-container-div {
+    position: absolute;
+    margin: 0; padding: 0;
+    top: 0; left: 0; bottom: 0; right: 0;
+}
+
+#map-div {
+    width: 100%;
+    background-color: #E8E8E8;
+    padding: 0px;
+    margin: 0px;
+}
+
+#steps-content {
+    font-family:  'Gill Sans', sans-serif;
+    width:98%;
+    margin:0px auto;
+    text-align:left;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    height: auto;
+}
+
+#steps-header {
+    font-family:  'Gill Sans', sans-serif;
+    font-size: 36px;
+    line-height: 36px;
+    letter-spacing: 0.1em;
+    color: #444;
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+    font-weight: 200;
+}
+
+#steps-top {
+    position: relative;
+    margin: 0px;
+    padding: 10px;
+    background-color: #dcdcdc;
+    border-bottom: 1px #000000 solid;
+    border-top: 1px #000000 solid;
+}
+
+#throbber {
+    position: absolute;
+    top: 13px;
+    right: 140px;
+}
+
+.tooltip {
+    height: 10px;
+    vertical-align: middle;    
+}
+
+.clear-button {
+    height: 14px;
+    vertical-align: baseline;
+}
+
+.nav-button {
+    position: absolute;
+    top: 10px;
+    bottom: 10px;
+}
+
+#prev-button {
+    left: 15px;
+}
+#next-button {
+    right: 15px;
+}

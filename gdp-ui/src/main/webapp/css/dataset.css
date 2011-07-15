@@ -1,0 +1,64 @@
+#algorithm-buttons {
+    margin-bottom: 10px;
+}
+
+#algorithm-configuration-summary{
+    height: auto;
+}
+
+#algorithm-dropdown-container {
+    margin-bottom:10px;
+}
+
+#algorithm-dropdown-container label {
+    font-size: 14px;
+}
+
+#dataset {
+	text-align: center;
+	min-width: 768px;
+}
+
+.di_element_wrapper {
+    margin-top: 5px;
+    padding: 5px;
+    clear: both;
+    width: 100%;
+    border-color: #3372a1;
+    background-color: #e1effb;
+    border-width: 1px;
+    border-radius: 5px;
+    border-style: solid;
+}
+
+.di_field {
+    text-align: right;
+    vertical-align: middle;
+}
+
+.di_algorithm_input_title {
+    float: left;
+    vertical-align: middle;
+}
+
+#submit-button-div {    
+    clear: both;
+    bottom: 0;
+    width: 90%;
+    margin-bottom: 5px;
+}
+
+
+.green-check-mark {
+    color: green;
+    font-weight: 900;
+}
+
+.red-x {
+    color: red;
+    font-weight: 900;
+}
+
+.ui-datepicker-calendar th, .ui-datepicker-calendar td {
+    font-size: .9em;
+}

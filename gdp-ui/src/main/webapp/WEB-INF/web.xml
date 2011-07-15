@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="WebApp_ID" version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+    <description>Geo Data Portal Web Component</description>
+    <display-name>Geo Data Portal Web Component {Owner: NB, Coder: IS, TK, RZ, CWG}</display-name>
+    <!-- Login Related Configuration For config.jsp -->
+    <login-config>
+        <auth-method>BASIC</auth-method>
+        <realm-name>Configuration Area</realm-name>
+    </login-config>
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Protected Resource</web-resource-name>
+            <url-pattern>/config.jsp</url-pattern>
+            <url-pattern>/blacklist_config.jsp</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>manager</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <error-page>
+        <error-code>404</error-code>
+        <location>/jsp/error/404.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/jsp/error/500.jsp</location>
+    </error-page>
+    <filter>
+        <description>Returns the XClientIP Header on getRemoteAddr()</description>
+        <filter-name>XClientIPFilter</filter-name>
+        <filter-class>gov.usgs.service.XClientIPFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>XClientIPFilter</filter-name>
+        <url-pattern>/proxy/*</url-pattern>
+    </filter-mapping>
+        <filter>
+        <description>Returns the X-REQUEST-URL Header on getRequestURL()</description>
+        <filter-name>URLFilter</filter-name>
+        <filter-class>gov.usgs.service.URLFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>URLFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <listener>
+        <description>Allows dynamic Log4J log level changes via JMX</description>
+        <listener-class>gov.usgs.cida.jmx.log4j.JMXLog4JLoggerServletContextListener</listener-class>
+    </listener>
+    <servlet>
+        <servlet-name>OWSProxy</servlet-name>
+        <servlet-class>gov.usgs.service.OWSProxyServletX</servlet-class>
+        <!--        <servlet-class>gov.usgs.service.OWSProxyServlet</servlet-class>-->
+        <init-param>
+            <param-name>getRequestURIKey</param-name>
+            <param-value>/proxy/*</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>OWSProxy</servlet-name>
+        <url-pattern>/proxy/*</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <description>
+           Used for uploading shapefiles to our WPS server
+        </description>
+        <servlet-name>PropertiesServlet</servlet-name>
+        <servlet-class>gov.usgs.service.PropertiesServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>PropertiesServlet</servlet-name>
+        <url-pattern>/PropertiesServlet</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <description>
+            Handles Base64 encoding and sending WPS call to upload x-zipped-shp
+        </description>
+        <servlet-name>UploadHandlerServlet</servlet-name>
+        <servlet-class>gov.usgs.service.UploadHandlerServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UploadHandlerServlet</servlet-name>
+        <url-pattern>/uploadhandler</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <description>
+			Handles blacklist management
+		</description>
+        <servlet-name>BlacklistServlet</servlet-name>
+        <servlet-class>gov.usgs.cida.blacklist.BlacklistServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>BlacklistServlet</servlet-name>
+        <url-pattern>/blacklist</url-pattern>
+    </servlet-mapping>
+</web-app>

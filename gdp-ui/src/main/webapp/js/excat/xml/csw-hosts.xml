@@ -1,0 +1,7 @@
+<select name="cswhosts">
+	<option value="http://igsarm-cida-javatest1.er.usgs.gov:8082/geonetwork/srv/en/csw">geonetwork</option>
+	<option value="http://geomatics.nlr.nl/excat/csw">eXcat@nlr</option>
+	<option value="http://dinolks03.nitg.tno.nl/excat/csw">eXcat@tno</option>
+	<option value="http://www.geodata.alterra.nl/excat/csw">eXcat@alterra</option>
+	<option value="http://geonovum.nitg.tno.nl:8080/geonetwork/srv/en/csw">Geonovum</option>
+</select>

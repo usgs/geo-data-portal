@@ -1,0 +1,97 @@
+#aoi-table td {
+    vertical-align: top;
+}
+
+#area-of-interest {
+	text-align: center;
+	min-width: 768px;
+}
+
+#available-featuretypes-cell, #available-attributes-cell, #available-attribute-values {
+    padding-right: 20px;
+}
+
+#available-feature-types-selectbox {
+    /* min-width, max-width not supported by IE7*/
+    min-width: 205px;
+    max-width: 400px;
+}
+
+#available-attributes-selectbox {
+    /* min-width, max-width not supported by IE7*/
+    min-width: 180px;
+    max-width: 400px;
+}
+
+#available-attribute-values-selectbox {
+    /* min-width, max-width not supported by IE7*/
+    min-width: 200px;
+    max-width: 400px;
+}
+
+#featuretype-name-input-cell {
+    visibility: hidden;
+}
+
+.instructions {
+    float: left;
+    height: 100%;
+    width: 350px;
+    padding-right: 15px;
+    margin-right: 15px;
+    border-right: 1px solid black;
+}
+    
+#intro {
+    padding: 10px;
+}    
+ 
+#clear-input-cell {
+    visibility: hidden;
+}
+
+#services-input-cells {
+     position: relative;   
+}    
+
+#submit-input-cell {
+    visibility: hidden; 
+    padding-right: 15px;
+}
+
+#upload-input-cell {
+    visibility: hidden; 
+    position: absolute; 
+    left: 0;
+    top: 0;
+}
+
+#services-table {
+    padding: 3px;
+}
+
+    #services-table tbody {
+        height: 72px;
+    }
+
+    #services-table td {
+        vertical-align: top;
+    }
+
+    #services-table tr {
+        height: 36px;
+    }
+
+    #services-table #upload-button-cell {
+        padding-left: 25px;
+    }
+
+    #services-table #waters-input-cell {
+        padding-left: 25px;
+    }
+    
+    #services-table #waters-input-cell label {
+/*        vertical-align: top;*/
+    }
+
+    

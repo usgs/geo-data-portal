@@ -1,0 +1,11 @@
+div.ui-datepicker {
+    font-size: 11px;
+}
+
+.ui-button {
+    font-family:  'Gill Sans', sans-serif;
+    font-weight: 500;
+}
+.button .ui-button-text {
+    padding: 0em;
+}

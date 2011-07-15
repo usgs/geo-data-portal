@@ -1,0 +1,26 @@
+/* Override ui-lightness theme */
+div.jGrowl > .ui-state-highlight {
+    background: inherit;
+    color: inherit;
+    border: inherit;
+}
+
+div.jGrowl > div.default {
+    background: #EEEEEE;
+    color: #000000;
+}
+
+div.jGrowl > div.theme-error {
+    background: #880000;
+}
+
+div.jGrowl > div.theme-warning {
+    background: #FFCC00;
+    color: #000000;
+}
+
+div.jGrowl div.jGrowl-notification, div.jGrowl div.jGrowl-closer {
+	opacity:     .95; /* Make a little less transparent (default = .85) */
+    -ms-filter:  "progid:DXImageTransform.Microsoft.Alpha(Opacity=95)";
+    filter: 	 progid:DXImageTransform.Microsoft.Alpha(Opacity=95);
+}
