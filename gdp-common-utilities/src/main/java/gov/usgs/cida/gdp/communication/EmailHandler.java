@@ -26,7 +26,7 @@ public class EmailHandler {
 		session.setDebug(true);
 
 		Message msg = new MimeMessage(session);
-
+                
 		InternetAddress[] bccList = new InternetAddress[message.getBcc().size()];
 		for (int counter = 0;counter < message.getBcc().size();counter++)  {
 			InternetAddress email = new InternetAddress();
@@ -51,8 +51,9 @@ public class EmailHandler {
 		msg.setFrom(new InternetAddress(message.getFrom()));
 		msg.setSubject(message.getSubject());
 		msg.setContent(message.getContent(), "text/plain");
-
-		Transport.send(msg);
+                msg.setReplyTo(message.getReplyTo());
+		
+                Transport.send(msg);
 		log.info(new StringBuilder("Sent E-Mail From: ")
                         .append(message.getFrom())
                         .append(" To: ")
