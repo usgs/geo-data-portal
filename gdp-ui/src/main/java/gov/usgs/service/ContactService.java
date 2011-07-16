@@ -71,7 +71,7 @@ public class ContactService extends HttpServlet {
             log.info("Email sent to Pubs");
 
             try {
-                writer.append("{ status : success }");
+                writer.append("{ \"status\" : \"success\" }");
                 writer.flush();
             } finally {
                 if (writer != null) {
@@ -81,7 +81,7 @@ public class ContactService extends HttpServlet {
         } catch (Exception ex) {
             log.error("Could not send email message.", ex);
             try {
-                writer.append("{ status : fail }");
+                writer.append("{ \"status\" : \"fail\" }");
                 writer.flush();
             } finally {
                 if (writer != null) {

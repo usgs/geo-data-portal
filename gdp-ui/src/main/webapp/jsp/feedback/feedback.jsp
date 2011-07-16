@@ -119,7 +119,7 @@
                     if (filter.test(emailAddress)) {
                         emailError.html('');	
                     } else if (!filter.test(emailAddress) || emailAddress == '') {
-                        emailError.html('* Please enter a valid E-Mail address or uncheck the reply required box.');	
+                        emailError.html('* Please enter a valid E-Mail address or<br/>uncheck the reply required box.');	
                         emailError.css('color', errorColor);	
                         result = false;	
                     } 
@@ -156,22 +156,23 @@
                                         "replyrequired" : replyReq 
                                     },
                                     success: function(data, textStatus, XMLHttpRequest) {
-                                        if (data["status"] == "success"){
+                                        if (data['status'] == 'success'){
                                             logger.debug("GDP: Feedback e-mail sent");
                                             _commentField.val('');
                                             _captchaInput.val('');
-                                            FEEDBACK.retrieveSecurityImage();
+                                            FEEDBACK.updateCaptchaImage();
                                             FEEDBACK.closeEmailPanel();
+                                            showNotification("Feedback has been sent. If you entered an e-mail address, you will receive a copy.", false, null);
                                         } else {
                                             logger.debug("GDP: Feedback e-mail not sent");
-                                            alert('Feedback', "Sorry, submission failed. Please retype security text and try again. " + _serverErrorMessage);
-                                            FEEDBACK.retrieveSecurityImage();
+                                            showWarningNotification("Sorry, submission failed. Please retype security text and try again. " + _serverErrorMessage);
+                                            FEEDBACK.updateCaptchaImage();
                                             return false;
                                         }
                                     },
                                     error :  function(jqXHR, textStatus, errorThrown) {
-                                        alert('Feedback', FEEDBACK.getCaptchaFailureMessage());
-                                        FEEDBACK.retrieveSecurityImage();
+                                        showWarningNotification(FEEDBACK.getCaptchaFailureMessage());
+                                        FEEDBACK.updateCaptchaImage();
                                         return false;
                                     }
                                 })
@@ -184,7 +185,7 @@
                         },
                         error : function(jqXHR, textStatus, errorThrown) {
                             alert(FFEDBACK.getCaptchaFailureMessage());
-                            FEEDBACK.retrieveSecurityImage();
+                            FEEDBACK.updateCaptchaImage();
                             return false;
                         }
                     });
