@@ -47,6 +47,12 @@
         <description>Allows dynamic Log4J log level changes via JMX</description>
         <listener-class>gov.usgs.cida.jmx.log4j.JMXLog4JLoggerServletContextListener</listener-class>
     </listener>
+    
+    <!-- Feedback services -->
+    <servlet>
+    	<servlet-name>ContactService</servlet-name>
+    	<servlet-class>gov.usgs.service.ContactService</servlet-class>
+    </servlet>
     <servlet>
         <servlet-name>SecurityImageGenerator</servlet-name>
         <servlet-class>gov.usgs.service.SecurityImageGenerator</servlet-class>
@@ -55,6 +61,12 @@
         <servlet-name>SecurityImageGenerator</servlet-name>
         <url-pattern>/securityimage/*</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+    	<servlet-name>ContactService</servlet-name>
+    	<url-pattern>/service/contact/*</url-pattern>
+    </servlet-mapping>
+    
+    
     <servlet>
         <servlet-name>OWSProxy</servlet-name>
         <servlet-class>gov.usgs.service.OWSProxyServletX</servlet-class>
