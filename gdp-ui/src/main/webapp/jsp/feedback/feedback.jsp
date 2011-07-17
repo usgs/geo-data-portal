@@ -12,6 +12,8 @@
         var _submitButton;
         var _captchaInput;
         var _resetSecurityImageButton;
+        var _emailResponseRequired;
+        var _emailError;
         
         var _captchaValidationUrl = '${param["securityimageDir"]}/validatecaptcha/';
         var _commentSubmittalUrl = '${param["serviceDir"]}/contact/';
@@ -29,6 +31,9 @@
                 _captchaImageDiv = $('#captchaImageDiv');
                 _captchaImage = _captchaImageDiv.find('img');
                 _captchaInput = $('#captcha');
+                _emailError  = $('#emailError');
+                _emailResponseRequired = $('#emailResponseRequired');
+                
                 // Create button objects 
                 _submitButton.button({'label' : 'Submit', 'disabled' : true});
                 _resetSecurityImageButton.button({'label':'Reset Security Image'});
@@ -64,6 +69,12 @@
                 _submitButton.click(function() {
                     FEEDBACK.submitComment();
                 });
+                
+                _emailResponseRequired.change(function() {
+                    if (!$(this).prop('checked')) {
+                        _emailError.html('');
+                    } 
+                }) 
                 
             },
             getCaptchaFailureMessage : function() {
@@ -104,7 +115,7 @@
             submitComment : function() {
                 var errorColor = '#FF0000';
                 var emailAddress= $('#email').val();
-                var emailError  = $('#emailError');
+                
                 var commentError= $('#commentError');
                 var captchaError =$('#captchaError'); 
                 var replyReq	= $('#emailResponseRequired').prop('checked') ? true : false;
@@ -112,22 +123,22 @@
                 var result 	= true;
                 var verified 	= false;
                 
-                emailError.val('');
+                _emailError.val('');
                 
                 // Check EMail address if anything is entered or needs to be
                 if (replyReq) {
                     if (filter.test(emailAddress)) {
-                        emailError.html('');	
+                        _emailError.html('');	
                     } else if (!filter.test(emailAddress) || emailAddress == '') {
-                        emailError.html('* Please enter a valid E-Mail address or<br/>uncheck the reply required box.');	
-                        emailError.css('color', errorColor);	
+                        _emailError.html('* Please enter a valid E-Mail address or<br/>uncheck the reply required box.');	
+                        _emailError.css('color', errorColor);	
                         result = false;	
                     } 
                 }
 
                 // Check that a comment is entered
                 if (!_commentField.val()) {
-                    emailError.html('');
+                    _emailError.html('');
                     commentError.html('* Please enter a comment');	
                     commentError.css('color', errorColor);	
                     result = false;	
