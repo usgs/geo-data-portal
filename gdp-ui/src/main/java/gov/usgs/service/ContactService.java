@@ -20,6 +20,7 @@ public class ContactService extends HttpServlet {
     private final static Logger log = LoggerFactory.getLogger(ContactService.class);
     private static final String USGS_REMEDY = "servicedesk@usgs.gov";
     private static final String DEFAULT_GDP_ADDRESS = "gdp_help@usgs.gov";
+    private static final String DEFAULT_SUBJECT = "Geo Data Portal User Comments";
     private static final String NO_RESPONSE_REQUIRED_ADDRESS = "gdp_help_noreply@usgs.gov";
 
     @Override
@@ -29,46 +30,42 @@ public class ContactService extends HttpServlet {
         String comments = req.getParameter("comments");
         String email = req.getParameter("email");
         String emailResponseRequired = req.getParameter("replyrequired");
+
         String emailResponseRequiredText = ("true".equals(emailResponseRequired)) ? "*** User (" + email + ") Requires a Response ***\n\n" : "";
-        String autoInsertedContent = "This is an auto-generated email from the USGS Publications Warehouse.  "
+        String autoInsertedContent = "This is an auto-generated email from the USGS Geo Data Portal.  "
                 + "Below is a copy of the message you (" + email + ") submitted.  If you feel you have received this message erroneously, "
                 + "please contact servicedesk@usgs.gov.\n\n";
-        StringBuilder message = new StringBuilder();
-        message.append("Serving: ");
-        message.append(req.getQueryString());
-        log.info(message.toString());
-        log.info("ContactService Request Email:" + email + " ResponseRequired:" + emailResponseRequired);
-
+        
+        log.info("Serving: " + req.getQueryString());
+        log.info("ContactService Request Email: " + email + " ResponseRequired:" + emailResponseRequired);
+        
+        email = (StringUtils.isBlank(email)) ? DEFAULT_GDP_ADDRESS : email;
+        
         EmailMessage msg = new EmailMessage();
         {
 //                msg.setTo(USGS_REMEDY);
             msg.setTo("isuftin@usgs.gov");
-            msg.setSubject("Geo Data Portal User Comments");
+            msg.setSubject(DEFAULT_SUBJECT);
             msg.setContent(autoInsertedContent + emailResponseRequiredText + comments);
 
-            // set the reply to address if there is one.
+            // set the from and reply to address if there is one.
             try {
-                if (StringUtils.isNotBlank(email)) {
-                    msg.setFrom(email);
-                    msg.setReplyTo(new InternetAddress[]{new InternetAddress(email)});
-                } else {
-                    msg.setFrom(NO_RESPONSE_REQUIRED_ADDRESS);
-                    msg.setReplyTo(new InternetAddress[]{new InternetAddress(DEFAULT_GDP_ADDRESS)});
-                }
+                msg.setFrom(email);
+                msg.setReplyTo(new InternetAddress[]{new InternetAddress(email)});
             } catch (AddressException ex) {
                 try {
-                    log.error(email + " could not be parsed as a valid reply-to email address. Setting " + DEFAULT_GDP_ADDRESS, ex);
+                    log.error(email + " could not be parsed as a valid reply-to email address. Setting reply-to to " + DEFAULT_GDP_ADDRESS, ex);
                     msg.setReplyTo(new InternetAddress[]{new InternetAddress(DEFAULT_GDP_ADDRESS)});
                 } catch (AddressException ex1) {
                     log.error("Could not properly set e-mail reply-to field.", ex1);
                 }
             }
-            
+
         }
         PrintWriter writer = resp.getWriter();
         try {
             msg.send();
-            log.info("Email sent to Pubs");
+            log.info("Email sent to GDP");
 
             try {
                 writer.append("{ \"status\" : \"success\" }");
@@ -88,12 +85,7 @@ public class ContactService extends HttpServlet {
                     writer.flush();
                 }
             }
-
         }
-
-//		ContactUsEntity cue = ContactUsEntity.getContactUsEntityInstance(comments, remoteAddr, email, emailResponseRequired);
-//		ContactUsEntity.emailPubs(cue);
-
     }
 
     @Override

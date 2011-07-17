@@ -145,6 +145,7 @@
                 }
 
                 if (result) {
+                    // Primary Ajax Request
                     $.ajax( {
                         url : FEEDBACK.getCaptchaValidationUrl(),
                         type : 'get',
@@ -157,6 +158,7 @@
                                 logger.debug("GDP: Captcha verified");
                                 captchaError.html('');
                                 
+                                // Secondary AJAX request
                                 $.ajax({
                                     url : FEEDBACK.getCommentSubmittalUrl(),
                                     method: 'post',
@@ -169,8 +171,9 @@
                                     success: function(data, textStatus, XMLHttpRequest) {
                                         if (data['status'] == 'success'){
                                             logger.debug("GDP: Feedback e-mail sent");
-                                            _commentField.val('');
+                                            _commentField.val(_defaultComment);
                                             _captchaInput.val('');
+                                            _submitButton.button('option', 'disabled', true);
                                             FEEDBACK.updateCaptchaImage();
                                             FEEDBACK.closeEmailPanel();
                                             showNotification("Feedback has been sent. If you entered an e-mail address, you will receive a copy.", false, null);
