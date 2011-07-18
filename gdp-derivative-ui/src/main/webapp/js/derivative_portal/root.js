@@ -12,3 +12,11 @@ function initializeLogging() {
     LOG.addAppender(appender);
     LOG.info('Derivative Portal: Logging initialized.');
 }
+
+Ext.onReady(function () {
+	
+	new Ext.Viewport({
+		renderTo : document.body
+	});
+	
+});

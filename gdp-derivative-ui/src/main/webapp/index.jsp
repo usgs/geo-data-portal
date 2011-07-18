@@ -4,10 +4,11 @@
 
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <script src="js/log4javascript/log4javascript.js" type="text/javascript"></script>
-        <script src="js/jquery/jquery.js" type="text/javascript"></script>
-        <script src="js/derivative_portal/root.js" type="text/javascript"></script>
+        <jsp:include page="template/head.jsp"></jsp:include>
+        <jsp:include page="template/css.jsp"></jsp:include>
+		<jsp:include page="template/scripts.jsp">
+			<jsp:param value="js/derivative_portal/root.js" name="UIScriptFile"/>
+		</jsp:include>
         <title>Derivative Portal</title>
     </head>
     <body>
