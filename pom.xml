@@ -17,7 +17,7 @@
         <module>geoserver</module>
 <!--        <module>geonetwork</module>-->
         <module>gdp-ui</module>
-        <module>derivative_portal</module>
+        <module>gdp-derivative-ui</module>
         <module>gdp-deployer</module>
     </modules>
     <properties>

@@ -6,7 +6,7 @@
         <groupId>gov.usgs.cida.gdp</groupId>
         <version>12-SNAPSHOT</version>
     </parent>
-    <artifactId>derivative_portal</artifactId>
+    <artifactId>gdp-derivative-ui</artifactId>
     <packaging>war</packaging>
     <name>GDP Derivative UI</name>
     <properties>
