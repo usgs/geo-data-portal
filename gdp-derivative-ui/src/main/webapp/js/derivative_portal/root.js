@@ -1,9 +1,5 @@
 var LOG;
 
-$(document).ready(function() {
-    initializeLogging();
-});
-
 function initializeLogging() {
     LOG = log4javascript.getLogger();
     var layout = new log4javascript.PatternLayout("%rms - %d{HH:mm:ss.SSS} %-5p - %m%n");
@@ -15,8 +11,45 @@ function initializeLogging() {
 
 Ext.onReady(function () {
 	
-	new Ext.Viewport({
-		renderTo : document.body
-	});
+    initializeLogging();
+        
+    var map = new OpenLayers.Map();
+    var layer = new OpenLayers.Layer.WMS(
+        "Global Imagery",
+        "http://isse.cr.usgs.gov/ArcGIS/services/Combined/SDDS_Imagery/MapServer/WMSServer",
+               
+        {
+            
+            layers: "0"
+        }
+        );
+    var threddsLayer = new OpenLayers.Layer.WMS(
+        "...",
+        "http://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/wms/gmo/GMO_w_meta.ncml",
+        {
+            isBaseLayer: false,
+            layers: "Prcp"
+        }
+        );
+            
+    map.addLayers([layer, threddsLayer]);
+    map.raiseLayer(threddsLayer, 1);
+//    map.addLayers([threddsLayer,layer]);
+//    map.addLayer(threddsLayer);
+
+    var mapPanel = new GeoExt.MapPanel({
+        //            renderTo: 'gxmap',
+        height: 400,
+        width: 600,
+        map: map,
+        title: 'A Simple GeoExt Map'
+    });
+        
+    new Ext.Viewport({
+        renderTo : document.body,
+        items : [mapPanel],
+        layout: 'fit'
+                
+    });
 	
 });
