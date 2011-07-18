@@ -14,7 +14,8 @@
         var _resetSecurityImageButton;
         var _emailResponseRequired;
         var _emailError;
-        
+        var _commentError;
+        var _captchaError; 
         var _captchaValidationUrl = '${param["securityimageDir"]}/validatecaptcha/';
         var _commentSubmittalUrl = '${param["serviceDir"]}/contact/';
         var _serverErrorMessage = '${param["serverErrorMessage"]}';
@@ -24,15 +25,23 @@
         return {
             init : function() {
                 logger.info('GDP: Initializing Contact Form');
+                
+                var errorColor = '#FF0000';
+                
                 _submitButton = $('#submit');
                 _resetSecurityImageButton = $('#resetSecurityTextButton');
                 _contactPopupContainer = $('#contact-popup-container');
                 _commentField = $('#comment');
+                _captchaError =$('#captchaError'); 
                 _captchaImageDiv = $('#captchaImageDiv');
                 _captchaImage = _captchaImageDiv.find('img');
                 _captchaInput = $('#captcha');
                 _emailError  = $('#emailError');
                 _emailResponseRequired = $('#emailResponseRequired');
+                _commentError = $('#commentError');
+                
+                _commentError.css('color', errorColor);	
+                _emailError.css('color', errorColor);
                 
                 // Create button objects 
                 _submitButton.button({'label' : 'Submit', 'disabled' : true});
@@ -76,6 +85,7 @@
                     } 
                 }) 
                 
+                 
             },
             getCaptchaFailureMessage : function() {
                 return _captchaFailureMessage;
@@ -113,11 +123,7 @@
                 }
             },
             submitComment : function() {
-                var errorColor = '#FF0000';
                 var emailAddress= $('#email').val();
-                
-                var commentError= $('#commentError');
-                var captchaError =$('#captchaError'); 
                 var replyReq	= $('#emailResponseRequired').prop('checked') ? true : false;
                 var filter 	= /^.+@.+\..{2,3}$/;
                 var result 	= true;
@@ -131,7 +137,6 @@
                         _emailError.html('');	
                     } else if (!filter.test(emailAddress) || emailAddress == '') {
                         _emailError.html('* Please enter a valid E-Mail address or<br/>uncheck the reply required box.');	
-                        _emailError.css('color', errorColor);	
                         result = false;	
                     } 
                 }
@@ -139,8 +144,7 @@
                 // Check that a comment is entered
                 if (!_commentField.val()) {
                     _emailError.html('');
-                    commentError.html('* Please enter a comment');	
-                    commentError.css('color', errorColor);	
+                    _commentError.html('* Please enter a comment');	
                     result = false;	
                 }
 
@@ -156,7 +160,7 @@
                             verified = (data["captcha"] == "true") ? true : false;
                             if (verified) {
                                 logger.debug("GDP: Captcha verified");
-                                captchaError.html('');
+                                _captchaError.html('');
                                 
                                 // Secondary AJAX request
                                 $.ajax({
@@ -171,6 +175,8 @@
                                     success: function(data, textStatus, XMLHttpRequest) {
                                         if (data['status'] == 'success'){
                                             logger.debug("GDP: Feedback e-mail sent");
+                                            _commentError.html('');
+                                            _emailError.html('');
                                             _commentField.val(_defaultComment);
                                             _captchaInput.val('');
                                             _submitButton.button('option', 'disabled', true);
@@ -193,12 +199,12 @@
                                 
                             } else {
                                 logger.debug("GDP: Captcha verification failed");
-                                captchaError.html(_captchaFailureMessage);
+                                _captchaError.html(_captchaFailureMessage);
                             }
                             
                         },
                         error : function(jqXHR, textStatus, errorThrown) {
-                            alert(FFEDBACK.getCaptchaFailureMessage());
+                            showErrorNotification(FFEDBACK.getCaptchaFailureMessage());
                             FEEDBACK.updateCaptchaImage();
                             return false;
                         }
@@ -257,8 +263,7 @@
                                   onkeypress="FEEDBACK.keyPressed(event.charCode);" 
                                   rows="10" 
                                   cols="40" 
-                                  name="comment">
-                        </textarea>
+                                  name="comment"></textarea>
                     </td>
                 </tr>
                 <tr>
