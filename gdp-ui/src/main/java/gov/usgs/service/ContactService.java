@@ -19,9 +19,8 @@ public class ContactService extends HttpServlet {
     private static final long serialVersionUID = -8308644813099149346L;
     private final static Logger log = LoggerFactory.getLogger(ContactService.class);
     private static final String USGS_REMEDY = "servicedesk@usgs.gov";
-    private static final String DEFAULT_GDP_ADDRESS = "gdp_help@usgs.gov";
     private static final String DEFAULT_SUBJECT = "Geo Data Portal User Comments";
-    private static final String NO_RESPONSE_REQUIRED_ADDRESS = "gdp_help_noreply@usgs.gov";
+    private static final String DEFAULT_GDP_ADDRESS = "gdp_help_noreply@usgs.gov";
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -35,16 +34,16 @@ public class ContactService extends HttpServlet {
         String autoInsertedContent = "This is an auto-generated email from the USGS Geo Data Portal.  "
                 + "Below is a copy of the message you (" + email + ") submitted.  If you feel you have received this message erroneously, "
                 + "please contact servicedesk@usgs.gov.\n\n";
-        
+
         log.info("Serving: " + req.getQueryString());
         log.info("ContactService Request Email: " + email + " ResponseRequired:" + emailResponseRequired);
-        
+
         email = (StringUtils.isBlank(email)) ? DEFAULT_GDP_ADDRESS : email;
-        
+
         EmailMessage msg = new EmailMessage();
         {
-//                msg.setTo(USGS_REMEDY);
-            msg.setTo("isuftin@usgs.gov");
+            msg.setTo(USGS_REMEDY);
+//            msg.setTo("isuftin@usgs.gov");
             msg.setSubject(DEFAULT_SUBJECT);
             msg.setContent(autoInsertedContent + emailResponseRequiredText + comments);
 
