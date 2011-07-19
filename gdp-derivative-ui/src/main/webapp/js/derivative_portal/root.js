@@ -57,7 +57,7 @@ function initializeMapping() {
         zoom : 4
     });
     
-    var cbConfigPanel = new Ext.Panel({
+    var configPanel = new Ext.Panel({
         width : 'auto',
         region: 'west',
         items : [{
@@ -86,7 +86,7 @@ function initializeMapping() {
         
     });
 
-	    var legendPanel = new GeoExt.LegendPanel({
+	var legendPanel = new GeoExt.LegendPanel({
         defaults: {
 //            preferredTypes : 'simple',
             style: 'padding: 0 5px 5px 5px'
@@ -100,16 +100,27 @@ function initializeMapping() {
     });
     
 	var legendWindow = new Ext.Window({
+//		title: 'Legend',
 		border : false,
 		frame : false,
+//		plain : true,
 		closable: false,
 		resizable : false,
 		items : [legendPanel]
 	});
 	
-	legendWindow.show();
-
-    new Ext.Viewport({
+	mapPanel.on('afterlayout', function() {
+		LOG.info('mapPanel afterlayout hit');
+		legendWindow.show(null, function() {
+			LOG.info('Legend window show callback hit');
+			//TODO, I hate myself for this, but here are some magic numbers
+			// legendpanel's afterlayout gets called before it's actually done rendering everything
+			// so this is a hack to make at least some of it visible
+			legendWindow.alignTo(mapPanel.getEl(), "br-br", [-110,-264]); 
+		});
+	});
+	
+    var viewport = new Ext.Viewport({
         renderTo : document.body,
         items : [mapPanel, configPanel],
         layout: 'border'
@@ -118,5 +129,9 @@ function initializeMapping() {
     
     LOG.info('Derivative Portal: Mapping initialized.');
 	
+	viewport.on('afterlayout', function() {
+		LOG.info('viewport afterlayout hit');
+		legendWindow.alignTo(mapPanel.getEl(), "br-br");
+	});
 }
 
