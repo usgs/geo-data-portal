@@ -34,26 +34,24 @@ function initializeMapping() {
         }
         );
             
-    var threddsLayer = new OpenLayers.Layer.WMS(
-        "...",
-        "http://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/wms/gmo/GMO_w_meta.ncml",
-        {
-            transparent: true,
-            layers: "Tmax"
-        },{
-            opacity : 0.5
-        }
-        );
+//    var threddsLayer = new OpenLayers.Layer.WMS(
+//        "...",
+//        "http://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/wms/gmo/GMO_w_meta.ncml",
+//        {
+//            transparent: true,
+//            layers: "Tmax"
+//        },{
+//            opacity : 0.5
+//        }
+//        );
             
-    map.addLayers([baseLayer, threddsLayer]);
-    map.setBaseLayer(baseLayer);
-    map.setLayerIndex(threddsLayer, 1);
+    map.addLayers([baseLayer]);
     
-
     var mapPanel = new GeoExt.MapPanel({
         //            renderTo: 'gxmap',
         height: 400,
         width: 600,
+        region: 'center',
         map: map,
         title: 'Geo Data Portal Derivative UI',
         center: new OpenLayers.LonLat(-96, 38),
@@ -70,11 +68,38 @@ function initializeMapping() {
             this.height = state.height;
         }
     });
+    
+    var configPanel = new Ext.Panel({
+        width : 300,
+        region: 'west',
+        items : [{
+            xtype : 'combo',
+            mode : 'remote',
+            triggerAction: 'all',
+            store : capabilitiesStore,
+            displayField : 'title',
+            listeners : {
+            'select' : function(combo, record, index) {
+                var copy = record.copy();
+                copy.data['layer'] = record.getLayer();
+                copy.getLayer().mergeNewParams({
+                    format: "image/png",
+                    transparent : true,
+                    options: {opacity : 0.5}
+                });
+                mapPanel.layers.add(copy);
+                mapPanel.map.zoomToExtent(OpenLayers.Bounds.fromArray(copy.get('llbbox')));
+            }
+        }
+        }]
         
+        
+    });
+
     new Ext.Viewport({
         renderTo : document.body,
-        items : [mapPanel],
-        layout: 'fit'
+        items : [mapPanel, configPanel],
+        layout: 'border'
             
     });
     LOG.info('Derivative Portal: Mapping initialized.');
