@@ -1,4 +1,4 @@
-<script src="js/jquery/jquery.js" type="text/javascript"></script>
+<%--<script src="js/jquery/jquery.js" type="text/javascript"></script>--%>
 
 <script src="js/ext/adapter/ext/ext-base.js" type="text/javascript"></script>
 <%--script src="js/ext/adapter/jquery/ext-jquery-adapter.js" type="text/javascript"></script --%>
