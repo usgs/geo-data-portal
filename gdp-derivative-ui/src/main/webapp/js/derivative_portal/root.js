@@ -1,4 +1,5 @@
 var LOG;
+var capabilitiesStore;
 
 function initializeLogging() {
     LOG = log4javascript.getLogger();
@@ -13,6 +14,15 @@ Ext.onReady(function () {
 	
     initializeLogging();
         
+    capabilitiesStore = new GeoExt.data.WMSCapabilitiesStore({
+        url : 'proxy/http://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/wms/gmo/GMO_w_meta.ncml?service=WMS&version=1.3.0&request=GetCapabilities',
+        storeId : 'whatever'
+    });
+    capabilitiesStore.load();
+    
+    
+    
+    
     var map = new OpenLayers.Map();
     var baseLayer = new OpenLayers.Layer.WMS(
         "Global Imagery",
@@ -26,9 +36,9 @@ Ext.onReady(function () {
         "...",
         "http://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/wms/gmo/GMO_w_meta.ncml",
         {
-            transparent: 'true',
+            transparent: true,
             isBaseLayer: false,
-            layers: "Prcp"
+            layers: "Tmax"
         },{
             opacity : 0.5
         }
@@ -37,23 +47,28 @@ Ext.onReady(function () {
     map.addLayers([baseLayer, threddsLayer]);
     map.setBaseLayer(baseLayer);
     map.setLayerIndex(threddsLayer, 1);
-//    map.raiseLayer(threddsLayer, 1);
-//    map.addLayers([threddsLayer,layer]);
-//    map.addLayer(threddsLayer);
+    
 
     var mapPanel = new GeoExt.MapPanel({
         //            renderTo: 'gxmap',
         height: 400,
         width: 600,
         map: map,
-        title: 'A Simple GeoExt Map'
+        title: 'A Simple GeoExt Map',
+        center: new OpenLayers.LonLat(-96, 38),
+        zoom : 6
+//        listeners : {
+//            'afterrender' : function() {map.setCenter(new OpenLayers.LonLat(-96, 38), 6);}
+//        }    
     });
         
     new Ext.Viewport({
         renderTo : document.body,
         items : [mapPanel],
         layout: 'fit'
-                
+            
     });
+    
+    
 	
 });
