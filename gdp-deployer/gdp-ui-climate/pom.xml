@@ -13,7 +13,7 @@
         <cargo.deploy.groupId>gov.usgs.cida.gdp</cargo.deploy.groupId>
         <cargo.deploy.artifactId>gdp-ui</cargo.deploy.artifactId>
         <cargo.deploy.version>${project.version}</cargo.deploy.version>
-<!--        <cargo.deploy.context>GDP_WEB</cargo.deploy.context>-->
+        <cargo.deploy.context>GDP_WEB</cargo.deploy.context>
     </properties>
     <dependencies>
         <dependency>
