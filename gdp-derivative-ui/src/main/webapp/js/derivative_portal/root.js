@@ -1,5 +1,4 @@
 var LOG;
-var capabilitiesStore;
 
 Ext.onReady(function () {
 	
@@ -18,7 +17,7 @@ function initializeLogging() {
 }
 
 function initializeMapping() {
-    capabilitiesStore = new GeoExt.data.WMSCapabilitiesStore({
+    var capabilitiesStore = new GeoExt.data.WMSCapabilitiesStore({
         url : 'proxy/http://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/wms/gmo/GMO_w_meta.ncml?service=WMS&version=1.3.0&request=GetCapabilities',
         storeId : 'whatever'
     });
@@ -34,43 +33,41 @@ function initializeMapping() {
         }
         );
             
-//    var threddsLayer = new OpenLayers.Layer.WMS(
-//        "...",
-//        "http://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/wms/gmo/GMO_w_meta.ncml",
-//        {
-//            transparent: true,
-//            layers: "Tmax"
-//        },{
-//            opacity : 0.5
-//        }
-//        );
+    var threddsLayer = new OpenLayers.Layer.WMS(
+        "...",
+        "http://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/wms/gmo/GMO_w_meta.ncml",
+        {
+            transparent: true,
+            layers: "Tavg"
+        },{
+            opacity : 0.5
+        }
+        );
             
-    map.addLayers([baseLayer]);
+    map.addLayers([baseLayer, threddsLayer]);
+    var legendPanel = new GeoExt.LegendPanel({
+        defaults: {
+            preferredTypes : 'simple',
+            style: 'padding: 5px'
+        },
+        width: 'auto',
+        autoScroll: true,
+        region: 'east'
+    });
     
     var mapPanel = new GeoExt.MapPanel({
-        //            renderTo: 'gxmap',
         height: 400,
         width: 600,
         region: 'center',
+        border: false,
         map: map,
         title: 'Geo Data Portal Derivative UI',
         center: new OpenLayers.LonLat(-96, 38),
-        zoom : 4,
-        getState: function() {
-            var state = GeoExt.MapPanel.prototype.getState.apply(this);
-            state.width = this.getSize().width;
-            state.height = this.getSize().height;
-            return state;
-        },
-        applyState: function(state) {
-            GeoExt.MapPanel.prototype.applyState.apply(this, arguments);
-            this.width = state.width;
-            this.height = state.height;
-        }
+        zoom : 4
     });
     
     var configPanel = new Ext.Panel({
-        width : 300,
+        width : 'auto',
         region: 'west',
         items : [{
             xtype : 'combo',
@@ -79,18 +76,19 @@ function initializeMapping() {
             store : capabilitiesStore,
             displayField : 'title',
             listeners : {
-            'select' : function(combo, record, index) {
-                var copy = record.copy();
-                copy.data['layer'] = record.getLayer();
-                copy.getLayer().mergeNewParams({
-                    format: "image/png",
-                    transparent : true,
-                    options: {opacity : 0.5}
-                });
-                mapPanel.layers.add(copy);
-                mapPanel.map.zoomToExtent(OpenLayers.Bounds.fromArray(copy.get('llbbox')));
+                'select' : function(combo, record, index) {
+                    var copy = record.copy();
+                    copy.data['layer'] = record.getLayer();
+                    copy.getLayer().mergeNewParams({
+                        format: "image/png",
+                        transparent : true,
+                        options: {
+                            opacity : 0.5
+                        }
+                    });
+                    mapPanel.layers.add(copy);
+                }
             }
-        }
         }]
         
         
@@ -98,7 +96,7 @@ function initializeMapping() {
 
     new Ext.Viewport({
         renderTo : document.body,
-        items : [mapPanel, configPanel],
+        items : [mapPanel, configPanel,legendPanel],
         layout: 'border'
             
     });
