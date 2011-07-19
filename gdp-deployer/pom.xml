@@ -17,14 +17,18 @@
         <module>gdp-ui</module>
         <module>gdp-ui-climate</module>
     </modules>
+    <properties>
+        <!-- skip deployment unless explicitly enabled -->
+        <cargo.deploy.skip>true</cargo.deploy.skip>
+    </properties>
     <build>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.cargo</groupId>
                 <artifactId>cargo-maven2-plugin</artifactId>
-                <inherited>false</inherited>
+                <inherited>true</inherited>
                 <configuration>
-                    <skip>true</skip>
+                    <skip>${cargo.deploy.skip}</skip>
                 </configuration>
             </plugin>
         </plugins>
@@ -46,6 +50,7 @@
                             </properties>
                         </configuration>
                         <deployer>
+                            <type>remote</type>
                             <deployables>
                                 <deployable>
                                     <groupId>${cargo.deploy.groupId}</groupId>

@@ -14,7 +14,6 @@
         <cargo.deploy.artifactId>gdp-process-wps</cargo.deploy.artifactId>
         <cargo.deploy.version>${project.version}</cargo.deploy.version>
         <cargo.deploy.context>${cargo.deploy.artifactId}</cargo.deploy.context>
-        <cargo.deploy.skip>false</cargo.deploy.skip>
     </properties>
     <dependencies>
         <dependency>
@@ -26,6 +25,18 @@
     </dependencies> 
     <profiles>
         <profile>
+            <!-- needs to be here for standalone execution respecting CARGO_DEPLOY_VERSION -->
+            <id>cargo-deploy-version</id>
+            <activation>
+                <property>
+                    <name>env.CARGO_DEPLOY_VERSION</name>
+                </property>
+            </activation>
+            <properties>
+                <cargo.deploy.version>${env.CARGO_DEPLOY_VERSION}</cargo.deploy.version>
+            </properties>
+        </profile>
+        <profile>
             <id>localhost</id>
             <activation>
                 <property>
@@ -34,6 +45,7 @@
                 </property>
             </activation>
             <properties>
+                <cargo.deploy.skip>false</cargo.deploy.skip>
                 <cargo.containerId>tomcat6x</cargo.containerId>
                 <!-- references server id in settings.xml -->
                 <cargo.server.settings>cargo-localhost</cargo.server.settings>
@@ -48,6 +60,7 @@
                 </property>
             </activation>
             <properties>
+                <cargo.deploy.skip>false</cargo.deploy.skip>
                 <cargo.containerId>tomcat6x</cargo.containerId>
                 <!-- references server id in settings.xml -->
                 <cargo.server.settings>cargo-javadev1-8080</cargo.server.settings>
@@ -62,6 +75,7 @@
                 </property>
             </activation>
             <properties>
+                <cargo.deploy.skip>false</cargo.deploy.skip>
                 <cargo.containerId>tomcat6x</cargo.containerId>
                 <!-- references server id in settings.xml -->
                 <cargo.server.settings><!-- set when we have staging --></cargo.server.settings>
@@ -76,6 +90,7 @@
                 </property>
             </activation>
             <properties>
+                <cargo.deploy.skip>false</cargo.deploy.skip>
                 <cargo.containerId>tomcat6x</cargo.containerId>
                 <!-- references server id in settings.xml -->
                 <cargo.server.settings>cargo-gdp1-8080</cargo.server.settings>

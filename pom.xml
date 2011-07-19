@@ -480,6 +480,7 @@
                     <version>2.1.1</version>
                     <configuration>
                         <failOnMissingWebXml>false</failOnMissingWebXml>
+                        <packagingExcludes>META-INF/context.xml</packagingExcludes>
                     </configuration>
                 </plugin>
                 <plugin>
