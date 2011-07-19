@@ -34,28 +34,18 @@ function initializeMapping() {
         );
             
     var threddsLayer = new OpenLayers.Layer.WMS(
-        "...",
+        "tavg",
         "http://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/wms/gmo/GMO_w_meta.ncml",
         {
             transparent: true,
-            layers: "Tavg"
+            layers: "Tmax"
         },{
             opacity : 0.5
         }
         );
             
     map.addLayers([baseLayer, threddsLayer]);
-    
-    var legendPanel = new GeoExt.LegendPanel({
-        defaults: {
-            preferredTypes : 'simple',
-            style: 'padding: 5px'
-        },
-        width: 'auto',
-        autoScroll: true,
-        region: 'east'
-    });
-    
+	
     var mapPanel = new GeoExt.MapPanel({
         height: 400,
         width: 600,
@@ -96,13 +86,37 @@ function initializeMapping() {
         
     });
 
+	    var legendPanel = new GeoExt.LegendPanel({
+        defaults: {
+//            preferredTypes : 'simple',
+            style: 'padding: 0 5px 5px 5px'
+        },
+		border : false,
+		layerStore: mapPanel.layers,
+		filter : function(record) {
+			return !(record.getLayer().isBaseLayer);
+		},
+        autoScroll: true
+    });
+    
+	var legendWindow = new Ext.Window({
+		border : false,
+		frame : false,
+		closable: false,
+		resizable : false,
+		items : [legendPanel]
+	});
+	
+	legendWindow.show();
+
     new Ext.Viewport({
         renderTo : document.body,
-        items : [mapPanel, cbConfigPanel,legendPanel],
+        items : [mapPanel, configPanel],
         layout: 'border'
             
     });
     
     LOG.info('Derivative Portal: Mapping initialized.');
+	
 }
 

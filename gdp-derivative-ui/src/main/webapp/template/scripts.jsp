@@ -11,6 +11,12 @@ Ext.BLANK_IMAGE_URL = 'images/s.gif';<%-- Path to the blank image should point t
 <script src="js/openlayers/OpenLayers.js" type="text/javascript"></script>
 <script src="js/geoext/GeoExt.js" type="text/javascript"></script>
 
+<script type="text/javascript">
+	Ext.override(GeoExt.WMSLegend,{
+		showTitle : false
+	});
+</script>
+
 <script src="js/log4javascript/log4javascript.js" type="text/javascript"></script>
 
 <%-- Custom Application Modules Here --%>
