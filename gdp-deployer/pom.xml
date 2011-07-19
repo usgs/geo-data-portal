@@ -46,7 +46,7 @@
                         <configuration>
                             <type>runtime</type>
                             <properties>
-                                <cargo.server.settings>cargo-localhost</cargo.server.settings>
+                                <cargo.server.settings>${cargo.server.settings}</cargo.server.settings>
                             </properties>
                         </configuration>
                         <deployer>
