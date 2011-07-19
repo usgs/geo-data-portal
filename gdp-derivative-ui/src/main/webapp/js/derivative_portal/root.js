@@ -45,6 +45,7 @@ function initializeMapping() {
         );
             
     map.addLayers([baseLayer, threddsLayer]);
+    
     var legendPanel = new GeoExt.LegendPanel({
         defaults: {
             preferredTypes : 'simple',
@@ -66,7 +67,7 @@ function initializeMapping() {
         zoom : 4
     });
     
-    var configPanel = new Ext.Panel({
+    var cbConfigPanel = new Ext.Panel({
         width : 'auto',
         region: 'west',
         items : [{
@@ -77,16 +78,17 @@ function initializeMapping() {
             displayField : 'title',
             listeners : {
                 'select' : function(combo, record, index) {
-                    var copy = record.copy();
-                    copy.data['layer'] = record.getLayer();
-                    copy.getLayer().mergeNewParams({
+                    var copy = record.clone();
+                    
+                    copy.get('layer').mergeNewParams({
                         format: "image/png",
-                        transparent : true,
-                        options: {
-                            opacity : 0.5
-                        }
+                        transparent : true
                     });
+                    mapPanel.layers.removeAt(1);
                     mapPanel.layers.add(copy);
+                    mapPanel.map.zoomToExtent(
+                        OpenLayers.Bounds.fromArray(copy.get("llbbox"))
+                    );
                 }
             }
         }]
@@ -96,10 +98,11 @@ function initializeMapping() {
 
     new Ext.Viewport({
         renderTo : document.body,
-        items : [mapPanel, configPanel,legendPanel],
+        items : [mapPanel, cbConfigPanel,legendPanel],
         layout: 'border'
             
     });
+    
     LOG.info('Derivative Portal: Mapping initialized.');
 }
 
