@@ -1243,6 +1243,38 @@ var Dataset = function() {
         CSWClient.setCSWHost($(_CSW_URL_INPUT_BOX).val());
     }
 
+    /**
+     * This sets up a configuration of the application where we only have one
+     * algorithm to display to the user.
+     */
+//    function setupSingleAlgorithmView(algorithm) {
+//        // TODO - Currently if we have a single algorithm with nothing to configure, the configure link shows up anyway.
+//        // When a user clicks it, it goes away and nothing happens. We need a way to know before this view shows up whether or
+//        // not we can configure the algorithm.  If not, don't show the link or remove it at this point.
+//        var singleAlgorithm = Algorithm.algorithms[algorithm]
+//            
+//        // Protect ourselves from front-end garbage -- This means config is configured for a nonexistent algorithm -- default to the dropdown
+//        if (!singleAlgorithm) {
+//            populateAlgorithmDropdownView();
+//        } else {
+//            var abstractText = singleAlgorithm.abstrakt;
+//            var title = singleAlgorithm.title;
+//
+//            // Append the current algorithm we're displaying to the html body
+//            $('#algorithm_dropdown_container').append($('<span></span>').attr('id', 'algorithm_display_span').append('Algorithm: ', title));
+//            $('#algorithm_dropdown_container').append('&nbsp;&nbsp;<a href="#" id="configure_algorithm_link"> Configure</a>');
+//            if (abstractText) {
+//                $('#algorithm_dropdown_container').append('&nbsp;&nbsp;<a href="#" id="algorithm_documentation_link"> Documentation</a>');
+//                configureDocumentationLink(singleAlgorithm.title, abstractText);
+//            }
+//            
+//            // Wire up the configure link
+//            $('#configure_algorithm_link').click(function() { 
+//                populateDynamicContent(singleAlgorithm.xml); 
+//            });
+//        }
+//    }
+
     function setupCSWClientView() {
         logger.debug("GDP: Setting up CSW Client.");
         
