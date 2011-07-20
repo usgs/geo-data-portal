@@ -204,7 +204,7 @@
                             
                         },
                         error : function(jqXHR, textStatus, errorThrown) {
-                            showErrorNotification(FFEDBACK.getCaptchaFailureMessage());
+                            showErrorNotification(FEEDBACK.getCaptchaFailureMessage());
                             FEEDBACK.updateCaptchaImage();
                             return false;
                         }
