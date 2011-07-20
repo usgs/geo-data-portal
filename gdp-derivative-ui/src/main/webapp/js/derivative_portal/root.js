@@ -17,6 +17,8 @@ function initializeLogging() {
 }
 
 function initializeMapping() {
+    var DEFAULT_OPACITY = 0.4;
+    var LAT_LONG_BOUNDING_BOX = "llbbox";
     var capabilitiesStore = new GeoExt.data.WMSCapabilitiesStore({
         url : 'proxy/http://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/wms/gmo/GMO_w_meta.ncml?service=WMS&version=1.1.1&request=GetCapabilities',
         storeId : 'capabilitiesStore'
@@ -40,7 +42,7 @@ function initializeMapping() {
             transparent: true,
             layers: "Tmax"
         },{
-            opacity : 0.5
+            opacity : DEFAULT_OPACITY
         }
         );
             
@@ -59,7 +61,7 @@ function initializeMapping() {
     
     capabilitiesStore.on('load', function(capStore, records) {
         mapPanel.map.zoomToExtent(
-            OpenLayers.Bounds.fromArray(capStore.getAt(0).get("llbbox"))
+            OpenLayers.Bounds.fromArray(capStore.getAt(0).get(LAT_LONG_BOUNDING_BOX))
             );
     });
     
@@ -74,18 +76,7 @@ function initializeMapping() {
             displayField : 'title',
             listeners : {
                 'select' : function(combo, record, index) {
-                    var copy = record.clone();
-                    
-                    copy.get('layer').mergeNewParams({
-                        format: "image/png",
-                        transparent : true
-                    });
-                    copy.get('layer')['opacity'] = 0.2;
-                    mapPanel.layers.removeAt(1);
-                    mapPanel.layers.add(copy);
-                    mapPanel.map.zoomToExtent(
-                        OpenLayers.Bounds.fromArray(copy.get("llbbox"))
-                        );
+                    replaceLayer(record, mapPanel);
                 }
             }
         }]
@@ -135,6 +126,24 @@ function initializeMapping() {
         LOG.debug('viewport afterlayout hit');
         legendWindow.alignTo(mapPanel.getEl(), "br-br");
     });
+    
+    function replaceLayer(record, mPanel, timeStep) {
+        var copy = record.clone();
+                    
+        copy.get('layer').mergeNewParams({
+            format: "image/png",
+            transparent : true
+        });
+        copy.get('layer')['opacity'] = DEFAULT_OPACITY;
+        if (timeStep) {
+            copy.get('layer').mergeNewParams({'time':timeStep});
+        }
+        mPanel.layers.removeAt(1);
+        mPanel.layers.add(copy);
+        mPanel.map.zoomToExtent(
+            OpenLayers.Bounds.fromArray(copy.get(LAT_LONG_BOUNDING_BOX))
+            );
+    }
     
     LOG.info('Derivative Portal: Mapping initialized.');
 	
