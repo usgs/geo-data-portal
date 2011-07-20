@@ -113,6 +113,8 @@ function submitDrawFeature() {
     var wpsInputs = {'name' : [name]}
     var wpsOutputs = ['layer-name'];
 
+    
+
     WPS.sendWpsExecuteRequest(Constant.endpoint.proxy + Constant.endpoint.utilitywps,
         wpsAlgo, wpsInputs, wpsOutputs, false, drawFeatureCallback);
 }

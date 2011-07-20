@@ -332,14 +332,12 @@ function showThrobber() {$(THROBBER).fadeIn(Constant.ui.fadespeed);}
 
 function hideThrobber() {$(THROBBER).fadeOut(Constant.ui.fadespeed);}
 
-function showWarningNotification(message) {
-    showNotification(message, true, 'theme-warning');
-    hideThrobber();
+function showWarningNotification(message, sticky) {
+    showNotification(message, sticky, 'theme-warning');
 }
 
-function showErrorNotification(message) {
-    showNotification(message, true, 'theme-error');
-    hideThrobber();
+function showErrorNotification(message, sticky) {
+    showNotification(message, sticky, 'theme-error');
 }
 
 function showNotification(message, sticky, themeStr) {
@@ -348,6 +346,11 @@ function showNotification(message, sticky, themeStr) {
         life: '10000',
         sticky: (sticky) ? sticky : false
     } );
+    hideThrobber();
+}
+
+function showInformationalNotification(message, sticky)  {
+    showNotification(message, sticky, 'theme-informational');
 }
 
 /**

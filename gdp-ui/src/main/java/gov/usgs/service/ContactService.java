@@ -43,7 +43,6 @@ public class ContactService extends HttpServlet {
         EmailMessage msg = new EmailMessage();
         {
             msg.setTo(USGS_REMEDY);
-//            msg.setTo("isuftin@usgs.gov");
             msg.setSubject(DEFAULT_SUBJECT);
             msg.setContent(autoInsertedContent + emailResponseRequiredText + comments);
 

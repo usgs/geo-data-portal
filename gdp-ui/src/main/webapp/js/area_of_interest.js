@@ -210,8 +210,12 @@ var AOI = function() {
                 on_depress : function() {
                     deselectFeatureType();
                     activateDrawFeature();
+                    showInformationalNotification("<center><h4>How To Draw A Polygon</h4></center>Begin drawing your polygon by clicking on the map.<br /><br />Subsequent clicks create polygon points.<br /><br />Double click to finish your polygon.", true);
                 },
-                on_release : deactivateDrawFeature
+                on_release : function() {
+                    deactivateDrawFeature();
+                    $.jGrowl('close');
+                }
             }
         };
 
