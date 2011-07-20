@@ -19,6 +19,11 @@ div.jGrowl > div.theme-warning {
     color: #000000;
 }
 
+div.jGrowl > div.theme-informational {
+    background: #21507B;
+    color: #eeeeee;
+}
+
 div.jGrowl div.jGrowl-notification, div.jGrowl div.jGrowl-closer {
 	opacity:     .95; /* Make a little less transparent (default = .85) */
     -ms-filter:  "progid:DXImageTransform.Microsoft.Alpha(Opacity=95)";
