@@ -31,63 +31,62 @@ function initializeMapping() {
         title: 'Geo Data Portal Derivative UI'
     });
     
-	var layerCombo = new Ext.form.ComboBox({
-            xtype : 'combo',
-            mode : 'local',
-            triggerAction: 'all',
-            store : capabilitiesStore,
-			forceSelection : true,
-			lazyInit : false,
-            displayField : 'title',
-            listeners : {
-                'select' : function(combo, record, index) {
-					LOG.info("layerCombo select hit");
-                    mapPanel.replaceLayer(record);
-                }
+    var layerCombo = new Ext.form.ComboBox({
+        xtype : 'combo',
+        mode : 'local',
+        triggerAction: 'all',
+        store : capabilitiesStore,
+        forceSelection : true,
+        lazyInit : false,
+        displayField : 'title',
+        listeners : {
+            'select' : function(combo, record, index) {
+                LOG.info("layerCombo select hit");
+                mapPanel.replaceLayer(record);
             }
-        });
+        }
+    });
 	
     var configPanel = new Ext.Panel({
         width : 'auto',
         region: 'west',
         items : [
-			layerCombo
-		]
+        layerCombo
+        ]
     });
 	
-	capabilitiesStore.on('load', function(capStore, records) {
-		var firstIndex = 0;
-		var firstRecord = capStore.getAt(firstIndex);
-		layerCombo.setValue(firstRecord.get("title"));
-		layerCombo.fireEvent('select', layerCombo, firstRecord, 0);
-        mapPanel.zoomToExtent(firstRecord);
+    capabilitiesStore.on('load', function(capStore, records) {
+        var firstIndex = 0;
+        var firstRecord = capStore.getAt(firstIndex);
+        layerCombo.setValue(firstRecord.get("title"));
+        layerCombo.fireEvent('select', layerCombo, firstRecord, 0);
     });
 	
-//	var timestepStore = new Ext.data.ArrayStore({
-//		
-//	});
-//	
-//	var timestepPanel = new Ext.Panel({
-//		region : 'north',
-//		border : false,
-//		height : 'auto',
-//		items : [
-//			{
-//				xtype : 'combo',
-//				mode : 'local',
-//				triggerAction: 'all',
-//				store : timestepStore,
-//				displayField : 'title',
-//				listeners : {
-//					'select' : function(combo, record, index) {
-//						mapPanel.replaceLayer(layerCombo, {"time" : record.get("time")});
-//					}
-//				}
-//			}
-//		]
-//	});
+    //	var timestepStore = new Ext.data.ArrayStore({
+    //		
+    //	});
+    //	
+    //	var timestepPanel = new Ext.Panel({
+    //		region : 'north',
+    //		border : false,
+    //		height : 'auto',
+    //		items : [
+    //			{
+    //				xtype : 'combo',
+    //				mode : 'local',
+    //				triggerAction: 'all',
+    //				store : timestepStore,
+    //				displayField : 'title',
+    //				listeners : {
+    //					'select' : function(combo, record, index) {
+    //						mapPanel.replaceLayer(layerCombo, {"time" : record.get("time")});
+    //					}
+    //				}
+    //			}
+    //		]
+    //	});
 	
-	new Ext.Viewport({
+    new Ext.Viewport({
         renderTo : document.body,
         items : [mapPanel, configPanel],
         layout: 'border'
