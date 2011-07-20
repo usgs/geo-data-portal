@@ -57,12 +57,18 @@ function initializeMapping() {
         zoom : 4
     });
     
+    capabilitiesStore.on('load', function(capStore, records) {
+        mapPanel.map.zoomToExtent(
+            OpenLayers.Bounds.fromArray(capStore.getAt(0).get("llbbox"))
+            );
+    });
+    
     var configPanel = new Ext.Panel({
         width : 'auto',
         region: 'west',
         items : [{
             xtype : 'combo',
-            mode : 'remote',
+            mode : 'local',
             triggerAction: 'all',
             store : capabilitiesStore,
             displayField : 'title',
@@ -74,6 +80,7 @@ function initializeMapping() {
                         format: "image/png",
                         transparent : true
                     });
+                    copy.get('layer')['opacity'] = 0.2;
                     mapPanel.layers.removeAt(1);
                     mapPanel.layers.add(copy);
                     mapPanel.map.zoomToExtent(
