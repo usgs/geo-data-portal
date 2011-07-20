@@ -26,6 +26,7 @@ function initializeMapping() {
     var mapPanel = new GDP.BaseMap({
         height: 400,
         width: 600,
+		id : 'mapPanel',
         region: 'center',
         border: false,
         title: 'Geo Data Portal Derivative UI'

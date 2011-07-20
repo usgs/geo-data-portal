@@ -2,10 +2,12 @@ Ext.ns("GDP");
 
 GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 	layerOpacity : 0.4,
-	maxNumberOfTimesteps : 100,
+	maxNumberOfTimesteps : 5,
 	legendWindow : undefined,
 	baseLayer : undefined,
 	timestepStore : undefined,
+	timestepController : undefined,
+	timestepAnimator : undefined,
 	realignLegend : function() {
 		var DEFAULT_LEGEND_X = 110;
 		var DEFAULT_LEGEND_Y = 264;
@@ -33,25 +35,47 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 			fields: ['time']
 		});
 		
-		var timestepController = new Ext.form.ComboBox({
+		this.timestepController = new Ext.form.ComboBox({
 			mode : 'local',
 			triggerAction: 'all',
+			flex : 1,
 			anchor : '100%',
 			store : this.timestepStore,
 			displayField : 'time'
 		});
 		
-		timestepController.on('select', function(combo, record, index) {
+		this.timestepController.on('select', function(combo, record, index) {
 							var timeStr = record.get('time');
 							this.changeTimestep(timeStr);
 						}, this);
-
+		
 		var timestepPanel = new Ext.Panel({
 			region : 'north',
 			border : false,
 			height : 'auto',
-			layout : 'fit',
-			items : [timestepController]
+			layout : 'hbox',
+			items : [
+				this.timestepController,
+				new Ext.Button({
+					text : 'Play Timesteps',
+					handler : function() {
+						this.timestepAnimator.startAnimation();
+					},
+					scope : this
+				}),
+				new Ext.Button({
+					text : 'Stop Timesteps',
+					handler : function() {
+						this.timestepAnimator.stopAnimation();
+					},
+					scope : this
+				})
+			]
+		});
+		
+		this.timestepAnimator = new GDP.MapTimestepAnimator({
+			baseMap : this,
+			store : this.timestepStore
 		});
 		
 		config = Ext.apply({
@@ -99,7 +123,8 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 	changeTimestep : function(timestep) {
 		this.replaceLayer(this.getCurrentLayer(), {time : timestep});
 	},
-	updateAvailableTimesteps : function(record) {
+	updateAvailableTimesteps : function(record, currentTimestep) {
+		
 		this.timestepStore.removeAll();
 		var times = record.get('dimensions').time;
 		
@@ -110,26 +135,44 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 			} else {
 				timesToLoad.push([item.trim()]);
 			}
+			return true;
 		}, this);
 		
 		this.timestepStore.loadData(timesToLoad);
+		this.timestepController.setValue(currentTimestep);
 	},
 	getCurrentLayer : function() {
-		return this.layers.getAt(1);
-	},
-	changeLayer : function(record) {
-		var copy = record.clone();
-		
-		var params = {};
-		var dim = copy.get('dimensions');
-		if (dim && dim.hasOwnProperty('time')) {
-			params['time'] = dim.time['default'];
+		var storeIndex = this.layers.findBy(function(record, id) {
+			return record.get('layer').getVisibility();
+		}, this, 1);
+		if (-1 < storeIndex) {
+			return this.layers.getAt(storeIndex);
+		} else {
+			return null;
 		}
 		
-		this.replaceLayer(copy, params);
+	},
+	clearLayers : function() {
+		if (this.layers.getCount() > 1) {
+			this.layers.remove(this.layers.getRange(1));
+		}
+	},
+	changeLayer : function(record) {
+		var params = {};
 		
-		this.updateAvailableTimesteps(copy);
-		this.zoomToExtent(copy);
+		this.zoomToExtent(record);
+		
+		var dim = record.get('dimensions');
+		var timestep = '';
+		if (dim && dim.hasOwnProperty('time')) {
+			timestep = dim.time['default'];
+			params['time'] = timestep;
+		}
+		
+		this.clearLayers();
+		this.replaceLayer(record, params);
+		
+		this.updateAvailableTimesteps(record, timestep);
 		this.realignLegend();
 	},
 	replaceLayer : function(record, params) {
@@ -137,15 +180,39 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 			params = {};
 		}
 		
-		params = Ext.apply({
-			format: "image/png",
-			transparent : true
-		}, params);
+		var requestedTime = params.time;
+		var existingLayerIndex = this.layers.findBy(function(record, id) {
+					var existingTime = record.get('layer').params['TIME'];
+					return (existingTime === requestedTime);
+				}, this, 1);
 		
-		record.get('layer').mergeNewParams(params);
-		record.get('layer')['opacity'] = this.layerOpacity;
+		var hideLayer = function(oldLayer) {
+			if (oldLayer) {
+				oldLayer.getLayer().setVisibility(false);
+				oldLayer.getLayer().redraw();
+			}
+		};
 		
-		this.layers.removeAt(1);
-		this.layers.add(record);
+		if (-1 < existingLayerIndex) {
+			hideLayer(this.getCurrentLayer());
+			
+			var newLayer = this.layers.getAt(existingLayerIndex).getLayer();
+			newLayer.setVisibility(true);
+			newLayer.redraw();
+		} else {
+			//Only the base layer exists on this map, lets get it.
+			var copy = record.clone();
+			hideLayer(this.getCurrentLayer());
+			
+			params = Ext.apply({
+				format: "image/png",
+				transparent : true
+			}, params);
+
+			copy.get('layer').mergeNewParams(params);
+			copy.get('layer')['opacity'] = this.layerOpacity;
+
+			this.layers.add(copy);
+		}
 	}
 });
