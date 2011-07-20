@@ -42,7 +42,7 @@ function initializeMapping() {
         listeners : {
             'select' : function(combo, record, index) {
                 LOG.info("layerCombo select hit");
-                mapPanel.replaceLayer(record);
+                mapPanel.changeLayer(record);
             }
         }
     });
@@ -61,30 +61,6 @@ function initializeMapping() {
         layerCombo.setValue(firstRecord.get("title"));
         layerCombo.fireEvent('select', layerCombo, firstRecord, 0);
     });
-	
-    //	var timestepStore = new Ext.data.ArrayStore({
-    //		
-    //	});
-    //	
-    //	var timestepPanel = new Ext.Panel({
-    //		region : 'north',
-    //		border : false,
-    //		height : 'auto',
-    //		items : [
-    //			{
-    //				xtype : 'combo',
-    //				mode : 'local',
-    //				triggerAction: 'all',
-    //				store : timestepStore,
-    //				displayField : 'title',
-    //				listeners : {
-    //					'select' : function(combo, record, index) {
-    //						mapPanel.replaceLayer(layerCombo, {"time" : record.get("time")});
-    //					}
-    //				}
-    //			}
-    //		]
-    //	});
 	
     new Ext.Viewport({
         renderTo : document.body,
