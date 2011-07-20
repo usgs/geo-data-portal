@@ -18,8 +18,8 @@ function initializeLogging() {
 
 function initializeMapping() {
     var capabilitiesStore = new GeoExt.data.WMSCapabilitiesStore({
-        url : 'proxy/http://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/wms/gmo/GMO_w_meta.ncml?service=WMS&version=1.3.0&request=GetCapabilities',
-        storeId : 'whatever'
+        url : 'proxy/http://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/wms/gmo/GMO_w_meta.ncml?service=WMS&version=1.1.1&request=GetCapabilities',
+        storeId : 'capabilitiesStore'
     });
     capabilitiesStore.load();
     
@@ -78,47 +78,44 @@ function initializeMapping() {
                     mapPanel.layers.add(copy);
                     mapPanel.map.zoomToExtent(
                         OpenLayers.Bounds.fromArray(copy.get("llbbox"))
-                    );
+                        );
                 }
             }
         }]
-        
-        
     });
+    
 
-	var legendPanel = new GeoExt.LegendPanel({
+    var legendPanel = new GeoExt.LegendPanel({
         defaults: {
-//            preferredTypes : 'simple',
+            //            preferredTypes : 'simple',
             style: 'padding: 0 5px 5px 5px'
         },
-		border : false,
-		layerStore: mapPanel.layers,
-		filter : function(record) {
-			return !(record.getLayer().isBaseLayer);
-		},
+        border : false,
+        layerStore: mapPanel.layers,
+        filter : function(record) {
+            return !(record.getLayer().isBaseLayer);
+        },
         autoScroll: true
     });
     
-	var legendWindow = new Ext.Window({
-//		title: 'Legend',
-		border : false,
-		frame : false,
-//		plain : true,
-		closable: false,
-		resizable : false,
-		items : [legendPanel]
-	});
+    var legendWindow = new Ext.Window({
+        border : false,
+        frame : false,
+        closable: false,
+        resizable : false,
+        items : [legendPanel]
+    });
 	
-	mapPanel.on('afterlayout', function() {
-		LOG.info('mapPanel afterlayout hit');
-		legendWindow.show(null, function() {
-			LOG.info('Legend window show callback hit');
-			//TODO, I hate myself for this, but here are some magic numbers
-			// legendpanel's afterlayout gets called before it's actually done rendering everything
-			// so this is a hack to make at least some of it visible
-			legendWindow.alignTo(mapPanel.getEl(), "br-br", [-110,-264]); 
-		});
-	});
+    mapPanel.on('afterlayout', function() {
+        LOG.debug('mapPanel afterlayout hit');
+        legendWindow.show(null, function() {
+            LOG.info('Legend window show callback hit');
+            //TODO, I hate myself for this, but here are some magic numbers
+            // legendpanel's afterlayout gets called before it's actually done rendering everything
+            // so this is a hack to make at least some of it visible
+            legendWindow.alignTo(mapPanel.getEl(), "br-br", [-110,-264]); 
+        });
+    });
 	
     var viewport = new Ext.Viewport({
         renderTo : document.body,
@@ -127,11 +124,13 @@ function initializeMapping() {
             
     });
     
+    viewport.on('afterlayout', function() {
+        LOG.debug('viewport afterlayout hit');
+        legendWindow.alignTo(mapPanel.getEl(), "br-br");
+    });
+    
     LOG.info('Derivative Portal: Mapping initialized.');
 	
-	viewport.on('afterlayout', function() {
-		LOG.info('viewport afterlayout hit');
-		legendWindow.alignTo(mapPanel.getEl(), "br-br");
-	});
+    
 }
 
