@@ -9,7 +9,7 @@
 		<jsp:include page="template/scripts.jsp">
 			<jsp:param value="js/derivative_portal/root.js" name="UIScriptFile"/>
 		</jsp:include>
-        <title>Derivative Portal</title>
+        <title>USGS Derived Downscaled Climate Portal</title>
     </head>
     <body>
         

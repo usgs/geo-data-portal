@@ -61,7 +61,7 @@ function initializeMapping() {
 		id : 'mapPanel',
         region: 'center',
         border: false,
-        title: 'Geo Data Portal Derivative UI',
+        title: 'USGS Derived Downscaled Climate Portal',
         baseLayer: baseLayerStore.getAt(1)
     });
     
