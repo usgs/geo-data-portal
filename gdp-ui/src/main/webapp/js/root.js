@@ -40,14 +40,16 @@ $(document).ready(function() {
     }
 })
 
-$(window).load(function() {
-    // initMap() has to be done here instead of in $(document).ready due to IE8 bug
-    initMap();
-    removeOverlay();
-})
+
 
 function init() {
     logger.info("GDP: Beginning application initialization.");
+    
+    $(window).load(function() {
+        // initMap() has to be done here instead of in $(document).ready due to IE8 bug
+        initMap();
+        removeOverlay();
+    })
     
     // Add htmlDecode function to the JS String object
     String.prototype.htmlDecode = function() {
