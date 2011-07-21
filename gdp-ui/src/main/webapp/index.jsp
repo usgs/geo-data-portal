@@ -35,31 +35,31 @@
         <link rel="stylesheet" href="css/dataset.css" type="text/css" />
         <link rel="stylesheet" href="css/submit.css" type="text/css" />
 
-        <script src="js/cookie/cookie.js" type="text/javascript"></script>
-        <script src="js/log4javascript/log4javascript.js" type="text/javascript"></script>
-        <script src="js/jquery/jquery-1.6.1.js" type="text/javascript"></script>
-        <script src="js/xslt/jquery.xslt.js" type="text/javascript"></script>
-        <script src="js/xmlns/jquery.xmlns.js" type="text/javascript"></script>
-        <script src="js/objects/algorithm.js" type="text/javascript"></script>
-        <script src="js/constants.js" type="text/javascript"></script>
-        <script src="openlayers/OpenLayers.js" type="text/javascript"></script>
-        <script src="js/jquery-ui/jquery-ui-1.8.12.custom.min.js" type="text/javascript"></script>
-        <script src="js/jgrowl/jquery.jgrowl_google.js" type="text/javascript"></script>
-        <script src="js/colorbox/jquery.colorbox-min.js" type="text/javascript"></script>
-        <script src="js/parseUri/parseUri.js" type="text/javascript"></script>
-        <script src="js/parsexml/jquery.xmldom-1.0.min.js" type="text/javascript"></script>
-        <script src="js/fileuploader/fileuploader.js" type="text/javascript"></script>
-        <script src="js/download/download.jQuery.js" type="text/javascript"></script>
-        <script src="js/wps.js" type="text/javascript"></script>
-        <script src="js/wfs.js" type="text/javascript"></script>
-        <script src="js/root.js" type="text/javascript"></script>
-        <script src="js/area_of_interest.js" type="text/javascript"></script>
-        <script src="js/dataset.js" type="text/javascript"></script>
-        <script src="js/map.js" type="text/javascript"></script>
-        <script src="js/tiptip/jquery.tipTip.js" type="text/javascript"></script>
-        <script src="js/excat/scripts/sarissa.js" type="text/javascript"></script>
-        <script src="js/excat/scripts/sarissa_ieemu_xpath.js" type="text/javascript"></script>
-        <script src="js/excat/scripts/cswclient.js" type="text/javascript"></script>
+        <script type="text/javascript" src="js/cookie/cookie.js"></script>
+        <script type="text/javascript" src="js/log4javascript/log4javascript.js"></script>
+        <script type="text/javascript" src="js/jquery/jquery-1.6.1.js"></script>
+        <script type="text/javascript" src="js/xslt/jquery.xslt.js"></script>
+        <script type="text/javascript" src="js/xmlns/jquery.xmlns.js"></script>
+        <script type="text/javascript" src="js/objects/algorithm.js"></script>
+        <script type="text/javascript" src="js/constants.js"></script>
+        <script type="text/javascript" src="openlayers/OpenLayers.js"></script>
+        <script type="text/javascript" src="js/jquery-ui/jquery-ui-1.8.12.custom.min.js"></script>
+        <script type="text/javascript" src="js/jgrowl/jquery.jgrowl_google.js"></script>
+        <script type="text/javascript" src="js/colorbox/jquery.colorbox-min.js"></script>
+        <script type="text/javascript" src="js/parseUri/parseUri.js"></script>
+        <script type="text/javascript" src="js/parsexml/jquery.xmldom-1.0.min.js"></script>
+        <script type="text/javascript" src="js/fileuploader/fileuploader.js"></script>
+        <script type="text/javascript" src="js/download/download.jQuery.js"></script>
+        <script type="text/javascript" src="js/wps.js"></script>
+        <script type="text/javascript" src="js/wfs.js"></script>
+        <script type="text/javascript" src="js/root.js"></script>
+        <script type="text/javascript" src="js/area_of_interest.js"></script>
+        <script type="text/javascript" src="js/dataset.js"></script>
+        <script type="text/javascript" src="js/map.js"></script>
+        <script type="text/javascript" src="js/tiptip/jquery.tipTip.js"></script>
+        <script type="text/javascript" src="js/excat/scripts/sarissa.js"></script>
+        <script type="text/javascript" src="js/excat/scripts/sarissa_ieemu_xpath.js"></script>
+        <script type="text/javascript" src="js/excat/scripts/cswclient.js"></script>
     </head>
 
     <body>

@@ -51,6 +51,12 @@ function init() {
         removeOverlay();
     })
     
+    // If we wish to modify when this gets called based on the event (reload? link click?),
+    // check http://geekswithblogs.net/renso/archive/2009/09/21/how-to-stop-browser-closing.aspx
+    window.onbeforeunload = function() {
+        return "Leaving the Geo Data Portal will cause any unsaved configuration to be lost.";
+    }
+    
     // Add htmlDecode function to the JS String object
     String.prototype.htmlDecode = function() {
         var e = document.createElement('div');
