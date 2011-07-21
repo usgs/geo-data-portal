@@ -16,7 +16,13 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 	constructor : function(config) {
 		if (!config) config = {};
 		
-		var map = new OpenLayers.Map();
+		var map = new OpenLayers.Map({
+                    // From GDP (with Zoerb's comments)
+                    // Got this number from Hollister, and he's not sure where it came from.
+                    // Without this line, the esri road and relief layers will not display
+                    // outside of the upper western hemisphere.
+                    maxResolution: 1.40625/2
+                });
     
                 this.baseLayer = config.baseLayer.getLayer();
 

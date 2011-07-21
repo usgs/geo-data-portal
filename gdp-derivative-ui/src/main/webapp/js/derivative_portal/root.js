@@ -37,7 +37,21 @@ function initializeMapping() {
             {
                 layers: "0"
             }
-            )
+            ),
+        new OpenLayers.Layer.XYZ(
+            "Shaded Relief",
+            "http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_ShadedRelief_World_2D/MapServer/tile/${z}/${y}/${x}",
+            {
+                layers : "0"
+            }
+        ),
+       new OpenLayers.Layer.XYZ(
+            "Street Map",
+            "http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_StreetMap_World_2D/MapServer/tile/${z}/${y}/${x}",
+            {
+                layers : "0"
+            }
+        ), 
         ]
     });
 	
