@@ -14,14 +14,16 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		this.legendWindow.alignTo(this.getEl(), "br-br", [-DEFAULT_LEGEND_X,-DEFAULT_LEGEND_Y]); 
 	},
 	constructor : function(config) {
+                // From GDP (with Zoerb's comments)
+                // Got this number from Hollister, and he's not sure where it came from.
+                // Without this line, the esri road and relief layers will not display
+                // outside of the upper western hemisphere.
+                var MAX_RESOLUTION = 1.40625/2;
+                
 		if (!config) config = {};
 		
 		var map = new OpenLayers.Map({
-                    // From GDP (with Zoerb's comments)
-                    // Got this number from Hollister, and he's not sure where it came from.
-                    // Without this line, the esri road and relief layers will not display
-                    // outside of the upper western hemisphere.
-                    maxResolution: 1.40625/2
+                    maxResolution: MAX_RESOLUTION
                 });
     
                 this.baseLayer = config.baseLayer.getLayer();
