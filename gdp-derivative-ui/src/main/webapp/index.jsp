@@ -12,7 +12,9 @@
         <title>USGS Derived Downscaled Climate Portal</title>
     </head>
     <body>
-        <jsp:include page="template/header.jsp"></jsp:include>
+        <jsp:include page="template/header.jsp">
+            <jsp:param name="imageDir" value="images"/>
+        </jsp:include>
         <jsp:include page="template/footer.jsp">
             <jsp:param name="footer-class" value="x-hidden"/>
             <jsp:param name="imageDir" value="images"/>

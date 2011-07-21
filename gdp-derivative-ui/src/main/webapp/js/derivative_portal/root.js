@@ -124,12 +124,14 @@ function initializeMapping() {
     var headerPanel = new Ext.Panel({
         region: 'north',
         height: 'auto',
+        autoShow: true,
         contentEl: 'usgs-header-panel'
     })
     
     var footerPanel = new Ext.Panel({
         region: 'south',
         height: 'auto',
+        autoShow: true,
         contentEl: 'usgs-footer-panel'
     })
     
