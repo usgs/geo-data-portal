@@ -1,0 +1,860 @@
+#header #banner-area {
+    background-image: url(../images/pubs_banner.gif) !important; /* Modify for alternate banner images */
+    background-position: 0px 0px;
+}
+
+/********************************************
+General
+*********************************************/
+.x-window-header {
+	background-color: #336699;
+}
+
+.x-window-footer {
+	background-color: #336699;
+}
+
+#captchaImageDiv {
+	height: 50px;
+}
+
+#site-title {
+    background-color:#369; 		
+}
+
+#home-link {
+	float:right;
+	text-decoration: underline;
+	margin-right: 5px;
+}
+
+#usgs-policy-links .hnav {
+	background-color:#19334C !important;
+}
+
+.area-header {
+   padding: 2px;
+   background-color:#369 !important;
+   color: #FFF;
+   text-align: center;
+   font-weight: bold;
+   font-size: large;
+}
+.area-container {
+   background-color:#369 !important;   
+}
+
+.white-background {
+   background-color:#FFF !important;   
+}
+
+.dark-grey-background {
+   background-color:#555555 !important;
+}
+
+.grey-background {
+   background-color:#F0F0F0 !important;   
+}
+.green-background {
+   background-color:#336699 !important;   
+}
+.left-right-5px-margin {
+	margin-left: 5px;
+	margin-right: 5px;
+}
+#pubs-collections-panel a:hover {
+	background-color:	transparent;
+	cursor: 			pointer;
+}
+
+#pubs-print-target {
+	display: none;
+}
+
+#pubs-resources-tab-source a, #pubs-resources-tab-source a:hover {
+	background: transparent;
+}
+
+#page-info a:hover, .clearlinks a:hover{
+	background-color:	transparent;
+	cursor: 			pointer;
+    text-decoration: 	underline;
+}
+
+.rss_link:hover{
+	background-color:	transparent;
+	cursor: 			pointer;
+}
+
+.highlight-selected {
+    background-color: #FAFAFA;
+}
+
+.underline-selected {
+    text-decoration: underline;
+}
+
+/********************************************
+Contents Tab
+*********************************************/
+#pubs-content-paging-source a {
+	cursor: pointer;
+    background-color: transparent;
+}
+
+.content_block {
+	padding: 10px 10px 10px 10px;
+}
+
+.content_block:hover {
+    background-color: #FAFAFA;
+}
+
+.content_block a:hover{
+	background-color: transparent;
+	cursor: 	pointer;
+    text-decoration: 	underline;
+}
+
+.content_even {
+	background-color: #eeeeee;
+}
+
+#content-series-table {
+	border-spacing: 0px;
+	width: 100%;
+}
+
+#content-series-table a:hover{
+	background-color: transparent;
+	cursor: 			pointer;
+    text-decoration: 	underline;
+} 
+
+#content-series-table tbody tr td{
+	padding-top: 2px;
+	padding-bottom: 2px;
+} 
+
+.content_header_bottom {
+	background-color: #336699;
+}
+
+.content_header_top {
+	background-color: #336699;
+}
+
+.content_header_bottom th {
+	color:#FFFFFF;
+	font-size:large;
+	font-weight:bold;
+	padding:2px;
+	text-align:left;
+}
+
+.content_header_top th {
+	color:#FFFFFF;
+	font-size:large;
+	font-weight:bold;
+	padding:2px;
+	text-align:center;
+}
+
+/* See PUBSTWO-505 for the reason for this rule */
+.content-zero {
+	color: #225588;
+	font-weight: bold;
+}
+/********************************************
+Search UI
+*********************************************/
+	
+.ui-button {
+    width: 10em;	
+    text-align: center;
+}
+
+#load-search-link:hover {
+    cursor: pointer;
+}
+
+#pubs-do-basic-search-btn {
+    float: right;
+}
+
+#pubs-toggle-search-btn {
+    float: right;
+}
+
+#pubs-arg-query {
+    width: 100%;    
+}
+
+#advanced-search-form, #pubs-search-ui-source {
+    padding: 1em;
+}
+
+#pubs-search-ui-source table{
+    width: 100%;
+}
+
+#search-tips-link   {
+	font-size: xx-small;
+	float: right;
+}
+
+#search-tips-link:hover {
+    cursor: pointer;
+}
+
+#pop-searches-list {
+    width: 100%;
+}
+
+#pop-searches-list a {
+	cursor: pointer;
+	font-size: x-small;
+	text-decoration: underline;
+}
+.advanced-param {
+    width: 100%;	
+}
+
+.advanced-param-name {
+    width: 30%;    
+}
+
+.advanced-param-value {
+    width: 68%;    
+}
+
+#pubs-do-advanced-search-btn {
+    float: right;    
+    padding-right: 1em;
+}
+
+.load-search-name {
+    text-decoration: underline;
+    margin-bottom: 1em;
+}
+
+.load-search-header {
+    font-weight: bold;
+}
+
+.tab-options {
+	margin: 5px 5px 0px 10px;
+}
+
+.tab-options a:HOVER {
+	cursor: pointer;
+    background-color: transparent !important;
+}	
+
+/********************************************
+Collections
+*********************************************/
+.content-science-area-count, .content-science-area a {
+	font-size: large;
+	color: #EEEEEE;
+	padding-left: 10px;
+}
+
+.science-icons {
+	border: solid #EEEEEE 2px; 
+}
+
+.pubs-collection td {
+    padding-top: 10px;	
+    color: #EEE;
+}
+.pubs-collection a {
+	cursor: pointer;
+    color: #EEE;  
+    text-decoration: underline;
+}
+
+#pubs-topical-collection-anchor-bar a:hover, #pubs-topical-collection-view a:hover, .pubs-collection a:hover {
+	cursor: pointer;
+    background-color: transparent !important;
+}
+
+.pubs-collection-header-cell {
+    padding-left: 1em;
+    text-align: center;
+ }
+ 
+.pubs-collection-header-cell p {
+    color: #EEE;
+    font-weight: bold;
+ }
+ 
+.pubs-collection-list-cell {
+	padding-left: 1em;
+	padding-right: 2em;
+    font-size: .85em !important;	
+}
+
+.pubs-collection img {
+    border: solid black 3px;	
+}
+
+ .pubs-more-collections-link {
+    float: right;
+    font-weight: bold;
+    padding-top: 1em;
+    padding-right: 2em;
+    color: #EEE;
+ }
+
+ .pubs-collection-spacer {
+    padding-left: 2em;
+    padding-right: 2em;
+}
+
+#pubs-science-anchor-bar {
+	text-align: center;
+	background-color: #EEEEEE;
+	width: 100%;
+}
+
+#topical-collections-image {
+	border: 1px;
+	border-style: solid;
+	border-color: white;
+}
+
+#science-programs-image {
+	border: 1px;
+	border-style: solid;
+	border-color: white;
+}
+
+#science-offices-image {
+	border: 1px;
+	border-style: solid;
+	border-color: white;
+}
+
+
+#offices-programs-listing-source {
+	padding: 10px;
+	width: 95%; /*prevent overflow and horizontal scrollbar in IE*/
+}
+
+/********************************************
+Latest news
+*********************************************/
+#pubs-news-collection {
+    width: 98%;
+    padding-left: 10px;
+    padding-top: 10px;
+}
+
+#pubs-news-collection li {
+    list-style-type: disc;
+    list-style-position: inside;
+}
+
+.full-pubs-news-item {
+    margin-top: 1em;
+    margin-left: 1em;
+    border: none;
+    width: 50%;
+}
+
+.full-pubs-news-item .news-headline {
+	font-size: large;
+	background-color: #EEEEEE;
+	text-transform: capitalize;
+	font-stretch: 	extra-expanded;
+	
+}
+
+.full-pubs-news-item .news-attributes {
+	font-size: x-small;
+	font-weight: bold;
+}
+
+.full-pubs-news-item .news-story { 
+	text-indent: 1em;
+	padding: 1em 1em 1em 1em;
+}
+
+.pubs-news-item a {
+	font-weight: normal;	
+}
+
+.pubs-news-item a:HOVER {
+    text-decoration: underline;
+}
+
+#pubs-more-news-link {
+    float: right;
+    padding-right: 2em;	
+}
+
+#pubs-news-paging-bar {
+	text-align: center;
+	background-color: #EEEEEE;
+	width: 100%;
+}
+
+.news-item-date {
+	color: red;
+	font-size: x-small;
+}
+
+.news-item-item {
+	color: black;
+}
+
+.headline hover{
+	cursor: pointer;
+    text-decoration: underline;
+}
+
+.headline_creation_date {
+	font-size: x-small;
+}
+
+/********************************************
+Other Resources
+*********************************************/
+#pubs-resources-tab-source {
+	margin-left: 5em;
+	margin-top: 1em;
+}
+
+#pubs-resources-tab-source hr {
+	clear: both;
+	margin-top: 20px;
+	margin-bottom: 20px;
+	width: 700px;
+	text-align: center;
+}
+
+.pubs-resources-link-icon {
+	float: left;
+	padding-top: 10px;
+	padding-bottom: 20px;
+}
+
+.pubs-resources-link-icon img {
+	width: 125px;
+	height: 125px;
+	border: none;
+	border: 1px #EEEEEE solid;
+}
+
+
+.pubs-resources-link-title {
+	font-weight: bold;
+	color: #000000;
+	font-size: 1.2em;
+	padding-left: 170px;
+	padding-top: 10px;
+	
+}
+
+.pubs-resources-link {
+	font-weight: lighter;
+	color: #000000;
+	font-size: 0.9em;
+}
+
+.pubs-resources-link a {
+	font-weight: lighter;
+	color: #000000;
+	font-size: 1.2em;
+	padding-left: 100px;
+	text-decoration: underline;
+}
+
+/********************************************
+Result lists
+*********************************************/
+.download_link {
+	text-decoration: underline;
+    cursor: pointer;
+    background-color: transparent !important;   
+}
+
+.download_link:visited {
+	color: #EEEEEE;	   
+}
+
+.no-results-msg {
+}
+
+.pubs-citation {
+    padding-top: 1em;
+    padding-left: 1em;
+    padding-bottom: 1em;
+}
+
+#pubs-search-result-list-source .pubs-citation {
+	cursor: pointer;
+}
+
+.pubs-result td {
+    padding: 1em;
+    /* background-color: #EEEEEE; */
+}
+
+.pop-pubs-tab-content {
+	background-color: #FFFFFF;
+}
+
+.img-container img {
+    border-bottom: solid black 1px;	
+    border-right: solid black 1px; 
+}
+
+.pubs-selected-result-row {
+	background-color: #1E90FF;
+}
+
+.pubs-selected-result-row .pubs-citation{
+    cursor: default !important;
+}
+
+.rec-pubs-tab-content table {
+    width: 95%;	
+}
+
+.rec-pubs-tab-content a, .rec-pubs-tab-content a:hover {
+	text-decoration: underline;
+    cursor: pointer;
+    background-color: transparent !important;   
+}
+
+.pop-pubs-tab-content .pubs-citation {
+    padding-top: 0em;
+    padding-left: 1em;
+    padding-bottom: 0em;
+    font-size: x-small;
+}
+
+.pop-pubs-tab-content .pubs-result td {
+    padding: .5em;
+    padding-left: .5em;
+}
+
+.pop-pubs-tab-content a, .pop-pubs-tab-content a:hover {
+    text-decoration: underline;
+    cursor: pointer;
+    background-color: transparent !important;   
+}
+
+/********************************************
+Search tab
+*********************************************/
+
+#pubs-search-header-table {
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#pubs-search-header-table td {
+	padding-right: 0.5em;
+	padding-left: 0.5em;
+}
+
+#pubs-search-header-table hr {
+	color: #FFF;
+	background-color: #FFF;
+	height: 0.1em;
+	width: 30em;
+}
+
+#pubs-search-download-link {
+	text-align: left;
+}
+
+#pubs-sort-options-td {
+	text-align: left;
+}
+
+#pubs-search-save-link {
+	text-decoration: underline;
+	text-align: left;
+}
+
+#pubs-search-new-link {
+	text-decoration: underline;
+	text-align: left;
+}
+
+#narrow-search-link {
+	text-decoration: underline;
+}
+
+#pubs-sort-search-list-source{
+	padding: 0.5em 0;
+	width: 100%;
+	height: 100%;
+	text-align: center;	
+}
+
+#pubs-adv-narrow-search-ui-source {
+    background-color: #336699;
+    padding-left: 1em;
+}
+
+#pubs-sort-search-list-source a {
+	color: #FFFFFF;
+	cursor: pointer;
+    background-color: transparent !important;
+}
+
+#pubs-sort-search-list-source a:hover {
+	color: #FFFFFF;
+	cursor: pointer;
+    background-color: transparent !important;
+}
+
+#pubs-search-download-link a {
+	text-decoration: underline;
+}
+
+#pubs-sort-search-list-source a:visited {
+	color: #FFFFFF;
+	cursor: pointer;
+    background-color: transparent !important;
+}
+
+.pubs-selected-sort-option, .pubs-selected-sort-option:hover {
+    padding-left: .5em;
+    padding-right: .5em;
+    color: white;
+    font-weight: bold;
+    text-decoration: underline;
+    background-color: red !important;	
+}
+
+.pubs-sort-option {
+	font-weight: bold;
+    text-decoration: underline;
+}
+
+.pubs-sort-option:hover {
+	cursor: pointer;
+    background-color: transparent !important;
+}
+
+#pubs-next-page-links a, #pubs-next-page-links a:hover {
+	background: transparent;
+	cursor: pointer;
+}
+
+#pubs-next-page-links {
+	color: #555;
+}
+
+#pubs-search-result-list-source table {
+    width: 100%;
+}
+
+/********************************************
+Citation details
+*********************************************/
+#storeInfo {
+	width: 300px;
+} 
+
+#pubs-citation-source h1{
+	font-size: large;
+	padding-bottom: 2em;
+}
+
+#pubs-citation-source {
+    padding: 1em;
+}
+
+.pubs-citation-detail-img-container{
+    float: left;
+    padding-right: 2em;
+}
+
+.pubs-citation-detail-img-container img{
+    border-bottom: solid black 2px;
+    border-right: solid black 2px;
+}
+ .pubs-citation-detail-header-info {
+    float: left;
+ }
+
+.pubs-citation-detail-online-info h2 {
+    padding-bottom: 1em;   
+}
+
+.pubs-citation-detail-online-info p {
+    padding-top: 1em;	
+}
+
+.pubs-citation-detail-info-container {
+    padding-top: 1em;   
+    padding-bottom: 1em;   
+}
+
+.pubs-citation-detail-head-section {
+	width: 100%;
+}
+
+.pubs-citation-detail-info-container table {
+    width: 100%;
+}
+
+.pubs-citation-detail-info-container td {
+	padding-left: 1em;
+	padding-right: 1em;
+    background-color: #EEE; 	
+}
+
+#pubs-citation-detail-navigavtion{
+    float: right;	
+    text-align: right;
+}
+
+#pubs-citation-view a, #pubs-citation-source a, #pubs-citation-detail-navigavtion a {
+    cursor: pointer;
+}
+
+#pubs-citation-view a:hover, #pubs-citation-source a:hover, #pubs-citation-detail-navigavtion a:hover {
+    cursor: pointer;
+    background-color: transparent !important;
+}
+
+.pluginRequiredNotification {
+	font-size: x-small;
+}
+
+.citation-module {
+    margin: 1em;
+}
+
+.citation-module-header {
+   background-color:#369 !important;
+   color: #FFF;
+   text-align: center;
+   font-weight: bold;
+   font-size: medium;
+}
+
+.citation-module-content {
+    padding: 1em;
+}
+
+div.btop, div.btop div, div.bbot, div.bbot div {
+    display: block;
+    height: 5px;
+    font-size: 1px;
+    background-image:url(../js/pubs_ext_config/pubs-corners/w-c.gif);
+    background-repeat: no-repeat;
+}
+div.btop div {
+    background-position: 100% -5px
+}
+div.bbot {
+    background-position: 0 -10px
+}
+div.bbot div{
+    background-position: 100% -15px
+}
+
+/********************************************
+Faq Tab
+*********************************************/
+#pubs-faq-tab-contact-us-source{
+    /*background-color: #EEE;*/
+    padding: 10px;	
+}
+
+#pubs-faq-section-content a:hover{
+	cursor: pointer;
+    background-color: transparent !important;
+    color:#003399;		
+}
+
+#pubs-faq-question-content a:hover{
+	cursor: pointer;
+    background-color: transparent !important;	
+    color:#003399;
+}
+
+.faq-header-text {
+	font-size: 16px;
+	font-weight: bold;
+	font-family: sans-serif;
+}
+
+.faq-text {
+	font-family: sans-serif;
+	font-size: 15px; 
+}
+/**
+#faq-section-collection li:HOVER,a:HOVER{
+	 background-color:#FFFBBA;
+}
+
+
+#faq-question-collection li:HOVER,a:HOVER{
+	 background-color:#FFFBBA;
+}
+**/
+/********************************************
+Citation View page
+*********************************************/
+#pubs-citation-view-min-height {
+    float: left;
+    top: 0px;
+    width: 1%;
+}
+#pubs-citation-view {
+	padding: 1em;
+    float: left;
+    width: 95%;	
+}
+
+#pubs-citation-view h1{
+    font-size: large;
+    padding-bottom: 2em;
+}
+
+#pubs-citation-view #pubs-citation-detail-navigavtion{
+    display: none; 
+}
+
+/**********************************************************
+Topical Collections
+***********************************************************/
+#pubs-topical-collection-anchor-bar {
+    padding: 1em;	
+}
+
+#pubs-topical-collection-view {
+    padding-left: 2em;   
+}
+
+/* CLEAR FIX */
+.clearfix:after {
+    content: ".";
+    display: block;
+    clear: both;
+    visibility: hidden;
+    line-height: 0;
+    height: 0;
+}
+ 
+.clearfix {
+    display: inline-block;
+}
+ 
+html[xmlns] .clearfix {
+    display: block;
+}
+ 
+* html .clearfix {
+    height: 1%;
+}

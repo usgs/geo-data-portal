@@ -120,10 +120,22 @@ function initializeMapping() {
         layerCombo.setValue(firstRecord.get("title"));
         layerCombo.fireEvent('select', layerCombo, firstRecord, 0);
     });
-	
+    
+    var headerPanel = new Ext.Panel({
+        region: 'north',
+        height: 'auto',
+        contentEl: 'usgs-header-panel'
+    })
+    
+    var footerPanel = new Ext.Panel({
+        region: 'south',
+        height: 'auto',
+        contentEl: 'usgs-footer-panel'
+    })
+    
     new Ext.Viewport({
         renderTo : document.body,
-        items : [mapPanel, configPanel],
+        items : [headerPanel,mapPanel, configPanel,footerPanel],
         layout: 'border'
     });
     
