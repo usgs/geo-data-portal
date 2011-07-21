@@ -56,6 +56,7 @@ function initializeMapping() {
         mode : 'local',
         triggerAction: 'all',
         store : capabilitiesStore,
+        fieldLabel : 'Layer',
         forceSelection : true,
         lazyInit : false,
         displayField : 'title',
@@ -86,9 +87,13 @@ function initializeMapping() {
         }
     });        
         
-    var configPanel = new Ext.Panel({
-        width : 'auto',
+    var configPanel = new Ext.form.FormPanel({
+        width : 265,
         region: 'west',
+        labelWidth: 80,
+        defaults: {
+            width: 180
+        },
         items : [
             baseLayerCombo,
             layerCombo
