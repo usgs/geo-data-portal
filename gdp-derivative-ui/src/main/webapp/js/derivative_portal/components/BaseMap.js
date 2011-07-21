@@ -18,16 +18,10 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		
 		var map = new OpenLayers.Map();
     
-		this.baseLayer = new OpenLayers.Layer.WMS(
-			"Global Imagery",
-			"http://maps.opengeo.org/geowebcache/service/wms",
-			{
-				layers: "bluemarble"
-			}
-			);
+                this.baseLayer = config.baseLayer.getLayer();
 
-		map.addLayers([this.baseLayer]);
-		
+                map.addLayers([this.baseLayer]);
+
 		
 		this.timestepStore = new Ext.data.ArrayStore({
 			storeId : 'timestepStore',
@@ -175,6 +169,10 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		this.updateAvailableTimesteps(record, timestep);
 		this.realignLegend();
 	},
+        replaceBaseLayer : function(record) {
+            this.layers.removeAt(0);
+            this.layers.insert(0,[record]);
+        },
 	replaceLayer : function(record, params) {
 		if (!params) {
 			params = {};

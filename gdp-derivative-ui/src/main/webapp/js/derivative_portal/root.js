@@ -22,6 +22,24 @@ function initializeMapping() {
     });
     capabilitiesStore.load();
     
+    var baseLayerStore = new GeoExt.data.LayerStore({
+        layers : [
+        new OpenLayers.Layer.WMS(
+            "Blue Marble",
+            "http://maps.opengeo.org/geowebcache/service/wms",
+            {
+                layers: "bluemarble"
+            }
+            ),
+        new OpenLayers.Layer.WMS(
+            "NAIP",
+            "http://isse.cr.usgs.gov/ArcGIS/services/Combined/SDDS_Imagery/MapServer/WMSServer",
+            {
+                layers: "0"
+            }
+            )
+        ]
+    });
 	
     var mapPanel = new GDP.BaseMap({
         height: 400,
@@ -29,7 +47,8 @@ function initializeMapping() {
 		id : 'mapPanel',
         region: 'center',
         border: false,
-        title: 'Geo Data Portal Derivative UI'
+        title: 'Geo Data Portal Derivative UI',
+        baseLayer: baseLayerStore.getAt(1)
     });
     
     var layerCombo = new Ext.form.ComboBox({
@@ -48,11 +67,31 @@ function initializeMapping() {
         }
     });
 	
+    var baseLayerCombo = new Ext.form.ComboBox({
+        xtype : 'combo',
+        mode : 'local',
+        triggerAction: 'all',
+        store : baseLayerStore,
+        fieldLabel : 'Base Layer',
+        forceSelection : true,
+        lazyInit : false,
+        displayField : 'title',
+        listeners : {
+            'afterrender' : function() {
+                baseLayerCombo.setValue(baseLayerStore.getAt(1).getLayer().name);
+            },
+            'select' : function(combo, record, index) {
+                mapPanel.replaceBaseLayer(record);
+            }
+        }
+    });        
+        
     var configPanel = new Ext.Panel({
         width : 'auto',
         region: 'west',
         items : [
-        layerCombo
+            baseLayerCombo,
+            layerCombo
         ]
     });
 	
