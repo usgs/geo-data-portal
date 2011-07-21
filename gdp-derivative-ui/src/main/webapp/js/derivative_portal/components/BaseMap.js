@@ -4,7 +4,8 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 	layerOpacity : 0.4,
 	maxNumberOfTimesteps : 5,
 	legendWindow : undefined,
-	baseLayer : undefined,
+	//	baseLayer : undefined,
+	layerController : undefined,
 	timestepStore : undefined,
 	timestepController : undefined,
 	timestepAnimator : undefined,
@@ -14,22 +15,25 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		this.legendWindow.alignTo(this.getEl(), "br-br", [-DEFAULT_LEGEND_X,-DEFAULT_LEGEND_Y]); 
 	},
 	constructor : function(config) {
-                // From GDP (with Zoerb's comments)
-                // Got this number from Hollister, and he's not sure where it came from.
-                // Without this line, the esri road and relief layers will not display
-                // outside of the upper western hemisphere.
-                var MAX_RESOLUTION = 1.40625/2;
+		// From GDP (with Zoerb's comments)
+		// Got this number from Hollister, and he's not sure where it came from.
+		// Without this line, the esri road and relief layers will not display
+		// outside of the upper western hemisphere.
+		var MAX_RESOLUTION = 1.40625/2;
                 
 		if (!config) config = {};
 		
 		var map = new OpenLayers.Map({
-                    maxResolution: MAX_RESOLUTION
-                });
-    
-                this.baseLayer = config.baseLayer.getLayer();
-
-                map.addLayers([this.baseLayer]);
-
+			maxResolution: MAX_RESOLUTION
+		});
+				
+		this.layerController = config.layerController;
+		
+		this.layerController.on('changelayer', function() {
+			LOG.info('BaseMap changelayer hit');
+			this.replaceBaseLayer(this.layerController.getBaseLayer());
+			this.changeLayer(this.layerController.getLayer());
+		}, this);
 		
 		this.timestepStore = new Ext.data.ArrayStore({
 			storeId : 'timestepStore',
@@ -47,9 +51,9 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		});
 		
 		this.timestepController.on('select', function(combo, record, index) {
-							var timeStr = record.get('time');
-							this.changeTimestep(timeStr);
-						}, this);
+			var timeStr = record.get('time');
+			this.changeTimestep(timeStr);
+		}, this);
 		
 		var timestepPanel = new Ext.Panel({
 			region : 'north',
@@ -57,21 +61,21 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 			height : 'auto',
 			layout : 'hbox',
 			items : [
-				this.timestepController,
-				new Ext.Button({
-					text : 'Play Timesteps',
-					handler : function() {
-						this.timestepAnimator.startAnimation();
-					},
-					scope : this
-				}),
-				new Ext.Button({
-					text : 'Stop Timesteps',
-					handler : function() {
-						this.timestepAnimator.stopAnimation();
-					},
-					scope : this
-				})
+			this.timestepController,
+			new Ext.Button({
+				text : 'Play Timesteps',
+				handler : function() {
+					this.timestepAnimator.startAnimation();
+				},
+				scope : this
+			}),
+			new Ext.Button({
+				text : 'Stop Timesteps',
+				handler : function() {
+					this.timestepAnimator.stopAnimation();
+				},
+				scope : this
+			})
 			]
 		});
 		
@@ -79,6 +83,10 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 			baseMap : this,
 			store : this.timestepStore
 		});
+		
+		this.timestepAnimator.on('timestepchange', function(time) {
+			this.changeTimestep(time);
+		}, this);
 		
 		config = Ext.apply({
 			map: map,
@@ -88,6 +96,8 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		}, config);
 		
 		GDP.BaseMap.superclass.constructor.call(this, config);
+		
+		this.layerController.fireEvent('requestbaselayer', this.layerController.getBaseLayer());
 		
 		var legendPanel = new GeoExt.LegendPanel({
 			defaults: {
@@ -110,23 +120,24 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		});
 		
 		this.on('afterlayout', function() {
-			LOG.debug('mapPanel afterlayout hit');
 			this.legendWindow.show(null, function() {
-				LOG.info('Legend window show callback hit');
 				this.realignLegend();
 			}, this);
 		}, this);
 	},
 	zoomToExtent : function(record) {
+		if (!record) return;
 		this.map.zoomToExtent(
 			OpenLayers.Bounds.fromArray(record.get("llbbox"))
 			);
 	},
 	changeTimestep : function(timestep) {
-		this.replaceLayer(this.getCurrentLayer(), {time : timestep});
+		this.replaceLayer(this.getCurrentLayer(), {
+			time : timestep
+		});
 	},
 	updateAvailableTimesteps : function(record, currentTimestep) {
-		
+		if (!record) return;
 		this.timestepStore.removeAll();
 		var times = record.get('dimensions').time;
 		
@@ -160,6 +171,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		}
 	},
 	changeLayer : function(record) {
+		if (!record) return;
 		var params = {};
 		
 		this.zoomToExtent(record);
@@ -177,20 +189,34 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		this.updateAvailableTimesteps(record, timestep);
 		this.realignLegend();
 	},
-        replaceBaseLayer : function(record) {
-            this.layers.removeAt(0);
-            this.layers.insert(0,[record]);
-        },
+	replaceBaseLayer : function(record) {
+		if (!record) return;
+		if (!this.layers) {
+			this.map.addLayer(record.getLayer());
+		} else {
+			if (0 < this.layers.getCount()) {
+				if (this.layers.getAt(0) !== record) {  //If it's a different baseLayer, lets swap it out
+					this.layers.removeAt(0);
+					this.layers.insert(0, record);
+				}
+			} else {
+				this.layers.add(record);
+			}
+			
+		}
+			
+	},
 	replaceLayer : function(record, params) {
+		if (!record) return;
 		if (!params) {
 			params = {};
 		}
 		
 		var requestedTime = params.time;
 		var existingLayerIndex = this.layers.findBy(function(record, id) {
-					var existingTime = record.get('layer').params['TIME'];
-					return (existingTime === requestedTime);
-				}, this, 1);
+			var existingTime = record.get('layer').params['TIME'];
+			return (existingTime === requestedTime);
+		}, this, 1);
 		
 		var hideLayer = function(oldLayer) {
 			if (oldLayer) {

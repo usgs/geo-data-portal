@@ -20,6 +20,8 @@ Ext.BLANK_IMAGE_URL = 'images/s.gif';<%-- Path to the blank image should point t
 <script src="js/log4javascript/log4javascript.js" type="text/javascript"></script>
 
 <%-- Custom Application Modules Here --%>
+<script type="text/javascript" src="js/derivative_portal/components/LayerChooser.js"></script>
+<script type="text/javascript" src="js/derivative_portal/components/LayerController.js"></script>
 <script type="text/javascript" src="js/derivative_portal/components/MapTimestepAnimator.js"></script>
 <script type="text/javascript" src="js/derivative_portal/components/BaseMap.js"></script>
 
