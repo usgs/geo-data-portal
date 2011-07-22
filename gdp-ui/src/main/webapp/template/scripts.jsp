@@ -19,6 +19,7 @@
 <script type="text/javascript" src="js/parsexml/jquery.xmldom-1.0.min.js"></script>
 <script type="text/javascript" src="js/fileuploader/fileuploader.js"></script>
 <script type="text/javascript" src="js/download/download.jQuery.js"></script>
+<script type="text/javascript" src="js/jquery-url-parser/jquery.url.js"></script>
 <script type="text/javascript" src="js/wps.js"></script>
 <script type="text/javascript" src="js/wfs.js"></script>
 <script type="text/javascript" src="js/root.js"></script>
