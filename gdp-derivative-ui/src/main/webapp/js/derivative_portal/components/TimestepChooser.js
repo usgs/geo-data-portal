@@ -1,7 +1,7 @@
 Ext.ns("GDP");
 
 GDP.TimestepChooser = Ext.extend(Ext.form.FormPanel, {
-	maxNumberOfTimesteps : 101,
+	maxNumberOfTimesteps : 301,
 	LOW_THUMB : 0,
 	MIDDLE_THUMB : 1,
 	HIGH_THUMB : 2,
@@ -12,26 +12,19 @@ GDP.TimestepChooser = Ext.extend(Ext.form.FormPanel, {
 	timestepAnimator : undefined,
 	updateAvailableTimesteps : function(record) {
 		if (!record) return;
-		this.timestepStore.removeAll();
-		var times = record.get('dimensions').time;
-		var currentTimestep = times['default'];
-		var timesToLoad = [];
-		Ext.each(times.values, function(item, index, allItems){
-			if (index > this.maxNumberOfTimesteps) {
-				return false;
-			} else {
-				timesToLoad.push([item.trim()]);
-			}
-			return true;
-		}, this);
 		
-		this.timestepStore.loadData(timesToLoad);
-		this.timestepAnimator.setMinIndex(0);
-		this.timestepSlider.setMinValue(0);
-		this.timestepAnimator.setMaxIndex(timesToLoad.length - 1);
-		this.timestepSlider.setMaxValue(timesToLoad.length - 1);
-		this.timestepComponent.setValue(currentTimestep);
-		this.setThumbValue(this.MIDDLE_THUMB, currentTimestep);
+		var loaded = this.layerController.loadDimensionStore(record, this.timestepStore, 'time', this.maxNumberOfTimesteps);
+		
+		if (loaded) {
+			this.timestepAnimator.setMinIndex(0);
+			this.timestepSlider.setMinValue(0);
+
+			this.timestepAnimator.setMaxIndex(loaded.loadedData.length - 1);
+			this.timestepSlider.setMaxValue(loaded.loadedData.length - 1);
+
+			this.timestepComponent.setValue(loaded.currentExtent);
+			this.setThumbValue(this.MIDDLE_THUMB, loaded.currentExtent);
+		}
 	},
 	constructor : function(config) {
 		config = config || {};
@@ -43,7 +36,7 @@ GDP.TimestepChooser = Ext.extend(Ext.form.FormPanel, {
 		}, this); 
 		
 		this.layerController.on('changedimension', function() {
-			var currentTimestep = this.layerController.getTimestep();
+			var currentTimestep = this.layerController.getDimension('time');
 			this.timestepComponent.setValue(currentTimestep);
 			this.setThumbValue(this.MIDDLE_THUMB, currentTimestep);
 		}, this);
@@ -78,11 +71,11 @@ GDP.TimestepChooser = Ext.extend(Ext.form.FormPanel, {
 		this.timestepSlider.on('changecomplete', function(slider, newValue, thumb) {
 			this.timestepAnimator.setMinIndex(this.getThumbValue(this.LOW_THUMB));
 			this.timestepAnimator.setMaxIndex(this.getThumbValue(this.HIGH_THUMB));
-			this.layerController.requestTimestep(this.timestepStore.getAt(this.getThumbValue(this.MIDDLE_THUMB)).get('time'));
+			this.layerController.requestDimension('time', this.timestepStore.getAt(this.getThumbValue(this.MIDDLE_THUMB)).get('time'));
 		}, this);
 		
 		this.timestepAnimator.on('timedchange', function(index) {
-			this.layerController.requestTimestep(this.timestepStore.getAt(index).get('time'));
+			this.layerController.requestDimension('time', this.timestepStore.getAt(index).get('time'));
 		}, this);
 		
 		config = Ext.apply({

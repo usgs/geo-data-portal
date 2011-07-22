@@ -16,7 +16,55 @@ function initializeLogging() {
 
 function initializeMapping() {
 	
-	var layerController = new GDP.LayerController();
+	var coolUrls = {
+			testCave : 'proxy/http://igsarmewmaccave:8081/ncWMS/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1',
+			initialSample : 'proxy/http://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/wms/gmo/GMO_w_meta.ncml?service=WMS&version=1.1.1&request=GetCapabilities'
+		};
+	
+	var capabilitiesStore = new GeoExt.data.WMSCapabilitiesStore({
+			url : coolUrls.testCave,
+			storeId : 'capabilitiesStore'
+		});
+	
+	var baseLayerStore = new GeoExt.data.LayerStore({
+			layers : [
+			new OpenLayers.Layer.WMS(
+				"Blue Marble",
+				"http://maps.opengeo.org/geowebcache/service/wms",
+				{
+					layers: "bluemarble"
+				}
+				),
+			new OpenLayers.Layer.WMS(
+				"NAIP",
+				"http://isse.cr.usgs.gov/ArcGIS/services/Combined/SDDS_Imagery/MapServer/WMSServer",
+				{
+					layers: "0"
+				}
+				),
+			new OpenLayers.Layer.XYZ(
+				"Shaded Relief",
+				"http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_ShadedRelief_World_2D/MapServer/tile/${z}/${y}/${x}",
+				{
+					layers : "0"
+				}
+				),
+			new OpenLayers.Layer.XYZ(
+				"Street Map",
+				"http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_StreetMap_World_2D/MapServer/tile/${z}/${y}/${x}",
+				{
+					layers : "0"
+				}
+				)
+			]
+		});
+	
+	var layerController = new GDP.LayerController({
+		baseLayer : baseLayerStore.getAt(3),
+		dimensions : [
+			'time', 'elevation'
+		]
+	});
 	
 	//UI Components
 	var configPanel = new GDP.LayerChooser({
@@ -32,6 +80,8 @@ function initializeMapping() {
 		split : true,
 		minSize : 265,
 		maxSize : 265,
+		capabilitiesStore : capabilitiesStore,
+		baseLayerStore : baseLayerStore,
 		controller : layerController,
 		defaults: {
 			width: 180
@@ -84,6 +134,6 @@ function initializeMapping() {
     
 	LOG.info('Derivative Portal: Mapping initialized.');
 	
-    
+    capabilitiesStore.load();
 }
 

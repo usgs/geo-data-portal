@@ -7,75 +7,10 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
 		
 		this.controller = config.controller || new GDP.LayerController({});
 		
-		var coolUrls = {
-			testCave : 'proxy/http://igsarmewmaccave:8081/ncWMS/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1',
-			initialSample : 'proxy/http://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/wms/gmo/GMO_w_meta.ncml?service=WMS&version=1.1.1&request=GetCapabilities'
-		};
 		
-		var capabilitiesStore = new GeoExt.data.WMSCapabilitiesStore({
-			url : coolUrls.testCave,
-			storeId : 'capabilitiesStore'
-		});
-		capabilitiesStore.load();
 		
-		capabilitiesStore.on('load', function(capStore, records) {
-			var firstIndex = 0;
-			var firstRecord = capStore.getAt(firstIndex);
-			layerCombo.setValue(firstRecord.get("title"));
-			layerCombo.fireEvent('select', layerCombo, firstRecord, 0);
-		});
+		var baseLayerStore = config.baseLayerStore;
 		
-		var baseLayerStore = new GeoExt.data.LayerStore({
-			layers : [
-			new OpenLayers.Layer.WMS(
-				"Blue Marble",
-				"http://maps.opengeo.org/geowebcache/service/wms",
-				{
-					layers: "bluemarble"
-				}
-				),
-			new OpenLayers.Layer.WMS(
-				"NAIP",
-				"http://isse.cr.usgs.gov/ArcGIS/services/Combined/SDDS_Imagery/MapServer/WMSServer",
-				{
-					layers: "0"
-				}
-				),
-			new OpenLayers.Layer.XYZ(
-				"Shaded Relief",
-				"http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_ShadedRelief_World_2D/MapServer/tile/${z}/${y}/${x}",
-				{
-					layers : "0"
-				}
-				),
-			new OpenLayers.Layer.XYZ(
-				"Street Map",
-				"http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_StreetMap_World_2D/MapServer/tile/${z}/${y}/${x}",
-				{
-					layers : "0"
-				}
-				), 
-			]
-		});
-		
-		this.controller.requestBaseLayer(baseLayerStore.getAt(3));
-		
-		var layerCombo = new Ext.form.ComboBox({
-			xtype : 'combo',
-			mode : 'local',
-			triggerAction: 'all',
-			store : capabilitiesStore,
-			fieldLabel : 'Layer',
-			forceSelection : true,
-			lazyInit : false,
-			displayField : 'title'
-		});
-		
-		layerCombo.on('select', function(combo, record, index) {
-			LOG.debug("layerCombo select hit");
-			this.controller.requestLayer(record);
-		}, this);
-	
 		var baseLayerCombo = new Ext.form.ComboBox({
 			xtype : 'combo',
 			mode : 'local',
@@ -91,10 +26,59 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
 			this.controller.requestBaseLayer(record);
 		}, this);
 		
+		
+		
+		var capabilitiesStore = config.capabilitiesStore;
+		
+		var layerCombo = new Ext.form.ComboBox({
+			xtype : 'combo',
+			mode : 'local',
+			triggerAction: 'all',
+			store : capabilitiesStore,
+			fieldLabel : 'Layer',
+			forceSelection : true,
+			lazyInit : false,
+			displayField : 'title'
+		});
+		
+		layerCombo.on('select', function(combo, record, index) {
+			this.controller.requestLayer(record);
+		}, this);
+	
+		capabilitiesStore.on('load', function(capStore, records) {
+			var firstIndex = 0;
+			var firstRecord = capStore.getAt(firstIndex);
+			layerCombo.setValue(firstRecord.get("title"));
+			layerCombo.fireEvent('select', layerCombo, firstRecord, 0);
+		});
+		
+		
+		var thresholdName = 'elevation';
+		var thresholdStore = new Ext.data.ArrayStore({
+			storeId : 'thresholdStore',
+			idIndex: 0,
+			fields: [thresholdName]
+		});
+		
+		var thresholdCombo = new Ext.form.ComboBox({
+			xtype : 'combo',
+			mode : 'local',
+			triggerAction: 'all',
+			store : thresholdStore,
+			fieldLabel : 'Tmin threshold',
+			forceSelection : true,
+			lazyInit : false,
+			displayField : thresholdName
+		});
+		thresholdCombo.on('select', function(combo, record, index) {
+			this.controller.requestDimension(thresholdName, record.get(thresholdName));
+		}, this);
+		
 		config = Ext.apply({
 			items : [
 			baseLayerCombo,
-			layerCombo
+			layerCombo,
+			thresholdCombo
 			]
 		}, config);
 		
@@ -109,6 +93,20 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
 				layerCombo.setValue(layer.getLayer().name);
 			}
 			
+			this.controller.loadDimensionStore(layer, thresholdStore, thresholdName);
+			
+			var threshold = this.controller.getDimension(thresholdName);
+			if (threshold) {
+				thresholdCombo.setValue(threshold);
+			}
+			
+		}, this);
+		
+		this.controller.on('changeDimension', function() {
+			var threshold = this.controller.getDimension(thresholdName);
+			if (threshold) {
+				thresholdCombo.setValue(threshold);
+			}
 		}, this);
 		
 		GDP.LayerChooser.superclass.constructor.call(this, config);

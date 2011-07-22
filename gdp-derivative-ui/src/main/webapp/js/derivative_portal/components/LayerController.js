@@ -9,12 +9,26 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
 	getLayer : function() {
 		return this.layer;
 	},
-	timestep : undefined,
-	getTimestep : function() {
-		return this.timestep;
+	dimensions : undefined,
+	getDimension : function(extentName) {
+		return this.dimensions[extentName];
+	},
+	getAllDimensions : function() {
+		return this.dimensions;
 	},
 	constructor : function(config) {
 		if (!config) config = {};
+		
+		var baseLayer = config.baseLayer;
+		
+		var configDimensions = config.dimensions;
+		var filledDims = {'time' : ''};
+		
+		Ext.each(configDimensions, function(item) {
+			filledDims[item] = '';
+		}, this);
+		
+		this.dimensions = filledDims;
 		
 		config = Ext.apply({
 			
@@ -32,17 +46,65 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
 			"changedimension"
 		);
 		
+		this.requestBaseLayer(baseLayer);
+		
 	},
 	requestBaseLayer : function(baseLayerRecord) {
+		if (!baseLayerRecord) return;
 		this.baseLayer = baseLayerRecord;
 		this.fireEvent('changelayer');
 	},
 	requestLayer : function(layerRecord) {
+		if (!layerRecord) return;
 		this.layer = layerRecord;
+		
+		var dims = layerRecord.get('dimensions');
+		Ext.iterate(dims, function(key, value) {
+			this.modifyDimensions(key, value['default']);
+		}, this);
+		
 		this.fireEvent('changelayer');
 	},
-	requestTimestep : function(timestep) {
-		this.timestep = timestep;
-		this.fireEvent('changedimension');
+	requestDimension : function(extentName, value) {
+		if (!extentName) return;
+		if (this.modifyDimensions(extentName, value)) {
+			this.fireEvent('changedimension');
+		} else {
+			LOG.info('Requested dimension (' + extentName + ') does not exist');
+		}
+	},
+	modifyDimensions : function(extentName, value) {
+		if (this.dimensions.hasOwnProperty(extentName)) {
+			var val = value || '';
+			this.dimensions[extentName] = val;
+			return true;
+		} else {
+			return false;
+		}
+	},
+	loadDimensionStore : function(record, store, extentName, maxCount) {
+		if (!record || !store || !extentName) return null;
+		
+		var maxNum = maxCount || 101;
+		
+		store.removeAll();
+		
+		var extents = record.get('dimensions')[extentName];
+		var currentExtent = extents['default'];
+		var timesToLoad = [];
+		Ext.each(extents.values, function(item, index, allItems){
+			if (index > maxNum) {
+				return false;
+			} else {
+				timesToLoad.push([item.trim()]);
+			}
+			return true;
+		}, this);
+		
+		store.loadData(timesToLoad);
+		return {
+			currentExtent : currentExtent,
+			loadedData : timesToLoad
+		}
 	}
 });

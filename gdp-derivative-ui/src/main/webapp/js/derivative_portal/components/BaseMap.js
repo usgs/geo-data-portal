@@ -108,32 +108,36 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 	},
 	onChangeLayer : function() {			
 		this.replaceBaseLayer(this.layerController.getBaseLayer());
-			
+		
 		var layer = this.layerController.getLayer();
-		var time = this.layerController.getTimestep();
-			
+
 		this.zoomToExtent(layer);
 		this.clearLayers();
 			
 		var params = {};
-		params['time'] = time;
+		Ext.apply(params, this.layerController.getAllDimensions());
 			
 		this.replaceLayer(layer, params);
 			
 		this.realignLegend();
 	},
 	onChangeDimension : function() {
-		var requestedTime = this.layerController.getTimestep();
 		var existingLayerIndex = this.layers.findBy(function(record, id) {
-			var existingTime = record.getLayer().params['TIME'];
-			return (existingTime === requestedTime);
+			var result = true;
+			var requestedDimensions = this.layerController.getAllDimensions();
+			Ext.iterate(requestedDimensions, function(extentName, value) {
+				var existingDimension = record.getLayer().params[extentName.toUpperCase()];
+				result = result && (existingDimension === value)
+			}, this);
+			return result;
 		}, this, 1);
+		
+		var params = {};
+		Ext.apply(params, this.layerController.getAllDimensions());
 		
 		this.replaceLayer(
 			this.layerController.getLayer(), 
-			{
-				time : requestedTime
-			},
+			params,
 			(-1 < existingLayerIndex)?existingLayerIndex : undefined
 		);
 	},
@@ -150,9 +154,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 			} else {
 				this.layers.add(record);
 			}
-			
 		}
-			
 	},
 	replaceLayer : function(record, params, existingIndex) {
 		if (!record) return;
@@ -168,7 +170,6 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 			var newLayer = this.layers.getAt(existingIndex).getLayer();
 			newLayer.setVisibility(true);
 		} else {
-			//Only the base layer exists on this map, lets get it.
 			var copy = record.clone();
 			
 			params = Ext.apply({
