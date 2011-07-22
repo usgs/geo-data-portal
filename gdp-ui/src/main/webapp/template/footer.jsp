@@ -29,6 +29,7 @@
                     </span>
                 </span><!-- vcard -->
             </p> 
+            <p id="footer-page-url">URL: <%= (request.getRequestURL()).toString() %></p>
             <p id="footer-contact-info">
                 Page Contact Information: <a onclick="FEEDBACK.popEmailPanel()" title="Link to the contact form of the Geo Data Portal">Contact the Geo Data Portal team</a>
                 <%--E-Mail <a href="mailto:gdp@usgs.gov?subject=Geo Data Portal Contact">GDP Help</a> at gdp@usgs.gov --%>
