@@ -12,7 +12,7 @@ var Dataset = function() {
     var _ALGORITHM_DROPDOWN = '#algorithm-dropdown';
     var _ALGORITHM_DOC_LINK = '#algorithm-documentation-link';
     var _ALGORITHM_DOC_CONTAINER = '#algorithm-documentation';
-    var _ALGORITHM_CONFIG_LINK = '#configure_algorithm_link';
+    var _ALGORITHM_CONFIG_LINK = '#configure-algorithm-link';
     var _ALGORITHM_CONFIGURATION_SUMMARY = '#algorithm-configuration-summary';
     var _ALGORITHM_DYNAMIC_CONTAINER_CONTENT = '#algorithm-dynamic-container-content';
     var _CSW_CLIENT = '#csw-client-div';
@@ -291,7 +291,8 @@ var Dataset = function() {
                     $(this).dialog("close");
                     
                     logger.trace('GDP: Displaying algorithm configuration link.');
-                    if ($(_ALGORITHM_CONFIG_LINK).hasClass('hidden')) $(_ALGORITHM_CONFIG_LINK).fadeIn(Constant.ui.fadeSpeed);
+                    $(_ALGORITHM_CONFIG_LINK).fadeIn(Constant.ui.fadeSpeed);
+                    
                     $(_ALGORITHM_CONFIG_LINK).click(function() {
                         $(_ALGORITHM_DROPDOWN).trigger('change');
                     });
