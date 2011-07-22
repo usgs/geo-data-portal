@@ -28,8 +28,8 @@ GDP.Animator = Ext.extend(Ext.util.Observable, {
 			"timedchange"
 		);
 	},
-	startAnimation : function() {
-		this.resetIndex()
+	startAnimation : function(index) {
+		this.resetIndex(index);
 		this.continueAnimation();
 	},
 	continueAnimation : function() {
@@ -53,8 +53,9 @@ GDP.Animator = Ext.extend(Ext.util.Observable, {
 	setMinIndex : function(min) {
 		this.minIndex = min;
 	},
-	resetIndex : function() {
-		var min = this.minIndex - this.indexInterval;
+	resetIndex : function(index) {
+		var reqIndex = index || this.minIndex;
+		var min = reqIndex - this.indexInterval;
 		this.currentIndex = min;
 		return min;
 	},
