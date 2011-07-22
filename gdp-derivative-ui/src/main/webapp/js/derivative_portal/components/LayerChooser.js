@@ -5,7 +5,7 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
 	constructor : function(config) {
 		if (!config) config = {};
 		
-		this.controller = new GDP.LayerController({});
+		this.controller = config.controller || new GDP.LayerController({});
 		
 		var capabilitiesStore = new GeoExt.data.WMSCapabilitiesStore({
 			url : 'proxy/http://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/wms/gmo/GMO_w_meta.ncml?service=WMS&version=1.1.1&request=GetCapabilities',
@@ -53,7 +53,7 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
 			]
 		});
 		
-		this.controller.fireEvent('requestBaseLayer', baseLayerStore.getAt(3));
+		this.controller.requestBaseLayer(baseLayerStore.getAt(3));
 		
 		var layerCombo = new Ext.form.ComboBox({
 			xtype : 'combo',
@@ -67,8 +67,8 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
 		});
 		
 		layerCombo.on('select', function(combo, record, index) {
-			LOG.info("layerCombo select hit");
-			this.controller.fireEvent('requestlayer', record);
+			LOG.debug("layerCombo select hit");
+			this.controller.requestLayer(record);
 		}, this);
 	
 		var baseLayerCombo = new Ext.form.ComboBox({
@@ -83,7 +83,7 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
 		});
 		
 		baseLayerCombo.on('select', function(combo, record, index) {
-			this.controller.fireEvent('requestbaselayer', record);
+			this.controller.requestBaseLayer(record);
 		}, this);
 		
 		config = Ext.apply({

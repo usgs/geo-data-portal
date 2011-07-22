@@ -16,10 +16,23 @@ function initializeLogging() {
 
 function initializeMapping() {
 	
+	var layerController = new GDP.LayerController();
+	
+	//UI Components
 	var configPanel = new GDP.LayerChooser({
+		title : 'Controls',
         width : 265,
         region: 'west',
         labelWidth: 80,
+		border : false,
+		collapsible : true,
+		floatable : false,
+		hideCollapseTool : true,
+		collapseMode : 'mini',
+		split : true,
+		minSize : 265,
+		maxSize : 265,
+		controller : layerController,
         defaults: {
             width: 180
         }
@@ -31,13 +44,14 @@ function initializeMapping() {
 		id : 'mapPanel',
         region: 'center',
         border: false,
-		layerController : configPanel.controller,
+		layerController : layerController,
         title: 'USGS Derived Downscaled Climate Portal'
     });
 	
 	var headerPanel = new Ext.Panel({
         region: 'north',
         height: 'auto',
+		border : false,
         autoShow: true,
         contentEl: 'usgs-header-panel'
     });
@@ -45,6 +59,7 @@ function initializeMapping() {
     var footerPanel = new Ext.Panel({
         region: 'south',
         height: 'auto',
+		border : false,
         autoShow: true,
         contentEl: 'usgs-footer-panel'
     });

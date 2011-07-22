@@ -9,6 +9,10 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
 	getLayer : function() {
 		return this.layer;
 	},
+	timestep : undefined,
+	getTimestep : function() {
+		return this.timestep;
+	},
 	constructor : function(config) {
 		if (!config) config = {};
 		
@@ -25,22 +29,20 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
 		 * to switch to a new layer.
 		 */
 			"changelayer",
-			
-			"requestbaselayer"
+			"changedimension"
 		);
 		
-		this.on('requestbaselayer', function(baseLayerRecord) {
-			this.baseLayer = baseLayerRecord;
-			this.onRequest();
-		}, this);
-		
-		this.on('requestlayer', function(layerRecord) {
-			this.layer = layerRecord;
-			this.onRequest();
-		}, this);
-		
 	},
-	onRequest : function() {
+	requestBaseLayer : function(baseLayerRecord) {
+		this.baseLayer = baseLayerRecord;
 		this.fireEvent('changelayer');
+	},
+	requestLayer : function(layerRecord) {
+		this.layer = layerRecord;
+		this.fireEvent('changelayer');
+	},
+	requestTimestep : function(timestep) {
+		this.timestep = timestep;
+		this.fireEvent('changedimension');
 	}
 });
