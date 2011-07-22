@@ -7,8 +7,13 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
 		
 		this.controller = config.controller || new GDP.LayerController({});
 		
+		var coolUrls = {
+			testCave : 'proxy/http://igsarmewmaccave:8081/ncWMS/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1',
+			initialSample : 'proxy/http://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/wms/gmo/GMO_w_meta.ncml?service=WMS&version=1.1.1&request=GetCapabilities'
+		};
+		
 		var capabilitiesStore = new GeoExt.data.WMSCapabilitiesStore({
-			url : 'proxy/http://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/wms/gmo/GMO_w_meta.ncml?service=WMS&version=1.1.1&request=GetCapabilities',
+			url : coolUrls.testCave,
 			storeId : 'capabilitiesStore'
 		});
 		capabilitiesStore.load();

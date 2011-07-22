@@ -173,7 +173,8 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 			
 			params = Ext.apply({
 				format: "image/png",
-				transparent : true
+				transparent : true,
+				styles : 'boxfill/redblue'
 			}, params);
 
 			copy.get('layer').mergeNewParams(params);
