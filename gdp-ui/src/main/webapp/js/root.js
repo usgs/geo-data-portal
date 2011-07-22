@@ -53,6 +53,7 @@ function init() {
     
     // If we wish to modify when this gets called based on the event (reload? link click?),
     // check http://geekswithblogs.net/renso/archive/2009/09/21/how-to-stop-browser-closing.aspx
+    // Ref: http://internal.cida.usgs.gov/jira/browse/GDP-358
     window.onbeforeunload = function() {
         return "Leaving the Geo Data Portal will cause any unsaved configuration to be lost.";
     }
