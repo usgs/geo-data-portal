@@ -1,10 +1,14 @@
 Ext.ns("GDP");
 
 GDP.TimestepChooser = Ext.extend(Ext.form.FormPanel, {
-	maxNumberOfTimesteps : 5,
+	maxNumberOfTimesteps : 101,
+	LOW_THUMB : 0,
+	MIDDLE_THUMB : 1,
+	HIGH_THUMB : 2,
 	timestepStore : undefined,
 	layerController : undefined,
 	timestepComponent : undefined,
+	timestepSlider : undefined,
 	timestepAnimator : undefined,
 	updateAvailableTimesteps : function(record) {
 		if (!record) return;
@@ -25,6 +29,7 @@ GDP.TimestepChooser = Ext.extend(Ext.form.FormPanel, {
 		this.timestepAnimator.setMinIndex(0);
 		this.timestepAnimator.setMaxIndex(timesToLoad.length - 1);
 		this.timestepComponent.setValue(currentTimestep);
+		this.timestepSlider.setValue(this.MIDDLE_THUMB, this.timestepStore.indexOfId(currentTimestep));
 	},
 	constructor : function(config) {
 		config = config || {};
@@ -36,27 +41,38 @@ GDP.TimestepChooser = Ext.extend(Ext.form.FormPanel, {
 		}, this); 
 		
 		this.layerController.on('changedimension', function() {
-			this.timestepComponent.setValue(this.layerController.getTimestep());
+			var currentTimestep = this.layerController.getTimestep();
+			this.timestepComponent.setValue(currentTimestep);
+			this.timestepSlider.setValue(this.MIDDLE_THUMB, this.timestepStore.indexOfId(currentTimestep));
 		}, this);
 		
-		this.timestepStore = new Ext.data.ArrayStore({
+		var stepStore = new Ext.data.ArrayStore({
 			storeId : 'timestepStore',
 			idIndex: 0,
 			fields: ['time']
 		});
+		this.timestepStore = stepStore;
 		
-		this.timestepComponent = new Ext.form.ComboBox({
-			mode : 'local',
-			triggerAction: 'all',
-			flex : 1,
-			anchor : '100%',
-			store : this.timestepStore,
-			displayField : 'time'
+		this.timestepComponent = new Ext.form.TextField({
+			editable : false
 		});
 		
-		this.timestepComponent.on('select', function(combo, record, index) {
-			var timeStr = record.get('time');
-			this.layerController.requestTimestep(timeStr);
+		this.timestepSlider = new Ext.slider.MultiSlider({
+			hideLabel : true,
+			flex : 1,
+			minValue : 0,
+			maxValue : 100,
+			constrainThumbs : false,
+			values : [0, 50, 100],
+			plugins : new Ext.slider.Tip({
+				getText: function(thumb) {
+					return stepStore.getAt(thumb.value).get('time');
+				}
+			})
+		});
+		
+		this.timestepSlider.on('changecomplete', function(slider) {
+			this.layerController.requestTimestep(this.timestepStore.getAt(slider.getValue(this.MIDDLE_THUMB)).get('time'));
 		}, this);
 		
 		this.timestepAnimator = new GDP.Animator();
@@ -68,8 +84,9 @@ GDP.TimestepChooser = Ext.extend(Ext.form.FormPanel, {
 		config = Ext.apply({
 			items : [
 				new Ext.form.CompositeField({
-					fieldLabel : 'Timestep',
+					hideLabel : true,
 					items : [
+						this.timestepSlider,
 						this.timestepComponent,
 			new Ext.Button({
 				text : 'Play',

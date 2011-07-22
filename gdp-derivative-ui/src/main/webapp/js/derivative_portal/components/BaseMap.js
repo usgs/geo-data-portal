@@ -30,7 +30,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		});
 				
 		this.layerController = config.layerController;
-		
+
 		this.layerController.on('changelayer', function() {
 			this.onChangeLayer();
 			this.currentLayer = this.findCurrentLayer();
@@ -39,19 +39,11 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 			this.onChangeDimension();
 			this.currentLayer = this.findCurrentLayer();
 		}, this);
-				
-		var timestepPanel = new GDP.TimestepChooser({
-			region : 'north',
-			border : false,
-			height : 'auto',
-			layerController : this.layerController
-		});
 		
 		config = Ext.apply({
 			map: map,
 			center: new OpenLayers.LonLat(-96, 38),
-			zoom : 4,
-			items : [timestepPanel]
+			zoom : 4
 		}, config);
 		
 		GDP.BaseMap.superclass.constructor.call(this, config);
