@@ -1282,6 +1282,7 @@ var Dataset = function() {
         var showSimpleCSWClient = parseInt(Constant.ui.view_simple_csw_client);
         var showCSWURLInputBox = parseInt(Constant.ui.view_show_csw_url_input);
         var showCSWDatasetUrl = parseInt(Constant.ui.view_show_csw_dataset_url);
+        var dsUrl = $.url().param('dataset');
         
         var CSWDialogTableRow = $('.csw-dialog-tablerow');
         var searchSubmitButton = $('#dataset_search_submit_button');
@@ -1328,6 +1329,12 @@ var Dataset = function() {
         if (Constant.ui.default_dataset_url.length > 0) {
             logger.trace('GDP: Adding default dataset URL "'+Constant.ui.default_dataset_url+'" to the CSW dataset URL inputbox.');
             $(_DATASET_URL_INPUT_BOX).val(Constant.ui.default_dataset_url);
+        }
+        
+        // Ref: http://internal.cida.usgs.gov/jira/browse/GDP-344
+        if (dsUrl) {  //Incoming dataset URL should override a default dataset URL if one exists
+            logger.trace('GDP: Adding dataset URL "'+ decodeURIComponent(dsUrl) +'" parsed from incoming URL.');
+            $(_DATASET_URL_INPUT_BOX).val(decodeURIComponent(dsUrl));
         }
 
         if (Constant.endpoint.csw.length > 0) {
