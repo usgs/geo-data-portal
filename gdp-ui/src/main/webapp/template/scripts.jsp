@@ -6,7 +6,7 @@
 
 <script type="text/javascript" src="js/cookie/cookie.js"></script>
 <script type="text/javascript" src="js/log4javascript/log4javascript.js"></script>
-<script type="text/javascript" src="js/jquery/jquery-1.6.1.js"></script>
+<script type="text/javascript" src="js/jquery/jquery.js"></script>
 <script type="text/javascript" src="js/xslt/jquery.xslt.js"></script>
 <script type="text/javascript" src="js/xmlns/jquery.xmlns.js"></script>
 <script type="text/javascript" src="js/objects/algorithm.js"></script>
