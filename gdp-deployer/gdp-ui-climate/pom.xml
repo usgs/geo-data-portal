@@ -76,7 +76,7 @@
                 <cargo.deploy.skip>false</cargo.deploy.skip>
                 <cargo.containerId>tomcat6x</cargo.containerId>
                 <!-- references server id in settings.xml -->
-                <cargo.server.settings><!-- set when we have staging --></cargo.server.settings>
+                <cargo.server.settings>cargo-gdp2-staging-8083</cargo.server.settings>
             </properties>
         </profile>
         <profile>
