@@ -16,6 +16,10 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
 	getAllDimensions : function() {
 		return this.dimensions;
 	},
+	zaxisName : undefined,
+	getZAxisName : function() {
+		return this.zaxisName;
+	},
 	constructor : function(config) {
 		if (!config) config = {};
 		
@@ -62,6 +66,9 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
 		Ext.iterate(dims, function(key, value) {
 			this.modifyDimensions(key, value['default']);
 		}, this);
+		
+		var layerName = layerRecord.get('name');
+		this.zaxisName = layerName.slice(0, layerName.indexOf('/'));
 		
 		this.fireEvent('changelayer');
 	},

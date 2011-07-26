@@ -53,32 +53,28 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
 		});
 		
 		
-		var thresholdName = 'elevation';
-		var thresholdStore = new Ext.data.ArrayStore({
-			storeId : 'thresholdStore',
+		var zlayerName = 'elevation';
+		var zlayerStore = new Ext.data.ArrayStore({
+			storeId : 'zlayerStore',
 			idIndex: 0,
-			fields: [thresholdName]
+			fields: [zlayerName]
 		});
 		
-		var thresholdCombo = new Ext.form.ComboBox({
-			xtype : 'combo',
+		var zlayerComboConfig = {
 			mode : 'local',
 			triggerAction: 'all',
-			store : thresholdStore,
-			fieldLabel : 'Tmin threshold',
+			store : zlayerStore,
 			forceSelection : true,
 			lazyInit : false,
-			displayField : thresholdName
-		});
-		thresholdCombo.on('select', function(combo, record, index) {
-			this.controller.requestDimension(thresholdName, record.get(thresholdName));
-		}, this);
+			displayField : zlayerName
+		};
+		
+		var zlayerCombo = undefined;
 		
 		config = Ext.apply({
 			items : [
 			baseLayerCombo,
-			layerCombo,
-			thresholdCombo
+			layerCombo
 			]
 		}, config);
 		
@@ -93,19 +89,30 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
 				layerCombo.setValue(layer.getLayer().name);
 			}
 			
-			this.controller.loadDimensionStore(layer, thresholdStore, thresholdName);
+			this.controller.loadDimensionStore(layer, zlayerStore, zlayerName);
 			
-			var threshold = this.controller.getDimension(thresholdName);
+			var threshold = this.controller.getDimension(zlayerName);
 			if (threshold) {
-				thresholdCombo.setValue(threshold);
+				if (zlayerCombo) {
+					this.remove(zlayerCombo)
+				}
+				zlayerCombo = new Ext.form.ComboBox(Ext.apply({
+					fieldLabel : this.controller.getZAxisName()
+				}, zlayerComboConfig));
+				this.add(zlayerCombo);
+				zlayerCombo.setValue(threshold);
+				zlayerCombo.on('select', function(combo, record, index) {
+					this.controller.requestDimension(zlayerName, record.get(zlayerName));
+				}, this);
+				this.doLayout();
 			}
 			
 		}, this);
 		
 		this.controller.on('changeDimension', function() {
-			var threshold = this.controller.getDimension(thresholdName);
-			if (threshold) {
-				thresholdCombo.setValue(threshold);
+			var threshold = this.controller.getDimension(zlayerName);
+			if (threshold & zlayerCombo) {
+				zlayerCombo.setValue(threshold);
 			}
 		}, this);
 		

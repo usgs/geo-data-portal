@@ -71,7 +71,10 @@ GDP.TimestepChooser = Ext.extend(Ext.form.FormPanel, {
 		this.timestepSlider.on('changecomplete', function(slider, newValue, thumb) {
 			this.timestepAnimator.setMinIndex(this.getThumbValue(this.LOW_THUMB));
 			this.timestepAnimator.setMaxIndex(this.getThumbValue(this.HIGH_THUMB));
-			this.layerController.requestDimension('time', this.timestepStore.getAt(this.getThumbValue(this.MIDDLE_THUMB)).get('time'));
+			var midVal = this.getThumbValue(this.MIDDLE_THUMB);
+			if (midVal === newValue) {
+				this.layerController.requestDimension('time', this.timestepStore.getAt(midVal).get('time'));
+			}
 		}, this);
 		
 		this.timestepAnimator.on('timedchange', function(index) {
