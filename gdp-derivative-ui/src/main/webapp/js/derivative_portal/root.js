@@ -1,5 +1,7 @@
 var LOG;
 
+var LOADMASK;
+
 Ext.onReady(function () {
 	initializeLogging();
 	initializeMapping();
@@ -172,6 +174,9 @@ function initializeMapping() {
 	});
     
 	LOG.info('Derivative Portal: Mapping initialized.');
+	
+	LOADMASK = new Ext.LoadMask(Ext.getBody());
+	LOADMASK.show();
 	
     capabilitiesStore.load();
 }

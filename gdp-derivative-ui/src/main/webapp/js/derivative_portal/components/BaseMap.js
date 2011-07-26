@@ -180,7 +180,10 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 
 			copy.get('layer').mergeNewParams(params);
 			copy.get('layer')['opacity'] = this.layerOpacity;
-
+			
+			copy.getLayer().events.register('loadend', this, function() {
+				LOADMASK.hide();
+			});
 			this.layers.add(copy);
 		}
 	}
