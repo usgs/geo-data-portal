@@ -60,16 +60,20 @@ function initializeMapping() {
 	
 	var coolUrls = {
 		testCave : 'http://igsarmewmaccave:8081/ncWMS/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1',
-		initialSample : 'http://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/wms/gmo/GMO_w_meta.ncml?service=WMS&version=1.1.1&request=GetCapabilities'
+		initialSample : 'http://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/wms/gmo/GMO_w_meta.ncml?service=WMS&version=1.1.1&request=GetCapabilities',
+		nonExistentURL : 'http://IMAURLTHATDOESNTEXIST:8080'
 	};
 	
 	var endpointTextField = new Ext.form.TextField({
 				flex : 1,
-				value : coolUrls.testCave
+				value : coolUrls.nonExistentURL
 			});
 	
 	var endpointApplyButton = new Ext.Button({
-				text : 'Go'
+				text : 'Go',
+				handler : function() {
+					if (LOADMASK) LOADMASK.show();
+				}
 			});
 	
 	var endpointContainer = new Ext.form.CompositeField({
@@ -85,6 +89,10 @@ function initializeMapping() {
 			url : 'proxy/' + endpointTextField.getValue(),
 			storeId : 'capabilitiesStore'
 		});
+	
+	capabilitiesStore.on('exception', function() {
+		if (LOADMASK) LOADMASK.hide();
+	}, this);
 		
 	endpointApplyButton.on('click', function() {
 		capabilitiesStore.proxy.setApi(Ext.data.Api.actions.read, 'proxy/' + endpointTextField.getValue());
@@ -176,7 +184,7 @@ function initializeMapping() {
 	LOG.info('Derivative Portal: Mapping initialized.');
 	
 	LOADMASK = new Ext.LoadMask(Ext.getBody());
-//	LOADMASK.show();
+	if (LOADMASK) LOADMASK.show();
 	
     capabilitiesStore.load();
 }

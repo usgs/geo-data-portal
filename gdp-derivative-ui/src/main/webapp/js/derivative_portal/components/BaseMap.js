@@ -106,7 +106,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 			this.layers.remove(this.layers.getRange(1));
 		}
 	},
-	onChangeLayer : function() {			
+	onChangeLayer : function() {
 		this.replaceBaseLayer(this.layerController.getBaseLayer());
 		
 		var layer = this.layerController.getLayer();
@@ -180,9 +180,13 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 
 			copy.get('layer').mergeNewParams(params);
 			copy.get('layer')['opacity'] = this.layerOpacity;
-			
+
+			// This looks like crap when animating.  load doesn't mean loading from remotely
+//			copy.getLayer().events.register('loadstart', this, function() {
+//				if (LOADMASK) LOADMASK.show();
+//			});
 			copy.getLayer().events.register('loadend', this, function() {
-				LOADMASK.hide();
+				if (LOADMASK) LOADMASK.hide();
 			});
 			this.layers.add(copy);
 		}
