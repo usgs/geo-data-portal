@@ -89,22 +89,24 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
 				layerCombo.setValue(layer.getLayer().name);
 			}
 			
-			this.controller.loadDimensionStore(layer, zlayerStore, zlayerName);
+			if (zlayerCombo) {
+				this.remove(zlayerCombo)
+			}
+			var loaded = this.controller.loadDimensionStore(layer, zlayerStore, zlayerName);
 			
-			var threshold = this.controller.getDimension(zlayerName);
-			if (threshold) {
-				if (zlayerCombo) {
-					this.remove(zlayerCombo)
+			if (loaded) {
+				var threshold = this.controller.getDimension(zlayerName);
+				if (threshold) {
+					zlayerCombo = new Ext.form.ComboBox(Ext.apply({
+						fieldLabel : this.controller.getZAxisName()
+					}, zlayerComboConfig));
+					this.add(zlayerCombo);
+					zlayerCombo.setValue(threshold);
+					zlayerCombo.on('select', function(combo, record, index) {
+						this.controller.requestDimension(zlayerName, record.get(zlayerName));
+					}, this);
+					this.doLayout();
 				}
-				zlayerCombo = new Ext.form.ComboBox(Ext.apply({
-					fieldLabel : this.controller.getZAxisName()
-				}, zlayerComboConfig));
-				this.add(zlayerCombo);
-				zlayerCombo.setValue(threshold);
-				zlayerCombo.on('select', function(combo, record, index) {
-					this.controller.requestDimension(zlayerName, record.get(zlayerName));
-				}, this);
-				this.doLayout();
 			}
 			
 		}, this);

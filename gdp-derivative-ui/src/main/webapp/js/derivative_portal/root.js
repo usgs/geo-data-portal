@@ -16,16 +16,6 @@ function initializeLogging() {
 
 function initializeMapping() {
 	
-	var coolUrls = {
-			testCave : 'proxy/http://igsarmewmaccave:8081/ncWMS/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1',
-			initialSample : 'proxy/http://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/wms/gmo/GMO_w_meta.ncml?service=WMS&version=1.1.1&request=GetCapabilities'
-		};
-	
-	var capabilitiesStore = new GeoExt.data.WMSCapabilitiesStore({
-			url : coolUrls.testCave,
-			storeId : 'capabilitiesStore'
-		});
-	
 	var baseLayerStore = new GeoExt.data.LayerStore({
 			layers : [
 			new OpenLayers.Layer.WMS(
@@ -66,6 +56,39 @@ function initializeMapping() {
 		]
 	});
 	
+	var coolUrls = {
+		testCave : 'http://igsarmewmaccave:8081/ncWMS/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1',
+		initialSample : 'http://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/wms/gmo/GMO_w_meta.ncml?service=WMS&version=1.1.1&request=GetCapabilities'
+	};
+	
+	var endpointTextField = new Ext.form.TextField({
+				flex : 1,
+				value : coolUrls.testCave
+			});
+	
+	var endpointApplyButton = new Ext.Button({
+				text : 'Go'
+			});
+	
+	var endpointContainer = new Ext.form.CompositeField({
+		region : 'center',
+		fieldLabel : 'Endpoint',
+		items : [
+			endpointTextField,
+			endpointApplyButton
+		]
+	});
+	
+	var capabilitiesStore = new GeoExt.data.WMSCapabilitiesStore({
+			url : 'proxy/' + endpointTextField.getValue(),
+			storeId : 'capabilitiesStore'
+		});
+		
+	endpointApplyButton.on('click', function() {
+		capabilitiesStore.proxy.setApi(Ext.data.Api.actions.read, 'proxy/' + endpointTextField.getValue());
+		capabilitiesStore.load();
+	}, this);
+	
 	//UI Components
 	var configPanel = new GDP.LayerChooser({
 		title : 'Controls',
@@ -88,6 +111,22 @@ function initializeMapping() {
 		}
 	});
 	
+	var endpointPanel = new Ext.Panel({
+		region : 'north',
+		border : false,
+		layout : 'border',
+		collapsed : true,
+		collapsible : true,
+		floatable : false,
+		hideCollapseTool : true,
+		collapseMode : 'mini',
+		split : true,
+		height : 25,
+		minSize : 25,
+		maxSize : 25,
+		items : [endpointContainer]
+	});
+	
 	var timestepPanel = new GDP.TimestepChooser({
 				region : 'south',
 				border : false,
@@ -107,7 +146,7 @@ function initializeMapping() {
 	var centerPanel = new Ext.Panel({
 		region : 'center',
 		layout : 'border',
-		items : [ mapPanel, timestepPanel]
+		items : [ endpointPanel, mapPanel, timestepPanel]
 	})
 	
 	var headerPanel = new Ext.Panel({

@@ -97,21 +97,25 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
 		store.removeAll();
 		
 		var extents = record.get('dimensions')[extentName];
-		var currentExtent = extents['default'];
-		var timesToLoad = [];
-		Ext.each(extents.values, function(item, index, allItems){
-			if (index > maxNum) {
-				return false;
-			} else {
-				timesToLoad.push([item.trim()]);
+		if (extents) {
+			var currentExtent = extents['default'];
+			var timesToLoad = [];
+			Ext.each(extents.values, function(item, index, allItems){
+				if (index > maxNum) {
+					return false;
+				} else {
+					timesToLoad.push([item.trim()]);
+				}
+				return true;
+			}, this);
+
+			store.loadData(timesToLoad);
+			return {
+				currentExtent : currentExtent,
+				loadedData : timesToLoad
 			}
-			return true;
-		}, this);
-		
-		store.loadData(timesToLoad);
-		return {
-			currentExtent : currentExtent,
-			loadedData : timesToLoad
+		} else {
+			return null;
 		}
 	}
 });
