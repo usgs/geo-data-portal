@@ -1,9 +1,10 @@
 var LOG;
-
+var NOTIFY;
 var LOADMASK;
 
 Ext.onReady(function () {
 	initializeLogging();
+	initializeNotification();
 	initializeMapping();
 });
 
@@ -14,6 +15,63 @@ function initializeLogging() {
 	appender.setLayout(layout);
 	LOG.addAppender(appender);
 	LOG.info('Derivative Portal: Logging initialized.');
+}
+
+function initializeNotification() {
+	var _notifyError = function(config) {
+		if (!config) config = {};
+		
+		var moreInfo = new Ext.Button({text: 'More Info...'});
+		var buttons = [];
+		
+		if (config.moreInfoAction) {
+			buttons.push(moreInfo);
+		}
+		
+		var notify = new Ext.ux.Notify({
+			msgWidth: 200,
+			hideDelay: 8000,
+			title: 'Error!',
+			titleIconCls: 'titleicon-error',
+			msgIconCls: 'msgicon-error',
+			msg: 'An error has occured.',
+			buttons: buttons
+		});
+		
+		if (config.moreInfoAction) {
+			moreInfo.on('click', function() {
+					notify.hide();
+					config.moreInfoAction();
+				});
+		}
+		
+		notify.show(document);
+	}
+	
+	var _notifySuccess = function() {
+		new Ext.ux.Notify({
+			msgWidth: 200,
+			hideDelay: 1000,
+			title: 'Success!',
+			titleIconCls: 'titleicon-success',
+			msg: 'Data saved successfully.'
+		}).show(document);
+	}
+	
+	var _notifyDebug = function(msg) {
+		new Ext.ux.Notify({
+			msgWidth: 200,
+			hideDelay: 3000,
+			title: 'DEBUG',
+			titleIconCls: 'titleicon-debug',
+			msg: msg
+		}).show(document);
+	}
+	NOTIFY = {
+		debug : _notifyDebug,
+		success : _notifySuccess,
+		error : _notifyError
+	};
 }
 
 function initializeMapping() {
@@ -58,17 +116,34 @@ function initializeMapping() {
 		]
 	});
 	
-	var coolUrls = {
-		qa : 'http://gdp1-qa.er.usgs.gov:8080/ncWMS/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1',
-		testCave : 'http://igsarmewmaccave:8081/ncWMS/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1',
-		initialSample : 'http://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/wms/gmo/GMO_w_meta.ncml?service=WMS&version=1.1.1&request=GetCapabilities',
-		nonExistentURL : 'http://IMAURLTHATDOESNTEXIST:8080'
-	};
+	var endpointStore = new Ext.data.ArrayStore({
+		storeId : 'endpointStore',
+		idIndex: 0,
+		fields: ['url']
+	});
 	
-	var endpointTextField = new Ext.form.TextField({
-				flex : 1,
-				value : coolUrls.qa
-			});
+	var urls = [
+		['http://gdp1-qa.er.usgs.gov:8080/ncWMS/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1'],
+		['http://igsarmewmaccave:8081/ncWMS/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1'],
+		['http://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/wms/gmo/GMO_w_meta.ncml?service=WMS&version=1.1.1&request=GetCapabilities']
+	];
+	
+	endpointStore.loadData(urls);
+	
+	var endpointCombo = new Ext.form.ComboBox({
+			mode : 'local',
+			triggerAction: 'all',
+			flex : 1,
+			store : endpointStore,
+			value : urls[0][0],
+			lazyInit : false,
+			displayField : 'url'
+		});
+	
+//	var endpointTextField = new Ext.form.TextField({
+//				flex : 1,
+//				value : coolUrls.qa
+//			});
 	
 	var endpointApplyButton = new Ext.Button({
 				text : 'Go',
@@ -81,23 +156,35 @@ function initializeMapping() {
 		region : 'center',
 		fieldLabel : 'Endpoint',
 		items : [
-			endpointTextField,
+			endpointCombo,
 			endpointApplyButton
 		]
 	});
 	
+	var proxyUrl = '';
+	
+	if (endpointCombo.getRawValue() && '' !== endpointCombo.getRawValue()) {
+		proxyUrl = 'proxy/' + endpointCombo.getRawValue();
+	}
+	
 	var capabilitiesStore = new GeoExt.data.WMSCapabilitiesStore({
-			url : 'proxy/' + endpointTextField.getValue(),
+			url : proxyUrl,
 			storeId : 'capabilitiesStore'
 		});
 	
 	capabilitiesStore.on('exception', function() {
 		if (LOADMASK) LOADMASK.hide();
+		NOTIFY.error();
 	}, this);
 		
 	endpointApplyButton.on('click', function() {
-		capabilitiesStore.proxy.setApi(Ext.data.Api.actions.read, 'proxy/' + endpointTextField.getValue());
-		capabilitiesStore.load();
+		var proxyUrl = '';
+	
+		if (endpointCombo.getRawValue() && '' !== endpointCombo.getRawValue()) {
+			proxyUrl = 'proxy/' + endpointCombo.getRawValue();
+			capabilitiesStore.proxy.setApi(Ext.data.Api.actions.read, proxyUrl);
+			capabilitiesStore.load();
+		}
 	}, this);
 	
 	//UI Components

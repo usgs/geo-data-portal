@@ -59,6 +59,7 @@ Ext.override(Ext.Panel, {
 <script src="js/log4javascript/log4javascript.js" type="text/javascript"></script>
 
 <%-- Custom Application Modules Here --%>
+<script type="text/javascript" src="js/derivative_portal/components/notify.js"></script>
 <script type="text/javascript" src="js/derivative_portal/components/Animator.js"></script>
 <script type="text/javascript" src="js/derivative_portal/components/LayerController.js"></script>
 <script type="text/javascript" src="js/derivative_portal/components/LayerChooser.js"></script>
