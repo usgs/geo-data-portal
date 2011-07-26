@@ -59,6 +59,7 @@ function initializeMapping() {
 	});
 	
 	var coolUrls = {
+		qa : 'http://gdp1-qa.er.usgs.gov:8080/ncWMS/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1',
 		testCave : 'http://igsarmewmaccave:8081/ncWMS/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1',
 		initialSample : 'http://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/wms/gmo/GMO_w_meta.ncml?service=WMS&version=1.1.1&request=GetCapabilities',
 		nonExistentURL : 'http://IMAURLTHATDOESNTEXIST:8080'
@@ -66,7 +67,7 @@ function initializeMapping() {
 	
 	var endpointTextField = new Ext.form.TextField({
 				flex : 1,
-				value : coolUrls.nonExistentURL
+				value : coolUrls.qa
 			});
 	
 	var endpointApplyButton = new Ext.Button({
