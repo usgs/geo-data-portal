@@ -110,16 +110,18 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		this.replaceBaseLayer(this.layerController.getBaseLayer());
 		
 		var layer = this.layerController.getLayer();
+		
+		if (!this.currentLayer || this.currentLayer.getLayer() !== layer) {
+			this.zoomToExtent(layer);
+			this.clearLayers();
 
-		this.zoomToExtent(layer);
-		this.clearLayers();
-			
-		var params = {};
-		Ext.apply(params, this.layerController.getAllDimensions());
-			
-		this.replaceLayer(layer, params);
-			
-		this.realignLegend();
+			var params = {};
+			Ext.apply(params, this.layerController.getAllDimensions());
+
+			this.replaceLayer(layer, params);
+
+			this.realignLegend();
+		}
 	},
 	onChangeDimension : function() {
 		var existingLayerIndex = this.layers.findBy(function(record, id) {
@@ -161,10 +163,6 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		if (!params) {
 			params = {};
 		}
-
-		if (this.currentLayer) {
-			this.currentLayer.getLayer().setVisibility(false);
-		}
 		
 		if (existingIndex) {
 			var newLayer = this.layers.getAt(existingIndex).getLayer();
@@ -186,6 +184,10 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 				if (LOADMASK) LOADMASK.hide();
 			});
 			this.layers.add(copy);
+		}
+		
+		if (this.currentLayer) {
+			this.currentLayer.getLayer().setVisibility(false);
 		}
 	}
 });
