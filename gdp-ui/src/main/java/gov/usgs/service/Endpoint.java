@@ -114,14 +114,14 @@ public class Endpoint {
 	 */
 	private void createComparisonString() {
 		// TODO Fix regex to make it more readable
+        // Description in words: capture everything up to last slash, not query string
 		Pattern urlPattern = Pattern.compile("([^\\?]*/)(?:[^/\\?]*(?:\\?.*)?){1}");
 		Matcher matcher = urlPattern.matcher(url);
 		if (matcher.matches()) {
 			comparisonString = matcher.group(1);
 		}
 		else {
-			comparisonString = null;
-			// TODO Send some sort of URL error
+			throw new UnsupportedOperationException("Cannot create endpoint with invalid URL");
 		}
 	}
 
@@ -145,12 +145,22 @@ public class Endpoint {
 	 * @return
 	 */
 	public boolean equals(Endpoint other) {
-		return (this.getComparisonString().equals(other.getComparisonString()));
+        if (comparisonString != null) {
+            return comparisonString.equals(other.getComparisonString());
+        }
+        else {
+            return false;
+        }
 	}
 
 	@Override
 	public int hashCode() {
-		return getComparisonString().hashCode();
+        if (comparisonString != null) {
+            return comparisonString.hashCode();
+        }   
+        else {
+            return 0;
+        }
 	}
 
 	@Override
