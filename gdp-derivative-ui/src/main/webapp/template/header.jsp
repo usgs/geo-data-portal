@@ -26,6 +26,6 @@
                 <li><a href="#footer" title="Mainenance info, general USGS links.  Bottom of page, after content.">Misc. Page Info</a></li>
             </ul>
         </div>
-        <h2 id="site-title">USGS Derived Downscaled Climate Portal</h2>
+        <h2 id="site-title">USGS Derived Downscaled Climate Portal  *** BETA ***</h2>
     </div><!-- /header -->
 </div><!--/header panel-->
