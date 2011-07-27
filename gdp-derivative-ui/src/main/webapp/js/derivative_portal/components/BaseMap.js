@@ -180,11 +180,8 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 
 			copy.get('layer').mergeNewParams(params);
 			copy.get('layer')['opacity'] = this.layerOpacity;
+			copy.get('layer')['url'] = 'proxy/' + copy.get('layer')['url'];
 
-			// This looks like crap when animating.  load doesn't mean loading from remotely
-//			copy.getLayer().events.register('loadstart', this, function() {
-//				if (LOADMASK) LOADMASK.show();
-//			});
 			copy.getLayer().events.register('loadend', this, function() {
 				if (LOADMASK) LOADMASK.hide();
 			});
