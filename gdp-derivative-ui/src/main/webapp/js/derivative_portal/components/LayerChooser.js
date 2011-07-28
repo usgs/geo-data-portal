@@ -82,9 +82,9 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
                 
 		config = Ext.apply({
 			items : [
-			baseLayerCombo,
-			layerCombo,
-                        layerOpacitySlider
+			baseLayerCombo
+			,layerCombo
+                        ,layerOpacitySlider
 			]
 		}, config);
 		

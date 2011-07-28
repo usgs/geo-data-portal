@@ -189,6 +189,7 @@ function initializeMapping() {
 	
 	//UI Components
 	var configPanel = new GDP.LayerChooser({
+                id: 'control-panel',
 		title : 'Controls',
 		width : 265,
 		region: 'west',
@@ -238,7 +239,7 @@ function initializeMapping() {
 		layout : 'fit',
 		border: false,
 		layerController : layerController,
-		title: 'USGS Derived Downscaled Climate Portal'
+		title: 'USGS Derived Downscaled Climate Portal',
 	});
 	
 	var centerPanel = new Ext.Panel({

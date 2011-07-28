@@ -7,8 +7,8 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 	currentLayer : undefined,
 	realignLegend : function(isAlreadyRendered) {
 		if (this.legendWindow) {
-			var DEFAULT_LEGEND_X = 110;
-			var DEFAULT_LEGEND_Y = 264;
+                        var DEFAULT_LEGEND_X = 110;
+			var DEFAULT_LEGEND_Y = 274;
 			if (isAlreadyRendered) {
 				this.legendWindow.alignTo(this.getEl(), "br-br"); 
 			} else {
@@ -27,6 +27,14 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		
 		var map = new OpenLayers.Map({
 			maxResolution: MAX_RESOLUTION
+                        ,controls: [
+                            new OpenLayers.Control.MousePosition() 
+                            ,new OpenLayers.Control.ScaleLine()
+                            ,new OpenLayers.Control.Navigation()
+                            ,new OpenLayers.Control.ArgParser()
+                            ,new OpenLayers.Control.Attribution()
+                            ,new OpenLayers.Control.PanZoomBar()
+                        ]
 		});
 				
 		this.layerController = config.layerController;
@@ -46,6 +54,8 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 			zoom : 4
 		}, config);
 		
+                
+                
 		GDP.BaseMap.superclass.constructor.call(this, config);
 		
 		this.layerController.requestBaseLayer(this.layerController.getBaseLayer());
