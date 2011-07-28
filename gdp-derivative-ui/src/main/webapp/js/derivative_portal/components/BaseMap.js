@@ -28,7 +28,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		var map = new OpenLayers.Map({
 			maxResolution: MAX_RESOLUTION
                         ,controls: [
-                            new OpenLayers.Control.MousePosition() 
+                            new OpenLayers.Control.MousePosition()
                             ,new OpenLayers.Control.ScaleLine()
                             ,new OpenLayers.Control.Navigation()
                             ,new OpenLayers.Control.ArgParser()
