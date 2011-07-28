@@ -9,7 +9,7 @@
         </encoder>
     </appender>
     <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <File>${catalina.base}/logs/gdp-derivative-ui/ncetl.log</File>
+        <File>${catalina.base}/logs/gdp-derivative-ui/derivative.log</File>
         <encoder>
             <pattern>%d{HH:mm:ss} %p %c{1}: %m%n</pattern>
         </encoder>
