@@ -1282,7 +1282,7 @@ var Dataset = function() {
         var showSimpleCSWClient = parseInt(Constant.ui.view_simple_csw_client);
         var showCSWURLInputBox = parseInt(Constant.ui.view_show_csw_url_input);
         var showCSWDatasetUrl = parseInt(Constant.ui.view_show_csw_dataset_url);
-        var dsUrl = $.url().param('dataset');
+        var dsUrl = $.url().param('dataset'); //TODO- We can actually probably use the parseURI script for this. 
         
         var CSWDialogTableRow = $('.csw-dialog-tablerow');
         var searchSubmitButton = $('#dataset_search_submit_button');
