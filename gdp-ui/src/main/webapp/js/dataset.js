@@ -1326,17 +1326,6 @@ var Dataset = function() {
             $(datasetURLInputRow).hide();
         }
 
-        if (Constant.ui.default_dataset_url.length > 0) {
-            logger.trace('GDP: Adding default dataset URL "'+Constant.ui.default_dataset_url+'" to the CSW dataset URL inputbox.');
-            $(_DATASET_URL_INPUT_BOX).val(Constant.ui.default_dataset_url);
-        }
-        
-        // Ref: http://internal.cida.usgs.gov/jira/browse/GDP-344
-        if (dsUrl) {  //Incoming dataset URL should override a default dataset URL if one exists
-            logger.trace('GDP: Adding dataset URL "'+ decodeURIComponent(dsUrl) +'" parsed from incoming URL.');
-            $(_DATASET_URL_INPUT_BOX).val(decodeURIComponent(dsUrl));
-        }
-
         if (Constant.endpoint.csw.length > 0) {
             logger.trace('GDP: Adding default endpoint URL "'+Constant.endpoint.csw+'" to the CSW endpoint URL inputbox.');
             $(_CSW_URL_INPUT_BOX).val(Constant.endpoint.csw);
@@ -1356,6 +1345,18 @@ var Dataset = function() {
             logger.debug('GDP: User has selected a dataset. ');
             Dataset.datasetSelected($(datasetURLInputBox).val());
         });
+
+        if (Constant.ui.default_dataset_url.length > 0) {
+            logger.trace('GDP: Adding default dataset URL "'+Constant.ui.default_dataset_url+'" to the CSW dataset URL inputbox.');
+            $(_DATASET_URL_INPUT_BOX).val(Constant.ui.default_dataset_url);
+        }
+        
+        // Ref: http://internal.cida.usgs.gov/jira/browse/GDP-344
+        if (dsUrl) {  //Incoming dataset URL should override a default dataset URL if one exists
+            logger.trace('GDP: Adding dataset URL "'+ decodeURIComponent(dsUrl) +'" parsed from incoming URL.');
+            $(_DATASET_URL_INPUT_BOX).val(decodeURIComponent(dsUrl));
+             $(_SELECT_DATASET_BUTTON).click();
+        }
 
         $(_DATASET_ID_SELECTBOX).change(function() {
             if ($(this).val() == '') {
