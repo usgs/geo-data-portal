@@ -71,20 +71,21 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
 		
 		var zlayerCombo = undefined;
 		
-                var layerOpacitySlider = new GeoExt.LayerOpacitySlider({
-                    layer: null,
-                    aggressive: true, 
-                    isFormField: true,
-                    changeVisibility: true,
-                    fieldLabel: "Opacity",
-                    plugins: new GeoExt.LayerOpacitySliderTip({template: '<div>Opacity: {opacity}%</div>'})
-                })
+		var layerOpacitySlider = new Ext.Slider({
+			value : 40,
+			fieldLabel: "Opacity",
+			plugins: new GeoExt.LayerOpacitySliderTip({template: '<div>Opacity: {opacity}%</div>'})
+		});
+		
+		layerOpacitySlider.on('change', function() {
+			this.controller.requestOpacity(layerOpacitySlider.getValue() / 100);
+		}, this, {buffer: 5});
                 
 		config = Ext.apply({
 			items : [
 			baseLayerCombo
 			,layerCombo
-                        ,layerOpacitySlider
+			,layerOpacitySlider
 			]
 		}, config);
 		
@@ -99,8 +100,6 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
 			var layer = this.controller.getLayer();
 			if (layer) {
 				layerCombo.setValue(layer.getLayer().name);
-                                layerOpacitySlider.setLayer(layer.getLayer());
-                                layerOpacitySlider.setValue(40); //TODO- This needs to be set to the layer's current opacity
 			}
 			
 			if (zlayerCombo) {
@@ -125,11 +124,16 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
 			
 		}, this);
 		
-		this.controller.on('changeDimension', function() {
+		this.controller.on('changedimension', function() {
 			var threshold = this.controller.getDimension(zlayerName);
 			if (threshold & zlayerCombo) {
 				zlayerCombo.setValue(threshold);
 			}
+		}, this);
+		
+		this.controller.on('changeopacity', function() {
+			var opacity = this.controller.getLayerOpacity();
+			
 		}, this);
 		
 		GDP.LayerChooser.superclass.constructor.call(this, config);

@@ -1,8 +1,8 @@
 Ext.ns("GDP");
 
 GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
-	layerOpacity : 0.4,
 	legendWindow : undefined,
+	legendStore : undefined,
 	layerController : undefined,
 	currentLayer : undefined,
 	realignLegend : function(isAlreadyRendered) {
@@ -47,6 +47,9 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 			this.onChangeDimension();
 			this.currentLayer = this.findCurrentLayer();
 		}, this);
+		this.layerController.on('changeopacity', function() {
+			this.onChangeOpacity();
+		}, this);
 		
 		config = Ext.apply({
 			map: map,
@@ -60,12 +63,16 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		
 		this.layerController.requestBaseLayer(this.layerController.getBaseLayer());
 		
+		this.legendStore = new GeoExt.data.LayerStore({
+			storeId : 'legendStore'
+		});
+		
 		var legendPanel = new GeoExt.LegendPanel({
 			defaults: {
 				style: 'padding: 0 5px 5px 5px'
 			},
 			border : false,
-			layerStore: this.layers,
+			layerStore: this.legendStore,
 			filter : function(record) {
 				return !(record.getLayer().isBaseLayer);
 			},
@@ -102,7 +109,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 	 */
 	findCurrentLayer : function() {
 		var storeIndex = this.layers.findBy(function(record, id) {
-			return record.get('layer').getVisibility();
+			return (this.layerController.getLayerOpacity() === record.get('layer').opacity);
 		}, this, 1);
 		if (-1 < storeIndex) {
 			return this.layers.getAt(storeIndex);
@@ -122,6 +129,11 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		var layer = this.layerController.getLayer();
 		
 		if (!this.currentLayer || this.currentLayer.getLayer() !== layer) {
+			if (this.legendStore) {
+				this.legendStore.removeAll();
+				this.legendStore.add(layer);
+			}
+			
 			this.zoomToExtent(layer);
 			this.clearLayers();
 
@@ -153,6 +165,11 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 			(-1 < existingLayerIndex)?existingLayerIndex : undefined
 		);
 	},
+	onChangeOpacity : function() {
+		if (this.currentLayer) {
+			this.currentLayer.getLayer().setOpacity(this.layerController.getLayerOpacity());
+		}
+	},
 	replaceBaseLayer : function(record) {
 		if (!record) return;
 		if (!this.layers) {
@@ -176,7 +193,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		
 		if (existingIndex) {
 			var newLayer = this.layers.getAt(existingIndex).getLayer();
-			newLayer.setVisibility(true);
+			newLayer.setOpacity(this.layerController.getLayerOpacity());
 		} else {
 			var copy = record.clone();
 			
@@ -187,7 +204,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 			}, params);
 
 			copy.get('layer').mergeNewParams(params);
-			copy.get('layer')['opacity'] = this.layerOpacity;
+			copy.get('layer')['opacity'] = this.layerController.getLayerOpacity();
 			copy.get('layer')['url'] = 'proxy/' + copy.get('layer')['url'];
 
 			copy.getLayer().events.register('loadend', this, function() {
@@ -197,7 +214,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		}
 		
 		if (this.currentLayer) {
-			this.currentLayer.getLayer().setVisibility(false);
+			this.currentLayer.getLayer().setOpacity(0);
 		}
 	}
 });

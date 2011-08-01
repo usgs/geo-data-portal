@@ -20,8 +20,14 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
 	getZAxisName : function() {
 		return this.zaxisName;
 	},
+	layerOpacity : 0.4,
+	getLayerOpacity : function() {
+		return this.layerOpacity;
+	},
 	constructor : function(config) {
 		if (!config) config = {};
+		
+		this.layerOpacity = config.layerOpacity || this.layerOpacity;
 		
 		var baseLayer = config.baseLayer;
 		
@@ -47,7 +53,8 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
 		 * to switch to a new layer.
 		 */
 			"changelayer",
-			"changedimension"
+			"changedimension",
+			"changeopacity"
 		);
 		
 		this.requestBaseLayer(baseLayer);
@@ -71,6 +78,13 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
 		this.zaxisName = layerName.slice(0, layerName.indexOf('/'));
 		
 		this.fireEvent('changelayer');
+	},
+	requestOpacity : function(opacity) {
+		if (!opacity) return;
+		if (0 <= opacity && 1 >= opacity) {
+			this.layerOpacity = opacity;
+			this.fireEvent('changeopacity');
+		}
 	},
 	requestDimension : function(extentName, value) {
 		if (!extentName) return;

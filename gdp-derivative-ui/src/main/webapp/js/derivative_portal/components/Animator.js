@@ -7,11 +7,18 @@ GDP.Animator = Ext.extend(Ext.util.Observable, {
 	currentTimeoutID : undefined,
 	minIndex : 0,
 	maxIndex : -1,
+	repeating : true,
 	constructor : function(config) {
 		if (!config) config = {};
 		
 		this.timeInterval = config.timeInterval || this.timeInterval;
 		this.indexInterval = config.indexInterval || this.indexInterval;
+		this.minIndex = config.minIndex || this.minIndex;
+		this.maxIndex = config.maxIndex || this.maxIndex;
+		
+		if (config.nonRepeating) {
+			this.repeating = false;
+		}
 		
 		config = Ext.apply({
 			
@@ -37,7 +44,13 @@ GDP.Animator = Ext.extend(Ext.util.Observable, {
 		
 		var nextIndex = this.currentIndex + this.indexInterval;
 		if (nextIndex > this.maxIndex) {
-			nextIndex = this.resetIndex() + this.indexInterval;
+			if (this.repeating) {
+				nextIndex = this.resetIndex() + this.indexInterval;
+			} else {
+				//BASE CASE
+				this.stopAnimation();
+				return;
+			}
 		}
 		
 		this.currentIndex = nextIndex;
