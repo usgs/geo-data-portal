@@ -72,7 +72,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 				style: 'padding: 0 5px 5px 5px'
 			},
 			border : false,
-			layerStore: this.legendStore,
+//			layerStore: this.legendStore,
 			filter : function(record) {
 				return !(record.getLayer().isBaseLayer);
 			},
