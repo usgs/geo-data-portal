@@ -464,8 +464,9 @@ function setupLayer(layerOb, type, defaultLayer) {
 
     map.addLayer(layer);
 
-    if (layerOb.id == defaultLayer &&
-        layerOb.params['isBaseLayer'] == 'true') map.setBaseLayer(layer);
+    if (layerOb.id == defaultLayer && layerOb.params['isBaseLayer'] == 'true') {
+        map.setBaseLayer(layer);
+    }
 }
 
 function deactivateWatersControl() {
