@@ -8,6 +8,7 @@ var drawFeatureControl;
 var saveStrategy;
 
 var _NUM_ZOOM_LEVELS = 18;
+var _PROJ900913 = new OpenLayers.Projection("EPSG:900913")
 var _PROJ4326 = new OpenLayers.Projection("EPSG:4326");
 var _DEFAULT_ATTRIBUTE = 'ID'; // placeholder attribute added by us
 var _FEATURE_TYPE_NAME = '#featuretypeName';
