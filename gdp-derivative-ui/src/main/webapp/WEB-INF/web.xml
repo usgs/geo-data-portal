@@ -3,9 +3,9 @@
     <description>Derivative Portal</description>
     <display-name>Derivative Portal {Owner: NB, Coder: IS, TK, JW, DS}</display-name>
     
-        <servlet>
+    <servlet>
         <servlet-name>OWSProxy</servlet-name>
-        <servlet-class>gov.usgs.cida.service.OWSProxyServletX</servlet-class>
+        <servlet-class>gov.usgs.service.OWSProxyServletX</servlet-class>
         <!--        <servlet-class>gov.usgs.service.OWSProxyServlet</servlet-class>-->
         <init-param>
             <param-name>getRequestURIKey</param-name>
