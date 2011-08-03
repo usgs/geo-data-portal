@@ -254,7 +254,12 @@ function initializeMapping() {
 		layerController : layerController,
 		title: 'USGS Derived Downscaled Climate Portal'
 	});
-	
+        
+//        var activityBar = new GDP.MapActivityBar({
+//            id : 'activityBar'
+//            ,map : mapPanel.map
+//        })
+        
 	var centerPanel = new Ext.Panel({
 		region : 'center',
 		layout : 'border',
