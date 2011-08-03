@@ -65,8 +65,7 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
 			"changelayer",
                         "changelegend",
 			"changedimension",
-			"changeopacity",
-                        "modifylegendstore"
+			"changeopacity"
 		);
 		
 		this.requestBaseLayer(baseLayer);
@@ -93,23 +92,26 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
 	},
         requestLegendStore : function(legendStore) {
             if (!legendStore) return;
+            LOG.debug('LayerController:requestLegendStore: Handling request.');
             this.legendStore = legendStore;
-            this.fireEvent('modifylegendstore');
+            this.fireEvent('changelegend');
         },
         modifyLegendStore : function(jsonObject) {
             if (!jsonObject) return;
             if (!this.legendStore) return;
+            LOG.debug('LayerController:modifyLegendStore: Handling request.');
             this.legendStore.loadData(jsonObject);
-            this.fireEvent('modifylegendstore');
+            this.fireEvent('changelegend');
         },
         requestLegendRecord : function(legendRecord) {
             if (!legendRecord) return;
-            LOG.debug('LayerController: A new legend record has been added to the layer controller');
+            LOG.debug('LayerController:requestLegendRecord: Handling request.');
             this.legendRecord = legendRecord;
             this.fireEvent('changelegend');
         },
 	requestOpacity : function(opacity) {
 		if (!opacity) return;
+                LOG.debug('LayerController:requestOpacity: Handling request.');
 		if (0 <= opacity && 1 >= opacity) {
 			this.layerOpacity = opacity;
 			this.fireEvent('changeopacity');
@@ -117,6 +119,7 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
 	},
 	requestDimension : function(extentName, value) {
 		if (!extentName) return;
+                LOG.debug('LayerController:requestDimension: Handling request.');
 		if (this.modifyDimensions(extentName, value)) {
 			this.fireEvent('changedimension');
 		} else {
@@ -124,6 +127,7 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
 		}
 	},
 	modifyDimensions : function(extentName, value) {
+            LOG.debug('LayerController:modifyDimensions: Handling request.');
 		if (this.dimensions.hasOwnProperty(extentName)) {
 			var val = value || '';
 			this.dimensions[extentName] = val;
@@ -134,7 +138,7 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
 	},
 	loadDimensionStore : function(record, store, extentName, maxCount) {
 		if (!record || !store || !extentName) return null;
-		
+		LOG.debug('LayerController:loadDimensionStore: Handling request.');
 		var maxNum = maxCount || 101;
 		
 		store.removeAll();

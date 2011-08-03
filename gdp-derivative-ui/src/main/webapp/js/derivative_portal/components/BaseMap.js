@@ -40,6 +40,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		}, this);
 		this.layerController.on('changelegend', function() {
                     this.onChangeLegend();
+                    this.currentLayer = this.findCurrentLayer();
                 }, this);
                 
 		config = Ext.apply({
@@ -146,6 +147,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 	},
 	replaceBaseLayer : function(record) {
 		if (!record) return;
+                LOG.debug('BaseMap:replaceBaseLayer: Handling Request.');
 		if (!this.layers) {
 			this.map.addLayer(record.getLayer());
 		} else {
@@ -189,8 +191,8 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		}
 		
 		if (this.currentLayer) {
-                    LOG.debug('BaseMap:replaceLayer: Setting current layer opacity to 0');
-			this.currentLayer.getLayer().setOpacity(0);
+                    LOG.debug('BaseMap:replaceLayer: currentLayer exists. Setting opacity to 0');
+                    this.currentLayer.getLayer().setOpacity(0);
 		}
 	}
 });

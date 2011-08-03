@@ -3,15 +3,12 @@ Ext.ns("GDP");
 GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
 	controller : undefined,
         legendWindow : undefined,
-        realignLegend : function(isAlreadyRendered) {
+        legendImage : undefined, 
+        DEFAULT_LEGEND_X : 110,
+        DEFAULT_LEGEND_Y : 274,
+        realignLegend : function() {
 		if (this.legendWindow) {
-                        var DEFAULT_LEGEND_X = 110;
-			var DEFAULT_LEGEND_Y = 274;
-			if (isAlreadyRendered) {
-				this.legendWindow.alignTo(this.getEl(), "br-br"); 
-			} else {
-				this.legendWindow.alignTo(this.getEl(), "br-br", [-DEFAULT_LEGEND_X,-DEFAULT_LEGEND_Y]); 
-			}
+                    this.legendWindow.alignTo(this.getEl(), "br-br"); 
 		}
 	},
 	constructor : function(config) {
@@ -34,13 +31,19 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
 			this.controller.requestBaseLayer(record);
 		}, this);
 		
+                this.legendImage = new GeoExt.LegendImage({
+                    flex : 1
+                });
 		this.legendWindow = new Ext.Window({
                     resizable: false
                     ,draggable: false
                     ,closable: false
                     ,border: false
                     ,frame: false
-                    ,html: ''
+                    ,layout: 'absolute'
+                    ,items: [this.legendImage]
+                    ,height: this.DEFAULT_LEGEND_Y
+                    ,width: this.DEFAULT_LEGEND_X
                 });
                 this.legendWindow.show();
                 
@@ -130,21 +133,14 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
 			,layerOpacitySlider
 			]
 		}, config);
-		
-                this.controller.on('modifylegendstore', function(){
-                    LOG.debug('LayerChooser: Observed legend store modification');
-                    var legendHref = this.controller.getLegendRecord().data.href;
-                    this.legendWindow.update('<img src="proxy/' + legendHref + '" />');
-                    this.legendWindow.show(null, function() {
-                    this.realignLegend();
-                    }, this);
-                }, this);
                 this.controller.on('changelegend', function(){
                     LOG.debug('LayerChooser: Observed legend change');
                     var legendHref = this.controller.getLegendRecord().data.href;
-                    this.legendWindow.update('<img src="proxy/' + legendHref + '" />');
+                    this.legendImage.setUrl('proxy/' + legendHref);
+//                    this.legendWindow.update('<img src="proxy/' + legendHref + '" />');
                     this.legendWindow.show(null, function() {
-                    this.realignLegend();
+                        this.legendWindow.items[0].show();
+                        this.realignLegend();
                     }, this);
                 }, this);
 		this.controller.on('changelayer', function() {
@@ -189,6 +185,7 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
 		}, this);
 		
 		this.controller.on('changeopacity', function() {
+                    LOG.debug('LayerChooser: Observed "changeopacity"')
 			var opacity = this.controller.getLayerOpacity();
 			
 		}, this);
