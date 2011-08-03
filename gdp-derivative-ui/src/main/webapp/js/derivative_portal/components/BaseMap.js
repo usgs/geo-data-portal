@@ -1,22 +1,10 @@
 Ext.ns("GDP");
 
 GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
-	legendWindow : undefined,
-	legendStore : undefined,
 	layerController : undefined,
 	currentLayer : undefined,
-	realignLegend : function(isAlreadyRendered) {
-		if (this.legendWindow) {
-                        var DEFAULT_LEGEND_X = 110;
-			var DEFAULT_LEGEND_Y = 274;
-			if (isAlreadyRendered) {
-				this.legendWindow.alignTo(this.getEl(), "br-br"); 
-			} else {
-				this.legendWindow.alignTo(this.getEl(), "br-br", [-DEFAULT_LEGEND_X,-DEFAULT_LEGEND_Y]); 
-			}
-		}
-	},
 	constructor : function(config) {
+            LOG.debug('BaseMap: Constructing self.');
 		// From GDP (with Zoerb's comments)
 		// Got this number from Hollister, and he's not sure where it came from.
 		// Without this line, the esri road and relief layers will not display
@@ -50,7 +38,10 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		this.layerController.on('changeopacity', function() {
 			this.onChangeOpacity();
 		}, this);
-		
+		this.layerController.on('changelegend', function() {
+                    this.onChangeLegend();
+                }, this);
+                
 		config = Ext.apply({
 			map: map,
 			center: new OpenLayers.LonLat(-96, 38),
@@ -66,36 +57,6 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		this.legendStore = new GeoExt.data.LayerStore({
 			storeId : 'legendStore'
 		});
-		
-		var legendPanel = new GeoExt.LegendPanel({
-			defaults: {
-				style: 'padding: 0 5px 5px 5px'
-			},
-			border : false,
-//			layerStore: this.legendStore,
-			filter : function(record) {
-				return !(record.getLayer().isBaseLayer);
-			},
-			autoScroll: true
-		});
-    
-		this.legendWindow = new Ext.Window({
-			border : false,
-			frame : false,
-			closable: false,
-			resizable : false,
-			items : [legendPanel]
-		});
-		
-		this.on('afterlayout', function() {
-			this.legendWindow.show(null, function() {
-				this.realignLegend();
-			}, this);
-		}, this);
-		
-		this.on('resize', function() {
-			this.realignLegend(true);
-		}, this);
 	},
 	zoomToExtent : function(record) {
 		if (!record) return;
@@ -119,21 +80,19 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		
 	},
 	clearLayers : function() {
+            LOG.debug('BaseMap:clearLayers: Handling request.');
 		if (this.layers.getCount() > 1) {
-			this.layers.remove(this.layers.getRange(1));
+                    LOG.debug('BaseMap:clearLayers: Clearing layer.');
+                    this.layers.remove(this.layers.getRange(1));
 		}
 	},
 	onChangeLayer : function() {
+            LOG.debug('BaseMap:onChangeLayer: Handling request.')
 		this.replaceBaseLayer(this.layerController.getBaseLayer());
 		
 		var layer = this.layerController.getLayer();
 		
 		if (!this.currentLayer || this.currentLayer.getLayer() !== layer) {
-			if (this.legendStore) {
-				this.legendStore.removeAll();
-				this.legendStore.add(layer);
-			}
-			
 			this.zoomToExtent(layer);
 			this.clearLayers();
 
@@ -142,17 +101,19 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 
 			this.replaceLayer(layer, params);
 
-			this.realignLegend();
 		}
 	},
 	onChangeDimension : function() {
+            LOG.debug('BaseMap:onChangeDimension: Handling request.');
 		var existingLayerIndex = this.layers.findBy(function(record, id) {
+                    LOG.debug(' BaseMap:onChangeDimension: Checking existing layer index.');
 			var result = true;
 			var requestedDimensions = this.layerController.getAllDimensions();
 			Ext.iterate(requestedDimensions, function(extentName, value) {
 				var existingDimension = record.getLayer().params[extentName.toUpperCase()];
 				result = result && (existingDimension === value)
 			}, this);
+                        LOG.debug(' BaseMap:onChangeDimension: Found existing layer index ' + result);
 			return result;
 		}, this, 1);
 		
@@ -162,10 +123,23 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		this.replaceLayer(
 			this.layerController.getLayer(), 
 			params,
-			(-1 < existingLayerIndex)?existingLayerIndex : undefined
+			(-1 < existingLayerIndex) ? existingLayerIndex : undefined
 		);
 	},
+        onChangeLegend : function() {
+            LOG.debug('BaseMap:onChangeLegend: Handling Request.');
+            var record = this.layerController.getLegendRecord();
+            this.clearLayers();
+            this.replaceLayer(
+                this.layerController.getLayer(),
+                {
+                    styles: record.id
+                }
+            );
+            
+        },
 	onChangeOpacity : function() {
+            LOG.debug('BaseMap:onChangeOpacity: Handling Request.');
 		if (this.currentLayer) {
 			this.currentLayer.getLayer().setOpacity(this.layerController.getLayerOpacity());
 		}
@@ -186,6 +160,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		}
 	},
 	replaceLayer : function(record, params, existingIndex) {
+            LOG.debug('BaseMap:replaceLayer: Handling request.');
 		if (!record) return;
 		if (!params) {
 			params = {};
@@ -198,9 +173,9 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 			var copy = record.clone();
 			
 			params = Ext.apply({
-				format: "image/png",
-				transparent : true,
-				styles : 'boxfill/redblue'
+				format: "image/png"
+				,transparent : true
+                                ,styles : (params.styles) ? params.styles : this.layerController.getLegendRecord().id
 			}, params);
 
 			copy.get('layer').mergeNewParams(params);
@@ -214,6 +189,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		}
 		
 		if (this.currentLayer) {
+                    LOG.debug('BaseMap:replaceLayer: Setting current layer opacity to 0');
 			this.currentLayer.getLayer().setOpacity(0);
 		}
 	}

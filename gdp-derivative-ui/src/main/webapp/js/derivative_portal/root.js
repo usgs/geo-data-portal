@@ -109,11 +109,27 @@ function initializeMapping() {
 			]
 		});
 	
+        // Reads in the JSON array from each layer, creating a legend data store
+        var legendStore = new Ext.data.JsonStore({
+                                    idProperty: 'name'
+                                    ,root: 'styles'
+                                    ,fields: [
+                                        {name: 'name', mapping: 'name'}
+                                        ,{name: 'title', mapping: 'title'}
+                                        ,{name: 'abstrakt', mapping: 'abstract'}
+                                        ,{name: 'width', mapping: 'legend.width'}
+                                        ,{name: 'height', mapping: 'legend.height'}
+                                        ,{name: 'format', mapping: 'legend.format'}
+                                        ,{name: 'href', mapping: 'legend.href'}
+                                    ]
+                                });
+        
 	var layerController = new GDP.LayerController({
-		baseLayer : baseLayerStore.getAt(3),
-		dimensions : [
+		baseLayer : baseLayerStore.getAt(3)
+		,dimensions : [
 			'time', 'elevation'
 		]
+                ,legendStore : legendStore
 	});
 	
 	var endpointStore = new Ext.data.ArrayStore({
@@ -122,6 +138,7 @@ function initializeMapping() {
 		fields: ['url']
 	});
 	
+        // Default endpoints we use
 	var urls = [
 		['http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/ncWMS/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1'],
 		['http://igsarmewmaccave:8081/ncWMS/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1'],
@@ -131,19 +148,15 @@ function initializeMapping() {
 	endpointStore.loadData(urls);
 	
 	var endpointCombo = new Ext.form.ComboBox({
-			mode : 'local',
-			triggerAction: 'all',
-			flex : 1,
-			store : endpointStore,
-			value : urls[0][0],
-			lazyInit : false,
-			displayField : 'url'
+			mode : 'local'
+			,triggerAction: 'all'
+			,flex : 1
+			,store : endpointStore
+			,value : urls[0][0]
+			,lazyInit : false
+                        ,editable : false
+			,displayField : 'url'
 		});
-	
-//	var endpointTextField = new Ext.form.TextField({
-//				flex : 1,
-//				value : coolUrls.qa
-//			});
 	
 	var endpointApplyButton = new Ext.Button({
 				text : 'Go',
@@ -277,4 +290,3 @@ function initializeMapping() {
 	
     capabilitiesStore.load();
 }
-

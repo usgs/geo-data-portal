@@ -2,10 +2,10 @@ Ext.ns("GDP");
 
 GDP.LayerController = Ext.extend(Ext.util.Observable, {
 	baseLayer : undefined,
-	layer : undefined,
 	getBaseLayer : function() {
 		return this.baseLayer;
 	},
+        layer : undefined,
 	getLayer : function() {
 		return this.layer;
 	},
@@ -24,11 +24,21 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
 	getLayerOpacity : function() {
 		return this.layerOpacity;
 	},
+        legendStore : undefined,
+        getLegendStore : function() {
+            return this.legendStore;
+        },
+        legendRecord : undefined,
+        getLegendRecord : function() {
+            return this.legendRecord;
+        },
 	constructor : function(config) {
 		if (!config) config = {};
 		
 		this.layerOpacity = config.layerOpacity || this.layerOpacity;
 		
+                this.legendStore = config.legendStore || this.legendStore;
+                
 		var baseLayer = config.baseLayer;
 		
 		var configDimensions = config.dimensions;
@@ -53,8 +63,10 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
 		 * to switch to a new layer.
 		 */
 			"changelayer",
+                        "changelegend",
 			"changedimension",
-			"changeopacity"
+			"changeopacity",
+                        "modifylegendstore"
 		);
 		
 		this.requestBaseLayer(baseLayer);
@@ -79,6 +91,23 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
 		
 		this.fireEvent('changelayer');
 	},
+        requestLegendStore : function(legendStore) {
+            if (!legendStore) return;
+            this.legendStore = legendStore;
+            this.fireEvent('modifylegendstore');
+        },
+        modifyLegendStore : function(jsonObject) {
+            if (!jsonObject) return;
+            if (!this.legendStore) return;
+            this.legendStore.loadData(jsonObject);
+            this.fireEvent('modifylegendstore');
+        },
+        requestLegendRecord : function(legendRecord) {
+            if (!legendRecord) return;
+            LOG.debug('LayerController: A new legend record has been added to the layer controller');
+            this.legendRecord = legendRecord;
+            this.fireEvent('changelegend');
+        },
 	requestOpacity : function(opacity) {
 		if (!opacity) return;
 		if (0 <= opacity && 1 >= opacity) {
