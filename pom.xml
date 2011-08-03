@@ -20,7 +20,6 @@
         <module>gdp-ui</module>
         <module>gdp-derivative-ui</module>
         <module>gdp-deployer</module>
-    <module>gdp-proxy</module>
   </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
