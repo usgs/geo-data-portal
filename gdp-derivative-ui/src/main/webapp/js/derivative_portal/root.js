@@ -1,3 +1,5 @@
+//TODO- Way too much coniguration going on in this file. A lot of the elements can (should) be made into their own classes and self-configured in there
+//TODO- Make sure that the element initializations are coming in at the right order -- With this much initialization from one place, lots of room for issues to come up
 var LOG;
 var NOTIFY;
 var LOADMASK;
@@ -46,7 +48,7 @@ function initializeNotification() {
 				});
 		}
 		
-		notify.show(document);
+            notify.show(document);
 	}
 	
 	var _notifySuccess = function() {

@@ -11,7 +11,7 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
         
         var map = config.map;
         var toggleGroup = 'draw';
-        var zoomToExtentAction, navigationAction, vector, drawPolygonAction;
+        var zoomToExtentAction, navigationAction, vector, drawBboxAction;
         
         vector = new OpenLayers.Layer.Vector('vector');
         zoomToExtentAction = new GeoExt.Action({
@@ -33,20 +33,20 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
             ,map: map
         });
         
-        drawPolygonAction = new GeoExt.Action({
-            text: 'Draw Poly'
+        drawBboxAction = new GeoExt.Action({
+            text: 'Draw Box'
             ,control: new OpenLayers.Control.DrawFeature(
                 vector, OpenLayers.Handler.Polygon
                 )
             ,toggleGroup: toggleGroup
             ,allowDepress: false
-            ,tooltip: 'Draw A Polygon On The Map'
+            ,tooltip: 'Draw A Bounding Box On The Map'
             ,group: toggleGroup
             ,map: map
         });
         
         config = Ext.apply({
-            items: [zoomToExtentAction, navigationAction, drawPolygonAction]
+            items: [zoomToExtentAction, navigationAction, drawBboxAction]
         }, config);
         GDP.MapActivityBar.superclass.constructor.call(this, config);
     }

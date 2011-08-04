@@ -30,7 +30,31 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
                 this.controller.requestBaseLayer(record);
         }, this);
 
-        this.legendImage = new GeoExt.LegendImage({flex : 1});
+        
+
+        var extendedLegendImage = Ext.extend(GeoExt.LegendImage, {
+            initComponent: function(){
+                Ext.apply(this, {
+                    flex : 1
+                })
+                extendedLegendImage.superclass.initComponent.call(this, arguments);
+            }
+            ,onRender: function() {
+                extendedLegendImage.superclass.onRender.apply(this, arguments);
+            }
+            ,setUrl: function(url) {
+                this.url = url;
+                var el = this.getEl();
+                if (el) {
+                    LOG.debug('here');
+                    el.dom.src = Ext.BLANK_IMAGE_URL;
+                    el.un("error", this.onImageLoadError, this);
+                    el.on("error", this.onImageLoadError, this, {single: true});
+                    el.dom.src = url;
+                }
+            }
+        })
+        this.legendImage = new extendedLegendImage();
         this.legendWindow = new Ext.Window({
             resizable: false
             ,draggable: false
@@ -138,7 +162,7 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
         this.controller.on('changelegend', function(){
             LOG.debug('LayerChooser: Observed legend change');
             var legendHref = this.controller.getLegendRecord().data.href;
-            this.legendImage.setUrl('proxy/' + legendHref);
+            this.legendImage.setUrl(Ext.PROXY_PREFIX + legendHref);
             this.legendWindow.show(null, function() {
                 this.realignLegend();
             }, this);
