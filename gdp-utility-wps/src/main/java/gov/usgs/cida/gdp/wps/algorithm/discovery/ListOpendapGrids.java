@@ -1,7 +1,11 @@
 package gov.usgs.cida.gdp.wps.algorithm.discovery;
 
+import com.google.common.collect.Lists;
 import gov.usgs.cida.gdp.dataaccess.helper.OpendapServerHelper;
 import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
+import gov.usgs.cida.gdp.wps.cache.ResponseCache;
+import gov.usgs.cida.gdp.wps.cache.ResponseCache.CacheIdentifier;
+import static gov.usgs.cida.gdp.wps.cache.ResponseCache.CacheIdentifier.CacheType.*;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -9,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.n52.wps.io.data.IData;
+import org.n52.wps.io.data.binding.literal.LiteralBooleanBinding;
 import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
 import org.n52.wps.server.AbstractSelfDescribingAlgorithm;
 import org.slf4j.Logger;
@@ -22,17 +27,34 @@ public class ListOpendapGrids extends AbstractSelfDescribingAlgorithm {
 
     private static final Logger log = LoggerFactory.getLogger(ListOpendapGrids.class);
     private static final String PARAM_CATALOG_URL = "catalog-url";
+    private static final String PARAM_USE_CACHE = "allow-cached-result";
     private static final String PARAM_RESULT = "result";
     private List<String> errors = new ArrayList<String>();
 
     @Override
     public Map<String, IData> run(Map<String, List<IData>> inputData) {
         String catalogUrl = ((LiteralStringBinding) inputData.get(PARAM_CATALOG_URL).get(0)).getPayload();
+        boolean useCache = true;
+        List<IData> cached = inputData.get(PARAM_USE_CACHE);
+        if (cached != null && cached.size() > 0) { 
+            useCache = ((LiteralBooleanBinding)cached.get(0)).getPayload().booleanValue();
+        }
+        CacheIdentifier ci = new ResponseCache.CacheIdentifier(catalogUrl, DATA_TYPE, null);
 
         StringBuilder response = new StringBuilder();
         List<XmlResponse> xmlResponseList = null;
         try {
-            xmlResponseList = OpendapServerHelper.getGridBeanListFromServer(catalogUrl);
+            if (useCache && ResponseCache.hasCachedResponse(ci)) {
+                xmlResponseList = Lists.newLinkedList();
+                XmlResponse readXmlFromCache = ResponseCache.readXmlFromCache(ci);
+                xmlResponseList.add(readXmlFromCache);
+            }
+            else {
+                xmlResponseList = OpendapServerHelper.getGridBeanListFromServer(catalogUrl);
+                if (useCache) {
+                    ResponseCache.writeXmlToCache(ci, xmlResponseList.get(0));
+                }
+            }
         } catch (IllegalArgumentException ex) {
             getErrors().add(ex.getMessage());
             throw new RuntimeException("An error has occured while processing response. Error: " + ex.getMessage(),ex);
@@ -52,8 +74,9 @@ public class ListOpendapGrids extends AbstractSelfDescribingAlgorithm {
 
     @Override
     public List<String> getInputIdentifiers() {
-        List<String> result = new ArrayList<String>(1);
+        List<String> result = new ArrayList<String>(2);
         result.add(PARAM_CATALOG_URL);
+        result.add(PARAM_USE_CACHE);
         return result;
     }
 
@@ -61,6 +84,9 @@ public class ListOpendapGrids extends AbstractSelfDescribingAlgorithm {
     public Class getInputDataType(String id) {
         if (id.equalsIgnoreCase(PARAM_CATALOG_URL)) {
             return LiteralStringBinding.class;
+        }
+        if (id.equalsIgnoreCase(PARAM_USE_CACHE)) {
+            return LiteralBooleanBinding.class;
         }
         return null;
     }
@@ -86,6 +112,9 @@ public class ListOpendapGrids extends AbstractSelfDescribingAlgorithm {
         if (PARAM_CATALOG_URL.equals(identifier)) {
             return BigInteger.valueOf(1);
         }
+        if (PARAM_USE_CACHE.equals(identifier)) {
+            return BigInteger.valueOf(1);
+        }
         return super.getMaxOccurs(identifier);
     }
 
@@ -93,6 +122,9 @@ public class ListOpendapGrids extends AbstractSelfDescribingAlgorithm {
     public BigInteger getMinOccurs(String identifier) {
         if (PARAM_CATALOG_URL.equals(identifier)) {
             return BigInteger.valueOf(1);
+        }
+        if (PARAM_USE_CACHE.equals(identifier)) {
+            return BigInteger.valueOf(0);
         }
         return super.getMaxOccurs(identifier);
     }

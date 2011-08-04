@@ -2,6 +2,9 @@ package gov.usgs.cida.gdp.wps.algorithm.discovery;
 
 import gov.usgs.cida.gdp.dataaccess.helper.OpendapServerHelper;
 import gov.usgs.cida.gdp.utilities.bean.Time;
+import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
+import gov.usgs.cida.gdp.wps.cache.ResponseCache;
+import gov.usgs.cida.gdp.wps.cache.ResponseCache.CacheIdentifier;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.text.ParseException;
@@ -10,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.n52.wps.io.data.IData;
+import org.n52.wps.io.data.binding.literal.LiteralBooleanBinding;
 import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
 import org.n52.wps.server.AbstractSelfDescribingAlgorithm;
 import org.slf4j.Logger;
@@ -23,6 +27,7 @@ public class GetGridTimeRange extends AbstractSelfDescribingAlgorithm  {
     private static final Logger log = LoggerFactory.getLogger(GetGridTimeRange.class);
     private static final String PARAM_CATALOG_URL = "catalog-url";
     private static final String PARAM_GRID = "grid";
+    private static final String PARAM_USE_CACHE = "allow-cached-response";
     private static final String PARAM_RESULT = "result";
     
     @Override
@@ -47,9 +52,26 @@ public class GetGridTimeRange extends AbstractSelfDescribingAlgorithm  {
             grid.add(((LiteralStringBinding) inputData.get(PARAM_GRID).get(index)).getPayload());
         }
         String gridSelection = grid.get(0);
-        Time timeBean = null;
+        
+        boolean useCache = true; // default to use cache, make user disable
+        if (inputData.containsKey(PARAM_USE_CACHE)) {
+            useCache = ((LiteralBooleanBinding)inputData.get(PARAM_USE_CACHE).get(0)).getPayload().booleanValue();
+        }
+        
+        XmlResponse xmlResponse = null;
+        CacheIdentifier cacheIdent = new CacheIdentifier(datasetUrl,
+                                                         CacheIdentifier.CacheType.TIME_RANGE,
+                                                         gridSelection);
         try {
-            timeBean = OpendapServerHelper.getTimeBean(datasetUrl, gridSelection);
+            if (useCache && ResponseCache.hasCachedResponse(cacheIdent)) {
+                xmlResponse = ResponseCache.readXmlFromCache(cacheIdent);
+            }
+            else {
+                xmlResponse = OpendapServerHelper.getTimeBean(datasetUrl, gridSelection);
+                if (useCache) {
+                    ResponseCache.writeXmlToCache(cacheIdent, xmlResponse);
+                }
+            }
         } catch (IOException ex) {
             log.error(ex.getMessage());
             throw new RuntimeException("Error occured while getting time range.  Function halted.",ex);
@@ -59,7 +81,7 @@ public class GetGridTimeRange extends AbstractSelfDescribingAlgorithm  {
         }
 
         Map<String, IData> result = new HashMap<String, IData>(1);
-        result.put(PARAM_RESULT, new LiteralStringBinding(timeBean.toXML()));
+        result.put(PARAM_RESULT, new LiteralStringBinding(xmlResponse.toXML()));
         return result;
     }
 
@@ -68,6 +90,7 @@ public class GetGridTimeRange extends AbstractSelfDescribingAlgorithm  {
         List<String> result = new ArrayList<String>(2);
         result.add(PARAM_CATALOG_URL);
         result.add(PARAM_GRID);
+        result.add(PARAM_USE_CACHE);
         return result;
     }
 
@@ -98,6 +121,9 @@ public class GetGridTimeRange extends AbstractSelfDescribingAlgorithm  {
         if (PARAM_GRID.equals(identifier)) {
             return BigInteger.valueOf(Long.MAX_VALUE);
         }
+        if (PARAM_USE_CACHE.equals(identifier)) {
+            return BigInteger.valueOf(1);
+        }
         return super.getMaxOccurs(identifier);
     }
 
@@ -108,6 +134,9 @@ public class GetGridTimeRange extends AbstractSelfDescribingAlgorithm  {
         }
         if (PARAM_GRID.equals(identifier)) {
             return BigInteger.valueOf(1);
+        }
+        if (PARAM_USE_CACHE.equals(identifier)) {
+            return BigInteger.valueOf(0);
         }
         return super.getMaxOccurs(identifier);
     }
