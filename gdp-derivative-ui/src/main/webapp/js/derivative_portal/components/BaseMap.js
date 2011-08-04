@@ -28,8 +28,8 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		this.layerController = config.layerController;
 
 		this.layerController.on('changelayer', function() {
-			this.onChangeLayer();
-			this.currentLayer = this.findCurrentLayer();
+                    this.onChangeLayer();
+                    this.currentLayer = this.findCurrentLayer();
 		}, this);
 		this.layerController.on('changedimension', function() {
 			this.onChangeDimension();
@@ -70,21 +70,21 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 	 * is the visible one.
 	 */
 	findCurrentLayer : function() {
-		var storeIndex = this.layers.findBy(function(record, id) {
-			return (this.layerController.getLayerOpacity() === record.get('layer').opacity);
-		}, this, 1);
-		if (-1 < storeIndex) {
-			return this.layers.getAt(storeIndex);
-		} else {
-			return null;
-		}
-		
+            var storeIndex = this.layers.findBy(function(record, id) {
+                return (this.layerController.getLayerOpacity() === record.get('layer').opacity);
+            }, this, 1);
+            if (-1 < storeIndex) {
+                    return this.layers.getAt(storeIndex);
+            } else {
+                    return null;
+            }
 	},
 	clearLayers : function() {
             LOG.debug('BaseMap:clearLayers: Handling request.');
 		if (this.layers.getCount() > 1) {
                     LOG.debug('BaseMap:clearLayers: Clearing layer.');
                     this.layers.remove(this.layers.getRange(1));
+                    this.layerController.requestClearLegendImage();
 		}
 	},
 	onChangeLayer : function() {

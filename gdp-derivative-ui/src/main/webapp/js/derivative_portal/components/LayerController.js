@@ -97,6 +97,9 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
             this.legendRecord = legendRecord;
             this.fireEvent('changelegend');
         },
+        requestClearLegendImage : function() {
+            
+        },
 	requestOpacity : function(opacity) {
 		if (!opacity) return;
                 LOG.debug('LayerController:requestOpacity: Handling request.');

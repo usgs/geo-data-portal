@@ -46,8 +46,7 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
                 this.url = url;
                 var el = this.getEl();
                 if (el) {
-                    LOG.debug('here');
-                    el.dom.src = Ext.BLANK_IMAGE_URL;
+                    el.dom.src = '';
                     el.un("error", this.onImageLoadError, this);
                     el.on("error", this.onImageLoadError, this, {single: true});
                     el.dom.src = url;
@@ -161,6 +160,7 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
         }, config);
         this.controller.on('changelegend', function(){
             LOG.debug('LayerChooser: Observed legend change');
+            LOG.debug('LayerChooser: Removing current legend image and reapplying new legend image.');
             var legendHref = this.controller.getLegendRecord().data.href;
             this.legendImage.setUrl(GDP.PROXY_PREFIX + legendHref);
             this.legendWindow.show(null, function() {
