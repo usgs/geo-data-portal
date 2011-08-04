@@ -40,6 +40,7 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
                     ,closable: false
                     ,border: false
                     ,frame: false
+                    ,shadow: false
                     ,layout: 'absolute'
                     ,items: [this.legendImage]
                     ,height: this.DEFAULT_LEGEND_Y
@@ -126,10 +127,10 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
 		}, this, {buffer: 5});
                 
                     var activityBar = new GDP.MapActivityBar(
-                        {
-                            id : 'activityBar'
-                            ,map : config.map
-                        }
+//                        {
+//                            id : 'activityBar'
+//                            ,map : config.map
+//                        }
                     );
                 
 		config = Ext.apply({
@@ -146,7 +147,6 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
                     var legendHref = this.controller.getLegendRecord().data.href;
                     this.legendImage.setUrl('proxy/' + legendHref);
                     this.legendWindow.show(null, function() {
-                        this.legendWindow.items[0].show();
                         this.realignLegend();
                     }, this);
                 }, this);
@@ -191,12 +191,6 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
 			}
 		}, this);
 		
-		this.controller.on('changeopacity', function() {
-                    LOG.debug('LayerChooser: Observed "changeopacity"')
-			var opacity = this.controller.getLayerOpacity();
-			
-		}, this);
-                
 		GDP.LayerChooser.superclass.constructor.call(this, config);
                 
                 this.on('resize', function() {
