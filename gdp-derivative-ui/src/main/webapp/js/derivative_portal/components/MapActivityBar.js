@@ -3,7 +3,7 @@ Ext.ns("GDP");
 GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
     layerController : undefined,
     constructor : function(config) {
-        LOG.debug('MapActivityBar: Constructing self.');
+        LOG.debug('MapActivityBar:constructor: Constructing self.');
         
         if (!config) config = {};
         
@@ -11,9 +11,23 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
         
         var map = config.map;
         var toggleGroup = 'draw';
-        var zoomToExtentAction, navigationAction, vector, drawBboxAction;
+        var zoomToExtentAction, navigationAction, bboxVector, drawBboxAction;
         
-        vector = new OpenLayers.Layer.Vector('vector');
+        bboxVector = new OpenLayers.Layer.Vector('bboxvector');
+        
+        drawBboxAction = new GeoExt.Action({
+            text: 'Draw Box'
+            ,control: new OpenLayers.Control.DrawFeature(
+                bboxVector, 
+                OpenLayers.Handler.Box
+            )
+            ,toggleGroup: toggleGroup
+            ,allowDepress: false
+            ,tooltip: 'Draw A Bounding Box On The Map'
+            ,group: toggleGroup
+            ,map: map
+        });
+        
         zoomToExtentAction = new GeoExt.Action({
             text : 'Max Extent'
             ,control: new OpenLayers.Control.ZoomToMaxExtent()
@@ -33,21 +47,20 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
             ,map: map
         });
         
-        drawBboxAction = new GeoExt.Action({
-            text: 'Draw Box'
-            ,control: new OpenLayers.Control.DrawFeature(
-                vector, OpenLayers.Handler.Polygon
-                )
+        var zoomAction = new GeoExt.Action({
+            text: "Zoom In"
+            ,control: new OpenLayers.Control.ZoomBox({alwaysZoom: true})
+            ,map: map
             ,toggleGroup: toggleGroup
             ,allowDepress: false
-            ,tooltip: 'Draw A Bounding Box On The Map'
+            ,tooltip: "Zoom In"
             ,group: toggleGroup
-            ,map: map
         });
         
         config = Ext.apply({
-            items: [zoomToExtentAction, navigationAction, drawBboxAction]
+            items: [zoomToExtentAction, navigationAction, drawBboxAction, zoomAction]
         }, config);
         GDP.MapActivityBar.superclass.constructor.call(this, config);
+//        map.addLayer(bboxVector);
     }
 });

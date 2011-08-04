@@ -83,8 +83,8 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             LOG.debug('BaseMap:clearLayers: Handling request.');
 		if (this.layers.getCount() > 1) {
                     LOG.debug('BaseMap:clearLayers: Clearing layer.');
+                    // Remove all layers except for vector layer
                     this.layers.remove(this.layers.getRange(1));
-                    this.layerController.requestClearLegendImage();
 		}
 	},
 	onChangeLayer : function() {
@@ -99,9 +99,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 
 			var params = {};
 			Ext.apply(params, this.layerController.getAllDimensions());
-
 			this.replaceLayer(layer, params);
-
 		}
 	},
 	onChangeDimension : function() {
@@ -188,6 +186,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                             if (LOADMASK) LOADMASK.hide();
 			});
 			this.layers.add(copy);
+                        LOG.debug('here');
 		}
 		
 		if (this.currentLayer) {
