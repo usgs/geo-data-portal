@@ -33,26 +33,20 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
             return this.legendRecord;
         },
 	constructor : function(config) {
+            LOG.debug('LayerController: Constructing self.');
 		if (!config) config = {};
 		
 		this.layerOpacity = config.layerOpacity || this.layerOpacity;
-		
                 this.legendStore = config.legendStore || this.legendStore;
                 
 		var baseLayer = config.baseLayer;
-		
+                
 		var configDimensions = config.dimensions;
-		var filledDims = {'time' : ''};
-		
+		var filledDims = {'time' : ''}; // TODO- Ask Sipps what he was doing here
 		Ext.each(configDimensions, function(item) {
 			filledDims[item] = '';
 		}, this);
-		
 		this.dimensions = filledDims;
-		
-		config = Ext.apply({
-			
-		}, config);
 		
 		GDP.LayerController.superclass.constructor.call(this, config);
 		

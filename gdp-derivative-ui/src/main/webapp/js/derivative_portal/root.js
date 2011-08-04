@@ -3,6 +3,7 @@ var NOTIFY;
 var LOADMASK;
 
 Ext.onReady(function () {
+        Ext.PROXY_PREFIX = 'proxy/';
 	initializeLogging();
 	initializeNotification();
 	initializeMapping();
@@ -75,223 +76,206 @@ function initializeNotification() {
 }
 
 function initializeMapping() {
-	
-	var baseLayerStore = new GeoExt.data.LayerStore({
-			layers : [
-			new OpenLayers.Layer.WMS(
-				"Blue Marble",
-				"http://maps.opengeo.org/geowebcache/service/wms",
-				{
-					layers: "bluemarble"
-				}
-				),
-			new OpenLayers.Layer.WMS(
-				"NAIP",
-				"http://isse.cr.usgs.gov/ArcGIS/services/Combined/SDDS_Imagery/MapServer/WMSServer",
-				{
-					layers: "0"
-				}
-				),
-			new OpenLayers.Layer.XYZ(
-				"Shaded Relief",
-				"http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_ShadedRelief_World_2D/MapServer/tile/${z}/${y}/${x}",
-				{
-					layers : "0"
-				}
-				),
-			new OpenLayers.Layer.XYZ(
-				"Street Map",
-				"http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_StreetMap_World_2D/MapServer/tile/${z}/${y}/${x}",
-				{
-					layers : "0"
-				}
-				)
-			]
-		});
-	
-        // Reads in the JSON array from each layer, creating a legend data store
-        var legendStore = new Ext.data.JsonStore({
-                                    idProperty: 'name'
-                                    ,root: 'styles'
-                                    ,fields: [
-                                        {name: 'name', mapping: 'name'}
-                                        ,{name: 'title', mapping: 'title'}
-                                        ,{name: 'abstrakt', mapping: 'abstract'}
-                                        ,{name: 'width', mapping: 'legend.width'}
-                                        ,{name: 'height', mapping: 'legend.height'}
-                                        ,{name: 'format', mapping: 'legend.format'}
-                                        ,{name: 'href', mapping: 'legend.href'}
-                                    ]
-                                });
-        
-	var layerController = new GDP.LayerController({
-		baseLayer : baseLayerStore.getAt(3)
-		,dimensions : [
-			'time', 'elevation'
-		]
-                ,legendStore : legendStore
-	});
-	
-	var endpointStore = new Ext.data.ArrayStore({
-		storeId : 'endpointStore',
-		idIndex: 0,
-		fields: ['url']
-	});
-	
-        // Default endpoints we use
-	var urls = [
-		['http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/ncWMS/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1'],
-		['http://igsarmewmaccave:8081/ncWMS/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1'],
-		['http://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/wms/gmo/GMO_w_meta.ncml?service=WMS&version=1.1.1&request=GetCapabilities']
-	];
-	
-	endpointStore.loadData(urls);
-	
-	var endpointCombo = new Ext.form.ComboBox({
-			mode : 'local'
-			,triggerAction: 'all'
-			,flex : 1
-			,store : endpointStore
-			,value : urls[0][0]
-			,lazyInit : false
-                        ,editable : false
-			,displayField : 'url'
-		});
-	
-	var endpointApplyButton = new Ext.Button({
-				text : 'Go',
-				handler : function() {
-					if (LOADMASK) LOADMASK.show();
-				}
-			});
-	
-	var endpointContainer = new Ext.form.CompositeField({
-		region : 'center',
-		fieldLabel : 'Endpoint',
-		items : [
-			endpointCombo,
-			endpointApplyButton
-		]
-	});
-	
-	var proxyUrl = '';
-	
-	if (endpointCombo.getRawValue() && '' !== endpointCombo.getRawValue()) {
-		proxyUrl = 'proxy/' + endpointCombo.getRawValue();
-	}
-	
-	var capabilitiesStore = new GeoExt.data.WMSCapabilitiesStore({
-			url : proxyUrl,
-			storeId : 'capabilitiesStore'
-		});
-	
-	capabilitiesStore.on('exception', function() {
-		if (LOADMASK) LOADMASK.hide();
-		NOTIFY.error();
-	}, this);
-		
-	endpointApplyButton.on('click', function() {
-		var proxyUrl = '';
-	
-		if (endpointCombo.getRawValue() && '' !== endpointCombo.getRawValue()) {
-			proxyUrl = 'proxy/' + endpointCombo.getRawValue();
-			capabilitiesStore.proxy.setApi(Ext.data.Api.actions.read, proxyUrl);
-			capabilitiesStore.load();
-		}
-	}, this);
-	
-	//UI Components
-	var configPanel = new GDP.LayerChooser({
-                id: 'control-panel',
-		title : 'Controls',
-		width : 265,
-		region: 'west',
-		labelWidth: 80,
-		border : false,
-		collapsible : true,
-		floatable : false,
-		hideCollapseTool : true,
-		collapseMode : 'mini',
-		split : true,
-		minSize : 265,
-		maxSize : 265,
-		capabilitiesStore : capabilitiesStore,
-		baseLayerStore : baseLayerStore,
-		controller : layerController,
-		defaults: {
-			width: 180
-		}
-	});
-	
-	var endpointPanel = new Ext.Panel({
-		region : 'north',
-		border : false,
-		layout : 'border',
-		collapsed : true,
-		collapsible : true,
-		floatable : false,
-		hideCollapseTool : true,
-		collapseMode : 'mini',
-		split : true,
-		height : 25,
-		minSize : 25,
-		maxSize : 25,
-		items : [endpointContainer]
-	});
-	
-	var timestepPanel = new GDP.TimestepChooser({
-				region : 'south',
-				border : false,
-				height : 30,
-				layerController : layerController
-			});
-	
-	var mapPanel = new GDP.BaseMap({
-		id : 'mapPanel',
-		region: 'center',
-		layout : 'fit',
-		border: false,
-		layerController : layerController,
-		title: 'USGS Derived Downscaled Climate Portal'
-	});
-        
-//        var activityBar = new GDP.MapActivityBar({
-//            id : 'activityBar'
-//            ,map : mapPanel.map
-//        })
-        
-	var centerPanel = new Ext.Panel({
-		region : 'center',
-		layout : 'border',
-		items : [ endpointPanel, mapPanel, timestepPanel]
-	})
-	
-	var headerPanel = new Ext.Panel({
-		region: 'north',
-		height: 'auto',
-		border : false,
-		autoShow: true,
-		contentEl: 'usgs-header-panel'
-	});
-    
-	var footerPanel = new Ext.Panel({
-		region: 'south',
-		height: 'auto',
-		border : false,
-		autoShow: true,
-		contentEl: 'usgs-footer-panel'
-	});
-	
-	new Ext.Viewport({
-		renderTo : document.body,
-		items : [headerPanel, centerPanel, configPanel,footerPanel], 
-		layout: 'border'
-	});
-    
-	LOG.info('Derivative Portal: Mapping initialized.');
-	
 	LOADMASK = new Ext.LoadMask(Ext.getBody());
-	if (LOADMASK) LOADMASK.show();
+    var baseLayerStore = new GeoExt.data.LayerStore({
+        layers : [
+        new OpenLayers.Layer.WMS(
+            "Blue Marble",
+            "http://maps.opengeo.org/geowebcache/service/wms",
+            {
+                layers: "bluemarble"
+            }
+            ),
+        new OpenLayers.Layer.WMS(
+            "NAIP",
+            "http://isse.cr.usgs.gov/ArcGIS/services/Combined/SDDS_Imagery/MapServer/WMSServer",
+            {
+                layers: "0"
+            }
+            ),
+        new OpenLayers.Layer.XYZ(
+            "Shaded Relief",
+            "http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_ShadedRelief_World_2D/MapServer/tile/${z}/${y}/${x}",
+            {
+                layers : "0"
+            }
+            ),
+        new OpenLayers.Layer.XYZ(
+            "Street Map",
+            "http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_StreetMap_World_2D/MapServer/tile/${z}/${y}/${x}",
+            {
+                layers : "0"
+            }
+            )
+        ]
+    });
+	
+    // Reads in the JSON array from each layer, creating a legend data store
+    var legendStore = new Ext.data.JsonStore({
+        idProperty: 'name'
+        ,root: 'styles'
+        ,fields: [
+            {name: 'name', mapping: 'name'}
+            ,{name: 'title', mapping: 'title'}
+            ,{name: 'abstrakt', mapping: 'abstract'}
+            ,{name: 'width', mapping: 'legend.width'}
+            ,{name: 'height', mapping: 'legend.height'}
+            ,{name: 'format', mapping: 'legend.format'}
+            ,{name: 'href', mapping: 'legend.href'}
+        ]
+    });
+
+    var layerController = new GDP.LayerController({
+        baseLayer : baseLayerStore.getAt(3) // Use ESRI StreetMap
+        ,legendStore : legendStore
+        ,dimensions : ['time', 'elevation']
+    });
+
+    // Endpoint Combobox Creation
+    var proxyUrl, urls, endpointStore, endpointCombo, endpointApplyButton, endpointContainer, endpointPanel;
+    {
+        proxyUrl = '';
+        urls = [
+                ['http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/ncWMS/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1'],
+                ['http://igsarmewmaccave:8081/ncWMS/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1'],
+                ['http://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/wms/gmo/GMO_w_meta.ncml?service=WMS&version=1.1.1&request=GetCapabilities']
+        ];
+        endpointStore = new Ext.data.ArrayStore({
+                storeId : 'endpointStore',
+                idIndex: 0,
+                fields: ['url']
+        });
+        endpointStore.loadData(urls);
+        endpointCombo = new Ext.form.ComboBox({
+            mode : 'local'
+            ,triggerAction: 'all'
+            ,flex : 1
+            ,store : endpointStore
+            ,value : urls[0][0]
+            ,lazyInit : false
+            ,displayField : 'url'
+        });
+        endpointApplyButton = new Ext.Button({
+            text : 'Go'
+        });
+        endpointCombo.on('select', function(){
+            endpointApplyButton.fireEvent('click');
+        });
+        endpointContainer = new Ext.form.CompositeField({
+            region : 'center'
+            ,fieldLabel : 'Endpoint'
+            ,items : [
+                endpointCombo,
+                endpointApplyButton
+            ]
+        });
+        if (endpointCombo.getRawValue() && '' !== endpointCombo.getRawValue()) {
+            proxyUrl = Ext.PROXY_PREFIX + endpointCombo.getRawValue();
+        }
+        endpointPanel = new Ext.Panel({
+            region : 'north',
+            border : false,
+            layout : 'border',
+            collapsed : true,
+            collapsible : true,
+            floatable : false,
+            hideCollapseTool : true,
+            collapseMode : 'mini',
+            split : true,
+            height : 25,
+            minSize : 25,
+            maxSize : 25,
+            items : [endpointContainer]
+        });
+    }
+
+    var capabilitiesStore = new GeoExt.data.WMSCapabilitiesStore({
+        url : proxyUrl,
+        storeId : 'capabilitiesStore'
+    });
+    capabilitiesStore.on('exception', function() {
+        if (LOADMASK) LOADMASK.hide();
+        NOTIFY.error();
+    }, this);
+
+    endpointApplyButton.on('click', function() {
+        var proxyUrl = '';
+        if (endpointCombo.getRawValue() && '' !== endpointCombo.getRawValue()) {
+            if (LOADMASK) LOADMASK.show();
+            proxyUrl = Ext.PROXY_PREFIX + endpointCombo.getRawValue();
+            capabilitiesStore.proxy.setApi(Ext.data.Api.actions.read, proxyUrl);
+            capabilitiesStore.load();
+        }
+    }, this);
+
+    //UI Components
+    var mapPanel, timestepPanel, centerPanel;
+    var configPanel = new GDP.LayerChooser({
+        id: 'control-panel',
+        title : 'Controls',
+        region: 'west',
+        labelWidth: 80,
+        border : false,
+        collapsible : true,
+        floatable : false,
+        hideCollapseTool : true,
+        collapseMode : 'mini',
+        split : true,
+        width : 265,
+        minSize : 265,
+        maxSize : 265,
+        map : mapPanel,
+        capabilitiesStore : capabilitiesStore,
+        baseLayerStore : baseLayerStore,
+        controller : layerController,
+        defaults: {
+            width: 180
+        }
+    });
+    timestepPanel = new GDP.TimestepChooser({
+        region : 'south',
+        border : false,
+        height : 30,
+        layerController : layerController
+    });
+    mapPanel = new GDP.BaseMap({
+            id : 'mapPanel',
+            region: 'center',
+            layout : 'fit',
+            border: false,
+            layerController : layerController,
+            title: 'USGS Derived Downscaled Climate Portal'
+    });
+    centerPanel = new Ext.Panel({
+            region : 'center',
+            layout : 'border',
+            items : [ endpointPanel, mapPanel, timestepPanel]
+    });
+
+    var headerPanel, footerPanel;
+    headerPanel = new Ext.Panel({
+        region: 'north',
+        height: 'auto',
+        border : false,
+        autoShow: true,
+        contentEl: 'usgs-header-panel'
+    });
+    footerPanel = new Ext.Panel({
+        region: 'south',
+        height: 'auto',
+        border : false,
+        autoShow: true,
+        contentEl: 'usgs-footer-panel'
+    });
+
+    new Ext.Viewport({
+            renderTo : document.body,
+            items : [headerPanel, centerPanel, configPanel,footerPanel], 
+            layout: 'border'
+    });
+
+    LOG.info('Derivative Portal: Mapping initialized.');
+    if (LOADMASK) LOADMASK.show();
 	
     capabilitiesStore.load();
 }

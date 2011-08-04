@@ -1,6 +1,6 @@
 Ext.ns("GDP");
 
-GDP.MapActivityBar = Ext.extend(Ext.ToolBar, {
+GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
     layerController : undefined,
     constructor : function(config) {
         LOG.debug('MapActivityBar: Constructing self.');

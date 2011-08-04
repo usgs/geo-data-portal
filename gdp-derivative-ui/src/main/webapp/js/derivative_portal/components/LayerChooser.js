@@ -125,9 +125,17 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
 			this.controller.requestOpacity(layerOpacitySlider.getValue() / 100);
 		}, this, {buffer: 5});
                 
+                    var activityBar = new GDP.MapActivityBar(
+                        {
+                            id : 'activityBar'
+                            ,map : config.map
+                        }
+                    );
+                
 		config = Ext.apply({
 			items : [
-			baseLayerCombo
+                        activityBar
+			,baseLayerCombo
 			,layerCombo
                         ,legendCombo
 			,layerOpacitySlider
@@ -137,7 +145,6 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
                     LOG.debug('LayerChooser: Observed legend change');
                     var legendHref = this.controller.getLegendRecord().data.href;
                     this.legendImage.setUrl('proxy/' + legendHref);
-//                    this.legendWindow.update('<img src="proxy/' + legendHref + '" />');
                     this.legendWindow.show(null, function() {
                         this.legendWindow.items[0].show();
                         this.realignLegend();
