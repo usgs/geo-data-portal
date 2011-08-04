@@ -76,7 +76,8 @@ function initializeNotification() {
 }
 
 function initializeMapping() {
-	LOADMASK = new Ext.LoadMask(Ext.getBody());
+    LOG.debug('root:initializeMapping');
+    LOADMASK = new Ext.LoadMask(Ext.getBody());
     var baseLayerStore = new GeoExt.data.LayerStore({
         layers : [
         new OpenLayers.Layer.WMS(
@@ -110,27 +111,6 @@ function initializeMapping() {
         ]
     });
 	
-    // Reads in the JSON array from each layer, creating a legend data store
-    var legendStore = new Ext.data.JsonStore({
-        idProperty: 'name'
-        ,root: 'styles'
-        ,fields: [
-            {name: 'name', mapping: 'name'}
-            ,{name: 'title', mapping: 'title'}
-            ,{name: 'abstrakt', mapping: 'abstract'}
-            ,{name: 'width', mapping: 'legend.width'}
-            ,{name: 'height', mapping: 'legend.height'}
-            ,{name: 'format', mapping: 'legend.format'}
-            ,{name: 'href', mapping: 'legend.href'}
-        ]
-    });
-
-    var layerController = new GDP.LayerController({
-        baseLayer : baseLayerStore.getAt(3) // Use ESRI StreetMap
-        ,legendStore : legendStore
-        ,dimensions : ['time', 'elevation']
-    });
-
     // Endpoint Combobox Creation
     var proxyUrl, urls, endpointStore, endpointCombo, endpointApplyButton, endpointContainer, endpointPanel;
     {
@@ -208,9 +188,38 @@ function initializeMapping() {
         }
     }, this);
 
+    var legendStore = new Ext.data.JsonStore({
+        idProperty: 'name'
+        ,root: 'styles'
+        ,fields: [
+            {name: 'name', mapping: 'name'}
+            ,{name: 'title', mapping: 'title'}
+            ,{name: 'abstrakt', mapping: 'abstract'}
+            ,{name: 'width', mapping: 'legend.width'}
+            ,{name: 'height', mapping: 'legend.height'}
+            ,{name: 'format', mapping: 'legend.format'}
+            ,{name: 'href', mapping: 'legend.href'}
+        ]
+    });
+    var layerController = new GDP.LayerController({
+        baseLayer : baseLayerStore.getAt(3) // Use ESRI StreetMap
+        ,legendStore : legendStore
+        ,dimensions : ['time', 'elevation']
+    });
+
     //UI Components
-    var mapPanel, timestepPanel, centerPanel;
-    var configPanel = new GDP.LayerChooser({
+    var configPanel, mapPanel, timestepPanel, centerPanel;
+    
+    mapPanel = new GDP.BaseMap({
+            id : 'mapPanel',
+            region: 'center',
+            layout : 'fit',
+            border: false,
+            layerController : layerController,
+            title: 'USGS Derived Downscaled Climate Portal'
+    });
+    
+    configPanel = new GDP.LayerChooser({
         id: 'control-panel',
         title : 'Controls',
         region: 'west',
@@ -224,7 +233,7 @@ function initializeMapping() {
         width : 265,
         minSize : 265,
         maxSize : 265,
-        map : mapPanel,
+        map : mapPanel.map,
         capabilitiesStore : capabilitiesStore,
         baseLayerStore : baseLayerStore,
         controller : layerController,
@@ -232,19 +241,14 @@ function initializeMapping() {
             width: 180
         }
     });
+    
+    
+    
     timestepPanel = new GDP.TimestepChooser({
         region : 'south',
         border : false,
         height : 30,
         layerController : layerController
-    });
-    mapPanel = new GDP.BaseMap({
-            id : 'mapPanel',
-            region: 'center',
-            layout : 'fit',
-            border: false,
-            layerController : layerController,
-            title: 'USGS Derived Downscaled Climate Portal'
     });
     centerPanel = new Ext.Panel({
             region : 'center',

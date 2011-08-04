@@ -9,37 +9,44 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
         
         this.layerController = config.layerController;
         
-        var zoomToExtentAction = new GeoExt.Action({
-            text : 'Max Extent',
-            control: new OpenLayers.Control.ZoomToMaxExtent(),
-            tooltip: "zoom to max extent"
+        var map = config.map;
+        var toggleGroup = 'draw';
+        var zoomToExtentAction, navigationAction, vector, drawPolygonAction;
+        
+        vector = new OpenLayers.Layer.Vector('vector');
+        zoomToExtentAction = new GeoExt.Action({
+            text : 'Max Extent'
+            ,control: new OpenLayers.Control.ZoomToMaxExtent()
+            ,tooltip: 'Zoom To Map Extent'
+            ,map: map
         });
         
-        var navigationAction = new GeoExt.Action({
-            text: "Nav",
-            control: new OpenLayers.Control.Navigation(),
-            toggleGroup: "draw",
-            allowDepress: false,
-            pressed: true,
-            tooltip: "navigate",
-            group: "draw",
-            checked: true
+        navigationAction = new GeoExt.Action({
+            text: 'Nav'
+            ,control: new OpenLayers.Control.Navigation()
+            ,toggleGroup: toggleGroup
+            ,allowDepress: false
+            ,pressed: true
+            ,tooltip: 'Navigate The Map'
+            ,group: toggleGroup
+            ,checked: true
+            ,map: map
         });
         
-        var vector = new OpenLayers.Layer.Vector("vector");
-        var drawPolygonAction = new GeoExt.Action({
-        text: "draw poly",
-        control: new OpenLayers.Control.DrawFeature(
-            vector, OpenLayers.Handler.Polygon
-        ),
-        toggleGroup: "draw",
-        allowDepress: false,
-        tooltip: "draw polygon",
-        group: "draw"
-    });
+        drawPolygonAction = new GeoExt.Action({
+            text: 'Draw Poly'
+            ,control: new OpenLayers.Control.DrawFeature(
+                vector, OpenLayers.Handler.Polygon
+                )
+            ,toggleGroup: toggleGroup
+            ,allowDepress: false
+            ,tooltip: 'Draw A Polygon On The Map'
+            ,group: toggleGroup
+            ,map: map
+        });
         
         config = Ext.apply({
-            items: [zoomToExtentAction, navigationAction]
+            items: [zoomToExtentAction, navigationAction, drawPolygonAction]
         }, config);
         GDP.MapActivityBar.superclass.constructor.call(this, config);
     }

@@ -177,7 +177,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 			params = Ext.apply({
 				format: "image/png"
 				,transparent : true
-                                ,styles : (params.styles) ? params.styles : this.layerController.getLegendRecord().id
+//                                ,styles : (params.styles) ? params.styles : this.layerController.getLegendRecord().id
 			}, params);
 
 			copy.get('layer').mergeNewParams(params);
@@ -185,7 +185,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 			copy.get('layer')['url'] = 'proxy/' + copy.get('layer')['url'];
 
 			copy.getLayer().events.register('loadend', this, function() {
-				if (LOADMASK) LOADMASK.hide();
+                            if (LOADMASK) LOADMASK.hide();
 			});
 			this.layers.add(copy);
 		}

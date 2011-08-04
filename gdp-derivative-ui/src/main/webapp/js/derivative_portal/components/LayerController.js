@@ -32,39 +32,33 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
         getLegendRecord : function() {
             return this.legendRecord;
         },
-	constructor : function(config) {
+        constructor : function(config) {
             LOG.debug('LayerController: Constructing self.');
-		if (!config) config = {};
-		
-		this.layerOpacity = config.layerOpacity || this.layerOpacity;
-                this.legendStore = config.legendStore || this.legendStore;
-                
-		var baseLayer = config.baseLayer;
-                
-		var configDimensions = config.dimensions;
-		var filledDims = {'time' : ''}; // TODO- Ask Sipps what he was doing here
-		Ext.each(configDimensions, function(item) {
-			filledDims[item] = '';
-		}, this);
-		this.dimensions = filledDims;
-		
-		GDP.LayerController.superclass.constructor.call(this, config);
-		
-		this.addEvents(
-		/**
-		 * @event changelayer
-		 * Fired after all configuration changes has been made and are ready
-		 * to switch to a new layer.
-		 */
-			"changelayer",
-                        "changelegend",
-			"changedimension",
-			"changeopacity"
-		);
-		
-		this.requestBaseLayer(baseLayer);
-		
-	},
+            
+            if (!config) config = {};
+
+            this.layerOpacity = config.layerOpacity || this.layerOpacity;
+            this.legendStore = config.legendStore || this.legendStore;
+
+            // TODO- Ask Sipps what he was doing here
+            var filledDims = {'time' : ''}; 
+            Ext.each(config.dimensions, function(item) {
+                filledDims[item] = '';
+            }, this);
+            this.dimensions = filledDims;
+
+            GDP.LayerController.superclass.constructor.call(this, config);
+
+            this.addEvents(
+                "changelayer",
+                "changelegend",
+                "changedimension",
+                "changeopacity"
+                );
+
+            this.requestBaseLayer(config.baseLayer);
+
+        },
 	requestBaseLayer : function(baseLayerRecord) {
 		if (!baseLayerRecord) return;
 		this.baseLayer = baseLayerRecord;
