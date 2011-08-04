@@ -162,7 +162,7 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
         this.controller.on('changelegend', function(){
             LOG.debug('LayerChooser: Observed legend change');
             var legendHref = this.controller.getLegendRecord().data.href;
-            this.legendImage.setUrl(Ext.PROXY_PREFIX + legendHref);
+            this.legendImage.setUrl(GDP.PROXY_PREFIX + legendHref);
             this.legendWindow.show(null, function() {
                 this.realignLegend();
             }, this);

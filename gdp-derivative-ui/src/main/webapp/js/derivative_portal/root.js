@@ -5,7 +5,7 @@ var NOTIFY;
 var LOADMASK;
 
 Ext.onReady(function () {
-        Ext.PROXY_PREFIX = 'proxy/';
+        GDP.PROXY_PREFIX = 'proxy/';
 	initializeLogging();
 	initializeNotification();
 	initializeMapping();
@@ -152,7 +152,7 @@ function initializeMapping() {
             ]
         });
         if (endpointCombo.getRawValue() && '' !== endpointCombo.getRawValue()) {
-            proxyUrl = Ext.PROXY_PREFIX + endpointCombo.getRawValue();
+            proxyUrl = GDP.PROXY_PREFIX + endpointCombo.getRawValue();
         }
         endpointPanel = new Ext.Panel({
             region : 'north',
@@ -184,7 +184,7 @@ function initializeMapping() {
         var proxyUrl = '';
         if (endpointCombo.getRawValue() && '' !== endpointCombo.getRawValue()) {
             if (LOADMASK) LOADMASK.show();
-            proxyUrl = Ext.PROXY_PREFIX + endpointCombo.getRawValue();
+            proxyUrl = GDP.PROXY_PREFIX + endpointCombo.getRawValue();
             capabilitiesStore.proxy.setApi(Ext.data.Api.actions.read, proxyUrl);
             capabilitiesStore.load();
         }
