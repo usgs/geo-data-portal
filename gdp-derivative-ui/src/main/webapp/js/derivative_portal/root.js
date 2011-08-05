@@ -80,38 +80,6 @@ function initializeNotification() {
 function initializeMapping() {
     LOG.debug('root:initializeMapping');
     LOADMASK = new Ext.LoadMask(Ext.getBody());
-    var baseLayerStore = new GeoExt.data.LayerStore({
-        layers : [
-        new OpenLayers.Layer.WMS(
-            "Blue Marble",
-            "http://maps.opengeo.org/geowebcache/service/wms",
-            {
-                layers: "bluemarble"
-            }
-            ),
-        new OpenLayers.Layer.WMS(
-            "NAIP",
-            "http://isse.cr.usgs.gov/ArcGIS/services/Combined/SDDS_Imagery/MapServer/WMSServer",
-            {
-                layers: "0"
-            }
-            ),
-        new OpenLayers.Layer.XYZ(
-            "Shaded Relief",
-            "http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_ShadedRelief_World_2D/MapServer/tile/${z}/${y}/${x}",
-            {
-                layers : "0"
-            }
-            ),
-        new OpenLayers.Layer.XYZ(
-            "Street Map",
-            "http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_StreetMap_World_2D/MapServer/tile/${z}/${y}/${x}",
-            {
-                layers : "0"
-            }
-            )
-        ]
-    });
 	
     // Endpoint Combobox Creation
     var proxyUrl, urls, endpointStore, endpointCombo, endpointApplyButton, endpointContainer, endpointPanel;
@@ -179,7 +147,7 @@ function initializeMapping() {
         if (LOADMASK) LOADMASK.hide();
         NOTIFY.error();
     }, this);
-
+    
     endpointApplyButton.on('click', function() {
         var proxyUrl = '';
         if (endpointCombo.getRawValue() && '' !== endpointCombo.getRawValue()) {
@@ -203,8 +171,40 @@ function initializeMapping() {
             ,{name: 'href', mapping: 'legend.href'}
         ]
     });
+    var baseLayerStore = new GeoExt.data.LayerStore({
+        layers : [
+        new OpenLayers.Layer.WMS(
+            "Blue Marble",
+            "http://maps.opengeo.org/geowebcache/service/wms",
+            {
+                layers: "bluemarble"
+            }
+            ),
+        new OpenLayers.Layer.WMS(
+            "NAIP",
+            "http://isse.cr.usgs.gov/ArcGIS/services/Combined/SDDS_Imagery/MapServer/WMSServer",
+            {
+                layers: "0"
+            }
+            ),
+        new OpenLayers.Layer.XYZ(
+            "Shaded Relief",
+            "http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_ShadedRelief_World_2D/MapServer/tile/${z}/${y}/${x}",
+            {
+                layers : "0"
+            }
+            ),
+        new OpenLayers.Layer.XYZ(
+            "Street Map",
+            "http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_StreetMap_World_2D/MapServer/tile/${z}/${y}/${x}",
+            {
+                layers : "0"
+            }
+            )
+        ]
+    });
     var layerController = new GDP.LayerController({
-        baseLayer : baseLayerStore.getAt(3) // Use ESRI StreetMap
+        baseLayer : baseLayerStore.getAt(3) 
         ,legendStore : legendStore
         ,dimensions : ['time', 'elevation']
     });
@@ -214,6 +214,7 @@ function initializeMapping() {
     
     mapPanel = new GDP.BaseMap({
             id : 'mapPanel',
+//            layers : [layerController.getBaseLayer()],
             region: 'center',
             layout : 'fit',
             border: false,
@@ -243,8 +244,6 @@ function initializeMapping() {
             width: 180
         }
     });
-    
-    
     
     timestepPanel = new GDP.TimestepChooser({
         region : 'south',
@@ -282,6 +281,5 @@ function initializeMapping() {
 
     LOG.info('Derivative Portal: Mapping initialized.');
     if (LOADMASK) LOADMASK.show();
-	
     capabilitiesStore.load();
 }

@@ -26,7 +26,9 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		});
 				
 		this.layerController = config.layerController;
-
+                this.layerController.on('changebaselayer', function() {
+                    this.replaceBaseLayer(this.layerController.getBaseLayer());
+                },this);
 		this.layerController.on('changelayer', function() {
                     this.onChangeLayer();
                     this.currentLayer = this.findCurrentLayer();
@@ -42,22 +44,15 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                     this.onChangeLegend();
                     this.currentLayer = this.findCurrentLayer();
                 }, this);
-                
 		config = Ext.apply({
-			map: map,
-			center: new OpenLayers.LonLat(-96, 38),
+			map : map,
+			center : new OpenLayers.LonLat(-96, 38),
 			zoom : 4
 		}, config);
-		
-                
                 
 		GDP.BaseMap.superclass.constructor.call(this, config);
 		
 		this.layerController.requestBaseLayer(this.layerController.getBaseLayer());
-		
-		this.legendStore = new GeoExt.data.LayerStore({
-			storeId : 'legendStore'
-		});
 	},
 	zoomToExtent : function(record) {
 		if (!record) return;
@@ -83,24 +78,24 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             LOG.debug('BaseMap:clearLayers: Handling request.');
 		if (this.layers.getCount() > 1) {
                     LOG.debug('BaseMap:clearLayers: Clearing layer.');
-                    // Remove all layers except for vector layer
+                    Ext.each(this.layers, function(item, index, allItems){
+                    },this);
                     this.layers.remove(this.layers.getRange(1));
 		}
 	},
 	onChangeLayer : function() {
             LOG.debug('BaseMap:onChangeLayer: Handling request.')
-		this.replaceBaseLayer(this.layerController.getBaseLayer());
-		
-		var layer = this.layerController.getLayer();
-		
-		if (!this.currentLayer || this.currentLayer.getLayer() !== layer) {
-			this.zoomToExtent(layer);
-			this.clearLayers();
+            
+            var layer = this.layerController.getLayer();
 
-			var params = {};
-			Ext.apply(params, this.layerController.getAllDimensions());
-			this.replaceLayer(layer, params);
-		}
+            if (!this.currentLayer || this.currentLayer.getLayer() !== layer) {
+                    this.zoomToExtent(layer);
+                    this.clearLayers();
+
+                    var params = {};
+                    Ext.apply(params, this.layerController.getAllDimensions());
+                    this.replaceLayer(layer, params);
+            }
 	},
 	onChangeDimension : function() {
             LOG.debug('BaseMap:onChangeDimension: Handling request.');
@@ -142,23 +137,28 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		if (this.currentLayer) {
 			this.currentLayer.getLayer().setOpacity(this.layerController.getLayerOpacity());
 		}
-	},
-	replaceBaseLayer : function(record) {
-		if (!record) return;
-                LOG.debug('BaseMap:replaceBaseLayer: Handling Request.');
-		if (!this.layers) {
-			this.map.addLayer(record.getLayer());
-		} else {
-			if (0 < this.layers.getCount()) {
-				if (this.layers.getAt(0) !== record) {  //If it's a different baseLayer, lets swap it out
-					this.layers.removeAt(0);
-					this.layers.insert(0, record);
-				}
-			} else {
-				this.layers.add(record);
-			}
-		}
-	},
+            },
+        replaceBaseLayer : function(record) {
+            if (!record) return;
+            LOG.debug('BaseMap:replaceBaseLayer: Handling Request.');
+            if (!this.layers.getAt(0)) {
+                this.layers.add([record]);//map.addLayer(record);
+            } else {
+                if (this.layers.getCount() > 0) {
+                    var baseLayerIndex = this.layers.findBy(function(r, id){
+                        return r.data.layer.isBaseLayer
+                    });
+                    if (baseLayerIndex > -1 ) {
+                        this.layers.removeAt(baseLayerIndex);
+                        this.layers.insert(baseLayerIndex, [record]);
+                    } else {
+                         this.layers.add([record]);
+                    }
+                } else { 
+                    this.layers.add([record]);
+                }
+            }
+        },
 	replaceLayer : function(record, params, existingIndex) {
             LOG.debug('BaseMap:replaceLayer: Handling request.');
 		if (!record) return;
@@ -186,7 +186,6 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                             if (LOADMASK) LOADMASK.hide();
 			});
 			this.layers.add(copy);
-                        LOG.debug('here');
 		}
 		
 		if (this.currentLayer) {

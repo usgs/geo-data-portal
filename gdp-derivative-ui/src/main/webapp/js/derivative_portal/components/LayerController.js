@@ -50,19 +50,21 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
             GDP.LayerController.superclass.constructor.call(this, config);
 
             this.addEvents(
+                "changebaselayer",
                 "changelayer",
                 "changelegend",
                 "changedimension",
                 "changeopacity"
-                );
+            );
 
             this.requestBaseLayer(config.baseLayer);
 
         },
-	requestBaseLayer : function(baseLayerRecord) {
-		if (!baseLayerRecord) return;
-		this.baseLayer = baseLayerRecord;
-		this.fireEvent('changelayer');
+	requestBaseLayer : function(baseLayer) {
+            LOG.debug('LayerController:requestBaseLayer');
+            if (!baseLayer) return;
+            this.baseLayer = baseLayer;
+            this.fireEvent('changebaselayer');
 	},
 	requestLayer : function(layerRecord) {
 		if (!layerRecord) return;

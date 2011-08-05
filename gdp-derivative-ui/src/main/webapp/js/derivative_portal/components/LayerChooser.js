@@ -24,14 +24,15 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
                 fieldLabel : 'Base Layer',
                 forceSelection : true,
                 lazyInit : false,
-                displayField : 'title'
+                displayField : 'title',
+                editable : false
         });
-        baseLayerCombo.on('change', function(combo, record, index) {
-                this.controller.requestBaseLayer(record);
-        }, this);
-
         
-
+        baseLayerCombo.on('select', function(combo, record, index) {
+            this.controller.requestBaseLayer(record);
+        }, this);
+        
+        
         var extendedLegendImage = Ext.extend(GeoExt.LegendImage, {
             initComponent: function(){
                 Ext.apply(this, {
@@ -83,8 +84,7 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
             this.controller.requestLayer(record);
         }, this);
         capabilitiesStore.on('load', function(capStore, records) {
-            var firstIndex = 0;
-            var firstRecord = capStore.getAt(firstIndex);
+            var firstRecord = capStore.getAt(0);
             layerCombo.setValue(firstRecord.get("title"));
             layerCombo.fireEvent('select', layerCombo, firstRecord, 0);
         });
@@ -117,6 +117,10 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
             ,editable : false
             ,emptyText : 'Please Select...'
         });
+        legendCombo.on('select', function(obj, rec, ind) {
+            LOG.debug('LayerChooser: A new legend style chosen: ' + rec.id + ' (' + rec.data.abstrakt + ')');
+            this.controller.requestLegendRecord(rec);
+        },this)
         legendCombo.store.on('load', function(store) {
             // When the combo's store gets loaded, set
             // the combo to the first value in the store.
@@ -126,11 +130,6 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
             this.setValue(store.getAt(0).get('name'));
             this.fireEvent('select', this, store.getAt(0), 0);
         }, legendCombo);
-        legendCombo.on('select', function(obj, rec, ind) {
-            LOG.debug('LayerChooser: A new legend style chosen: ' + rec.id + ' (' + rec.data.abstrakt + ')');
-            this.controller.requestLegendRecord(rec);
-        },this)
-
         var layerOpacitySlider = new Ext.Slider({
             value : 40,
             fieldLabel: "Opacity",
@@ -158,6 +157,9 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
             ,layerOpacitySlider
             ]
         }, config);
+        this.controller.on('changebaselayer', function() {
+            baseLayerCombo.setValue(this.controller.getBaseLayer().data.title);
+        }, this);
         this.controller.on('changelegend', function(){
             LOG.debug('LayerChooser: Observed legend change');
             LOG.debug('LayerChooser: Removing current legend image and reapplying new legend image.');
@@ -168,11 +170,6 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
             }, this);
         }, this);
         this.controller.on('changelayer', function() {
-            var baseLayer = this.controller.getBaseLayer();
-            if (baseLayer) {
-                baseLayerCombo.setValue(baseLayer.getLayer().name);
-            }
-
             var layer = this.controller.getLayer();
             if (layer) {
                 layerCombo.setValue(layer.getLayer().name);
@@ -207,9 +204,8 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
                 zlayerCombo.setValue(threshold);
             }
         }, this);
-
         GDP.LayerChooser.superclass.constructor.call(this, config);
-
+        baseLayerCombo.setValue(this.controller.getBaseLayer().data.title);
         this.on('resize', function() {
             this.realignLegend(); 
         }, this);
