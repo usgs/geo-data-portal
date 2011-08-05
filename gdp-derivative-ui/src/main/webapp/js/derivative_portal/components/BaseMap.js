@@ -38,6 +38,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                 {
                     this.layerController = config.layerController;
                     this.layerController.on('changebaselayer', function() {
+                        LOG.debug('BaseMap: Observed "changebaselayer".');
                         this.onReplaceBaseLayer(this.layerController.getBaseLayer());
                     },this);
                     this.layerController.on('changelayer', function() {
@@ -140,25 +141,25 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		}
             },
         onReplaceBaseLayer : function(record) {
-            if (!record) return;
             LOG.debug('BaseMap:onReplaceBaseLayer: Handling Request.');
-            if (!this.layers.getAt(0)) {
-                this.layers.add([record]);//map.addLayer(record);
-            } else {
-                if (this.layers.getCount() > 0) {
-                    var baseLayerIndex = this.layers.findBy(function(r, id){
-                        return r.data.layer.isBaseLayer
-                    });
-                    if (baseLayerIndex > -1 ) {
-                        this.layers.removeAt(baseLayerIndex);
-                        this.layers.insert(baseLayerIndex, [record]);
-                    } else {
-                         this.layers.add([record]);
-                    }
-                } else { 
-                    this.layers.add([record]);
+            if (!record) {
+                LOG.debug('BaseMap:onReplaceBaseLayer: passed record object null or undefined. Returning without modifications.');
+                return;
+            }
+            
+            if (this.layers.getCount() > 0) {
+                var baseLayerIndex = this.layers.findBy(function(r, id){
+                    return r.data.layer.isBaseLayer
+                });
+                
+                if (baseLayerIndex > -1 ) {
+                    this.layers.removeAt(baseLayerIndex);
+                    LOG.debug('BaseMap:onReplaceBaseLayer: Removed base layer from this object\'s map.layers at index ' + baseLayerIndex + '.');
                 }
             }
+            
+            this.layers.add([record]);
+            LOG.debug('BaseMap:onReplaceBaseLayer: Added base layer to this object\'s map.layers at index ' + baseLayerIndex + '.');
         },
 	replaceLayer : function(record, params, existingIndex) {
             LOG.debug('BaseMap:replaceLayer: Handling request.');

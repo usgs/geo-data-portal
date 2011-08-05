@@ -234,7 +234,6 @@ function initializeMapping() {
             title: 'USGS Derived Downscaled Climate Portal'
     });
     
-    layerController.requestBaseLayer(layerController.getBaseLayer());
     configPanel = new GDP.LayerChooser({
         id: 'control-panel',
         title : 'Controls',
@@ -294,5 +293,8 @@ function initializeMapping() {
 
     LOG.info('Derivative Portal: Mapping initialized.');
     if (LOADMASK) LOADMASK.show();
+    
     capabilitiesStore.load();
+    
+    layerController.requestBaseLayer(layerController.getBaseLayer());
 }

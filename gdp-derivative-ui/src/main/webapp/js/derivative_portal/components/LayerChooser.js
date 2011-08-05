@@ -171,7 +171,7 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
                 baseLayerCombo.setValue(this.controller.getBaseLayer().data.title);
             }, this);
             this.controller.on('changelegend', function(){
-                LOG.debug('LayerChooser: Observed legend change');
+                LOG.debug('LayerChooser: Observed legend change.');
                 LOG.debug('LayerChooser: Removing current legend image and reapplying new legend image.');
                 var legendHref = this.controller.getLegendRecord().data.href;
                 this.legendImage.setUrl(GDP.PROXY_PREFIX + legendHref);
@@ -180,6 +180,8 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
                 }, this);
             }, this);
             this.controller.on('changelayer', function() {
+                LOG.debug('LayerChooser: Observed changelayer.');
+                
                 var layer = this.controller.getLayer();
                 if (layer) {
                     layerCombo.setValue(layer.getLayer().name);

@@ -39,7 +39,8 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
 
             this.layerOpacity = config.layerOpacity || this.layerOpacity;
             this.legendStore = config.legendStore || this.legendStore;
-
+            
+            
             // TODO- Ask Sipps what he was doing here
             var filledDims = {'time' : ''}; 
             Ext.each(config.dimensions, function(item) {
@@ -66,6 +67,7 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
             LOG.debug('LayerController:requestBaseLayer');
             if (!baseLayer) return;
             this.baseLayer = baseLayer;
+            LOG.debug('LayerController:requestBaseLayer: Added new base layer to LayerController. Firing "changebaselayer".');
             this.fireEvent('changebaselayer');
 	},
 	requestLayer : function(layerRecord) {
