@@ -81,7 +81,7 @@ function initializeMapping() {
     LOG.debug('root:initializeMapping');
     LOADMASK = new Ext.LoadMask(Ext.getBody());
 	
-    // Endpoint Combobox Creation
+    LOG.debug('root:initializeMapping: Creating endpoint container.');
     var proxyUrl, urls, endpointStore, endpointCombo, endpointApplyButton, endpointContainer, endpointPanel;
     {
         proxyUrl = '';
@@ -147,11 +147,18 @@ function initializeMapping() {
         if (LOADMASK) LOADMASK.hide();
         NOTIFY.error();
     }, this);
+    capabilitiesStore.on('load', function() {
+        LOG.debug('EVENT: Capabilities store has finished loading.');
+        if (LOADMASK) LOADMASK.hide();
+    }, this);
     
     endpointApplyButton.on('click', function() {
-        var proxyUrl = '';
-        if (endpointCombo.getRawValue() && '' !== endpointCombo.getRawValue()) {
+        LOG.debug('EVENT: User has clicked on the endpoint apply button');
+        var endpoint = endpointCombo.getRawValue();
+        if (endpoint && !capabilitiesStore.url.contains(endpoint)) {
+            LOG.debug('EVENT: Adding ' + endpointCombo.getRawValue() + ' to the capabilities store');
             if (LOADMASK) LOADMASK.show();
+            var proxyUrl = '';
             proxyUrl = GDP.PROXY_PREFIX + endpointCombo.getRawValue();
             capabilitiesStore.proxy.setApi(Ext.data.Api.actions.read, proxyUrl);
             capabilitiesStore.load();
