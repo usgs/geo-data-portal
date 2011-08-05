@@ -11,6 +11,32 @@
     <name>GDP Process WPS</name>
     <build>
         <finalName>gdp-process-wps</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>patch-via-WEB-INF-classes</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>gdp-52n-wps-patches</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>    
+        </plugins>
     </build>
     <dependencies>
         <!-- sibling module dependencies -->
@@ -23,6 +49,13 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>gdp-data-access</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>gdp-52n-wps-patches</artifactId>
+            <version>${project.version}</version>
+            <!-- we will unpack jar contents to WEB-INF/classes -->
+            <scope>provided</scope>
         </dependency>
         <!-- version numbers set in parent pom -->
         <dependency>
