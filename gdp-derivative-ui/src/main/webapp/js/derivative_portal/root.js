@@ -21,6 +21,7 @@ function initializeLogging() {
 }
 
 function initializeNotification() {
+    LOG.info('Derivative Portal: Initializing Notification.');
     LOG.debug('root:initializeNotification');
 	var _notifyError = function(config) {
 		if (!config) config = {};
@@ -76,9 +77,11 @@ function initializeNotification() {
 		success : _notifySuccess,
 		error : _notifyError
 	};
+        LOG.info('Derivative Portal: Notification Initialized.');
 }
 
 function initializeMapping() {
+    LOG.info('Derivative Portal: Initializing Mapping.');
     LOG.debug('root:initializeMapping');
     LOADMASK = new Ext.LoadMask(Ext.getBody());
 	
@@ -211,6 +214,8 @@ function initializeMapping() {
             )
         ]
     });
+    
+    // Central controller for the application.
     var layerController = new GDP.LayerController({
         baseLayer : baseLayerStore.getAt(3) 
         ,legendStore : legendStore
@@ -229,6 +234,7 @@ function initializeMapping() {
             title: 'USGS Derived Downscaled Climate Portal'
     });
     
+    layerController.requestBaseLayer(layerController.getBaseLayer());
     configPanel = new GDP.LayerChooser({
         id: 'control-panel',
         title : 'Controls',

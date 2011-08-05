@@ -26,19 +26,19 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		});
 			
 		config = Ext.apply({
-			map : map,
-			center : new OpenLayers.LonLat(-96, 38),
-			zoom : 4
+                    map : map,
+                    center : new OpenLayers.LonLat(-96, 38),
+                    zoom : 4
 		}, config);
                 
 		GDP.BaseMap.superclass.constructor.call(this, config);
-		LOG.debug('BaseMap: Constructing done.');
+		LOG.debug('BaseMap: Construction complete.');
                 
                 // Register listeners
                 {
                     this.layerController = config.layerController;
                     this.layerController.on('changebaselayer', function() {
-                        this.replaceBaseLayer(this.layerController.getBaseLayer());
+                        this.onReplaceBaseLayer(this.layerController.getBaseLayer());
                     },this);
                     this.layerController.on('changelayer', function() {
                         this.onChangeLayer();
@@ -57,18 +57,14 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                     }, this);
                 }
                 
-		this.layerController.requestBaseLayer(this.layerController.getBaseLayer());
+//		this.layerController.requestBaseLayer(this.layerController.getBaseLayer());
 	},
-	zoomToExtent : function(record) {
-		if (!record) return;
-		this.map.zoomToExtent(
-			OpenLayers.Bounds.fromArray(record.get("llbbox"))
-			);
-	},
-	/**
-	 * Completely accurate (tho expensive) way to find which layer
-	 * is the visible one.
-	 */
+        zoomToExtent : function(record) {
+            if (!record) return;
+            this.map.zoomToExtent(
+                OpenLayers.Bounds.fromArray(record.get("llbbox"))
+            );
+        },
 	findCurrentLayer : function() {
             var storeIndex = this.layers.findBy(function(record, id) {
                 return (this.layerController.getLayerOpacity() === record.get('layer').opacity);
@@ -79,7 +75,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                     return null;
             }
 	},
-	clearLayers : function() {
+	clearLayers : function() { //TODO- This needs to change to handle only regular layers. Not baselayers or vector layers
             LOG.debug('BaseMap:clearLayers: Handling request.');
 		if (this.layers.getCount() > 1) {
                     LOG.debug('BaseMap:clearLayers: Clearing layer.');
@@ -143,9 +139,9 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 			this.currentLayer.getLayer().setOpacity(this.layerController.getLayerOpacity());
 		}
             },
-        replaceBaseLayer : function(record) {
+        onReplaceBaseLayer : function(record) {
             if (!record) return;
-            LOG.debug('BaseMap:replaceBaseLayer: Handling Request.');
+            LOG.debug('BaseMap:onReplaceBaseLayer: Handling Request.');
             if (!this.layers.getAt(0)) {
                 this.layers.add([record]);//map.addLayer(record);
             } else {
