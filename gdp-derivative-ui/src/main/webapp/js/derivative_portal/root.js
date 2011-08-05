@@ -21,6 +21,7 @@ function initializeLogging() {
 }
 
 function initializeNotification() {
+    LOG.debug('root:initializeNotification');
 	var _notifyError = function(config) {
 		if (!config) config = {};
 		
@@ -81,7 +82,6 @@ function initializeMapping() {
     LOG.debug('root:initializeMapping');
     LOADMASK = new Ext.LoadMask(Ext.getBody());
 	
-    LOG.debug('root:initializeMapping: Creating endpoint container.');
     var proxyUrl, urls, endpointStore, endpointCombo, endpointApplyButton, endpointContainer, endpointPanel;
     {
         proxyUrl = '';
@@ -104,6 +104,7 @@ function initializeMapping() {
             ,value : urls[0][0]
             ,lazyInit : false
             ,displayField : 'url'
+            
         });
         endpointApplyButton = new Ext.Button({
             text : 'Go'
@@ -119,7 +120,7 @@ function initializeMapping() {
                 endpointApplyButton
             ]
         });
-        if (endpointCombo.getRawValue() && '' !== endpointCombo.getRawValue()) {
+        if (endpointCombo.getRawValue()) {
             proxyUrl = GDP.PROXY_PREFIX + endpointCombo.getRawValue();
         }
         endpointPanel = new Ext.Panel({
@@ -155,11 +156,11 @@ function initializeMapping() {
     endpointApplyButton.on('click', function() {
         LOG.debug('EVENT: User has clicked on the endpoint apply button');
         var endpoint = endpointCombo.getRawValue();
-        if (endpoint && !capabilitiesStore.url.contains(endpoint)) {
-            LOG.debug('EVENT: Adding ' + endpointCombo.getRawValue() + ' to the capabilities store');
+        if (endpoint) {
+            LOG.debug('EVENT: Adding ' + endpoint + ' to the capabilities store');
             if (LOADMASK) LOADMASK.show();
             var proxyUrl = '';
-            proxyUrl = GDP.PROXY_PREFIX + endpointCombo.getRawValue();
+            proxyUrl = GDP.PROXY_PREFIX + endpoint;
             capabilitiesStore.proxy.setApi(Ext.data.Api.actions.read, proxyUrl);
             capabilitiesStore.load();
         }
@@ -221,7 +222,6 @@ function initializeMapping() {
     
     mapPanel = new GDP.BaseMap({
             id : 'mapPanel',
-//            layers : [layerController.getBaseLayer()],
             region: 'center',
             layout : 'fit',
             border: false,
