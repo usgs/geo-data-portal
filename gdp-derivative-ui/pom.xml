@@ -9,9 +9,6 @@
     <artifactId>gdp-derivative-ui</artifactId>
     <packaging>war</packaging>
     <name>GDP Derivative UI</name>
-    <properties>
-        <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
