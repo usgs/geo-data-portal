@@ -33,13 +33,12 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
             return this.legendRecord;
         },
         constructor : function(config) {
-            LOG.debug('LayerController: Constructing self.');
+            LOG.debug('LayerController:constructor: Constructing self.');
             
             if (!config) config = {};
 
             this.layerOpacity = config.layerOpacity || this.layerOpacity;
             this.legendStore = config.legendStore || this.legendStore;
-            
             
             // TODO- Ask Sipps what he was doing here
             var filledDims = {'time' : ''}; 
@@ -49,8 +48,9 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
             this.dimensions = filledDims;
 
             GDP.LayerController.superclass.constructor.call(this, config);
-            LOG.debug('LayerController: Construction complete.');
+            LOG.debug('LayerController:constructor: Construction complete.');
             
+            LOG.debug('LayerController:constructor: Registering Observables.');
             this.addEvents(
                 "changebaselayer",
                 "changelayer",
@@ -59,7 +59,8 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
                 "changeopacity"
             );
             
-            // There shouldn't be anything listening at this point
+            // There shouldn't be anything listening at this point. 
+            LOG.trace('LayerController:constructor: replacing base layer for this object. The next notification firing shouldn\'t be picked up by any other object at this point in the initialization');
             this.requestBaseLayer(config.baseLayer);
 
         },
@@ -71,6 +72,7 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
             this.fireEvent('changebaselayer');
 	},
 	requestLayer : function(layerRecord) {
+            LOG.debug('LayerController:requestLayer');
 		if (!layerRecord) return;
 		this.layer = layerRecord;
 		
@@ -81,26 +83,29 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
 		
 		var layerName = layerRecord.get('name');
 		this.zaxisName = layerName.slice(0, layerName.indexOf('/'));
-		
+		LOG.debug('LayerController:requestLegendStore: Firing event "changelayer".');
 		this.fireEvent('changelayer');
 	},
         requestLegendStore : function(legendStore) {
-            if (!legendStore) return;
             LOG.debug('LayerController:requestLegendStore: Handling request.');
+            if (!legendStore) return;
             this.legendStore = legendStore;
+            LOG.debug('LayerController:requestLegendStore: Firing event "changelegend".');
             this.fireEvent('changelegend');
         },
         modifyLegendStore : function(jsonObject) {
+            LOG.debug('LayerController:modifyLegendStore: Handling request.');
             if (!jsonObject) return;
             if (!this.legendStore) return;
-            LOG.debug('LayerController:modifyLegendStore: Handling request.');
             this.legendStore.loadData(jsonObject);
+            LOG.debug('LayerController:modifyLegendStore: Firing event "changelegend".');
             this.fireEvent('changelegend');
         },
         requestLegendRecord : function(legendRecord) {
-            if (!legendRecord) return;
             LOG.debug('LayerController:requestLegendRecord: Handling request.');
+            if (!legendRecord) return;
             this.legendRecord = legendRecord;
+            LOG.debug('LayerController:requestLegendRecord: Firing event "changelegend".');
             this.fireEvent('changelegend');
         },
 	requestOpacity : function(opacity) {
@@ -108,18 +113,20 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
                 LOG.debug('LayerController:requestOpacity: Handling request.');
 		if (0 <= opacity && 1 >= opacity) {
 			this.layerOpacity = opacity;
+                        LOG.debug('LayerController:requestOpacity: Firing event "changeopacity".');
 			this.fireEvent('changeopacity');
 		}
 	},
-	requestDimension : function(extentName, value) {
-		if (!extentName) return;
-                LOG.debug('LayerController:requestDimension: Handling request.');
-		if (this.modifyDimensions(extentName, value)) {
-			this.fireEvent('changedimension');
-		} else {
-			LOG.info('Requested dimension (' + extentName + ') does not exist');
-		}
-	},
+        requestDimension : function(extentName, value) {
+            LOG.debug('LayerController:requestDimension: Handling request.');
+            if (!extentName) return;
+            if (this.modifyDimensions(extentName, value)) {
+                LOG.debug('LayerController:requestDimension: Firing event "changedimension".');
+                this.fireEvent('changedimension');
+            } else {
+                LOG.info('Requested dimension (' + extentName + ') does not exist');
+            }
+        },
 	modifyDimensions : function(extentName, value) {
             LOG.debug('LayerController:modifyDimensions: Handling request.');
 		if (this.dimensions.hasOwnProperty(extentName)) {

@@ -147,28 +147,7 @@ function initializeMapping() {
         url : proxyUrl,
         storeId : 'capabilitiesStore'
     });
-    capabilitiesStore.on('exception', function() {
-        if (LOADMASK) LOADMASK.hide();
-        NOTIFY.error();
-    }, this);
-    capabilitiesStore.on('load', function() {
-        LOG.debug('EVENT: Capabilities store has finished loading.');
-        if (LOADMASK) LOADMASK.hide();
-    }, this);
     
-    endpointApplyButton.on('click', function() {
-        LOG.debug('EVENT: User has clicked on the endpoint apply button');
-        var endpoint = endpointCombo.getRawValue();
-        if (endpoint) {
-            LOG.debug('EVENT: Adding ' + endpoint + ' to the capabilities store');
-            if (LOADMASK) LOADMASK.show();
-            var proxyUrl = '';
-            proxyUrl = GDP.PROXY_PREFIX + endpoint;
-            capabilitiesStore.proxy.setApi(Ext.data.Api.actions.read, proxyUrl);
-            capabilitiesStore.load();
-        }
-    }, this);
-
     var legendStore = new Ext.data.JsonStore({
         idProperty: 'name'
         ,root: 'styles'
@@ -285,16 +264,41 @@ function initializeMapping() {
         contentEl: 'usgs-footer-panel'
     });
 
+    LOG.debug('root:initializeMapping: Registering Event Handlers.');
+    {
+        capabilitiesStore.on('exception', function() {
+            if (LOADMASK) LOADMASK.hide();
+            NOTIFY.error();
+        }, this);
+        capabilitiesStore.on('load', function() {
+            LOG.debug('root: Capabilities store has finished loading.');
+            if (LOADMASK) LOADMASK.hide();
+        }, this);
+        endpointApplyButton.on('click', function() {
+            LOG.debug('EVENT: User has clicked on the endpoint apply button');
+            var endpoint = endpointCombo.getRawValue();
+            if (endpoint) {
+                LOG.debug('EVENT: Adding ' + endpoint + ' to the capabilities store');
+                if (LOADMASK) LOADMASK.show();
+                var proxyUrl = '';
+                proxyUrl = GDP.PROXY_PREFIX + endpoint;
+                capabilitiesStore.proxy.setApi(Ext.data.Api.actions.read, proxyUrl);
+                capabilitiesStore.load();
+            }
+        }, this);
+    }
+
+    LOG.info('Derivative Portal: Mapping initialized.');
+    if (LOADMASK) LOADMASK.show();
+    
+    LOG.debug('root: Loading capabilities store.');
+    capabilitiesStore.load();
+    LOG.debug('root: Triggering LayerController:requestBaseLayer.');
+    layerController.requestBaseLayer(layerController.getBaseLayer());
+    
     new Ext.Viewport({
             renderTo : document.body,
             items : [headerPanel, centerPanel, configPanel,footerPanel], 
             layout: 'border'
     });
-
-    LOG.info('Derivative Portal: Mapping initialized.');
-    if (LOADMASK) LOADMASK.show();
-    
-    capabilitiesStore.load();
-    
-    layerController.requestBaseLayer(layerController.getBaseLayer());
 }

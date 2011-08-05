@@ -27,6 +27,7 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
             ,group: toggleGroup
             ,map: map
         });
+        map.addLayers([bboxVector]);
         
         zoomToExtentAction = new GeoExt.Action({
             text : 'Max Extent'
@@ -61,6 +62,6 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
             items: [zoomToExtentAction, navigationAction, drawBboxAction, zoomAction]
         }, config);
         GDP.MapActivityBar.superclass.constructor.call(this, config);
-//        map.addLayer(bboxVector);
+        LOG.debug('MapActivityBar:constructor: Construction complete.');
     }
 });
