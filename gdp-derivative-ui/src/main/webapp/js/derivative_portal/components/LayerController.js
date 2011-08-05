@@ -48,7 +48,8 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
             this.dimensions = filledDims;
 
             GDP.LayerController.superclass.constructor.call(this, config);
-
+            LOG.debug('LayerController: Constructing done.');
+            
             this.addEvents(
                 "changebaselayer",
                 "changelayer",
@@ -56,7 +57,7 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
                 "changedimension",
                 "changeopacity"
             );
-
+            
             this.requestBaseLayer(config.baseLayer);
 
         },
