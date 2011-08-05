@@ -25,7 +25,8 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
                 forceSelection : true,
                 lazyInit : false,
                 displayField : 'title',
-                editable : false
+                editable : false,
+                emptyText : 'Loading...'
         });
         
         baseLayerCombo.on('select', function(combo, record, index) {
@@ -78,7 +79,8 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
             fieldLabel : 'Layer',
             forceSelection : true,
             lazyInit : false,
-            displayField : 'title'
+            displayField : 'title',
+            emptyText : 'Loading...'
         });
         layerCombo.on('select', function(combo, record, index) {
             this.controller.requestLayer(record);
@@ -102,7 +104,8 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
             store : zlayerStore,
             forceSelection : true,
             lazyInit : false,
-            displayField : zlayerName
+            displayField : zlayerName,
+            emptyText : 'Loading...'
         };
 
         var legendCombo = new Ext.form.ComboBox({
@@ -115,7 +118,7 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
             ,lazyInit : false
             ,displayField : 'title'
             ,editable : false
-            ,emptyText : 'Please Select...'
+            ,emptyText : 'Loading...'
         });
         legendCombo.on('select', function(obj, rec, ind) {
             LOG.debug('LayerChooser: A new legend style chosen: ' + rec.id + ' (' + rec.data.abstrakt + ')');
