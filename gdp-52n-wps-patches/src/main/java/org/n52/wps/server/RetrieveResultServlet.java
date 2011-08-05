@@ -2,8 +2,8 @@ package org.n52.wps.server;
 
 import com.ctc.wstx.stax.WstxInputFactory;
 import com.ctc.wstx.stax.WstxOutputFactory;
-import gov.usgs.cida.gdp.wps.database.ResultsDatabase;
-import gov.usgs.cida.gdp.wps.util.MIMEUtil;
+import gov.usgs.cida.n52.wps.database.ResultsDatabase;
+import gov.usgs.cida.n52.wps.util.MIMEUtil;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;

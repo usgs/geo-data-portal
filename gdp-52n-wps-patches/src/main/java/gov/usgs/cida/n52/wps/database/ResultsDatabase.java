@@ -1,8 +1,8 @@
-package gov.usgs.cida.gdp.wps.database;
+package gov.usgs.cida.n52.wps.database;
 
 import com.google.common.base.Joiner;
 import gov.usgs.cida.gdp.constants.AppConstant;
-import gov.usgs.cida.gdp.wps.util.MIMEUtil;
+import gov.usgs.cida.n52.wps.util.MIMEUtil;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;

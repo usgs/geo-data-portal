@@ -12,6 +12,7 @@
         <module>gdp-core-processing</module>
         <module>gdp-geotiff</module>
         <module>gdp-proxy</module>
+        <module>gdp-52n-wps-patches</module>
         <module>gdp-utility-wps</module>
         <module>gdp-process-wps</module>
         <module>gdp-wfst</module>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>gov.usgs.cida.gdp</groupId>
+        <artifactId>gdp</artifactId>
+        <version>13-SNAPSHOT</version>
+    </parent>
+    <artifactId>gdp-52n-wps-patches</artifactId>
+    <name>GDP 52n WPS Patches</name>
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>gdp-common-utilities</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- 52n WPS dependencies START -->
+        <dependency>
+            <groupId>org.n52.wps</groupId>
+            <artifactId>52n-wps-commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.n52.wps</groupId>
+            <artifactId>52n-wps-io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.n52.wps</groupId>
+            <artifactId>52n-wps-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.n52.wps</groupId>
+            <artifactId>52n-wps-transactional</artifactId>
+        </dependency>
+        <!-- 52n WPS dependencies END -->
+        <!-- LOGGING START-->
+        <!-- needed for patch 52n code -->
+        <dependency>
+            <artifactId>log4j</artifactId>
+            <groupId>log4j</groupId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- install commons logging to slf4j bridge -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- hide commons-logging (force through slf4j using bridge) -->
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.1.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- LOGGING END-->
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.java.dev.stax-utils</groupId>
+            <artifactId>stax-utils</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.collections</groupId>
+            <artifactId>google-collections</artifactId>
+        </dependency>
+    </dependencies>
+</project>
+

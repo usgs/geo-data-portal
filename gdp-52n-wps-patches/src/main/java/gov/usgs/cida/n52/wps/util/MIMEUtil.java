@@ -1,4 +1,4 @@
-package gov.usgs.cida.gdp.wps.util;
+package gov.usgs.cida.n52.wps.util;
 
 /**
  *
