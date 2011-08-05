@@ -24,26 +24,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                             ,new OpenLayers.Control.PanZoomBar()
                         ]
 		});
-				
-		this.layerController = config.layerController;
-                this.layerController.on('changebaselayer', function() {
-                    this.replaceBaseLayer(this.layerController.getBaseLayer());
-                },this);
-		this.layerController.on('changelayer', function() {
-                    this.onChangeLayer();
-                    this.currentLayer = this.findCurrentLayer();
-		}, this);
-		this.layerController.on('changedimension', function() {
-			this.onChangeDimension();
-			this.currentLayer = this.findCurrentLayer();
-		}, this);
-		this.layerController.on('changeopacity', function() {
-			this.onChangeOpacity();
-		}, this);
-		this.layerController.on('changelegend', function() {
-                    this.onChangeLegend();
-                    this.currentLayer = this.findCurrentLayer();
-                }, this);
+			
 		config = Ext.apply({
 			map : map,
 			center : new OpenLayers.LonLat(-96, 38),
@@ -51,7 +32,31 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		}, config);
                 
 		GDP.BaseMap.superclass.constructor.call(this, config);
-		
+		LOG.debug('BaseMap: Constructing done.');
+                
+                // Register listeners
+                {
+                    this.layerController = config.layerController;
+                    this.layerController.on('changebaselayer', function() {
+                        this.replaceBaseLayer(this.layerController.getBaseLayer());
+                    },this);
+                    this.layerController.on('changelayer', function() {
+                        this.onChangeLayer();
+                        this.currentLayer = this.findCurrentLayer();
+                    }, this);
+                    this.layerController.on('changedimension', function() {
+                        this.onChangeDimension();
+                        this.currentLayer = this.findCurrentLayer();
+                    }, this);
+                    this.layerController.on('changeopacity', function() {
+                        this.onChangeOpacity();
+                    }, this);
+                    this.layerController.on('changelegend', function() {
+                        this.onChangeLegend();
+                        this.currentLayer = this.findCurrentLayer();
+                    }, this);
+                }
+                
 		this.layerController.requestBaseLayer(this.layerController.getBaseLayer());
 	},
 	zoomToExtent : function(record) {
