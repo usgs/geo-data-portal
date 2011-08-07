@@ -34,22 +34,35 @@ GDP.PolygonPOIPanel = Ext.extend(Ext.Panel, {
         var westboundLonTexbox = new Ext.form.TextField({
             id : 'west-box',
             fieldLabel : 'West Lon',
-            value : this.west.lon
+            value : this.west.lon,
+            allowBlank : false,
+            regEx : ' [-+]?[0-9]*\\.?[0-9]+',
+            regexText : 'Must be float'
         });
         var northboundLatTextbox = new Ext.form.TextField({
             id : 'north-box',
             fieldLabel : 'North Lat',
-            value : this.north.lat
+            value : this.north.lat,
+            allowBlank : false,
+            regEx : ' [-+]?[0-9]*\\.?[0-9]+',
+            regexText : 'Must be float'
+            
         });
         var southboundLatTextbox = new Ext.form.TextField({
             id : 'south-box',
             fieldLabel : 'South Lat',
-            value : this.south.lat
+            value : this.south.lat,
+            allowBlank : false,
+            regEx : ' [-+]?[0-9]*\\.?[0-9]+',
+            regexText : 'Must be float'
         });
         var eastboundLonTextBox = new Ext.form.TextField({
             id : 'east-box',
             fieldLabel : 'East Lon',
-            value : this.east.lon
+            value : this.east.lon,
+            allowBlank : false,
+            regEx : ' [-+]?[0-9]*\\.?[0-9]+',
+            regexText : 'Must be float'
         });
         coordPanel = new Ext.Panel({
             id : 'coord-text-panel',
@@ -67,7 +80,32 @@ GDP.PolygonPOIPanel = Ext.extend(Ext.Panel, {
         
         var configItems = [coordPanel];
         var button = config.submitButton;
+        var validator = function(boxes) {
+            var westBox = boxes.westBox;
+            var southBox = boxes.southBox;
+            var eastBox = boxes.eastBox;
+            var northBox = boxes.northBox;
+            LOG.debug('Validating input bounding boxes.');
+
+            return function() {
+                if (northBox.getValue() > southBox.getValue()) {
+                    LOG.debug('Validation: North Box is always less than South Box');
+                    northBox.setValue('');
+                    southBox.setValue('');
+                    return false;
+                }
+                if (westBox.getValue() > eastBox.getValue()) {
+                    LOG.debug('Validation: West Box is always less than East Box');
+                    westBox.setValue('');
+                    eastBox.setValue('');
+                    return false;
+                }
+                return true;
+            }();
+        }
+                
         if (button) {
+            button.validator = validator;
             button.setTextBoxes({
                 westBox : westboundLonTexbox, 
                 southBox : southboundLatTextbox, 

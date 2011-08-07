@@ -269,7 +269,9 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
                         south : south,
                         east : east,
                         north : north,
-                        submitButton : new GDP.BoundsPanelSubmitButton()
+                        submitButton : new GDP.BoundsPanelSubmitButton({
+                            validator : validator
+                        })
                     }
                     var coordPanel = new GDP.PolygonPOIPanel(poiPanelConfig);
                     this.add(coordPanel);

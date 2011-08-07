@@ -19,7 +19,6 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
         OpenLayers.Util.extend(control, {
             controller : this.layerController,
             activate : function() {
-//                this.activate();
                 this.controller.boundingBoxButtonClicked();
             },
             draw: function() {
@@ -61,9 +60,6 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
             ,tooltip: 'Draw A Bounding Box On The Map'
             ,group: toggleGroup
             ,map: map
-//            ,onCtrlActivate : function() {
-//                LOG.debug('MapActivityBar:drawBboxAction: Clicked');
-//            }
         });
         
         zoomToExtentAction = new GeoExt.Action({
