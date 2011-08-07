@@ -119,8 +119,12 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 			var result = true;
 			var requestedDimensions = this.layerController.getAllDimensions();
 			Ext.iterate(requestedDimensions, function(extentName, value) {
-				var existingDimension = record.getLayer().params[extentName.toUpperCase()];
-				result = result && (existingDimension === value)
+                                var layer = record.getLayer();
+                                // Disregard testing the vector layer
+                                if (!layer.CLASS_NAME === 'OpenLayers.Layer.Vector') {
+                                    var existingDimension = record.getLayer().params[extentName.toUpperCase()];
+                                    result = result && (existingDimension === value)
+                                }
 			}, this);
                         LOG.debug(' BaseMap:onChangeDimension: Found existing layer index ' + result);
 			return result;
