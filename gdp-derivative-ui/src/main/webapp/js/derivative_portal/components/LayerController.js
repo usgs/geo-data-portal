@@ -107,7 +107,7 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
             if (!legendRecord) return;
             this.legendRecord = legendRecord;
             LOG.debug('LayerController:requestLegendRecord: Firing event "changelegend".');
-//            this.fireEvent('changelegend');
+            this.fireEvent('changelegend');
         },
 	requestOpacity : function(opacity) {
 		if (!opacity) return;

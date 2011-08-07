@@ -18,7 +18,7 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
         
         var control = new OpenLayers.Control();
         OpenLayers.Util.extend(control, {
-//            controller : config.layerController,
+            controller : config.layerController,
             draw: function() {
                 this.handler = new OpenLayers.Handler.Box(
                     control,
@@ -39,6 +39,7 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
                 var urLat = ur.lat.toFixed(4)
                 var urLon = ur.lon.toFixed(4);
                 
+                LOG.debug('GDP.MapActivityBar: Polygan drawn...')
                 LOG.debug('Lower Left [LAT, LON] = ' + llLat + ', ' + llLon);
                 LOG.debug('Upper Right [LAT, LON] = ' + urLat + ', ' + urLon);
             }
@@ -55,7 +56,6 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
             ,map: map
         });
         
-//        map.addControl(new OpenLayers.Control.EditingToolbar(bboxVector));
         zoomToExtentAction = new GeoExt.Action({
             text : 'Max Extent'
             ,control: new OpenLayers.Control.ZoomToMaxExtent()
