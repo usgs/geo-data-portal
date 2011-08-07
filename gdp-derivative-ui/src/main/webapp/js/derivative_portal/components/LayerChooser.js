@@ -236,19 +236,21 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
                 
                 // ul, br
                 // Now we should populate the text boxes on this panel
-                var coordPanel = new GDP.PolygonPOIPanel({
+                var poiPanelConfig = {
                     id : 'coord-panel',
                     left : left,
                     bottom : bottom,
                     right : right,
                     top : top
-                });
+                }
+                var coordPanel = new GDP.PolygonPOIPanel(poiPanelConfig);
                 this.add(coordPanel);
-//                this.doLayout(true);
+                this.doLayout(true);
             }, this);
         }
         this.on('resize', function() {
-            this.realignLegend(); 
+            this.get('activityBar').setWidth(this.getWidth());
+            this.realignLegend();
         }, this);
     }
 });

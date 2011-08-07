@@ -8,7 +8,6 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
         if (!config) config = {};
         
         this.layerController = config.layerController;
-        this.bboxVector 
         var map = config.map;
         var toggleGroup = 'draw';
         var zoomToExtentAction, navigationAction, bboxVector, drawBboxAction;
