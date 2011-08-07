@@ -229,23 +229,34 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
                 LOG.debug('LayerChooser: Observed "drewbbox"');
                 var bounds = args.bounds;
                 var map = args.map;
-                var left = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.top)); 
-                var bottom = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.bottom));
-                var right = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.bottom));
-                var top = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.top)); 
+                var west = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.top)); 
+                var south = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.bottom));
+                var east = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.bottom));
+                var north = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.top)); 
                 
                 // ul, br
                 // Now we should populate the text boxes on this panel
-                var poiPanelConfig = {
-                    id : 'coord-panel',
-                    left : left,
-                    bottom : bottom,
-                    right : right,
-                    top : top
+                if (this.get('coord-panel')) {
+                    this.get('coord-panel').setCoords({
+                        west : west,
+                        south : south,
+                        east : east,
+                        north : north
+                    });
+                } else {
+                    var poiPanelConfig = {
+                        id : 'coord-panel',
+                        west : west,
+                        south : south,
+                        east : east,
+                        north : north,
+                        submitButton : new GDP.BoundsPanelSubmitButton()
+                    }
+                    var coordPanel = new GDP.PolygonPOIPanel(poiPanelConfig);
+                    this.add(coordPanel);
+                    this.doLayout(true);
+                    coordPanel.setWidth(this.getWidth());
                 }
-                var coordPanel = new GDP.PolygonPOIPanel(poiPanelConfig);
-                this.add(coordPanel);
-                this.doLayout(true);
             }, this);
         }
         this.on('resize', function() {
