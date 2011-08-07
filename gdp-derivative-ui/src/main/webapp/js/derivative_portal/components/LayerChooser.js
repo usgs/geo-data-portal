@@ -149,10 +149,14 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
                 this.controller.requestLayer(record);
             }, this);
             capabilitiesStore.on('load', function(capStore, records) {
+                LOG.debug('root: Capabilities store has finished loading.');
                 var firstRecord = capStore.getAt(0);
                 layerCombo.setValue(firstRecord.get("title"));
+                // Let's use this event to load the legendstore/combobox
+                this.controller.modifyLegendStore(firstRecord.data);
                 layerCombo.fireEvent('select', layerCombo, firstRecord, 0);
-            });
+                if (LOADMASK) LOADMASK.hide();
+            }, this);
             legendCombo.on('select', function(obj, rec, ind) {
                 LOG.debug('LayerChooser: A new legend style chosen: ' + rec.id + ' (' + rec.data.abstrakt + ')');
                 this.controller.requestLegendRecord(rec);
@@ -160,7 +164,7 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
             legendCombo.store.on('load', function(store) {
                 LOG.debug('LayerChooser: Legend Combobox Loaded.');
                 this.setValue(store.getAt(0).get('name'));
-                this.fireEvent('select', this, store.getAt(0), 0);
+//                this.fireEvent('select', this, store.getAt(0), 0);
             }, legendCombo);
             layerOpacitySlider.on('change', function() {
                 LOG.debug('layerOpacitySlider: Observed \'change\'.');

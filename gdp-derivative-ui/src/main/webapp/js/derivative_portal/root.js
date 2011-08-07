@@ -243,13 +243,15 @@ function initializeMapping() {
         layerController : layerController
     });
     centerPanel = new Ext.Panel({
-            region : 'center',
-            layout : 'border',
-            items : [ endpointPanel, mapPanel, timestepPanel]
+        id : 'center-panel',
+        region : 'center',
+        layout : 'border',
+        items : [ endpointPanel, mapPanel, timestepPanel]
     });
 
     var headerPanel, footerPanel;
     headerPanel = new Ext.Panel({
+        id: 'header-panel',
         region: 'north',
         height: 'auto',
         border : false,
@@ -257,6 +259,7 @@ function initializeMapping() {
         contentEl: 'usgs-header-panel'
     });
     footerPanel = new Ext.Panel({
+        id: 'footer-panel',
         region: 'south',
         height: 'auto',
         border : false,
@@ -269,10 +272,6 @@ function initializeMapping() {
         capabilitiesStore.on('exception', function() {
             if (LOADMASK) LOADMASK.hide();
             NOTIFY.error();
-        }, this);
-        capabilitiesStore.on('load', function() {
-            LOG.debug('root: Capabilities store has finished loading.');
-            if (LOADMASK) LOADMASK.hide();
         }, this);
         endpointApplyButton.on('click', function() {
             LOG.debug('EVENT: User has clicked on the endpoint apply button');

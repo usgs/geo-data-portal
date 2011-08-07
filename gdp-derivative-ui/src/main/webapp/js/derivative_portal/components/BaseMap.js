@@ -116,19 +116,21 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             LOG.debug('BaseMap:onChangeDimension: Handling request.');
 		var existingLayerIndex = this.layers.findBy(function(record, id) {
                     LOG.debug(' BaseMap:onChangeDimension: Checking existing layer index.');
-			var result = true;
-			var requestedDimensions = this.layerController.getAllDimensions();
-			Ext.iterate(requestedDimensions, function(extentName, value) {
-                                var layer = record.getLayer();
-                                // Disregard testing the vector layer
-                                if (!layer.CLASS_NAME === 'OpenLayers.Layer.Vector') {
-                                    var existingDimension = record.getLayer().params[extentName.toUpperCase()];
-                                    result = result && (existingDimension === value)
-                                }
-			}, this);
-                        LOG.debug(' BaseMap:onChangeDimension: Found existing layer index ' + result);
-			return result;
-		}, this, 1);
+                    var result = true;
+                    var requestedDimensions = this.layerController.getAllDimensions();
+                    Ext.iterate(requestedDimensions, function(extentName, value) {
+                            var layer = record.getLayer();
+                            if (layer.CLASS_NAME === 'OpenLayers.Layer.Vector' || layer.isBaseLayer) {
+                                // Disregard testing the vector and base layers
+                                result = false;
+                            } else {
+                                var existingDimension = record.getLayer().params[extentName.toUpperCase()];
+                                result = result && (existingDimension === value)
+                            }
+                    }, this);
+                    LOG.debug(' BaseMap:onChangeDimension: Found existing layer index ' + result);
+                    return result;
+		}, this, 0);
 		
 		var params = {};
 		Ext.apply(params, this.layerController.getAllDimensions());
@@ -141,6 +143,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 	},
         onChangeLegend : function() {
             LOG.debug('BaseMap:onChangeLegend: Handling Request.');
+            if (!this.layerController.getLayer()) return;
             var record = this.layerController.getLegendRecord();
             this.clearLayers();
             this.replaceLayer(
@@ -188,15 +191,17 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		}
 		
 		if (existingIndex) {
+                        LOG.debug('BaseMap:replaceLayer: Replacing current layer with already-existing layer at index ' + existingIndex);
 			var newLayer = this.layers.getAt(existingIndex).getLayer();
 			newLayer.setOpacity(this.layerController.getLayerOpacity());
 		} else {
+                        LOG.debug('BaseMap:replaceLayer: Replacing current layer with a new layer.');
 			var copy = record.clone();
 			
 			params = Ext.apply({
 				format: "image/png"
 				,transparent : true
-//                                ,styles : (params.styles) ? params.styles : this.layerController.getLegendRecord().id
+                                ,styles : (params.styles) ? params.styles : this.layerController.getLegendRecord().id
 			}, params);
 
 			copy.get('layer').mergeNewParams(params);
@@ -210,7 +215,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		}
 		
 		if (this.currentLayer) {
-                    LOG.debug('BaseMap:replaceLayer: currentLayer exists. Setting opacity to 0');
+                    LOG.debug('BaseMap:replaceLayer: Setting current layer opacity to 0');
                     this.currentLayer.getLayer().setOpacity(0);
 		}
 	}

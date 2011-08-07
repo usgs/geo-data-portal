@@ -31,16 +31,6 @@ GDP.TimestepChooser = Ext.extend(Ext.form.FormPanel, {
 		
 		this.layerController = config.layerController || new GDP.LayerController();
 		
-		this.layerController.on('changelayer', function() {
-			this.updateAvailableTimesteps(this.layerController.getLayer());
-		}, this); 
-		
-		this.layerController.on('changedimension', function() {
-			var currentTimestep = this.layerController.getDimension('time');
-			this.timestepComponent.setValue(currentTimestep);
-			this.setThumbValue(this.MIDDLE_THUMB, currentTimestep);
-		}, this);
-		
 		var stepStore = new Ext.data.ArrayStore({
 			storeId : 'timestepStore',
 			idIndex: 0,
@@ -68,18 +58,6 @@ GDP.TimestepChooser = Ext.extend(Ext.form.FormPanel, {
 		
 		this.timestepAnimator = new GDP.Animator();
 		
-		this.timestepSlider.on('changecomplete', function(slider, newValue, thumb) {
-			this.timestepAnimator.setMinIndex(this.getThumbValue(this.LOW_THUMB));
-			this.timestepAnimator.setMaxIndex(this.getThumbValue(this.HIGH_THUMB));
-			var midVal = this.getThumbValue(this.MIDDLE_THUMB);
-			if (midVal === newValue) {
-				this.layerController.requestDimension('time', this.timestepStore.getAt(midVal).get('time'));
-			}
-		}, this);
-		
-		this.timestepAnimator.on('timedchange', function(index) {
-			this.layerController.requestDimension('time', this.timestepStore.getAt(index).get('time'));
-		}, this);
 		
 		config = Ext.apply({
 			items : [
@@ -109,6 +87,28 @@ GDP.TimestepChooser = Ext.extend(Ext.form.FormPanel, {
 		
 		GDP.TimestepChooser.superclass.constructor.call(this, config);
 		
+                LOG.debug('TimestepChooser:constructor: Registering Listeners.');
+                this.layerController.on('changelayer', function() {
+			this.updateAvailableTimesteps(this.layerController.getLayer());
+		}, this); 
+		
+		this.layerController.on('changedimension', function() {
+			var currentTimestep = this.layerController.getDimension('time');
+			this.timestepComponent.setValue(currentTimestep);
+			this.setThumbValue(this.MIDDLE_THUMB, currentTimestep);
+		}, this);
+		this.timestepSlider.on('changecomplete', function(slider, newValue, thumb) {
+			this.timestepAnimator.setMinIndex(this.getThumbValue(this.LOW_THUMB));
+			this.timestepAnimator.setMaxIndex(this.getThumbValue(this.HIGH_THUMB));
+			var midVal = this.getThumbValue(this.MIDDLE_THUMB);
+			if (midVal === newValue) {
+				this.layerController.requestDimension('time', this.timestepStore.getAt(midVal).get('time'));
+			}
+		}, this);
+		this.timestepAnimator.on('timedchange', function(index) {
+			this.layerController.requestDimension('time', this.timestepStore.getAt(index).get('time'));
+		}, this);
+                
 	},
 	getSortedThumbs : function() {
 		var thumbArray = this.timestepSlider.thumbs.slice(0);

@@ -83,7 +83,7 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
 		
 		var layerName = layerRecord.get('name');
 		this.zaxisName = layerName.slice(0, layerName.indexOf('/'));
-		LOG.debug('LayerController:requestLegendStore: Firing event "changelayer".');
+		LOG.debug('LayerController:requestLayer: Firing event "changelayer".');
 		this.fireEvent('changelayer');
 	},
         requestLegendStore : function(legendStore) {
@@ -98,6 +98,7 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
             if (!jsonObject) return;
             if (!this.legendStore) return;
             this.legendStore.loadData(jsonObject);
+            this.requestLegendRecord(this.legendStore.getAt(0));
             LOG.debug('LayerController:modifyLegendStore: Firing event "changelegend".');
             this.fireEvent('changelegend');
         },
@@ -106,7 +107,7 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
             if (!legendRecord) return;
             this.legendRecord = legendRecord;
             LOG.debug('LayerController:requestLegendRecord: Firing event "changelegend".');
-            this.fireEvent('changelegend');
+//            this.fireEvent('changelegend');
         },
 	requestOpacity : function(opacity) {
 		if (!opacity) return;
