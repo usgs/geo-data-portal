@@ -18,21 +18,29 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
         
         var control = new OpenLayers.Control();
         OpenLayers.Util.extend(control, {
+//            controller : config.layerController,
             draw: function() {
                 this.handler = new OpenLayers.Handler.Box(
                     control,
-                    {
-                        done : this.notice
-                    },
-                    {
-                        alwaysZoom : true
-                    }
-                
+                        {
+                            done : this.notice
+                        },
+                        {
+                            alwaysZoom : true
+                        }
                     )
                 this.handler.activate();
             },
             notice : function(xy) {
-                LOG.debug(xy);
+                var ll = map.getLonLatFromPixel(new OpenLayers.Pixel(xy.left, xy.bottom)); 
+                var ur = map.getLonLatFromPixel(new OpenLayers.Pixel(xy.right, xy.top)); 
+                var llLat = ll.lat.toFixed(4);
+                var llLon = ll.lon.toFixed(4);
+                var urLat = ur.lat.toFixed(4)
+                var urLon = ur.lon.toFixed(4);
+                
+                LOG.debug('Lower Left [LAT, LON] = ' + llLat + ', ' + llLon);
+                LOG.debug('Upper Right [LAT, LON] = ' + urLat + ', ' + urLon);
             }
         });
         
