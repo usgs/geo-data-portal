@@ -57,7 +57,8 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
                 "changelegend",
                 "changedimension",
                 "changeopacity",
-                "drewbbox"
+                "drewbbox",
+                "bboxbuttonclicked"
             );
             
             // There shouldn't be anything listening at this point. 
@@ -170,7 +171,11 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
 		}
 	},
         drewBoundingBox : function(args) {
-            LOG.debug('LayerController:drewBoundingBox: Polygan drawn...')
+            LOG.debug('LayerController:drewBoundingBox: Polygan drawn. Firing event: "drewbbox".');
             this.fireEvent('drewbbox', args);
+        },
+        boundingBoxButtonClicked : function(args) {
+            LOG.debug('LayerController:drewBoundingBox: Bounding Box button clicked. Firing event: "bboxbuttonclicked"')
+            this.fireEvent('bboxbuttonclicked', args);
         }
 });

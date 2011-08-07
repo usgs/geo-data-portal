@@ -225,6 +225,25 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
                     zlayerCombo.setValue(threshold);
                 }
             }, this);
+            this.controller.on('bboxbuttonclicked', function(args){
+                if (this.get('coord-panel')) {
+                    this.get('coord-panel').setCoords({
+                        west : '',
+                        south : '',
+                        east : '',
+                        north : ''
+                    });
+                } else {
+                    var poiPanelConfig = {
+                        id : 'coord-panel',
+                        submitButton : new GDP.BoundsPanelSubmitButton()
+                    }
+                    var coordPanel = new GDP.PolygonPOIPanel(poiPanelConfig);
+                    this.add(coordPanel);
+                    this.doLayout(true);
+                    coordPanel.setWidth(this.getWidth());
+                }
+            }, this),
             this.controller.on('drewbbox', function(args){
                 LOG.debug('LayerChooser: Observed "drewbbox"');
                 var bounds = args.bounds;
