@@ -14,21 +14,40 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
         var zoomToExtentAction, navigationAction, bboxVector, drawBboxAction;
         
         bboxVector = new OpenLayers.Layer.Vector('bboxvector');
+        map.addLayers([bboxVector]);
+        
+        var control = new OpenLayers.Control();
+        OpenLayers.Util.extend(control, {
+            draw: function() {
+                this.handler = new OpenLayers.Handler.Box(
+                    control,
+                    {
+                        done : this.notice
+                    },
+                    {
+                        alwaysZoom : true
+                    }
+                
+                    )
+                this.handler.activate();
+            },
+            notice : function(xy) {
+                LOG.debug(xy);
+            }
+        });
+        
         
         drawBboxAction = new GeoExt.Action({
             text: 'Draw Box'
-            ,control: new OpenLayers.Control.DrawFeature(
-                bboxVector, 
-                OpenLayers.Handler.Box
-            )
+            ,control: control
             ,toggleGroup: toggleGroup
             ,allowDepress: false
             ,tooltip: 'Draw A Bounding Box On The Map'
             ,group: toggleGroup
             ,map: map
         });
-        map.addLayers([bboxVector]);
         
+//        map.addControl(new OpenLayers.Control.EditingToolbar(bboxVector));
         zoomToExtentAction = new GeoExt.Action({
             text : 'Max Extent'
             ,control: new OpenLayers.Control.ZoomToMaxExtent()
