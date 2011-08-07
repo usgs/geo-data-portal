@@ -66,7 +66,10 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                         this.onChangeLegend();
                         this.currentLayer = this.findCurrentLayer();
                     }, this);
-                    
+                    this.layerController.on('creategeomoverlay', function(args) {
+                        LOG.debug('BaseMap: Observed "creategeomoverlay".');
+                        this.createGeomOverlay(args);
+                    }, this)
                 }
 	},
         zoomToExtent : function(record) {
@@ -219,5 +222,15 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                     LOG.debug('BaseMap:replaceLayer: Setting current layer opacity to 0');
                     this.currentLayer.getLayer().setOpacity(0);
 		}
-	}
+	},
+        createGeomOverlay : function(args) {
+            LOG.debug('BaseMap:createGeometryOverlay: Drawing vector')
+            var bounds = args.bounds;
+            var geom = bounds.toGeometry();
+            var feature = new OpenLayers.Feature.Vector(geom);
+            
+            this.map.getLayersByName('bboxvector')[0].removeAllFeatures(null,true);
+            this.map.getLayersByName('bboxvector')[0].addFeatures([feature]);
+            this.map.zoomToExtent(bounds,true);
+        }
 });

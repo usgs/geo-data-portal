@@ -34,6 +34,7 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
                 this.handler.activate();
             },
             notice : function(bounds) {
+                LOG.debug('MapActivityBar:drawControl:notice: bbox drawn');
                 var left = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.top)); 
                 var bottom = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.bottom));
                 var right = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.bottom));
@@ -43,12 +44,8 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
                 lonLatBounds.extend(bottom);
                 lonLatBounds.extend(top);
                 
-                var geom = lonLatBounds.toGeometry();
-                var feature = new OpenLayers.Feature.Vector(geom);
-                this.map.getLayersByName('bboxvector')[0].removeAllFeatures(null,true);
-                this.map.getLayersByName('bboxvector')[0].addFeatures([feature]);
-                map.zoomToExtent(lonLatBounds,true);
                 this.controller.drewBoundingBox({map : this.map, bounds : bounds});
+                this.controller.createGeomOverlay({bounds : lonLatBounds});
             }
         });
         
