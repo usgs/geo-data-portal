@@ -27,7 +27,7 @@ GDP.BoundsPanelSubmitButton = Ext.extend(Ext.Button, {
     onClick : function(button, eventObj) {
         LOG.debug('BoundsPanelSubmitButton:click: Handling Request.');
         var north = this.textBoxes.northBox.getValue();
-        var south = this.textBoxes.eastBox.getValue();
+        var south = this.textBoxes.southBox.getValue();
         var east = this.textBoxes.eastBox.getValue()
         var west = this.textBoxes.westBox.getValue()
         
@@ -37,32 +37,43 @@ GDP.BoundsPanelSubmitButton = Ext.extend(Ext.Button, {
         LOG.debug('North: ' + north);
         
         // Do bounding box validation
-        if (this.validator({
+        var valid = this.validator({
             northBox : this.textBoxes.northBox,
             southBox : this.textBoxes.southBox, 
             eastBox : this.textBoxes.eastBox,
             westBox : this.textBoxes.westBox
-        })) {
-            LOG.debug('BoundsPanelSubmitButton:click:validator returned true')
+        });
+        if (valid) {
+            LOG.debug('BoundsPanelSubmitButton:click:validator returned true');
+            
+            // Let's draw the polygon on the map
+            // We need to create some boundaries first
+            var bounds = new OpenLayers.Bounds();
+            bounds.extend(new OpenLayers.LonLat(west, south));
+            bounds.extend(new OpenLayers.LonLat(east, north));
+            this.layerController.createGeomOverlay({bounds : bounds});
+            
+            return; // The rest is not done yet
+
+            // Create XML to send to WPS backing process
+            var xmlData;
+
+            // Send the AJAX request and do success/fail handling. (We probably want to pass the 'success' function in?)
+            Ext.Ajax.request({
+                url : 'proxy/' ,
+                method: 'POST',
+                xmlData : xmlData,
+                success: function ( result, request ) {
+                    LOG.debug('BoundsPanelSubmitButton:onClick:Ajax:success: ' + result);
+                },
+                failure: function ( result, request) {
+                    LOG.debug('BoundsPanelSubmitButton:onClick:Ajax:failure: ' + result);
+                }
+            });
         } else {
             LOG.debug('BoundsPanelSubmitButton:click:validator returned false')
         }
-        return;
-        // Create XML to send to WPS backing process
-        var xmlData;
         
-        // Send the AJAX request and do success/fail handling. (We probably want to pass the 'success' function in?)
-        Ext.Ajax.request({
-            url : 'proxy/' ,
-            method: 'POST',
-            xmlData : xmlData,
-            success: function ( result, request ) {
-                LOG.debug('BoundsPanelSubmitButton:onClick:Ajax:success: ' + result);
-            },
-            failure: function ( result, request) {
-                LOG.debug('BoundsPanelSubmitButton:onClick:Ajax:failure: ' + result);
-            }
-        });
  
     }
 });

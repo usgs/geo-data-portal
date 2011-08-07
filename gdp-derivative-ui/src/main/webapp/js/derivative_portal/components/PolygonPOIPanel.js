@@ -124,7 +124,7 @@ GDP.PolygonPOIPanel = Ext.extend(Ext.Panel, {
                 }
                 if (westBox.getValue() > eastBox.getValue()) {
                     LOG.debug('Validation: West Box is always less than East Box');
-                    errorMsg += '\nValidation: North Box is always less than South Box';
+                    errorMsg += '\nValidation: West Box is always less than East Box';
                     westBox.setValue('');
                     eastBox.setValue('');
                     result = false;
