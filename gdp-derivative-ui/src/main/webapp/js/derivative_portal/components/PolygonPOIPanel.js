@@ -80,6 +80,9 @@ GDP.PolygonPOIPanel = Ext.extend(Ext.Panel, {
         
         var configItems = [coordPanel];
         var button = config.submitButton;
+        
+        // This validates the textbox values and returns a boolean.
+        // The submit button will use this function when pressed.
         var validator = function(boxes) {
             var westBox = boxes.westBox;
             var southBox = boxes.southBox;
@@ -88,19 +91,46 @@ GDP.PolygonPOIPanel = Ext.extend(Ext.Panel, {
             LOG.debug('Validating input bounding boxes.');
 
             return function() {
+                var result = true;
+                var errorMsg = '';
+                var nullValErr = '\nValidation: All Inputs Must Be Populated';
+                var nanError = '\nValidation: All Inputs Must Be Numeric';
+                
+                // null validation
+                Ext.each([northBox, westBox, southBox, eastBox], function(box, index){
+                    if (!box.getValue()) {
+                        LOG.debug(errorMsg);
+                        errorMsg = nullValErr
+                        result = false;
+                    }
+                });
+                
+                // NaN validation
+                Ext.each([northBox, westBox, southBox, eastBox], function(box, index){
+                    if (isNaN(box.getValue())) {
+                        LOG.debug(errorMsg);
+                        errorMsg += nanError
+                        box.setValue('');
+                        result = false;
+                    }
+                });
+                
                 if (northBox.getValue() > southBox.getValue()) {
                     LOG.debug('Validation: North Box is always less than South Box');
+                    errorMsg +='\nValidation: North Box is always less than South Box'
                     northBox.setValue('');
                     southBox.setValue('');
-                    return false;
+                    result = false;
                 }
                 if (westBox.getValue() > eastBox.getValue()) {
                     LOG.debug('Validation: West Box is always less than East Box');
+                    errorMsg += '\nValidation: North Box is always less than South Box';
                     westBox.setValue('');
                     eastBox.setValue('');
-                    return false;
+                    result = false;
                 }
-                return true;
+                if (!result) NOTIFY.warn(errorMsg);
+                return result;
             }();
         }
                 

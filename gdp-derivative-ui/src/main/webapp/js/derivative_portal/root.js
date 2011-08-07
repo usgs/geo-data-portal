@@ -72,10 +72,21 @@ function initializeNotification() {
 			msg: msg
 		}).show(document);
 	}
+        
+        var _notifyWarning = function(msg) {
+            new Ext.ux.Notify({
+			msgWidth: 200,
+			hideDelay: 3000,
+			title: 'WARNING',
+			titleIconCls: 'titleicon-warning',
+			msg: msg
+		}).show(document);
+        }
 	NOTIFY = {
 		debug : _notifyDebug,
 		success : _notifySuccess,
-		error : _notifyError
+		error : _notifyError,
+                warn : _notifyWarning
 	};
         LOG.info('Derivative Portal: Notification Initialized.');
 }

@@ -35,6 +35,8 @@ GDP.BoundsPanelSubmitButton = Ext.extend(Ext.Button, {
         LOG.debug('South: ' + south);
         LOG.debug('East: ' + east);
         LOG.debug('North: ' + north);
+        
+        // Do bounding box validation
         if (this.validator({
             northBox : this.textBoxes.northBox,
             southBox : this.textBoxes.southBox, 
@@ -46,12 +48,6 @@ GDP.BoundsPanelSubmitButton = Ext.extend(Ext.Button, {
             LOG.debug('BoundsPanelSubmitButton:click:validator returned false')
         }
         return;
-        
-        // Do bounding box validation
-        if (!west) {
-            this.textBoxes.westBox
-        }
-        
         // Create XML to send to WPS backing process
         var xmlData;
         
