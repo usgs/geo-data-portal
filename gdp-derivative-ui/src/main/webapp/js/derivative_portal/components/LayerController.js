@@ -56,7 +56,8 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
                 "changelayer",
                 "changelegend",
                 "changedimension",
-                "changeopacity"
+                "changeopacity",
+                "drewbbox"
             );
             
             // There shouldn't be anything listening at this point. 
@@ -102,6 +103,7 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
             LOG.debug('LayerController:modifyLegendStore: Firing event "changelegend".');
             this.fireEvent('changelegend');
         },
+        
         requestLegendRecord : function(legendRecord) {
             LOG.debug('LayerController:requestLegendRecord: Handling request.');
             if (!legendRecord) return;
@@ -166,5 +168,9 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
 		} else {
 			return null;
 		}
-	}
+	},
+        drewBoundingBox : function(args) {
+            LOG.debug('LayerController:drewBoundingBox: Polygan drawn...')
+            this.fireEvent('drewbbox', args);
+        }
 });

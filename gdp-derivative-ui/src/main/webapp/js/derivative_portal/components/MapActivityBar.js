@@ -8,7 +8,7 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
         if (!config) config = {};
         
         this.layerController = config.layerController;
-        
+        this.bboxVector 
         var map = config.map;
         var toggleGroup = 'draw';
         var zoomToExtentAction, navigationAction, bboxVector, drawBboxAction;
@@ -18,7 +18,7 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
         
         var control = new OpenLayers.Control();
         OpenLayers.Util.extend(control, {
-            controller : config.layerController,
+            controller : this.layerController,
             draw: function() {
                 this.handler = new OpenLayers.Handler.Box(
                     control,
@@ -31,20 +31,24 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
                     )
                 this.handler.activate();
             },
-            notice : function(xy) {
-                var ll = map.getLonLatFromPixel(new OpenLayers.Pixel(xy.left, xy.bottom)); 
-                var ur = map.getLonLatFromPixel(new OpenLayers.Pixel(xy.right, xy.top)); 
-                var llLat = ll.lat.toFixed(4);
-                var llLon = ll.lon.toFixed(4);
-                var urLat = ur.lat.toFixed(4)
-                var urLon = ur.lon.toFixed(4);
+            notice : function(bounds) {
+                var left = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.top)); 
+                var bottom = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.bottom));
+                var right = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.bottom));
+                var top = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.top)); 
+                    
+                var lonLatBounds = new OpenLayers.Bounds();
+                lonLatBounds.extend(bottom);
+                lonLatBounds.extend(top);
                 
-                LOG.debug('GDP.MapActivityBar: Polygan drawn...')
-                LOG.debug('Lower Left [LAT, LON] = ' + llLat + ', ' + llLon);
-                LOG.debug('Upper Right [LAT, LON] = ' + urLat + ', ' + urLon);
+                var geom = lonLatBounds.toGeometry();
+                var feature = new OpenLayers.Feature.Vector(geom);
+                this.map.getLayersByName('bboxvector')[0].removeAllFeatures(null,true);
+                this.map.getLayersByName('bboxvector')[0].addFeatures([feature]);
+                map.zoomToExtent(lonLatBounds,true);
+                this.controller.drewBoundingBox({map : this.map, bounds : bounds});
             }
         });
-        
         
         drawBboxAction = new GeoExt.Action({
             text: 'Draw Box'

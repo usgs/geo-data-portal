@@ -66,6 +66,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                         this.onChangeLegend();
                         this.currentLayer = this.findCurrentLayer();
                     }, this);
+                    
                 }
 	},
         zoomToExtent : function(record) {
@@ -156,10 +157,10 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         },
 	onChangeOpacity : function() {
             LOG.debug('BaseMap:onChangeOpacity: Handling Request.');
-		if (this.currentLayer) {
-			this.currentLayer.getLayer().setOpacity(this.layerController.getLayerOpacity());
-		}
-            },
+            if (this.currentLayer) {
+                    this.currentLayer.getLayer().setOpacity(this.layerController.getLayerOpacity());
+            }
+        },
         onReplaceBaseLayer : function(record) {
             LOG.debug('BaseMap:onReplaceBaseLayer: Handling Request.');
             if (!record) {

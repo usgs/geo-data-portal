@@ -30,9 +30,6 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
             editable : false,
             emptyText : 'Loading...'
         });
-//        var bLayerTitle = this.controller.getBaseLayer().data.title;
-//        LOG.debug('LayerChooser:constructor: Setting baseLayerCombo value to '+bLayerTitle+'.');
-//        baseLayerCombo.setValue(bLayerTitle);
         
         var capabilitiesStore = config.capabilitiesStore;
         var layerCombo = new Ext.form.ComboBox({
@@ -88,6 +85,7 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
         var activityBar = new GDP.MapActivityBar({
                 id : 'activityBar'
                 ,map : config.map
+                ,layerController : this.controller
         });
 
         var legendImage = Ext.extend(GeoExt.LegendImage, {
@@ -152,8 +150,10 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
                 LOG.debug('root: Capabilities store has finished loading.');
                 var firstRecord = capStore.getAt(0);
                 layerCombo.setValue(firstRecord.get("title"));
+                
                 // Let's use this event to load the legendstore/combobox
                 this.controller.modifyLegendStore(firstRecord.data);
+                
                 layerCombo.fireEvent('select', layerCombo, firstRecord, 0);
                 if (LOADMASK) LOADMASK.hide();
             }, this);
@@ -164,7 +164,6 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
             legendCombo.store.on('load', function(store) {
                 LOG.debug('LayerChooser: Legend Combobox Loaded.');
                 this.setValue(store.getAt(0).get('name'));
-//                this.fireEvent('select', this, store.getAt(0), 0);
             }, legendCombo);
             layerOpacitySlider.on('change', function() {
                 LOG.debug('layerOpacitySlider: Observed \'change\'.');
@@ -225,6 +224,27 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
                 if (threshold & zlayerCombo) {
                     zlayerCombo.setValue(threshold);
                 }
+            }, this);
+            this.controller.on('drewbbox', function(args){
+                LOG.debug('LayerChooser: Observed "drewbbox"');
+                var bounds = args.bounds;
+                var map = args.map;
+                var left = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.top)); 
+                var bottom = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.bottom));
+                var right = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.bottom));
+                var top = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.top)); 
+                
+                // ul, br
+                // Now we should populate the text boxes on this panel
+                var coordPanel = new GDP.PolygonPOIPanel({
+                    id : 'coord-panel',
+                    left : left,
+                    bottom : bottom,
+                    right : right,
+                    top : top
+                });
+                this.add(coordPanel);
+//                this.doLayout(true);
             }, this);
         }
         this.on('resize', function() {

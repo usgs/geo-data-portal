@@ -58,10 +58,12 @@
 <script type="text/javascript" src="js/derivative_portal/components/notify.js"></script>
 <script type="text/javascript" src="js/derivative_portal/components/Animator.js"></script>
 <script type="text/javascript" src="js/derivative_portal/components/LayerController.js"></script>
+<script type="text/javascript" src="js/derivative_portal/components/PolygonPOIPanel.js"></script>
 <script type="text/javascript" src="js/derivative_portal/components/LayerChooser.js"></script>
 <script type="text/javascript" src="js/derivative_portal/components/TimestepChooser.js"></script>
 <script type="text/javascript" src="js/derivative_portal/components/BaseMap.js"></script>
 <script type="text/javascript" src="js/derivative_portal/components/MapActivityBar.js"></script>
+
 
 
 <script src='${param["UIScriptFile"]}' type="text/javascript"></script>
