@@ -225,7 +225,7 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
                     zlayerCombo.setValue(threshold);
                 }
             }, this);
-            this.controller.on('bboxbuttonclicked', function(args){
+            this.controller.on('bboxbuttonactivated', function(args){
                 if (this.get('coord-panel')) {
                     this.get('coord-panel').setCoords({
                         west : '',

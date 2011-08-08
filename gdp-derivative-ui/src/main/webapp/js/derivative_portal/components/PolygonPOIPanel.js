@@ -115,14 +115,14 @@ GDP.PolygonPOIPanel = Ext.extend(Ext.Panel, {
                     }
                 });
                 
-                if (southBox.getValue() > northBox.getValue()) {
+                if (parseFloat(southBox.getValue()) > parseFloat(northBox.getValue())) {
                     LOG.debug('Validation: North Box is always less than South Box');
                     errorMsg +='\nValidation: North Box is always less than South Box'
                     northBox.setValue('');
                     southBox.setValue('');
                     result = false;
                 }
-                if (westBox.getValue() > eastBox.getValue()) {
+                if (parseFloat(westBox.getValue()) > parseFloat(eastBox.getValue())) {
                     LOG.debug('Validation: West Box is always less than East Box');
                     errorMsg += '\nValidation: West Box is always less than East Box';
                     westBox.setValue('');
