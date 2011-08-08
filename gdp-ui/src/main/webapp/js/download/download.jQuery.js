@@ -21,8 +21,7 @@ jQuery.download = function(url, data, method){
         var pair = this.split('=');
         inputs+='<input type="hidden" name="'+ pair[0] +'" value="'+ pair[1] +'" />'; 
     });
-    //send request
-    jQuery('<form action="'+ url +'" method="'+ (method||'post') +'">'+inputs+'</form>')
-    .appendTo('body').submit().remove();
-//}
+    window.onbeforeunload = undefined; // http://internal.cida.usgs.gov/jira/browse/GDP-378
+    jQuery('<form action="'+ url +'" method="'+ (method||'post') +'">'+inputs+'</form>').appendTo('body').submit().remove();
+    window.onbeforeunload = function() { return "Leaving the Geo Data Portal will cause any unsaved configuration to be lost."; }
 };
