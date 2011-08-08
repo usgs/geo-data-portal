@@ -44,12 +44,14 @@
                         <span id="uploadButton" class="button aoi-services-button toggle">Upload Shapefile</span>
                     </span>
                     <span id="waters-button-container" style="padding-right: 15px;">
+                        or
                         <a class="tooltip">
                             <img src="images/question-mark.png" alt="informational question mark" />
                         </a>
                         <span id="watersButton" class="button aoi-services-button toggle">EPA WATERS Service</span>
                     </span>
                     <span id="draw-feature-button-container">
+                        or
                         <a class="tooltip">
                             <img src="images/question-mark.png" alt="informational question mark" />
                         </a>

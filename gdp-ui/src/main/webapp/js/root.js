@@ -401,7 +401,7 @@ function createPopupView(popupText, overrideCookie) {
             }
         },
         title: 'Geo Data Portal Information',
-        width: 'auto',
+        width: '80%',
         height: 'auto',
         modal: true,
         resizable: false,
