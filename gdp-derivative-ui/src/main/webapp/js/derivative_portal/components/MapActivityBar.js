@@ -21,9 +21,6 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
             activate : function() {
                 this.controller.boundingBoxButtonActivated();
             },
-            deactivate : function() {
-                this.controller.boundingBoxButtonDeactivated();
-            },
             draw: function() {
                 this.handler = new OpenLayers.Handler.Box(
                     control,

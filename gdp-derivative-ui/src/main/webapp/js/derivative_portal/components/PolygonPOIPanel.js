@@ -14,10 +14,10 @@ GDP.PolygonPOIPanel = Ext.extend(Ext.Panel, {
     },
     getCoords : function() {
         return {
-            west : this.west,
-            south : this.south,
-            east : this.east,
-            north : this.north
+            west : this.get('coord-text-panel').get('west-box').getValue(),
+            south :  this.get('coord-text-panel').get('south-box').getValue(),
+            east : this.get('coord-text-panel').get('east-box').getValue(),
+            north : this.get('coord-text-panel').get('north-box').getValue()
         }
     },
     constructor : function(config) {

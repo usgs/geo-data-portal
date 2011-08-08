@@ -207,7 +207,7 @@ function initializeMapping() {
     
     // Central controller for the application.
     var layerController = new GDP.LayerController({
-        baseLayer : baseLayerStore.getAt(3) 
+        baseLayer : baseLayerStore.getAt(2) 
         ,legendStore : legendStore
         ,dimensions : ['time', 'elevation']
     });

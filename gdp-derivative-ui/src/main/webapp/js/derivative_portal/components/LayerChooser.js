@@ -226,14 +226,21 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
                 }
             }, this);
             this.controller.on('bboxbuttonactivated', function(args){
+                LOG.debug('LayerChooser: Observed "bboxbuttonactivated"');
                 if (this.get('coord-panel')) {
-                    this.get('coord-panel').setCoords({
-                        west : '',
-                        south : '',
-                        east : '',
-                        north : ''
-                    });
+                    LOG.debug('LayerChooser: Coordinate panel found. Reusing.');
+                    var coords = this.get('coord-panel').getCoords();
+                    if (coords.west && coords.south && coords.east && coords.north) {
+                        LOG.debug('LayerChooser: Coordinate panel has all 4 coordinates populated. Drawing and snapping to polygon.');
+                        
+                        var lonLatBounds = new OpenLayers.Bounds();
+                        lonLatBounds.extend(new OpenLayers.LonLat(coords.west, coords.south));
+                        lonLatBounds.extend(new OpenLayers.LonLat(coords.east, coords.north));
+
+                        this.controller.createGeomOverlay({bounds : lonLatBounds});
+                    }
                 } else {
+                    LOG.debug('LayerChooser: Coordinate panel not found. Reconstructing panel.');
                     var poiPanelConfig = {
                         id : 'coord-panel',
                         submitButton : new GDP.BoundsPanelSubmitButton({
@@ -245,10 +252,6 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
                     this.doLayout(true);
                     coordPanel.setWidth(this.getWidth());
                 }
-            }, this);
-            this.controller.on('bboxbuttondeactivated', function(args){
-                LOG.debug('LayerChooser: Observed "bboxbuttondeactivated".');
-                this.remove(this.get('coord-panel'));
             }, this);
             this.controller.on('drewbbox', function(args){
                 LOG.debug('LayerChooser: Observed "drewbbox"');

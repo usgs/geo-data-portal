@@ -70,10 +70,10 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                         LOG.debug('BaseMap: Observed "creategeomoverlay".');
                         this.createGeomOverlay(args);
                     }, this);
-                    this.layerController.on('bboxbuttondeactivated', function(args){
-                        LOG.debug('BaseMap: Observed "bboxbuttondeactivated".');
-                        this.map.getLayersByName('bboxvector')[0].removeAllFeatures(null,true);
-                    }, this);
+//                    this.layerController.on('bboxbuttondeactivated', function(args){
+//                        LOG.debug('BaseMap: Observed "bboxbuttondeactivated".');
+//                        this.map.getLayersByName('bboxvector')[0].removeAllFeatures(null,true);
+//                    }, this);
                 }
 	},
         zoomToExtent : function(record) {

@@ -59,7 +59,7 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
                 "changeopacity",
                 "drewbbox",
                 "bboxbuttonactivated",
-                "bboxbuttondeactivated",
+//                "bboxbuttondeactivated",
                 "creategeomoverlay"
             );
             
@@ -180,10 +180,10 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
             LOG.debug('LayerController:drewBoundingBox: Bounding Box button clicked. Firing event: "bboxbuttonclicked"')
             this.fireEvent('bboxbuttonactivated', args);
         },
-        boundingBoxButtonDeactivated : function(args) {
-            LOG.debug('LayerController:drewBoundingBox: Bounding Box button deactivated. Firing event: "bboxbuttondeactivated"')
-            this.fireEvent('bboxbuttondeactivated', args);
-        },
+//        boundingBoxButtonDeactivated : function(args) {
+//            LOG.debug('LayerController:drewBoundingBox: Bounding Box button deactivated. Firing event: "bboxbuttondeactivated"')
+//            this.fireEvent('bboxbuttondeactivated', args);
+//        },
         createGeomOverlay : function(args) {
             LOG.debug('LayerController:drewBoundingBox: Polygan requested. Firing event: "creategeomoverlay".');
             this.fireEvent('creategeomoverlay', args);
