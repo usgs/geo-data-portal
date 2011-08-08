@@ -44,6 +44,7 @@ var Dataset = function() {
     var _algorithmList;
     var _configured;
     var _hasTimeRange = false;
+    var _usingCache = false;
     var gDatasetType;
     var _datasetTypeEnum = {
         WCS: 'wcs',
@@ -984,13 +985,15 @@ var Dataset = function() {
         );
     }
 
-    function opendapDatasetSelected(datasetURL) {
+    function opendapDatasetSelected(datasetURL, useCache) {
         logger.debug('GDP: Attempting to retrieve grids using OpenDAP.');
         gDatasetType = _datasetTypeEnum.OPENDAP;
+        _usingCache = useCache;
 
         var wpsAlgorithm = 'gov.usgs.cida.gdp.wps.algorithm.discovery.ListOpendapGrids';
         var wpsInputs = {
-            'catalog-url': [datasetURL]
+            'catalog-url': [datasetURL],
+            'allow-cached-response': [useCache]
         };
         var wpsOutput = ['result'];
 
@@ -1039,7 +1042,7 @@ var Dataset = function() {
             
             var firstOption = $(_DATASET_ID_SELECTBOX).find('option').first();
             firstOption.prop('selected', true); //GDP-321
-            getTimeRange(_datasetURL, firstOption.val());
+            getTimeRange(_datasetURL, firstOption.val(), _usingCache);
         }
         
         $(_DATASET_ID_TOOLTIP).fadeIn(Constant.ui.fadespeed);
@@ -1048,12 +1051,13 @@ var Dataset = function() {
         
     }
 
-    function getTimeRange(datasetURL, selectedGrid) {
+    function getTimeRange(datasetURL, selectedGrid, useCache) {
         logger.debug('GDP: Attaining grid time range for dataset: ' + datasetURL + ' and selected grid: ' + selectedGrid);
         var getTimeRangeWpsAlgorithm = 'gov.usgs.cida.gdp.wps.algorithm.discovery.GetGridTimeRange';
         var getTimeRangeWpsInputs = {
             'catalog-url': [datasetURL],
-            'grid': [selectedGrid]
+            'grid': [selectedGrid],
+            'allow-cached-response': [useCache]
         }
         var getTimeRangeWpsOutput = ['result'];
 
@@ -1469,7 +1473,7 @@ var Dataset = function() {
 			gDatasetType = datasetType;
 		},
 
-        datasetSelected : function(datasetURL, wmsURL){
+        datasetSelected : function(datasetURL, wmsURL, useCache){
             _datasetURL = datasetURL;
             
             $(_DATASET_ID_TOOLTIP).hide();
@@ -1504,10 +1508,10 @@ var Dataset = function() {
                 wcsDatasetSelected(datasetURL, function() {
                     datasetURL = datasetURL.replace(/^http:\/\//, 'dods://');
                     _datasetURL = datasetURL;
-                    opendapDatasetSelected(datasetURL)
+                    opendapDatasetSelected(datasetURL, useCache)
                 });
             } else if (uri.protocol == 'dods') {
-                opendapDatasetSelected(datasetURL);
+                opendapDatasetSelected(datasetURL, useCache);
             } else {
                 showErrorNotification("Unknown dataset protocol: " + uri.protocol);
             }

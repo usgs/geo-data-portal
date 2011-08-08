@@ -387,7 +387,8 @@ var CSWClient = function() {
         selectDatasetById : function(id, title) {
             var csw_response = getRecordById(id);
 
-            var jqueryExprs = [
+            // We are doing this because we don't know which format the data might be in, if we can tell, we shouldn't iterate
+            var datasetSelectors = [
             '[nodeName="csw:GetRecordByIdResponse"] > [nodeName="csw:Record"] [nodeName="dc:URI"]',
             '[nodeName="csw:GetRecordByIdResponse"] > [nodeName="gmd:MD_Metadata"] > [nodeName="gmd:identificationInfo"] > \
                 [nodeName="srv:SV_ServiceIdentification"] > [nodeName="srv:containsOperations"] > [nodeName="srv:SV_OperationMetadata"] > \
@@ -396,11 +397,17 @@ var CSWClient = function() {
                 [nodeName="gmd:MD_Distribution"] > [nodeName="gmd:transferOptions"] > [nodeName="gmd:MD_DigitalTransferOptions"] > \
                 [nodeName="gmd:onLine"] > [nodeName="gmd:CI_OnlineResource"] > [nodeName="gmd:linkage"] > [nodeName="gmd:URL"]'
             ];
+            
+            var shouldCacheSelectors = [
+                '[nodeName="csw:GetRecordByIdResponse"] > [nodeName="gmd:MD_Metadata"] > [nodeName="gmd:identificationInfo"] > \
+                    [nodeName="gmd:MD_DataIdentification"] > [nodeName="gmd:status"] > [nodeName="gmd:MD_ProgressCode"]'
+            ];
 
             var selectedDataset;
+            var shouldUseCache = false;
             var wmsURL;
-            for (var i=0; i<jqueryExprs.length; i++) {
-                $(csw_response).find(jqueryExprs[i]).each(function(index, elem) {
+            for (var i=0; i<datasetSelectors.length; i++) {
+                $(csw_response).find(datasetSelectors[i]).each(function(index, elem) {
                     var text = $(elem).text();
 
                     if (text.toLowerCase().contains("dods")) {
@@ -416,12 +423,21 @@ var CSWClient = function() {
                     }
                 });
             }
+            for (var i=0; i<shouldCacheSelectors.length; i++) {
+                $(csw_response).find(shouldCacheSelectors[i]).each(function(index, elem) {
+                    var codeListValue = $(elem).attr("codeListValue");
+                    
+                    if (codeListValue.toLowerCase() == "completed") {
+                        shouldUseCache = true;
+                    }
+                });
+            }
             
             if (!selectedDataset) {
                 showErrorNotification("No dataset found for this CSW Record");
             }
             else {
-                Dataset.datasetSelected(selectedDataset, wmsURL);
+                Dataset.datasetSelected(selectedDataset, wmsURL, shouldUseCache);
                 $('#dataset-url-input-box').val(selectedDataset);
                 if (parseInt(Constant.ui.view_show_csw_chosen_dataset_title)) {
                     $(_DATASET_SELECTED_TITLE).fadeOut(Constant.fadeSpeed, function(){
