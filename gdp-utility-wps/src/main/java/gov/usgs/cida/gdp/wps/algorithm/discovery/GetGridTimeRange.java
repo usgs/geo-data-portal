@@ -1,7 +1,6 @@
 package gov.usgs.cida.gdp.wps.algorithm.discovery;
 
 import gov.usgs.cida.gdp.dataaccess.helper.OpendapServerHelper;
-import gov.usgs.cida.gdp.utilities.bean.Time;
 import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 import gov.usgs.cida.gdp.wps.cache.ResponseCache;
 import gov.usgs.cida.gdp.wps.cache.ResponseCache.CacheIdentifier;
@@ -53,7 +52,7 @@ public class GetGridTimeRange extends AbstractSelfDescribingAlgorithm  {
         }
         String gridSelection = grid.get(0);
         
-        boolean useCache = true; // default to use cache, make user disable
+        boolean useCache = false; // default to false
         if (inputData.containsKey(PARAM_USE_CACHE)) {
             useCache = ((LiteralBooleanBinding)inputData.get(PARAM_USE_CACHE).get(0)).getPayload().booleanValue();
         }
@@ -104,6 +103,15 @@ public class GetGridTimeRange extends AbstractSelfDescribingAlgorithm  {
 
     @Override
     public Class getInputDataType(String id) {
+        if (PARAM_CATALOG_URL.equals(id)) {
+            return LiteralStringBinding.class;
+        }
+        if (PARAM_GRID.equals(id)) {
+            return LiteralStringBinding.class;
+        }
+        if (PARAM_USE_CACHE.equals(id)) {
+            return LiteralBooleanBinding.class;
+        }
         return LiteralStringBinding.class;
     }
 

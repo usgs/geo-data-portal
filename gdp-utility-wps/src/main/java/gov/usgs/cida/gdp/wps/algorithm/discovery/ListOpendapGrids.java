@@ -27,17 +27,23 @@ public class ListOpendapGrids extends AbstractSelfDescribingAlgorithm {
 
     private static final Logger log = LoggerFactory.getLogger(ListOpendapGrids.class);
     private static final String PARAM_CATALOG_URL = "catalog-url";
-    private static final String PARAM_USE_CACHE = "allow-cached-result";
+    private static final String PARAM_USE_CACHE = "allow-cached-response";
     private static final String PARAM_RESULT = "result";
     private List<String> errors = new ArrayList<String>();
 
     @Override
     public Map<String, IData> run(Map<String, List<IData>> inputData) {
+        if (inputData == null)  {
+            throw new RuntimeException("Error while allocating input parameters: Unable to find input parameters");
+        }
+        if (!inputData.containsKey(PARAM_CATALOG_URL))  {
+            throw new RuntimeException("Error while allocating input parameters: missing required parameter: '"+PARAM_CATALOG_URL+"'");
+        }
         String catalogUrl = ((LiteralStringBinding) inputData.get(PARAM_CATALOG_URL).get(0)).getPayload();
-        boolean useCache = true;
-        List<IData> cached = inputData.get(PARAM_USE_CACHE);
-        if (cached != null && cached.size() > 0) { 
-            useCache = ((LiteralBooleanBinding)cached.get(0)).getPayload().booleanValue();
+        
+        boolean useCache = false; // default to false
+        if (inputData.containsKey(PARAM_USE_CACHE)) {
+            useCache = ((LiteralBooleanBinding)inputData.get(PARAM_USE_CACHE).get(0)).getPayload().booleanValue();
         }
         CacheIdentifier ci = new ResponseCache.CacheIdentifier(catalogUrl, DATA_TYPE, null);
 
