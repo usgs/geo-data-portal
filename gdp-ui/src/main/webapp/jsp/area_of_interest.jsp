@@ -91,7 +91,7 @@
                             of interest with the link below the list.">
                             <img src="images/question-mark.png" alt="informational question mark"/>
                         </a>
-                        <span id="clear-aoi-button"><img src="images/blue-undo-arrow.png" class="clear-button" title="Click to clear" /></span>
+                        <span id="clear-aoi-button"><img src="images/blue-undo-arrow.png" class="clear-button" title="Clear Selections" /></span>
                         <br />
                         <select id="aoi-selectbox" size="6">
                             <%-- Automatically Generated --%>

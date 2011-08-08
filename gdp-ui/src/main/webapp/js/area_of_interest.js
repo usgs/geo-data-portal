@@ -282,7 +282,7 @@ var AOI = function() {
         $(_SUBMIT_DRAW_FEATURE_BUTTON).button({'label':'Submit'});
         $(_SUBMIT_DRAW_FEATURE_BUTTON).click(submitDrawFeature);
         
-        $(_CLEAR_DRAW_FEATURE_BUTTON).button({'label' : 'Clear Selections'});
+        $(_CLEAR_DRAW_FEATURE_BUTTON).button({'label' : 'Clear Polygon'});
         $(_CLEAR_DRAW_FEATURE_BUTTON).click(clearDrawFeatureLayer);
 
         // If we are configured for uploading shapefiles
