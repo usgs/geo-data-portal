@@ -406,7 +406,9 @@ function createPopupView(popupText, overrideCookie) {
         modal: true,
         resizable: false,
         draggable: false,
-        zIndex: 9999
+        zIndex: 9999,
+        // GDP-383
+        open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); } 
     });
     return true;
 }
