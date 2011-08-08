@@ -51,7 +51,8 @@ GDP.BoundsPanelSubmitButton = Ext.extend(Ext.Button, {
             var bounds = new OpenLayers.Bounds();
             bounds.extend(new OpenLayers.LonLat(west, south));
             bounds.extend(new OpenLayers.LonLat(east, north));
-            this.layerController.createGeomOverlay({bounds : bounds});
+            
+            this.layerController.submitBounds({bounds : bounds});
             
             return; // The rest is not done yet
 
@@ -73,6 +74,7 @@ GDP.BoundsPanelSubmitButton = Ext.extend(Ext.Button, {
         } else {
             LOG.debug('BoundsPanelSubmitButton:click:validator returned false')
         }
+        
         
  
     }

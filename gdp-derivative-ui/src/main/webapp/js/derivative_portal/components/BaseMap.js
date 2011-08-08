@@ -231,7 +231,11 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             LOG.debug('BaseMap:createGeometryOverlay: Drawing vector')
             var bounds = args.bounds;
             var geom = bounds.toGeometry();
-            var feature = new OpenLayers.Feature.Vector(geom);
+            var feature = new OpenLayers.Feature.Vector(geom, {
+                id : 'draw-vector'
+            });
+            
+            var currentFeature = this.map.getLayersByName('bboxvector')[0].getFeatureById('draw-vector');
             
             this.map.getLayersByName('bboxvector')[0].removeAllFeatures(null,true);
             this.map.getLayersByName('bboxvector')[0].addFeatures([feature]);

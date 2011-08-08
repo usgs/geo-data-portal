@@ -59,8 +59,8 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
                 "changeopacity",
                 "drewbbox",
                 "bboxbuttonactivated",
-//                "bboxbuttondeactivated",
-                "creategeomoverlay"
+                "creategeomoverlay",
+                "submit-bounds"
             );
             
             // There shouldn't be anything listening at this point. 
@@ -188,7 +188,12 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
             this.fireEvent('bboxbuttonactivated', args);
         },
         createGeomOverlay : function(args) {
-            LOG.debug('LayerController:drewBoundingBox: Polygan requested. Firing event: "creategeomoverlay".');
+            LOG.debug('LayerController:createGeomOverlay: Polygon requested. Firing event: "creategeomoverlay".');
             this.fireEvent('creategeomoverlay', args);
+        },
+        submitBounds : function(args) {
+            LOG.debug('LayerController:submitBounds');
+            this.createGeomOverlay(args);
+            this.fireEvent('submit-bounds', args);
         }
 });

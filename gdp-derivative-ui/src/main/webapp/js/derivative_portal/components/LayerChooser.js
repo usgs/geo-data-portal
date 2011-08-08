@@ -286,6 +286,14 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
                     coordPanel.setWidth(this.getWidth());
                 }
             }, this);
+            this.controller.on('submit-bounds',function(args){
+                LOG.debug('LayerChooser: Observed "submit-bounds"');
+                
+                var wpsPanel = new GDP.WPSPanel({ bounds : args.bounds });
+                this.add(wpsPanel);
+                this.doLayout(true);
+                wpsPanel.setWidth(this.getWidth());
+            },this);
         }
         this.on('resize', function() {
             this.get('activityBar').setWidth(this.getWidth());
