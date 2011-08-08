@@ -262,7 +262,6 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
                 var north = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.top)); 
                 
                 // ul, br
-                // Now we should populate the text boxes on this panel
                 if (this.get('coord-panel')) {
                     this.get('coord-panel').setCoords({
                         west : west,

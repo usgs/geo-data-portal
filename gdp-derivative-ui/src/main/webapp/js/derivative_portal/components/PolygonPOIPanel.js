@@ -7,12 +7,14 @@ GDP.PolygonPOIPanel = Ext.extend(Ext.Panel, {
     east : undefined,
     north : undefined,
     setCoords : function(args) {
+        LOG.debug('PolygonPOIPanel:setCoords');
         this.get('coord-text-panel').get('west-box').setValue(args.west.lon);
         this.get('coord-text-panel').get('south-box').setValue(args.south.lat);
         this.get('coord-text-panel').get('east-box').setValue(args.east.lon);
         this.get('coord-text-panel').get('north-box').setValue(args.north.lat);
     },
     getCoords : function() {
+        LOG.debug('PolygonPOIPanel:getCoords');
         return {
             west : this.get('coord-text-panel').get('west-box').getValue(),
             south :  this.get('coord-text-panel').get('south-box').getValue(),

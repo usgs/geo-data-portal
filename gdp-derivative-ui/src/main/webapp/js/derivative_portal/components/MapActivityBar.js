@@ -40,6 +40,9 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
                 var right = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.bottom));
                 var top = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.top)); 
                     
+                LOG.debug('MapActivityBar:OpenLayers.Handler.Box:notice: Use drew a point and not a box');
+                if (bounds.left == undefined || bounds.right == undefined || bounds.top == undefined || bounds.bottom == undefined) return;
+                    
                 var lonLatBounds = new OpenLayers.Bounds();
                 lonLatBounds.extend(bottom);
                 lonLatBounds.extend(top);
