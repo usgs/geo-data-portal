@@ -6,6 +6,7 @@ var LOADMASK;
 
 Ext.onReady(function () {
         GDP.PROXY_PREFIX = 'proxy/';
+        GDP.DEFAULT_LEGEND_NAME = 'boxfill/greyscale';
 	initializeLogging();
 	initializeNotification();
 	initializeMapping();

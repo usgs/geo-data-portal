@@ -4,6 +4,7 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
     controller : undefined,
     legendWindow : undefined,
     legendImage : undefined, 
+    legendCombo : undefined,
     DEFAULT_LEGEND_X : 110,
     DEFAULT_LEGEND_Y : 274,
     realignLegend : function() {
@@ -61,7 +62,7 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
             emptyText : 'Loading...'
         };
 
-        var legendCombo = new Ext.form.ComboBox({
+        this.legendCombo = new Ext.form.ComboBox({
             xtype : 'combo'
             ,mode : 'local'
             ,triggerAction: 'all'
@@ -89,16 +90,7 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
         });
 
         var legendImage = Ext.extend(GeoExt.LegendImage, {
-            initComponent: function(){
-                Ext.apply(this, {
-                    flex : 1
-                })
-                legendImage.superclass.initComponent.call(this, arguments);
-            }
-            ,onRender: function() {
-                legendImage.superclass.onRender.apply(this, arguments);
-            }
-            ,setUrl: function(url) {
+            setUrl: function(url) {
                 this.url = url;
                 var el = this.getEl();
                 if (el) {
@@ -108,7 +100,8 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
                     el.dom.src = url;
                 }
             }
-        })
+        });
+        
         this.legendImage = new legendImage();
         this.legendWindow = new Ext.Window({
             resizable: false
@@ -129,7 +122,7 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
             activityBar
             ,baseLayerCombo
             ,layerCombo
-            ,legendCombo
+            ,this.legendCombo
             ,layerOpacitySlider
             ]
         }, config);
@@ -157,14 +150,20 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
                 layerCombo.fireEvent('select', layerCombo, firstRecord, 0);
                 if (LOADMASK) LOADMASK.hide();
             }, this);
-            legendCombo.on('select', function(obj, rec, ind) {
+            this.legendCombo.on('select', function(obj, rec, ind) {
                 LOG.debug('LayerChooser: A new legend style chosen: ' + rec.id + ' (' + rec.data.abstrakt + ')');
                 this.controller.requestLegendRecord(rec);
             },this);
-            legendCombo.store.on('load', function(store) {
-                LOG.debug('LayerChooser: Legend Combobox Loaded.');
-                this.setValue(store.getAt(0).get('name'));
-            }, legendCombo);
+            this.legendCombo.store.on('load', function(store) {
+                LOG.debug('LayerChooser: Legend Combobox store Loaded.');
+                
+                //  http://internal.cida.usgs.gov/jira/browse/GDP-372
+                // TODO - This is duplicated in LayerChoose @ LayerController.modifyLegendStore() -- Fix that.
+                var recordIndex = store.find('name', GDP.DEFAULT_LEGEND_NAME);
+                recordIndex = (recordIndex < 0) ? 0 : recordIndex;
+                
+                this.legendCombo.setValue(store.getAt(recordIndex).get('name'));
+            }, this);
             layerOpacitySlider.on('change', function() {
                 LOG.debug('layerOpacitySlider: Observed \'change\'.');
                 this.controller.requestOpacity(layerOpacitySlider.getValue() / 100);

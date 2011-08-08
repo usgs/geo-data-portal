@@ -102,7 +102,14 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
             if (!jsonObject) return;
             if (!this.legendStore) return;
             this.legendStore.loadData(jsonObject);
-            this.requestLegendRecord(this.legendStore.getAt(0));
+            
+            //  http://internal.cida.usgs.gov/jira/browse/GDP-372
+            // TODO - This is duplicated in LayerChoose @ LayerChooser.legendCombo.store.on() -- Fix that.
+            var recordIndex = this.legendStore.find('name', GDP.DEFAULT_LEGEND_NAME);
+            recordIndex = (recordIndex < 0) ? 0 : recordIndex;
+            
+            this.requestLegendRecord(this.legendStore.getAt(recordIndex));
+            
             LOG.debug('LayerController:modifyLegendStore: Firing event "changelegend".');
             this.fireEvent('changelegend');
         },
