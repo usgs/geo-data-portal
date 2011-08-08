@@ -69,7 +69,11 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                     this.layerController.on('creategeomoverlay', function(args) {
                         LOG.debug('BaseMap: Observed "creategeomoverlay".');
                         this.createGeomOverlay(args);
-                    }, this)
+                    }, this);
+                    this.layerController.on('bboxbuttondeactivated', function(args){
+                        LOG.debug('BaseMap: Observed "bboxbuttondeactivated".');
+                        this.map.getLayersByName('bboxvector')[0].removeAllFeatures(null,true);
+                    }, this);
                 }
 	},
         zoomToExtent : function(record) {

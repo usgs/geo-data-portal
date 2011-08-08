@@ -245,7 +245,11 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
                     this.doLayout(true);
                     coordPanel.setWidth(this.getWidth());
                 }
-            }, this),
+            }, this);
+            this.controller.on('bboxbuttondeactivated', function(args){
+                LOG.debug('LayerChooser: Observed "bboxbuttondeactivated".');
+                this.remove(this.get('coord-panel'));
+            }, this);
             this.controller.on('drewbbox', function(args){
                 LOG.debug('LayerChooser: Observed "drewbbox"');
                 var bounds = args.bounds;
