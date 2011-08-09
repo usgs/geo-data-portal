@@ -6,32 +6,14 @@ GDP.WPSCapabilitiesReader = function(meta, recordType) {
         meta.format = new OpenLayers.Format.WPSCapabilities();
     }
     if(typeof recordType !== "function") {
-        recordType = Ext.data.Record.create(
-            recordType || meta.fields || [
-                {name: "version", type: "string"}
-//                {name: "title", type: "string"},
-//                {name: "abstract", type: "string"},
-//                {name: "queryable", type: "boolean"},
-//                {name: "opaque", type: "boolean"},
-//                {name: "noSubsets", type: "boolean"},
-//                {name: "cascaded", type: "int"},
-//                {name: "fixedWidth", type: "int"},
-//                {name: "fixedHeight", type: "int"},
-//                {name: "minScale", type: "float"},
-//                {name: "maxScale", type: "float"},
-//                {name: "prefix", type: "string"},
-//                {name: "formats"}, // array
-//                {name: "styles"}, // array
-//                {name: "srs"}, // object
-//                {name: "dimensions"}, // object
-//                {name: "bbox"}, // object
-//                {name: "llbbox"}, // array
-//                {name: "attribution"}, // object
-//                {name: "keywords"}, // array
-//                {name: "identifiers"}, // object
-//                {name: "authorityURLs"}, // object
-//                {name: "metadataURLs"} // array
-            ]
+        recordType = Ext.data.Record.create(meta.fields || [
+            {name: "version", type: "string"},
+            {name: "languages"}, // Array of objects
+            {name: "operationsMetadata"}, // Array of objects
+            {name: "processOfferings"}, // Object
+            {name: "serviceIdentification"}, // Object
+            {name: "serviceProvider"}
+        ]
         );
     }
     GDP.WPSCapabilitiesReader.superclass.constructor.call(
@@ -63,52 +45,6 @@ Ext.extend(GDP.WPSCapabilitiesReader, Ext.data.DataReader, {
         return this.readRecords(data);
     },
     
-    /** private: method[serviceExceptionFormat]
-     *  :param formats: ``Array`` An array of service exception format strings.
-     *  :return: ``String`` The (supposedly) best service exception format.
-     */
-//    serviceExceptionFormat: function(formats) {
-//        if (OpenLayers.Util.indexOf(formats, 
-//            "application/vnd.ogc.se_inimage")>-1) {
-//            return "application/vnd.ogc.se_inimage";
-//        }
-//        if (OpenLayers.Util.indexOf(formats, 
-//            "application/vnd.ogc.se_xml")>-1) {
-//            return "application/vnd.ogc.se_xml";
-//        }
-//        return formats[0];
-//    },
-    
-    /** private: method[imageFormat]
-     *  :param layer: ``Object`` The layer's capabilities object.
-     *  :return: ``String`` The (supposedly) best mime type for requesting 
-     *      tiles.
-     */
-//    imageFormat: function(layer) {
-//        var formats = layer.formats;
-//        if (layer.opaque && 
-//            OpenLayers.Util.indexOf(formats, "image/jpeg")>-1) {
-//            return "image/jpeg";
-//        }
-//        if (OpenLayers.Util.indexOf(formats, "image/png")>-1) {
-//            return "image/png";
-//        }
-//        if (OpenLayers.Util.indexOf(formats, "image/png; mode=24bit")>-1) {
-//            return "image/png; mode=24bit";
-//        }
-//        if (OpenLayers.Util.indexOf(formats, "image/gif")>-1) {
-//            return "image/gif";
-//        }
-//        return formats[0];
-//    },
-
-    /** private: method[imageTransparent]
-     *  :param layer: ``Object`` The layer's capabilities object.
-     *  :return: ``Boolean`` The TRANSPARENT param.
-     */
-//    imageTransparent: function(layer) {
-//        return layer.opaque == undefined || !layer.opaque;
-//    },
 
     /** private: method[readRecords]
      *  :param data: ``DOMElement | String | Object`` A document element or XHR
@@ -126,59 +62,16 @@ Ext.extend(GDP.WPSCapabilitiesReader, Ext.data.DataReader, {
             data = this.meta.format.read(data);
         }
         
-        var version = data.version;
-//        var capability = data.capability || {};
-//        var url = capability.request && capability.request.getmap &&
-//            capability.request.getmap.href; 
-//        var layers = capability.layers; 
-//        var formats = capability.exception ? capability.exception.formats : [];
-//        var exceptions = this.serviceExceptionFormat(formats);
         var records = [];
         var values = {};
-        values.version = version;
+        
+        values.version = data.version;
+        values.languages = data.languages;
+        values.operationsMetadata = data.operationsMetadata;
+        values.processOfferings = data.processOfferings;
+        values.serviceIdentification = data.serviceIdentification;
+        values.serviceProvider = data.serviceProvider;
         records.push(new this.recordType(values));
-//        if(url && layers) {
-//            var fields = this.recordType.prototype.fields; 
-//            var layer, values, options, params, field, v;
-//
-//            for(var i=0, lenI=layers.length; i<lenI; i++){
-//                layer = layers[i];
-//                if(layer.name) {
-//                    values = {};
-//                    for(var j=0, lenJ=fields.length; j<lenJ; j++) {
-//                        field = fields.items[j];
-//                        v = layer[field.mapping || field.name] ||
-//                        field.defaultValue;
-//                        v = field.convert(v);
-//                        values[field.name] = v;
-//                    }
-//                    options = {
-//                        attribution: layer.attribution ?
-//                            this.attributionMarkup(layer.attribution) :
-//                            undefined,
-//                        minScale: layer.minScale,
-//                        maxScale: layer.maxScale
-//                    };
-//                    if(this.meta.layerOptions) {
-//                        Ext.apply(options, this.meta.layerOptions);
-//                    }
-//                    params = {
-//                            layers: layer.name,
-//                            exceptions: exceptions,
-//                            format: this.imageFormat(layer),
-//                            transparent: this.imageTransparent(layer),
-//                            version: version
-//                    };
-//                    if (this.meta.layerParams) {
-//                        Ext.apply(params, this.meta.layerParams);
-//                    }
-//                    values.layer = new OpenLayers.Layer.WMS(
-//                        layer.title || layer.name, url, params, options
-//                    );
-//                    records.push(new this.recordType(values, values.layer.id));
-//                }
-//            }
-//        }
         
         return {
             totalRecords: records.length,
@@ -188,41 +81,4 @@ Ext.extend(GDP.WPSCapabilitiesReader, Ext.data.DataReader, {
 
     }
 
-    /** private: method[attributionMarkup]
-     *  :param attribution: ``Object`` The attribution property of the layer
-     *      object as parsed from a WMS Capabilities document
-     *  :return: ``String`` HTML markup to display attribution
-     *      information.
-     *  
-     *  Generates attribution markup using the Attribution metadata
-     *      from WMS Capabilities
-     */
-//    attributionMarkup : function(attribution){
-//        var markup = [];
-//        
-//        if (attribution.logo){
-//            markup.push("<img class='"+this.attributionCls+"-image' "
-//                        + "src='" + attribution.logo.href + "' />");
-//        }
-//        
-//        if (attribution.title) {
-//            markup.push("<span class='"+ this.attributionCls + "-title'>"
-//                        + attribution.title
-//                        + "</span>");
-//        }
-//        
-//        if(attribution.href){
-//            for(var i = 0; i < markup.length; i++){
-//                markup[i] = "<a class='"
-//              + this.attributionCls + "-link' "
-//                    + "href="
-//                    + attribution.href
-//                    + ">"
-//                    + markup[i]
-//                    + "</a>";
-//            }
-//        }
-//
-//        return markup.join(" ");
-//    }
 });

@@ -53,24 +53,6 @@ GDP.BoundsPanelSubmitButton = Ext.extend(Ext.Button, {
             bounds.extend(new OpenLayers.LonLat(east, north));
             
             this.layerController.submitBounds({bounds : bounds});
-            
-            return; // The rest is not done yet
-
-            // Create XML to send to WPS backing process
-            var xmlData;
-
-            // Send the AJAX request and do success/fail handling. (We probably want to pass the 'success' function in?)
-            Ext.Ajax.request({
-                url : 'proxy/' ,
-                method: 'POST',
-                xmlData : xmlData,
-                success: function ( result, request ) {
-                    LOG.debug('BoundsPanelSubmitButton:onClick:Ajax:success: ' + result);
-                },
-                failure: function ( result, request) {
-                    LOG.debug('BoundsPanelSubmitButton:onClick:Ajax:failure: ' + result);
-                }
-            });
         } else {
             LOG.debug('BoundsPanelSubmitButton:click:validator returned false')
         }

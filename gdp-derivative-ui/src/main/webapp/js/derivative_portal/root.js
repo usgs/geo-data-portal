@@ -8,7 +8,7 @@ Ext.onReady(function () {
         GDP.PROXY_PREFIX = 'proxy/';
         GDP.DEFAULT_LEGEND_NAME = 'boxfill/greyscale';
 	initializeLogging();
-        test();
+//        test();
 	initializeNotification();
 	initializeMapping();
 });
@@ -25,17 +25,15 @@ function initializeLogging() {
 function test() {
     var testGetCaps = 'proxy/http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/gdp-process-wps/WebProcessingService?Service=WPS&Request=GetCapabilities';
     
-    var capabilitiesReader = new GDP.WPSCapabilitiesReader();
-    
     var capabilitiesStore = new GDP.WPSCapabilitiesStore({
         url : testGetCaps,
         storeId : 'wps-capabilities-store'
     });
     capabilitiesStore.load();
     capabilitiesStore.on('load', function() {
-        LOG.debug(this);
-    }, capabilitiesStore)
-    LOG.debug('am i work');
+        var processOfferings = this.data.get(0).processOfferings;
+        LOG.debug('test');
+    }, capabilitiesStore);
 }
 
 function initializeNotification() {
