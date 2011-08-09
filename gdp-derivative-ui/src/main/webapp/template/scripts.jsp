@@ -64,7 +64,9 @@
 <script type="text/javascript" src="js/derivative_portal/components/TimestepChooser.js"></script>
 <script type="text/javascript" src="js/derivative_portal/components/BaseMap.js"></script>
 <script type="text/javascript" src="js/derivative_portal/components/WPSCapabilitiesStore.js"></script>
+<script type="text/javascript" src="js/derivative_portal/components/WPSExecuteResponseStore.js"></script>
 <script type="text/javascript" src="js/derivative_portal/components/WPSCapabilitiesReader.js"></script>
+<script type="text/javascript" src="js/derivative_portal/components/WPSExecuteResponseReader.js"></script>
 <script type="text/javascript" src="js/derivative_portal/components/WPSPanel.js"></script>
 <script type="text/javascript" src="js/derivative_portal/components/MapActivityBar.js"></script>
 

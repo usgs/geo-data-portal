@@ -116,14 +116,10 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
         
         var bounds = this.bounds;
         
-//        http://cida.usgs.gov/thredds/dodsC/derivative/derivative-days_above_threshold.ncml
-//        http://cida.usgs.gov/thredds/dodsC/derivative/derivative-days_below_threshold.ncml
-//        http://cida.usgs.gov/thredds/dodsC/derivative/tmin_threshold.ncml
-        
         var layer = this.controller.getLayer();
         var layerName = layer.data.name;
         var layerFullName = layer.data.layer.params.LAYERS;
-        var datasetUriPre = 'http://cida.usgs.gov/qa/thredds/dodsC/derivative/';
+        var datasetUriPre = 'dods://cida.usgs.gov/qa/thredds/dodsC/derivative/';
         var datasetUriMid = layerFullName.split('/')[0];
         var datasetUriPost = '.ncml';
         var datasetUri = datasetUriPre + datasetUriMid + datasetUriPost;
@@ -132,6 +128,7 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
         var timeStart = undefined;
         var timeEnd = undefined;
         
+        // Create XML to send to WPS backing process
         var wfsXML = this.createWfsFeatureXml(bounds);
         var wpsXML = this.createWpsExecuteRequest({
             wfsXML : wfsXML,
@@ -142,23 +139,25 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
             timeEnd : timeEnd
         });
         
-        // Create XML to send to WPS backing process
-        var xmlData;
-
-
-        return; // stop here for now
         // Send the AJAX request and do success/fail handling. (We probably want to pass the 'success' function in?)
         Ext.Ajax.request({
             url : 'proxy/' ,
             method: 'POST',
-            xmlData : xmlData,
+            xmlData : wpsXML,
             success: function ( result, request ) {
-                LOG.debug('BoundsPanelSubmitButton:onClick:Ajax:success: ' + result);
+                LOG.debug('BoundsPanelSubmitButton:onClick:Ajax:success.');
+                
+                
             },
             failure: function ( result, request) {
-                LOG.debug('BoundsPanelSubmitButton:onClick:Ajax:failure: ' + result);
+                LOG.debug('BoundsPanelSubmitButton:onClick:Ajax:failure');
+                // Notify the user that this call has failed.
             }
         });
+        
+        return; // stop here for now
+        
+        
         
     },
     createWfsFeatureXml : function(bounds) {
@@ -172,8 +171,7 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
         var timestamp = now.format('c'); 
         var externalPortalMapping = 'http://cida-wiwsc-gdp2qa.er.usgs.gov:8080/derivative-portal/xsd/draw.xsd';
         
-        var result = '<wfs:FeatureCollection xmlns:ogc="http://www.opengis.net/ogc" xmlns:draw="gov.usgs.cida.gdp.draw" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:sample="gov.usgs.cida.gdp.sample" xmlns:ows="http://www.opengis.net/ows" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:upload="gov.usgs.cida.gdp.upload" numberOfFeatures="0" timeStamp="'+timestamp+'" xsi:schemaLocation="gov.usgs.cida.gdp.draw '+externalPortalMapping+' http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">';
-	result += '<gml:featureMembers>';
+	var result = '<gml:featureMembers xmlns:ogc="http://www.opengis.net/ogc" xmlns:draw="gov.usgs.cida.gdp.draw" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ows="http://www.opengis.net/ows" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="gov.usgs.cida.gdp.draw '+externalPortalMapping+'">';
         result += '<gml:box gml:id="box.1">';
         result += '<gml:the_geom>';
         result += '<gml:MultiPolygon srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">';
@@ -197,7 +195,6 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
         result += '<gml:ID>0</gml:ID>'
         result += '</gml:box>'
 	result += '</gml:featureMembers>'
-        result += '</wfs:FeatureCollection>'
         
         return result;
     },
@@ -234,14 +231,10 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
         result += '<wps:Input>';
         result += '<ows:Identifier>FEATURE_COLLECTION</ows:Identifier>';
         result += '<wps:Data>';
-        result += '<wps:ComplexData>';
-//        result += '<wps:Reference xlink:href="http://igsarm-cida-javadev1.er.usgs.gov:8081/geoserver/wfs">'
-//        result += '<wps:Body>';
+        result += '<wps:ComplexData schema="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd" encoding="UTF-8" mimeType="text/xml">';
         result += wfsXML;
         result += '</wps:ComplexData>';
         result += '</wps:Data>';
-//        result += '</wps:Body>';
-//        result += '</wps:Reference>';
         result += '</wps:Input>';
         result += '</wps:DataInputs>';
         result += '<wps:ResponseForm>';

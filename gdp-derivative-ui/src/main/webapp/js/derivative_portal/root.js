@@ -8,7 +8,8 @@ Ext.onReady(function () {
         GDP.PROXY_PREFIX = 'proxy/';
         GDP.DEFAULT_LEGEND_NAME = 'boxfill/greyscale';
 	initializeLogging();
-//        test();
+        test();
+        return;
 	initializeNotification();
 	initializeMapping();
 });
@@ -23,15 +24,24 @@ function initializeLogging() {
 }
 
 function test() {
-    var testGetCaps = 'proxy/http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/gdp-process-wps/WebProcessingService?Service=WPS&Request=GetCapabilities';
+    var data = '<?xml version="1.0" encoding="UTF-8"?> \
+<ns:ExecuteResponse xmlns:ns="http://www.opengis.net/wps/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_response.xsd" serviceInstance="http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/gdp-process-wps/WebProcessingService?REQUEST=GetCapabilities&amp;SERVICE=WPS" xml:lang="en-US" service="WPS" version="1.0.0" statusLocation="http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/gdp-process-wps/RetrieveResultServlet?id=1312919425852">\\n\
+<ns:Process ns:processVersion="1.0.0">\
+<ns1:Identifier xmlns:ns1="http://www.opengis.net/ows/1.1">gov.usgs.cida.gdp.wps.algorithm.FeatureCoverageOPeNDAPIntersectionAlgorithm</ns1:Identifier>\
+<ns1:Title xmlns:ns1="http://www.opengis.net/ows/1.1">Feature Coverage OPeNDAP Intersection</ns1:Title>\
+</ns:Process>\
+<ns:Status creationTime="2011-08-09T14:50:25.835-05:00">\
+<ns:ProcessStarted/>\
+</ns:Status>\
+</ns:ExecuteResponse>';
     
-    var capabilitiesStore = new GDP.WPSCapabilitiesStore({
-        url : testGetCaps,
-        storeId : 'wps-capabilities-store'
+    var capabilitiesStore = new GDP.WPSExecuteResponseStore({
+        data : [data],
+        storeId : 'wps-execresponse-store'
     });
     capabilitiesStore.load();
     capabilitiesStore.on('load', function() {
-        var processOfferings = this.data.get(0).processOfferings;
+        
         LOG.debug('test');
     }, capabilitiesStore);
 }
