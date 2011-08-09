@@ -1,10 +1,11 @@
-/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+/* Copyright (c) 2006-2011 by OpenLayers Contributors (see authors.txt for 
  * full list of contributors). Published under the Clear BSD license.  
  * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 
 /**
+ * @requires OpenLayers/BaseTypes/Class.js
  * @requires OpenLayers/Map.js
  * @requires OpenLayers/Projection.js
  */
@@ -80,9 +81,15 @@ OpenLayers.Layer = OpenLayers.Class({
      * moveend - Triggered when layer is done moving, object passed as
      *     argument has a zoomChanged boolean property which tells that the
      *     zoom has changed.
+     * added - Triggered after the layer is added to a map.  Listeners will
+     *     receive an object with a *map* property referencing the map and a
+     *     *layer* property referencing the layer.
+     * removed - Triggered after the layer is removed from the map.  Listeners
+     *     will receive an object with a *map* property referencing the map and
+     *     a *layer* property referencing the layer.
      */
     EVENT_TYPES: ["loadstart", "loadend", "loadcancel", "visibilitychanged",
-                  "move", "moveend"],
+                  "move", "moveend", "added", "removed"],
 
     /**
      * Constant: RESOLUTION_PROPERTIES
@@ -267,7 +274,7 @@ OpenLayers.Layer = OpenLayers.Class({
      * {Integer}
      */
     numZoomLevels: null,
-   
+    
     /**
      * APIProperty: minScale
      * {Float}
@@ -342,6 +349,11 @@ OpenLayers.Layer = OpenLayers.Class({
             this.div.style.width = "100%";
             this.div.style.height = "100%";
             this.div.dir = "ltr";
+            if (this.opacity != null) {
+                OpenLayers.Util.modifyDOMElement(
+                    this.div, null, null, null, null, null, null, this.opacity
+                );
+            }
 
             this.events = new OpenLayers.Events(this, this.div, 
                                                 this.EVENT_TYPES);
@@ -455,8 +467,12 @@ OpenLayers.Layer = OpenLayers.Class({
     * 
     * Parameters:
     * newOptions - {Object}
+    * reinitialize - {Boolean} If set to true, and if resolution options of the
+    *     current baseLayer were changed, the map will be recentered to make
+    *     sure that it is displayed with a valid resolution, and a
+    *     changebaselayer event will be triggered.
     */
-    addOptions: function (newOptions) {
+    addOptions: function (newOptions, reinitialize) {
 
         if (this.options == null) {
             this.options = {};
@@ -483,6 +499,8 @@ OpenLayers.Layer = OpenLayers.Class({
         // properties of the "properties" array defined below is set
         // in the new options
         if(this.map) {
+            // store current resolution so we can try to restore it later
+            var resolution = this.map.getResolution();
             var properties = this.RESOLUTION_PROPERTIES.concat(
                 ["projection", "units", "minExtent", "maxExtent"]
             );
@@ -491,6 +509,20 @@ OpenLayers.Layer = OpenLayers.Class({
                    OpenLayers.Util.indexOf(properties, o) >= 0) {
 
                     this.initResolutions();
+                    if (reinitialize && this.map.baseLayer === this) {
+                        // update map position, and restore previous resolution
+                        this.map.setCenter(this.map.getCenter(),
+                            this.map.getZoomForResolution(resolution),
+                            false, true
+                        );
+                        // trigger a changebaselayer event to make sure that
+                        // all controls (especially
+                        // OpenLayers.Control.PanZoomBar) get notified of the
+                        // new options
+                        this.map.events.triggerEvent("changebaselayer", {
+                            layer: this
+                        });
+                    }
                     break;
                 }
             }
@@ -537,7 +569,7 @@ OpenLayers.Layer = OpenLayers.Class({
      * Method: moveTo
      * 
      * Parameters:
-     * bound - {<OpenLayers.Bounds>}
+     * bounds - {<OpenLayers.Bounds>}
      * zoomChanged - {Boolean} Tells when zoom has changed, as layers have to
      *     do some init work in that case.
      * dragging - {Boolean}
@@ -548,6 +580,17 @@ OpenLayers.Layer = OpenLayers.Class({
             display = display && this.inRange;
         }
         this.display(display);
+    },
+
+    /**
+     * Method: moveByPx
+     * Move the layer based on pixel vector. To be implemented by subclasses.
+     *
+     * Parameters:
+     * dx - {Number} The x coord of the displacement vector.
+     * dy - {Number} The y coord of the displacement vector.
+     */
+    moveByPx: function(dx, dy) {
     },
 
     /**
@@ -685,7 +728,7 @@ OpenLayers.Layer = OpenLayers.Class({
      *     subverted.
      * 
      * Parameters:
-     * visible - {Boolean} Whether or not to display the layer (if in range)
+     * visibility - {Boolean} Whether or not to display the layer (if in range)
      */
     setVisibility: function(visibility) {
         if (visibility != this.visibility) {
@@ -704,7 +747,9 @@ OpenLayers.Layer = OpenLayers.Class({
 
     /** 
      * APIMethod: display
-     * Hide or show the Layer
+     * Hide or show the Layer. This is designed to be used internally, and 
+     *     is not generally the way to enable or disable the layer. For that,
+     *     use the setVisibility function instead..
      * 
      * Parameters:
      * display - {Boolean}
@@ -793,13 +838,13 @@ OpenLayers.Layer = OpenLayers.Class({
         //    map
         // 7. hope for the best!
 
-        var i, len;
+        var i, len, p;
         var props = {}, alwaysInRange = true;
 
         // get resolution data from layer config
         // (we also set alwaysInRange in the layer as appropriate)
         for(i=0, len=this.RESOLUTION_PROPERTIES.length; i<len; i++) {
-            var p = this.RESOLUTION_PROPERTIES[i];
+            p = this.RESOLUTION_PROPERTIES[i];
             props[p] = this.options[p];
             if(alwaysInRange && this.options[p]) {
                 alwaysInRange = false;
@@ -823,7 +868,7 @@ OpenLayers.Layer = OpenLayers.Class({
         // in the map
         if(props.resolutions == null) {
             for(i=0, len=this.RESOLUTION_PROPERTIES.length; i<len; i++) {
-                var p = this.RESOLUTION_PROPERTIES[i];
+                p = this.RESOLUTION_PROPERTIES[i];
                 props[p] = this.options[p] != null ?
                     this.options[p] : this.map[p];
             }
@@ -938,6 +983,8 @@ OpenLayers.Layer = OpenLayers.Class({
      */
     calculateResolutions: function(props) {
 
+        var viewSize, wRes, hRes;
+
         // determine maxResolution
         var maxResolution = props.maxResolution;
         if(props.minScale != null) {
@@ -945,9 +992,9 @@ OpenLayers.Layer = OpenLayers.Class({
                 OpenLayers.Util.getResolutionFromScale(props.minScale,
                                                        this.units);
         } else if(maxResolution == "auto" && this.maxExtent != null) {
-            var viewSize = this.map.getSize();
-            var wRes = this.maxExtent.getWidth() / viewSize.w;
-            var hRes = this.maxExtent.getHeight() / viewSize.h;
+            viewSize = this.map.getSize();
+            wRes = this.maxExtent.getWidth() / viewSize.w;
+            hRes = this.maxExtent.getHeight() / viewSize.h;
             maxResolution = Math.max(wRes, hRes);
         }
 
@@ -958,9 +1005,9 @@ OpenLayers.Layer = OpenLayers.Class({
                 OpenLayers.Util.getResolutionFromScale(props.maxScale,
                                                        this.units);
         } else if(props.minResolution == "auto" && this.minExtent != null) {
-            var viewSize = this.map.getSize();
-            var wRes = this.minExtent.getWidth() / viewSize.w;
-            var hRes = this.minExtent.getHeight()/ viewSize.h;
+            viewSize = this.map.getSize();
+            wRes = this.minExtent.getWidth() / viewSize.w;
+            hRes = this.minExtent.getHeight()/ viewSize.h;
             minResolution = Math.max(wRes, hRes);
         }
 
@@ -1044,7 +1091,7 @@ OpenLayers.Layer = OpenLayers.Class({
      * APIMethod: getZoomForExtent
      * 
      * Parameters:
-     * bounds - {<OpenLayers.Bounds>}
+     * extent - {<OpenLayers.Bounds>}
      * closest - {Boolean} Find the zoom level that most closely fits the 
      *     specified bounds. Note that this may result in a zoom that does 
      *     not exactly contain the entire extent.
@@ -1119,14 +1166,14 @@ OpenLayers.Layer = OpenLayers.Class({
      *     value and the 'closest' specification.
      */
     getZoomForResolution: function(resolution, closest) {
-        var zoom;
+        var zoom, i, len;
         if(this.map.fractionalZoom) {
             var lowZoom = 0;
             var highZoom = this.resolutions.length - 1;
             var highRes = this.resolutions[lowZoom];
             var lowRes = this.resolutions[highZoom];
             var res;
-            for(var i=0, len=this.resolutions.length; i<len; ++i) {
+            for(i=0, len=this.resolutions.length; i<len; ++i) {
                 res = this.resolutions[i];
                 if(res >= resolution) {
                     highRes = res;
@@ -1147,7 +1194,7 @@ OpenLayers.Layer = OpenLayers.Class({
         } else {
             var diff;
             var minDiff = Number.POSITIVE_INFINITY;
-            for(var i=0, len=this.resolutions.length; i<len; i++) {            
+            for(i=0, len=this.resolutions.length; i<len; i++) {            
                 if (closest) {
                     diff = Math.abs(this.resolutions[i] - resolution);
                     if (diff > minDiff) {
@@ -1177,22 +1224,17 @@ OpenLayers.Layer = OpenLayers.Class({
      */
     getLonLatFromViewPortPx: function (viewPortPx) {
         var lonlat = null;
-        if (viewPortPx != null) {
-            var size = this.map.getSize();
-            var center = this.map.getCenter();
-            if (center) {
-                var res  = this.map.getResolution();
-        
-                var delta_x = viewPortPx.x - (size.w / 2);
-                var delta_y = viewPortPx.y - (size.h / 2);
-            
-                lonlat = new OpenLayers.LonLat(center.lon + delta_x * res ,
-                                             center.lat - delta_y * res); 
+        var map = this.map;
+        if (viewPortPx != null && map.minPx) {
+            var res = map.getResolution();
+            var maxExtent = map.getMaxExtent({restricted: true});
+            var lon = (viewPortPx.x - map.minPx.x) * res + maxExtent.left;
+            var lat = (map.minPx.y - viewPortPx.y) * res + maxExtent.top;
+            lonlat = new OpenLayers.LonLat(lon, lat);
 
-                if (this.wrapDateLine) {
-                    lonlat = lonlat.wrapDateLine(this.maxExtent);
-                }
-            } // else { DEBUG STATEMENT }
+            if (this.wrapDateLine) {
+                lonlat = lonlat.wrapDateLine(this.maxExtent);
+            }
         }
         return lonlat;
     },
@@ -1232,11 +1274,8 @@ OpenLayers.Layer = OpenLayers.Class({
     setOpacity: function(opacity) {
         if (opacity != this.opacity) {
             this.opacity = opacity;
-            for(var i=0, len=this.div.childNodes.length; i<len; ++i) {
-                var element = this.div.childNodes[i].firstChild;
-                OpenLayers.Util.modifyDOMElement(element, null, null, null, 
-                                                 null, null, null, opacity);
-            }
+            OpenLayers.Util.modifyDOMElement(this.div, null, null, null, 
+                                             null, null, null, opacity);
             if (this.map != null) {
                 this.map.events.triggerEvent("changelayer", {
                     layer: this,
@@ -1292,7 +1331,8 @@ OpenLayers.Layer = OpenLayers.Class({
         if (this.wrapDateLine) {
             // wrap around the date line, within the limits of rounding error
             var wrappingOptions = { 
-                'rightTolerance':this.getResolution()
+                'rightTolerance':this.getResolution(),
+                'leftTolerance':this.getResolution()
             };    
             bounds = bounds.wrapDateLine(this.maxExtent, wrappingOptions);
                               

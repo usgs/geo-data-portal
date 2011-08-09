@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+/* Copyright (c) 2006-2011 by OpenLayers Contributors (see authors.txt for 
  * full list of contributors). Published under the Clear BSD license.  
  * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
@@ -58,22 +58,6 @@ OpenLayers.Layer.Markers = OpenLayers.Class(OpenLayers.Layer, {
         this.clearMarkers();
         this.markers = null;
         OpenLayers.Layer.prototype.destroy.apply(this, arguments);
-    },
-
-    /**
-     * APIMethod: setOpacity
-     * Sets the opacity for all the markers.
-     * 
-     * Parameter:
-     * opacity - {Float}
-     */
-    setOpacity: function(opacity) {
-        if (opacity != this.opacity) {
-            this.opacity = opacity;
-            for (var i=0, len=this.markers.length; i<len; i++) {
-                this.markers[i].setOpacity(this.opacity);
-            }
-        }
     },
 
     /** 

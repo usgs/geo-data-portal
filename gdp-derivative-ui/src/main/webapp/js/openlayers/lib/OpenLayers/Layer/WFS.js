@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+/* Copyright (c) 2006-2011 by OpenLayers Contributors (see authors.txt for 
  * full list of contributors). Published under the Clear BSD license.  
  * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
@@ -9,6 +9,7 @@
  * @requires OpenLayers/Layer/Vector.js
  * @requires OpenLayers/Layer/Markers.js
  * @requires OpenLayers/Console.js
+ * @requires OpenLayers/Lang.js
  */
 
 /**
@@ -589,21 +590,5 @@ OpenLayers.Layer.WFS = OpenLayers.Class(
         return extent;
     },
     
-    /** 
-     * APIMethod: setOpacity 
-     * Call the setOpacity method of the appropriate parent class to set the
-     *     opacity.  
-     * 
-     * Parameter: 
-     * opacity - {Float} 
-     */
-    setOpacity: function (opacity) {
-        if (this.vectorMode) {
-            OpenLayers.Layer.Vector.prototype.setOpacity.apply(this, [opacity]);
-        } else {
-            OpenLayers.Layer.Markers.prototype.setOpacity.apply(this, [opacity]);
-        }    
-    },
-
     CLASS_NAME: "OpenLayers.Layer.WFS"
 });
