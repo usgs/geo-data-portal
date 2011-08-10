@@ -66,6 +66,13 @@ GDP.PolygonPOIPanel = Ext.extend(Ext.Panel, {
             regEx : ' [-+]?[0-9]*\\.?[0-9]+',
             regexText : 'Must be float'
         });
+        var coordDescPanel = new Ext.Panel({
+            id : 'coord-desc-panel',
+            region : 'north',
+            border : false,
+            html : 'Draw a bounding box on the map or enter coordinates here. <br />Click Submit Bounds button when done.'
+        });
+        
         coordPanel = new Ext.Panel({
             id : 'coord-text-panel',
             region : 'center',
@@ -73,6 +80,7 @@ GDP.PolygonPOIPanel = Ext.extend(Ext.Panel, {
             title : 'Coordinates',
             border : false,
             items : [
+                coordDescPanel,
                 westboundLonTexbox, 
                 southboundLatTextbox, 
                 eastboundLonTextBox,

@@ -4,9 +4,9 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 	layerController : undefined,
 	currentLayer : undefined,
         legendWindow : undefined,
-        realignLegend : function() {
-            if (this.legendWindow) {this.legendWindow.alignTo(this.getEl(), "br-br");}
-        },
+//        realignLegend : function() {
+//            if (this.legendWindow) {this.legendWindow.alignTo(this.getEl(), "br-br");}
+//        },
 	constructor : function(config) {
             LOG.debug('BaseMap:constructor: Constructing self.');
 		// From GDP (with Zoerb's comments)
@@ -39,32 +39,32 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		GDP.BaseMap.superclass.constructor.call(this, config);
 		LOG.debug('BaseMap:constructor: Construction complete.');
                 
-                var legendImage = Ext.extend(GeoExt.LegendImage, {
-                setUrl: function(url) {
-                        this.url = url;
-                        var el = this.getEl();
-                        if (el) {
-                            el.dom.src = '';
-                            el.un("error", this.onImageLoadError, this);
-                            el.on("error", this.onImageLoadError, this, {single: true});
-                            el.dom.src = url;
-                        }
-                    }
-                });
-                this.legendImage = new legendImage();
-                this.legendWindow = new Ext.Window({
-                    resizable: false
-                    ,draggable: false
-                    ,closable: false
-                    ,border: false
-                    ,frame: false
-                    ,shadow: false
-                    ,layout: 'absolute'
-                    ,items: [this.legendImage]
-                    ,height: this.DEFAULT_LEGEND_Y
-                    ,width: this.DEFAULT_LEGEND_X
-                });
-                this.legendWindow.show();
+//                var legendImage = Ext.extend(GeoExt.LegendImage, {
+//                setUrl: function(url) {
+//                        this.url = url;
+//                        var el = this.getEl();
+//                        if (el) {
+//                            el.dom.src = '';
+//                            el.un("error", this.onImageLoadError, this);
+//                            el.on("error", this.onImageLoadError, this, {single: true});
+//                            el.dom.src = url;
+//                        }
+//                    }
+//                });
+//                this.legendImage = new legendImage();
+//                this.legendWindow = new Ext.Window({
+//                    resizable: false
+//                    ,draggable: false
+//                    ,closable: false
+//                    ,border: false
+//                    ,frame: false
+//                    ,shadow: false
+//                    ,layout: 'absolute'
+//                    ,items: [this.legendImage]
+//                    ,height: this.DEFAULT_LEGEND_Y
+//                    ,width: this.DEFAULT_LEGEND_X
+//                });
+//                this.legendWindow.show();
                 
                 LOG.debug('BaseMap:constructor: Registering Observables.');
                 this.addEvents(

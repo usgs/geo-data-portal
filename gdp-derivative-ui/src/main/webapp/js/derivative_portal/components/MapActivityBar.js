@@ -53,7 +53,7 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
         });
         
         drawBboxAction = new GeoExt.Action({
-            text: 'Draw Box'
+            text: 'Get Data'
             ,control: control
             ,toggleGroup: toggleGroup
             ,allowDepress: false
@@ -70,7 +70,7 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
         });
         
         navigationAction = new GeoExt.Action({
-            text: 'Nav'
+            text: 'Pan Map'
             ,control: new OpenLayers.Control.Navigation()
             ,toggleGroup: toggleGroup
             ,allowDepress: false
@@ -92,7 +92,7 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
         });
         
         config = Ext.apply({
-            items: [zoomToExtentAction, navigationAction, drawBboxAction, zoomAction]
+            items: [zoomToExtentAction, navigationAction, zoomAction, drawBboxAction]
         }, config);
         GDP.MapActivityBar.superclass.constructor.call(this, config);
         LOG.debug('MapActivityBar:constructor: Construction complete.');
