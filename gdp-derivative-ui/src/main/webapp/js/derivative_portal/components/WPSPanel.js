@@ -94,7 +94,7 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
         LOG.debug('WPSPanel:constructor: Constructing submit button.');
         var submitButton = new Ext.Button({
             id : 'wps-submit-button',
-            text : 'Bind Process',
+            text : 'Begin Process',
             region : 'south'
         });
         submitButton.on('click', function() {
@@ -194,7 +194,7 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
         
         // Begin the process
         Ext.Ajax.request({
-            url : 'proxy/' + 'http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/gdp-process-wps/WebProcessingService',
+            url : 'proxy/' + 'http://cida.usgs.gov/qa/climate/gdp/process/WebProcessingService',
             method: 'POST',
             xmlData : wpsXML,
             scope : this,
@@ -227,7 +227,7 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
         var bottom = bounds.bottom; 
         var now = new Date();
         var timestamp = now.format('c'); 
-        var externalPortalMapping = 'http://cida-wiwsc-gdp2qa.er.usgs.gov:8080/derivative-portal/xsd/draw.xsd';
+        var externalPortalMapping = 'http://cida.usgs.gov/qa/climate/derivative/xsd/draw.xsd';
         
 	var result = '<gml:featureMembers xmlns:ogc="http://www.opengis.net/ogc" xmlns:draw="gov.usgs.cida.gdp.draw" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ows="http://www.opengis.net/ows" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="gov.usgs.cida.gdp.draw '+externalPortalMapping+'">';
         result += '<gml:box gml:id="box.1">';
