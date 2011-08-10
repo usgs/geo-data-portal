@@ -70,7 +70,7 @@ GDP.PolygonPOIPanel = Ext.extend(Ext.Panel, {
             id : 'coord-desc-panel',
             region : 'north',
             border : false,
-            html : 'Draw a bounding box on the map or enter coordinates here. <br />Click Submit Bounds button when done.'
+            html : 'Draw a bounding box on the map or enter coordinates here.'
         });
         
         coordPanel = new Ext.Panel({
