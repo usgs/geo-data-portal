@@ -7,12 +7,7 @@ GDP.WPSExecuteResponseReader = function(meta, recordType) {
     }
     if(typeof recordType !== "function") {
         recordType = Ext.data.Record.create(meta.fields || [
-            {name: "version", type: "string"},
-            {name: "languages"}, // Array of objects
-            {name: "operationsMetadata"}, // Array of objects
-            {name: "processOfferings"}, // Object
-            {name: "serviceIdentification"}, // Object
-            {name: "serviceProvider"}
+            {name: "version", type: "string"}
         ]
         );
     }

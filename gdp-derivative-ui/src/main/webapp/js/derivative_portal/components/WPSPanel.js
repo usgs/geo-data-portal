@@ -13,10 +13,22 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
     getCapabilitiesStore : function() {
         return this.capabilitiesStore;
     },
+    timerPanel : undefined,
+    getTimerPanel : function() {
+        return this.timerPanel;
+    },
+    processPanels : {},
+    getProcessPanel : function(id) {
+        if (id) {
+            return this.processPanels[id];
+        } else {
+            return this.processPanels;
+        }
+    },
     constructor : function(config) {
         LOG.debug('WPSPanel:constructor: Constructing self.');
-        
-        var processEndpoint = 'proxy/http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/gdp-process-wps';
+//        var processEndpoint = 'proxy/http://127.0.0.1:8080/gdp-process-wps';
+      var processEndpoint = 'proxy/http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/gdp-process-wps';
         var processGetCaps = processEndpoint + '/WebProcessingService?Service=WPS&Request=GetCapabilities';
         var currentProcess = 'gov.usgs.cida.gdp.wps.algorithm.FeatureCoverageOPeNDAPIntersectionAlgorithm';
         
@@ -46,41 +58,47 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
         })
         items.push(describeProcessPanel);
         
-        LOG.debug('WPSPanel:constructor: Constructing algorithm description panel.');
-        var displayProcessingPanel = new Ext.Panel({
-            id : 'display-processing-panel',
-            region : 'center',
-            border : false,
-            html : 'Submitting process to server.',
-            hidden : true
-        })
-        items.push(displayProcessingPanel);
-        
-        LOG.debug('WPSPanel:constructor: Constructing WPS algorithm dropdown list.');
-        var layerCombo = new Ext.form.ComboBox({
-            xtype : 'combo',
-            mode : 'local',
-            triggerAction: 'all',
-            store : capabilitiesStore,
-            fieldLabel : 'Process',
-            forceSelection : true,
-            lazyInit : false,
-            displayField : 'processOfferings',
-            emptyText : 'Loading Processes'
-        });
-        layerCombo.on('select', function(combo, record, index) {
-            
-        });
+//        LOG.debug('WPSPanel:constructor: Constructing WPS algorithm dropdown list.');
+//        var layerCombo = new Ext.form.ComboBox({
+//            xtype : 'combo',
+//            mode : 'local',
+//            triggerAction: 'all',
+//            store : capabilitiesStore,
+//            fieldLabel : 'Process',
+//            forceSelection : true,
+//            lazyInit : false,
+//            displayField : 'processOfferings',
+//            emptyText : 'Loading Processes'
+//        });
+//        layerCombo.on('select', function(combo, record, index) {
+//            
+//        });
 //        items.push(layerCombo);
+        
+        LOG.debug('WPSPanel:constructor: Creating panel to hold timer.');
+        var timerPanel = new Ext.Panel({
+            id : 'display-processing-panel',
+            border : true,
+            region : 'center'
+        })
+        timerPanel.on('added', function() {
+            LOG.debug('Timer added to application');
+            this.doLayout();
+        }, timerPanel);
+        timerPanel.on('removed', function() {
+            LOG.debug('WPSPanel: Timer removed from application');
+        }, this);
+        items.push(timerPanel);
+        this.timerPanel = timerPanel;
         
         LOG.debug('WPSPanel:constructor: Constructing submit button.');
         var submitButton = new Ext.Button({
             id : 'wps-submit-button',
-            region : 'south',
-            text : 'ProcessBounds'
+            text : 'Bind Process',
+            region : 'south'
         });
         submitButton.on('click', function() {
-            this.submitButtonClicked()
+            this.submitButtonClicked();
         }, this);
         items.push(submitButton);
         
@@ -91,13 +109,14 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
             title : 'WPS Submit',
             border : true
         }, config);
-        GDP.PolygonPOIPanel.superclass.constructor.call(this, config);
+        GDP.WPSPanel.superclass.constructor.call(this, config);
         LOG.debug('WPSPanel:constructor: Construction complete.');
         
         LOG.debug('WPSPanel:constructor: Registering Observables.');
         this.addEvents(
                 "capabilities-store-loaded",
-                "wps-submit-clicked"
+                "wps-submit-clicked",
+                "process-started"
             );
                 
         LOG.debug('WPSPanel:constructor: Registering Listeners.');
@@ -105,11 +124,45 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
             LOG.debug('WPSPanel: Observed "wps-submit-clicked"');
             this.createProcess();
         }, this);
+        this.on('process-started', function(args) {
+            LOG.debug('WPSPanel: Observed "process-started"');
+            this.addProcessChecker(args);
+        }, this);
+        this.on('added', function() {
+            this.doLayout();
+        }, this);
+        this.on('removed', function() {
+            this.doLayout();
+        }, this);
+        
     },
     submitButtonClicked : function() {
         LOG.debug('WPSPanel:submitButtonClicked: Submit button clicked');
         LOG.debug('WPSPanel:submitButtonClicked: Firing Event "wps-submit-clicked"');
         this.fireEvent('wps-submit-clicked');
+    },
+    addProcessChecker : function(args) {
+        LOG.debug('WPSPanel:addProcessChecker: Kicking off process');
+        LOG.debug('WPSPanel:addProcessChecker: Constructing process process checker panel.');
+        
+        var processLink = args.processLink;
+        var processId = processLink.split('=')[1];
+        
+        var wpsProcessPanel = new GDP.WPSProcessPanel({
+            id : 'process-panel-' + processId,
+            processLink : processLink,
+            processId : processId,
+            controller : this
+        });
+        this.getProcessPanel()[processId] = wpsProcessPanel;
+        this.getTimerPanel().add(wpsProcessPanel);
+        this.getTimerPanel().doLayout();
+    },
+    processCancelled : function(processId) {
+        LOG.debug('WPSPanel:processCancelled: Removing panel ID: ' + processId);
+        this.getTimerPanel().remove(this.getProcessPanel(processId));
+        this.getProcessPanel(processId).destroy();
+        this.doLayout();
     },
     createProcess : function() {
         LOG.debug('WPSPanel:createProcess: Collecting process inputs.');
@@ -124,7 +177,7 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
         var datasetUriPost = '.ncml';
         var datasetUri = datasetUriPre + datasetUriMid + datasetUriPost;
         var datasetId = layerFullName.split('/')[1];
-        var requireFullCoverage = false;
+        var requireFullCoverage = true;
         var timeStart = undefined;
         var timeEnd = undefined;
         
@@ -139,27 +192,32 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
             timeEnd : timeEnd
         });
         
-        // Send the AJAX request and do success/fail handling. (We probably want to pass the 'success' function in?)
+        // Begin the process
         Ext.Ajax.request({
-            url : 'proxy/' ,
+            url : 'proxy/' + 'http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/gdp-process-wps/WebProcessingService',
             method: 'POST',
             xmlData : wpsXML,
+            scope : this,
             success: function ( result, request ) {
                 LOG.debug('BoundsPanelSubmitButton:onClick:Ajax:success.');
-                
-                
+                var xml = result.responseXML;
+                var procStarted = xml.getElementsByTagName('ns:ProcessStarted')
+                var processLink;
+                if (procStarted.length > 0) {
+                    // The process has started
+                    processLink = xml.getElementsByTagName('ns:ExecuteResponse')[0].getAttribute('statusLocation');
+                }
+                this.fireEvent('process-started', {processLink : processLink});
             },
             failure: function ( result, request) {
                 LOG.debug('BoundsPanelSubmitButton:onClick:Ajax:failure');
-                // Notify the user that this call has failed.
+            // Notify the user that this call has failed.
             }
         });
         
         return; // stop here for now
-        
-        
-        
     },
+    
     createWfsFeatureXml : function(bounds) {
         LOG.debug('WPSPanel:createWfsXml: Creating WFS XML.');
         

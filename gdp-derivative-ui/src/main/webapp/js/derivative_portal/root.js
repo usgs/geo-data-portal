@@ -4,12 +4,135 @@ var LOG;
 var NOTIFY;
 var LOADMASK;
 
+function test() {
+    
+    var inputData = '<?xml version="1.0" encoding="UTF-8"?>'
+    inputData += '<wps:Execute service="WPS" version="1.0.0" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">'
+    inputData += '<ows:Identifier>gov.usgs.cida.gdp.wps.algorithm.FeatureCoverageOPeNDAPIntersectionAlgorithm</ows:Identifier>'
+    inputData += '<wps:DataInputs>'
+    inputData += '<wps:Input>'
+    inputData += '<ows:Identifier>DATASET_URI</ows:Identifier>'
+    inputData += '<wps:Data>'
+    inputData += '<wps:LiteralData>dods://cida.usgs.gov/qa/thredds/dodsC/derivative/tmin-threshold-proto.ncml</wps:LiteralData>'
+    inputData += '</wps:Data>'
+    inputData += '</wps:Input>'
+    inputData += '<wps:Input>'
+    inputData += '<ows:Identifier>DATASET_ID</ows:Identifier>'
+    inputData += '<wps:Data>'
+    inputData += '<wps:LiteralData>days_below_threshold</wps:LiteralData>'
+    inputData += '</wps:Data>'
+    inputData += '</wps:Input>'
+    inputData += '<wps:Input>'
+    inputData += '<ows:Identifier>REQUIRE_FULL_COVERAGE</ows:Identifier>'
+    inputData += '<wps:Data>'
+    inputData += '<wps:LiteralData>false</wps:LiteralData>'
+    inputData += '</wps:Data>'
+    inputData += '</wps:Input>'
+    inputData += '<wps:Input>'
+    inputData += '<ows:Identifier>FEATURE_COLLECTION</ows:Identifier>'
+    inputData += '<wps:Data>'
+    inputData += '<wps:ComplexData schema="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd" encoding="UTF-8" mimeType="text/xml">'
+    inputData += '<gml:featureMembers xmlns:ogc="http://www.opengis.net/ogc" xmlns:draw="gov.usgs.cida.gdp.draw" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ows="http://www.opengis.net/ows" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="gov.usgs.cida.gdp.draw http://cida-wiwsc-gdp2qa.er.usgs.gov:8080/derivative-portal/xsd/draw.xsd">'
+    inputData += '<gml:box gml:id="box.1">'
+    inputData += '<gml:the_geom>'
+    inputData += '<gml:MultiPolygon srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">'
+    inputData += '<gml:polygonMember>'
+    inputData += '<gml:Polygon>'
+    inputData += '<gml:exterior>'
+    inputData += '<gml:LinearRing>'
+    inputData += '<gml:posList>-116.76342791319 45.776855155826 -116.76342791319 31.055175468326 -94.790771663189 31.055175468326 -94.790771663189 45.776855155826 -116.76342791319 45.776855155826</gml:posList>'
+    inputData += '</gml:LinearRing>'
+    inputData += '</gml:exterior>'
+    inputData += '</gml:Polygon>'
+    inputData += '</gml:polygonMember>'
+    inputData += '</gml:MultiPolygon>'
+    inputData += '</gml:the_geom>'
+    inputData += '<gml:ID>0</gml:ID>'
+    inputData += '</gml:box>'
+    inputData += '</gml:featureMembers>'
+    inputData += '</wps:ComplexData>'
+    inputData += '</wps:Data>'
+    inputData += '</wps:Input>'
+    inputData += '</wps:DataInputs>'
+    inputData += '<wps:ResponseForm>'
+    inputData += '<wps:ResponseDocument storeExecuteResponse="true" status="true">'
+    inputData += '<wps:Output asReference="true">'
+    inputData += '<ows:Identifier>OUTPUT</ows:Identifier>'
+    inputData += '</wps:Output>'
+    inputData += '</wps:ResponseDocument>'
+    inputData += '</wps:ResponseForm>'
+    inputData += '</wps:Execute>';
+    
+    var data = '<?xml version="1.0" encoding="UTF-8"?> \
+<ns:ExecuteResponse xmlns:ns="http://www.opengis.net/wps/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_response.xsd" serviceInstance="http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/gdp-process-wps/WebProcessingService?REQUEST=GetCapabilities&amp;SERVICE=WPS" xml:lang="en-US" service="WPS" version="1.0.0" statusLocation="http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/gdp-process-wps/RetrieveResultServlet?id=1312919425852">\\n\
+<ns:Process ns:processVersion="1.0.0">\
+<ns1:Identifier xmlns:ns1="http://www.opengis.net/ows/1.1">gov.usgs.cida.gdp.wps.algorithm.FeatureCoverageOPeNDAPIntersectionAlgorithm</ns1:Identifier>\
+<ns1:Title xmlns:ns1="http://www.opengis.net/ows/1.1">Feature Coverage OPeNDAP Intersection</ns1:Title>\
+</ns:Process>\
+<ns:Status creationTime="2011-08-09T14:50:25.835-05:00">\
+<ns:ProcessStarted/>\
+</ns:Status>\
+</ns:ExecuteResponse>';
+    
+    var derpDa = '<?xml version="1.0" encoding="UTF-8"?><ns:ExecuteResponse xmlns:ns="http://www.opengis.net/wps/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_response.xsd" serviceInstance="http://localhost:8080/gdp-process-wps/WebProcessingService?REQUEST=GetCapabilities&amp;SERVICE=WPS" xml:lang="en-US" service="WPS" version="1.0.0" statusLocation="http://localhost:8080/gdp-process-wps/RetrieveResultServlet?id=1312944775238"><ns:Process ns:processVersion="1.0.0"><ns1:Identifier xmlns:ns1="http://www.opengis.net/ows/1.1">gov.usgs.cida.gdp.wps.algorithm.FeatureCoverageOPeNDAPIntersectionAlgorithm</ns1:Identifier><ns1:Title xmlns:ns1="http://www.opengis.net/ows/1.1">Feature Coverage OPeNDAP Intersection</ns1:Title></ns:Process><ns:Status creationTime="2011-08-09T21:52:55.184-05:00"><ns:ProcessFailed><ns1:ExceptionReport xmlns:ns1="http://www.opengis.net/ows/1.1"><ns1:Exception><ns1:ExceptionText>General Error: java.io.IOException: opendap.dap.DataReadException: Inconsistent array length read: 1165128303 != 1914731274</ns1:ExceptionText></ns1:Exception></ns1:ExceptionReport></ns:ProcessFailed></ns:Status></ns:ExecuteResponse>';
+        
+    var doc;
+    if(window.ActiveXObject){
+        doc = new ActiveXObject("Microsoft.XMLDOM");
+        doc.async = "false";
+        doc.loadXML(derpDa);
+    }else{
+        doc = new DOMParser().parseFromString(derpDa,"text/xml");
+    }
+    
+    
+    Ext.Ajax.request({
+        url : 'proxy/' + 'http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/gdp-process-wps/WebProcessingService',
+        method: 'POST',
+        xmlData : inputData,
+        scope : this,
+        success: function ( result, request ) {
+            LOG.debug('BoundsPanelSubmitButton:onClick:Ajax:success.');
+            var xml = result.responseXML;
+            var procStarted = xml.getElementsByTagName('ns:ProcessStarted')
+            var processLink;
+            if (procStarted.length > 0) {
+                // The process has started
+                processLink = xml.getElementsByTagName('ns:ExecuteResponse')[0].getAttribute('statusLocation');
+            }
+        },
+        failure: function ( result, request) {
+            LOG.debug('BoundsPanelSubmitButton:onClick:Ajax:failure');
+        // Notify the user that this call has failed.
+        }
+    });
+    
+    
+
+//    
+
+//    
+
+    
+    
+//    var capabilitiesStore = new GDP.WPSExecuteResponseStore({
+//        url : 'http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/gdp-process-wps/WebProcessingService',
+//        data : inputData,
+//        storeId : 'wps-execresponse-store'
+//    });
+//    capabilitiesStore.load();
+//    capabilitiesStore.on('load', function() {
+//        
+//        LOG.debug('test');
+//    }, capabilitiesStore);
+}
+
 Ext.onReady(function () {
         GDP.PROXY_PREFIX = 'proxy/';
         GDP.DEFAULT_LEGEND_NAME = 'boxfill/greyscale';
 	initializeLogging();
-        test();
-        return;
+//        test();
+//        return;
 	initializeNotification();
 	initializeMapping();
 });
@@ -23,28 +146,7 @@ function initializeLogging() {
 	LOG.info('Derivative Portal: Logging initialized.');
 }
 
-function test() {
-    var data = '<?xml version="1.0" encoding="UTF-8"?> \
-<ns:ExecuteResponse xmlns:ns="http://www.opengis.net/wps/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_response.xsd" serviceInstance="http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/gdp-process-wps/WebProcessingService?REQUEST=GetCapabilities&amp;SERVICE=WPS" xml:lang="en-US" service="WPS" version="1.0.0" statusLocation="http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/gdp-process-wps/RetrieveResultServlet?id=1312919425852">\\n\
-<ns:Process ns:processVersion="1.0.0">\
-<ns1:Identifier xmlns:ns1="http://www.opengis.net/ows/1.1">gov.usgs.cida.gdp.wps.algorithm.FeatureCoverageOPeNDAPIntersectionAlgorithm</ns1:Identifier>\
-<ns1:Title xmlns:ns1="http://www.opengis.net/ows/1.1">Feature Coverage OPeNDAP Intersection</ns1:Title>\
-</ns:Process>\
-<ns:Status creationTime="2011-08-09T14:50:25.835-05:00">\
-<ns:ProcessStarted/>\
-</ns:Status>\
-</ns:ExecuteResponse>';
-    
-    var capabilitiesStore = new GDP.WPSExecuteResponseStore({
-        data : [data],
-        storeId : 'wps-execresponse-store'
-    });
-    capabilitiesStore.load();
-    capabilitiesStore.on('load', function() {
-        
-        LOG.debug('test');
-    }, capabilitiesStore);
-}
+
 
 function initializeNotification() {
     LOG.info('Derivative Portal: Initializing Notification.');

@@ -68,6 +68,7 @@
 <script type="text/javascript" src="js/derivative_portal/components/WPSCapabilitiesReader.js"></script>
 <script type="text/javascript" src="js/derivative_portal/components/WPSExecuteResponseReader.js"></script>
 <script type="text/javascript" src="js/derivative_portal/components/WPSPanel.js"></script>
+<script type="text/javascript" src="js/derivative_portal/components/WPSProcessPanel.js"></script>
 <script type="text/javascript" src="js/derivative_portal/components/MapActivityBar.js"></script>
 
 
