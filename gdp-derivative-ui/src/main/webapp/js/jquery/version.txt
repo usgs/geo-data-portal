@@ -1,2 +1,0 @@
-JQuery 1.6.2 Minified
-http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
