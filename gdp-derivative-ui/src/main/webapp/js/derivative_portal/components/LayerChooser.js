@@ -17,19 +17,21 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
 
         this.controller = config.controller || new GDP.LayerController({});
 
+        LOG.trace('LayerChooser:constructor: Constructing base layer combo box.');
         var baseLayerStore = config.baseLayerStore;
         var baseLayerCombo = new Ext.form.ComboBox({
             id : 'baseLayerCombo',
             xtype : 'combo',
             mode : 'local',
             triggerAction: 'all',
-            store : baseLayerStore,
             fieldLabel : 'Base Layer',
             forceSelection : true,
             lazyInit : false,
             displayField : 'title',
             editable : false,
-            emptyText : 'Loading...'
+            emptyText : 'Loading...',
+            autoSelect : false, // Value is programatically selected on store load
+            store : baseLayerStore
         });
         
         var capabilitiesStore = config.capabilitiesStore;
@@ -41,6 +43,7 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
             fieldLabel : 'Layer',
             forceSelection : true,
             lazyInit : false,
+            editable : false,
             displayField : 'title',
             emptyText : 'Loading...'
         });
@@ -59,7 +62,8 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
             forceSelection : true,
             lazyInit : false,
             displayField : zlayerName,
-            emptyText : 'Loading...'
+            emptyText : 'Loading...',
+            autoWidth : true
         };
 
         this.legendCombo = new Ext.form.ComboBox({
@@ -83,6 +87,10 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
             })
         });
 
+        Ext.iterate([baseLayerCombo, layerCombo, this.legendCombo, layerOpacitySlider], function(item) {
+            item.on('added', function(me, parent){ me.setWidth(parent.width - 5); })
+        })
+
         var activityBar = new GDP.MapActivityBar({
                 id : 'activityBar'
                 ,map : config.map
@@ -101,7 +109,6 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
                 }
             }
         });
-        
         this.legendImage = new legendImage();
         this.legendWindow = new Ext.Window({
             resizable: false
@@ -118,6 +125,7 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
         this.legendWindow.show();
         
         config = Ext.apply({
+            labelAlign : 'top',
             items : [
             activityBar
             ,baseLayerCombo
@@ -129,6 +137,7 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
         
         GDP.LayerChooser.superclass.constructor.call(this, config);
         LOG.debug('LayerChooser:constructor: Construction complete.');
+        this.doLayout();
         
         LOG.debug('LayerChooser:constructor: Registering Listeners.');
         {
@@ -205,8 +214,10 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
                     var threshold = this.controller.getDimension(zlayerName);
                     if (threshold) {
                         zlayerCombo = new Ext.form.ComboBox(Ext.apply({
-                            fieldLabel : this.controller.getZAxisName()
+                            fieldLabel : this.controller.getZAxisName(),
+                            editable : false
                         }, zlayerComboConfig));
+//                        zlayerCombo.on('added', function(me, parent, index){ me.setWidth(parent.width); })
                         this.add(zlayerCombo);
                         zlayerCombo.setValue(threshold);
                         zlayerCombo.on('select', function(combo, record, index) {

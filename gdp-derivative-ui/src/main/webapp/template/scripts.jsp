@@ -3,6 +3,7 @@
 <script type="text/javascript" src="js/ext/ext-all-debug.js"></script>
 <script type="text/javascript" src="${param["ComponentDir"]}/extension/notify.js"></script>
 
+<%-- Other JavaScript modules (Mapping, logging, etc) --%>
 <script src="js/log4javascript/log4javascript.js" type="text/javascript"></script>
 <script src="js/openlayers/OpenLayers.js" type="text/javascript"></script>
 <script src="js/geoext/GeoExt.js" type="text/javascript"></script>
