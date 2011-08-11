@@ -127,6 +127,10 @@ function test() {
 //    }, capabilitiesStore);
 }
 
+// http://www.mail-archive.com/users@openlayers.org/msg01838.html
+if (Ext.isIE7) {
+    document.namespaces; 
+}
 Ext.onReady(function () {
         GDP.PROXY_PREFIX = 'proxy/';
         GDP.DEFAULT_LEGEND_NAME = 'boxfill/greyscale';
