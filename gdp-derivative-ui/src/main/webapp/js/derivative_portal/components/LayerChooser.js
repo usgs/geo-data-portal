@@ -2,14 +2,7 @@ Ext.ns("GDP");
 
 GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
     controller : undefined,
-    legendWindow : undefined,
-    legendImage : undefined, 
     legendCombo : undefined,
-    DEFAULT_LEGEND_X : 110,
-    DEFAULT_LEGEND_Y : 274,
-    realignLegend : function() {
-        if (this.legendWindow) {this.legendWindow.alignTo(this.getEl(), "br-br");}
-    },
     constructor : function(config) {
         LOG.debug('LayerChooser:constructor: Constructing self.');
         
@@ -97,33 +90,6 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
                 ,layerController : this.controller
         });
 
-        var legendImage = Ext.extend(GeoExt.LegendImage, {
-            setUrl: function(url) {
-                this.url = url;
-                var el = this.getEl();
-                if (el) {
-                    el.dom.src = '';
-                    el.un("error", this.onImageLoadError, this);
-                    el.on("error", this.onImageLoadError, this, {single: true});
-                    el.dom.src = url;
-                }
-            }
-        });
-        this.legendImage = new legendImage();
-        this.legendWindow = new Ext.Window({
-            resizable: false
-            ,draggable: false
-            ,closable: false
-            ,border: false
-            ,frame: false
-            ,shadow: false
-            ,layout: 'absolute'
-            ,items: [this.legendImage]
-            ,height: this.DEFAULT_LEGEND_Y
-            ,width: this.DEFAULT_LEGEND_X
-        });
-        this.legendWindow.show();
-        
         config = Ext.apply({
             labelAlign : 'top',
             items : [
@@ -170,7 +136,6 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
                 // TODO - This is duplicated in LayerChoose @ LayerController.modifyLegendStore() -- Fix that.
                 var recordIndex = store.find('name', GDP.DEFAULT_LEGEND_NAME);
                 recordIndex = (recordIndex < 0) ? 0 : recordIndex;
-                
                 this.legendCombo.setValue(store.getAt(recordIndex).get('name'));
             }, this);
             layerOpacitySlider.on('change', function() {
@@ -182,19 +147,6 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
             this.controller.on('changebaselayer', function() {
                 LOG.debug('LayerChooser: Observed \'changebaselayer\'.');
                 baseLayerCombo.setValue(this.controller.getBaseLayer().data.title);
-            }, this);
-            this.controller.on('changelegend', function(){
-                LOG.debug('LayerChooser: Observed \'changelegend\'.');
-                var legendHref = this.controller.getLegendRecord().data.href;
-                if(this.legendImage.url && this.legendImage.url.contains(legendHref)) {
-                    LOG.debug('LayerChooser: \'changelegend\' called but legend image is already the same as requested legend.');
-                    return;
-                }
-                LOG.debug('LayerChooser: Removing current legend image and reapplying new legend image.');
-                this.legendImage.setUrl(GDP.PROXY_PREFIX + legendHref);
-                this.legendWindow.show(null, function() {
-                    this.realignLegend();
-                }, this);
             }, this);
             this.controller.on('changelayer', function() {
                 LOG.debug('LayerChooser: Observed \'changelayer\'.');
@@ -308,7 +260,6 @@ GDP.LayerChooser = Ext.extend(Ext.form.FormPanel, {
         }
         this.on('resize', function() {
             this.get('activityBar').setWidth(this.getWidth());
-            this.realignLegend();
         }, this);
     }
 });

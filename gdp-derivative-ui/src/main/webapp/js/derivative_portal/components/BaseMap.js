@@ -4,9 +4,14 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 	layerController : undefined,
 	currentLayer : undefined,
         legendWindow : undefined,
-//        realignLegend : function() {
-//            if (this.legendWindow) {this.legendWindow.alignTo(this.getEl(), "br-br");}
-//        },
+        legendImage : undefined, 
+        DEFAULT_LEGEND_X : 110,
+        DEFAULT_LEGEND_Y : 293,
+        realignLegend : function() {
+            if (this.legendWindow) {
+                this.legendWindow.alignTo(this.body, "tr-tr");
+            }
+        },
 	constructor : function(config) {
             LOG.debug('BaseMap:constructor: Constructing self.');
 		// From GDP (with Zoerb's comments)
@@ -39,32 +44,52 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		GDP.BaseMap.superclass.constructor.call(this, config);
 		LOG.debug('BaseMap:constructor: Construction complete.');
                 
-//                var legendImage = Ext.extend(GeoExt.LegendImage, {
-//                setUrl: function(url) {
-//                        this.url = url;
-//                        var el = this.getEl();
-//                        if (el) {
-//                            el.dom.src = '';
-//                            el.un("error", this.onImageLoadError, this);
-//                            el.on("error", this.onImageLoadError, this, {single: true});
-//                            el.dom.src = url;
-//                        }
-//                    }
-//                });
-//                this.legendImage = new legendImage();
-//                this.legendWindow = new Ext.Window({
-//                    resizable: false
-//                    ,draggable: false
-//                    ,closable: false
-//                    ,border: false
-//                    ,frame: false
-//                    ,shadow: false
-//                    ,layout: 'absolute'
-//                    ,items: [this.legendImage]
-//                    ,height: this.DEFAULT_LEGEND_Y
-//                    ,width: this.DEFAULT_LEGEND_X
-//                });
-//                this.legendWindow.show();
+                var legendImage = Ext.extend(GeoExt.LegendImage, {
+                    setUrl: function(url) {
+                        this.url = url;
+                        var el = this.getEl();
+                        if (el) {
+                            el.dom.src = '';
+                            el.un("error", this.onImageLoadError, this);
+                            el.on("error", this.onImageLoadError, this, {
+                                single: true
+                            });
+                            el.dom.src = url;
+                        }
+                    }
+                });
+                this.legendImage = new legendImage();
+                this.legendWindow = new Ext.Window({
+                    resizable: false
+                    ,draggable: false
+                    ,border: false // Change
+                    ,frame: true // Change
+                    ,shadow: false // Change
+                    ,layout: 'absolute'
+                    ,items: [this.legendImage]
+                    ,height: this.DEFAULT_LEGEND_Y
+                    ,width: this.DEFAULT_LEGEND_X
+                    ,closable : false
+                    ,collapsible : true
+                    ,headerCfg : {
+                        html : 'Legend',
+                        cls : 'x-panel-header'
+                    }
+                });
+                this.legendWindow.show();
+                this.layerController.on('changelegend', function(){
+                    LOG.debug('BaseMap: Observed \'changelegend\'.');
+                    var legendHref = this.layerController.getLegendRecord().data.href;
+                    if(this.legendImage.url && this.legendImage.url.contains(legendHref)) {
+                        LOG.debug('BaseMap: \'changelegend\' called but legend image is already the same as requested legend.');
+                        return;
+                    }
+                    LOG.debug('BaseMap: Removing current legend image and reapplying new legend image.');
+                    this.legendImage.setUrl(GDP.PROXY_PREFIX + legendHref);
+                    this.legendWindow.show(null, function() {
+                        this.realignLegend();
+                    }, this);
+                }, this);
                 
                 LOG.debug('BaseMap:constructor: Registering Observables.');
                 this.addEvents(
@@ -101,10 +126,9 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                         LOG.debug('BaseMap: Observed "creategeomoverlay".');
                         this.createGeomOverlay(args);
                     }, this);
-//                    this.layerController.on('bboxbuttondeactivated', function(args){
-//                        LOG.debug('BaseMap: Observed "bboxbuttondeactivated".');
-//                        this.map.getLayersByName('bboxvector')[0].removeAllFeatures(null,true);
-//                    }, this);
+                    this.on('resize', function() {
+                        this.realignLegend();
+                    }, this);
                 }
 	},
         zoomToExtent : function(record) {
