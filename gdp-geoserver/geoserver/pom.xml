@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>gov.usgs.cida.gdp</groupId>
-        <artifactId>gdp</artifactId>
+        <artifactId>gdp-geoserver</artifactId>
         <version>13-SNAPSHOT</version>
     </parent>
     <artifactId>geoserver</artifactId>
@@ -10,7 +10,7 @@
     <name>GDP GeoServer</name>
     <properties>
         <gs.version>2.1.1</gs.version>
-        <gt.version>2.7.1</gt.version>
+        <gt.version>2.7.2</gt.version>
     </properties>
     <dependencies>
         <dependency>
@@ -35,14 +35,14 @@
                 </exclusion>
             </exclusions>
         </dependency>
-<!--        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>gdp-geoserver-upload</artifactId>
-            <version>${project.version}</version>
-        </dependency>-->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>gdp-wfst</artifactId>
+            <artifactId>gdp-geoserver-wps</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>gdp-geoserver-wfs-t</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

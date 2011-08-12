@@ -3,15 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>gov.usgs.cida.gdp</groupId>
-        <artifactId>gdp</artifactId>
+        <artifactId>gdp-geoserver</artifactId>
         <version>13-SNAPSHOT</version>
     </parent>
-    <artifactId>gdp-wfst</artifactId>
-    <name>GDP GeoServer WFS-T</name>
-    <properties>
-        <gs.version>2.1.0</gs.version>
-        <gt.version>2.7.1</gt.version>
-    </properties>
+    <artifactId>gdp-geoserver-wfs-t</artifactId>
+    <name>GDP GeoServer WFS-T Extensions</name>
     <!-- These dependencies must have scope 'provided' so their transitive
        dependencies don't overwrite the standard GeoServer release jars
        and cause problems. -->
