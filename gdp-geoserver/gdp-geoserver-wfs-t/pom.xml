@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
@@ -8,6 +8,7 @@
     </parent>
     <artifactId>gdp-geoserver-wfs-t</artifactId>
     <name>GDP GeoServer WFS-T Extensions</name>
+    <!-- comment below per razoerb, haven't verified this with project reorg - tkunicki -->
     <!-- These dependencies must have scope 'provided' so their transitive
        dependencies don't overwrite the standard GeoServer release jars
        and cause problems. -->
@@ -25,11 +26,4 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
-    <repositories>
-        <repository>
-            <id>opengeo</id>
-            <name>OpenGeo</name>
-            <url>http://repo.opengeo.org/</url>
-        </repository>
-    </repositories>
 </project>
