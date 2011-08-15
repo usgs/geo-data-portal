@@ -90,7 +90,8 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         this.capabilitiesStore.on('exception', function() {
             LOG.debug('DatasetConfigPanel: Capabilities store has encountered an exception.');
             if (LOADMASK) LOADMASK.hide();
-            NOTIFY.error();
+            NOTIFY.error({msg : 'Could not access WMS endpoint. Application will not be functional until another endpoint is chosen.'});
+            this.controller.capabilitiesExceptionOccurred();
         }, this);
         this.layerCombo.on('select', function(combo, record, index) {
             this.controller.requestLayer(record);

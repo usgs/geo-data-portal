@@ -63,7 +63,8 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
                 "creategeomoverlay",
                 "submit-bounds",
                 "selected-dataset",
-                "loaded-capstore"
+                "loaded-capstore",
+                "exception-capstore"
             );
             
             // There shouldn't be anything listening at this point. 
@@ -199,18 +200,22 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
             this.fireEvent('creategeomoverlay', args);
         },
         submitBounds : function(args) {
-            LOG.debug('LayerController:submitBounds');
+            LOG.debug('LayerController:submitBounds: Firing event "submit-bounds"');
             this.createGeomOverlay(args);
             args = Ext.apply({controller : this}, args)
             this.fireEvent('submit-bounds', args);
         },
         selectedDataset : function(args) {
-            LOG.debug('LayerController:selectedDataset');
+            LOG.debug('LayerController:selectedDataset: Firing event "selected-dataset"');
             this.fireEvent('selected-dataset', args);
         },
         loadedCapabilitiesStore : function(args) {
-            LOG.debug('LayerController:loadedCapabilitiesStore');
+            LOG.debug('LayerController:loadedCapabilitiesStore: Firing event "loaded-capstore"');
             this.modifyLegendStore(args.record.data);
             this.fireEvent('loaded-capstore', args);
+        },
+        capabilitiesExceptionOccurred : function(args) {
+            LOG.debug('LayerController:capabilitiesExceptionFired: Firing event "exception-capstore"');
+            this.fireEvent('exception-capstore', args);
         }
 });

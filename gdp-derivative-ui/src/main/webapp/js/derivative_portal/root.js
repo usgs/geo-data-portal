@@ -28,26 +28,30 @@ function initializeNotification() {
     LOG.info('Derivative Portal: Initializing Notification.');
     LOG.debug('root:initializeNotification');
     
+    var defaultConfig = {
+        msgWidth: 400,
+        hideDelay: 8000
+    };
+    
     /**
      * ERROR
      */
     var _notifyError = function(args) {
         var config = args || {};
-		
+	
         var moreInfo = new Ext.Button({ text: 'More Info...' });
         
         var buttons = [];
         if (config.moreInfoAction) { buttons.push(moreInfo); }
-		
-        var notifyError = new Ext.ux.Notify({
-            msgWidth: 200,
-            hideDelay: 8000,
-            title: 'Error!',
-            titleIconCls: 'titleicon-error',
-            msgIconCls: 'msgicon-error',
-            msg: config.msg || 'An error has occured.',
-            buttons: buttons
-        });
+        
+        var notifyError = new Ext.ux.Notify(Ext.applyIf({
+                title: 'Error!',
+                titleIconCls: 'titleicon-error',
+                msgIconCls: 'msgicon-error',
+                msg: config.msg || 'An error has occured.',
+                buttons: buttons
+            }, defaultConfig)
+        );
 		
         if (config.moreInfoAction) {
             moreInfo.on('click', function() {
@@ -64,13 +68,11 @@ function initializeNotification() {
      */
     var _notifySuccess = function(msg) {
         LOG.debug('GDP-DUI: Showing success popup');
-        new Ext.ux.Notify({
-            msgWidth: 200,
-            hideDelay: 1000,
+        new Ext.ux.Notify(Ext.applyIf({
             title: 'Success!',
             titleIconCls: 'titleicon-success',
             msg: msg.msg || 'Data saved successfully.'
-        }).show(document);
+        }, defaultConfig)).show(document);
     }
 	
     /**
@@ -78,13 +80,11 @@ function initializeNotification() {
      */    
     var _notifyDebug = function(msg) {
         LOG.debug('GDP-DUI: Showing (debug) notify popup');
-        new Ext.ux.Notify({
-            msgWidth: 200,
-            hideDelay: 3000,
+        new Ext.ux.Notify(Ext.applyIf({
             title: 'DEBUG',
             titleIconCls: 'titleicon-debug',
             msg: msg.msg || ''
-        }).show(document);
+        }, defaultConfig)).show(document);
     }
     
     /**
@@ -92,13 +92,11 @@ function initializeNotification() {
      */
     var _notifyWarning = function(msg) {
         LOG.debug('GDP-DUI: Showing warning popup');
-        new Ext.ux.Notify({
-            msgWidth: 200,
-            hideDelay: 3000,
+        new Ext.ux.Notify(Ext.applyIf({
             title: 'WARNING',
             titleIconCls: 'titleicon-warning',
             msg: msg.msg || ''
-        }).show(document);
+        }, defaultConfig)).show(document);
     }
     
     /**
@@ -106,13 +104,11 @@ function initializeNotification() {
      */
     var _notifyInfo = function(msg) {
         LOG.debug('GDP-DUI: Showing information popup');
-        new Ext.ux.Notify({
-            msgWidth: 200,
-            hideDelay: 8000,
+        new Ext.ux.Notify(Ext.applyIf({
             title: 'INFO',
             titleIconCls: 'titleicon-info',
             msg: msg.msg || ''
-        }).show(document);
+        }, defaultConfig)).show(document);
     }    
     
     NOTIFY = {

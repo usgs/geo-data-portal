@@ -6,12 +6,13 @@ Ext.ns("GDP");
 GDP.EndpointPanel = Ext.extend(Ext.Panel, {
     controller : undefined,
     endpointApplyButton : undefined,
+    endpointCombo : undefined,
     constructor : function(config) {
         LOG.debug('EndpointPanel:constructor: Constructing self.');
 
         this.controller = config.controller;
 
-        var endpointUrls, endpointStore, endpointCombo, endpointApplyButton, endpointContainer, endpointPanel;
+        var endpointUrls, endpointStore, endpointApplyButton, endpointContainer, endpointPanel;
         endpointUrls = config.endpointUrls;
         
         endpointStore = new Ext.data.ArrayStore({
@@ -20,7 +21,7 @@ GDP.EndpointPanel = Ext.extend(Ext.Panel, {
             fields: ['url']
         });
         endpointStore.loadData(endpointUrls);
-        endpointCombo = new Ext.form.ComboBox({
+        this.endpointCombo = new Ext.form.ComboBox({
             mode : 'local'
             ,triggerAction: 'all'
             ,flex : 1
@@ -35,14 +36,15 @@ GDP.EndpointPanel = Ext.extend(Ext.Panel, {
         });
         this.endpointApplyButton = endpointApplyButton;
         
-        endpointCombo.on('select', function(){
+        this.endpointCombo.on('select', function(){
             endpointApplyButton.fireEvent('click');
         });
+        
         endpointContainer = new Ext.form.CompositeField({
             region : 'center'
             ,fieldLabel : 'Endpoint'
             ,items : [
-                endpointCombo,
+                this.endpointCombo,
                 endpointApplyButton
             ]
         });
@@ -66,9 +68,15 @@ GDP.EndpointPanel = Ext.extend(Ext.Panel, {
         GDP.EndpointPanel.superclass.constructor.call(this, config);
         LOG.debug('EndpointPanel:constructor: Construction complete.');
         
+        LOG.debug('EndpointPanel:constructor: Registering listeners.');
+        this.controller.on('exception-capstore', function() {
+            LOG.debug('EndpointPanel: Observed "exception-capstore"');
+            this.expand();
+//            this.endpointCombo
+        }, this);
         endpointApplyButton.on('click', function() {
             LOG.debug('EVENT: User has clicked on the endpoint apply button');
-            var endpoint = endpointCombo.getRawValue();
+            var endpoint = this.endpointCombo.getRawValue();
             if (endpoint) {
                 LOG.debug('EVENT: Adding ' + endpoint + ' to the capabilities store');
                 if (LOADMASK) LOADMASK.show();
