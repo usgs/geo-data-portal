@@ -5,8 +5,9 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 	currentLayer : undefined,
         legendWindow : undefined,
         legendImage : undefined, 
-        DEFAULT_LEGEND_X : 115,
-        DEFAULT_LEGEND_Y : 295,
+        legendLoadMask : undefined,
+        DEFAULT_LEGEND_X : 110,
+        DEFAULT_LEGEND_Y : 293,
         realignLegend : function() {
             if (this.legendWindow) {
                 this.legendWindow.alignTo(this.body, "tr-tr");
@@ -59,6 +60,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                     }
                 });
                 this.legendImage = new legendImage();
+                
                 this.legendWindow = new Ext.Window({
                     resizable: false
                     ,draggable: false
@@ -77,6 +79,8 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                     }
                 });
                 this.legendWindow.show();
+                this.legendLoadMask = new Ext.LoadMask(this.legendWindow.getEl());
+                
                 this.layerController.on('changelegend', function(){
                     LOG.debug('BaseMap: Observed \'changelegend\'.');
                     var legendHref = this.layerController.getLegendRecord().data.href;
@@ -119,7 +123,9 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                     }, this);
                     this.layerController.on('changelegend', function() {
                         LOG.debug('BaseMap: Observed "changelegend".');
+                        this.legendLoadMask.show();
                         this.onChangeLegend();
+                        this.legendLoadMask.hide();
                         this.currentLayer = this.findCurrentLayer();
                     }, this);
                     this.layerController.on('creategeomoverlay', function(args) {
@@ -148,15 +154,18 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                     return null;
             }
 	},
-	clearLayers : function() { //TODO- This needs to change to handle only regular layers. Not baselayers or vector layers
+	clearLayers : function() { 
             LOG.debug('BaseMap:clearLayers: Handling request.');
-            Ext.each(this.layers, function(item, index, allItems){
-                var layer = item.data.get(0).data.layer;
-                if (layer.isBaseLayer) {
+            Ext.each(this.layers.data.getRange(), function(item, index, allItems){
+                var layer = item.data.layer;
+                if (layer.isBaseLayer || layer.name == "bboxvector") {
                     LOG.debug('BaseMap:clearLayers: Layer '+layer.id+' is a base layer and will not be cleared.');
                     return;
                 }                
-                this.layers.remove(layer);
+                //TODO- This remove function should just take the layer defined above but 
+                // testing shows the layer store does not remove the layer using the 
+                // one defined above but this does work.
+                this.layers.remove(this.layers.getById(layer.id));
                 LOG.debug('BaseMap:clearLayers: Cleared layer: ' + layer.id);
             },this);
             LOG.debug('BaseMap:clearLayers: Clearing layers complete');
@@ -183,8 +192,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                     var requestedDimensions = this.layerController.getAllDimensions();
                     Ext.iterate(requestedDimensions, function(extentName, value) {
                             var layer = record.getLayer();
-                            if (layer.CLASS_NAME === 'OpenLayers.Layer.Vector' || layer.isBaseLayer) {
-                                // Disregard testing the vector and base layers
+                            if (layer.name === 'bboxvector' || layer.isBaseLayer) {
                                 result = false;
                             } else {
                                 var existingDimension = record.getLayer().params[extentName.toUpperCase()];
@@ -269,7 +277,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 
 			copy.get('layer').mergeNewParams(params);
 			copy.get('layer')['opacity'] = this.layerController.getLayerOpacity();
-			copy.get('layer')['url'] = 'proxy/' + copy.get('layer')['url'];
+			copy.get('layer')['url'] = GDP.PROXY_PREFIX + copy.get('layer')['url'];
 
 			copy.getLayer().events.register('loadend', this, function() {
                             if (LOADMASK) LOADMASK.hide();

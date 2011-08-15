@@ -2,20 +2,23 @@
 Notification window
 **************************************************/
 .msgicon {
-	width:32px;
-	height:32px;
-	float:left;
-	margin:0 10px 5px 0;
+    width:32px;
+    height:32px;
+    float:left;
+    margin:0 10px 5px 0;
 }
 .msgicon-error {            
-	background: transparent url(../js/ext/resources/images/default/window/icon-error.gif) no-repeat 0 0;
+    background: transparent url(../js/ext/resources/images/default/window/icon-error.gif) no-repeat 0 0;
 }
 .titleicon-error {
-	background-image: url(../images/error.gif) !important;
+    background-image: url(../images/error.gif) !important;
 }
 .titleicon-warning, .titleicon-debug {
-	background-image: url(../images/exclamation.gif) !important;
+    background-image: url(../images/exclamation.gif) !important;
 }
 .titleicon-success {
-	background-image: url(../images/accept.png) !important;
+    background-image: url(../images/accept.png) !important;
+}
+.titleicon-info {
+    background-image: url(../images/info.gif) !important;
 }

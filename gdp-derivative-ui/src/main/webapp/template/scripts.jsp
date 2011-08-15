@@ -12,9 +12,6 @@
 <script type="text/javascript" src="${param["ComponentDir"]}/Animator.js"></script>
 <script type="text/javascript" src="${param["ComponentDir"]}/LayerController.js"></script>
 <script type="text/javascript" src="${param["ComponentDir"]}/BoundsPanelSubmitButton.js"></script>
-<script type="text/javascript" src="${param["ComponentDir"]}/PolygonPOIPanel.js"></script>
-<script type="text/javascript" src="${param["ComponentDir"]}/LayerChooser.js"></script>
-<script type="text/javascript" src="${param["ComponentDir"]}/TimestepChooser.js"></script>
 <script type="text/javascript" src="${param["ComponentDir"]}/BaseMap.js"></script>
 <script type="text/javascript" src="${param["ComponentDir"]}/MapActivityBar.js"></script>
 <script type="text/javascript" src="${param["ComponentDir"]}/WPS/WPSCapabilitiesStore.js"></script>
@@ -23,6 +20,14 @@
 <script type="text/javascript" src="${param["ComponentDir"]}/WPS/WPSExecuteResponseReader.js"></script>
 <script type="text/javascript" src="${param["ComponentDir"]}/WPS/WPSPanel.js"></script>
 <script type="text/javascript" src="${param["ComponentDir"]}/WPS/WPSProcessPanel.js"></script>
+<script type="text/javascript" src="${param["ComponentDir"]}/panels/TimestepChooser.js"></script>
+<script type="text/javascript" src="${param["ComponentDir"]}/panels/EndpointPanel.js"></script>
+<script type="text/javascript" src="${param["ComponentDir"]}/panels/DatasetConfigPanel.js"></script>
+<script type="text/javascript" src="${param["ComponentDir"]}/panels/ConfigurationPanel.js"></script>
+<script type="text/javascript" src="${param["ComponentDir"]}/panels/MapConfigPanel.js"></script>
+<script type="text/javascript" src="${param["ComponentDir"]}/panels/ProcessingPanel.js"></script>
+<script type="text/javascript" src="${param["ComponentDir"]}/panels/PolygonPOIPanel.js"></script>
+
 
 <%-- Root Module --%>
 <script src='${param["UIScriptFile"]}' type="text/javascript"></script>

@@ -18,6 +18,7 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
         var control = new OpenLayers.Control();
         OpenLayers.Util.extend(control, {
             controller : this.layerController,
+            handler : undefined,
             activate : function() {
                 this.controller.boundingBoxButtonActivated();
             },
@@ -53,24 +54,24 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
         });
         
         drawBboxAction = new GeoExt.Action({
-            text: 'Get Data'
-            ,control: control
+            control: control
             ,toggleGroup: toggleGroup
             ,allowDepress: false
             ,tooltip: 'Draw A Bounding Box On The Map'
             ,group: toggleGroup
             ,map: map
+            ,iconCls : 'bounding-box'
         });
         
         zoomToExtentAction = new GeoExt.Action({
-            text : 'Max Extent'
-            ,control: new OpenLayers.Control.ZoomToMaxExtent()
-            ,tooltip: 'Zoom To Map Extent'
-            ,map: map
+            control: new OpenLayers.Control.ZoomToMaxExtent(),
+            tooltip: 'Zoom To Map Extent',
+            map: map,
+            iconCls : 'zoom-out'
         });
         
         navigationAction = new GeoExt.Action({
-            text: 'Pan Map'
+            iconCls : 'pan-map'
             ,control: new OpenLayers.Control.Navigation()
             ,toggleGroup: toggleGroup
             ,allowDepress: false
@@ -82,17 +83,18 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
         });
         
         var zoomAction = new GeoExt.Action({
-            text: "Zoom In"
-            ,control: new OpenLayers.Control.ZoomBox({alwaysZoom: true})
+            control: new OpenLayers.Control.ZoomBox({alwaysZoom: true})
             ,map: map
             ,toggleGroup: toggleGroup
             ,allowDepress: false
             ,tooltip: "Zoom In"
             ,group: toggleGroup
+            ,iconCls : 'zoom-in'
         });
         
         config = Ext.apply({
-            items: [zoomToExtentAction, navigationAction, zoomAction, drawBboxAction]
+            buttonAlign: 'center',
+            items: [zoomToExtentAction, ' ', '-', ' ',zoomAction, ' ','-',' ', navigationAction, ' ','-',' ', drawBboxAction]
         }, config);
         GDP.MapActivityBar.superclass.constructor.call(this, config);
         LOG.debug('MapActivityBar:constructor: Construction complete.');

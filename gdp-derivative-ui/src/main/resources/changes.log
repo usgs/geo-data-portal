@@ -1,4 +1,7 @@
 8-10-2011 - 8-24-2011:
-- Moved legend window from the control panel to the map container
-  - Gave legend window a minimizer
-  - 
+    - Moved legend window from the control panel to the map container
+    - Gave legend window a minimizer
+    - Backing script reorganization
+    - Implemented fix for IE7. The application was not working for IE7
+    - Moved control labels above control, expanded controls out to the width of their container
+    - Implemented accordion layout for control panel on left hand side of the application

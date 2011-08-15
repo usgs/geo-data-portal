@@ -105,9 +105,8 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
         config = Ext.apply({
             id : 'wps-panel',
             items : items,
-            layout : 'form',
-            title : 'WPS Submit',
-            border : true
+//            layout : 'form',
+            title : 'WPS Submit'
         }, config);
         GDP.WPSPanel.superclass.constructor.call(this, config);
         LOG.debug('WPSPanel:constructor: Construction complete.');
@@ -128,12 +127,12 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
             LOG.debug('WPSPanel: Observed "process-started"');
             this.addProcessChecker(args);
         }, this);
-        this.on('added', function() {
-            this.doLayout();
-        }, this);
-        this.on('removed', function() {
-            this.doLayout();
-        }, this);
+//        this.on('added', function() {
+//            this.doLayout();
+//        }, this);
+//        this.on('removed', function() {
+//            this.doLayout();
+//        }, this);
         
     },
     submitButtonClicked : function() {

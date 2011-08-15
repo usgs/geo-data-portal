@@ -1,6 +1,7 @@
 Ext.ns("GDP");
 
 GDP.LayerController = Ext.extend(Ext.util.Observable, {
+        MAXIMUM_DIMENSION_COUNT : 101,
 	baseLayer : undefined,
 	getBaseLayer : function() {
 		return this.baseLayer;
@@ -60,7 +61,9 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
                 "drewbbox",
                 "bboxbuttonactivated",
                 "creategeomoverlay",
-                "submit-bounds"
+                "submit-bounds",
+                "selected-dataset",
+                "loaded-capstore"
             );
             
             // There shouldn't be anything listening at this point. 
@@ -88,7 +91,11 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
 		var layerName = layerRecord.get('name');
 		this.zaxisName = layerName.slice(0, layerName.indexOf('/'));
 		LOG.debug('LayerController:requestLayer: Firing event "changelayer".');
-		this.fireEvent('changelayer');
+                this.modifyLegendStore(layerRecord.data);
+		this.fireEvent('changelayer', {
+                    zaxisName : this.zaxisName,
+                    record : layerRecord
+                });
 	},
         requestLegendStore : function(legendStore) {
             LOG.debug('LayerController:requestLegendStore: Handling request.');
@@ -125,9 +132,9 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
 		if (!opacity) return;
                 LOG.debug('LayerController:requestOpacity: Handling request.');
 		if (0 <= opacity && 1 >= opacity) {
-			this.layerOpacity = opacity;
-                        LOG.debug('LayerController:requestOpacity: Firing event "changeopacity".');
-			this.fireEvent('changeopacity');
+                    this.layerOpacity = opacity;
+                    LOG.debug('LayerController:requestOpacity: Firing event "changeopacity".');
+                    this.fireEvent('changeopacity');
 		}
 	},
         requestDimension : function(extentName, value) {
@@ -153,7 +160,7 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
 	loadDimensionStore : function(record, store, extentName, maxCount) {
 		if (!record || !store || !extentName) return null;
 		LOG.debug('LayerController:loadDimensionStore: Handling request.');
-		var maxNum = maxCount || 101;
+		var maxNum = maxCount || this.MAXIMUM_DIMENSION_COUNT;
 		
 		store.removeAll();
 		
@@ -196,5 +203,14 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
             this.createGeomOverlay(args);
             args = Ext.apply({controller : this}, args)
             this.fireEvent('submit-bounds', args);
+        },
+        selectedDataset : function(args) {
+            LOG.debug('LayerController:selectedDataset');
+            this.fireEvent('selected-dataset', args);
+        },
+        loadedCapabilitiesStore : function(args) {
+            LOG.debug('LayerController:loadedCapabilitiesStore');
+            this.modifyLegendStore(args.record.data);
+            this.fireEvent('loaded-capstore', args);
         }
 });

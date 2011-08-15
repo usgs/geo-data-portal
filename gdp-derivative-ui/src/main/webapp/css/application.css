@@ -1,0 +1,21 @@
+/* 
+    Document   : application
+    Created on : Aug 14, 2011, 2:40:57 PM
+    Author     : isuftin
+    Description:
+        IDs and Classes specific to this application
+*/
+
+.zoom-out {
+    background-image: url(../images/map-tools/zoom-out.gif) !important;
+}
+.zoom-in {
+    background-image: url(../images/map-tools/zoom-in.gif) !important;
+}
+.pan-map {
+    background-image: url(../images/map-tools/pan-map.gif) !important;
+}
+.bounding-box {
+    background-image: url(../images/map-tools/bounding-box.gif) !important;
+}
+
