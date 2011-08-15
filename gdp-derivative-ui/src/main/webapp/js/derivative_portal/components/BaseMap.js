@@ -5,8 +5,8 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 	currentLayer : undefined,
         legendWindow : undefined,
         legendImage : undefined, 
-        DEFAULT_LEGEND_X : 110,
-        DEFAULT_LEGEND_Y : 293,
+        DEFAULT_LEGEND_X : 115,
+        DEFAULT_LEGEND_Y : 295,
         realignLegend : function() {
             if (this.legendWindow) {
                 this.legendWindow.alignTo(this.body, "tr-tr");
@@ -62,9 +62,9 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                 this.legendWindow = new Ext.Window({
                     resizable: false
                     ,draggable: false
-                    ,border: false // Change
-                    ,frame: true // Change
-                    ,shadow: false // Change
+                    ,border: false
+                    ,frame: true
+                    ,shadow: false
                     ,layout: 'absolute'
                     ,items: [this.legendImage]
                     ,height: this.DEFAULT_LEGEND_Y
