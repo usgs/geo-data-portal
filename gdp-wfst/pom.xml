@@ -4,7 +4,7 @@
     <parent>
         <groupId>gov.usgs.cida.gdp</groupId>
         <artifactId>gdp</artifactId>
-        <version>13</version>
+        <version>14-SNAPSHOT</version>
     </parent>
     <artifactId>gdp-wfst</artifactId>
     <name>GDP GeoServer WFS-T</name>
