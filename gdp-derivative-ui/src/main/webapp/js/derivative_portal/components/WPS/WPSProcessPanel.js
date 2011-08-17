@@ -38,14 +38,15 @@ GDP.WPSProcessPanel = Ext.extend(Ext.Panel, {
                     var procStarted = xml.getElementsByTagName('ns:ProcessStarted')
                     var procSucceeded = xml.getElementsByTagName('ns:ProcessSucceeded');
                     var procFailed = xml.getElementsByTagName('ns:ProcessFailed');
+                    LOG.debug('started' + procStarted[0] + ", succeeded:")
                     if (procStarted.length > 0) {
                         var processStarted = xml.getElementsByTagName('ns:Status')[0].attributes['creationTime'];
                         LOG.debug('Process Task ID ' + this.getProcessId() + ' is still running. <br /><br />Process started ' + processStarted + '<br /><br />Last checked: ' + new Date().format('c'));
-                    } else if (procSucceeded > 0) {
+                    } else if (procSucceeded.length > 0) {
                         this.getRunner().stopAll();
                         var href = xml.getElementsByTagName('ns:Reference')[0].attributes['href'];
                         LOG.debug('Process Task ID ' + this.getProcessId() + ' succeeded.');
-                        this.update("This process has succeeded. <a href='"+href+"'>Click</a> to download your file.");
+                        this.update("This process has succeeded. <a href='"+href.value+"'>Click</a> to download your file.");
                         var downloadButton = new Ext.Button({
                             id : 'wps-download-button',
                             text : 'Download'
