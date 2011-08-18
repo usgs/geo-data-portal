@@ -16,7 +16,7 @@
         <module>gdp-utility-wps</module>
         <module>gdp-process-wps</module>
         <module>gdp-geoserver</module>
-        <module>gdp-sos-server</module>
+<!--        <module>gdp-sos-server</module>-->
 <!--        <module>geonetwork</module>-->
         <module>gdp-ui</module>
         <module>gdp-derivative-ui</module>
