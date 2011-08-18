@@ -2,28 +2,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>gov.usgs.cida.gdp</groupId>
-        <artifactId>gdp-geoserver</artifactId>
-        <version>14-SNAPSHOT</version>
+        <groupId>gov.usgs.cida.geoserver</groupId>
+        <artifactId>cida-geoserver</artifactId>
+        <version>1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>gdp-geoserver-wfs-t</artifactId>
-    <name>GDP GeoServer WFS-T Extensions</name>
-    <!-- comment below per razoerb, haven't verified this with project reorg - tkunicki -->
-    <!-- These dependencies must have scope 'provided' so their transitive
-       dependencies don't overwrite the standard GeoServer release jars
-       and cause problems. -->
+    <artifactId>cida-geoserver-wfs-t</artifactId>
+    <name>CIDA GeoServer WFS-T Extensions</name>
     <dependencies>
         <dependency>
             <groupId>org.geoserver</groupId>
             <artifactId>main</artifactId>
-            <version>${gs.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.geoserver</groupId>
             <artifactId>wfs</artifactId>
-            <version>${gs.version}</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

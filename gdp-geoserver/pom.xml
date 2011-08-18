@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>gov.usgs.cida.gdp</groupId>
-        <artifactId>gdp</artifactId>
-        <version>14-SNAPSHOT</version>
-    </parent>
-    <artifactId>gdp-geoserver</artifactId>
+    <groupId>gov.usgs.cida.geoserver</groupId>
+    <artifactId>cida-geoserver</artifactId>
+    <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>GDP GeoServer and Extensions</name>
+    <name>CIDA GeoServer and Extensions</name>
     <modules>
         <module>gdp-geoserver-wfs-t</module>
         <module>gdp-geoserver-wps</module>
@@ -16,97 +13,21 @@
     </modules>
     <properties>
         <gs.version>2.1.1</gs.version>
+        <!-- the property gt.version should be synced with the GeoTools version
+             used in the GeoServer release specified by gs.version.  These need
+             to match the values specified in the import pom used in dependency
+             management -->
         <gt.version>2.7.2</gt.version>
     </properties>
     <dependencyManagement>
         <dependencies>
-            <!-- START GeoTools -->
-            <!-- this is horrible, indicates the projects should be divorced from parent -->
             <dependency>
-                <artifactId>gt-arcgrid</artifactId>
-                <groupId>org.geotools</groupId>
-                <type>jar</type>
-                <version>${gt.version}</version>
+                <groupId>org.geoserver</groupId>
+                <artifactId>geoserver</artifactId>
+                <version>${gs.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
-            <dependency>
-                <artifactId>gt-coverage</artifactId>
-                <groupId>org.geotools</groupId>
-                <type>jar</type>
-                <version>${gt.version}</version>
-            </dependency>
-            <dependency>
-                <artifactId>gt-cql</artifactId>
-                <groupId>org.geotools</groupId>
-                <type>jar</type>
-                <version>${gt.version}</version>
-            </dependency>
-            <dependency>
-                <artifactId>gt-epsg-hsql</artifactId>
-                <groupId>org.geotools</groupId>
-                <type>jar</type>
-                <version>${gt.version}</version>
-            </dependency>
-            <dependency>
-                <artifactId>gt-geotiff</artifactId>
-                <groupId>org.geotools</groupId>
-                <type>jar</type>
-                <version>${gt.version}</version>
-            </dependency>
-            <dependency>
-                <artifactId>gt-graph</artifactId>
-                <groupId>org.geotools</groupId>
-                <type>jar</type>
-                <version>${gt.version}</version>
-            </dependency>
-            <dependency>
-                <artifactId>gt-main</artifactId>
-                <groupId>org.geotools</groupId>
-                <type>jar</type>
-                <version>${gt.version}</version>
-            </dependency>
-            <dependency>
-                <artifactId>gt-metadata</artifactId>
-                <groupId>org.geotools</groupId>
-                <type>jar</type>
-                <version>${gt.version}</version>
-            </dependency>
-            <dependency>
-                <artifactId>gt-referencing</artifactId>
-                <groupId>org.geotools</groupId>
-                <type>jar</type>
-                <version>${gt.version}</version>
-            </dependency>
-            <dependency>
-                <artifactId>gt-shapefile</artifactId>
-                <groupId>org.geotools</groupId>
-                <type>jar</type>
-                <version>${gt.version}</version>
-            </dependency>
-            <dependency>
-                <artifactId>gt-xsd-core</artifactId>
-                <groupId>org.geotools.xsd</groupId>
-                <type>jar</type>
-                <version>${gt.version}</version>
-            </dependency>
-            <dependency>
-                <artifactId>gt-xml</artifactId>
-                <groupId>org.geotools</groupId>
-                <type>jar</type>
-                <version>${gt.version}</version>
-            </dependency>
-            <dependency>
-                <artifactId>gt-xsd-gml2</artifactId>
-                <groupId>org.geotools.xsd</groupId>
-                <type>jar</type>
-                <version>${gt.version}</version>
-            </dependency>
-            <dependency>
-                <artifactId>gt-xsd-gml3</artifactId>
-                <groupId>org.geotools.xsd</groupId>
-                <type>jar</type>
-                <version>${gt.version}</version>
-            </dependency>
-            <!-- END GeoTools -->
         </dependencies>
     </dependencyManagement>
 </project>
