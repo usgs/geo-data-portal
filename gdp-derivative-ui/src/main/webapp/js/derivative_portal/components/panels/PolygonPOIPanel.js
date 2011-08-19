@@ -8,10 +8,10 @@ GDP.PolygonPOIPanel = Ext.extend(Ext.Panel, {
     north : undefined,
     setCoords : function(args) {
         LOG.debug('PolygonPOIPanel:setCoords');
-        this.get('coord-text-panel').get('west-box').setValue(args.west.lon);
-        this.get('coord-text-panel').get('south-box').setValue(args.south.lat);
-        this.get('coord-text-panel').get('east-box').setValue(args.east.lon);
-        this.get('coord-text-panel').get('north-box').setValue(args.north.lat);
+        this.get('coord-text-panel').get('west-box').setValue(Math.round(args.west.lon * 10000) / 10000);
+        this.get('coord-text-panel').get('south-box').setValue(Math.round(args.south.lat * 10000) / 10000);
+        this.get('coord-text-panel').get('east-box').setValue(Math.round(args.east.lon * 10000) / 10000);
+        this.get('coord-text-panel').get('north-box').setValue(Math.round(args.north.lat * 10000) / 10000);
     },
     getCoords : function() {
         LOG.debug('PolygonPOIPanel:getCoords');
@@ -39,7 +39,9 @@ GDP.PolygonPOIPanel = Ext.extend(Ext.Panel, {
             value : this.west.lon,
             allowBlank : false,
             regEx : ' [-+]?[0-9]*\\.?[0-9]+',
-            regexText : 'Must be float'
+            regexText : 'Must be float',
+            region : 'west',
+            width : 80
         });
         var northboundLatTextbox = new Ext.form.TextField({
             id : 'north-box',
@@ -47,8 +49,9 @@ GDP.PolygonPOIPanel = Ext.extend(Ext.Panel, {
             value : this.north.lat,
             allowBlank : false,
             regEx : ' [-+]?[0-9]*\\.?[0-9]+',
-            regexText : 'Must be float'
-            
+            regexText : 'Must be float',
+            region : 'north',
+            width : 80
         });
         var southboundLatTextbox = new Ext.form.TextField({
             id : 'south-box',
@@ -56,7 +59,9 @@ GDP.PolygonPOIPanel = Ext.extend(Ext.Panel, {
             value : this.south.lat,
             allowBlank : false,
             regEx : ' [-+]?[0-9]*\\.?[0-9]+',
-            regexText : 'Must be float'
+            regexText : 'Must be float',
+            region : 'south',
+            width : 80
         });
         var eastboundLonTextBox = new Ext.form.TextField({
             id : 'east-box',
@@ -64,21 +69,23 @@ GDP.PolygonPOIPanel = Ext.extend(Ext.Panel, {
             value : this.east.lon,
             allowBlank : false,
             regEx : ' [-+]?[0-9]*\\.?[0-9]+',
-            regexText : 'Must be float'
+            regexText : 'Must be float',
+            region : 'east',
+            width : 80
         });
         var coordDescPanel = new Ext.Panel({
             id : 'coord-desc-panel',
-            region : 'north',
+            region : 'center',
             border : false,
             html : 'Draw a bounding box on the map or enter coordinates here.'
         });
         
-        coordPanel = new Ext.Panel({
+        coordPanel = new Ext.FormPanel({
             id : 'coord-text-panel',
             region : 'center',
-            layout : 'form',
             title : 'Coordinates',
             border : false,
+            labelAlign : 'top',
             items : [
                 coordDescPanel,
                 westboundLonTexbox, 
