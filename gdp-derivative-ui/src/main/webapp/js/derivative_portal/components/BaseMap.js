@@ -128,6 +128,10 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                         this.legendLoadMask.hide();
                         this.currentLayer = this.findCurrentLayer();
                     }, this);
+                    this.layerController.on('submit-bounds', function(args) {
+                        LOG.debug('BaseMap: Observed "submit-bounds".');
+                        this.createGeomOverlay(args);
+                    }, this);
                     this.layerController.on('creategeomoverlay', function(args) {
                         LOG.debug('BaseMap: Observed "creategeomoverlay".');
                         this.createGeomOverlay(args);

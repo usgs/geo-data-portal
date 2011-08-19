@@ -27,15 +27,16 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
     },
     constructor : function(config) {
         LOG.debug('WPSPanel:constructor: Constructing self.');
-//        var processEndpoint = 'proxy/http://127.0.0.1:8080/gdp-process-wps';
-      var processEndpoint = 'proxy/http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/gdp-process-wps';
-        var processGetCaps = processEndpoint + '/WebProcessingService?Service=WPS&Request=GetCapabilities';
-        var currentProcess = 'gov.usgs.cida.gdp.wps.algorithm.FeatureCoverageOPeNDAPIntersectionAlgorithm';
         
         var items = [];
         if (!config) config = {};
         this.controller = config.controller;
         this.bounds = config.bounds;
+        
+        var processEndpoint = 'proxy/http://127.0.0.1:8080/gdp-process-wps';
+        //      var processEndpoint = 'proxy/http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/gdp-process-wps';
+        var processGetCaps = processEndpoint + '/WebProcessingService?Service=WPS&Request=GetCapabilities';
+        var currentProcess = 'gov.usgs.cida.gdp.wps.algorithm.FeatureCoverageOPeNDAPIntersectionAlgorithm';
         
         LOG.debug('WPSPanel:constructor: Constructing capabilitiesStore.');
         var capabilitiesStore = new GDP.WPSCapabilitiesStore({
@@ -46,6 +47,7 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
         capabilitiesStore.on('load', function() {
             LOG.debug('WPSPanel: Capabilities store loaded. Firing event "capabilities-store-loaded"');
             this.capabilitiesStore = capabilitiesStore;
+            this.constructProcessSelectionPanels();
             this.fireEvent('capabilities-store-loaded');
         }, this);
         
@@ -57,23 +59,6 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
             html : 'This service returns the subset of data that intersects a set of vector polygon features and time range, if specified. A NetCDF file will be returned.'
         })
         items.push(describeProcessPanel);
-        
-//        LOG.debug('WPSPanel:constructor: Constructing WPS algorithm dropdown list.');
-//        var layerCombo = new Ext.form.ComboBox({
-//            xtype : 'combo',
-//            mode : 'local',
-//            triggerAction: 'all',
-//            store : capabilitiesStore,
-//            fieldLabel : 'Process',
-//            forceSelection : true,
-//            lazyInit : false,
-//            displayField : 'processOfferings',
-//            emptyText : 'Loading Processes'
-//        });
-//        layerCombo.on('select', function(combo, record, index) {
-//            
-//        });
-//        items.push(layerCombo);
         
         LOG.debug('WPSPanel:constructor: Creating panel to hold timer.');
         var timerPanel = new Ext.Panel({
@@ -105,7 +90,6 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
         config = Ext.apply({
             id : 'wps-panel',
             items : items,
-//            layout : 'form',
             title : 'WPS Submit'
         }, config);
         GDP.WPSPanel.superclass.constructor.call(this, config);
@@ -113,9 +97,9 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
         
         LOG.debug('WPSPanel:constructor: Registering Observables.');
         this.addEvents(
-                "capabilities-store-loaded",
-                "wps-submit-clicked",
-                "process-started"
+            "capabilities-store-loaded",
+            "wps-submit-clicked",
+            "process-started"
             );
                 
         LOG.debug('WPSPanel:constructor: Registering Listeners.');
@@ -127,13 +111,18 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
             LOG.debug('WPSPanel: Observed "process-started"');
             this.addProcessChecker(args);
         }, this);
-//        this.on('added', function() {
-//            this.doLayout();
-//        }, this);
-//        this.on('removed', function() {
-//            this.doLayout();
-//        }, this);
-        
+    },
+    constructProcessSelectionPanels : function() {
+        LOG.debug('WPSPanel:submitButtonClicked: constructProcessSelectionPanels');
+        var processes = this.capabilitiesStore.data.items[0].data.processOfferings;
+        Ext.iterate(processes, function(k ,v, o) {
+            var title = v.title;
+            var identifier = v.identifier;
+        }, this);
+    },
+    updateBounds : function(args) {
+        LOG.debug('WPSPanel:updateBounds');
+        this.bounds = args.bounds;
     },
     submitButtonClicked : function() {
         LOG.debug('WPSPanel:submitButtonClicked: Submit button clicked');
@@ -206,7 +195,9 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
                     // The process has started
                     processLink = xml.getElementsByTagName('ns:ExecuteResponse')[0].getAttribute('statusLocation');
                 }
-                this.fireEvent('process-started', {processLink : processLink});
+                this.fireEvent('process-started', {
+                    processLink : processLink
+                });
             },
             failure: function ( result, request) {
                 LOG.debug('BoundsPanelSubmitButton:onClick:Ajax:failure');
@@ -228,7 +219,7 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
         var timestamp = now.format('c'); 
         var externalPortalMapping = 'http://cida.usgs.gov/qa/climate/derivative/xsd/draw.xsd';
         
-	var result = '<gml:featureMembers xmlns:ogc="http://www.opengis.net/ogc" xmlns:draw="gov.usgs.cida.gdp.draw" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ows="http://www.opengis.net/ows" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="gov.usgs.cida.gdp.draw '+externalPortalMapping+'">';
+        var result = '<gml:featureMembers xmlns:ogc="http://www.opengis.net/ogc" xmlns:draw="gov.usgs.cida.gdp.draw" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ows="http://www.opengis.net/ows" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="gov.usgs.cida.gdp.draw '+externalPortalMapping+'">';
         result += '<gml:box gml:id="box.1">';
         result += '<gml:the_geom>';
         result += '<gml:MultiPolygon srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">';
@@ -251,7 +242,7 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
         result += '</gml:the_geom>'
         result += '<gml:ID>0</gml:ID>'
         result += '</gml:box>'
-	result += '</gml:featureMembers>'
+        result += '</gml:featureMembers>'
         
         return result;
     },

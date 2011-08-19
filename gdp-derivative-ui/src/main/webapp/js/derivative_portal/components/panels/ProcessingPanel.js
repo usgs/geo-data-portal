@@ -12,9 +12,8 @@ GDP.ProcessingPanel = Ext.extend(Ext.Panel, {
         
         config = Ext.apply({
             id : 'data-processing-panel',
-//            items : [],
             layout : 'form',
-//            iconCls : 'titleicon-warning',
+            //            iconCls : 'titleicon-warning',
             title : 'Data Processing',
             border : false
         }, config);
@@ -23,12 +22,19 @@ GDP.ProcessingPanel = Ext.extend(Ext.Panel, {
         
         LOG.debug('ProcessingPanel:constructor: Registering listeners.');
         this.controller.on('submit-bounds',function(args){
-            LOG.debug('LayerChooser: Observed "submit-bounds"');
-
+            LOG.debug('ProcessingPanel: Observed "submit-bounds"');
+            this.boundsSubmitted(args);
+        },this);
+    },
+    boundsSubmitted : function(args){
+        LOG.debug('ProcessingPanel:boundsSubmitted');
+        if (!this.get('wps-panel')) {
+            LOG.debug('ProcessingPanel:boundsSubmitted: Constructing new WPS Panel');
             var wpsPanel = new GDP.WPSPanel(args);
             this.add(wpsPanel);
-            this.doLayout(true);
-            wpsPanel.setWidth(this.getWidth());
-        },this);
+        } else {
+            LOG.debug('ProcessingPanel:boundsSubmitted: WPS Panel exists. Updating bounds for algorithms');
+            this.get('wps-panel').updateBounds(args);
+        }
     }
 });

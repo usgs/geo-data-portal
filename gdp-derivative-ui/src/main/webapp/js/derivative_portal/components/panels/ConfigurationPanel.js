@@ -46,7 +46,5 @@ GDP.ConfigurationPanel = Ext.extend(Ext.Panel, {
         }, config);
         GDP.ConfigurationPanel.superclass.constructor.call(this, config);
         LOG.debug('ConfigurationPanel:constructor: Construction complete.');
-        
-        LOG.debug('ConfigurationPanel:constructor: Registering Listeners.');
     }
 });
