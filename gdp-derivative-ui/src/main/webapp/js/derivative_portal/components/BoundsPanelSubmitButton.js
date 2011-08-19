@@ -54,10 +54,7 @@ GDP.BoundsPanelSubmitButton = Ext.extend(Ext.Button, {
             
             this.layerController.submitBounds({bounds : bounds});
         } else {
-            LOG.debug('BoundsPanelSubmitButton:click:validator returned false')
+            LOG.debug('BoundsPanelSubmitButton:click:validator returned false');
         }
-        
-        
- 
     }
 });
