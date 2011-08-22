@@ -171,7 +171,7 @@ GDP.WPSProcessPanel = Ext.extend(Ext.Panel, {
                     this.process.runningProcessUrl = runningProcessUrl;
                     
                     LOG.debug('WPSProcessPanel:constructor: Creating timer process to check status every ' + (this.interval / 1000) + ' seconds.');
-                    this.updateInfoPanel({msg : 'Process successfully submitted.  Will now begin checking <a href="'+runningProcessUrl+'" target="_blank">' + runningProcessUrl + '</a> for process completion.'});
+                    this.updateInfoPanel({msg : 'Process successfully submitted.  Will now begin checking <a href="'+runningProcessUrl+'" target="_blank">endpoint</a> for process completion.'});
                     this.runner = new Ext.util.TaskRunner();
                     this.runner.start({
                         run : this.createProcessChecker,
