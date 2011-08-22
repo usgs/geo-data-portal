@@ -16,8 +16,8 @@ if (Ext.isIE7) { // http://www.mail-archive.com/users@openlayers.org/msg01838.ht
 Ext.onReady(function () {
     GDP.PROXY_PREFIX = 'proxy/';
     GDP.DEFAULT_LEGEND_NAME = 'boxfill/greyscale';
-//    GDP.PROCESS_ENDPOINT = 'http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/gdp-process-wps/WebProcessingService';
-    GDP.PROCESS_ENDPOINT = 'http://localhost:8080/gdp-process-wps/WebProcessingService'; // Development
+    GDP.PROCESS_ENDPOINT = 'http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/gdp-process-wps/WebProcessingService';
+//    GDP.PROCESS_ENDPOINT = 'http://localhost:8080/gdp-process-wps/WebProcessingService'; // Development
     
     initializeLogging();
 //        test();
