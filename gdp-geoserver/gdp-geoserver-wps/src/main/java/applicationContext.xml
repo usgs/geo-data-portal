@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+    
+    <!-- Resource manager -->
+<!--    <bean id="wpsResourceManager" class="org.geoserver.wps.resource.WPSResourceManager"/>-->
+    
+    <!-- The PPIO that need to be registered into SPI because of their dependencies -->
+<!--    <bean id="shapeZipPPIO" class="org.geoserver.wps.ppio.ShapeZipPPIO">
+      <constructor-arg ref="wpsResourceManager"/>
+    </bean>
+ -->
+</beans>

@@ -8,6 +8,19 @@
     </parent>
     <artifactId>cida-geoserver-wps</artifactId>
     <name>CIDA GeoServer WPS Extensions</name>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <dependencies>
         <!-- This dependency was found @ http://downloads.sourceforge.net/geoserver/geoserver-2.1.1-wps-plugin.zip -->
         <dependency>
