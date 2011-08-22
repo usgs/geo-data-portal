@@ -39,9 +39,7 @@ GDP.WPSProcessPanel = Ext.extend(Ext.Panel, {
             button.disable();
             this.continueButton.enable();
             this.runner.stopAll();
-            this.setIconClass('process-status-paused');
-            this.currentStatus = 'process-status-paused';
-            this.doLayout();
+            this.setPanelIcon({status:'process-status-paused'});
         }, this);
         
         this.continueButton = new Ext.Button({
@@ -70,8 +68,7 @@ GDP.WPSProcessPanel = Ext.extend(Ext.Panel, {
             this.cancelButton.setIconClass('process-close');
             this.continueButton.disable();
             this.pauseButton.disable();
-            this.setIconClass('process-status-stopped');
-            this.currentStatus = 'process-status-stopped';
+            this.setPanelIcon({status:'process-status-stopped'});
             this.updateInfoPanel({msg : 'Process now cancelled.  Clicking on the close button will close this panel.'});
             if (this.runner) this.runner.stopAll();
             this.fireEvent('process-cancelled', {obj : this});
@@ -168,9 +165,8 @@ GDP.WPSProcessPanel = Ext.extend(Ext.Panel, {
                 var runningProcessUrl;
                 if (procStarted.length > 0) {
                     LOG.debug('WPSProcessPanel:constructor: Processing has started.');
-                    this.setIconClass('process-status-started');
-                    this.currentStatus = 'process-status-started';
-
+                    this.setPanelIcon({status:'process-status-started'});
+                    
                     runningProcessUrl = xml.getElementsByTagName('ns:ExecuteResponse')[0].getAttribute('statusLocation');
                     this.process.runningProcessUrl = runningProcessUrl;
                     
@@ -199,9 +195,9 @@ GDP.WPSProcessPanel = Ext.extend(Ext.Panel, {
     },
     createProcessChecker : function () {
         var processUrl = GDP.PROXY_PREFIX + this.process.runningProcessUrl;
-        this.setIconClass('process-status-started');
-        this.currentStatus = 'process-status-started';
-        this.doLayout();
+        
+        this.setPanelIcon({status:'process-status-started'});
+        
         Ext.Ajax.request({
             url : processUrl,
             method: 'GET',
@@ -215,13 +211,14 @@ GDP.WPSProcessPanel = Ext.extend(Ext.Panel, {
                     this.updateInfoPanel({msg : 'Process is still running.'});
                 } else if (procSucceeded.length > 0) {
                     this.runner.stopAll();
+                    
                     var href = xml.getElementsByTagName('ns:Reference')[0].attributes['href'];
-                    LOG.debug('Process Task ID ' + this.getProcessId() + ' succeeded.');
+                    
                     this.updateInfoPanel({msg : 'This process has succeeded. <a href="'+href.value+'" target="_blank">Click here</a> to download your file.'});
+                    
                     if (!this.processCancelled) this.cancelButton.fireEvent('click');
-                    this.setIconClass('process-status-completed');
-                    this.currentStatus = 'process-status-completed';
-                    this.doLayout();
+                    
+                    this.setPanelIcon({status:'process-status-completed'})
                 } else if (procFailed.length > 0) {
                     this.runner.stopAll();
                     var failReason = xml.getElementsByTagName('ns1:ExceptionText')[0].textContent;
@@ -240,5 +237,11 @@ GDP.WPSProcessPanel = Ext.extend(Ext.Panel, {
         var currentContent = this.infoPanelCurrentContent;
         this.infoPanel.update(currentContent + msg + '<br /><br />');
         this.infoPanelCurrentContent =  currentContent + msg + '<br /><br />';
+    },
+    setPanelIcon : function(args) {
+        var status = args.status;
+        this.setIconClass(status);
+        this.currentStatus = status;
+        this.doLayout();
     }
 });
