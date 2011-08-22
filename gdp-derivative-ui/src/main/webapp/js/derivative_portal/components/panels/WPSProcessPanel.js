@@ -193,7 +193,7 @@ GDP.WPSProcessPanel = Ext.extend(Ext.Panel, {
         return; // stop here for now
     },
     createProcessChecker : function () {
-        var processUrl = this.process.runningProcessUrl;
+        var processUrl = GDP.PROXY_PREFIX + this.process.runningProcessUrl;
         Ext.Ajax.request({
             url : processUrl,
             method: 'GET',
