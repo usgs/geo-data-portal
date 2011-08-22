@@ -128,6 +128,8 @@ GDP.MapConfigPanel = Ext.extend(Ext.Panel, {
                 var coordPanel = new GDP.PolygonPOIPanel(poiPanelConfig);
                 this.add(coordPanel);
                 this.doLayout(true);
+//                this.ownerCt.add(coordPanel);
+//                this.ownerCt.doLayout(true);
                 coordPanel.setWidth(this.getWidth());
             }
         }, this);

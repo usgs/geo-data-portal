@@ -32,6 +32,13 @@ GDP.ConfigurationPanel = Ext.extend(Ext.Panel, {
             controller : this.controller,
             width : config.width || undefined
         });
+        this.processingPanel.on('request-attention', function(args){
+            LOG.debug('ConfigurationPanel: Processing panel requested attention.');
+            if (this.activeItem != args.obj) {
+                LOG.debug('ConfigurationPanel: Changing icon class of processing panel.');
+                args.obj.setIconClass('titleicon-warning');
+            }
+        }, this);
         
         config = Ext.apply({
             layout : 'accordion',
@@ -40,6 +47,7 @@ GDP.ConfigurationPanel = Ext.extend(Ext.Panel, {
             border : false,
             items : [
                 this.datasetConfigPanel,
+//                new Ext.Panel({items : [this.mapConfigPanel]}),
                 this.mapConfigPanel,
                 this.processingPanel
             ]

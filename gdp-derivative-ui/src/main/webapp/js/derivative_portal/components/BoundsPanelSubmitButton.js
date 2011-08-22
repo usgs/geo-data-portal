@@ -52,7 +52,10 @@ GDP.BoundsPanelSubmitButton = Ext.extend(Ext.Button, {
             bounds.extend(new OpenLayers.LonLat(west, south));
             bounds.extend(new OpenLayers.LonLat(east, north));
             
-            this.layerController.submitBounds({bounds : bounds});
+            this.layerController.submitBounds({
+                bounds : bounds,
+                areaType : 'bbox'
+            });
         } else {
             LOG.debug('BoundsPanelSubmitButton:click:validator returned false');
         }

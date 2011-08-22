@@ -1,5 +1,8 @@
 Ext.ns("GDP");
 
+// TODO- Click the submit button programatically when user draws a bbox. I tried putting this at the bottom of
+// the setCoords function but it didn't time correctly
+
 GDP.PolygonPOIPanel = Ext.extend(Ext.Panel, {
     layerController : undefined,
     west : undefined,
@@ -75,7 +78,7 @@ GDP.PolygonPOIPanel = Ext.extend(Ext.Panel, {
             region : 'center',
             title : 'Coordinates',
             border : false,
-            labelAlign : 'top',
+            labelAlign : 'left',
             items : [
                 coordDescPanel,
                 westboundLonTexbox, 

@@ -201,7 +201,6 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
         },
         submitBounds : function(args) {
             LOG.debug('LayerController:submitBounds: Firing event "submit-bounds"');
-//            this.createGeomOverlay(args); // TODO: This should not be here. 
             args = Ext.apply({controller : this}, args)
             this.fireEvent('submit-bounds', args);
         },

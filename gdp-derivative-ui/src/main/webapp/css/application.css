@@ -19,3 +19,33 @@
     background-image: url(../images/map-tools/bounding-box.gif) !important;
 }
 
+.process-pause {
+    background-image: url(../images/process-actions/pause.gif) !important;
+}
+.process-continue {
+    background-image: url(../images/process-actions/continue.gif) !important;
+}
+.process-stop {
+    background-image: url(../images/process-actions/stop.gif) !important;
+}
+.process-download {
+    background-image: url(../images/process-actions/download.gif) !important;
+}
+.process-visualize {
+    background-image: url(../images/process-actions/visualize.gif) !important;
+}
+.process-info {
+    background-image: url(../images/process-actions/info.gif) !important;
+}
+.process-close {
+    background-image: url(../images/process-actions/close.gif) !important;
+}
+.process-status-stopped {
+    background-image: url(../images/process-actions/red-circle.gif) !important;
+}
+.process-status-started {
+    background-image: url(../images/process-actions/yellow-circle.gif) !important;
+}
+.process-status-completed {
+    background-image: url(../images/process-actions/green-circle.gif) !important;
+}
