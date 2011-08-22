@@ -196,8 +196,6 @@ GDP.WPSProcessPanel = Ext.extend(Ext.Panel, {
                 if (!this.processCancelled) this.cancelButton.fireEvent('click');
             }
         });
-        
-        return; // stop here for now
     },
     createProcessChecker : function () {
         var processUrl = GDP.PROXY_PREFIX + this.process.runningProcessUrl;
