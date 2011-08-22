@@ -49,3 +49,6 @@
 .process-status-completed {
     background-image: url(../images/process-actions/green-circle.gif) !important;
 }
+.process-status-paused {
+    background-image: url(../images/process-actions/pause.gif) !important;
+}
