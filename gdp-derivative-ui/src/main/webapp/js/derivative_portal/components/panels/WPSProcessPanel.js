@@ -168,7 +168,7 @@ GDP.WPSProcessPanel = Ext.extend(Ext.Panel, {
                     this.process.runningProcessUrl = runningProcessUrl;
                     
                     LOG.debug('WPSProcessPanel:constructor: Creating timer process to check status every ' + (this.interval / 1000) + ' seconds.');
-                    this.updateInfoPanel({msg : 'Process successfully submitted.  Will now begin checking ' + runningProcessUrl + ' for process completion.'});
+                    this.updateInfoPanel({msg : 'Process successfully submitted.  Will now begin checking <a href="'+runningProcessUrl+'" target="_blank">' + runningProcessUrl + '</a> for process completion.'});
                     this.runner = new Ext.util.TaskRunner();
                     this.runner.start({
                         run : this.createProcessChecker,
@@ -209,7 +209,7 @@ GDP.WPSProcessPanel = Ext.extend(Ext.Panel, {
                     this.runner.stopAll();
                     var href = xml.getElementsByTagName('ns:Reference')[0].attributes['href'];
                     LOG.debug('Process Task ID ' + this.getProcessId() + ' succeeded.');
-                    this.updateInfoPanel({msg : 'This process has succeeded. <a href="'+href.value+'">Click</a> to download your file.'});
+                    this.updateInfoPanel({msg : 'This process has succeeded. <a href="'+href.value+'" target="_blank">Click here</a> to download your file.'});
                     if (!this.processCancelled) this.cancelButton.fireEvent('click');
                     this.setIconClass('process-status-completed');
                     this.currentStatus = 'process-status-completed';
@@ -228,7 +228,7 @@ GDP.WPSProcessPanel = Ext.extend(Ext.Panel, {
         });
     },
     updateInfoPanel : function(args) {
-        var msg = new Date().format(this.logTimeFormatting) + ' - ' + args.msg;
+        var msg = '<b>' + new Date().format(this.logTimeFormatting) + '</b> - ' + args.msg;
         var currentContent = this.infoPanelCurrentContent;
         this.infoPanel.update(currentContent + msg + '<br /><br />');
         this.infoPanelCurrentContent =  currentContent + msg + '<br /><br />';
