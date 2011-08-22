@@ -63,10 +63,11 @@ GDP.FeatureCoverageOPeNDAPIntersection  = function(args) {
                         title : 'FEATURE_COLLECTION',
                         identifier : 'FEATURE_COLLECTION',
                         data : {
-                            reference : {
+                            complexData : {
                                 mimeType : 'text/xml',
                                 encoding : 'UTF-8',
-                                schema : 'http://schemas.opengis.net/gml/3.1.1/base/feature.xsd'
+                                schema : 'http://schemas.opengis.net/gml/3.1.1/base/feature.xsd',
+                                value : ''
                             }
                         }
                     },
@@ -115,7 +116,7 @@ GDP.FeatureCoverageOPeNDAPIntersection  = function(args) {
                 // the way the OpenLayers writer does this is to 
                 // encode this data and that doesn't work for us
                 // so we will shimmy the node into the XML
-                executeXml.getElementsByTagName('wps:Data')[0].appendChild(args.scope.createWfsFeatureXml().childNodes[0]);
+                executeXml.getElementsByTagName('wps:ComplexData')[0].appendChild(args.scope.createWfsFeatureXml().childNodes[0]);
                 return executeXml;
             }({
                 scope : this
@@ -167,7 +168,7 @@ GDP.FeatureCoverageOPeNDAPIntersection  = function(args) {
             }else{
                 doc = new DOMParser().parseFromString(result,"text/xml");
             }
-                return doc;
+            return doc;
         }
     }
 }
