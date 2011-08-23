@@ -23,6 +23,7 @@ GDP.WPSProcessPanel = Ext.extend(Ext.Panel, {
     timerInterval : 5000,
     currentStatus : 'process-status-stopped',
     processCancelled : false,
+    downloadButtonFunction : undefined,
     constructor : function(config) {
         LOG.debug('WPSProcessPanel:constructor: Constructing self.');
         
@@ -89,6 +90,8 @@ GDP.WPSProcessPanel = Ext.extend(Ext.Panel, {
             tooltip : 'Download',
             disabled : true
         });
+        this.downloadButton.on('click', this.downloadButtonFunction);
+        
         this.infoButton = new Ext.Button({
             iconCls : 'process-info',
             tooltip : 'Information'
@@ -135,9 +138,9 @@ GDP.WPSProcessPanel = Ext.extend(Ext.Panel, {
         GDP.WPSProcessPanel.superclass.constructor.call(this, config);
         LOG.debug('WPSProcessPanel:constructor: Construction complete.');
         this.addEvents(
-            "request-attention",
-            "process-cancelled"
-        );
+        "request-attention",
+        "process-cancelled"
+    );
         
         LOG.debug('WPSProcessPanel:constructor: Registering listeners.');
         this.on('remove', function(){
@@ -152,6 +155,7 @@ GDP.WPSProcessPanel = Ext.extend(Ext.Panel, {
     }, 
     startProcess : function() { // Happens when user clicks on Beign Process button
         LOG.debug('WPSPanel:startProcess: Collecting process inputs.');
+        
         // Begin the process
         Ext.Ajax.request({
             url : GDP.PROXY_PREFIX + GDP.PROCESS_ENDPOINT,
@@ -215,6 +219,24 @@ GDP.WPSProcessPanel = Ext.extend(Ext.Panel, {
                     var href = xml.getElementsByTagName('ns:Reference')[0].attributes['href'];
                     
                     this.updateInfoPanel({msg : 'This process has succeeded. <a href="'+href.value+'" target="_blank">Click here</a> to download your file.'});
+                    this.downloadButton.un('click', this.downloadButtonFunction);
+                    this.downloadButtonFunction = function() {
+                        try {
+                            Ext.destroy(Ext.get('downloadIframe'));
+                        }
+                        catch(e) {}
+                        Ext.DomHelper.append(document.body, {
+                            tag: 'iframe',
+                            id:'downloadIframe',
+                            frameBorder: 0,
+                            width: 0,
+                            height: 0,
+                            css: 'display:none;visibility:hidden;height:0px;',
+                            src: href.value
+                        });
+                    };
+                    this.downloadButton.on('click', this.downloadButtonFunction)
+                    this.downloadButton.enable();
                     
                     if (!this.processCancelled) this.cancelButton.fireEvent('click');
                     
