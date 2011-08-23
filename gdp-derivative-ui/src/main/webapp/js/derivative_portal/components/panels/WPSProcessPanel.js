@@ -160,7 +160,7 @@ GDP.WPSProcessPanel = Ext.extend(Ext.Panel, {
         Ext.Ajax.request({
             url : GDP.PROXY_PREFIX + GDP.PROCESS_ENDPOINT,
             method: 'POST',
-            xmlData : (new XMLSerializer()).serializeToString(this.process.createWpsExecuteRequest()),
+            xmlData : /*(new XMLSerializer()).serializeToString(*/this.process.createWpsExecuteRequest(),//),
             scope : this,
             success: function (result) {
                 LOG.debug('WPSPanel:createProcess:Ajax:success.');
@@ -217,6 +217,7 @@ GDP.WPSProcessPanel = Ext.extend(Ext.Panel, {
                     this.runner.stopAll();
                     
                     var href = xml.getElementsByTagName('ns:Reference')[0].attributes['href'];
+                    if (href == undefined) href =xml.getElementsByTagName('ns:Reference')[0].attributes[1]; // IE issue - Can't pull attribute name by value, must be index??
                     
                     this.updateInfoPanel({msg : 'This process has succeeded. <a href="'+href.value+'" target="_blank">Click here</a> or the download button to download your file.'});
                     // Make the actual link for the button

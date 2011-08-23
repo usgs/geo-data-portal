@@ -117,7 +117,18 @@ GDP.FeatureCoverageOPeNDAPIntersection  = function(args) {
                 // encode this data and that doesn't work for us
                 // so we will shimmy the node into the XML
                 executeXml.getElementsByTagName('wps:ComplexData')[0].appendChild(args.scope.createWfsFeatureXml().childNodes[0]);
-                return executeXml;
+                try {
+                    return (new XMLSerializer()).serializeToString(executeXml);
+                }
+                catch (e) {
+                    try {
+                        return executeXml.xml;
+                    }
+                    catch (e)
+                    {
+                        return null;
+                    }
+                }
             }({
                 scope : this
             });
