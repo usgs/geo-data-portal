@@ -13,7 +13,7 @@ GDP.ProcessingPanel = Ext.extend(Ext.Panel, {
         config = Ext.apply({
             id : 'data-processing-panel',
             //            iconCls : 'titleicon-warning',
-            title : 'Data Processing',
+            title : 'Data Access',
             border : false
         }, config);
         GDP.ProcessingPanel.superclass.constructor.call(this, config);
