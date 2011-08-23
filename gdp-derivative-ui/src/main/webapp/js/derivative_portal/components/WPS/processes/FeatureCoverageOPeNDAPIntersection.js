@@ -116,7 +116,7 @@ GDP.FeatureCoverageOPeNDAPIntersection  = function(args) {
                 // the way the OpenLayers writer does this is to 
                 // encode this data and that doesn't work for us
                 // so we will shimmy the node into the XML
-                executeXml.getElementsByTagName('wps:ComplexData')[0].appendChild(args.scope.createWfsFeatureXml().childNodes[0]);
+                executeXml.getElementsByTagName('wps:ComplexData')[0].appendChild(args.scope.createWfsFeatureXml().childNodes[0]); // TODO- This does not currently work in chrome!!
                 try {
                     return (new XMLSerializer()).serializeToString(executeXml);
                 }

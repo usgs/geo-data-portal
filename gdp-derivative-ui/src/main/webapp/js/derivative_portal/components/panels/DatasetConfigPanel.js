@@ -126,7 +126,8 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
                     LOG.debug('DatasetConfigPanel: Threshold found for layer. Re-adding zlayer combobox.');
                     this.zlayerCombo = new Ext.form.ComboBox(Ext.apply({
                         fieldLabel : this.controller.getZAxisName(),
-                        editable : false
+                        editable : false,
+                        listWidth : this.width
                     }, this.zlayerComboConfig));
                     this.zlayerCombo.on('added', function(me, parent, index){ me.setWidth(parent.width); })
                     this.add(this.zlayerCombo);
