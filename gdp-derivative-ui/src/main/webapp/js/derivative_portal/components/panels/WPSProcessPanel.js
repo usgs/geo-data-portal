@@ -218,7 +218,8 @@ GDP.WPSProcessPanel = Ext.extend(Ext.Panel, {
                     
                     var href = xml.getElementsByTagName('ns:Reference')[0].attributes['href'];
                     
-                    this.updateInfoPanel({msg : 'This process has succeeded. <a href="'+href.value+'" target="_blank">Click here</a> to download your file.'});
+                    this.updateInfoPanel({msg : 'This process has succeeded. <a href="'+href.value+'" target="_blank">Click here</a> or the download button to download your file.'});
+                    // Make the actual link for the button
                     this.downloadButton.un('click', this.downloadButtonFunction);
                     this.downloadButtonFunction = function() {
                         try {
