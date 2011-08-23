@@ -10,4 +10,4 @@
 <meta name="reviewed date" content="20110209">
 <meta name="language" content="EN">
 <meta name="expiration date" content="Never">
-<link rel="shortcut icon" href="favicon.ico" type="${param["imageDir"]}/x-icon">
+<link rel="shortcut icon" href="favicon.ico" type='${param["imageDir"]}/x-icon'>

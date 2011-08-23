@@ -1,7 +1,7 @@
 <%-- Base EXT modules & Extensions --%>
 <script type="text/javascript" src="js/ext/adapter/ext/ext-base.js"></script>
 <script type="text/javascript" src="js/ext/ext-all-debug.js"></script>
-<script type="text/javascript" src="${param["ComponentDir"]}/extension/notify.js"></script>
+<script type="text/javascript" src='${param["ComponentDir"]}/extension/notify.js'></script>
 
 <%-- Other JavaScript modules (Mapping, logging, etc) --%>
 <script src="js/log4javascript/log4javascript.js" type="text/javascript"></script>
@@ -9,27 +9,27 @@
 <script src="js/geoext/GeoExt.js" type="text/javascript"></script>
 
 <%-- Custom Application Modules Here --%>
-<script type="text/javascript" src="${param["ComponentDir"]}/Animator.js"></script>
-<script type="text/javascript" src="${param["ComponentDir"]}/LayerController.js"></script>
-<script type="text/javascript" src="${param["ComponentDir"]}/BoundsPanelSubmitButton.js"></script>
-<script type="text/javascript" src="${param["ComponentDir"]}/BaseMap.js"></script>
-<script type="text/javascript" src="${param["ComponentDir"]}/MapActivityBar.js"></script>
-<script type="text/javascript" src="${param["ComponentDir"]}/WPS/processes/FeatureCoverageOPeNDAPIntersection.js"></script>
-<script type="text/javascript" src="${param["ComponentDir"]}/WPS/WPSCapabilitiesStore.js"></script>
-<script type="text/javascript" src="${param["ComponentDir"]}/WPS/WPSExecuteResponseStore.js"></script>
-<script type="text/javascript" src="${param["ComponentDir"]}/WPS/WPSCapabilitiesReader.js"></script>
-<script type="text/javascript" src="${param["ComponentDir"]}/WPS/WPSExecuteResponseReader.js"></script>
-<script type="text/javascript" src="${param["ComponentDir"]}/WPS/WPSDescribeProcessStore.js"></script>
-<script type="text/javascript" src="${param["ComponentDir"]}/WPS/WPSDescribeProcessReader.js"></script>
-<script type="text/javascript" src="${param["ComponentDir"]}/panels/WPSPanel.js"></script>
-<script type="text/javascript" src="${param["ComponentDir"]}/panels/WPSProcessPanel.js"></script>
-<script type="text/javascript" src="${param["ComponentDir"]}/panels/TimestepChooser.js"></script>
-<script type="text/javascript" src="${param["ComponentDir"]}/panels/EndpointPanel.js"></script>
-<script type="text/javascript" src="${param["ComponentDir"]}/panels/DatasetConfigPanel.js"></script>
-<script type="text/javascript" src="${param["ComponentDir"]}/panels/ConfigurationPanel.js"></script>
-<script type="text/javascript" src="${param["ComponentDir"]}/panels/MapConfigPanel.js"></script>
-<script type="text/javascript" src="${param["ComponentDir"]}/panels/ProcessingPanel.js"></script>
-<script type="text/javascript" src="${param["ComponentDir"]}/panels/PolygonPOIPanel.js"></script>
+<script type="text/javascript" src='${param["ComponentDir"]}/Animator.js'></script>
+<script type="text/javascript" src='${param["ComponentDir"]}/LayerController.js'></script>
+<script type="text/javascript" src='${param["ComponentDir"]}/BoundsPanelSubmitButton.js'></script>
+<script type="text/javascript" src='${param["ComponentDir"]}/BaseMap.js'></script>
+<script type="text/javascript" src='${param["ComponentDir"]}/MapActivityBar.js'></script>
+<script type="text/javascript" src='${param["ComponentDir"]}/WPS/processes/FeatureCoverageOPeNDAPIntersection.js'></script>
+<script type="text/javascript" src='${param["ComponentDir"]}/WPS/WPSCapabilitiesStore.js'></script>
+<script type="text/javascript" src='${param["ComponentDir"]}/WPS/WPSExecuteResponseStore.js'></script>
+<script type="text/javascript" src='${param["ComponentDir"]}/WPS/WPSCapabilitiesReader.js'></script>
+<script type="text/javascript" src='${param["ComponentDir"]}/WPS/WPSExecuteResponseReader.js'></script>
+<script type="text/javascript" src='${param["ComponentDir"]}/WPS/WPSDescribeProcessStore.js'></script>
+<script type="text/javascript" src='${param["ComponentDir"]}/WPS/WPSDescribeProcessReader.js'></script>
+<script type="text/javascript" src='${param["ComponentDir"]}/panels/WPSPanel.js'></script>
+<script type="text/javascript" src='${param["ComponentDir"]}/panels/WPSProcessPanel.js'></script>
+<script type="text/javascript" src='${param["ComponentDir"]}/panels/TimestepChooser.js'></script>
+<script type="text/javascript" src='${param["ComponentDir"]}/panels/EndpointPanel.js'></script>
+<script type="text/javascript" src='${param["ComponentDir"]}/panels/DatasetConfigPanel.js'></script>
+<script type="text/javascript" src='${param["ComponentDir"]}/panels/ConfigurationPanel.js'></script>
+<script type="text/javascript" src='${param["ComponentDir"]}/panels/MapConfigPanel.js'></script>
+<script type="text/javascript" src='${param["ComponentDir"]}/panels/ProcessingPanel.js'></script>
+<script type="text/javascript" src='${param["ComponentDir"]}/panels/PolygonPOIPanel.js'></script>
 
 
 <%-- Root Module --%>
