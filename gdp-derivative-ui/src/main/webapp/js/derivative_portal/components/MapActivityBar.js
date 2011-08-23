@@ -54,7 +54,8 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
         });
         
         drawBboxAction = new GeoExt.Action({
-            control: control
+            id : 'draw-bbox-action'
+            ,control: control
             ,toggleGroup: toggleGroup
             ,allowDepress: false
             ,tooltip: 'Draw A Bounding Box On The Map'
@@ -64,6 +65,7 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
         });
         
         zoomToExtentAction = new GeoExt.Action({
+            id : 'zoom-to-extent-action',
             control: new OpenLayers.Control.ZoomToMaxExtent(),
             tooltip: 'Zoom To Map Extent',
             map: map,
@@ -71,7 +73,8 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
         });
         
         navigationAction = new GeoExt.Action({
-            iconCls : 'pan-map'
+            id : 'navigation-action'
+            ,iconCls : 'pan-map'
             ,control: new OpenLayers.Control.Navigation()
             ,toggleGroup: toggleGroup
             ,allowDepress: false
@@ -83,7 +86,8 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
         });
         
         var zoomAction = new GeoExt.Action({
-            control: new OpenLayers.Control.ZoomBox({alwaysZoom: true})
+            id : 'zoom-action'
+            ,control: new OpenLayers.Control.ZoomBox({alwaysZoom: true})
             ,map: map
             ,toggleGroup: toggleGroup
             ,allowDepress: false
