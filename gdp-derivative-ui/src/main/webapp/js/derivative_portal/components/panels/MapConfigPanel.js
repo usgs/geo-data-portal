@@ -68,7 +68,8 @@ GDP.MapConfigPanel = Ext.extend(Ext.Panel, {
                 this.activityBar, 
                 this.baseLayerCombo,
                 this.legendCombo,
-                this.layerOpacitySlider
+                this.layerOpacitySlider,
+                new Ext.Panel({html:'To access the underlying data, select the Draw a Bounding Box tool and select your area of interest', border : false})
             ],
             layout : 'form',
             title : 'Map Configuration',
