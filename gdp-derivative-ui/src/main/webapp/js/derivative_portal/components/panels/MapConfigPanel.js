@@ -150,6 +150,7 @@ GDP.MapConfigPanel = Ext.extend(Ext.Panel, {
                     east : east,
                     north : north
                 });
+                this.get('coord-panel').button.fireEvent('click');
             } else {
                 var poiPanelConfig = {
                     id : 'coord-panel',

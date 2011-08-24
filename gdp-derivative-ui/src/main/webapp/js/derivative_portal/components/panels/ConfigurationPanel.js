@@ -17,7 +17,8 @@ GDP.ConfigurationPanel = Ext.extend(Ext.Panel, {
         this.datasetConfigPanel = new GDP.DatasetConfigPanel({
             controller : this.controller,
             url : config.url,
-            width : config.width || undefined
+            width : config.width || undefined,
+            iconCls : 'blank-icon'
         });
         
         this.mapConfigPanel = new GDP.MapConfigPanel({
@@ -25,12 +26,14 @@ GDP.ConfigurationPanel = Ext.extend(Ext.Panel, {
             url : config.url,
             map : config.map,
             baseLayerStore : config.baseLayerStore,
-            width : config.width || undefined
+            width : config.width || undefined,
+            iconCls : 'blank-icon'
         });
         
         this.processingPanel = new GDP.ProcessingPanel({
             controller : this.controller,
-            width : config.width || undefined
+            width : config.width || undefined,
+            iconCls : 'blank-icon'
         });
         this.processingPanel.on('request-attention', function(args){
             LOG.debug('ConfigurationPanel: Processing panel requested attention.');

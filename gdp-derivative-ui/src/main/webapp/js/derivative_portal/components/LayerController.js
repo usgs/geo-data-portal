@@ -158,35 +158,35 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
 			return false;
 		}
 	},
-	loadDimensionStore : function(record, store, extentName, maxCount) {
-		if (!record || !store || !extentName) return null;
-		LOG.debug('LayerController:loadDimensionStore: Handling request.');
-		var maxNum = maxCount || this.MAXIMUM_DIMENSION_COUNT;
-		
-		store.removeAll();
-		
-		var extents = record.get('dimensions')[extentName];
-		if (extents) {
-			var currentExtent = extents['default'];
-			var timesToLoad = [];
-			Ext.each(extents.values, function(item, index, allItems){
-				if (index > maxNum) {
-					return false;
-				} else {
-					timesToLoad.push([item.trim()]);
-				}
-				return true;
-			}, this);
+        loadDimensionStore : function(record, store, extentName, maxCount) {
+            if (!record || !store || !extentName) return null;
+            LOG.debug('LayerController:loadDimensionStore: Handling request.');
+            var maxNum = maxCount || this.MAXIMUM_DIMENSION_COUNT;
 
-			store.loadData(timesToLoad);
-			return {
-				currentExtent : currentExtent,
-				loadedData : timesToLoad
-			}
-		} else {
-			return null;
-		}
-	},
+            store.removeAll();
+
+            var extents = record.get('dimensions')[extentName];
+            if (extents) {
+                var currentExtent = extents['default'];
+                var timesToLoad = [];
+                Ext.each(extents.values, function(item, index, allItems){
+                    if (index > maxNum) {
+                        return false;
+                    } else {
+                        timesToLoad.push([item.trim()]);
+                    }
+                    return true;
+                }, this);
+
+                store.loadData(timesToLoad);
+                return {
+                    currentExtent : currentExtent,
+                    loadedData : timesToLoad
+                }
+            } else {
+                return null;
+            }
+        },
         drewBoundingBox : function(args) {
             LOG.debug('LayerController:drewBoundingBox: Polygan drawn. Firing event: "drewbbox".');
             this.fireEvent('drewbbox', args);

@@ -23,8 +23,11 @@ GDP.BoundsPanelSubmitButton = Ext.extend(Ext.Button, {
         }, config);
         GDP.PolygonPOIPanel.superclass.constructor.call(this, config);
         LOG.debug('BoundsPanelSubmitButton:constructor: Construction complete.');
+        this.on('click', function() {
+            this.onClick();
+        }, this);
     },
-    onClick : function(button, eventObj) {
+    onClick : function() {
         LOG.debug('BoundsPanelSubmitButton:click: Handling Request.');
         var north = this.textBoxes.northBox.getValue();
         var south = this.textBoxes.southBox.getValue();

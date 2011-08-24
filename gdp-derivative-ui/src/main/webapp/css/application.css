@@ -52,3 +52,7 @@
 .process-status-paused {
     background-image: url(../images/process-actions/pause.gif) !important;
 }
+
+.blank-icon {
+    background-image: url(../images/s.gif) !important;
+}

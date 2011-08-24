@@ -9,6 +9,7 @@ GDP.PolygonPOIPanel = Ext.extend(Ext.Panel, {
     south : undefined, 
     east : undefined,
     north : undefined,
+    button : undefined,
     setCoords : function(args) {
         LOG.debug('PolygonPOIPanel:setCoords');
         this.get('coord-text-panel').get('west-box').setValue(Math.round(args.west.lon * 10000) / 10000);
@@ -153,6 +154,7 @@ GDP.PolygonPOIPanel = Ext.extend(Ext.Panel, {
                 eastBox : eastboundLonTextBox
             })
             configItems.push(button);
+            this.button = button;
         }
         
         config = Ext.apply({
