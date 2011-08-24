@@ -31,17 +31,14 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         if (!config) config = {};
 		
         var map = new OpenLayers.Map({
-            maxResolution: MAX_RESOLUTION
-            ,
-            maxExtent: new OpenLayers.Bounds(-180, -90, 180, 90)
-            ,
+            maxResolution: MAX_RESOLUTION,
+            maxExtent: new OpenLayers.Bounds(-180, -90, 180, 90),
             controls: [
-            new OpenLayers.Control.MousePosition()
-            ,new OpenLayers.Control.ScaleLine()
-            ,new OpenLayers.Control.Navigation()
-            ,new OpenLayers.Control.ArgParser()
-            ,new OpenLayers.Control.Attribution()
-            ,new OpenLayers.Control.PanZoomBar()
+                new OpenLayers.Control.MousePosition()
+                ,new OpenLayers.Control.ScaleLine()
+                ,new OpenLayers.Control.ArgParser()
+                ,new OpenLayers.Control.Attribution()
+                ,new OpenLayers.Control.PanZoomBar()
             ]
         });
 			
