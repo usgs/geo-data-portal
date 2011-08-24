@@ -24,6 +24,8 @@ Ext.onReady(function () {
 //        return;
     initializeNotification();
     initializeMapping();
+    initializeQuickTips();
+    
 });
 
 function initializeLogging() {
@@ -269,6 +271,17 @@ function initializeMapping() {
     LOG.debug('root: Firing "click" event on end point apply button.');
     endpointPanel.endpointApplyButton.fireEvent('click');
     
+}
+
+function initializeQuickTips() {
+Ext.QuickTips.init();
+
+Ext.apply(Ext.QuickTips.getQuickTip(), {
+    maxWidth: 200,
+    minWidth: 100,
+    showDelay: 50,      // Show 50ms after entering target
+    trackMouse: true
+});
 }
 
 // This is here just for shortcutting some processes in order to test stuff like XML parsing
