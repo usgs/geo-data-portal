@@ -70,7 +70,7 @@ GDP.WPSProcessPanel = Ext.extend(Ext.Panel, {
             this.continueButton.disable();
             this.pauseButton.disable();
             this.setPanelIcon({status:'process-status-stopped'});
-            this.updateInfoPanel({msg : 'Process now cancelled.  Clicking on the close button will close this panel.'});
+            this.updateInfoPanel({msg : 'Process checking stopped.  Clicking on the close button will close this panel.'});
             if (this.runner) this.runner.stopAll();
             this.fireEvent('process-cancelled', {obj : this});
             this.cancelButton.on('click', function() {

@@ -181,11 +181,20 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
                         title : process.title,
                         buttons : [submitButton]
                     });
-                    
                     this.processPanel.add(wpsProcessPanel);
                     LOG.debug('WPSPanel: New process panel added. Firing event "request-attention"');
                     if (!this.isVisible()) this.fireEvent("request-attention", { obj : this });
-                    this.doLayout();
+                    
+                    // http://internal.cida.usgs.gov/jira/browse/GDP-395
+                    // TODO - This is fine since we only have one process. Remove this when we have more
+                    wpsProcessPanel.on('afterrender', function() {
+                       this.buttons[0].fireEvent('click', this);
+                       (function(){
+                                this.getEl().unmask();
+                        }).defer(1000, this);
+                    }, wpsProcessPanel)
+                    
+                    
                 },this)
             }
         }, this);
