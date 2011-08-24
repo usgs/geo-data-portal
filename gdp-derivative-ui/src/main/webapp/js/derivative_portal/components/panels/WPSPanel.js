@@ -201,13 +201,13 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
     },
     updateBounds : function(args) {
         LOG.debug('WPSPanel:updateBounds');
-        if (!this.bounds == args.bounds) {
+        if (this.bounds == args.bounds) {
+            LOG.debug('WPSPanel:updateBounds: Bounds submitted are already active bounds. Not rebuilding processing panels.');
+        } else { // Still buggy
             this.bounds = args.bounds;
-            LOG.debug('WPSPanel:updateBounds: Removing all process panels and will replace with new ones with updated bounds');
+            LOG.debug('WPSPanel:updateBounds: Removing all process panels and will replace with new ones with updated bounds'); 
             this.processPanel.removeAll();
             this.constructProcessSelectionPanels(args);
-        } else {
-            LOG.debug('WPSPanel:updateBounds: Bounds submitted are already active bounds. Not rebuilding processing panels.');
         }
     },
     addProcessChecker : function(args) {

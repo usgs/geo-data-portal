@@ -49,7 +49,6 @@ GDP.ProcessingPanel = Ext.extend(Ext.Panel, {
         }, this);
             this.add(wpsPanel);
             this.doLayout();
-            LOG.debug('setted');
         } else {
             LOG.debug('ProcessingPanel:boundsSubmitted: WPS Panel exists. Updating bounds for algorithms');
             this.get('wps-panel').updateBounds(args);
