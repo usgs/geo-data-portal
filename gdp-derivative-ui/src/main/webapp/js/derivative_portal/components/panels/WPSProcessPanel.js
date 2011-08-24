@@ -172,6 +172,10 @@ GDP.WPSProcessPanel = Ext.extend(Ext.Panel, {
                     this.setPanelIcon({status:'process-status-started'});
                     
                     runningProcessUrl = xml.getElementsByTagName('ns:ExecuteResponse')[0].getAttribute('statusLocation');
+                    
+                    // This fixes an issue where if we're on the mapped QA instance, runningProcessUrl comes back with proxy stuff already in there (not good)
+                    runningProcessUrl = (runningProcessUrl.lastIndexOf('proxy/') > -1) ? runningProcessUrl.slice(runningProcessUrl.lastIndexOf('proxy/') + 6) : runningProcessUrl;
+                    
                     this.process.runningProcessUrl = runningProcessUrl;
                     
                     LOG.debug('WPSProcessPanel:constructor: Creating timer process to check status every ' + (this.interval / 1000) + ' seconds.');
