@@ -145,7 +145,7 @@ var Dataset = function() {
                     }
                 },
                 title: title + ' Description',
-                width: 'auto',
+                width: '80%',
                 height: 'auto',
                 modal: true,
                 resizable: false,
