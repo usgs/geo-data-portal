@@ -9,6 +9,7 @@ GDP.MapConfigPanel = Ext.extend(Ext.Panel, {
     baseLayerCombo : undefined,
     legendCombo : undefined,
     layerOpacitySlider : undefined,
+    instructionPanel : undefined,
     constructor : function(config) {
         LOG.debug('MapConfigPanel:constructor: Constructing self.');
 
@@ -57,6 +58,11 @@ GDP.MapConfigPanel = Ext.extend(Ext.Panel, {
             })
         });
         
+        this.instructionPanel =  new Ext.Panel({
+            html:'To access the underlying data, select the Draw a Bounding Box tool and select your area of interest', 
+            border : false
+        })
+        
         Ext.iterate([this.baseLayerCombo, this.legendCombo, this.layerOpacitySlider], function(item) {
             item.on('added', function(me, parent){ me.setWidth(parent.width - 5); })
         })
@@ -69,7 +75,7 @@ GDP.MapConfigPanel = Ext.extend(Ext.Panel, {
                 this.baseLayerCombo,
                 this.legendCombo,
                 this.layerOpacitySlider,
-                new Ext.Panel({html:'To access the underlying data, select the Draw a Bounding Box tool and select your area of interest', border : false})
+                this.instructionPanel
             ],
             layout : 'form',
             title : 'Map Configuration',
