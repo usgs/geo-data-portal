@@ -16,7 +16,11 @@
                     <br /><a href="http://search.usgs.gov/" title="Link to main USGS search (not publications search)">Search USGS</a>
                 </div>
             </div><!-- End content -->
-            <div id="site-title">Geo Data Portal<span id="show-info-link"><a>Show Geo Data Portal Info</a></span></div>
+            <div id="site-title">
+                <%-- show-info-link goes above the site title here because if we don't do it this way, IE7 messes up --%>
+                <span id="show-info-link"><a>Show Geo Data Portal Info</a></span>
+                <span>Geo Data Portal</span>
+            </div>
             
         </div><!-- /header -->
     </div><!--/header panel-->
