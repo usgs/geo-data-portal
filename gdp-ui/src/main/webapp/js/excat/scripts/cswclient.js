@@ -52,7 +52,7 @@ var CSWClient = function() {
         outputDiv.innerHTML = output;
         $(outputDiv).dialog({
             'modal' : true,
-            width : 'auto' /*$(window).width() / 1.2 */,
+            width : '50%',
             height : request == "getrecordbyid" ? $(window).height() : 'auto',
             resizable : false,
             draggable: false,
