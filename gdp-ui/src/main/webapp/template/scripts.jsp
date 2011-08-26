@@ -12,7 +12,7 @@
 <script type="text/javascript" src="js/objects/algorithm.js"></script>
 <script type="text/javascript" src="js/constants.js"></script>
 <script type="text/javascript" src="openlayers/OpenLayers.js"></script>
-<script type="text/javascript" src="js/jquery-ui/jquery-ui-1.8.12.custom.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui/jquery-ui-1.8.16.custom.min.js"></script>
 <script type="text/javascript" src="js/jgrowl/jquery.jgrowl_compressed.js"></script> <%-- http://plugins.jquery.com/project/jGrowl --%>
 <script type="text/javascript" src="js/colorbox/jquery.colorbox-min.js"></script>
 <script type="text/javascript" src="js/parseUri/parseUri.js"></script>

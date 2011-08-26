@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="css/usgs/usgs_style_main.css" type="text/css" />
 <link rel="stylesheet" href="css/colorbox/colorbox.css" type="text/css" />
 <link rel="stylesheet" href="css/fileuploader/fileuploader.css" type="text/css" />
-<link rel="stylesheet" href="css/jquery-ui/redmond/jquery-ui-1.8.12.custom.css" type="text/css" />
+<link rel="stylesheet" href="css/jquery-ui/redmond/jquery-ui-1.8.16.custom.css" type="text/css" />
 <link rel="stylesheet" href="css/jquery-ui-override.css" type="text/css" />
 <link rel="stylesheet" href="css/jgrowl/jquery.jgrowl.css" type="text/css" />
 <link rel="stylesheet" href="css/jgrowl-override.css" type="text/css" />
