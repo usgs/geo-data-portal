@@ -7,11 +7,13 @@ GDP.EndpointPanel = Ext.extend(Ext.Panel, {
     controller : undefined,
     endpointApplyButton : undefined,
     endpointCombo : undefined,
+    capabilitiesStore : undefined,
     constructor : function(config) {
         LOG.debug('EndpointPanel:constructor: Constructing self.');
 
         this.controller = config.controller;
-
+        this.capabilitiesStore = config.capabilitiesStore;
+        
         var endpointUrls, endpointStore, endpointApplyButton, endpointContainer, endpointPanel;
         endpointUrls = config.endpointUrls;
         
@@ -72,7 +74,6 @@ GDP.EndpointPanel = Ext.extend(Ext.Panel, {
         this.controller.on('exception-capstore', function() {
             LOG.debug('EndpointPanel: Observed "exception-capstore"');
             this.expand();
-//            this.endpointCombo
         }, this);
         endpointApplyButton.on('click', function() {
             LOG.debug('EVENT: User has clicked on the endpoint apply button');
@@ -85,7 +86,6 @@ GDP.EndpointPanel = Ext.extend(Ext.Panel, {
                 proxyUrl = GDP.PROXY_PREFIX + endpoint;
                 
                 this.controller.selectedDataset(proxyUrl);
-                
                 this.capabilitiesStore.proxy.setApi(Ext.data.Api.actions.read, proxyUrl);
                 this.capabilitiesStore.load();
             }

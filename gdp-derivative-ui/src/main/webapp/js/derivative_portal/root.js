@@ -201,6 +201,10 @@ function initializeMapping() {
         ['http://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/wms/gmo/GMO_w_meta.ncml?service=WMS&version=1.1.1&request=GetCapabilities']
     ];
     var proxyUrl = GDP.PROXY_PREFIX + endpointUrls[0];
+    var capabilitiesStore = new GeoExt.data.WMSCapabilitiesStore({
+        url : proxyUrl,
+        storeId : 'capabilitiesStore'
+    });
     var accordionConfigPanel = new GDP.ConfigurationPanel({
         controller : layerController,
         collapsible : true,
@@ -209,7 +213,8 @@ function initializeMapping() {
         width : 265,
         minWidth : 265,
         map : mapPanel.map,
-        baseLayerStore : baseLayerStore
+        baseLayerStore : baseLayerStore,
+        capabilitiesStore : capabilitiesStore
     })
 
     var timestepPanel = new GDP.TimestepChooser({
@@ -218,10 +223,7 @@ function initializeMapping() {
         height : 30,
         layerController : layerController
     });
-    var capabilitiesStore = new GeoExt.data.WMSCapabilitiesStore({
-        url : proxyUrl,
-        storeId : 'capabilitiesStore'
-    });
+    
     var endpointPanel = new GDP.EndpointPanel({
         region : 'north',
         controller : layerController,

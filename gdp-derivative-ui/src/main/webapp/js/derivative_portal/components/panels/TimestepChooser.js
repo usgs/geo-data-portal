@@ -92,22 +92,13 @@ GDP.TimestepChooser = Ext.extend(Ext.form.FormPanel, {
             LOG.debug('TimestepChooser: Observed "changelayer"');
             this.updateAvailableTimesteps(this.layerController.getLayer());
         }, this); 
-		
         this.layerController.on('changedimension', function() {
             LOG.debug('TimestepChooser: Observed "changedimension"');
-            var currentTimestep = this.layerController.getDimension('time');
-            this.timestepComponent.setValue(currentTimestep);
-            this.setThumbValue(this.MIDDLE_THUMB, currentTimestep);
+            this.onChangedDimensions();
         }, this);
-                
         this.timestepSlider.on('changecomplete', function(slider, newValue, thumb) {
             LOG.debug('TimestepChooser: Observed "changecomplete"');
-            this.timestepAnimator.setMinIndex(this.getThumbValue(this.LOW_THUMB));
-            this.timestepAnimator.setMaxIndex(this.getThumbValue(this.HIGH_THUMB));
-            var midVal = this.getThumbValue(this.MIDDLE_THUMB);
-            if (midVal === newValue) {
-                this.layerController.requestDimension('time', this.timestepStore.getAt(midVal).get('time'));
-            }
+            this.onChangeComplete(slider, newValue, thumb);
         }, this);
         this.timestepAnimator.on('timedchange', function(index) {
             LOG.debug('TimestepChooser: Observed "timedchange"');
@@ -129,5 +120,18 @@ GDP.TimestepChooser = Ext.extend(Ext.form.FormPanel, {
     setThumbValue : function(index, time){
         var thumbArray = this.getSortedThumbs();
         this.timestepSlider.setValue(thumbArray[index].index, this.timestepStore.indexOfId(time));
+    },
+    onChangedDimensions : function() {
+        var currentTimestep = this.layerController.getDimension('time');
+        this.timestepComponent.setValue(currentTimestep);
+        this.setThumbValue(this.MIDDLE_THUMB, currentTimestep);
+    },
+    onChangeComplete : function(slider, newValue, thumb) {
+        this.timestepAnimator.setMinIndex(this.getThumbValue(this.LOW_THUMB));
+        this.timestepAnimator.setMaxIndex(this.getThumbValue(this.HIGH_THUMB));
+        var midVal = this.getThumbValue(this.MIDDLE_THUMB);
+        if (midVal === newValue) {
+            this.layerController.requestDimension('time', this.timestepStore.getAt(midVal).get('time'));
+        }
     }
 });

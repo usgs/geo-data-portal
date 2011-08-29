@@ -16,10 +16,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
 
         this.controller = config.controller;
         
-        this.capabilitiesStore = new GeoExt.data.WMSCapabilitiesStore({
-            url : config.url,
-            storeId : 'capabilities-store'
-        });
+        this.capabilitiesStore = config.capabilitiesStore;
         
         this.zlayerName = 'elevation';
         this.zlayerStore = new Ext.data.ArrayStore({
@@ -75,22 +72,13 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         GDP.DatasetConfigPanel.superclass.constructor.call(this, config);
         LOG.debug('DatasetConfigPanel:constructor: Construction complete.');
         
-        
-        
         LOG.debug('DatasetConfigPanel:constructor: Registering listeners.');
         this.capabilitiesStore.on('load', function(capStore) {
             LOG.debug('DatasetConfigPanel: Capabilities store has finished loading.');
-            
-            this.controller.loadedCapabilitiesStore({
-                record : capStore.getAt(0)
-            });
-            
-            if (LOADMASK) LOADMASK.hide();
+            this.capStoreOnLoad(capStore);
         }, this);
         this.capabilitiesStore.on('exception', function() {
             LOG.debug('DatasetConfigPanel: Capabilities store has encountered an exception.');
-            if (LOADMASK) LOADMASK.hide();
-            NOTIFY.error({msg : 'Could not access WMS endpoint. Application will not be functional until another endpoint is chosen.'});
             this.controller.capabilitiesExceptionOccurred();
         }, this);
         this.layerCombo.on('select', function(combo, record, index) {
@@ -98,56 +86,74 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         }, this);
         this.controller.on('selected-dataset', function(args) {
             LOG.debug('DatasetConfigPanel observed "selected-dataset"');
-            this.capabilitiesStore.proxy.setApi(Ext.data.Api.actions.read, args.url);
-            this.capabilitiesStore.load();
+            this.onSelectedDataset(args);
         }, this);
         this.controller.on('loaded-capstore', function(args) {
             LOG.debug('DatasetConfigPanel observed "loaded-capstore"');
-            this.layerCombo.setValue(args.record.get("title"));
-            this.layerCombo.fireEvent('select', this.layerCombo, args.record, 0);
+            this.onLoadedCapstore(args);
         }, this);
         this.controller.on('changelayer', function() {
             LOG.debug('DatasetConfigPanel: Observed "changelayer".');
-
-            var layer = this.controller.getLayer();
-            if (layer) {
-                this.layerCombo.setValue(layer.getLayer().name);
-            }
-
-            if (this.zlayerCombo) {
-                this.remove(this.zlayerCombo)
-            }
-            
-            var loaded = this.controller.loadDimensionStore(layer, this.zlayerStore, this.zlayerName);
-
-            if (loaded) {
-                var threshold = this.controller.getDimension(this.zlayerName);
-                if (threshold) {
-                    LOG.debug('DatasetConfigPanel: Threshold found for layer. Re-adding zlayer combobox.');
-                    this.zlayerCombo = new Ext.form.ComboBox(Ext.apply({
-                        fieldLabel : this.controller.getZAxisName(),
-                        editable : false,
-                        listWidth : this.width
-                    }, this.zlayerComboConfig));
-                    this.zlayerCombo.on('added', function(me, parent, index){ me.setWidth(parent.width); })
-                    this.add(this.zlayerCombo);
-                    
-                    LOG.debug('DatasetConfigPanel: Setting z-layer combobox to threshold: ' + threshold);
-                    this.zlayerCombo.setValue(threshold);
-                    
-                    this.zlayerCombo.on('select', function(combo, record, index) {
-                        this.controller.requestDimension(this.zlayerName, record.get(this.zlayerName));
-                    }, this);
-                    this.doLayout();
-                }
-            }
+            this.onChangeLayer();
         }, this);
         this.controller.on('changedimension', function() {
             LOG.debug('DatasetConfigPanel: Observed \'changedimension\'.');
-            var threshold = this.controller.getDimension(this.zlayerName);
-            if (threshold & this.zlayerCombo) {
-                this.zlayerCombo.setValue(threshold);
-            }
+            this.onChangeDimension();
         }, this);
+    },
+    capStoreOnLoad : function(capStore) {
+        this.controller.loadedCapabilitiesStore({
+            record : capStore.getAt(0)
+        });
+
+        if (LOADMASK) LOADMASK.hide();
+    },
+    onSelectedDataset : function(args) {
+        this.capabilitiesStore.proxy.setApi(Ext.data.Api.actions.read, args.url);
+        this.capabilitiesStore.load();
+    },
+    onLoadedCapstore : function(args) {
+        this.layerCombo.setValue(args.record.get("title"));
+        this.layerCombo.fireEvent('select', this.layerCombo, args.record, 0);
+    },
+    onChangeLayer : function() {
+        var layer = this.controller.getLayer();
+        if (layer) {
+            this.layerCombo.setValue(layer.getLayer().name);
+        }
+
+        if (this.zlayerCombo) {
+            this.remove(this.zlayerCombo)
+        }
+
+        var loaded = this.controller.loadDimensionStore(layer, this.zlayerStore, this.zlayerName);
+
+        if (loaded) {
+            var threshold = this.controller.getDimension(this.zlayerName);
+            if (threshold) {
+                LOG.debug('DatasetConfigPanel: Threshold found for layer. Re-adding zlayer combobox.');
+                this.zlayerCombo = new Ext.form.ComboBox(Ext.apply({
+                    fieldLabel : this.controller.getZAxisName(),
+                    editable : false,
+                    listWidth : this.width
+                }, this.zlayerComboConfig));
+                this.zlayerCombo.on('added', function(me, parent, index){ me.setWidth(parent.width); })
+                this.add(this.zlayerCombo);
+
+                LOG.debug('DatasetConfigPanel: Setting z-layer combobox to threshold: ' + threshold);
+                this.zlayerCombo.setValue(threshold);
+
+                this.zlayerCombo.on('select', function(combo, record, index) {
+                    this.controller.requestDimension(this.zlayerName, record.get(this.zlayerName));
+                }, this);
+                this.doLayout();
+            }
+        }
+    },
+    onChangeDimension : function() {
+        var threshold = this.controller.getDimension(this.zlayerName);
+        if (threshold & this.zlayerCombo) {
+            this.zlayerCombo.setValue(threshold);
+        }
     }
 });

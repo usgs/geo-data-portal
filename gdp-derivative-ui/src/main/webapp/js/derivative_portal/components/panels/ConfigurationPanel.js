@@ -17,6 +17,7 @@ GDP.ConfigurationPanel = Ext.extend(Ext.Panel, {
         this.datasetConfigPanel = new GDP.DatasetConfigPanel({
             controller : this.controller,
             url : config.url,
+            capabilitiesStore : config.capabilitiesStore,
             width : config.width || undefined,
             iconCls : 'blank-icon'
         });
@@ -35,13 +36,6 @@ GDP.ConfigurationPanel = Ext.extend(Ext.Panel, {
             width : config.width || undefined,
             iconCls : 'blank-icon'
         });
-        this.processingPanel.on('request-attention', function(args){
-            LOG.debug('ConfigurationPanel: Processing panel requested attention.');
-            if (this.activeItem != args.obj) {
-                LOG.debug('ConfigurationPanel: Changing icon class of processing panel.');
-                args.obj.setIconClass('titleicon-warning');
-            }
-        }, this);
         
         config = Ext.apply({
             layout : 'accordion',
@@ -50,12 +44,22 @@ GDP.ConfigurationPanel = Ext.extend(Ext.Panel, {
             border : false,
             items : [
                 this.datasetConfigPanel,
-//                new Ext.Panel({items : [this.mapConfigPanel]}),
                 this.mapConfigPanel,
                 this.processingPanel
             ]
         }, config);
         GDP.ConfigurationPanel.superclass.constructor.call(this, config);
         LOG.debug('ConfigurationPanel:constructor: Construction complete.');
+        
+        this.processingPanel.on('request-attention', function(args){
+            this.onRequestAttention(args);
+            LOG.debug('ConfigurationPanel: Processing panel requested attention.');
+        }, this);
+    },
+    onRequestAttention : function(args) {
+        if (this.activeItem != args.obj) {
+            LOG.debug('ConfigurationPanel: Changing icon class of processing panel.');
+            args.obj.setIconClass('titleicon-warning');
+        }
     }
 });

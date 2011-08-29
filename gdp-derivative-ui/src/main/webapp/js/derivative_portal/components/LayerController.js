@@ -41,7 +41,6 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
             this.layerOpacity = config.layerOpacity || this.layerOpacity;
             this.legendStore = config.legendStore || this.legendStore;
             
-            // TODO- Ask Sipps what he was doing here
             var filledDims = {'time' : ''}; 
             Ext.each(config.dimensions, function(item) {
                 filledDims[item] = '';
@@ -133,6 +132,7 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
 		if (!opacity) return;
                 LOG.debug('LayerController:requestOpacity: Handling request.');
 		if (0 <= opacity && 1 >= opacity) {
+                    LOG.debug('LayerController:requestOpacity: Setting opacity to ' + opacity);
                     this.layerOpacity = opacity;
                     LOG.debug('LayerController:requestOpacity: Firing event "changeopacity".');
                     this.fireEvent('changeopacity');
@@ -215,6 +215,8 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
         },
         capabilitiesExceptionOccurred : function(args) {
             LOG.debug('LayerController:capabilitiesExceptionFired: Firing event "exception-capstore"');
+            if (LOADMASK) LOADMASK.hide();
+            NOTIFY.error({msg : 'Could not access WMS endpoint. Application will not be functional until another endpoint is chosen.'});
             this.fireEvent('exception-capstore', args);
         }
 });

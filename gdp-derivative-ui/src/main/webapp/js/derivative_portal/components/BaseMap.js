@@ -39,6 +39,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                 ,new OpenLayers.Control.ArgParser()
                 ,new OpenLayers.Control.Attribution()
                 ,new OpenLayers.Control.PanZoomBar()
+                ,new OpenLayers.Control.LayerSwitcher()
             ]
         });
 			
@@ -90,11 +91,6 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         });
         this.legendWindow.show();
                 
-        LOG.debug('BaseMap:constructor: Registering Observables.');
-        this.addEvents(
-            'baselayerreplaced'
-            )
-                
         LOG.debug('BaseMap:constructor: Registering Listeners.');
         this.layerController.on('changebaselayer', function() {
             LOG.debug('BaseMap: Observed "changebaselayer".');
@@ -115,7 +111,6 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         this.layerController.on('changelegend', function() {
             LOG.debug('BaseMap: Observed "changelegend".');
             this.onChangeLegend();
-            this.currentLayer = this.findCurrentLayer();
         }, this);
         this.layerController.on('submit-bounds', function(args) {
             LOG.debug('BaseMap: Observed "submit-bounds".');
@@ -207,7 +202,6 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             (-1 < existingLayerIndex) ? existingLayerIndex : undefined
             );
         this.currentLayer = this.findCurrentLayer();
-        this.currentLayer.getLayer().redraw();
     },
     onChangeLegend : function() {
         LOG.debug('BaseMap:onChangeLegend: Handling Request.');
@@ -229,10 +223,12 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                 styles: record.id
             }
         );
+        this.currentLayer = this.findCurrentLayer();
     },
     onChangeOpacity : function() {
         LOG.debug('BaseMap:onChangeOpacity: Handling Request.');
         if (this.currentLayer) {
+            LOG.debug('BaseMap:onChangeOpacity: Current layer opacity: ' + this.currentLayer.getLayer().opacity + '. Changing to: ' + this.layerController.getLayerOpacity());
             this.currentLayer.getLayer().setOpacity(this.layerController.getLayerOpacity());
         }
     },
@@ -256,7 +252,6 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         }
             
         this.layers.add([record]);
-        this.fireEvent('baselayerreplaced');
         LOG.debug('BaseMap:onReplaceBaseLayer: Added base layer to this object\'s map.layers at index ' + baseLayerIndex + '.');
     },
     replaceLayer : function(record, params, existingIndex) {
