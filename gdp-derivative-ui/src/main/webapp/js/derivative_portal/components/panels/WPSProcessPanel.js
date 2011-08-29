@@ -37,10 +37,7 @@ GDP.WPSProcessPanel = Ext.extend(Ext.Panel, {
             tooltip : 'Pause process'
         });
         this.pauseButton.on('click', function(button) {
-            button.disable();
-            this.continueButton.enable();
-            this.runner.stopAll();
-            this.setPanelIcon({status:'process-status-paused'});
+            this.pauseButtonOnClick(button);
         }, this);
         
         this.continueButton = new Ext.Button({
@@ -49,35 +46,17 @@ GDP.WPSProcessPanel = Ext.extend(Ext.Panel, {
             disabled : true
         });
         this.continueButton.on('click', function(button) {
-            button.disable();
-            this.pauseButton.enable();
-            this.runner.start({
-                run : this.createProcessChecker,
-                interval : this.timerInterval,
-                scope : this
-            });
+            LOG.debug('WPSProcessPanel: Continue button clicked. Continuing process.');
+            this.continueButtonOnClick(button);
         }, this);
         
         this.cancelButton = new Ext.Button({
             iconCls : 'process-stop',
             tooltip : 'Stop process'
         }); 
-        this.cancelButton.on('click', function(button) {
+        this.cancelButton.on('click', function() {
             LOG.debug('WPSProcessPanel: Cancel button clicked. Cancelling process.');
-            this.processCancelled = true;
-            this.cancelButton.getEl().removeClass('process-stop');
-            this.cancelButton.setIconClass('process-close');
-            this.continueButton.disable();
-            this.pauseButton.disable();
-            this.setPanelIcon({status:'process-status-stopped'});
-            this.updateInfoPanel({msg : 'Process checking stopped.  Clicking on the close button will close this panel.'});
-            if (this.runner) this.runner.stopAll();
-            this.fireEvent('process-cancelled', {obj : this});
-            this.cancelButton.on('click', function() {
-                LOG.debug('WPSProcessPanel: Close button clicked. Closing process.');
-                this.ownerButton.enable();
-                this.ownerCt.remove(this, true);
-            }, this);
+            this.cancelButtonOnClick();
         }, this);
         
         this.visualizeButton = new Ext.Button({
@@ -97,14 +76,7 @@ GDP.WPSProcessPanel = Ext.extend(Ext.Panel, {
             tooltip : 'Information'
         });
         this.infoButton.on('click', function(){
-            if (this.infoPanel.isVisible()) {
-                this.infoPanel.hide();
-                this.setHeight(this.getHeight() - this.defaultInfoPanelHeight);
-            } else {
-                this.setHeight(this.getHeight() + this.defaultInfoPanelHeight);
-                this.infoPanel.show();
-            }
-            this.doLayout();
+            this.infoButtonOnClick();
         }, this)
         this.actionBar = new Ext.Toolbar({
             region : 'north',
@@ -138,9 +110,9 @@ GDP.WPSProcessPanel = Ext.extend(Ext.Panel, {
         GDP.WPSProcessPanel.superclass.constructor.call(this, config);
         LOG.debug('WPSProcessPanel:constructor: Construction complete.');
         this.addEvents(
-        "request-attention",
-        "process-cancelled"
-    );
+            "request-attention",
+            "process-cancelled"
+        );
         
         LOG.debug('WPSProcessPanel:constructor: Registering listeners.');
         this.on('remove', function(){
@@ -160,7 +132,7 @@ GDP.WPSProcessPanel = Ext.extend(Ext.Panel, {
         Ext.Ajax.request({
             url : GDP.PROXY_PREFIX + GDP.PROCESS_ENDPOINT,
             method: 'POST',
-            xmlData : /*(new XMLSerializer()).serializeToString(*/this.process.createWpsExecuteRequest(),//),
+            xmlData : this.process.createWpsExecuteRequest(),
             scope : this,
             success: function (result) {
                 LOG.debug('WPSPanel:createProcess:Ajax:success.');
@@ -174,7 +146,7 @@ GDP.WPSProcessPanel = Ext.extend(Ext.Panel, {
                     runningProcessUrl = xml.getElementsByTagName('ns:ExecuteResponse')[0].getAttribute('statusLocation');
                     
                     // This fixes an issue where if we're on the mapped QA instance, runningProcessUrl comes back with proxy stuff already in there (not good)
-                    runningProcessUrl = (runningProcessUrl.lastIndexOf('proxy/') > -1) ? runningProcessUrl.slice(runningProcessUrl.lastIndexOf('proxy/') + 6) : runningProcessUrl;
+                    runningProcessUrl = (runningProcessUrl.lastIndexOf(GDP.PROXY_PREFIX) > -1) ? runningProcessUrl.slice(runningProcessUrl.lastIndexOf('proxy/') + 6) : runningProcessUrl;
                     
                     this.process.runningProcessUrl = runningProcessUrl;
                     
@@ -270,6 +242,47 @@ GDP.WPSProcessPanel = Ext.extend(Ext.Panel, {
         var status = args.status;
         this.setIconClass(status);
         this.currentStatus = status;
+        this.doLayout();
+    },
+    cancelButtonOnClick : function() {
+        this.processCancelled = true;
+        this.cancelButton.getEl().removeClass('process-stop');
+        this.cancelButton.setIconClass('process-close');
+        this.continueButton.disable();
+        this.pauseButton.disable();
+        this.setPanelIcon({status:'process-status-stopped'});
+        this.updateInfoPanel({msg : 'Process checking stopped.  Clicking on the close button will close this panel.'});
+        if (this.runner) this.runner.stopAll();
+        this.fireEvent('process-cancelled', {obj : this});
+        this.cancelButton.on('click', function() {
+            LOG.debug('WPSProcessPanel: Close button clicked. Closing process.');
+            this.ownerButton.enable();
+            this.ownerCt.remove(this, true);
+        }, this);
+    },
+    pauseButtonOnClick : function(button) {
+        button.disable();
+        this.continueButton.enable();
+        this.runner.stopAll();
+        this.setPanelIcon({status:'process-status-paused'});
+    },
+    continueButtonOnClick : function(button) {
+        button.disable();
+        this.pauseButton.enable();
+        this.runner.start({
+            run : this.createProcessChecker,
+            interval : this.timerInterval,
+            scope : this
+        });
+    },
+    infoButtonOnClick : function() {
+        if (this.infoPanel.isVisible()) {
+            this.infoPanel.hide();
+            this.setHeight(this.getHeight() - this.defaultInfoPanelHeight);
+        } else {
+            this.setHeight(this.getHeight() + this.defaultInfoPanelHeight);
+            this.infoPanel.show();
+        }
         this.doLayout();
     }
 });

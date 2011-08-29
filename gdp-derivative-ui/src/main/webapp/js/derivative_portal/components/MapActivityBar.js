@@ -1,5 +1,8 @@
 Ext.ns("GDP");
 
+// TODO- The functionality of this bar is pretty fragile.  Make some effort to 
+// understand how we can make multiple activity bars (for multiple accordion panels
+// for example) and not have the activities overlap one another 
 GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
     layerController : undefined,
     constructor : function(config) {

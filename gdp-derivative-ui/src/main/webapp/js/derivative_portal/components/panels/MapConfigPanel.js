@@ -95,10 +95,7 @@ GDP.MapConfigPanel = Ext.extend(Ext.Panel, {
         },this);
         this.legendCombo.store.on('load', function(store) {
             LOG.debug('MapConfigPanel: Legend Combobox store Loaded.');
-            //  http://internal.cida.usgs.gov/jira/browse/GDP-372
-            var recordIndex = store.find('name', GDP.DEFAULT_LEGEND_NAME);
-            recordIndex = (recordIndex < 0) ? 0 : recordIndex;
-            this.legendCombo.setValue(store.getAt(recordIndex).get('name'));
+            this.onLegendComboStoreLoad(store);
         }, this);
         this.layerOpacitySlider.on('change', function() {
             LOG.debug('MapConfigPanel:layerOpacitySlider: Observed \'change\'.');
@@ -112,67 +109,77 @@ GDP.MapConfigPanel = Ext.extend(Ext.Panel, {
         }, this);
         this.controller.on('bboxbuttonactivated', function(){
             LOG.debug('MapConfigPanel: Observed "bboxbuttonactivated"');
-            if (this.get('coord-panel')) {
-                LOG.debug('MapConfigPanel: Coordinate panel found. Reusing.');
-                var coords = this.get('coord-panel').getCoords();
-                if (coords.west && coords.south && coords.east && coords.north) {
-                    LOG.debug('MapConfigPanel: Coordinate panel has all 4 coordinates populated. Drawing and snapping to polygon.');
-
-                    var lonLatBounds = new OpenLayers.Bounds();
-                    lonLatBounds.extend(new OpenLayers.LonLat(coords.west, coords.south));
-                    lonLatBounds.extend(new OpenLayers.LonLat(coords.east, coords.north));
-
-                    this.controller.createGeomOverlay({bounds : lonLatBounds});
-                }
-            } else {
-                LOG.debug('MapConfigPanel: Coordinate panel not found. Reconstructing panel.');
-                var poiPanelConfig = {
-                    id : 'coord-panel',
-                    submitButton : new GDP.BoundsPanelSubmitButton({
-                        layerController : this.controller
-                    })
-                }
-                var coordPanel = new GDP.PolygonPOIPanel(poiPanelConfig);
-                this.add(coordPanel);
-                this.doLayout(true);
-//                this.ownerCt.add(coordPanel);
-//                this.ownerCt.doLayout(true);
-                coordPanel.setWidth(this.getWidth());
-            }
+            this.bboxButtonActivated();
         }, this);
         this.controller.on('drewbbox', function(args){
             LOG.debug('LayerChooser: Observed "drewbbox"');
-            var bounds = args.bounds;
-            var map = args.map;
-            var west = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.top)); 
-            var south = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.bottom));
-            var east = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.bottom));
-            var north = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.top)); 
-
-            // ul, br
-            if (this.get('coord-panel')) {
-                this.get('coord-panel').setCoords({
-                    west : west,
-                    south : south,
-                    east : east,
-                    north : north
-                });
-            } else {
-                var poiPanelConfig = {
-                    id : 'coord-panel',
-                    west : west,
-                    south : south,
-                    east : east,
-                    north : north,
-                    submitButton : new GDP.BoundsPanelSubmitButton({
-                        layerController : this.controller
-                    })
-                }
-                var coordPanel = new GDP.PolygonPOIPanel(poiPanelConfig);
-                this.add(coordPanel);
-                this.doLayout(true);
-                coordPanel.setWidth(this.getWidth());
-            }
+            this.drewBbox(args);
         }, this);
+    },
+    onLegendComboStoreLoad : function(store) {
+        //  http://internal.cida.usgs.gov/jira/browse/GDP-372
+        var recordIndex = store.find('name', GDP.DEFAULT_LEGEND_NAME);
+        recordIndex = (recordIndex < 0) ? 0 : recordIndex;
+        this.legendCombo.setValue(store.getAt(recordIndex).get('name'));
+    },
+    bboxButtonActivated : function() {
+        if (this.get('coord-panel')) {
+            LOG.debug('MapConfigPanel: Coordinate panel found. Reusing.');
+            var coords = this.get('coord-panel').getCoords();
+            if (coords.west && coords.south && coords.east && coords.north) {
+                LOG.debug('MapConfigPanel: Coordinate panel has all 4 coordinates populated. Drawing and snapping to polygon.');
+
+                var lonLatBounds = new OpenLayers.Bounds();
+                lonLatBounds.extend(new OpenLayers.LonLat(coords.west, coords.south));
+                lonLatBounds.extend(new OpenLayers.LonLat(coords.east, coords.north));
+
+                this.controller.createGeomOverlay({bounds : lonLatBounds});
+            }
+        } else {
+            LOG.debug('MapConfigPanel: Coordinate panel not found. Reconstructing panel.');
+            var poiPanelConfig = {
+                id : 'coord-panel',
+                submitButton : new GDP.BoundsPanelSubmitButton({
+                    layerController : this.controller
+                })
+            }
+            var coordPanel = new GDP.PolygonPOIPanel(poiPanelConfig);
+            this.add(coordPanel);
+            this.doLayout(true);
+            coordPanel.setWidth(this.getWidth());
+        }
+    },
+    drewBbox : function(args) {
+        var bounds = args.bounds;
+        var map = args.map;
+        var west = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.top)); 
+        var south = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.bottom));
+        var east = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.bottom));
+        var north = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.top)); 
+
+        // ul, br
+        if (this.get('coord-panel')) {
+            this.get('coord-panel').setCoords({
+                west : west,
+                south : south,
+                east : east,
+                north : north
+            });
+        } else {
+            var poiPanelConfig = {
+                id : 'coord-panel',
+                west : west,
+                south : south,
+                east : east,
+                north : north,
+                submitButton : new GDP.BoundsPanelSubmitButton({
+                    layerController : this.controller
+                })
+            }
+            var coordPanel = new GDP.PolygonPOIPanel(poiPanelConfig);
+            this.add(coordPanel);
+            this.doLayout(true);
+            coordPanel.setWidth(this.getWidth());
+        }
     }
 });

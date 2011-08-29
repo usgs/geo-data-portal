@@ -111,7 +111,6 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
             this.legendStore.loadData(jsonObject);
             
             //  http://internal.cida.usgs.gov/jira/browse/GDP-372
-            // TODO - This is duplicated in LayerChoose @ LayerChooser.legendCombo.store.on() -- Fix that.
             var recordIndex = this.legendStore.find('name', GDP.DEFAULT_LEGEND_NAME);
             recordIndex = (recordIndex < 0) ? 0 : recordIndex;
             
@@ -120,7 +119,6 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
             LOG.debug('LayerController:modifyLegendStore: Firing event "changelegend".');
             this.fireEvent('changelegend');
         },
-        
         requestLegendRecord : function(legendRecord) {
             LOG.debug('LayerController:requestLegendRecord: Handling request.');
             if (!legendRecord) return;
@@ -129,14 +127,14 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
             this.fireEvent('changelegend');
         },
 	requestOpacity : function(opacity) {
-		if (!opacity) return;
-                LOG.debug('LayerController:requestOpacity: Handling request.');
-		if (0 <= opacity && 1 >= opacity) {
-                    LOG.debug('LayerController:requestOpacity: Setting opacity to ' + opacity);
-                    this.layerOpacity = opacity;
-                    LOG.debug('LayerController:requestOpacity: Firing event "changeopacity".');
-                    this.fireEvent('changeopacity');
-		}
+            if (!opacity) return;
+            LOG.debug('LayerController:requestOpacity: Handling request.');
+            if (0 <= opacity && 1 >= opacity) {
+                LOG.debug('LayerController:requestOpacity: Setting opacity to ' + opacity);
+                this.layerOpacity = opacity;
+                LOG.debug('LayerController:requestOpacity: Firing event "changeopacity".');
+                this.fireEvent('changeopacity');
+            }
 	},
         requestDimension : function(extentName, value) {
             LOG.debug('LayerController:requestDimension: Handling request.');

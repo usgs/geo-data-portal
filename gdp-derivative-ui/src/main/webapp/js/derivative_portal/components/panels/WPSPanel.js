@@ -8,7 +8,7 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
     processPanel : undefined,
     processPanels : {},
     knownProcesses : {},
-    threddsUrl : 'dods://cida.usgs.gov/qa/thredds/dodsC/derivative/',
+    threddsUrl : 'dods://cida.usgs.gov/qa/thredds/dodsC/derivative/', // TODO- This needs to be set up via config
     getProcessPanel : function(id) {
         if (id) {
             return this.processPanels[id];
@@ -28,6 +28,8 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
         this.populateKnownProcesses();
         
         LOG.debug('WPSPanel:constructor: Constructing capabilitiesStore.');
+        // TODO - This should probably be in the controller class and not here. 
+        // This gets loaded on each WPS submittal
         var capabilitiesStore = new GDP.WPSCapabilitiesStore({
             url : GDP.PROXY_PREFIX + GDP.PROCESS_ENDPOINT + '?Service=WPS&Request=GetCapabilities',
             storeId : 'wps-capabilities-store'
@@ -41,13 +43,14 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
         items.push(this.processPanel);
         
         LOG.debug('WPSPanel:constructor: Creating panel to hold timers.');
+        
         this.timerPanel = new Ext.Panel({
             id : 'display-processing-panel',
             border : true,
             region : 'south',
             layout : 'accordion',
             animate : true,
-            fill : true,
+            fill : true, // TODO - This does not seem to fill the panel that holds it
             title : 'Running Operations'
         })
         this.timerPanel.on('added', function() {

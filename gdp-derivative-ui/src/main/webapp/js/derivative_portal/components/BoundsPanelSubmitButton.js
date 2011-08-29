@@ -40,6 +40,7 @@ GDP.BoundsPanelSubmitButton = Ext.extend(Ext.Button, {
         LOG.debug('North: ' + north);
         
         // Do bounding box validation
+        // TODO- This is pretty buggy
         var valid = this.validator({
             northBox : this.textBoxes.northBox,
             southBox : this.textBoxes.southBox, 
