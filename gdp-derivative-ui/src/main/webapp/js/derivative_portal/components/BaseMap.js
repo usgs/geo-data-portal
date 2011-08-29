@@ -27,7 +27,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         // Without this line, the esri road and relief layers will not display
         // outside of the upper western hemisphere.
         var MAX_RESOLUTION = 1.40625/2;
-                
+        this.layerController = config.layerController;
         if (!config) config = {};
 		
         var map = new OpenLayers.Map({
@@ -96,43 +96,38 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             )
                 
         LOG.debug('BaseMap:constructor: Registering Listeners.');
-        {
-            this.layerController = config.layerController;
-            this.layerController.on('changebaselayer', function() {
-                LOG.debug('BaseMap: Observed "changebaselayer".');
-                this.onReplaceBaseLayer(this.layerController.getBaseLayer());
-            },this);
-            this.layerController.on('changelayer', function() {
-                LOG.debug('BaseMap: Observed "changelayer".');
-                this.onChangeLayer();
-                this.currentLayer = this.findCurrentLayer();
-            }, this);
-            this.layerController.on('changedimension', function() {
-                LOG.debug('BaseMap: Observed "changedimension".');
-                this.onChangeDimension();
-                this.currentLayer = this.findCurrentLayer();
-            }, this);
-            this.layerController.on('changeopacity', function() {
-                LOG.debug('BaseMap: Observed "changeopacity".');
-                this.onChangeOpacity();
-            }, this);
-            this.layerController.on('changelegend', function() {
-                LOG.debug('BaseMap: Observed "changelegend".');
-                this.onChangeLegend();
-                this.currentLayer = this.findCurrentLayer();
-            }, this);
-            this.layerController.on('submit-bounds', function(args) {
-                LOG.debug('BaseMap: Observed "submit-bounds".');
-                this.createGeomOverlay(args);
-            }, this);
-            this.layerController.on('creategeomoverlay', function(args) {
-                LOG.debug('BaseMap: Observed "creategeomoverlay".');
-                this.createGeomOverlay(args);
-            }, this);
-            this.on('resize', function() {
-                this.realignLegend();
-            }, this);
-        }
+        this.layerController.on('changebaselayer', function() {
+            LOG.debug('BaseMap: Observed "changebaselayer".');
+            this.onReplaceBaseLayer();
+        },this);
+        this.layerController.on('changelayer', function() {
+            LOG.debug('BaseMap: Observed "changelayer".');
+            this.onChangeLayer();
+        }, this);
+        this.layerController.on('changedimension', function() {
+            LOG.debug('BaseMap: Observed "changedimension".');
+            this.onChangeDimension();
+        }, this);
+        this.layerController.on('changeopacity', function() {
+            LOG.debug('BaseMap: Observed "changeopacity".');
+            this.onChangeOpacity();
+        }, this);
+        this.layerController.on('changelegend', function() {
+            LOG.debug('BaseMap: Observed "changelegend".');
+            this.onChangeLegend();
+            this.currentLayer = this.findCurrentLayer();
+        }, this);
+        this.layerController.on('submit-bounds', function(args) {
+            LOG.debug('BaseMap: Observed "submit-bounds".');
+            this.createGeomOverlay(args);
+        }, this);
+        this.layerController.on('creategeomoverlay', function(args) {
+            LOG.debug('BaseMap: Observed "creategeomoverlay".');
+            this.createGeomOverlay(args);
+        }, this);
+        this.on('resize', function() {
+            this.realignLegend();
+        }, this);
     },
     zoomToExtent : function(record) {
         if (!record) return;
@@ -141,13 +136,15 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             );
     },
     findCurrentLayer : function() {
-        LOG.debug('BaseMap: Handling "findCurrentLayer".');
+        LOG.debug('BaseMap:findCurrentLayer().');
         var storeIndex = this.layers.findBy(function(record, id) {
             return (this.layerController.getLayerOpacity() === record.get('layer').opacity);
         }, this, 1);
         if (-1 < storeIndex) {
+            LOG.debug('BaseMap:findCurrentLayer():Found layer at index' + storeIndex);
             return this.layers.getAt(storeIndex);
         } else {
+            LOG.debug('BaseMap:findCurrentLayer():Current layer not found');
             return null;
         }
     },
@@ -180,6 +177,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             Ext.apply(params, this.layerController.getAllDimensions());
             this.replaceLayer(layer, params);
         }
+        this.currentLayer = this.findCurrentLayer();
     },
     onChangeDimension : function() {
         LOG.debug('BaseMap:onChangeDimension: Handling request.');
@@ -208,6 +206,8 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             params,
             (-1 < existingLayerIndex) ? existingLayerIndex : undefined
             );
+        this.currentLayer = this.findCurrentLayer();
+        this.currentLayer.getLayer().redraw();
     },
     onChangeLegend : function() {
         LOG.debug('BaseMap:onChangeLegend: Handling Request.');
@@ -239,8 +239,8 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
     onReplaceBaseLayer : function(record) {
         LOG.debug('BaseMap:onReplaceBaseLayer: Handling Request.');
         if (!record) {
-            LOG.debug('BaseMap:onReplaceBaseLayer: passed record object null or undefined. Returning without modifications.');
-            return;
+            LOG.debug('BaseMap:onReplaceBaseLayer: A record object was not passed in. Using map\'s baselayer.');
+            record = this.layerController.getBaseLayer()
         }
             
         var baseLayerIndex = 0;
@@ -268,24 +268,21 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 		
         if (existingIndex) {
             LOG.debug('BaseMap:replaceLayer: Replacing current layer with already-existing layer at index ' + existingIndex);
-            var newLayer = this.layers.getAt(existingIndex).getLayer();
-            newLayer.setOpacity(this.layerController.getLayerOpacity());
+            var existingLayer = this.layers.getAt(existingIndex).getLayer();
+            existingLayer.setOpacity(this.layerController.getLayerOpacity());
         } else {
             LOG.debug('BaseMap:replaceLayer: Replacing current layer with a new layer.');
             var copy = record.clone();
 			
             params = Ext.apply({
-                format: "image/png"
-                ,
-                transparent : true
-                ,
+                format: "image/png",
+                transparent : true,
                 styles : (params.styles) ? params.styles : this.layerController.getLegendRecord().id
             }, params);
 
             copy.get('layer').mergeNewParams(params);
             copy.get('layer')['opacity'] = this.layerController.getLayerOpacity();
             copy.get('layer')['url'] = GDP.PROXY_PREFIX + copy.get('layer')['url'];
-
             copy.getLayer().events.register('loadend', this, function() {
                 if (LOADMASK) LOADMASK.hide();
             });
