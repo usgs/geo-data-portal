@@ -6,6 +6,7 @@ Ext.ns("GDP");
 GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
     controller : undefined,
     capabilitiesStore : undefined,
+    catalogStore : undefined,
     derivativeCombo : undefined,
     scenarioCombo : undefined,
     gcmCombo : undefined,
@@ -21,7 +22,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         
         this.capabilitiesStore = config.capabilitiesStore;
         this.catalogStore = config.getRecordsStore;
-
+        
         this.derivativeCombo = new Ext.form.ComboBox({
             xtype : 'combo',
             mode : 'local',
@@ -31,7 +32,8 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             forceSelection : true,
             lazyInit : false,
             editable : false,
-            displayField : 'keyword'
+            displayField : 'version',
+            emptyText : 'Loading...'
         });
         
         this.zlayerName = 'elevation';
@@ -87,6 +89,9 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             width : config.width || undefined
         }, config);
         GDP.DatasetConfigPanel.superclass.constructor.call(this, config);
+        
+        this.catalogStore.proxy.setApi(Ext.data.Api.actions.read, args.url);
+        this.catalogStore.load();
         LOG.debug('DatasetConfigPanel:constructor: Construction complete.');
         
         LOG.debug('DatasetConfigPanel:constructor: Registering listeners.');
@@ -98,6 +103,14 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             LOG.debug('DatasetConfigPanel: Capabilities store has encountered an exception.');
             this.controller.capabilitiesExceptionOccurred();
         }, this);
+        this.catalogStore.on('load', function(catStore) {
+            LOG.debug('DatasetConfigPanel: Catalog store has finished loading.');
+            this.catStoreOnLoad(catStore);
+        }, this);
+        this.catalogStore.on('exception', function() {
+            LOG.debug('DatasetConfigPanel: Catalog store has encountered an exception.');
+            this.controller.getRecordsExceptionOccurred();
+        }, this);
         this.layerCombo.on('select', function(combo, record, index) {
             this.controller.requestLayer(record);
         }, this);
@@ -108,6 +121,10 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         this.controller.on('loaded-capstore', function(args) {
             LOG.debug('DatasetConfigPanel observed "loaded-capstore"');
             this.onLoadedCapstore(args);
+        }, this);
+        this.controller.on('loaded-catstore', function(args) {
+            LOG.debug('DatasetConfigPanel observed "loaded-catstore"');
+            this.onLoadedCatstore(args);
         }, this);
         this.controller.on('changelayer', function() {
             LOG.debug('DatasetConfigPanel: Observed "changelayer".');
@@ -125,6 +142,13 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
 
         if (LOADMASK) LOADMASK.hide();
     },
+    catStoreOnLoad : function(catStore) {
+        this.controller.loadedGetRecordsStore({
+            record : catStore.getAt(0)
+        });
+
+        if (LOADMASK) LOADMASK.hide();
+    },
     onSelectedDataset : function(args) {
         this.capabilitiesStore.proxy.setApi(Ext.data.Api.actions.read, args.url);
         this.capabilitiesStore.load();
@@ -132,6 +156,10 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
     onLoadedCapstore : function(args) {
         this.layerCombo.setValue(args.record.get("title"));
         this.layerCombo.fireEvent('select', this.layerCombo, args.record, 0);
+    },
+    onLoadedCatstore : function(args) {
+        this.layerCombo.setValue(args.record.get("version"));
+        this.layerCombo.fireEvent('select', this.derivativeCombo, args.record, 0);
     },
     onChangeLayer : function() {
         var layer = this.controller.getLayer();

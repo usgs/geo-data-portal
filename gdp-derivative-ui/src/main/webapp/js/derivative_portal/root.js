@@ -207,24 +207,25 @@ function initializeMapping() {
         storeId : 'capabilitiesStore'
     });
     
-    var cswStore = {};
-    var cswGetRecords = new OpenLayers.Format.CSWGetRecords({
-        resultType : 'results',
-        Query : {
-            
+    var getRecordsStore = new GDP.CSWGetRecordsStore({
+        url : "proxy/" + endpointUrls[3],
+        storeId : 'cswStore',
+        opts : {
+            resultType : 'results',
+            outputSchema : 'http://www.isotc211.org/2005/gmd'
         }
     });
-    var opts = {
-        url : "proxy/" + endpointUrls[3],
-        data : cswGetRecords.write()
-    };
-    OpenLayers.Util.applyDefaults(opts, {
-                success : function(response) {
-                    cswStore = cswGetRecords.read(response.responseText);
-                    alert(JSON.stringify(cswStore));
-                }
-            });
-    var request = OpenLayers.Request.POST(opts);
+//    var opts = {
+//        url : "proxy/" + endpointUrls[3],
+//        data : cswGetRecords.write()
+//    };
+//    OpenLayers.Util.applyDefaults(opts, {
+//                success : function(response) {
+//                    cswStore = cswGetRecords.read(response.responseText);
+//                    alert(JSON.stringify(cswStore));
+//                }
+//            });
+//    var request = OpenLayers.Request.POST(opts);
 
     
     
@@ -238,7 +239,7 @@ function initializeMapping() {
         map : mapPanel.map,
         baseLayerStore : baseLayerStore,
         capabilitiesStore : capabilitiesStore,
-        getRecordsStore : cswStore
+        getRecordsStore : getRecordsStore
     })
 
     var timestepPanel = new GDP.TimestepChooser({

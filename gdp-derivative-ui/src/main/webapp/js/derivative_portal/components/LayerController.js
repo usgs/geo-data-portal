@@ -63,7 +63,9 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
                 "submit-bounds",
                 "selected-dataset",
                 "loaded-capstore",
-                "exception-capstore"
+                "loaded-catstore",
+                "exception-capstore",
+                "exception-catstore"
             );
             
             // There shouldn't be anything listening at this point. 
@@ -211,10 +213,21 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
             this.modifyLegendStore(args.record.data);
             this.fireEvent('loaded-capstore', args);
         },
+        loadedGetRecordsStore : function(args) {
+            LOG.debug('LayerController:loadedGetRecordsStore: Firing event "loaded-catstore"');
+            //this.modifyLegendStore(args.record.data);
+            this.fireEvent('loaded-catstore', args);
+        },
         capabilitiesExceptionOccurred : function(args) {
             LOG.debug('LayerController:capabilitiesExceptionFired: Firing event "exception-capstore"');
             if (LOADMASK) LOADMASK.hide();
             NOTIFY.error({msg : 'Could not access WMS endpoint. Application will not be functional until another endpoint is chosen.'});
             this.fireEvent('exception-capstore', args);
+        },
+        getRecordsExceptionOccurred : function(args) {
+            LOG.debug('LayerController:getRecordsExceptionFired: Firing event "exception-catstore"');
+            if (LOADMASK) LOADMASK.hide();
+            NOTIFY.error({msg : 'Could not access CSW catalog. Application will not be functional until another endpoint is chosen.'});
+            this.fireEvent('exception-catstore', args);
         }
 });

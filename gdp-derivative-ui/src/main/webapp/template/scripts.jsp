@@ -21,6 +21,8 @@
 <script type="text/javascript" src='${param["ComponentDir"]}/WPS/WPSExecuteResponseReader.js'></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/WPS/WPSDescribeProcessStore.js'></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/WPS/WPSDescribeProcessReader.js'></script>
+<script type="text/javascript" src='${param["ComponentDir"]}/CSW/CSWGetRecordsStore.js'></script>
+<script type="text/javascript" src='${param["ComponentDir"]}/CSW/CSWGetRecordsReader.js'></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/panels/WPSPanel.js'></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/panels/WPSProcessPanel.js'></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/panels/TimestepChooser.js'></script>
