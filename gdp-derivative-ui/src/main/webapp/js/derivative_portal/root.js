@@ -208,11 +208,22 @@ function initializeMapping() {
     });
     
     var getRecordsStore = new GDP.CSWGetRecordsStore({
-        url : "proxy/" + endpointUrls[3],
+        url : "geonetwork/csw",
         storeId : 'cswStore',
         opts : {
             resultType : 'results',
-            outputSchema : 'http://www.isotc211.org/2005/gmd'
+            outputSchema : 'http://www.isotc211.org/2005/gmd',
+            Query : {
+                ElementSetName : { value: 'full' },
+                Constraint : {
+                    Filter : {
+                        type : '==',
+                        property : 'identifier',
+                        value : 'a0a3c56c-2be5-4d45-9924-72b13e348919'
+                    },
+                    version : '1.1.0'
+                }
+            }
         }
     });
 //    var opts = {

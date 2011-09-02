@@ -7,8 +7,10 @@ GDP.CSWGetRecordsReader = function(meta, recordType) {
     }
     if(typeof recordType !== "function") {
         recordType = Ext.data.Record.create(meta.fields || [
-            {name: "version", type: "string"}//,
-//            {name: "languages"}, // Array of objects
+            {name: "identifier", type: "string"},
+            {name: "derivatives"}, // Array of objects
+            {name: "scenarios"}, // Array of objects
+            {name: "gcms"} // Array of objects
 //            {name: "operationsMetadata"}, // Array of objects
 //            {name: "processOfferings"}, // Object
 //            {name: "serviceIdentification"}, // Object
@@ -63,15 +65,48 @@ Ext.extend(GDP.CSWGetRecordsReader, Ext.data.DataReader, {
         }
         
         var records = [];
-        var values = {};
-        
-        values.version = data.version;
+
+        Ext.iterate(data.records, function (item) {
+            var values = {};
+            values.identifier = item.fileIdentifier.CharacterString.value;
+            values.derivatives = [];
+            values.scenarios = [];
+            values.gcms = [];
+            var keywordTypes = item.identificationInfo[0].descriptiveKeywords;
+            
+            Ext.iterate(keywordTypes, function (kt) {
+                if (kt.type.codeListValue === "derivative") {
+                    Ext.iterate(kt.keyword, function(key) {
+                        var derivArr = [];
+                        derivArr.push(key.CharacterString.value);
+                        values.derivatives.push(derivArr);
+                    }, this);
+                }
+                else if (kt.type.codeListValue === "scenario") {
+                    Ext.iterate(kt.keyword, function(key) {
+                        var scenarioArr = [];
+                        scenarioArr.push(key.CharacterString.value);
+                        values.scenarios.push(scenarioArr);
+                    }, this);
+                }
+                else if (kt.type.codeListValue === "gcm") {
+                    Ext.iterate(kt.keyword, function(key) {
+                        var gcmArr = [];
+                        gcmArr.push(key.CharacterString.value);
+                        values.gcms.push(gcmArr);
+                    }, this);
+                }
+            }, this);
+            
+            records.push(new this.recordType(values));
+        }, this);
+//        values.identifier = data.records[0].fileIdentifier...;
 //        values.languages = data.languages;
 //        values.operationsMetadata = data.operationsMetadata;
 //        values.processOfferings = data.processOfferings;
 //        values.serviceIdentification = data.serviceIdentification;
 //        values.serviceProvider = data.serviceProvider;
-        records.push(new this.recordType(values));
+        //records.push(new this.recordType(values));
         
         return {
             totalRecords: records.length,

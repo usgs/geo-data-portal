@@ -10,6 +10,18 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
 	getLayer : function() {
 		return this.layer;
 	},
+    derivative : undefined,
+    getDerivative : function() {
+        return this.derivative;
+    },
+    scenario : undefined,
+    getScenario : function() {
+        return this.scenario;
+    },
+    gcm : undefined,
+    getGcm : function() {
+        return this.gcm;
+    },
 	dimensions : undefined,
 	getDimension : function(extentName) {
 		return this.dimensions[extentName];
@@ -62,8 +74,10 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
                 "creategeomoverlay",
                 "submit-bounds",
                 "selected-dataset",
+                "selected-deriv",
                 "loaded-capstore",
                 "loaded-catstore",
+                "loaded-derivstore",
                 "exception-capstore",
                 "exception-catstore"
             );
@@ -99,6 +113,39 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
                     record : layerRecord
                 });
 	},
+    requestDerivative : function(derivRecord) {
+        LOG.debug('LayerController:requestDerivative');
+        if (!derivRecord) return;
+        this.derivative = derivRecord;
+        
+        // TODO get derivative record and modify scenario and gcm stores
+        //var derivName = derivRecord.get('derivative');
+        this.fireEvent('changederiv', {
+            record : derivRecord
+        })
+    },
+    requestScenario : function(scenRecord) {
+        LOG.debug('LayerController:requestScenario');
+        if (!scenRecord) return;
+        this.scenario = scenRecord;
+        
+        // TODO get derivative record and modify scenario and gcm stores
+        //var derivName = derivRecord.get('derivative');
+        this.fireEvent('changescenario', {
+            record : scenRecord
+        })
+    },
+    requestGcm : function(gcmRecord) {
+        LOG.debug('LayerController:requestGcm');
+        if (!gcmRecord) return;
+        this.gcm = gcmRecord;
+        
+        // TODO get derivative record and modify scenario and gcm stores
+        //var derivName = derivRecord.get('derivative');
+        this.fireEvent('changegcm', {
+            record : gcmRecord
+        })
+    },
         requestLegendStore : function(legendStore) {
             LOG.debug('LayerController:requestLegendStore: Handling request.');
             if (!legendStore) return;
@@ -208,6 +255,10 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
             LOG.debug('LayerController:selectedDataset: Firing event "selected-dataset"');
             this.fireEvent('selected-dataset', args);
         },
+        selectedDerivative : function(args) {
+            LOG.debug('LayerController:selectedDerivative: Firing event "selected-deriv"');
+            this.fireEvent('selected-deriv', args);
+        },
         loadedCapabilitiesStore : function(args) {
             LOG.debug('LayerController:loadedCapabilitiesStore: Firing event "loaded-capstore"');
             this.modifyLegendStore(args.record.data);
@@ -217,6 +268,16 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
             LOG.debug('LayerController:loadedGetRecordsStore: Firing event "loaded-catstore"');
             //this.modifyLegendStore(args.record.data);
             this.fireEvent('loaded-catstore', args);
+        },
+        loadedDerivStore : function(args) {
+            LOG.debug('LayerController:loadedGetRecordsStore: Firing event "loaded-derivstore"');
+            //this.modifyLegendStore(args.record.data);
+            this.fireEvent('loaded-derivstore', args);
+        },
+        loadedLeafStore : function(args) {
+            LOG.debug('LayerController:loadedGetRecordsStore: Firing event "loaded-leafstore"');
+            //this.modifyLegendStore(args.record.data);
+            this.fireEvent('loaded-leafstore', args);
         },
         capabilitiesExceptionOccurred : function(args) {
             LOG.debug('LayerController:capabilitiesExceptionFired: Firing event "exception-capstore"');
