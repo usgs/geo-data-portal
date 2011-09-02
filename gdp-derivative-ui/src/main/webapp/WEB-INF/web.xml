@@ -2,7 +2,6 @@
 <web-app id="WebApp_ID" version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
     <description>Derivative Portal</description>
     <display-name>Derivative Portal {Owner: NB, Coder: IS, TK, JW, DS}</display-name>
-    
     <servlet>
         <servlet-name>OWSProxy</servlet-name>
         <servlet-class>gov.usgs.service.OWSProxyServletX</servlet-class>
@@ -12,9 +11,16 @@
             <param-value>/proxy/*</param-value>
         </init-param>
     </servlet>
+    <servlet>
+        <servlet-name>GeonetworkProxy</servlet-name>
+        <servlet-class>gov.usgs.cida.geonetwork.GeonetworkProxy</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>OWSProxy</servlet-name>
         <url-pattern>/proxy/*</url-pattern>
     </servlet-mapping>
-    
+    <servlet-mapping>
+        <servlet-name>GeonetworkProxy</servlet-name>
+        <url-pattern>/geonetwork/csw</url-pattern>
+    </servlet-mapping>
 </web-app>
