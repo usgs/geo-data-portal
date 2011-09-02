@@ -198,13 +198,36 @@ function initializeMapping() {
     var endpointUrls = [
         ['http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/ncWMS/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1'],
         ['http://igsarmewmaccave:8081/ncWMS/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1'],
-        ['http://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/wms/gmo/GMO_w_meta.ncml?service=WMS&version=1.1.1&request=GetCapabilities']
+        ['http://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/wms/gmo/GMO_w_meta.ncml?service=WMS&version=1.1.1&request=GetCapabilities'],
+        ['http://igsarm-cida-gdp2.er.usgs.gov:8081/geonetwork/srv/en/csw']
     ];
     var proxyUrl = GDP.PROXY_PREFIX + endpointUrls[0];
     var capabilitiesStore = new GeoExt.data.WMSCapabilitiesStore({
         url : proxyUrl,
         storeId : 'capabilitiesStore'
     });
+    
+    var cswStore = {};
+    var cswGetRecords = new OpenLayers.Format.CSWGetRecords({
+        resultType : 'results',
+        Query : {
+            
+        }
+    });
+    var opts = {
+        url : "proxy/" + endpointUrls[3],
+        data : cswGetRecords.write()
+    };
+    OpenLayers.Util.applyDefaults(opts, {
+                success : function(response) {
+                    cswStore = cswGetRecords.read(response.responseText);
+                    alert(JSON.stringify(cswStore));
+                }
+            });
+    var request = OpenLayers.Request.POST(opts);
+
+    
+    
     var accordionConfigPanel = new GDP.ConfigurationPanel({
         controller : layerController,
         collapsible : true,
@@ -214,7 +237,8 @@ function initializeMapping() {
         minWidth : 265,
         map : mapPanel.map,
         baseLayerStore : baseLayerStore,
-        capabilitiesStore : capabilitiesStore
+        capabilitiesStore : capabilitiesStore,
+        getRecordsStore : cswStore
     })
 
     var timestepPanel = new GDP.TimestepChooser({

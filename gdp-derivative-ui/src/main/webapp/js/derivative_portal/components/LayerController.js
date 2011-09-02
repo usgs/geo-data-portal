@@ -89,7 +89,7 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
 		}, this);
 		
 		var layerName = layerRecord.get('name');
-		this.zaxisName = layerName.slice(0, layerName.indexOf('/'));
+		this.zaxisName = dims.elevation.name + ' (' + dims.elevation.units + ')';
 		LOG.debug('LayerController:requestLayer: Firing event "changelayer".');
                 this.modifyLegendStore(layerRecord.data);
 		this.fireEvent('changelayer', {

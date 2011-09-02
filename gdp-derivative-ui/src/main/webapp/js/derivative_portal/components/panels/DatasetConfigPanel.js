@@ -6,6 +6,9 @@ Ext.ns("GDP");
 GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
     controller : undefined,
     capabilitiesStore : undefined,
+    derivativeCombo : undefined,
+    scenarioCombo : undefined,
+    gcmCombo : undefined,
     layerCombo : undefined,
     zlayerCombo : undefined,
     zlayerName : undefined,
@@ -17,6 +20,19 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         this.controller = config.controller;
         
         this.capabilitiesStore = config.capabilitiesStore;
+        this.catalogStore = config.getRecordsStore;
+
+        this.derivativeCombo = new Ext.form.ComboBox({
+            xtype : 'combo',
+            mode : 'local',
+            triggerAction : 'all',
+            store : this.catalogStore,
+            fieldLabel : 'Derivative',
+            forceSelection : true,
+            lazyInit : false,
+            editable : false,
+            displayField : 'keyword'
+        });
         
         this.zlayerName = 'elevation';
         this.zlayerStore = new Ext.data.ArrayStore({
@@ -52,7 +68,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             emptyText : 'Loading...'
         });
         
-        Ext.iterate([this.layerCombo, this.zlayerCombo], function(item) {
+        Ext.iterate([this.derivativeCombo, this.layerCombo, this.zlayerCombo], function(item) {
             item.on('added', function(me, parent){ 
                 me.setWidth(parent.width - 5); 
             })
@@ -62,6 +78,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             id : 'dataset-configuration-panel',
             labelAlign : 'top',
             items : [
+                this.derivativeCombo,
                 this.layerCombo,
                 this.zlayerCombo
             ],
