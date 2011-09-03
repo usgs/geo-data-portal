@@ -15,8 +15,8 @@
         <module>gdp-52n-wps-patches</module>
         <module>gdp-utility-wps</module>
         <module>gdp-process-wps</module>
-<!--        <module>gdp-geoserver</module>-->
 <!--        <module>gdp-sos-server</module>-->
+        <module>geoserver</module>
 <!--        <module>geonetwork</module>-->
         <module>gdp-ui</module>
         <module>gdp-derivative-ui</module>
@@ -34,14 +34,13 @@
         <geotools.version>2.6.6</geotools.version>
         <slf4j.version>1.6.1</slf4j.version>
         <logback.version>0.9.26</logback.version>
-        <netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
     </properties>
     <description>
         Owner: NB
         Coders: IS, JW, DS, TK
     </description>
     <url>http://cida.usgs.gov</url>
-    <inceptionYear>2011</inceptionYear>
+    <inceptionYear>2010</inceptionYear>
     <organization>
         <name>Center for Integrated Data Analytics</name>
         <url>http://cida.usgs.gov</url>
@@ -95,7 +94,7 @@
         <url>http://igsarm-cida-hudson1.er.usgs.gov:8080/hudson/job/GeoDataPortal/</url>
     </ciManagement>
     <scm>
-        <developerConnection>scm:svn:https://cida-svn.er.usgs.gov/repos/dev/usgs/gdp/trunk</developerConnection>
+        <developerConnection>scm:svn:${cida.svn.url}/usgs/gdp/trunk</developerConnection>
     </scm>
     <issueManagement>
         <system>JIRA</system>
