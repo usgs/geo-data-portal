@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This file, which sets the Java EE version to 5, is required for Netbeans to
+    offer Java EE 5 containers (servers) to the list of available servers available
+    to execute the war.  If this file is missing the default Java EE version is
+    assumed to be Java EE 6 and containers such as Apache Tomcat 6.0 can't be 
+    selected.  This empty file is placed here so netbeans can identify the project
+    as a Java EE 5 project.  We don't want to include this in the final war as 
+    it's presense will preclude the use of the WEB-INF/web.xml in the war we are
+    overlaying.
+
+    The following section must be included in the maven-war-plugin configuration
+    in the effective pom.xml
+
+<project>
+    <build>
+       <plugins>
+           <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-war-plugin</artifactId>
+               <configuration>
+                   <warSourceExcludes>WEB-INF/web.xml</warSourceExcludes>
+               </configuration>
+           </plugin>
+       </plugins>
+   </build>
+</project>
+
+-->
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"/>
