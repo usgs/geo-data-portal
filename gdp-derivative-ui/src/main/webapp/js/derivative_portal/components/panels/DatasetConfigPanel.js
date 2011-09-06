@@ -25,7 +25,6 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         LOG.debug('DatasetConfigPanel:constructor: Constructing self.');
 
         this.controller = config.controller;
-        
         this.capabilitiesStore = config.capabilitiesStore;
         this.parentRecordStore = config.getRecordsStore;
         
@@ -101,20 +100,20 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             fieldLabel : this.controller.getZAxisName(),
             editable : false
         }, this.zlayerComboConfig));
-        this.layerCombo = new Ext.form.ComboBox({
-            xtype : 'combo',
-            mode : 'local',
-            triggerAction: 'all',
-            store : this.capabilitiesStore,
-            fieldLabel : 'Dataset',
-            forceSelection : true,
-            lazyInit : false,
-            editable : false,
-            displayField : 'title',
-            emptyText : 'Loading...'
-        });
+//        this.layerCombo = new Ext.form.ComboBox({
+//            xtype : 'combo',
+//            mode : 'local',
+//            triggerAction: 'all',
+//            store : this.capabilitiesStore,
+//            fieldLabel : 'Dataset',
+//            forceSelection : true,
+//            lazyInit : false,
+//            editable : false,
+//            displayField : 'title',
+//            emptyText : 'Loading...'
+//        });
         
-        Ext.iterate([this.derivativeCombo, this.scenarioCombo, this.gcmCombo, this.layerCombo, this.zlayerCombo], function(item) {
+        Ext.iterate([this.derivativeCombo, this.scenarioCombo, this.gcmCombo, this.zlayerCombo], function(item) {
             item.on('added', function(me, parent){ 
                 me.setWidth(parent.width - 5); 
             })
@@ -127,7 +126,6 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
                 this.derivativeCombo,
                 this.scenarioCombo,
                 this.gcmCombo,
-                this.layerCombo,
                 this.zlayerCombo
             ],
             layout : 'form',
@@ -157,9 +155,9 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             LOG.debug('DatasetConfigPanel: Catalog store has encountered an exception.');
             this.controller.getRecordsExceptionOccurred();
         }, this);
-        this.layerCombo.on('select', function(combo, record, index) {
-            this.controller.requestLayer(record);
-        }, this);
+//        this.layerCombo.on('select', function(combo, record, index) {
+//            this.controller.requestLayer(record);
+//        }, this);
         this.derivativeCombo.on('select', function(combo, record, index) {
             this.controller.requestDerivative(record);
         }, this);
@@ -218,7 +216,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         this.controller.loadedCapabilitiesStore({
             record : capStore.getAt(0)
         });
-
+    
         if (LOADMASK) LOADMASK.hide();
     },
     catStoreOnLoad : function(catStore) {
@@ -247,8 +245,9 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         this.capabilitiesStore.load();
     },
     onLoadedCapstore : function(args) {
-        this.layerCombo.setValue(args.record.get("title"));
-        this.layerCombo.fireEvent('select', this.layerCombo, args.record, 0);
+        this.gcmCombo.fireEvent('changegcm');
+//        this.layerCombo.setValue(args.record.get("title"));
+//        this.layerCombo.fireEvent('select', this.layerCombo, args.record, 0);
     },
     onLoadedCatstore : function(args) {
         this.derivativeStore.removeAll();
@@ -269,14 +268,16 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         this.loadLeafRecordStore();
     },
     onLoadedLeafStore : function(args) {
-        LOG.debug("DatasetConfigPanel: onLoadedLeafStore()")
+        LOG.debug("DatasetConfigPanel: onLoadedLeafStore()");
+        this.controller.setOPeNDAPEndpoint(args.record.get("opendap"));
+        this.controller.fireEvent('selected-dataset', {url : GDP.PROXY_PREFIX + args.record.get("wms")});
         // this might be where I gray out some of the options
         // also probably call WMS GetCaps
     },
     onChangeLayer : function() {
         var layer = this.controller.getLayer();
         if (layer) {
-            this.layerCombo.setValue(layer.getLayer().name);
+            //this.layerCombo.setValue(layer.getLayer().name);
         }
 
         if (this.zlayerCombo) {
@@ -326,7 +327,12 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
     onChangeGcm : function () {
         var gcm = this.controller.getGcm();
         if (gcm) {
-            this.gcmCombo.setValue(gcm.get("gcm"))
+            this.gcmCombo.setValue(gcm.get("gcm"));
+            var index = this.capabilitiesStore.findBy(function(record, id) {
+                return (this.controller.getGcm().get("gcm") === record.get('layer').name);
+            }, this, 0);
+            LOG.debug('DatasetConfigPanel: onChangeGcm got index ', index);
+            this.controller.requestLayer(this.capabilitiesStore.getAt(index));
         }
     },
     onChangeDimension : function() {

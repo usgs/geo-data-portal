@@ -243,7 +243,7 @@ function initializeMapping() {
     var accordionConfigPanel = new GDP.ConfigurationPanel({
         controller : layerController,
         collapsible : true,
-        url : proxyUrl,
+        //url : proxyUrl,
         region: 'west',
         width : 265,
         minWidth : 265,
@@ -260,18 +260,20 @@ function initializeMapping() {
         layerController : layerController
     });
     
-    var endpointPanel = new GDP.EndpointPanel({
-        region : 'north',
-        controller : layerController,
-        capabilitiesStore : capabilitiesStore,
-        endpointUrls : endpointUrls
-    });
+//    var endpointPanel = new GDP.EndpointPanel({
+//        region : 'north',
+//        controller : layerController,
+//        capabilitiesStore : capabilitiesStore,
+//        endpointUrls : endpointUrls
+//    });
     
     var centerPanel = new Ext.Panel({
         id : 'center-panel',
         region : 'center',
         layout : 'border',
-        items : [ endpointPanel, mapPanel, timestepPanel]
+        // removed endpointPanel for now
+        //items : [ endpointPanel, mapPanel, timestepPanel]
+        items : [ mapPanel, timestepPanel]
     });
     
     LOG.info('Derivative Portal: Mapping initialized.');
@@ -307,7 +309,8 @@ function initializeMapping() {
     
     // Everything is loaded, kick off the process by programatically choosing an endpoint
     LOG.debug('root: Firing "click" event on end point apply button.');
-    endpointPanel.endpointApplyButton.fireEvent('click');
+    //endpointPanel.endpointApplyButton.fireEvent('click');
+    
     
 }
 

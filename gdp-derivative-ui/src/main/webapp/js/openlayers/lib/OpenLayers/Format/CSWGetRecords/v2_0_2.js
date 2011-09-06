@@ -35,9 +35,11 @@ OpenLayers.Format.CSWGetRecords.v2_0_2 = OpenLayers.Class(OpenLayers.Format.XML,
         gco: "http://www.isotc211.org/2005/gco",
         geonet: "http://www.fao.org/geonetwork",
         gmd: "http://www.isotc211.org/2005/gmd",
+        srv: "http://www.isotc211.org/2005/srv",
         gml: "http://www.opengis.net/gml",
         ogc: "http://www.opengis.net/ogc",
         ows: "http://www.opengis.net/ows"
+
     },
     
     /**
@@ -324,7 +326,7 @@ OpenLayers.Format.CSWGetRecords.v2_0_2 = OpenLayers.Class(OpenLayers.Format.XML,
                 "MD_DimensionNameTypeCode": null,
                 "MD_CellGeometryCode": null,
                 "MD_MaintenanceFrequencyCode": null,
-                "MD_ScopeCode": null
+                "MD_ScopeCode": null,
             },
             "_pass": {
                 "CI_ResponsibleParty": null,
@@ -501,6 +503,65 @@ OpenLayers.Format.CSWGetRecords.v2_0_2 = OpenLayers.Class(OpenLayers.Format.XML,
                 "individualName": null, 
                 "organisationName":null,
                 "positionName":null
+            }
+        },
+        "srv": {
+            "SV_ServiceIdentification": function(node, obj) {
+                obj.serviceIdentification = {};
+                var attrs = node.attributes;
+                for(var i=0, len=attrs.length; i<len; ++i) {
+                    obj.serviceIdentification[attrs[i].name] = attrs[i].nodeValue;
+                }
+                
+                this.readChildNodes(node, obj.serviceIdentification);
+            },
+            "serviceType": function(node, obj) {
+                obj.serviceType = {};
+                this.readChildNodes(node, obj.serviceType);
+            },
+            "extent": function(node, obj) {
+                // if parent is DQ_Scope_Type, cardinality is 0..1 else if MD_DataIdentification_Type 0..infty
+                if (node.parentNode.localName == "MD_DataIdentification" || 
+                    node.parentNode.nodeName.split(":").pop() == "MD_DataIdentification") {
+                    if (!(obj.extent instanceof Array)) {
+                        obj.extent = [];
+                    }
+                    obj.extent.push(this.readChildNodes(node));
+                } else {
+                    obj.extent = this.readChildNodes(node);
+                }
+            },
+            "containsOperations": function(node, obj) {
+                this.readChildNodes(node, obj);
+            },
+            "SV_OperationMetadata": function(node, obj) {
+                obj.operationMetadata = {}
+                this.readChildNodes(node, obj.operationMetadata);
+            },
+            "operationName": function(node, obj) {
+                obj.operationName = {}
+                this.readChildNodes(node, obj.operationName);
+            },
+            "connectPoint": function(node, obj) {
+                this.readChildNodes(node, obj);
+            },
+            "*": function(node, obj) {
+                var name = node.localName || node.nodeName.split(":").pop();
+                if (name in this.readers.gmd._createOneChild) {
+                    obj[name] = this.readChildNodes(node);
+                } else if (name in this.readers.gmd._createManyChildren) {
+                    if (!(obj[name] instanceof Array)) {
+                        obj[name] = [];
+                    }
+                    obj[name].push(this.readChildNodes(node));
+                } else if (name in this.readers.gmd._pass) {
+                    this.readChildNodes(node, obj);
+                } else if (name in this.readers.gmd._readAttributes) {
+                    var attrs = node.attributes;
+                    for(var i=0, len=attrs.length; i<len; ++i) {
+                        obj[attrs[i].name] = attrs[i].nodeValue;
+                    }
+                }
             }
         },
         "gml": { // TODO: should be elsewhere

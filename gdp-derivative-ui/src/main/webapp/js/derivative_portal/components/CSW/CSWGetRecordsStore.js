@@ -9,7 +9,9 @@ GDP.CSWGetRecordsStore = function(meta) {
         {name: "identifier", type: "string"},
         {name: "derivatives"}, // Array of objects
         {name: "scenarios"}, // Array of objects
-        {name: "gcms"} // Array of objects
+        {name: "gcms"}, // Array of objects
+        {name: "opendap", type: "string"},
+        {name: "wms", type: "string"}
 //        {name: "languages"}, // Array of objects
 //        {name: "operationsMetadata"}, // Array of objects
 //        {name: "processOfferings"}, // Object

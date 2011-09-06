@@ -10,7 +10,9 @@ GDP.CSWGetRecordsReader = function(meta, recordType) {
             {name: "identifier", type: "string"},
             {name: "derivatives"}, // Array of objects
             {name: "scenarios"}, // Array of objects
-            {name: "gcms"} // Array of objects
+            {name: "gcms"}, // Array of objects
+            {name: "opendap", type: "string"},
+            {name: "wms", type: "string"}
 //            {name: "operationsMetadata"}, // Array of objects
 //            {name: "processOfferings"}, // Object
 //            {name: "serviceIdentification"}, // Object
@@ -72,29 +74,51 @@ Ext.extend(GDP.CSWGetRecordsReader, Ext.data.DataReader, {
             values.derivatives = [];
             values.scenarios = [];
             values.gcms = [];
-            var keywordTypes = item.identificationInfo[0].descriptiveKeywords;
             
-            Ext.iterate(keywordTypes, function (kt) {
-                if (kt.type.codeListValue === "derivative") {
-                    Ext.iterate(kt.keyword, function(key) {
-                        var derivArr = [];
-                        derivArr.push(key.CharacterString.value);
-                        values.derivatives.push(derivArr);
+            var idInfos = item.identificationInfo;
+            
+            Ext.iterate(idInfos, function (idInfo) {
+                var keywordTypes = idInfo.descriptiveKeywords;
+                var srvId = idInfo.serviceIdentification;
+                
+                if (keywordTypes) {
+                    Ext.iterate(keywordTypes, function (kt) {
+                        if (kt.type.codeListValue === "derivative") {
+                            Ext.iterate(kt.keyword, function(key) {
+                                var derivArr = [];
+                                derivArr.push(key.CharacterString.value);
+                                values.derivatives.push(derivArr);
+                            }, this);
+                        }
+                        else if (kt.type.codeListValue === "scenario") {
+                            Ext.iterate(kt.keyword, function(key) {
+                                var scenarioArr = [];
+                                scenarioArr.push(key.CharacterString.value);
+                                values.scenarios.push(scenarioArr);
+                            }, this);
+                        }
+                        else if (kt.type.codeListValue === "gcm") {
+                            Ext.iterate(kt.keyword, function(key) {
+                                var gcmArr = [];
+                                gcmArr.push(key.CharacterString.value);
+                                values.gcms.push(gcmArr);
+                            }, this);
+                        }
                     }, this);
                 }
-                else if (kt.type.codeListValue === "scenario") {
-                    Ext.iterate(kt.keyword, function(key) {
-                        var scenarioArr = [];
-                        scenarioArr.push(key.CharacterString.value);
-                        values.scenarios.push(scenarioArr);
-                    }, this);
-                }
-                else if (kt.type.codeListValue === "gcm") {
-                    Ext.iterate(kt.keyword, function(key) {
-                        var gcmArr = [];
-                        gcmArr.push(key.CharacterString.value);
-                        values.gcms.push(gcmArr);
-                    }, this);
+                if (srvId) {
+                    var serviceId = srvId.id;
+                    var opMeta = srvId.operationMetadata;
+                    if (opMeta) var linkage = opMeta.linkage;
+                    if (linkage) var endpoint = linkage.URL;
+                    if (serviceId) {
+                        if (serviceId === "OPeNDAP") {
+                            values.opendap = endpoint;
+                        }
+                        else if (serviceId === "OGC-WMS") {
+                            values.wms = endpoint;
+                        }
+                    } 
                 }
             }, this);
             

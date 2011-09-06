@@ -16,7 +16,7 @@ GDP.ConfigurationPanel = Ext.extend(Ext.Panel, {
         
         this.datasetConfigPanel = new GDP.DatasetConfigPanel({
             controller : this.controller,
-            url : config.url,
+            //url : config.url,
             capabilitiesStore : config.capabilitiesStore,
             getRecordsStore : config.getRecordsStore,
             width : config.width || undefined,
@@ -25,7 +25,7 @@ GDP.ConfigurationPanel = Ext.extend(Ext.Panel, {
         
         this.mapConfigPanel = new GDP.MapConfigPanel({
             controller : this.controller,
-            url : config.url,
+            //url : config.url,
             map : config.map,
             baseLayerStore : config.baseLayerStore,
             width : config.width || undefined,
