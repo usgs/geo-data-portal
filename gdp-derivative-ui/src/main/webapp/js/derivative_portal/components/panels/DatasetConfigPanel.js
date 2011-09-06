@@ -155,9 +155,6 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             LOG.debug('DatasetConfigPanel: Catalog store has encountered an exception.');
             this.controller.getRecordsExceptionOccurred();
         }, this);
-//        this.layerCombo.on('select', function(combo, record, index) {
-//            this.controller.requestLayer(record);
-//        }, this);
         this.derivativeCombo.on('select', function(combo, record, index) {
             this.controller.requestDerivative(record);
         }, this);
@@ -213,25 +210,20 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         }, this);
     },
     capStoreOnLoad : function(capStore) {
+        var index = capStore.findBy(this.capsFindBy, this, 0);
         this.controller.loadedCapabilitiesStore({
-            record : capStore.getAt(0)
+            record : capStore.getAt(index)
         });
-    
-        if (LOADMASK) LOADMASK.hide();
     },
     catStoreOnLoad : function(catStore) {
         this.controller.loadedGetRecordsStore({
             record : catStore.getAt(0)
         });
-
-        if (LOADMASK) LOADMASK.hide();
     },
     derivStoreOnLoad : function(derivStore) {
         this.controller.loadedDerivStore({
             record : derivStore.getAt(0)
         });
-
-        if (LOADMASK) LOADMASK.hide();
     },
     leafStoreOnLoad : function(leafStore) {
         this.controller.loadedLeafStore({
@@ -246,6 +238,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
     },
     onLoadedCapstore : function(args) {
         this.gcmCombo.fireEvent('changegcm');
+        this.controller.fireEvent('changelayer');
 //        this.layerCombo.setValue(args.record.get("title"));
 //        this.layerCombo.fireEvent('select', this.layerCombo, args.record, 0);
     },
@@ -328,9 +321,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         var gcm = this.controller.getGcm();
         if (gcm) {
             this.gcmCombo.setValue(gcm.get("gcm"));
-            var index = this.capabilitiesStore.findBy(function(record, id) {
-                return (this.controller.getGcm().get("gcm") === record.get('layer').name);
-            }, this, 0);
+            var index = this.capabilitiesStore.findBy(this.capsFindBy, this, 0);
             LOG.debug('DatasetConfigPanel: onChangeGcm got index ', index);
             this.controller.requestLayer(this.capabilitiesStore.getAt(index));
         }
@@ -340,6 +331,9 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         if (threshold & this.zlayerCombo) {
             this.zlayerCombo.setValue(threshold);
         }
+    },
+    capsFindBy : function(record, id) {
+        return (this.controller.getGcm().get("gcm") === record.get('layer').name);
     },
     loadDerivRecordStore : function() {
         // TODO fail nicely if this fails
