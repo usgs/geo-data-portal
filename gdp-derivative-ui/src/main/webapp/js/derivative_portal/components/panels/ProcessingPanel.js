@@ -1,7 +1,8 @@
 Ext.ns("GDP");
 
 /**
- * This panel is a holder for processing-related panels
+ * This panel is one of the three main panels and contains WPS processes that the user may choose 
+ * from as well as the running operations accordion panel
  */
 GDP.ProcessingPanel = Ext.extend(Ext.Panel, {
     controller : undefined,
@@ -12,9 +13,9 @@ GDP.ProcessingPanel = Ext.extend(Ext.Panel, {
         
         config = Ext.apply({
             id : 'data-processing-panel',
-            //            iconCls : 'titleicon-warning',
             title : 'Data Access',
-            border : false
+            border : false,
+            frame : false
         }, config);
         GDP.ProcessingPanel.superclass.constructor.call(this, config);
         LOG.debug('ProcessingPanel:constructor: Construction complete.');

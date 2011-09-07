@@ -151,7 +151,7 @@ GDP.PolygonPOIPanel = Ext.extend(Ext.Panel, {
         
         config = Ext.apply({
             items : configItems,
-            border : false,
+            border : true,
             frame : true
         }, config);
         GDP.PolygonPOIPanel.superclass.constructor.call(this, config);

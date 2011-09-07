@@ -105,7 +105,8 @@ GDP.WPSProcessPanel = Ext.extend(Ext.Panel, {
         config = Ext.apply({
             items : [this.actionBar, this.infoPanel],
             title : this.process.title,
-            iconCls : this.currentStatus
+            iconCls : this.currentStatus,
+            autoHeight : true
         }, config);
         GDP.WPSProcessPanel.superclass.constructor.call(this, config);
         LOG.debug('WPSProcessPanel:constructor: Construction complete.');

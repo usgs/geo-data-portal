@@ -46,30 +46,22 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
         
         this.timerPanel = new Ext.Panel({
             id : 'display-processing-panel',
-            border : true,
-            region : 'south',
+            border : false,
+            frame : false,
             layout : 'accordion',
             animate : true,
-            fill : true, // TODO - This does not seem to fill the panel that holds it
+            autoHeight : true,
             title : 'Running Operations'
         })
-        this.timerPanel.on('added', function() {
-            LOG.debug('WPSPanel: Timer added to application');
-            this.doLayout();
-        }, this);
-        this.timerPanel.on('removed', function() {
-            LOG.debug('WPSPanel: Timer removed from application');
-            this.doLayout();
-        }, this);
         items.push(this.timerPanel);
-        
         
         LOG.debug('WPSPanel:constructor: Constructing submit button.');
         
         config = Ext.apply({
             id : 'wps-panel',
             items : items,
-            border : false
+            border : false,
+            frame : false
         }, config);
         GDP.WPSPanel.superclass.constructor.call(this, config);
         LOG.debug('WPSPanel:constructor: Construction complete.');
