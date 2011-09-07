@@ -39,7 +39,6 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                 ,new OpenLayers.Control.ArgParser()
                 ,new OpenLayers.Control.Attribution()
                 ,new OpenLayers.Control.PanZoomBar()
-                ,new OpenLayers.Control.LayerSwitcher()
             ]
         });
 			
@@ -298,7 +297,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             id : 'draw-vector'
         });
             
-        var currentFeature = this.map.getLayersByName('bboxvector')[0].getFeatureById('draw-vector');
+//        var currentFeature = this.map.getLayersByName('bboxvector')[0].getFeatureById('draw-vector');
             
         this.map.getLayersByName('bboxvector')[0].removeAllFeatures(null,true);
         this.map.getLayersByName('bboxvector')[0].addFeatures([feature]);
