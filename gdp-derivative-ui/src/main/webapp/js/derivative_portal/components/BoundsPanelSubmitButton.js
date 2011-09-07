@@ -21,7 +21,7 @@ GDP.BoundsPanelSubmitButton = Ext.extend(Ext.Button, {
             id : 'boundspanel-submit-button',
             text : 'Get Data'
         }, config);
-        GDP.PolygonPOIPanel.superclass.constructor.call(this, config);
+        GDP.BoundsPanelSubmitButton.superclass.constructor.call(this, config);
         LOG.debug('BoundsPanelSubmitButton:constructor: Construction complete.');
         this.on('click', function() {
             this.onClick();
