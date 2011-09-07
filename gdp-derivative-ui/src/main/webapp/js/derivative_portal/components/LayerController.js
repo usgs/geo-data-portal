@@ -311,7 +311,6 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
     },
     setOPeNDAPEndpoint : function(args) {
         LOG.debug('LayerController:setOPeNDAPEndpoint: Setting current OPeNDAP endpoint to ' + args);
-        opendapEndpoint = args;
-    },
-
+        this.opendapEndpoint = args;
+    }
 });
