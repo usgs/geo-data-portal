@@ -6,10 +6,6 @@ var LOADMASK;
 // it seems to take ages to load action/toolbar icons. This happens due to map tiles
 // loading at the same time.
 
-// TODO- When attention icons are placed into accordion panel bars, the text moves over to the right
-// But when the icon is removed (when panel is activated), the text does not move back over to the left.
-// The solution would be to put a transparent 16x16 icon into each 'activateable' panel as its base iconCls
-
 if (Ext.isIE7) { // http://www.mail-archive.com/users@openlayers.org/msg01838.html
     document.namespaces;
 } 
