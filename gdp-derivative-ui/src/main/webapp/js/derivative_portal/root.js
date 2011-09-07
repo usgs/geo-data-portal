@@ -17,11 +17,11 @@ Ext.onReady(function () {
     GDP.PROXY_PREFIX = 'proxy/';
     GDP.DEFAULT_LEGEND_NAME = 'boxfill/greyscale';
     GDP.PROCESS_ENDPOINT = 'http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/gdp-process-wps/WebProcessingService';
-//    GDP.PROCESS_ENDPOINT = 'http://localhost:8080/gdp-process-wps/WebProcessingService'; // Development
+    //    GDP.PROCESS_ENDPOINT = 'http://localhost:8080/gdp-process-wps/WebProcessingService'; // Development
     
     initializeLogging();
-//        test();
-//        return;
+    //        test();
+    //        return;
     initializeNotification();
     initializeMapping();
     initializeQuickTips();
@@ -52,18 +52,22 @@ function initializeNotification() {
     var _notifyError = function(args) {
         var config = args || {};
 	
-        var moreInfo = new Ext.Button({text: 'More Info...'});
+        var moreInfo = new Ext.Button({
+            text: 'More Info...'
+        });
         
         var buttons = [];
-        if (config.moreInfoAction) {buttons.push(moreInfo);}
+        if (config.moreInfoAction) {
+            buttons.push(moreInfo);
+        }
         
         var notifyError = new Ext.ux.Notify(Ext.applyIf({
-                title: 'Error!',
-                titleIconCls: 'titleicon-error',
-                msgIconCls: 'msgicon-error',
-                msg: config.msg || 'An error has occured.',
-                buttons: buttons
-            }, defaultConfig)
+            title: 'Error!',
+            titleIconCls: 'titleicon-error',
+            msgIconCls: 'msgicon-error',
+            msg: config.msg || 'An error has occured.',
+            buttons: buttons
+        }, defaultConfig)
         );
 		
         if (config.moreInfoAction) {
@@ -145,37 +149,72 @@ function initializeMapping() {
         idProperty: 'name',
         root: 'styles',
         fields: [
-            {name: 'name', mapping: 'name'},
-            {name: 'title', mapping: 'title'},
-            {name: 'abstrakt', mapping: 'abstract'},
-            {name: 'width', mapping: 'legend.width'},
-            {name: 'height', mapping: 'legend.height'},
-            {name: 'format', mapping: 'legend.format'},
-            {name: 'href', mapping: 'legend.href'}
+        {
+            name: 'name', 
+            mapping: 'name'
+        },
+
+        {
+            name: 'title', 
+            mapping: 'title'
+        },
+
+        {
+            name: 'abstrakt', 
+            mapping: 'abstract'
+        },
+
+        {
+            name: 'width', 
+            mapping: 'legend.width'
+        },
+
+        {
+            name: 'height', 
+            mapping: 'legend.height'
+        },
+
+        {
+            name: 'format', 
+            mapping: 'legend.format'
+        },
+
+        {
+            name: 'href', 
+            mapping: 'legend.href'
+        }
         ]
     });
     
     var baseLayerStore = new GeoExt.data.LayerStore({
         layers : [
-            new OpenLayers.Layer.WMS(
-                "Blue Marble",
-                "http://maps.opengeo.org/geowebcache/service/wms",
-                {layers: "bluemarble"}
+        new OpenLayers.Layer.WMS(
+            "Blue Marble",
+            "http://maps.opengeo.org/geowebcache/service/wms",
+            {
+                layers: "bluemarble"
+            }
             ),
-            new OpenLayers.Layer.WMS(
-                "NAIP",
-                "http://isse.cr.usgs.gov/ArcGIS/services/Combined/SDDS_Imagery/MapServer/WMSServer",
-                {layers: "0"}
+        new OpenLayers.Layer.WMS(
+            "NAIP",
+            "http://isse.cr.usgs.gov/ArcGIS/services/Combined/SDDS_Imagery/MapServer/WMSServer",
+            {
+                layers: "0"
+            }
             ),
-            new OpenLayers.Layer.XYZ(
-                "Shaded Relief",
-                "http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_ShadedRelief_World_2D/MapServer/tile/${z}/${y}/${x}",
-                {layers : "0"}
+        new OpenLayers.Layer.XYZ(
+            "Shaded Relief",
+            "http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_ShadedRelief_World_2D/MapServer/tile/${z}/${y}/${x}",
+            {
+                layers : "0"
+            }
             ),
-            new OpenLayers.Layer.XYZ(
-                "Street Map",
-                "http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_StreetMap_World_2D/MapServer/tile/${z}/${y}/${x}",
-                {layers : "0"}
+        new OpenLayers.Layer.XYZ(
+            "Street Map",
+            "http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_StreetMap_World_2D/MapServer/tile/${z}/${y}/${x}",
+            {
+                layers : "0"
+            }
             )
         ]
     });
@@ -196,10 +235,10 @@ function initializeMapping() {
     });
 
     var endpointUrls = [
-        ['http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/ncWMS/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1'],
-        ['http://igsarmewmaccave:8081/ncWMS/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1'],
-        ['http://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/wms/gmo/GMO_w_meta.ncml?service=WMS&version=1.1.1&request=GetCapabilities'],
-        ['http://igsarm-cida-gdp2.er.usgs.gov:8081/geonetwork/srv/en/csw']
+    ['http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/ncWMS/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1'],
+    ['http://igsarmewmaccave:8081/ncWMS/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1'],
+    ['http://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/wms/gmo/GMO_w_meta.ncml?service=WMS&version=1.1.1&request=GetCapabilities'],
+    ['http://igsarm-cida-gdp2.er.usgs.gov:8081/geonetwork/srv/en/csw']
     ];
     var proxyUrl = GDP.PROXY_PREFIX + endpointUrls[0];
     var capabilitiesStore = new GeoExt.data.WMSCapabilitiesStore({
@@ -214,7 +253,9 @@ function initializeMapping() {
             resultType : 'results',
             outputSchema : 'http://www.isotc211.org/2005/gmd',
             Query : {
-                ElementSetName : { value: 'full' },
+                ElementSetName : {
+                    value: 'full'
+                },
                 Constraint : {
                     Filter : {
                         type : '==',
@@ -226,17 +267,17 @@ function initializeMapping() {
             }
         }
     });
-//    var opts = {
-//        url : "proxy/" + endpointUrls[3],
-//        data : cswGetRecords.write()
-//    };
-//    OpenLayers.Util.applyDefaults(opts, {
-//                success : function(response) {
-//                    cswStore = cswGetRecords.read(response.responseText);
-//                    alert(JSON.stringify(cswStore));
-//                }
-//            });
-//    var request = OpenLayers.Request.POST(opts);
+    //    var opts = {
+    //        url : "proxy/" + endpointUrls[3],
+    //        data : cswGetRecords.write()
+    //    };
+    //    OpenLayers.Util.applyDefaults(opts, {
+    //                success : function(response) {
+    //                    cswStore = cswGetRecords.read(response.responseText);
+    //                    alert(JSON.stringify(cswStore));
+    //                }
+    //            });
+    //    var request = OpenLayers.Request.POST(opts);
 
     
     
@@ -315,19 +356,46 @@ function initializeMapping() {
 }
 
 function initializeQuickTips() {
-Ext.QuickTips.init();
+    Ext.QuickTips.init();
 
-Ext.apply(Ext.QuickTips.getQuickTip(), {
-    maxWidth: 200,
-    minWidth: 100,
-    showDelay: 50,      // Show 50ms after entering target
-    trackMouse: true
-});
+    Ext.apply(Ext.QuickTips.getQuickTip(), {
+        maxWidth: 200,
+        minWidth: 100,
+        showDelay: 50,      // Show 50ms after entering target
+        trackMouse: true
+    });
 }
 
 // This is here just for shortcutting some processes in order to test stuff like XML parsing
-function test() {
-    var test = 'http://cida.usgs.gov/qa/climate/derivative/proxy/http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/gdp-process-wps/RetrieveResultServlet?id=1314188057357';
-    LOG.debug('');  
+function test() { 
+    var xml = 'some XML string';
     
+    // We can create an XML DOM to test
+    var doc;
+    if(window.ActiveXObject){
+        // We are in IE
+        doc = new ActiveXObject("Microsoft.XMLDOM");
+        doc.async = "false";
+        doc.loadXML(xml);
+    }else{
+        // We are in a decent browser
+        doc = new DOMParser().parseFromString(xml,"text/xml");
     }
+    
+    // Create a reader here and feed it the doc
+    
+    //Or test some AJAX
+    Ext.Ajax.request({
+        url : 'proxy/' + 'http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/gdp-process-wps/WebProcessingService',
+        method: 'POST',
+        xmlData : doc,
+        scope : this,
+        success: function ( result, request ) {
+            // Test success here
+        },
+        failure: function ( result, request) {
+            // Test fail here
+        }
+    });
+    
+}
