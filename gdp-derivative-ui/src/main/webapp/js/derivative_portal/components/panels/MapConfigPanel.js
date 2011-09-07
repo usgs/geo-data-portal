@@ -63,13 +63,10 @@ GDP.MapConfigPanel = Ext.extend(Ext.Panel, {
             border : false
         })
         
-        Ext.iterate([this.baseLayerCombo, this.legendCombo, this.layerOpacitySlider], function(item) {
-            item.on('added', function(me, parent){ me.setWidth(parent.width - 5); })
-        })
         
         config = Ext.apply({
             id : 'map-configuration-panel',
-            labelAlign : 'top',
+            layout : 'form',
             items : [
                 this.activityBar, 
                 this.baseLayerCombo,
@@ -77,9 +74,7 @@ GDP.MapConfigPanel = Ext.extend(Ext.Panel, {
                 this.layerOpacitySlider,
                 this.instructionPanel
             ],
-            layout : 'form',
-            title : 'Map Configuration',
-            width : config.width || undefined
+            title : 'Map Configuration'
         }, config);
         GDP.MapConfigPanel.superclass.constructor.call(this, config);
         LOG.debug('MapConfigPanel:constructor: Construction complete.');
@@ -146,7 +141,6 @@ GDP.MapConfigPanel = Ext.extend(Ext.Panel, {
             var coordPanel = new GDP.PolygonPOIPanel(poiPanelConfig);
             this.add(coordPanel);
             this.doLayout(true);
-            coordPanel.setWidth(this.getWidth());
         }
     },
     drewBbox : function(args) {
@@ -179,7 +173,6 @@ GDP.MapConfigPanel = Ext.extend(Ext.Panel, {
             var coordPanel = new GDP.PolygonPOIPanel(poiPanelConfig);
             this.add(coordPanel);
             this.doLayout(true);
-            coordPanel.setWidth(this.getWidth());
         }
     }
 });
