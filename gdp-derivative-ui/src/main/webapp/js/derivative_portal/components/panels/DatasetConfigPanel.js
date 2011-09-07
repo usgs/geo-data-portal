@@ -42,7 +42,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             lazyInit : false,
             editable : false,
             displayField : 'derivative',
-            emptyText : 'Loading...'
+            emptyText : 'Choose Derivative'
         });
         
         this.scenarioStore = new Ext.data.ArrayStore({
@@ -59,7 +59,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             lazyInit : false,
             editable : false,
             displayField : 'scenario',
-            emptyText : 'Loading...'
+            emptyText : 'Choose Scenario'
         });
         
         this.gcmStore = new Ext.data.ArrayStore({
@@ -76,7 +76,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             lazyInit : false,
             editable : false,
             displayField : 'gcm',
-            emptyText : 'Loading...'
+            emptyText : 'Choose GCM'
         });
         
         this.zlayerName = 'elevation';
@@ -98,7 +98,8 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         
         this.zlayerCombo = new Ext.form.ComboBox(Ext.apply({
             fieldLabel : this.controller.getZAxisName(),
-            editable : false
+            editable : false,
+            hidden : true
         }, this.zlayerComboConfig));
 //        this.layerCombo = new Ext.form.ComboBox({
 //            xtype : 'combo',
@@ -116,6 +117,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         Ext.iterate([this.derivativeCombo, this.scenarioCombo, this.gcmCombo, this.zlayerCombo], function(item) {
             item.on('added', function(me, parent){ 
                 me.setWidth(parent.width - 5); 
+                me.setValue('');
             })
         }, this);
         
@@ -239,21 +241,21 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         this.capabilitiesStore.load();
     },
     onLoadedCapstore : function(args) {
-        this.gcmCombo.fireEvent('changegcm');
+        this.controller.fireEvent('changegcm');
         this.controller.fireEvent('changelayer');
 //        this.layerCombo.setValue(args.record.get("title"));
 //        this.layerCombo.fireEvent('select', this.layerCombo, args.record, 0);
     },
     onLoadedCatstore : function(args) {
         this.derivativeStore.removeAll();
-        this.derivativeStore.loadData(args.record.get("derivatives"));
+        this.derivativeStore.loadData(args.record.get("derivatives"), true);
         this.scenarioStore.removeAll();
-        this.scenarioStore.loadData(args.record.get("scenarios"));
+        this.scenarioStore.loadData(args.record.get("scenarios"), true);
         this.gcmStore.removeAll();
-        this.gcmStore.loadData(args.record.get("gcms"));
-        this.derivativeCombo.fireEvent('select', this.derivativeCombo, this.derivativeStore.getAt(0), 0);
-        this.scenarioCombo.fireEvent('select', this.scenarioCombo, this.scenarioStore.getAt(0), 0);
-        this.gcmCombo.fireEvent('select', this.gcmCombo, this.gcmStore.getAt(0), 0);
+        this.gcmStore.loadData(args.record.get("gcms"), true);
+//        this.derivativeCombo.fireEvent('select', this.derivativeCombo, this.derivativeStore.getAt(0), 0);
+//        this.scenarioCombo.fireEvent('select', this.scenarioCombo, this.scenarioStore.getAt(0), 0);
+//        this.gcmCombo.fireEvent('select', this.gcmCombo, this.gcmStore.getAt(0), 0);
 //        this.derivativeCombo.
 //        this.derivativeCombo.fireEvent('select', this.derivativeCombo, args.record, 0);
     },
@@ -306,14 +308,14 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
     onChangeDerivative : function () {
         var derivative = this.controller.getDerivative();
         if (derivative) {
-            this.derivativeCombo.setValue(derivative.get("derivative"))
+            //this.derivativeCombo.setValue(derivative.get("derivative"))
         }
         this.loadDerivRecordStore();
     },
     onChangeScenario : function () {
         var scenario = this.controller.getScenario();
         if (scenario) {
-            this.scenarioCombo.setValue(scenario.get("scenario"))
+            //this.scenarioCombo.setValue(scenario.get("scenario"))
         }
         if (this.derivRecordStoreLoaded) {
             this.loadLeafRecordStore();
@@ -322,7 +324,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
     onChangeGcm : function () {
         var gcm = this.controller.getGcm();
         if (gcm) {
-            this.gcmCombo.setValue(gcm.get("gcm"));
+            //this.gcmCombo.setValue(gcm.get("gcm"));
             var index = this.capabilitiesStore.findBy(this.capsFindBy, this, 0);
             LOG.debug('DatasetConfigPanel: onChangeGcm got index ', index);
             this.controller.requestLayer(this.capabilitiesStore.getAt(index));
