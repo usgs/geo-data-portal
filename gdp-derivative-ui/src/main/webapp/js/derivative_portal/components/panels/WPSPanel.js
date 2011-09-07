@@ -8,7 +8,6 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
     processPanel : undefined,
     processPanels : {},
     knownProcesses : {},
-    threddsUrl : 'dods://cida.usgs.gov/qa/thredds/dodsC/derivative/', // TODO- This needs to be set up via config
     getProcessPanel : function(id) {
         if (id) {
             return this.processPanels[id];
@@ -69,7 +68,7 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
         capabilitiesStore.on('load', function() {
             LOG.debug('WPSPanel: Capabilities store loaded. Firing event "capabilities-store-loaded"');
             this.capabilitiesStore = capabilitiesStore;
-            this.constructProcessSelectionPanels({ areaType : config.areaType});
+            this.constructProcessSelectionPanels({areaType : config.areaType});
         }, this);
         
         LOG.debug('WPSPanel:constructor: Registering Observables.');
@@ -109,14 +108,8 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
                     var layer = this.controller.getLayer();
                     var layerFullName = layer.data.layer.params.LAYERS;
                     
-                    // This right here is pretty weak. 
-                    // Right now we're pulling WMS stuffs from ncWMS
-                    // and are depending on a mirror naming scheme on THREDDS.
-                    // TODO - Jordan's working on setting up a WCS solution to this
-                    var datasetUriPre = this.threddsUrl;
-                    var datasetUriMid = layerFullName.split('/')[0];
-                    var datasetUriPost = '.ncml';
-                    var datasetUri = datasetUriPre + datasetUriMid + datasetUriPost;
+                    // Replaces the old way of getting the dods url, now from CSW
+                    var datasetUri = this.controller.getOPeNDAPEndpoint();
                     
                     // Hopefully this will come from ncWMS and we won't have to parse 
                     // ncWMS variables to pull critical bits of info from
@@ -153,7 +146,7 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
                     });
                     items.push(describeProcessPanel);
                     
-                    var processConfigurationPanel = process.getConfigurables({ region : 'south'});
+                    var processConfigurationPanel = process.getConfigurables({region : 'south'});
                     if (processConfigurationPanel) items.push(processConfigurationPanel);
                     
                     var submitButton = new Ext.Button({
@@ -178,7 +171,7 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
                     });
                     this.processPanel.add(wpsProcessPanel);
                     LOG.debug('WPSPanel: New process panel added. Firing event "request-attention"');
-                    if (!this.isVisible()) this.fireEvent("request-attention", { obj : this });
+                    if (!this.isVisible()) this.fireEvent("request-attention", {obj : this});
                     
                     // http://internal.cida.usgs.gov/jira/browse/GDP-395
                     // TODO - This is fine since we only have one process. Remove this when we have more
@@ -225,7 +218,7 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
             if (this.timerPanel.activeItem != args.obj) {
                 LOG.debug('WPSPanel: Changing icon class.');
                 args.obj.setIconClass('titleicon-warning');
-                this.fireEvent("request-attention", { obj : this });
+                this.fireEvent("request-attention", {obj : this});
             }
         }, this);
         this.processPanel[process.identifier] = wpsProcessPanel;

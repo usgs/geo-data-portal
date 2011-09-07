@@ -219,11 +219,13 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         this.controller.loadedGetRecordsStore({
             record : catStore.getAt(0)
         });
+        if (LOADMASK) LOADMASK.hide();
     },
     derivStoreOnLoad : function(derivStore) {
         this.controller.loadedDerivStore({
             record : derivStore.getAt(0)
         });
+        if (LOADMASK) LOADMASK.hide();
     },
     leafStoreOnLoad : function(leafStore) {
         this.controller.loadedLeafStore({
