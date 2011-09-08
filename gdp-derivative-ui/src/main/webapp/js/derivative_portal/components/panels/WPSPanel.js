@@ -164,6 +164,7 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
                     }, this);
                     
                     var wpsProcessPanel = new Ext.Panel({
+                        frame : true,
                         items : items,
                         process : process,
                         title : process.title,
@@ -178,7 +179,7 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
                     wpsProcessPanel.on('afterrender', function() {
                        this.buttons[0].fireEvent('click', this);
                        (function(){
-                                this.getEl().unmask();
+                            this.getEl().unmask();
                         }).defer(1000, this);
                     }, wpsProcessPanel)
                     
@@ -208,7 +209,7 @@ GDP.WPSPanel = Ext.extend(Ext.Panel, {
         button.disable();
         
         var wpsProcessPanel = new GDP.WPSProcessPanel({
-            id : 'process-panel-' + process.identifier,
+//            id : 'process-panel-' + process.identifier,
             process : process,
             controller : this,
             ownerButton : args.button

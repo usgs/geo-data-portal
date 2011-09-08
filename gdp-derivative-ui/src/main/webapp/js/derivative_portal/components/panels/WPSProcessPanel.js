@@ -151,7 +151,7 @@ GDP.WPSProcessPanel = Ext.extend(Ext.Panel, {
                     
                     this.process.runningProcessUrl = runningProcessUrl;
                     
-                    LOG.debug('WPSProcessPanel:constructor: Creating timer process to check status every ' + (this.interval / 1000) + ' seconds.');
+                    LOG.debug('WPSProcessPanel:constructor: Creating timer process to check status every ' + (this.timerInterval / 1000) + ' seconds.');
                     this.updateInfoPanel({msg : 'Process successfully submitted.  Will now begin checking <a href="'+runningProcessUrl+'" target="_blank">endpoint</a> for process completion.'});
                     this.runner = new Ext.util.TaskRunner();
                     this.runner.start({
@@ -234,9 +234,12 @@ GDP.WPSProcessPanel = Ext.extend(Ext.Panel, {
         });
     },
     updateInfoPanel : function(args) {
+        LOG.debug('WPSProcessPanel:updateInfoPanel')
         var msg = '<b>' + new Date().format(this.logTimeFormatting) + '</b> - ' + args.msg;
         var currentContent = this.infoPanelCurrentContent;
-        this.infoPanel.update(currentContent + msg + '<br /><br />');
+        if (this.infoPanel.rendered) {
+            this.infoPanel.update(currentContent + msg + '<br /><br />');
+        }
         this.infoPanelCurrentContent =  currentContent + msg + '<br /><br />';
     },
     setPanelIcon : function(args) {
