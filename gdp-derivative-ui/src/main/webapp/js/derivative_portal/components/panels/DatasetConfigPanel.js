@@ -213,9 +213,11 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
     },
     capStoreOnLoad : function(capStore) {
         var index = capStore.findBy(this.capsFindBy, this, 0);
-        this.controller.loadedCapabilitiesStore({
-            record : capStore.getAt(index)
-        });
+        if (index > -1) {
+            this.controller.loadedCapabilitiesStore({
+                record : capStore.getAt(index)
+            });
+        }
     },
     catStoreOnLoad : function(catStore) {
         this.controller.loadedGetRecordsStore({
@@ -337,7 +339,11 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         }
     },
     capsFindBy : function(record, id) {
-        return (this.controller.getGcm().get("gcm") === record.get('layer').name);
+        var gcm = this.controller.getGcm()
+        if (gcm) {
+            return (gcm.get("gcm") === record.get('layer').name);
+        }
+        return false;
     },
     loadDerivRecordStore : function() {
         // TODO fail nicely if this fails
@@ -389,9 +395,8 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         this.derivRecordStore.load();
     },
     loadLeafRecordStore : function() {
-        // TODO fail nicely if things don't go so well
         var scenario = this.controller.getScenario();
-        var gcm = this.controller.getGcm();
+        if (!scenario) return;
         this.leafRecordStore = new GDP.CSWGetRecordsStore({
             url : "geonetwork/csw",
             storeId : 'cswStore',
