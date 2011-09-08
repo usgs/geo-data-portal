@@ -12,7 +12,7 @@
         <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
         <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
         <script src="js/log4javascript/log4javascript.js" type="text/javascript"></script>
-        <script src="js/jquery/jquery-1.6.1.js" type="text/javascript"></script>
+        <script src="js/jquery/jquery.js" type="text/javascript"></script>
         <script src="js/xmlns/jquery.xmlns.js" type="text/javascript"></script>
         <script src="js/constants.js" type="text/javascript"></script>
         <script src="js/xslt/jquery.xslt.js" type="text/javascript"></script>
