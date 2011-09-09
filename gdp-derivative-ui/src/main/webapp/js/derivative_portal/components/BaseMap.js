@@ -281,7 +281,8 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             }, params);
 
             copy.get('layer').mergeNewParams(params);
-            copy.get('layer')['opacity'] = this.layerController.getLayerOpacity();
+//            copy.get('layer')['opacity'] = this.layerController.getLayerOpacity();
+            copy.getLayer().setOpacity(this.layerController.getLayerOpacity());
             copy.get('layer')['url'] = GDP.PROXY_PREFIX + copy.get('layer')['url'];
             copy.getLayer().events.register('loadend', this, function() {
                 if (LOADMASK) LOADMASK.hide();
