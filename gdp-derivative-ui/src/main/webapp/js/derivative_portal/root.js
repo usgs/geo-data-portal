@@ -145,40 +145,40 @@ function initializeMapping() {
         idProperty: 'name',
         root: 'styles',
         fields: [
-        {
-            name: 'name', 
-            mapping: 'name'
-        },
+            {
+                name: 'name', 
+                mapping: 'name'
+            },
 
-        {
-            name: 'title', 
-            mapping: 'title'
-        },
+            {
+                name: 'title', 
+                mapping: 'title'
+            },
 
-        {
-            name: 'abstrakt', 
-            mapping: 'abstract'
-        },
+            {
+                name: 'abstrakt', 
+                mapping: 'abstract'
+            },
 
-        {
-            name: 'width', 
-            mapping: 'legend.width'
-        },
+            {
+                name: 'width', 
+                mapping: 'legend.width'
+            },
 
-        {
-            name: 'height', 
-            mapping: 'legend.height'
-        },
+            {
+                name: 'height', 
+                mapping: 'legend.height'
+            },
 
-        {
-            name: 'format', 
-            mapping: 'legend.format'
-        },
+            {
+                name: 'format', 
+                mapping: 'legend.format'
+            },
 
-        {
-            name: 'href', 
-            mapping: 'legend.href'
-        }
+            {
+                name: 'href', 
+                mapping: 'legend.href'
+            }
         ]
     });
     

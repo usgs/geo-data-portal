@@ -267,9 +267,9 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                 
         if (existingIndex) {
             LOG.debug('BaseMap:replaceLayer: Replacing current layer with already-existing layer at index ' + existingIndex);
-            var existingLayer = this.layers.getAt(existingIndex).getLayer();
-            existingLayer.setOpacity(this.layerController.getLayerOpacity());
-            LOG.debug('BaseMap:replaceLayer: Changed already-existing layer opacity to: ' + existingLayer.opacity);
+            var existingLayer = this.layers.getAt(existingIndex);
+            this.currentLayer = existingLayer;
+            this.onChangeOpacity();
         } else {
             LOG.debug('BaseMap:replaceLayer: Replacing current layer with a new layer.');
             var copy = record.clone();
