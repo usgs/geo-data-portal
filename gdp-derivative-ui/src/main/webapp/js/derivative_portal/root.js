@@ -6,7 +6,7 @@ var LOADMASK;
 // it seems to take ages to load action/toolbar icons. This happens due to map tiles
 // loading at the same time.
 
-if (Ext.isIE7) { // http://www.mail-archive.com/users@openlayers.org/msg01838.html
+if (Ext.isIE) { // http://www.mail-archive.com/users@openlayers.org/msg01838.html
     document.namespaces;
 } 
 Ext.onReady(function () {
