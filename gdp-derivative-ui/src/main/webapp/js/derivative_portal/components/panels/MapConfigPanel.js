@@ -51,7 +51,7 @@ GDP.MapConfigPanel = Ext.extend(Ext.Panel, {
         });
         
         this.layerOpacitySlider = new Ext.Slider({
-            value : 40,
+            value : this.controller.getLayerOpacity() * 100,
             fieldLabel: "Opacity",
             plugins: new GeoExt.LayerOpacitySliderTip({
                 template: '<div>Opacity: {opacity}%</div>'

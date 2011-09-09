@@ -33,7 +33,7 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
     getZAxisName : function() {
         return this.zaxisName;
     },
-    layerOpacity : 0.4,
+    layerOpacity : 0.8,
     getLayerOpacity : function() {
         return this.layerOpacity;
     },
