@@ -143,6 +143,8 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
             if (declaredCRS == null || declaredCRS.isEmpty()) {
                 declaredCRS = ShapeFileEPSGHelper.getDeclaredEPSGFromWKT(nativeCRS, true);
                 warning = "Could not find EPSG code for prj definition. The geographic coordinate system '"+declaredCRS+"' will be used";
+            } else if (declaredCRS.startsWith("ESRI:")) {
+                declaredCRS = declaredCRS.replaceFirst("ESRI:", "EPSG:");
             }
             if (declaredCRS == null || declaredCRS.isEmpty()) {
                 throw new RuntimeException("Could not attain EPSG code from shapefile. Please ensure proper projection and a valid PRJ file.");
