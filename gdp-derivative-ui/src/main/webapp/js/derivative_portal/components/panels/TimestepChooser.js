@@ -122,6 +122,7 @@ GDP.TimestepChooser = Ext.extend(Ext.form.FormPanel, {
         this.timestepSlider.setValue(thumbArray[index].index, this.timestepStore.indexOfId(time));
     },
     onChangedDimensions : function() {
+        LOG.debug('TimeStepChooser:onChangedDimensions');
         var currentTimestep = this.layerController.getDimension('time');
         this.timestepComponent.setValue(currentTimestep);
         this.setThumbValue(this.MIDDLE_THUMB, currentTimestep);

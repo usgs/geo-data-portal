@@ -101,18 +101,6 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             editable : false,
             hidden : true
         }, this.zlayerComboConfig));
-//        this.layerCombo = new Ext.form.ComboBox({
-//            xtype : 'combo',
-//            mode : 'local',
-//            triggerAction: 'all',
-//            store : this.capabilitiesStore,
-//            fieldLabel : 'Dataset',
-//            forceSelection : true,
-//            lazyInit : false,
-//            editable : false,
-//            displayField : 'title',
-//            emptyText : 'Loading...'
-//        });
         
         Ext.iterate([this.derivativeCombo, this.scenarioCombo, this.gcmCombo, this.zlayerCombo], function(item) {
             item.on('added', function(me, parent){ 

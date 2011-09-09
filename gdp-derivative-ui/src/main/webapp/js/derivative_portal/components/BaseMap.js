@@ -260,10 +260,16 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             params = {};
         }
 		
+        if (this.currentLayer) {
+            this.currentLayer.getLayer().setOpacity(0.0);
+            LOG.debug('BaseMap:replaceLayer: Set current layer opacity to: ' + this.currentLayer.getLayer().opacity);
+        }        
+                
         if (existingIndex) {
             LOG.debug('BaseMap:replaceLayer: Replacing current layer with already-existing layer at index ' + existingIndex);
             var existingLayer = this.layers.getAt(existingIndex).getLayer();
             existingLayer.setOpacity(this.layerController.getLayerOpacity());
+            LOG.debug('BaseMap:replaceLayer: Changed already-existing layer opacity to: ' + existingLayer.opacity);
         } else {
             LOG.debug('BaseMap:replaceLayer: Replacing current layer with a new layer.');
             var copy = record.clone();
@@ -283,11 +289,6 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             this.layers.add(copy);
         }
 		
-        if (this.currentLayer) {
-            LOG.debug('BaseMap:replaceLayer: Setting current layer opacity to 0');
-            this.currentLayer.getLayer().setOpacity(0);
-        }
-        
     },
     createGeomOverlay : function(args) {
         LOG.debug('BaseMap:createGeometryOverlay: Drawing vector')
