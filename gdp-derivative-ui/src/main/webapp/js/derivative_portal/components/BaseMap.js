@@ -263,7 +263,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         if (this.currentLayer) {
             this.currentLayer.getLayer().setOpacity(0.0);
             LOG.debug('BaseMap:replaceLayer: Set current layer opacity to: ' + this.currentLayer.getLayer().opacity);
-        }        
+        }
                 
         if (existingIndex) {
             LOG.debug('BaseMap:replaceLayer: Replacing current layer with already-existing layer at index ' + existingIndex);
@@ -273,7 +273,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         } else {
             LOG.debug('BaseMap:replaceLayer: Replacing current layer with a new layer.');
             var copy = record.clone();
-			
+
             params = Ext.apply({
                 format: "image/png",
                 transparent : true,
@@ -281,7 +281,6 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             }, params);
 
             copy.get('layer').mergeNewParams(params);
-//            copy.get('layer')['opacity'] = this.layerController.getLayerOpacity();
             copy.getLayer().setOpacity(this.layerController.getLayerOpacity());
             copy.get('layer')['url'] = GDP.PROXY_PREFIX + copy.get('layer')['url'];
             copy.getLayer().events.register('loadend', this, function() {
@@ -289,7 +288,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             });
             this.layers.add(copy);
         }
-		
+        
     },
     createGeomOverlay : function(args) {
         LOG.debug('BaseMap:createGeometryOverlay: Drawing vector')
