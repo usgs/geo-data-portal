@@ -28,6 +28,10 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         this.capabilitiesStore = config.capabilitiesStore;
         this.parentRecordStore = config.getRecordsStore;
         
+        // TODO- What we need is for derivativeStore, scenarioStore and gcmStore to have 
+        // a second field that describes the store item.  Then we can use that in the 
+        // tooltip on each combobox
+        
         this.derivativeStore = new Ext.data.ArrayStore({
             storeId : 'derivativeStore',
             fields: ['derivative']
@@ -42,7 +46,8 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             lazyInit : false,
             editable : false,
             displayField : 'derivative',
-            emptyText : 'Choose Derivative'
+            emptyText : 'Choose Derivative',
+            tpl : '<tpl for="."><div ext:qtip="<b>{derivative}</b><br /><br />This should contain some info about {derivative}" class="x-combo-list-item">{derivative}</div></tpl>'
         });
         
         this.scenarioStore = new Ext.data.ArrayStore({
@@ -59,7 +64,8 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             lazyInit : false,
             editable : false,
             displayField : 'scenario',
-            emptyText : 'Choose Scenario'
+            emptyText : 'Choose Scenario',
+            tpl : '<tpl for="."><div ext:qtip="<b>{scenario}</b><br /><br />This should contain some info about {scenario}" class="x-combo-list-item">{scenario}</div></tpl>'
         });
         
         this.gcmStore = new Ext.data.ArrayStore({
@@ -76,7 +82,8 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             lazyInit : false,
             editable : false,
             displayField : 'gcm',
-            emptyText : 'Choose GCM'
+            emptyText : 'Choose GCM',
+            tpl : '<tpl for="."><div ext:qtip="<b>{gcm}</b><br /><br />This should contain some info about {gcm}" class="x-combo-list-item">{gcm}</div></tpl>'
         });
         
         this.zlayerName = 'elevation';
