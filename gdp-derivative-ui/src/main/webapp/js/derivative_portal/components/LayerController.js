@@ -286,12 +286,12 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
         this.fireEvent('loaded-catstore', args);
     },
     loadedDerivStore : function(args) {
-        LOG.debug('LayerController:loadedGetRecordsStore: Firing event "loaded-derivstore"');
+        LOG.debug('LayerController:loadedDerivStore: Firing event "loaded-derivstore"');
         //this.modifyLegendStore(args.record.data);
         this.fireEvent('loaded-derivstore', args);
     },
     loadedLeafStore : function(args) {
-        LOG.debug('LayerController:loadedGetRecordsStore: Firing event "loaded-leafstore"');
+        LOG.debug('LayerController:loadedLeafStore: Firing event "loaded-leafstore"');
         //this.modifyLegendStore(args.record.data);
         this.fireEvent('loaded-leafstore', args);
     },
