@@ -326,7 +326,7 @@ OpenLayers.Format.CSWGetRecords.v2_0_2 = OpenLayers.Class(OpenLayers.Format.XML,
                 "MD_DimensionNameTypeCode": null,
                 "MD_CellGeometryCode": null,
                 "MD_MaintenanceFrequencyCode": null,
-                "MD_ScopeCode": null,
+                "MD_ScopeCode": null
             },
             "_pass": {
                 "CI_ResponsibleParty": null,
