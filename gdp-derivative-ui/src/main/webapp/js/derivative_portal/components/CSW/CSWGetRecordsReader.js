@@ -80,27 +80,34 @@ Ext.extend(GDP.CSWGetRecordsReader, Ext.data.DataReader, {
             Ext.iterate(idInfos, function (idInfo) {
                 var keywordTypes = idInfo.descriptiveKeywords;
                 var srvId = idInfo.serviceIdentification;
+                var abstrakt = eval('('+idInfo.abstract.CharacterString.value+')');
                 
                 if (keywordTypes) {
                     Ext.iterate(keywordTypes, function (kt) {
                         if (kt.type.codeListValue === "derivative") {
                             Ext.iterate(kt.keyword, function(key) {
                                 var derivArr = [];
-                                derivArr.push(key.CharacterString.value);
+                                var val = key.CharacterString.value;
+                                derivArr.push(val);
+                                derivArr.push(abstrakt.quicktips.derivatives[val]);
                                 values.derivatives.push(derivArr);
                             }, this);
                         }
                         else if (kt.type.codeListValue === "scenario") {
                             Ext.iterate(kt.keyword, function(key) {
                                 var scenarioArr = [];
-                                scenarioArr.push(key.CharacterString.value);
+                                var val = key.CharacterString.value;
+                                scenarioArr.push(val);
+                                scenarioArr.push(abstrakt.quicktips.scenarios[val]);
                                 values.scenarios.push(scenarioArr);
                             }, this);
                         }
                         else if (kt.type.codeListValue === "gcm") {
                             Ext.iterate(kt.keyword, function(key) {
                                 var gcmArr = [];
-                                gcmArr.push(key.CharacterString.value);
+                                var val = key.CharacterString.value;
+                                gcmArr.push(val);
+                                gcmArr.push(abstrakt.quicktips.gcms[val]);
                                 values.gcms.push(gcmArr);
                             }, this);
                         }

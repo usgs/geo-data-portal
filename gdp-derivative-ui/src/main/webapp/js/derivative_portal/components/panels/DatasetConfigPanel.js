@@ -34,7 +34,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         
         this.derivativeStore = new Ext.data.ArrayStore({
             storeId : 'derivativeStore',
-            fields: ['derivative']
+            fields: ['derivative', 'quicktip']
         });
         this.derivativeCombo = new Ext.form.ComboBox({
             xtype : 'combo',
@@ -47,12 +47,12 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             editable : false,
             displayField : 'derivative',
             emptyText : 'Choose Derivative',
-            tpl : '<tpl for="."><div ext:qtip="<b>{derivative}</b><br /><br />This should contain some info about {derivative}" class="x-combo-list-item">{derivative}</div></tpl>'
+            tpl : '<tpl for="."><div ext:qtip="<b>{derivative}</b><br /><br />{quicktip}" class="x-combo-list-item">{derivative}</div></tpl>'
         });
         
         this.scenarioStore = new Ext.data.ArrayStore({
             storeId : 'scenarioStore',
-            fields: ['scenario']
+            fields: ['scenario', 'quicktip']
         });
         this.scenarioCombo = new Ext.form.ComboBox({
             xtype : 'combo',
@@ -65,12 +65,12 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             editable : false,
             displayField : 'scenario',
             emptyText : 'Choose Scenario',
-            tpl : '<tpl for="."><div ext:qtip="<b>{scenario}</b><br /><br />This should contain some info about {scenario}" class="x-combo-list-item">{scenario}</div></tpl>'
+            tpl : '<tpl for="."><div ext:qtip="<b>{scenario}</b><br /><br />{quicktip}" class="x-combo-list-item">{scenario}</div></tpl>'
         });
         
         this.gcmStore = new Ext.data.ArrayStore({
             storeId : 'gcmStore',
-            fields: ['gcm']
+            fields: ['gcm', 'quicktip']
         });
         this.gcmCombo = new Ext.form.ComboBox({
             xtype : 'combo',
@@ -83,7 +83,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             editable : false,
             displayField : 'gcm',
             emptyText : 'Choose GCM',
-            tpl : '<tpl for="."><div ext:qtip="<b>{gcm}</b><br /><br />This should contain some info about {gcm}" class="x-combo-list-item">{gcm}</div></tpl>'
+            tpl : '<tpl for="."><div ext:qtip="<b>{gcm}</b><br /><br />{quicktip}" class="x-combo-list-item">{gcm}</div></tpl>'
         });
         
         this.zlayerName = 'elevation';
@@ -244,12 +244,23 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
 //        this.layerCombo.fireEvent('select', this.layerCombo, args.record, 0);
     },
     onLoadedCatstore : function(args) {
+        var tips = args.record.get("tooltips");
         this.derivativeStore.removeAll();
         this.derivativeStore.loadData(args.record.get("derivatives"), true);
+//        this.derivativeStore.each(function(item) {
+//            this.derivativeStore. = tips.quicktips.derivatives[item.get('derivative')];
+//            var x = 4;
+//        }, this);
         this.scenarioStore.removeAll();
         this.scenarioStore.loadData(args.record.get("scenarios"), true);
+//        this.scenarioStore.each(function(item) {
+//            item.quicktip = tips.quicktips.scenarios[item.get('scenario')];
+//        }, this);
         this.gcmStore.removeAll();
         this.gcmStore.loadData(args.record.get("gcms"), true);
+//        this.gcmStore.each(function(item) {
+//            item.quicktip = tips.quicktips.gcms[item.get('gcm')];
+//        }, this);
 //        this.derivativeCombo.fireEvent('select', this.derivativeCombo, this.derivativeStore.getAt(0), 0);
 //        this.scenarioCombo.fireEvent('select', this.scenarioCombo, this.scenarioStore.getAt(0), 0);
 //        this.gcmCombo.fireEvent('select', this.gcmCombo, this.gcmStore.getAt(0), 0);
