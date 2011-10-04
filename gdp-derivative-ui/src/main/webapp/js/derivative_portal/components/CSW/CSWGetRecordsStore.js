@@ -11,7 +11,8 @@ GDP.CSWGetRecordsStore = function(meta) {
         {name: "scenarios"}, // Array of objects
         {name: "gcms"}, // Array of objects
         {name: "opendap", type: "string"},
-        {name: "wms", type: "string"}
+        {name: "wms", type: "string"},
+        {name: "fieldLabels"}
 //        {name: "languages"}, // Array of objects
 //        {name: "operationsMetadata"}, // Array of objects
 //        {name: "processOfferings"}, // Object

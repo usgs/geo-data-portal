@@ -41,7 +41,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             mode : 'local',
             triggerAction : 'all',
             store : this.derivativeStore,
-            fieldLabel : '<tpl for="."><span ext:qtip="Some information about derivatives" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Derivative',
+            fieldLabel : '<tpl for="."><span ext:qtip="Some information about derivative" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Derivative',
             forceSelection : true,
             lazyInit : false,
             editable : false,
@@ -258,6 +258,11 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
 //        }, this);
         this.gcmStore.removeAll();
         this.gcmStore.loadData(args.record.get("gcms"), true);
+        
+        this.derivativeCombo.label.update('<tpl for="."><span ext:qtip="' + args.record.get("fieldLabels").derivative + '" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Derivative');
+        this.scenarioCombo.label.update('<tpl for="."><span ext:qtip="' + args.record.get("fieldLabels").scenario + '" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Scenario');
+        this.gcmCombo.label.update('<tpl for="."><span ext:qtip="' + args.record.get("fieldLabels").gcm + '" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> GCM');
+        //this.derivativeCombo.render();
 //        this.gcmStore.each(function(item) {
 //            item.quicktip = tips.quicktips.gcms[item.get('gcm')];
 //        }, this);

@@ -12,7 +12,8 @@ GDP.CSWGetRecordsReader = function(meta, recordType) {
             {name: "scenarios"}, // Array of objects
             {name: "gcms"}, // Array of objects
             {name: "opendap", type: "string"},
-            {name: "wms", type: "string"}
+            {name: "wms", type: "string"},
+            {name: "fieldLabels"}
 //            {name: "operationsMetadata"}, // Array of objects
 //            {name: "processOfferings"}, // Object
 //            {name: "serviceIdentification"}, // Object
@@ -80,7 +81,14 @@ Ext.extend(GDP.CSWGetRecordsReader, Ext.data.DataReader, {
             Ext.iterate(idInfos, function (idInfo) {
                 var keywordTypes = idInfo.descriptiveKeywords;
                 var srvId = idInfo.serviceIdentification;
-                var abstrakt = eval('('+idInfo.abstract.CharacterString.value+')');
+                var abstrakt;
+                try {
+                    abstrakt = Ext.decode(idInfo["abstract"].CharacterString.value, true);
+                }
+                catch (ex) {
+                    // means not json, set abstract to null
+                    abstrakt = null;
+                }
                 
                 if (keywordTypes) {
                     Ext.iterate(keywordTypes, function (kt) {
@@ -89,7 +97,9 @@ Ext.extend(GDP.CSWGetRecordsReader, Ext.data.DataReader, {
                                 var derivArr = [];
                                 var val = key.CharacterString.value;
                                 derivArr.push(val);
-                                derivArr.push(abstrakt.quicktips.derivatives[val]);
+                                if (abstrakt != null) {
+                                    derivArr.push(abstrakt.quicktips.derivatives[val]);
+                                }
                                 values.derivatives.push(derivArr);
                             }, this);
                         }
@@ -98,7 +108,9 @@ Ext.extend(GDP.CSWGetRecordsReader, Ext.data.DataReader, {
                                 var scenarioArr = [];
                                 var val = key.CharacterString.value;
                                 scenarioArr.push(val);
-                                scenarioArr.push(abstrakt.quicktips.scenarios[val]);
+                                if (abstrakt != null) {
+                                    scenarioArr.push(abstrakt.quicktips.scenarios[val]);
+                                }
                                 values.scenarios.push(scenarioArr);
                             }, this);
                         }
@@ -107,7 +119,9 @@ Ext.extend(GDP.CSWGetRecordsReader, Ext.data.DataReader, {
                                 var gcmArr = [];
                                 var val = key.CharacterString.value;
                                 gcmArr.push(val);
-                                gcmArr.push(abstrakt.quicktips.gcms[val]);
+                                if (abstrakt != null) {
+                                    gcmArr.push(abstrakt.quicktips.gcms[val]);
+                                }
                                 values.gcms.push(gcmArr);
                             }, this);
                         }
@@ -127,6 +141,10 @@ Ext.extend(GDP.CSWGetRecordsReader, Ext.data.DataReader, {
                         }
                     } 
                 }
+                if (abstrakt != null) {
+                    values.fieldLabels = abstrakt.fieldlabels;
+                }
+                
             }, this);
             
             records.push(new this.recordType(values));
