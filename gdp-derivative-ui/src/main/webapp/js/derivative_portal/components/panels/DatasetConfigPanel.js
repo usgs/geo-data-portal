@@ -104,7 +104,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         };
         
         this.zlayerCombo = new Ext.form.ComboBox(Ext.apply({
-            fieldLabel : this.controller.getZAxisName(),
+            //fieldLabel : '<tpl for="."><span ext:qtip="Which threshold to display the derivative data for" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> ' + this.controller.getZAxisName(),
             editable : false,
             hidden : true
         }, this.zlayerComboConfig));
@@ -301,11 +301,11 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             if (threshold) {
                 LOG.debug('DatasetConfigPanel: Threshold found for layer. Re-adding zlayer combobox.');
                 this.zlayerCombo = new Ext.form.ComboBox(Ext.apply({
-                    fieldLabel : this.controller.getZAxisName(),
+                    fieldLabel : '<tpl for="."><span ext:qtip="Which threshold to display the derivative data for" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> ' + this.controller.getZAxisName(),
                     editable : false,
                     listWidth : this.width
                 }, this.zlayerComboConfig));
-                this.zlayerCombo.on('added', function(me, parent, index){me.setWidth(parent.width);})
+                this.zlayerCombo.on('added', function(me, parent, index){me.setWidth(parent.width - 5); })
                 this.add(this.zlayerCombo);
 
                 LOG.debug('DatasetConfigPanel: Setting z-layer combobox to threshold: ' + threshold);
