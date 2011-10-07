@@ -358,6 +358,7 @@ function initializeQuickTips() {
         maxWidth: 200,
         minWidth: 100,
         showDelay: 50,      // Show 50ms after entering target
+        dismissDelay: 0,
         trackMouse: true
     });
 }

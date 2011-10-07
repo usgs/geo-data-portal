@@ -305,7 +305,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
                     editable : false,
                     listWidth : this.width
                 }, this.zlayerComboConfig));
-                this.zlayerCombo.on('added', function(me, parent, index){me.setWidth(parent.width - 5); })
+                this.zlayerCombo.on('added', function(me, parent, index){me.setWidth(parent.width - 5); });
                 this.add(this.zlayerCombo);
 
                 LOG.debug('DatasetConfigPanel: Setting z-layer combobox to threshold: ' + threshold);
