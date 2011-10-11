@@ -1,0 +1,19 @@
+<dataStore>
+  <id>DataStoreInfoImpl--69a84d5b:132f307e08a:-8000</id>
+  <name>upload</name>
+  <type>Directory of spatial files (shapefiles)</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl--468a8f29:12b595b6180:-7fff</id>
+  </workspace>
+  <connectionParameters>
+    <entry key="memory mapped buffer">false</entry>
+    <entry key="create spatial index">true</entry>
+    <entry key="charset">ISO-8859-1</entry>
+    <entry key="filetype">shapefile</entry>
+    <entry key="cache and reuse memory maps">true</entry>
+    <entry key="url">file:data/upload</entry>
+    <entry key="namespace">gov.usgs.cida.gdp.upload</entry>
+  </connectionParameters>
+  <__default>false</__default>
+</dataStore>
