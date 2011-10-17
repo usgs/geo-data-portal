@@ -7,6 +7,7 @@
 <script src="js/log4javascript/log4javascript.js" type="text/javascript"></script>
 <script src="js/openlayers/OpenLayers.js" type="text/javascript"></script>
 <script src="js/geoext/GeoExt.js" type="text/javascript"></script>
+<script src="js/dygraph/dygraph-combined.js" type="text/javascript"></script>
 
 <%-- Modified library js modules??? --%>
 <script src='${param["ComponentDir"]}/CSW/Format/v2_0_2.js'></script>
@@ -35,6 +36,7 @@
 <script type="text/javascript" src='${param["ComponentDir"]}/panels/MapConfigPanel.js'></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/panels/ProcessingPanel.js'></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/panels/PolygonPOIPanel.js'></script>
+<script type="text/javascript" src='${param["ComponentDir"]}/panels/Plotter.js'></script>
 
 
 <%-- Root Module --%>

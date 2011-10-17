@@ -256,6 +256,8 @@ function initializeMapping() {
                     Filter : {
                         type : '==',
                         property : 'identifier',
+                        // this value (id of parent record) should come from some config thing
+                        // TODO basically don't hard code this
                         value : 'a0a3c56c-2be5-4d45-9924-72b13e348919'
                     },
                     version : '1.1.0'
@@ -290,11 +292,21 @@ function initializeMapping() {
         getRecordsStore : getRecordsStore
     })
 
+    // I'm removing this for now, we should move the logic somewhere though
     var timestepPanel = new GDP.TimestepChooser({
         region : 'south',
         border : false,
         height : 30,
         layerController : layerController
+    });
+    
+    var plotterPanel = new GDP.Plotter({
+        id : 'plotterPanel',
+        contentEl : 'dygraph-content',
+        layout : 'fit',
+        region : 'south',
+        border : true,
+        height : 200
     });
     
 //    var endpointPanel = new GDP.EndpointPanel({
@@ -310,7 +322,7 @@ function initializeMapping() {
         layout : 'border',
         // removed endpointPanel for now
         //items : [ endpointPanel, mapPanel, timestepPanel]
-        items : [ mapPanel, timestepPanel]
+        items : [ mapPanel, plotterPanel]
     });
     
     LOG.info('Derivative Portal: Mapping initialized.');
