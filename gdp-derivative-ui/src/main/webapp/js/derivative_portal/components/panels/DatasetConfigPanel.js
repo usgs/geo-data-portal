@@ -68,6 +68,36 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             tpl : '<tpl for="."><div ext:qtip="<b>{scenario}</b><br /><br />{quicktip}" class="x-combo-list-item">{scenario}</div></tpl>'
         });
         
+        this.timestepStore = new Ext.data.ArrayStore({
+            storeId : 'timestepStore',
+            fields: [
+                'timestep',
+                'timestepdisplay',
+                'quicktip'
+            ],
+            data: [
+                [1961, '1961-1990', 'Some information about 1961-1990'], 
+                [2001, '2001-2030', 'Some information about 2001-2030'],
+                [2031, '2031-2060', 'Some information about 2031-2060']
+            ]
+        });
+        this.timestepCombo = new Ext.form.ComboBox({
+            xtype : 'combo',
+            mode : 'local',
+            triggerAction : 'all',
+            store : this.timestepStore,
+            forceSelection : true,
+            lazyInit : false,
+            editable : false,
+            autoSelect : true,
+            displayField : 'timestepdisplay',
+            fieldLabel : '<tpl for="."><span ext:qtip="Some information about timestep" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Time Step',
+            tpl : '<tpl for="."><div ext:qtip="<b>{timestepdisplay}</b><br /><br />{quicktip}" class="x-combo-list-item">{timestepdisplay}</div></tpl>'
+        });
+        this.timestepCombo.on('added', function(me){
+            me.setValue(me.store.data.items[0].data.timestepdisplay);
+        }, this);
+        
         this.gcmStore = new Ext.data.ArrayStore({
             storeId : 'gcmStore',
             fields: ['gcm', 'quicktip']
@@ -109,10 +139,10 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             hidden : true
         }, this.zlayerComboConfig));
         
-        Ext.iterate([this.derivativeCombo, this.scenarioCombo, this.gcmCombo, this.zlayerCombo], function(item) {
+        Ext.iterate([this.derivativeCombo, this.scenarioCombo, this.timestepCombo, this.gcmCombo, this.zlayerCombo], function(item) {
             item.on('added', function(me, parent){ 
                 me.setWidth(parent.width - 5); 
-                me.setValue('');
+//                me.setValue('');
             })
         }, this);
         
@@ -122,6 +152,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             items : [
                 this.derivativeCombo,
                 this.scenarioCombo,
+                this.timestepCombo,
                 this.gcmCombo,
                 this.zlayerCombo
             ],
