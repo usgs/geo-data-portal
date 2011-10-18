@@ -16,8 +16,6 @@ Ext.onReady(function () {
     //    GDP.PROCESS_ENDPOINT = 'http://localhost:8080/gdp-process-wps/WebProcessingService'; // Development
     
     initializeLogging();
-    //        test();
-    //        return;
     initializeNotification();
     initializeMapping();
     initializeQuickTips();

@@ -76,9 +76,10 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
                 'quicktip'
             ],
             data: [
-                [1961, '1961-1990', 'Some information about 1961-1990'], 
-                [2001, '2001-2030', 'Some information about 2001-2030'],
-                [2031, '2031-2060', 'Some information about 2031-2060']
+                ['1961-01-01T00:00:00Z', '1961-1990', 'Some information about 1961-1990'], 
+                ['2011-01-01T00:00:00Z', '2011-2040', 'Some information about 2011-2040'],
+                ['2041-01-01T00:00:00Z', '2041-2070', 'Some information about 2041-2070'],
+                ['2071-01-01T00:00:00Z', '2071-2098', 'Some information about 2071-2098']
             ]
         });
         this.timestepCombo = new Ext.form.ComboBox({
@@ -191,6 +192,9 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         }, this);
         this.gcmCombo.on('select', function(combo, record, index) {
             this.controller.requestGcm(record);
+        }, this);
+        this.timestepCombo.on('select', function(combo, record, index){
+             this.controller.requestDimension('time', record.data.timestep);
         }, this);
         this.controller.on('selected-dataset', function(args) {
             LOG.debug('DatasetConfigPanel observed "selected-dataset"');
