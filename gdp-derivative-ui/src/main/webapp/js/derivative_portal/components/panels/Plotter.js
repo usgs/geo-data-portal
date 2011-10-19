@@ -15,17 +15,8 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
             var graph = new Dygraph(
                 this.plotterDiv.dom,
                 'resources/test.csv',
-//                [
-//                    [0,1,2],
-//                    [1,4,5],
-//                    [2,68,44]
-//                ],
                 {
-                    //labels : ['x', 'Num', 'Awesome'],
-                    //customBars: true,
                     errorBars : true,
-                    //title: 'Test Flight',
-                    //ylabel: 'Temperature (F)',
                     legend: 'always',
                     labelsDivStyles: {'textAlign': 'right'},
                     showRangeSelector: true
