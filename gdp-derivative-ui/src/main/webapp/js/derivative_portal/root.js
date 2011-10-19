@@ -291,12 +291,12 @@ function initializeMapping() {
     })
 
     // I'm removing this for now, we should move the logic somewhere though
-    var timestepPanel = new GDP.TimestepChooser({
-        region : 'south',
-        border : false,
-        height : 30,
-        layerController : layerController
-    });
+//    var timestepPanel = new GDP.TimestepChooser({
+//        region : 'south',
+//        border : false,
+//        height : 30,
+//        layerController : layerController
+//    });
     
     var plotterPanel = new GDP.Plotter({
         id : 'plotterPanel',
@@ -306,13 +306,6 @@ function initializeMapping() {
         border : true,
         height : 200
     });
-    
-//    var endpointPanel = new GDP.EndpointPanel({
-//        region : 'north',
-//        controller : layerController,
-//        capabilitiesStore : capabilitiesStore,
-//        endpointUrls : endpointUrls
-//    });
     
     var centerPanel = new Ext.Panel({
         id : 'center-panel',

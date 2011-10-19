@@ -17,6 +17,9 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
     gcmStore : undefined,
     gcmCombo : undefined,
     layerCombo : undefined,
+    timestepName : undefined,
+    timestepStore : undefined,
+    timestepCombo : undefined,
     zlayerCombo : undefined,
     zlayerName : undefined,
     zlayerStore : undefined,
@@ -68,19 +71,21 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             tpl : '<tpl for="."><div ext:qtip="<b>{scenario}</b><br /><br />{quicktip}" class="x-combo-list-item">{scenario}</div></tpl>'
         });
         
+        this.timestepName = 'time';
         this.timestepStore = new Ext.data.ArrayStore({
-            storeId : 'timestepStore2',
+            storeId : 'timestepStore',
             fields: [
-                'time',
-                'timestepdisplay'
-            ],
-            data: [
-                ['1961-01-01T00:00:00Z', '1961-1990'], 
-                ['2011-01-01T00:00:00Z', '2011-2040'],
-                ['2041-01-01T00:00:00Z', '2041-2070'],
-                ['2071-01-01T00:00:00Z', '2071-2098']
+                'time'
             ]
         });
+//        this.timestepStore.on('load', function(store, records, {}){
+//            Ext.iterate(records, function(item, index, allItems) {
+//                var test.data = item;
+//                var that = this;
+//                var indez = index;
+//                log.debug('');
+//            }, this)
+//        }, this);
         this.timestepCombo = new Ext.form.ComboBox({
             xtype : 'combo',
             mode : 'local',
@@ -90,11 +95,11 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             lazyInit : false,
             editable : false,
             autoSelect : true,
-            displayField : 'timestepdisplay',
-            fieldLabel : '<tpl for="."><span ext:qtip="Some information about timestep" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Time Step'
+            hidden : true,
+            displayField : 'time'
         });
         this.timestepCombo.on('added', function(me){
-            me.setValue(me.store.data.items[0].data.timestepdisplay);
+//            me.setValue(me.store.data.items[0].data.time);
         }, this);
         
         this.gcmStore = new Ext.data.ArrayStore({
@@ -151,9 +156,9 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             items : [
                 this.derivativeCombo,
                 this.scenarioCombo,
-                this.timestepCombo,
                 this.gcmCombo,
-                this.zlayerCombo
+                this.zlayerCombo,
+                this.timestepCombo
             ],
             layout : 'form',
             title : 'Dataset Configuration',
@@ -319,6 +324,8 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         // also probably call WMS GetCaps
     },
     onChangeLayer : function() {
+        LOG.debug("DatasetConfigPanel: onChangeLayer()");
+        
         var layer = this.controller.getLayer();
         if (layer) {
             //this.layerCombo.setValue(layer.getLayer().name);
@@ -328,10 +335,17 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             this.remove(this.zlayerCombo)
         }
 
-        var loaded = this.controller.loadDimensionStore(layer, this.zlayerStore, this.zlayerName);
-
+        var loaded = this.controller.loadDimensionStore(layer, this.zlayerStore, this.zlayerName)
+            && this.controller.loadDimensionStore(layer, this.timestepStore, this.timestepName);
+        
         if (loaded) {
+            this.controller.time = this.timestepStore.data.items[0].data.time;
+            
             var threshold = this.controller.getDimension(this.zlayerName);
+            var time = this.controller.getDimension(this.timestepName);
+            this.timestepCombo.setValue(time);
+            this.timestepCombo.label = '<tpl for="."><span ext:qtip="Some information about timestep" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Time Step';
+            this.timestepCombo.setVisible(true);
             if (threshold) {
                 LOG.debug('DatasetConfigPanel: Threshold found for layer. Re-adding zlayer combobox.');
                 this.zlayerCombo = new Ext.form.ComboBox(Ext.apply({
@@ -348,7 +362,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
                 this.zlayerCombo.on('select', function(combo, record, index) {
                     this.controller.requestDimension(this.zlayerName, record.get(this.zlayerName));
                 }, this);
-                this.doLayout();
+                this.doLayout();   
             }
         }
     },

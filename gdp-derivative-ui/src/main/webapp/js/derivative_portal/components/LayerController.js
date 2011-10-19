@@ -22,6 +22,10 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
     getGcm : function() {
         return this.gcm;
     },
+    time : undefined,
+    getTime : function() {
+        return this.time;
+    },
     dimensions : undefined,
     getDimension : function(extentName) {
         return this.dimensions[extentName];
