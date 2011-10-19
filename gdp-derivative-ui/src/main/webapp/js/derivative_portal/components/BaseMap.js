@@ -5,9 +5,6 @@ Ext.ns("GDP");
 // Originally I had wanted to collapse the legend window when a user changes the legend, and have it re-expand
 // when the new legend image has been loaded but I'm still not able to get the timing right.
 
-// TODO- At some point, a bug was introduced that causes the legend to appear with a much lower opacity than what the bar suggests.
-// This occurs when you flip *back* to a legend layer already shown previously either by sliding through time steps or z-index
-
 GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
     layerController : undefined,
     currentLayer : undefined,
@@ -15,11 +12,6 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
     legendImage : undefined, 
     DEFAULT_LEGEND_X : 110,
     DEFAULT_LEGEND_Y : 293,
-    realignLegend : function() {
-        if (this.legendWindow) {
-            this.legendWindow.alignTo(this.body, "tr-tr");
-        }
-    },
     constructor : function(config) {
         LOG.debug('BaseMap:constructor: Constructing self.');
         // From GDP (with Zoerb's comments)
@@ -27,7 +19,9 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         // Without this line, the esri road and relief layers will not display
         // outside of the upper western hemisphere.
         var MAX_RESOLUTION = 1.40625/2;
+        
         this.layerController = config.layerController;
+        
         if (!config) config = {};
 		
         var map = new OpenLayers.Map({
@@ -122,6 +116,11 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         this.on('resize', function() {
             this.realignLegend();
         }, this);
+    },
+    realignLegend : function() {
+        if (this.legendWindow) {
+            this.legendWindow.alignTo(this.body, "tr-tr");
+        }
     },
     zoomToExtent : function(record) {
         if (!record) return;
@@ -240,18 +239,22 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             
         var baseLayerIndex = 0;
         if (this.layers.getCount() > 0) {
+            LOG.debug('BaseMap:onReplaceBaseLayer: Trying to find current base layer to remove it.');
             baseLayerIndex = this.layers.findBy(function(r, id){
                 return r.data.layer.isBaseLayer
             });
                 
             if (baseLayerIndex > -1 ) {
                 this.layers.removeAt(baseLayerIndex);
-                LOG.debug('BaseMap:onReplaceBaseLayer: Removed base layer from this object\'s map.layers at index ' + baseLayerIndex + '.');
+                LOG.debug('BaseMap:onReplaceBaseLayer: Removed base layer from this object\'s map.layers at index ' + baseLayerIndex);
+            } else {
+                // Not sure why this would happen
+                LOG.debug('BaseMap:onReplaceBaseLayer: Base layer not found.');
             }
         }
             
         this.layers.add([record]);
-        LOG.debug('BaseMap:onReplaceBaseLayer: Added base layer to this object\'s map.layers at index ' + baseLayerIndex + '.');
+        LOG.debug('BaseMap:onReplaceBaseLayer: Added base layer to this object\'s map.layers at index ' + baseLayerIndex);
     },
     replaceLayer : function(record, params, existingIndex) {
         LOG.debug('BaseMap:replaceLayer: Handling request.');
@@ -261,8 +264,9 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         }
 		
         if (this.currentLayer) {
-            this.currentLayer.getLayer().setOpacity(0.0);
-            LOG.debug('BaseMap:replaceLayer: Set current layer opacity to: ' + this.currentLayer.getLayer().opacity);
+            var layer = this.currentLayer.getLayer();
+            layer.setOpacity(0.0); // This will effectively hide the current layer
+            LOG.debug('BaseMap:replaceLayer: Hiding current layer');
         }
                 
         if (existingIndex) {
@@ -297,8 +301,6 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         var feature = new OpenLayers.Feature.Vector(geom, {
             id : 'draw-vector'
         });
-            
-//        var currentFeature = this.map.getLayersByName('bboxvector')[0].getFeatureById('draw-vector');
             
         this.map.getLayersByName('bboxvector')[0].removeAllFeatures(null,true);
         this.map.getLayersByName('bboxvector')[0].addFeatures([feature]);

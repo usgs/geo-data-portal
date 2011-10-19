@@ -229,10 +229,10 @@ function initializeMapping() {
     });
 
     var endpointUrls = [
-    ['http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/ncWMS/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1'],
-    ['http://igsarmewmaccave:8081/ncWMS/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1'],
-    ['http://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/wms/gmo/GMO_w_meta.ncml?service=WMS&version=1.1.1&request=GetCapabilities'],
-    ['http://igsarm-cida-gdp2.er.usgs.gov:8081/geonetwork/srv/en/csw']
+        ['http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/ncWMS/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1'],
+        ['http://igsarmewmaccave:8081/ncWMS/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1'],
+        ['http://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/wms/gmo/GMO_w_meta.ncml?service=WMS&version=1.1.1&request=GetCapabilities'],
+        ['http://igsarm-cida-gdp2.er.usgs.gov:8081/geonetwork/srv/en/csw']
     ];
     var proxyUrl = GDP.PROXY_PREFIX + endpointUrls[0];
     var capabilitiesStore = new GeoExt.data.WMSCapabilitiesStore({

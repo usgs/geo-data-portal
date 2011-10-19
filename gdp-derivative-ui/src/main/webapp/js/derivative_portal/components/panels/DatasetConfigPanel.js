@@ -69,17 +69,16 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         });
         
         this.timestepStore = new Ext.data.ArrayStore({
-            storeId : 'timestepStore',
+            storeId : 'timestepStore2',
             fields: [
-                'timestep',
-                'timestepdisplay',
-                'quicktip'
+                'time',
+                'timestepdisplay'
             ],
             data: [
-                ['1961-01-01T00:00:00Z', '1961-1990', 'Some information about 1961-1990'], 
-                ['2011-01-01T00:00:00Z', '2011-2040', 'Some information about 2011-2040'],
-                ['2041-01-01T00:00:00Z', '2041-2070', 'Some information about 2041-2070'],
-                ['2071-01-01T00:00:00Z', '2071-2098', 'Some information about 2071-2098']
+                ['1961-01-01T00:00:00Z', '1961-1990'], 
+                ['2011-01-01T00:00:00Z', '2011-2040'],
+                ['2041-01-01T00:00:00Z', '2041-2070'],
+                ['2071-01-01T00:00:00Z', '2071-2098']
             ]
         });
         this.timestepCombo = new Ext.form.ComboBox({
@@ -92,8 +91,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             editable : false,
             autoSelect : true,
             displayField : 'timestepdisplay',
-            fieldLabel : '<tpl for="."><span ext:qtip="Some information about timestep" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Time Step',
-            tpl : '<tpl for="."><div ext:qtip="<b>{timestepdisplay}</b><br /><br />{quicktip}" class="x-combo-list-item">{timestepdisplay}</div></tpl>'
+            fieldLabel : '<tpl for="."><span ext:qtip="Some information about timestep" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Time Step'
         });
         this.timestepCombo.on('added', function(me){
             me.setValue(me.store.data.items[0].data.timestepdisplay);
@@ -194,7 +192,8 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             this.controller.requestGcm(record);
         }, this);
         this.timestepCombo.on('select', function(combo, record, index){
-             this.controller.requestDimension('time', record.data.timestep);
+            LOG.debug('DatasetConfigPanel observed "select"');
+             this.controller.requestDimension('time', record.data.time);
         }, this);
         this.controller.on('selected-dataset', function(args) {
             LOG.debug('DatasetConfigPanel observed "selected-dataset"');
