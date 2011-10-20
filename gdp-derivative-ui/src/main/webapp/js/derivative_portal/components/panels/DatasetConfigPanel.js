@@ -20,6 +20,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
     timestepName : undefined,
     timestepStore : undefined,
     timestepCombo : undefined,
+    timestepComboConfig : undefined,
     zlayerCombo : undefined,
     zlayerName : undefined,
     zlayerStore : undefined,
@@ -74,33 +75,21 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         this.timestepName = 'time';
         this.timestepStore = new Ext.data.ArrayStore({
             storeId : 'timestepStore',
-            fields: [
-                'time'
-            ]
+            fields: [this.timestepName]
         });
-//        this.timestepStore.on('load', function(store, records, {}){
-//            Ext.iterate(records, function(item, index, allItems) {
-//                var test.data = item;
-//                var that = this;
-//                var indez = index;
-//                log.debug('');
-//            }, this)
-//        }, this);
-        this.timestepCombo = new Ext.form.ComboBox({
-            xtype : 'combo',
+        this.timestepComboConfig = {
             mode : 'local',
             triggerAction : 'all',
             store : this.timestepStore,
             forceSelection : true,
             lazyInit : false,
+            displayField : this.timestepName,
             editable : false,
-            autoSelect : true,
-            hidden : true,
-            displayField : 'time'
-        });
-        this.timestepCombo.on('added', function(me){
-//            me.setValue(me.store.data.items[0].data.time);
-        }, this);
+            autoWidth : true
+        }
+        this.timestepCombo = new Ext.form.ComboBox({
+            hidden : true
+        }, this.timestepComboConfig);
         
         this.gcmStore = new Ext.data.ArrayStore({
             storeId : 'gcmStore',
@@ -146,7 +135,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         Ext.iterate([this.derivativeCombo, this.scenarioCombo, this.timestepCombo, this.gcmCombo, this.zlayerCombo], function(item) {
             item.on('added', function(me, parent){ 
                 me.setWidth(parent.width - 5); 
-//                me.setValue('');
+                me.setValue('');
             })
         }, this);
         
@@ -195,10 +184,6 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         }, this);
         this.gcmCombo.on('select', function(combo, record, index) {
             this.controller.requestGcm(record);
-        }, this);
-        this.timestepCombo.on('select', function(combo, record, index){
-            LOG.debug('DatasetConfigPanel observed "select"');
-             this.controller.requestDimension('time', record.data.time);
         }, this);
         this.controller.on('selected-dataset', function(args) {
             LOG.debug('DatasetConfigPanel observed "selected-dataset"');
@@ -332,7 +317,11 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         }
 
         if (this.zlayerCombo) {
-            this.remove(this.zlayerCombo)
+            this.remove(this.zlayerCombo);
+        }
+        
+        if (this.timestepCombo) {
+            this.remove(this.timestepCombo);
         }
 
         var loaded = this.controller.loadDimensionStore(layer, this.zlayerStore, this.zlayerName)
@@ -342,10 +331,28 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             this.controller.time = this.timestepStore.data.items[0].data.time;
             
             var threshold = this.controller.getDimension(this.zlayerName);
+            
+            // TODO - Move time combobox creation down here instead of in constructor
             var time = this.controller.getDimension(this.timestepName);
-            this.timestepCombo.setValue(time);
-            this.timestepCombo.label = '<tpl for="."><span ext:qtip="Some information about timestep" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Time Step';
-            this.timestepCombo.setVisible(true);
+            
+            if (time) {
+                LOG.debug('DatasetConfigPanel: Time found for layer. Re-adding time step combobox.');
+                this.timestepCombo = new Ext.form.ComboBox(Ext.apply({
+                    fieldLabel : '<tpl for="."><span ext:qtip="Some information about timestep" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Time Step',
+                    listWidth : this.width
+                }, this.timestepComboConfig));
+                this.timestepCombo.on('added', function(me, parent){me.setWidth(parent.width - 5); });
+                this.add(this.timestepCombo);
+                
+                LOG.debug('DatasetConfigPanel: Setting timestep combobox to time: ' + time);
+                this.timestepCombo.setValue(time);
+                
+                this.timestepCombo.on('select', function(combo, record, index){
+                    LOG.debug('DatasetConfigPanel:timeStepCombo: observed "select"');
+                     this.controller.requestDimension(this.timestepName, record.get(this.timestepName));
+                }, this);
+            }
+            
             if (threshold) {
                 LOG.debug('DatasetConfigPanel: Threshold found for layer. Re-adding zlayer combobox.');
                 this.zlayerCombo = new Ext.form.ComboBox(Ext.apply({
@@ -353,17 +360,18 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
                     editable : false,
                     listWidth : this.width
                 }, this.zlayerComboConfig));
-                this.zlayerCombo.on('added', function(me, parent, index){me.setWidth(parent.width - 5); });
+                this.zlayerCombo.on('added', function(me, parent){me.setWidth(parent.width - 5); });
                 this.add(this.zlayerCombo);
 
                 LOG.debug('DatasetConfigPanel: Setting z-layer combobox to threshold: ' + threshold);
                 this.zlayerCombo.setValue(threshold);
 
                 this.zlayerCombo.on('select', function(combo, record, index) {
+                    LOG.debug('DatasetConfigPanel:zlayerCombo: observed "select"');
                     this.controller.requestDimension(this.zlayerName, record.get(this.zlayerName));
                 }, this);
-                this.doLayout();   
             }
+            this.doLayout();
         }
     },
     onChangeDerivative : function () {
