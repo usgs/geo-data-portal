@@ -1095,8 +1095,8 @@ var Dataset = function() {
         }
         _hasTimeRange = true;
 
-        var fromDate = $.datepicker.parseDate('yy-mm-dd', $(datesXML).find('time:eq(0)').text());
-        var toDate = $.datepicker.parseDate('yy-mm-dd', $(datesXML).find('time:eq(1)').text());
+        var fromDate = $.datepicker.parseDate('yy-mm-dd', $(datesXML).find('time:eq(0)').text().split('T')[0]);
+        var toDate = $.datepicker.parseDate('yy-mm-dd', $(datesXML).find('time:eq(1)').text().split('T')[0]);
         logger.debug('GDP: Grid time range is from ' + fromDate + ' to ' + toDate);
         
         $(_DATE_RANGE_FROM_INPUT_BOX).datepicker("destroy");
