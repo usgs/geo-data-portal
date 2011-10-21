@@ -416,17 +416,18 @@ var AOI = function() {
         $('#download_shapefile_link_row').remove();
         if (selectedFeatureType) {
             var maxFeaturesToReturn = Constant.ui.shapefile_downloading_maxfeatures ?  '&maxFeatures=' + Constant.ui.shapefile_downloading_maxfeatures : '';
-            var grabURL = Constant.endpoint.proxy + Constant.endpoint.geoserver + '/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+selectedFeatureType + maxFeaturesToReturn + '&outputFormat=SHAPE-ZIP';
+            var rootUrl = Constant.endpoint.proxy + Constant.endpoint.geoserver + '/ows';
+            var kvpParams = 'service=WFS&version=1.0.0&request=GetFeature&typeName='+selectedFeatureType + maxFeaturesToReturn + '&outputFormat=SHAPE-ZIP';
             $('#aoi-table tbody').append(
                 $('<tr></tr>').append(
                     $('<td></td>').append(
                         $('<a></a>').
                             attr('id','download_shapefile_link').
-                            attr('href', grabURL).
+                            attr('href', '#').
                             addClass('hidden bold-link').
                             html('Download Shapefile').
                             click(function() {
-                                window.onbeforeunload = null;
+                                $.download(rootUrl,kvpParams,'get')
                             })
                     )
                 ).attr('id','download_shapefile_link_row')
