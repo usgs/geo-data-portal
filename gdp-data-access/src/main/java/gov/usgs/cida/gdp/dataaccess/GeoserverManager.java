@@ -73,7 +73,7 @@ public class GeoserverManager {
         String dataStoresPath = workspacesPath + workspace + PARAM_DATASTORES;
         
         String namespace = "";
-        Matcher nsMatcher = Pattern.compile(".*<uri>(.*)</uri>.*").matcher(getNameSpaceXML(workspace));
+        Matcher nsMatcher = Pattern.compile(".*<uri>(.*)</uri>.*", Pattern.DOTALL).matcher(getNameSpaceXML(workspace));
         if (nsMatcher.matches()) {
             namespace = nsMatcher.group(1);
         }
