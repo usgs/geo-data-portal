@@ -411,7 +411,6 @@ var AOI = function() {
     }
 
     function createShapefileDownloadLink(selectedFeatureType) {
-        // Currently, the download functionality from GeoServer is not functioning.
         if (!selectedFeatureType) selectedFeatureType = $(_AOI_SELECTBOX).val();
         $('#download_shapefile_link').fadeOut(Constant.ui.fadeSpeed);
         $('#download_shapefile_link_row').remove();
@@ -421,7 +420,14 @@ var AOI = function() {
             $('#aoi-table tbody').append(
                 $('<tr></tr>').append(
                     $('<td></td>').append(
-                        $('<a></a>').attr('id','download_shapefile_link').attr('href', grabURL).addClass('hidden bold-link').html('Download Shapefile')
+                        $('<a></a>').
+                            attr('id','download_shapefile_link').
+                            attr('href', grabURL).
+                            addClass('hidden bold-link').
+                            html('Download Shapefile').
+                            click(function() {
+                                window.onbeforeunload = null;
+                            })
                     )
                 ).attr('id','download_shapefile_link_row')
             )
