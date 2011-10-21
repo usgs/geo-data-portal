@@ -412,7 +412,6 @@ var AOI = function() {
 
     function createShapefileDownloadLink(selectedFeatureType) {
         // Currently, the download functionality from GeoServer is not functioning.
-        return;
         if (!selectedFeatureType) selectedFeatureType = $(_AOI_SELECTBOX).val();
         $('#download_shapefile_link').fadeOut(Constant.ui.fadeSpeed);
         $('#download_shapefile_link_row').remove();
