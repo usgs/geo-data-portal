@@ -14,7 +14,12 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
             this.plotterDiv.setHeight(this.height);
             var graph = new Dygraph(
                 this.plotterDiv.dom,
-                'resources/test.csv',
+                'resources/a1b-a2.csv',
+//                [
+//                    [0,1,2],
+//                    [1,4,5],
+//                    [2,68,44]
+//                ],
                 {
                     errorBars : true,
                     legend: 'always',
