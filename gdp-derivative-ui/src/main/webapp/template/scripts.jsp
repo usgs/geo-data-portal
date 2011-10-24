@@ -13,7 +13,6 @@
 <script src='${param["ComponentDir"]}/CSW/Format/v2_0_2.js'></script>
 
 <%-- Custom Application Modules Here --%>
-<script type="text/javascript" src='${param["ComponentDir"]}/Animator.js'></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/LayerController.js'></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/BoundsPanelSubmitButton.js'></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/BaseMap.js'></script>
@@ -29,7 +28,6 @@
 <script type="text/javascript" src='${param["ComponentDir"]}/CSW/CSWGetRecordsReader.js'></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/panels/WPSPanel.js'></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/panels/WPSProcessPanel.js'></script>
-<script type="text/javascript" src='${param["ComponentDir"]}/panels/TimestepChooser.js'></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/panels/EndpointPanel.js'></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/panels/DatasetConfigPanel.js'></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/panels/ConfigurationPanel.js'></script>

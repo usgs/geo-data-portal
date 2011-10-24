@@ -113,6 +113,52 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             LOG.debug('BaseMap: Observed "creategeomoverlay".');
             this.createGeomOverlay(args);
         }, this);
+        this.layerController.on('requestfoi', function(args){
+            LOG.debug('BaseMap: Observed "requestfoi".');
+            this.clearLayers();
+            var foivectorlayer = args.clone().getLayer();
+            
+            foivectorlayer.setVisibility(true);
+            foivectorlayer.events.on({
+                'featureselected': function(feature) {
+                    LOG.debug(feature.feature.fid);
+                    // TODO - Add this fid to the plotter
+                },
+                'featureunselected': function(feature) {
+                    LOG.debug(feature.feature.fid);
+                    // TODO -Remove this fid from the plotter
+                }
+            });
+            
+            var defaultStyle = new OpenLayers.Style({
+                strokeColor: "#FFFF66",
+                strokeWidth: 2,
+                strokeOpacity: 0.5,
+                fillOpacity: 0.2
+            });
+            var selectedStyle = new OpenLayers.Style({
+                strokeColor: "#00CCFF",
+                strokeWidth: 2,
+                strokeOpacity: 0.5,
+                fillOpacity: 0.2,
+                fillColor: "#0000FF"
+            });
+            foivectorlayer.styleMap = new OpenLayers.StyleMap({ 
+                'default' : defaultStyle,
+                'select' : selectedStyle
+            })
+            
+            var selectorControl = new OpenLayers.Control.SelectFeature(
+                foivectorlayer,
+                {
+                    multiple: false, 
+                    hover: false
+                }
+            )
+            this.map.addLayers([foivectorlayer]);
+            this.map.addControl(selectorControl);
+            selectorControl.activate();
+        }, this);
         this.on('resize', function() {
             this.realignLegend();
         }, this);
@@ -145,7 +191,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         LOG.debug('BaseMap:clearLayers: Handling request.');
         Ext.each(this.layers.data.getRange(), function(item, index, allItems){
             var layer = item.data.layer;
-            if (layer.isBaseLayer || layer.name == "bboxvector") {
+            if (layer.isBaseLayer || layer.name == "bboxvector"/* || layer.name == "foivector"*/) {
                 LOG.debug('BaseMap:clearLayers: Layer '+layer.id+' is a base layer and will not be cleared.');
                 return;
             }                
@@ -180,7 +226,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             var requestedDimensions = this.layerController.getAllDimensions();
             Ext.iterate(requestedDimensions, function(extentName, value) {
                 var layer = record.getLayer();
-                if (layer.name === 'bboxvector' || layer.isBaseLayer) {
+                if (layer.name === 'bboxvector' /*|| layer.name === 'foivector' */|| layer.isBaseLayer) {
                     result = false;
                 } else {
                     var existingDimension = record.getLayer().params[extentName.toUpperCase()];

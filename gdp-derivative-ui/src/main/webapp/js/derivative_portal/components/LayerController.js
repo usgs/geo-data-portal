@@ -95,8 +95,9 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
             "loaded-catstore",
             "loaded-derivstore",
             "exception-capstore",
-            "exception-catstore"
-            );
+            "exception-catstore",
+            "requestfoi"
+        );
             
         // There shouldn't be anything listening at this point. 
         LOG.trace('LayerController:constructor: replacing base layer for this object. The next notification firing shouldn\'t be picked up by any other object at this point in the initialization');
@@ -202,6 +203,10 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
             LOG.debug('LayerController:requestOpacity: Firing event "changeopacity".');
             this.fireEvent('changeopacity');
         }
+    },
+    requestFeatureOfInterest : function(args) {
+        LOG.debug('LayerController:requestFeatureOfInterest: Firing Event "requestfoi".');
+        this.fireEvent('requestfoi', args);
     },
     requestDimension : function(extentName, value) {
         LOG.debug('LayerController:requestDimension: Handling request.');

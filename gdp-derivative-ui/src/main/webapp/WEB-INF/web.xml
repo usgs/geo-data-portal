@@ -11,14 +11,15 @@
             <param-value>/proxy/*</param-value>
         </init-param>
     </servlet>
-    <servlet>
-        <servlet-name>GeonetworkProxy</servlet-name>
-        <servlet-class>gov.usgs.cida.geonetwork.GeonetworkProxy</servlet-class>
-    </servlet>
     <servlet-mapping>
         <servlet-name>OWSProxy</servlet-name>
         <url-pattern>/proxy/*</url-pattern>
     </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>GeonetworkProxy</servlet-name>
+        <servlet-class>gov.usgs.cida.geonetwork.GeonetworkProxy</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>GeonetworkProxy</servlet-name>
         <url-pattern>/geonetwork/csw</url-pattern>

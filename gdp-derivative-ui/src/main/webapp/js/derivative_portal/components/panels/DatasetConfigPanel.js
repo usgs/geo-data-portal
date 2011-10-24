@@ -28,13 +28,12 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
     constructor : function(config) {
         LOG.debug('DatasetConfigPanel:constructor: Constructing self.');
 
-        this.controller = config.controller;
-        this.capabilitiesStore = config.capabilitiesStore;
-        this.parentRecordStore = config.getRecordsStore;
-        
         // TODO- What we need is for derivativeStore, scenarioStore and gcmStore to have 
         // a second field that describes the store item.  Then we can use that in the 
         // tooltip on each combobox
+        this.controller = config.controller;
+        this.capabilitiesStore = config.capabilitiesStore;
+        this.parentRecordStore = config.getRecordsStore;
         
         this.derivativeStore = new Ext.data.ArrayStore({
             storeId : 'derivativeStore',
@@ -132,7 +131,42 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             hidden : true
         }, this.zlayerComboConfig));
         
-        Ext.iterate([this.derivativeCombo, this.scenarioCombo, this.timestepCombo, this.gcmCombo, this.zlayerCombo], function(item) {
+        var foiGetCapsStore = new GeoExt.data.WFSCapabilitiesStore({
+            //TODO - Bring this out
+            url:"proxy/http://localhost:8081/geoserver/wfs?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetCapabilities",
+            protocolOptions: {
+                version: "1.1.0"
+            },
+            layerOptions: {
+                visibility: true,
+                displayInLayerSwitcher: false,
+                strategies: [new OpenLayers.Strategy.BBOX({ratio: 1})],
+                opacity : 0.5
+            },
+            autoLoad: true,
+            listeners: {
+                load: function(data) {
+                    Ext.each(data.data.items, function(item, index, allItems){
+                        item.data.layer.options.protocol.options.url = "proxy/" + item.data.layer.options.protocol.url;
+                    }, this);
+                }
+            }
+        });
+        this.featureOfInterestCombo = new Ext.form.ComboBox({
+            xtype : 'combo',
+            mode : 'local',
+            triggerAction : 'all',
+            store : foiGetCapsStore,
+            fieldLabel : '<tpl for="."><span ext:qtip="Choose a feature of interest" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Feature Of Interest',
+            forceSelection : true,
+            lazyInit : false,
+            editable : false,
+            displayField : 'title',
+            emptyText : 'Choose Feature Of Interest',
+            tpl : '<tpl for="."><div ext:qtip="{title}" class="x-combo-list-item">{title}</div></tpl>'
+        });
+        
+        Ext.iterate([this.derivativeCombo, this.scenarioCombo, this.timestepCombo, this.gcmCombo, this.zlayerCombo, this.featureOfInterestCombo], function(item) {
             item.on('added', function(me, parent){ 
                 me.setWidth(parent.width - 5); 
                 me.setValue('');
@@ -147,7 +181,8 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
                 this.scenarioCombo,
                 this.gcmCombo,
                 this.zlayerCombo,
-                this.timestepCombo
+                this.timestepCombo,
+                this.featureOfInterestCombo
             ],
             layout : 'form',
             title : 'Dataset Configuration',
@@ -179,6 +214,9 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         this.derivativeCombo.on('select', function(combo, record, index) {
             this.controller.requestDerivative(record);
         }, this);
+        this.featureOfInterestCombo.on('select', function(combo, record, index) {
+            this.controller.requestFeatureOfInterest(record);
+        }, this)
         this.scenarioCombo.on('select', function(combo, record, index) {
             this.controller.requestScenario(record);
         }, this);
@@ -341,7 +379,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
                     fieldLabel : '<tpl for="."><span ext:qtip="Some information about timestep" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Time Step',
                     listWidth : this.width
                 }, this.timestepComboConfig));
-                this.timestepCombo.on('added', function(me, parent){me.setWidth(parent.width - 5); });
+                this.timestepCombo.on('added', function(me, parent){me.setWidth(parent.width - 5);});
                 this.add(this.timestepCombo);
                 
                 LOG.debug('DatasetConfigPanel: Setting timestep combobox to time: ' + time);
@@ -360,7 +398,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
                     editable : false,
                     listWidth : this.width
                 }, this.zlayerComboConfig));
-                this.zlayerCombo.on('added', function(me, parent){me.setWidth(parent.width - 5); });
+                this.zlayerCombo.on('added', function(me, parent){me.setWidth(parent.width - 5);});
                 this.add(this.zlayerCombo);
 
                 LOG.debug('DatasetConfigPanel: Setting z-layer combobox to threshold: ' + threshold);

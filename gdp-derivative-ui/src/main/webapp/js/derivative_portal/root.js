@@ -14,12 +14,12 @@ Ext.onReady(function () {
     GDP.DEFAULT_LEGEND_NAME = 'boxfill/greyscale';
     GDP.PROCESS_ENDPOINT = 'http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/gdp-process-wps/WebProcessingService';
     //    GDP.PROCESS_ENDPOINT = 'http://localhost:8080/gdp-process-wps/WebProcessingService'; // Development
-    
+//    OpenLayers.ProxyHost = "proxy/";
     initializeLogging();
     initializeNotification();
     initializeMapping();
     initializeQuickTips();
-    
+//    test();
 });
 
 function initializeLogging() {
@@ -137,7 +137,6 @@ function initializeMapping() {
     LOG.info('Derivative Portal: Initializing Mapping.');
 	
     LOG.debug('Derivative Portal:initializeMapping: Constructing endpoint panel.');
-    
     
     var legendStore = new Ext.data.JsonStore({
         idProperty: 'name',
@@ -263,24 +262,10 @@ function initializeMapping() {
             }
         }
     });
-    //    var opts = {
-    //        url : "proxy/" + endpointUrls[3],
-    //        data : cswGetRecords.write()
-    //    };
-    //    OpenLayers.Util.applyDefaults(opts, {
-    //                success : function(response) {
-    //                    cswStore = cswGetRecords.read(response.responseText);
-    //                    alert(JSON.stringify(cswStore));
-    //                }
-    //            });
-    //    var request = OpenLayers.Request.POST(opts);
-
     
-    
-    var accordionConfigPanel = new GDP.ConfigurationPanel({
+    var configPanel = new GDP.ConfigurationPanel({
         controller : layerController,
         collapsible : true,
-        //url : proxyUrl,
         region: 'west',
         width : 265,
         minWidth : 265,
@@ -290,14 +275,6 @@ function initializeMapping() {
         getRecordsStore : getRecordsStore
     })
 
-    // I'm removing this for now, we should move the logic somewhere though
-//    var timestepPanel = new GDP.TimestepChooser({
-//        region : 'south',
-//        border : false,
-//        height : 30,
-//        layerController : layerController
-//    });
-    
     var plotterPanel = new GDP.Plotter({
         id : 'plotterPanel',
         contentEl : 'dygraph-content',
@@ -311,8 +288,6 @@ function initializeMapping() {
         id : 'center-panel',
         region : 'center',
         layout : 'border',
-        // removed endpointPanel for now
-        //items : [ endpointPanel, mapPanel, timestepPanel]
         items : [ mapPanel, plotterPanel]
     });
     
@@ -343,14 +318,9 @@ function initializeMapping() {
     
     new Ext.Viewport({
         renderTo : document.body,
-        items : [headerPanel, centerPanel, accordionConfigPanel, footerPanel], 
+        items : [headerPanel, centerPanel, configPanel, footerPanel], 
         layout: 'border'
     });
-    
-    // Everything is loaded, kick off the process by programatically choosing an endpoint
-    LOG.debug('root: Firing "click" event on end point apply button.');
-    //endpointPanel.endpointApplyButton.fireEvent('click');
-    
     
 }
 
@@ -368,34 +338,53 @@ function initializeQuickTips() {
 
 // This is here just for shortcutting some processes in order to test stuff like XML parsing
 function test() { 
-    var xml = 'some XML string';
-    
-    // We can create an XML DOM to test
-    var doc;
-    if(window.ActiveXObject){
-        // We are in IE
-        doc = new ActiveXObject("Microsoft.XMLDOM");
-        doc.async = "false";
-        doc.loadXML(xml);
-    }else{
-        // We are in a decent browser
-        doc = new DOMParser().parseFromString(xml,"text/xml");
-    }
-    
-    // Create a reader here and feed it the doc
-    
-    //Or test some AJAX
-    Ext.Ajax.request({
-        url : 'proxy/' + 'http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/gdp-process-wps/WebProcessingService',
-        method: 'POST',
-        xmlData : doc,
-        scope : this,
-        success: function ( result, request ) {
-            // Test success here
-        },
-        failure: function ( result, request) {
-            // Test fail here
-        }
-    });
+//    var store = new GeoExt.data.WFSCapabilitiesStore({
+//        url:"proxy/http://localhost:8081/geoserver/wfs?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetCapabilities",
+//        protocolOptions: {version: "1.1.0"},
+//        autoLoad: true,
+//        listeners: {
+//			load: function(store) {
+//			  //store_WMS.add({records: store.getRange()},{add: true});
+//			}
+//		}
+//
+//    })
+//store.load();
+
+
+
+
+
+
+//    LOG.debug('derp');
+//    var xml = 'some XML string';
+//    
+//    // We can create an XML DOM to test
+//    var doc;
+//    if(window.ActiveXObject){
+//        // We are in IE
+//        doc = new ActiveXObject("Microsoft.XMLDOM");
+//        doc.async = "false";
+//        doc.loadXML(xml);
+//    }else{
+//        // We are in a decent browser
+//        doc = new DOMParser().parseFromString(xml,"text/xml");
+//    }
+//    
+//    // Create a reader here and feed it the doc
+//    
+//    //Or test some AJAX
+//    Ext.Ajax.request({
+//        url : 'proxy/' + 'http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/gdp-process-wps/WebProcessingService',
+//        method: 'POST',
+//        xmlData : doc,
+//        scope : this,
+//        success: function ( result, request ) {
+//            // Test success here
+//        },
+//        failure: function ( result, request) {
+//            // Test fail here
+//        }
+//    });
     
 }

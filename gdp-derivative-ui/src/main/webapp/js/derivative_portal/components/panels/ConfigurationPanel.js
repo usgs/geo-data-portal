@@ -19,6 +19,7 @@ GDP.ConfigurationPanel = Ext.extend(Ext.Panel, {
             //url : config.url,
             capabilitiesStore : config.capabilitiesStore,
             getRecordsStore : config.getRecordsStore,
+            featureOfIneterestEndpointStore : config.featureOfIneterestEndpointStore,
             width : config.width || undefined,
             iconCls : 'blank-icon'
         });
