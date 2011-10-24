@@ -129,6 +129,9 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                     // TODO -Remove this fid from the plotter
                 }
             });
+            foivectorlayer.afterAdd(function(){
+                LOG.debug('Layer added to map');
+            })
             
             var defaultStyle = new OpenLayers.Style({
                 strokeColor: "#FFFF66",
@@ -158,6 +161,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             this.map.addLayers([foivectorlayer]);
             this.map.addControl(selectorControl);
             selectorControl.activate();
+//            foivectorlayer.redraw();
         }, this);
         this.on('resize', function() {
             this.realignLegend();

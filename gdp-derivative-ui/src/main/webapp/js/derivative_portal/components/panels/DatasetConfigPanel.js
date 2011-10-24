@@ -140,7 +140,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             layerOptions: {
                 visibility: true,
                 displayInLayerSwitcher: false,
-                strategies: [new OpenLayers.Strategy.BBOX({ratio: 1})],
+                strategies: [new OpenLayers.Strategy.BBOX({ratio: 1, resFactor: 1})],
                 opacity : 0.5
             },
             autoLoad: true,
