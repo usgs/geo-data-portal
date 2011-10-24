@@ -145,50 +145,54 @@ public abstract class GridCellCoverageFactory {
 	}
 
 	public static List<GridCellAttributeCoverage> calculateCoverage(GridCellGeometry gridCellGeometry, SimpleFeature feature)
-            throws FactoryException, TransformException, InvalidRangeException {
+            throws FactoryException, TransformException {
 
-		Geometry geometry = (Geometry)feature.getDefaultGeometry();
-		CoordinateReferenceSystem geometryCRS = feature.getFeatureType().getCoordinateReferenceSystem();
+        try {
+            final Geometry geometry = (Geometry)feature.getDefaultGeometry();
+            final CoordinateReferenceSystem geometryCRS = feature.getFeatureType().getCoordinateReferenceSystem();
 
-		final int xCellCount = gridCellGeometry.getCellCountX();
+            final int xCellCount = gridCellGeometry.getCellCountX();
 
-		final Range[] ranges = GridUtility.getXYRangesFromBoundingBox(
-			feature.getBounds(),
-			gridCellGeometry.getGridCoordSystem(),
-            false);
-		final int xCellMin = ranges[0].first();
-		final int xCellMax = ranges[0].last() + 1; // last() returns inclusive, we want exclulsive
-		final int yCellMin = ranges[1].first();
-		final int yCellMax = ranges[1].last() + 1; // last() returns inclusive, we want exclulsive
+            final Range[] ranges = GridUtility.getXYRangesFromBoundingBox(
+                feature.getBounds(),
+                gridCellGeometry.getGridCoordSystem(),
+                false);
+            final int xCellMin = ranges[0].first();
+            final int xCellMax = ranges[0].last() + 1; // last() returns inclusive, we want exclulsive
+            final int yCellMin = ranges[1].first();
+            final int yCellMax = ranges[1].last() + 1; // last() returns inclusive, we want exclulsive
 
-        MathTransform transform = CRS.findMathTransform(gridCellGeometry.getGridCRS(), geometryCRS, true);
-        PreparedGeometry preparedGeometry = PreparedGeometryFactory.prepare(geometry);
+            MathTransform transform = CRS.findMathTransform(gridCellGeometry.getGridCRS(), geometryCRS, true);
+            PreparedGeometry preparedGeometry = PreparedGeometryFactory.prepare(geometry);
 
-		List<GridCellAttributeCoverage> coverageList = new ArrayList<GridCellAttributeCoverage>();
-        for (int yIndex = yCellMin; yIndex < yCellMax; ++yIndex) {
-            int yOffset = yIndex * xCellCount;
-            for (int xIndex = xCellMin; xIndex < xCellMax; ++xIndex) {
-                int yxIndex = yOffset + xIndex;
-                Geometry cellGeometry = JTS.transform(
-						gridCellGeometry.getCellGeometryQuick(yxIndex),
-						transform);
-                if (preparedGeometry.intersects(cellGeometry)) {
+            List<GridCellAttributeCoverage> coverageList = new ArrayList<GridCellAttributeCoverage>();
+            for (int yIndex = yCellMin; yIndex < yCellMax; ++yIndex) {
+                int yOffset = yIndex * xCellCount;
+                for (int xIndex = xCellMin; xIndex < xCellMax; ++xIndex) {
+                    int yxIndex = yOffset + xIndex;
+                    Geometry cellGeometry = JTS.transform(
+                            gridCellGeometry.getCellGeometryQuick(yxIndex),
+                            transform);
+                    if (preparedGeometry.intersects(cellGeometry)) {
 
-                    if (preparedGeometry.containsProperly(cellGeometry)) {
-                        coverageList.add(
-								new GridCellAttributeCoverage(xIndex, yIndex, 1d));
-                    } else {
-                        Geometry intersectGeometry = geometry.intersection(cellGeometry);
-                        coverageList.add(
-								new GridCellAttributeCoverage(
-									xIndex,
-									yIndex,
-									intersectGeometry.getArea() / cellGeometry.getArea()));
+                        if (preparedGeometry.containsProperly(cellGeometry)) {
+                            coverageList.add(
+                                    new GridCellAttributeCoverage(xIndex, yIndex, 1d));
+                        } else {
+                            Geometry intersectGeometry = geometry.intersection(cellGeometry);
+                            coverageList.add(
+                                    new GridCellAttributeCoverage(
+                                        xIndex,
+                                        yIndex,
+                                        intersectGeometry.getArea() / cellGeometry.getArea()));
+                        }
                     }
                 }
             }
+            return coverageList;
+        } catch (InvalidRangeException e) {
+            return Collections.EMPTY_LIST;
         }
-		return coverageList;
     }
 
 	public static class GridCellCoverageByIndex {

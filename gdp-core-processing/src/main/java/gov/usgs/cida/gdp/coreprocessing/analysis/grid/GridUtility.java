@@ -55,6 +55,15 @@ public abstract class GridUtility {
 
         bounds = bounds.toBounds(gridCRS);
 
+        ProjectionRect gcsProjectionRect = gcs.getBoundingBox();
+        if (!gcsProjectionRect.intersects(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getWidth())) {
+            throw new InvalidRangeException("Grid doesn't intersect bounding box.");
+        }
+        
+        if (requireFullCoverage && !gcsProjectionRect.contains(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getWidth())) {
+            throw new InvalidRangeException("Grid doesn't cover bounding box.");
+        }
+        
         double[][] coords = {
             { bounds.getMinX(), bounds.getMinY() },
             { bounds.getMinX(), bounds.getMaxY() },
@@ -75,10 +84,7 @@ public abstract class GridUtility {
             if (currentIndices[1] > upperY) { upperY = currentIndices[1] ; }
         }
 
-        if ((lowerX < 0 && upperX < 0) || (lowerY < 0 && upperY < 0)) {
-            throw new InvalidRangeException("Grid doesn't intersect bounding box.");
-        }
-        
+        // redunandant, but keep as double check using alternate algorithm
         if (requireFullCoverage) {
             if (lowerX < 0 || upperX < 0 || lowerY < 0 || upperY < 0) {
                 throw new InvalidRangeException("Grid doesn't cover bounding box.");
