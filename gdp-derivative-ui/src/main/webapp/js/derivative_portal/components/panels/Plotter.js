@@ -37,19 +37,11 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
     updatePlotter : function(args) {
         LOG.debug('Plotter:updatePlotter: Observed request to update plotter');
         this.csv = args.csv;
-//        var graph = new Dygraph(
-//                this.plotterDiv.dom,
-//                this.csv,
-//                {
-//                    errorBars : true,
-//                    legend: 'always',
-//                    labelsDivStyles: {
-//                        'textAlign': 'right'
-//                    },
-//                    showRangeSelector: true
-//                }
-//            );
-        this.graph.updateOptions({file : this.csv});
+        this.graph.updateOptions({
+            file : this.csv,
+            dateWindow : null,
+            valueRange : null
+        });
     }
     
 
