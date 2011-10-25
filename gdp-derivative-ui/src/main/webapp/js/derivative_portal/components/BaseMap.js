@@ -176,6 +176,9 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                     hover: false
                 }
             )
+            // http://osgeo-org.1803224.n2.nabble.com/Conflict-Select-feature-vs-pan-td5935040.html
+            // fixes the annoyance of not being able to pan with features displayed
+            selectorControl.handlers.feature.stopDown = false; 
             this.map.addLayers([foivectorlayer]);
             this.map.addControl(selectorControl);
             selectorControl.activate();
