@@ -133,11 +133,12 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                         Ext.each(csvs, function(csv, index) {
                             if (csv === currentCsv) csvs.splice(index, 1);
                         })
-                        var chosenIndex = Math.floor(Math.random()*(csvs.length + 1));
+                        var chosenIndex = Math.floor(Math.random()*(csvs.length));
+                        LOG.debug("chosenIndex=" + chosenIndex);
                         return (csvs[chosenIndex])
                     }();
                     
-                    this.layerController.updatePlotter(csvToPlot);
+                    this.layerController.updatePlotter({csv : csvToPlot});
                 },
                 'featureunselected': function(feature) {
                     LOG.debug(feature.feature.fid);

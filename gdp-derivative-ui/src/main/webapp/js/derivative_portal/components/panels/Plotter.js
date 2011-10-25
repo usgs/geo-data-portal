@@ -32,7 +32,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         }, this);
         this.controller.on('updateplotter', function(args){
             this.updatePlotter(args);
-        })
+        }, this)
     },
     updatePlotter : function(args) {
         LOG.debug('Plotter:updatePlotter: Observed request to update plotter');
