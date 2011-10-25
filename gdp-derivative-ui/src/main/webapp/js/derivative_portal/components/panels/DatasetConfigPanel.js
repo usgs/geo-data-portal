@@ -137,21 +137,24 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             protocolOptions: {
                 version: "1.1.0"
             },
-            layerOptions: {
-                visibility: true,
-                displayInLayerSwitcher: false,
-                strategies: [
-//                    new OpenLayers.Strategy.BBOX({ratio: 1, resFactor: 1})
-                        new OpenLayers.Strategy.Fixed({preload : true})
-                ],
-                opacity : 0.5
-            },
+//            layerOptions: {
+//                strategies: [
+//                    new OpenLayers.Strategy.Fixed({preload : true})
+//                ]
+//            },
             autoLoad: true,
             listeners: {
+//                beforeload: function(proxy, params) {
+//                    LOG.debug('test');
+//                },
                 load: function(data) {
                     Ext.each(data.data.items, function(item, index, allItems){
                         item.data.layer.options.protocol.options.url = "proxy/" + item.data.layer.options.protocol.url;
                     }, this);
+                },
+                exception: function(proxy, type, action, options, response, arg) {
+                    LOG.error(response.responseText);
+                    NOTIFY.error({msg : response.responseText});
                 }
             }
         });
