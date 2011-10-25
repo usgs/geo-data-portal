@@ -219,7 +219,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         LOG.debug('BaseMap:clearLayers: Handling request.');
         Ext.each(this.layers.data.getRange(), function(item, index, allItems){
             var layer = item.data.layer;
-            if (layer.isBaseLayer || layer.name == "bboxvector"/* || layer.name == "foivector"*/) {
+            if (layer.isBaseLayer || layer.CLASS_NAME === 'OpenLayers.Layer.Vector') {
                 LOG.debug('BaseMap:clearLayers: Layer '+layer.id+' is a base layer and will not be cleared.');
                 return;
             }                
@@ -254,7 +254,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             var requestedDimensions = this.layerController.getAllDimensions();
             Ext.iterate(requestedDimensions, function(extentName, value) {
                 var layer = record.getLayer();
-                if (layer.name === 'bboxvector' /*|| layer.name === 'foivector' */|| layer.isBaseLayer) {
+                if (layer.CLASS_NAME === 'OpenLayers.Layer.Vector' || layer.isBaseLayer) {
                     result = false;
                 } else {
                     var existingDimension = record.getLayer().params[extentName.toUpperCase()];
