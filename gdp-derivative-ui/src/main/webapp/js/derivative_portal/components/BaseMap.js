@@ -28,11 +28,11 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             maxResolution: MAX_RESOLUTION,
             maxExtent: new OpenLayers.Bounds(-180, -90, 180, 90),
             controls: [
-                new OpenLayers.Control.MousePosition()
-                ,new OpenLayers.Control.ScaleLine()
-                ,new OpenLayers.Control.ArgParser()
-                ,new OpenLayers.Control.Attribution()
-                ,new OpenLayers.Control.PanZoomBar()
+            new OpenLayers.Control.MousePosition()
+            ,new OpenLayers.Control.ScaleLine()
+            ,new OpenLayers.Control.ArgParser()
+            ,new OpenLayers.Control.Attribution()
+            ,new OpenLayers.Control.PanZoomBar()
             ]
         });
 			
@@ -115,19 +115,19 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         }, this);
         this.layerController.on('requestfoi', function(args){
             LOG.debug('BaseMap: Observed "requestfoi".');
-            this.clearLayers();
+            var existingLayer = this.map.getLayer('featureLayer');
+            if (existingLayer) existingLayer.destroy();
             var foivectorlayer = args.clone().getLayer();
             
             foivectorlayer.setVisibility(true);
             foivectorlayer.events.on({
                 'featureselected': function(feature) {
-                    var that = this;
                     LOG.debug(feature.feature.fid);
                     var csvToPlot = function() {
                         var csvs = [
-                            'resources/a1b-a2.csv',
-                            'resources/kansas.csv',
-                            'resources/wisconsin.csv'
+                        'resources/a1b-a2.csv',
+                        'resources/kansas.csv',
+                        'resources/wisconsin.csv'
                         ]
                         var currentCsv = Ext.ComponentMgr.get('plotterPanel').csv;
                         Ext.each(csvs, function(csv, index) {
@@ -138,16 +138,19 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                         return (csvs[chosenIndex])
                     }();
                     
-                    this.layerController.updatePlotter({csv : csvToPlot});
+                    this.layerController.updatePlotter({
+                        csv : csvToPlot
+                    });
                 },
                 'featureunselected': function(feature) {
                     LOG.debug(feature.feature.fid);
-                    // TODO -Remove this fid from the plotter
+                // TODO -Remove this fid from the plotter
                 },
                 scope : this
             }
-        );
-            foivectorlayer.events.on({'featuresadded' : function(features) {
+            );
+            foivectorlayer.events.on({
+                'featuresadded' : function(features) {
                     this.map.zoomToExtent(this.getDataExtent());
                 }
             })
@@ -176,7 +179,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                     multiple: false, 
                     hover: false
                 }
-            )
+                )
             // http://osgeo-org.1803224.n2.nabble.com/Conflict-Select-feature-vs-pan-td5935040.html
             // fixes the annoyance of not being able to pan with features displayed
             selectorControl.handlers.feature.stopDown = false; 
@@ -291,7 +294,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             {
                 styles: record.id
             }
-        );
+            );
         this.currentLayer = this.findCurrentLayer();
     },
     onChangeOpacity : function() {

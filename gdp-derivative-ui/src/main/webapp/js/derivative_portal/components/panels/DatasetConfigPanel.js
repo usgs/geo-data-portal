@@ -137,19 +137,17 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             protocolOptions: {
                 version: "1.1.0"
             },
-//            layerOptions: {
+            layerOptions: {
 //                strategies: [
 //                    new OpenLayers.Strategy.Fixed({preload : true})
 //                ]
-//            },
+            },
             autoLoad: true,
             listeners: {
-//                beforeload: function(proxy, params) {
-//                    LOG.debug('test');
-//                },
                 load: function(data) {
                     Ext.each(data.data.items, function(item, index, allItems){
                         item.data.layer.options.protocol.options.url = "proxy/" + item.data.layer.options.protocol.url;
+                        item.data.layer.id = 'featureLayer';
                     }, this);
                 },
                 exception: function(proxy, type, action, options, response, arg) {
@@ -308,37 +306,19 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
     onLoadedCapstore : function(args) {
         this.controller.fireEvent('changegcm');
         this.controller.fireEvent('changelayer');
-//        this.layerCombo.setValue(args.record.get("title"));
-//        this.layerCombo.fireEvent('select', this.layerCombo, args.record, 0);
     },
     onLoadedCatstore : function(args) {
         var tips = args.record.get("tooltips");
         this.derivativeStore.removeAll();
         this.derivativeStore.loadData(args.record.get("derivatives"), true);
-//        this.derivativeStore.each(function(item) {
-//            this.derivativeStore. = tips.quicktips.derivatives[item.get('derivative')];
-//            var x = 4;
-//        }, this);
         this.scenarioStore.removeAll();
         this.scenarioStore.loadData(args.record.get("scenarios"), true);
-//        this.scenarioStore.each(function(item) {
-//            item.quicktip = tips.quicktips.scenarios[item.get('scenario')];
-//        }, this);
         this.gcmStore.removeAll();
         this.gcmStore.loadData(args.record.get("gcms"), true);
         
         this.derivativeCombo.label.update('<tpl for="."><span ext:qtip="' + args.record.get("fieldLabels").derivative + '" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Derivative');
         this.scenarioCombo.label.update('<tpl for="."><span ext:qtip="' + args.record.get("fieldLabels").scenario + '" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Scenario');
         this.gcmCombo.label.update('<tpl for="."><span ext:qtip="' + args.record.get("fieldLabels").gcm + '" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> GCM');
-        //this.derivativeCombo.render();
-//        this.gcmStore.each(function(item) {
-//            item.quicktip = tips.quicktips.gcms[item.get('gcm')];
-//        }, this);
-//        this.derivativeCombo.fireEvent('select', this.derivativeCombo, this.derivativeStore.getAt(0), 0);
-//        this.scenarioCombo.fireEvent('select', this.scenarioCombo, this.scenarioStore.getAt(0), 0);
-//        this.gcmCombo.fireEvent('select', this.gcmCombo, this.gcmStore.getAt(0), 0);
-//        this.derivativeCombo.
-//        this.derivativeCombo.fireEvent('select', this.derivativeCombo, args.record, 0);
     },
     onLoadedDerivStore : function(args) {
         // this might be where I gray out some of the options
