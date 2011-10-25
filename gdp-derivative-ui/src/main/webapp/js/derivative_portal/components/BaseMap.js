@@ -121,17 +121,35 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             foivectorlayer.setVisibility(true);
             foivectorlayer.events.on({
                 'featureselected': function(feature) {
+                    var that = this;
                     LOG.debug(feature.feature.fid);
-                    // TODO - Add this fid to the plotter
+                    var csvToPlot = function() {
+                        var csvs = [
+                            'resources/a1b-a2.csv',
+                            'resources/kansas.csv',
+                            'resources/wisconsin.csv'
+                        ]
+                        var currentCsv = Ext.ComponentMgr.get('plotterPanel').csv;
+                        Ext.each(csvs, function(csv, index) {
+                            if (csv === currentCsv) csvs.splice(index, 1);
+                        })
+                        var chosenIndex = Math.floor(Math.random()*(csvs.length + 1));
+                        return (csvs[chosenIndex])
+                    }();
+                    
+                    this.layerController.updatePlotter(csvToPlot);
                 },
                 'featureunselected': function(feature) {
                     LOG.debug(feature.feature.fid);
                     // TODO -Remove this fid from the plotter
                 },
-                'featuresadded' : function(features) {
+                scope : this
+            }
+        );
+            foivectorlayer.events.on({'featuresadded' : function(features) {
                     this.map.zoomToExtent(this.getDataExtent());
                 }
-            });
+            })
             
             var defaultStyle = new OpenLayers.Style({
                 strokeColor: "#FFFF66",

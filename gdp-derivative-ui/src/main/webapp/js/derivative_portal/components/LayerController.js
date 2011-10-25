@@ -96,7 +96,8 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
             "loaded-derivstore",
             "exception-capstore",
             "exception-catstore",
-            "requestfoi"
+            "requestfoi",
+            "updateplotter"
         );
             
         // There shouldn't be anything listening at this point. 
@@ -323,5 +324,9 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
     setOPeNDAPEndpoint : function(args) {
         LOG.debug('LayerController:setOPeNDAPEndpoint: Setting current OPeNDAP endpoint to ' + args);
         this.opendapEndpoint = args;
+    },
+    updatePlotter : function(args) {
+        LOG.debug('LayerController:updatePlotter: Firing event "updateplotter"');
+        this.fireEvent('updateplotter', args);
     }
 });

@@ -213,6 +213,7 @@ function initializeMapping() {
     });
 
     var layerController = new GDP.LayerController({
+        id : 'layerController',
         baseLayer : baseLayerStore.getAt(2),
         legendStore : legendStore,
         dimensions : ['time', 'elevation']
@@ -281,7 +282,9 @@ function initializeMapping() {
         layout : 'fit',
         region : 'south',
         border : true,
-        height : 200
+        height : 200,
+        csv : 'resources/a1b-a2.csv',
+        controller : layerController
     });
     
     var centerPanel = new Ext.Panel({
