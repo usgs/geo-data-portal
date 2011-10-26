@@ -133,7 +133,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         
         var foiGetCapsStore = new GeoExt.data.WFSCapabilitiesStore({
             //TODO - Bring this out
-            url:"proxy/http://localhost:8082/geoserver/wfs?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetCapabilities",
+            url:"proxy/http://cida-wiwsc-gdp2qa.er.usgs.gov:8082/geoserver/wfs?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetCapabilities",
             protocolOptions: {
                 version: "1.1.0"
             },
