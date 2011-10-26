@@ -133,7 +133,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         
         var foiGetCapsStore = new GeoExt.data.WFSCapabilitiesStore({
             //TODO - Bring this out
-            url:"proxy/http://localhost:8081/geoserver/wfs?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetCapabilities",
+            url:"proxy/http://localhost:8082/geoserver/wfs?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetCapabilities",
             protocolOptions: {
                 version: "1.1.0"
             },
@@ -318,7 +318,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         
         this.derivativeCombo.label.update('<tpl for="."><span ext:qtip="' + args.record.get("fieldLabels").derivative + '" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Derivative');
         this.scenarioCombo.label.update('<tpl for="."><span ext:qtip="' + args.record.get("fieldLabels").scenario + '" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Scenario');
-        this.gcmCombo.label.update('<tpl for="."><span ext:qtip="' + args.record.get("fieldLabels").gcm + '" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> GCM');
+        this.gcmCombo.label.update('<tpl for="."><span ext:qtip="' + args.record.get("fieldLabels").gcm + '" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Climate Model');
     },
     onLoadedDerivStore : function(args) {
         // this might be where I gray out some of the options
