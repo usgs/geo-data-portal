@@ -56,11 +56,11 @@ public abstract class GridUtility {
         bounds = bounds.toBounds(gridCRS);
 
         ProjectionRect gcsProjectionRect = gcs.getBoundingBox();
-        if (!gcsProjectionRect.intersects(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getWidth())) {
+        if (!gcsProjectionRect.intersects(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight())) {
             throw new InvalidRangeException("Grid doesn't intersect bounding box.");
         }
         
-        if (requireFullCoverage && !gcsProjectionRect.contains(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getWidth())) {
+        if (requireFullCoverage && !gcsProjectionRect.contains(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight())) {
             throw new InvalidRangeException("Grid doesn't cover bounding box.");
         }
         
@@ -75,25 +75,31 @@ public abstract class GridUtility {
         int upperX = Integer.MIN_VALUE;
         int lowerY = Integer.MAX_VALUE;
         int upperY = Integer.MIN_VALUE;
-
+        
         for (int i = 0; i < coords.length; ++i) {
-            gcs.findXYindexFromCoord(coords[i][0], coords[i][1], currentIndices);
+            if (requireFullCoverage) {
+                // If a value is outside the gridded data set a value of -1 is returned.
+                // This should have been caught by the tests above but we double check
+                // for this state below.
+                gcs.findXYindexFromCoord(coords[i][0], coords[i][1], currentIndices);
+            } else {
+                // This will snap any value outside the grid to the nearest grid cell index.
+                // We don't do this ourselves as we need to know the sign of the grid cell deltas
+                // for a 1D coordinate axis.  For a 2D coordinate axis this is even more difficult
+                // as deltas are most likely vector quantities (and in some case the representation
+                // of a sampled function where the vector direction is not constant).  We have
+                // to trust NetCDF-Java here...
+                gcs.findXYindexFromCoordBounded(coords[i][0], coords[i][1], currentIndices);
+            }
             if (currentIndices[0] < lowerX) { lowerX = currentIndices[0] ; }
             if (currentIndices[0] > upperX) { upperX = currentIndices[0] ; }
             if (currentIndices[1] < lowerY) { lowerY = currentIndices[1] ; }
             if (currentIndices[1] > upperY) { upperY = currentIndices[1] ; }
         }
 
-        // redunandant, but keep as double check using alternate algorithm
-        if (requireFullCoverage) {
-            if (lowerX < 0 || upperX < 0 || lowerY < 0 || upperY < 0) {
-                throw new InvalidRangeException("Grid doesn't cover bounding box.");
-            }
-        } else {
-            if (lowerX < 0) lowerX = 0;
-            if (upperX < 0) upperX = gcs.getXHorizAxis().getShape(gcs.getXHorizAxis().getRank() - 1) - 1;
-            if (lowerY < 0) lowerY = 0;
-            if (upperY < 0) upperY = gcs.getYHorizAxis().getShape(0) - 1;
+        // redunandant, but keep as double check
+        if (requireFullCoverage && (lowerX < 0 || upperX < 0 || lowerY < 0 || upperY < 0)) {
+            throw new InvalidRangeException("Grid doesn't cover bounding box.");
         }
        
         return bufferXYRanges(gcs, new Range[] {
