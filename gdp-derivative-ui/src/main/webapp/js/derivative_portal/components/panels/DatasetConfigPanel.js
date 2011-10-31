@@ -62,12 +62,12 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             mode : 'local',
             triggerAction : 'all',
             store : this.scenarioStore,
-            fieldLabel : '<tpl for="."><span ext:qtip="Some information about scenario" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Scenario',
+            fieldLabel : '<tpl for="."><span ext:qtip="Some information about emmissions scenario" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Scenario',
             forceSelection : true,
             lazyInit : false,
             editable : false,
             displayField : 'scenario',
-            emptyText : 'Choose Scenario',
+            emptyText : 'Choose Emmissions Scenario',
             tpl : '<tpl for="."><div ext:qtip="<b>{scenario}</b><br /><br />{quicktip}" class="x-combo-list-item">{scenario}</div></tpl>'
         });
         
@@ -137,11 +137,6 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             protocolOptions: {
                 version: "1.1.0"
             },
-            layerOptions: {
-//                strategies: [
-//                    new OpenLayers.Strategy.Fixed({preload : true})
-//                ]
-            },
             autoLoad: true,
             listeners: {
                 load: function(data) {
@@ -161,12 +156,12 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             mode : 'local',
             triggerAction : 'all',
             store : foiGetCapsStore,
-            fieldLabel : '<tpl for="."><span ext:qtip="Choose a feature of interest" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Feature Of Interest',
+            fieldLabel : '<tpl for="."><span ext:qtip="Choose an area of interest" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Area Of Interest',
             forceSelection : true,
             lazyInit : false,
             editable : false,
             displayField : 'title',
-            emptyText : 'Choose Feature Of Interest',
+            emptyText : 'Choose Area Of Interest',
             tpl : '<tpl for="."><div ext:qtip="{title}" class="x-combo-list-item">{title}</div></tpl>'
         });
         
@@ -317,7 +312,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         this.gcmStore.loadData(args.record.get("gcms"), true);
         
         this.derivativeCombo.label.update('<tpl for="."><span ext:qtip="' + args.record.get("fieldLabels").derivative + '" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Derivative');
-        this.scenarioCombo.label.update('<tpl for="."><span ext:qtip="' + args.record.get("fieldLabels").scenario + '" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Scenario');
+        this.scenarioCombo.label.update('<tpl for="."><span ext:qtip="' + args.record.get("fieldLabels").scenario + '" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Emmissions Scenario');
         this.gcmCombo.label.update('<tpl for="."><span ext:qtip="' + args.record.get("fieldLabels").gcm + '" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Climate Model');
     },
     onLoadedDerivStore : function(args) {
@@ -362,7 +357,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             if (time) {
                 LOG.debug('DatasetConfigPanel: Time found for layer. Re-adding time step combobox.');
                 this.timestepCombo = new Ext.form.ComboBox(Ext.apply({
-                    fieldLabel : '<tpl for="."><span ext:qtip="Some information about timestep" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Time Step',
+                    fieldLabel : '<tpl for="."><span ext:qtip="Some information about time period" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Time Period',
                     listWidth : this.width
                 }, this.timestepComboConfig));
                 this.timestepCombo.on('added', function(me, parent){me.setWidth(parent.width - 5);});
