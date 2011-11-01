@@ -143,6 +143,8 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                         csv : csvToPlot
                     });
                     
+                    // TODO - There should be a better way of getting at this. 
+                    // Look into OpenLayers scoping for layer.on events
                     Ext.ComponentMgr.get('mapPanel').notificationWindow.close();
                 },
                 'featureunselected': function(feature) {
@@ -160,11 +162,13 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                     
                     // Set up the notification
                     Ext.ux.NotifyMgr.alignment = 'top-center';
+                    // TODO - There should be a better way of getting at this. 
+                    // Look into OpenLayers scoping for layer.on events
                     Ext.ComponentMgr.get('mapPanel').notificationWindow = new Ext.ux.Notify({
                         title: 'Areas Of Interest',
                         titleIconCls: 'titleicon-info',
                         hideDelay: 30000,
-//                        hideDelay: 0, // Do not close until we decide to close it
+                     // hideDelay: 0, // Do not close until we decide to close it
                         msg: 'Click the area of interest you would like to plot an annual time series for.',
                         isClosable : true
                     }).show(document);
