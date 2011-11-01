@@ -6,17 +6,18 @@ Ext.ns("GDP");
 GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
     controller : undefined,
     capabilitiesStore : undefined,
-    parentRecordStore : undefined,
     derivRecordStore : undefined,
     derivRecordStoreLoaded : false, // TODO find a better way to do this
-    leafRecordStore : undefined,
     derivativeStore : undefined,
     derivativeCombo : undefined,
-    scenarioStore : undefined,
-    scenarioCombo : undefined,
+    featureOfInterestCombo : undefined,
     gcmStore : undefined,
     gcmCombo : undefined,
     layerCombo : undefined,
+    leafRecordStore : undefined,
+    parentRecordStore : undefined,
+    scenarioStore : undefined,
+    scenarioCombo : undefined,
     timestepName : undefined,
     timestepStore : undefined,
     timestepCombo : undefined,
@@ -28,9 +29,6 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
     constructor : function(config) {
         LOG.debug('DatasetConfigPanel:constructor: Constructing self.');
 
-        // TODO- What we need is for derivativeStore, scenarioStore and gcmStore to have 
-        // a second field that describes the store item.  Then we can use that in the 
-        // tooltip on each combobox
         this.controller = config.controller;
         this.capabilitiesStore = config.capabilitiesStore;
         this.parentRecordStore = config.getRecordsStore;
@@ -208,14 +206,10 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
                 this.featureOfInterestCombo
                 ]
             }
-            
-            
             ]
-            
         }, config);
         GDP.DatasetConfigPanel.superclass.constructor.call(this, config);
         
-        //this.catalogStore.proxy.setApi(Ext.data.Api.actions.read, args.url);
         this.parentRecordStore.load();
         LOG.debug('DatasetConfigPanel:constructor: Construction complete.');
         
@@ -329,7 +323,6 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         this.controller.fireEvent('changelayer');
     },
     onLoadedCatstore : function(args) {
-        var tips = args.record.get("tooltips");
         this.derivativeStore.removeAll();
         this.derivativeStore.loadData(args.record.get("derivatives"), true);
         this.scenarioStore.removeAll();
@@ -340,6 +333,14 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         this.derivativeCombo.label.update('<tpl for="."><span ext:qtip="' + args.record.get("fieldLabels").derivative + '" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Derivative');
         this.scenarioCombo.label.update('<tpl for="."><span ext:qtip="' + args.record.get("fieldLabels").scenario + '" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Emmissions Scenario');
         this.gcmCombo.label.update('<tpl for="."><span ext:qtip="' + args.record.get("fieldLabels").gcm + '" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Climate Model');
+        
+        // http://internal.cida.usgs.gov/jira/browse/GDP-416
+        this.derivativeCombo.setValue(args.record.get("derivatives")[0][0]);
+        this.scenarioCombo.setValue(args.record.get("scenarios")[0][0]);
+        this.gcmCombo.setValue(args.record.get("gcms")[0][0]);
+        this.derivativeCombo.fireEvent('select', this, this.derivativeCombo.getStore().data.items[0]);
+        this.scenarioCombo.fireEvent('select', this, this.scenarioCombo.getStore().data.items[0]);
+        this.gcmCombo.fireEvent('select', this, this.gcmCombo.getStore().data.items[0]);
     },
     onLoadedDerivStore : function(args) {
         // this might be where I gray out some of the options
@@ -360,7 +361,6 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         
         var layer = this.controller.getLayer();
         if (layer) {
-        //this.layerCombo.setValue(layer.getLayer().name);
         }
 
         if (this.zlayerCombo) {
@@ -428,14 +428,12 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
     onChangeDerivative : function () {
         var derivative = this.controller.getDerivative();
         if (derivative) {
-        //this.derivativeCombo.setValue(derivative.get("derivative"))
         }
         this.loadDerivRecordStore();
     },
     onChangeScenario : function () {
         var scenario = this.controller.getScenario();
         if (scenario) {
-        //this.scenarioCombo.setValue(scenario.get("scenario"))
         }
         if (this.derivRecordStoreLoaded) {
             this.loadLeafRecordStore();
