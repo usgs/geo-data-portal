@@ -149,7 +149,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
                     LOG.error(response.responseText);
                     NOTIFY.error({
                         msg : response.responseText
-                        });
+                    });
                 }
             }
         });
@@ -185,6 +185,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
                 labelAlign : 'top',
                 title: 'Map',
                 autoHeight : true,
+                ref : 'mapFieldSet',
                 defaultType: 'combo',
                 layout : 'form',
                 items : [
@@ -198,6 +199,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             {
                 xtype: 'fieldset',
                 labelAlign : 'top',
+                ref : 'plotFieldSet',
                 title: 'Plot',
                 autoHeight : true,
                 defaultType: 'combo',
@@ -349,7 +351,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         this.controller.setOPeNDAPEndpoint(args.record.get("opendap"));
         this.controller.fireEvent('selected-dataset', {
             url : GDP.PROXY_PREFIX + args.record.get("wms")
-            });
+        });
     // this might be where I gray out some of the options
     // also probably call WMS GetCaps
     },
@@ -362,11 +364,11 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         }
 
         if (this.zlayerCombo) {
-            this.remove(this.zlayerCombo);
+            this.mapFieldSet.remove(this.zlayerCombo);
         }
         
         if (this.timestepCombo) {
-            this.remove(this.timestepCombo);
+            this.mapFieldSet.remove(this.timestepCombo);
         }
 
         var loaded = this.controller.loadDimensionStore(layer, this.zlayerStore, this.zlayerName)
@@ -387,9 +389,9 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
                     listWidth : this.width
                 }, this.timestepComboConfig));
                 this.timestepCombo.on('added', function(me, parent){
-                    me.setWidth(parent.width - 15);
+                    me.setWidth(parent.ownerCt.width - 15);
                 });
-                this.add(this.timestepCombo);
+                this.mapFieldSet.add(this.timestepCombo);
                 
                 LOG.debug('DatasetConfigPanel: Setting timestep combobox to time: ' + time);
                 this.timestepCombo.setValue(time);
@@ -408,9 +410,9 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
                     listWidth : this.width
                 }, this.zlayerComboConfig));
                 this.zlayerCombo.on('added', function(me, parent){
-                    me.setWidth(parent.width - 15);
+                    me.setWidth(parent.ownerCt.width - 15);
                 });
-                this.add(this.zlayerCombo);
+                this.mapFieldSet.add(this.zlayerCombo);
 
                 LOG.debug('DatasetConfigPanel: Setting z-layer combobox to threshold: ' + threshold);
                 this.zlayerCombo.setValue(threshold);
