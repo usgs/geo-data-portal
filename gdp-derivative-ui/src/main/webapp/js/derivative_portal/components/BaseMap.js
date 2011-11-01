@@ -10,6 +10,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
     currentLayer : undefined,
     legendWindow : undefined,
     legendImage : undefined, 
+    notificationWindow : undefined,
     DEFAULT_LEGEND_X : 110,
     DEFAULT_LEGEND_Y : 293,
     constructor : function(config) {
@@ -141,6 +142,8 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                     this.layerController.updatePlotter({
                         csv : csvToPlot
                     });
+                    
+                    Ext.ComponentMgr.get('mapPanel').notificationWindow.close();
                 },
                 'featureunselected': function(feature) {
                     LOG.debug(feature.feature.fid);
@@ -151,7 +154,25 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             );
             foivectorlayer.events.on({
                 'featuresadded' : function(features) {
-                    this.map.zoomToExtent(this.getDataExtent());
+                    // Pull defaults for Ext.ux.NotifyMgr settings 
+                    // to be reset later
+                    var alignment = Ext.ux.NotifyMgr.alignment;
+                    
+                    // Set up the notification
+                    Ext.ux.NotifyMgr.alignment = 'top-center';
+                    Ext.ComponentMgr.get('mapPanel').notificationWindow = new Ext.ux.Notify({
+                        title: 'Areas Of Interest',
+                        titleIconCls: 'titleicon-info',
+                        hideDelay: 30000,
+//                        hideDelay: 0, // Do not close until we decide to close it
+                        msg: 'Click the area of interest you would like to plot an annual time series for.',
+                        isClosable : true
+                    }).show(document);
+                    
+                    // Reset back to default settings
+                    Ext.ux.NotifyMgr.alignment = alignment;
+                    
+                    features.object.map.zoomToExtent(this.getDataExtent());
                 }
             })
             
