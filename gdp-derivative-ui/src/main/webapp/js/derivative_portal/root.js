@@ -278,8 +278,9 @@ function initializeMapping() {
 
     var plotterPanel = new GDP.Plotter({
         id : 'plotterPanel',
-        contentEl : 'dygraph-content',
-        layout : 'fit',
+        //contentEl : 'dygraph-area',
+        plotterDiv : 'dygraph-content',
+        legendDiv : 'dygraph-legend',
         region : 'south',
         border : true,
         height : 200,
