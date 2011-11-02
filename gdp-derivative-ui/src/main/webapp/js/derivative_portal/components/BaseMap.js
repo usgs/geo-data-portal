@@ -117,54 +117,54 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         this.layerController.on('requestfoi', function(args){
             LOG.debug('BaseMap: Observed "requestfoi".');
             var existingLayer = this.layerController.getCurrentFeatureLayer();
-            if (existingLayer) existingLayer.destroy();
-            var foivectorlayer = args;
+            if (existingLayer) Ext.each(existingLayer, function(item){item.destroy()});
+            var foiLayer = args;
             
-            foivectorlayer.setVisibility(true);
-            foivectorlayer.events.on({
-                'featureselected': function(feature) {
-                    LOG.debug(feature.feature.fid);
-                    var csvToPlot = function() {
-                        var csvs = [
-                        'resources/a1b-a2.csv',
-                        'resources/kansas.csv',
-                        'resources/wisconsin.csv'
-                        ]
-                        var currentCsv = Ext.ComponentMgr.get('plotterPanel').csv;
-                        Ext.each(csvs, function(csv, index) {
-                            if (csv === currentCsv) csvs.splice(index, 1);
-                        })
-                        var chosenIndex = Math.floor(Math.random()*(csvs.length));
-                        LOG.debug("chosenIndex=" + chosenIndex);
-                        return (csvs[chosenIndex])
-                    }();
-                    
-                    this.layerController.updatePlotter({
-                        csv : csvToPlot,
-                        featureTitle : this.layerController.getDerivative().data.derivative + " - " + feature.feature.attributes.STATE
-                    });
-                    
-                    // TODO - There should be a better way of getting at this. 
-                    // Look into OpenLayers scoping for layer.on events
-                    Ext.ComponentMgr.get('mapPanel').notificationWindow.close();
-                },
-                'featureunselected': function(feature) {
-                    LOG.debug(feature.feature.fid);
-                // TODO -Remove this fid from the plotter
-                },
-                scope : this
-            }
-            );
-            foivectorlayer.events.on({
-                'featuresadded' : function(features) {
+            foiLayer.setVisibility(true);
+//            foivectorlayer.events.on({
+//                'featureselected': function(feature) {
+//                    LOG.debug(feature.feature.fid);
+//                    var csvToPlot = function() {
+//                        var csvs = [
+//                        'resources/a1b-a2.csv',
+//                        'resources/kansas.csv',
+//                        'resources/wisconsin.csv'
+//                        ]
+//                        var currentCsv = Ext.ComponentMgr.get('plotterPanel').csv;
+//                        Ext.each(csvs, function(csv, index) {
+//                            if (csv === currentCsv) csvs.splice(index, 1);
+//                        })
+//                        var chosenIndex = Math.floor(Math.random()*(csvs.length));
+//                        LOG.debug("chosenIndex=" + chosenIndex);
+//                        return (csvs[chosenIndex])
+//                    }();
+//                    
+//                    this.layerController.updatePlotter({
+//                        csv : csvToPlot,
+//                        featureTitle : this.layerController.getDerivative().data.derivative + " - " + feature.feature.attributes.STATE
+//                    });
+//                    
+//                    // TODO - There should be a better way of getting at this. 
+//                    // Look into OpenLayers scoping for layer.on events
+//                    Ext.ComponentMgr.get('mapPanel').notificationWindow.close();
+//                },
+//                'featureunselected': function(feature) {
+//                    LOG.debug(feature.feature.fid);
+//                // TODO -Remove this fid from the plotter
+//                },
+//                scope : this
+//            }
+//            );
+            foiLayer.events.on({
+                'added' : function(features) {
                     // Pull defaults for Ext.ux.NotifyMgr settings 
                     // to be reset later
                     var alignment = Ext.ux.NotifyMgr.alignment;
-                    
-                    // Set up the notification
+//                    
+//                    // Set up the notification
                     Ext.ux.NotifyMgr.alignment = 'top-center';
-                    // TODO - There should be a better way of getting at this. 
-                    // Look into OpenLayers scoping for layer.on events
+//                    // TODO - There should be a better way of getting at this. 
+//                    // Look into OpenLayers scoping for layer.on events
                     Ext.ComponentMgr.get('mapPanel').notificationWindow = new Ext.ux.Notify({
                         title: 'Areas Of Interest',
                         titleIconCls: 'titleicon-info',
@@ -173,31 +173,33 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                         msg: 'Click the area of interest you would like to plot an annual time series for.',
                         isClosable : true
                     }).show(document);
-                    
-                    // Reset back to default settings
+//                    
+//                    // Reset back to default settings
                     Ext.ux.NotifyMgr.alignment = alignment;
-                    
-                    features.object.map.zoomToExtent(this.getDataExtent());
+                    if (Ext.ComponentMgr.get('mapPanel').notificationWindow) {
+                        Ext.ComponentMgr.get('mapPanel').notificationWindow.close();
+                    }
+                    features.object.map.zoomToExtent(features.layer.getExtent());
                 }
             })
             
-            var defaultStyle = new OpenLayers.Style({
-                strokeColor: "#FFFF66",
-                strokeWidth: 2,
-                strokeOpacity: 0.5,
-                fillOpacity: 0.2
-            });
-            var selectedStyle = new OpenLayers.Style({
-                strokeColor: "#00CCFF",
-                strokeWidth: 2,
-                strokeOpacity: 0.5,
-                fillOpacity: 0.2,
-                fillColor: "#0000FF"
-            });
-            foivectorlayer.styleMap = new OpenLayers.StyleMap({ 
-                'default' : defaultStyle,
-                'select' : selectedStyle
-            });
+//            var defaultStyle = new OpenLayers.Style({
+//                strokeColor: "#FFFF66",
+//                strokeWidth: 2,
+//                strokeOpacity: 0.5,
+//                fillOpacity: 0.2
+//            });
+//            var selectedStyle = new OpenLayers.Style({
+//                strokeColor: "#00CCFF",
+//                strokeWidth: 2,
+//                strokeOpacity: 0.5,
+//                fillOpacity: 0.2,
+//                fillColor: "#0000FF"
+//            });
+//            foiLayer.styleMap = new OpenLayers.StyleMap({ 
+//                'default' : defaultStyle,
+//                'select' : selectedStyle
+//            });
 //            var selectorControl = new OpenLayers.Control.SLDSelect(
 //                OpenLayers.Class(OpenLayers.Control, {                
 //                    defaultHandlerOptions: {
@@ -231,20 +233,22 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 //                    layers: [foivectorlayer]
 //                }
 //            );
-            selectorControl = new OpenLayers.Control.WMSGetFeatureInfo({
+            var selectorControl = new OpenLayers.Control.WMSGetFeatureInfo({
                 maxFeatures : 50,
                 output : 'features',
                 infoFormat : 'application/vnd.ogc.gml',
                 clickCallback : 'click',
-                layers : [foivectorlayer]
+                layers : [foiLayer]
             });
             selectorControl.events.register("getfeatureinfo", this, function(evt) {
-               LOG.debug(evt); 
+               LOG.debug(evt);
+               if (Ext.ComponentMgr.get('mapPanel').notificationWindow) Ext.ComponentMgr.get('mapPanel').notificationWindow.close();
+               
             });
             // http://osgeo-org.1803224.n2.nabble.com/Conflict-Select-feature-vs-pan-td5935040.html
             // fixes the annoyance of not being able to pan with features displayed
             //selectorControl.handlers.feature.stopDown = false; 
-            this.map.addLayers([foivectorlayer]);
+            this.map.addLayers([foiLayer]);
             this.map.addControl(selectorControl);
             selectorControl.activate();
         }, this);
