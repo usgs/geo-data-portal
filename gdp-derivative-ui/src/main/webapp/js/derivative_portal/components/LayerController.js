@@ -53,10 +53,13 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
     getWMSCapsStore : function() {
         return this.wmsCapsStore;
     },
-   
     opendapEndpoint : undefined,
     getOPeNDAPEndpoint : function() {
         return this.opendapEndpoint;
+    },
+    featureLayer : undefined,
+    getCurrentFeatureLayer : function() {
+        return this.featureLayer;
     },
     constructor : function(config) {
         LOG.debug('LayerController:constructor: Constructing self.');

@@ -116,9 +116,9 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         }, this);
         this.layerController.on('requestfoi', function(args){
             LOG.debug('BaseMap: Observed "requestfoi".');
-            var existingLayer = this.map.getLayer('featureLayer');
+            var existingLayer = this.layerController.getCurrentFeatureLayer();
             if (existingLayer) existingLayer.destroy();
-            var foivectorlayer = args.clone().getLayer();
+            var foivectorlayer = args;
             
             foivectorlayer.setVisibility(true);
             foivectorlayer.events.on({
@@ -197,18 +197,53 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             foivectorlayer.styleMap = new OpenLayers.StyleMap({ 
                 'default' : defaultStyle,
                 'select' : selectedStyle
-            })
-            
-            var selectorControl = new OpenLayers.Control.SelectFeature(
-                foivectorlayer,
-                {
-                    multiple: false, 
-                    hover: false
-                }
-                )
+            });
+//            var selectorControl = new OpenLayers.Control.SLDSelect(
+//                OpenLayers.Class(OpenLayers.Control, {                
+//                    defaultHandlerOptions: {
+//                        'single': true,
+//                        'double': false,
+//                        'pixelTolerance': 0,
+//                        'stopSingle': false,
+//                        'stopDouble': false
+//                    },
+//                    initialize: function(options) {
+//                        this.handlerOptions = OpenLayers.Util.extend(
+//                            {}, this.defaultHandlerOptions
+//                        );
+//                        OpenLayers.Control.prototype.initialize.apply(
+//                            this, arguments
+//                        ); 
+//                        this.handler = new OpenLayers.Handler.Click(
+//                            this, {
+//                                'click': this.onClick
+//                            }, this.handlerOptions
+//                        );
+//                    }, 
+//                    onClick: function(evt) {
+//                        //var output = document.getElementById(this.key + "Output");
+//                        var msg = "click " + evt.xy;
+//                        LOG.debug(msg);
+//                    }
+//                }),
+//                {
+//                    displayClass: 'olControlSLDSelectPoint',
+//                    layers: [foivectorlayer]
+//                }
+//            );
+            selectorControl = new OpenLayers.Control.WMSGetFeatureInfo({
+                maxFeatures : 50,
+                output : 'features',
+                infoFormat : 'application/vnd.ogc.gml',
+                clickCallback : 'click',
+                layers : [foivectorlayer]
+            });
+            selectorControl.events.register("getfeatureinfo", this, function(evt) {
+               LOG.debug(evt); 
+            });
             // http://osgeo-org.1803224.n2.nabble.com/Conflict-Select-feature-vs-pan-td5935040.html
             // fixes the annoyance of not being able to pan with features displayed
-            selectorControl.handlers.feature.stopDown = false; 
+            //selectorControl.handlers.feature.stopDown = false; 
             this.map.addLayers([foivectorlayer]);
             this.map.addControl(selectorControl);
             selectorControl.activate();

@@ -129,18 +129,19 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             hidden : true
         }, this.zlayerComboConfig));
         
-        var foiGetCapsStore = new GeoExt.data.WFSCapabilitiesStore({
+        var foiGetCapsStore = new GeoExt.data.WMSCapabilitiesStore({
             //TODO - Bring this out
-            url:"proxy/http://cida-wiwsc-gdp2qa.er.usgs.gov:8082/geoserver/wfs?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetCapabilities",
-            protocolOptions: {
-                version: "1.1.0"
-            },
+            url:"proxy/http://cida-wiwsc-gdp2qa.er.usgs.gov:8082/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities",
+//            protocolOptions: {
+//                version: "1.1.0"
+//            },
             autoLoad: true,
             listeners: {
                 load: function(data) {
                     Ext.each(data.data.items, function(item, index, allItems){
-                        item.data.layer.options.protocol.options.url = "proxy/" + item.data.layer.options.protocol.url;
-                        item.data.layer.id = 'featureLayer';
+                        item.data.layer.url = GDP.PROXY_PREFIX + item.data.layer.url;
+                        item.id = 'featureLayer';
+                        item.data.layer.setOpacity(0.3)
                     }, this);
                 },
                 exception: function(proxy, type, action, options, response, arg) {
@@ -234,8 +235,10 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             this.controller.requestDerivative(record);
         }, this);
         this.featureOfInterestCombo.on('select', function(combo, record, index) {
-            this.controller.requestFeatureOfInterest(record);
-        }, this)
+            var layerClone = record.clone().getLayer();
+            this.controller.requestFeatureOfInterest(layerClone);
+            this.controller.featureLayer = layerClone;
+        }, this);
         this.scenarioCombo.on('select', function(combo, record, index) {
             this.controller.requestScenario(record);
         }, this);
