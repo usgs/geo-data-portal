@@ -6,17 +6,20 @@
         IDs and Classes specific to this application
 */
 
-.zoom-out {
-    background-image: url(../images/map-tools/zoom-out.gif) !important;
+.blank-icon {
+    background-image: url(../images/s.gif) !important;
 }
-.zoom-in {
-    background-image: url(../images/map-tools/zoom-in.gif) !important;
-}
-.pan-map {
-    background-image: url(../images/map-tools/pan-map.gif) !important;
-}
+
 .bounding-box {
     background-image: url(../images/map-tools/bounding-box.gif) !important;
+}
+
+.dygraph-title {
+    color : #225588;
+}
+
+.pan-map {
+    background-image: url(../images/map-tools/pan-map.gif) !important;
 }
 
 .process-pause {
@@ -53,10 +56,13 @@
     background-image: url(../images/process-actions/pause.gif) !important;
 }
 
-.blank-icon {
-    background-image: url(../images/s.gif) !important;
-}
-
 .quicktip-img {
     vertical-align: middle;
+}
+
+.zoom-out {
+    background-image: url(../images/map-tools/zoom-out.gif) !important;
+}
+.zoom-in {
+    background-image: url(../images/map-tools/zoom-in.gif) !important;
 }

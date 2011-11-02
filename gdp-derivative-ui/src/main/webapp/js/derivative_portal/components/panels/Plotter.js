@@ -38,6 +38,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         LOG.debug('Plotter:updatePlotter: Observed request to update plotter');
         this.csv = args.csv;
         this.graph.updateOptions({
+            title : args.featureTitle,
             file : this.csv,
             dateWindow : null,
             valueRange : null

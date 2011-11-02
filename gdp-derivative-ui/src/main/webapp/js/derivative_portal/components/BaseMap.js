@@ -140,7 +140,8 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                     }();
                     
                     this.layerController.updatePlotter({
-                        csv : csvToPlot
+                        csv : csvToPlot,
+                        featureTitle : this.layerController.getDerivative().data.derivative + " - " + feature.feature.attributes.STATE
                     });
                     
                     // TODO - There should be a better way of getting at this. 
