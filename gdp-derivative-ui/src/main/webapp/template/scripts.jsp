@@ -5,7 +5,8 @@
 
 <%-- Other JavaScript modules (Mapping, logging, etc) --%>
 <script src="js/log4javascript/log4javascript.js" type="text/javascript"></script>
-<script src="js/openlayers/OpenLayers.js" type="text/javascript"></script>
+<%--script src="js/openlayers/OpenLayers.js" type="text/javascript"></script--%>
+<script src="js/openlayers/lib/OpenLayers.js" type="text/javascript"></script>
 <script src="js/geoext/GeoExt.js" type="text/javascript"></script>
 <script src="js/dygraph/dygraph-combined.js" type="text/javascript"></script>
 

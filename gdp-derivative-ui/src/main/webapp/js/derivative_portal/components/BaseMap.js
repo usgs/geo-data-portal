@@ -116,8 +116,9 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         }, this);
         this.layerController.on('requestfoi', function(args){
             LOG.debug('BaseMap: Observed "requestfoi".');
-            var existingLayer = this.layerController.getCurrentFeatureLayer();
-            if (existingLayer) Ext.each(existingLayer, function(item){item.destroy()});
+            var existingLayer = this.layerController.getCurrentFeatureLayers();
+            if (existingLayer.allFeatures) existingLayer.allFeatures.destroy();
+            if (existingLayer.selectedFeature) existingLayer.selectedFeature.destroy();
             var foiLayer = args;
             
             foiLayer.setVisibility(true);
@@ -176,9 +177,9 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 //                    
 //                    // Reset back to default settings
                     Ext.ux.NotifyMgr.alignment = alignment;
-                    if (Ext.ComponentMgr.get('mapPanel').notificationWindow) {
-                        Ext.ComponentMgr.get('mapPanel').notificationWindow.close();
-                    }
+//                    if (Ext.ComponentMgr.get('mapPanel').notificationWindow) {
+//                        Ext.ComponentMgr.get('mapPanel').notificationWindow.close();
+//                    }
                     features.object.map.zoomToExtent(features.layer.getExtent());
                 }
             })
@@ -241,7 +242,57 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                 layers : [foiLayer]
             });
             selectorControl.events.register("getfeatureinfo", this, function(evt) {
-               LOG.debug(evt);
+                LOG.debug(evt);
+                var existingLayer = this.layerController.getCurrentFeatureLayers();
+                if (existingLayer.selectedFeature) existingLayer.selectedFeature.destroy();
+                var csvToPlot = function() {
+                    var csvs = [
+                    'resources/a1b-a2.csv',
+                    'resources/kansas.csv',
+                    'resources/wisconsin.csv'
+                    ]
+                    var currentCsv = Ext.ComponentMgr.get('plotterPanel').csv;
+                    Ext.each(csvs, function(csv, index) {
+                        if (csv === currentCsv) csvs.splice(index, 1);
+                    })
+                    var chosenIndex = Math.floor(Math.random()*(csvs.length));
+                    LOG.debug("chosenIndex=" + chosenIndex);
+                    return (csvs[chosenIndex])
+                }();
+//                    
+                this.layerController.updatePlotter({
+                    csv : csvToPlot,
+                    featureTitle : this.layerController.getDerivative().data.derivative + " - " + evt.features[0].attributes.STATE
+                });
+                var selectedLayer = new OpenLayers.Layer.Vector(
+                    "aksfsaldf",
+                    {
+                        //features : evt.features
+                    });
+                selectedLayer.addFeatures(evt.features);
+                var defaultStyle = new OpenLayers.Style({
+                    strokeColor: "#FFFF66",
+                    strokeWidth: 2,
+                    strokeOpacity: 0.5,
+                    fillOpacity: 0.2
+                });
+                var selectedStyle = new OpenLayers.Style({
+                    strokeColor: "#00CCFF",
+                    strokeWidth: 2,
+                    strokeOpacity: 0.5,
+                    fillOpacity: 0.2,
+                    fillColor: "#0000FF"
+                });
+                selectedLayer.styleMap = new OpenLayers.StyleMap({ 
+                    'default' : selectedStyle,
+                    'select' : selectedStyle
+                });
+                this.map.addLayers([selectedLayer]);
+                this.layerController.featureLayers.selectedFeature = selectedLayer;
+//                    
+//                    // TODO - There should be a better way of getting at this. 
+//                    // Look into OpenLayers scoping for layer.on events
+//                    Ext.ComponentMgr.get('mapPanel').notificationWindow.close();
                if (Ext.ComponentMgr.get('mapPanel').notificationWindow) Ext.ComponentMgr.get('mapPanel').notificationWindow.close();
                
             });
