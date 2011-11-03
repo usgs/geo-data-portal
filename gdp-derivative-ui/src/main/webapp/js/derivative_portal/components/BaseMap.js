@@ -193,9 +193,19 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                     return (csvs[chosenIndex])
                 }();
 
+                // http://internal.cida.usgs.gov/jira/browse/GDP-423
+                evt.features[0].attributes.TITLE = function() {
+                    var fid = evt.object.layers[0].params.LAYERS.toLowerCase();
+                    if (fid == 'derivative:conus_states') return evt.features[0].attributes.STATE;
+                    if (fid == 'derivative:us_counties') return evt.features[0].attributes.COUNTY
+                    if (fid == 'derivative:level_iii_ecoregions') return evt.features[0].attributes.LEVEL3_NAM
+                    if (fid == 'derivative:wbdhu8_alb_simp') return evt.features[0].attributes.SUBBASIN
+                    if (fid == 'derivative:fws_lcc') return evt.features[0].attributes.area_names
+                    return '';
+                }();
                 this.layerController.updatePlotter({
                     csv : csvToPlot,
-                    featureTitle : this.layerController.getDerivative().data.derivative + " - " + evt.features[0].attributes.STATE
+                    featureTitle : this.layerController.getDerivative().data.derivative + " - " + evt.features[0].attributes.TITLE
                 });
                 
                 var selectedLayer = new OpenLayers.Layer.Vector(
