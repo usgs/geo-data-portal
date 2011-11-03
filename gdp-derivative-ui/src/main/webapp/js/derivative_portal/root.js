@@ -137,7 +137,7 @@ function initializeMapping() {
     LOG.info('Derivative Portal: Initializing Mapping.');
 	
     LOG.debug('Derivative Portal:initializeMapping: Constructing endpoint panel.');
-    
+    var foiGetCapsURL = GDP.PROXY_PREFIX + "http://igsarm-cida-javadev1.er.usgs.gov:8081/geoserver/derivative/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities";
     var legendStore = new Ext.data.JsonStore({
         idProperty: 'name',
         root: 'styles',
@@ -271,6 +271,7 @@ function initializeMapping() {
         width : 265,
         minWidth : 265,
         map : mapPanel.map,
+        foiGetCapsURL : foiGetCapsURL,
         baseLayerStore : baseLayerStore,
         capabilitiesStore : capabilitiesStore,
         getRecordsStore : getRecordsStore

@@ -131,10 +131,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         
         var foiGetCapsStore = new GeoExt.data.WMSCapabilitiesStore({
             //TODO - Bring this out
-            url:"proxy/http://cida-wiwsc-gdp2qa.er.usgs.gov:8082/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities",
-//            protocolOptions: {
-//                version: "1.1.0"
-//            },
+            url: config.foiGetCapsURL,//GDP.PROXY_PREFIX + "http://igsarm-cida-javadev1.er.usgs.gov:8081/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities",
             autoLoad: true,
             listeners: {
                 load: function(data) {

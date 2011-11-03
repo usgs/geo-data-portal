@@ -16,7 +16,7 @@ GDP.ConfigurationPanel = Ext.extend(Ext.Panel, {
         
         this.datasetConfigPanel = new GDP.DatasetConfigPanel({
             controller : this.controller,
-            //url : config.url,
+            foiGetCapsURL : config.foiGetCapsURL,
             capabilitiesStore : config.capabilitiesStore,
             getRecordsStore : config.getRecordsStore,
             featureOfIneterestEndpointStore : config.featureOfIneterestEndpointStore,
