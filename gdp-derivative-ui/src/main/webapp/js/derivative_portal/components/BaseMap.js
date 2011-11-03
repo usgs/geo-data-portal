@@ -116,10 +116,21 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         }, this);
         this.layerController.on('requestfoi', function(args){
             LOG.debug('BaseMap: Observed "requestfoi".');
-            var existingLayer = this.layerController.getCurrentFeatureLayers();
-            if (existingLayer.allFeatures) existingLayer.allFeatures.destroy();
-            if (existingLayer.selectedFeature) existingLayer.selectedFeature.destroy();
-            var foiLayer = args;
+            
+            // Clean up befre re-adding layers and controls
+            Ext.each(this.map.getLayersByName('foilayer'), function(item){
+                item.destroy();
+            });
+            
+            Ext.each(this.map.getLayersByName('selectedFeature'), function(item){
+                item.destroy();
+            });
+            
+            Ext.each(this.map.getControlsByClass('OpenLayers.Control.WMSGetFeatureInfo'), function(item){
+                this.removeControl(item);
+            }, this.map);
+            
+            var foiLayer = args.clone().getLayer();
             
             foiLayer.setVisibility(true);
             foiLayer.name = "foilayer";
@@ -150,17 +161,22 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             })
             
             var selectorControl = new OpenLayers.Control.WMSGetFeatureInfo({
+                id : 'clickcontrol',
                 maxFeatures : 50,
                 output : 'features',
                 infoFormat : 'application/vnd.ogc.gml',
                 clickCallback : 'click',
-                layers : [foiLayer]
+                layers : [foiLayer],
+                url : foiLayer.url
             });
             
             selectorControl.events.register("getfeatureinfo", this, function(evt) {
                 if (!evt.features[0]) return; // User clicked somewhere they shouldn't have
-                var existingLayer = this.layerController.getCurrentFeatureLayers();
-                if (existingLayer.selectedFeature) existingLayer.selectedFeature.destroy();
+                
+                Ext.each(this.map.getLayersByName('selectedFeature'), function(item){
+                    item.destroy();
+                })
+                
                 var csvToPlot = function() {
                     var csvs = [
                     'resources/a1b-a2.csv',
@@ -196,8 +212,6 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                     }
                     );
                 selectedLayer.addFeatures(evt.features);
-                
-                this.layerController.featureLayers.selectedFeature = selectedLayer;
                 
                 this.map.addLayers([selectedLayer]);
                 

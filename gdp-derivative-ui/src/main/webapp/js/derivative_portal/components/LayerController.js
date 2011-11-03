@@ -57,13 +57,6 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
     getOPeNDAPEndpoint : function() {
         return this.opendapEndpoint;
     },
-    featureLayers : {
-        allFeatures: undefined,
-        selectedFeature: undefined
-    },
-    getCurrentFeatureLayers : function() {
-        return this.featureLayers;
-    },
     constructor : function(config) {
         LOG.debug('LayerController:constructor: Constructing self.');
             

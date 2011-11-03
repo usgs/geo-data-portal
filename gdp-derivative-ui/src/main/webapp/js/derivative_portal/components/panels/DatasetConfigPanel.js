@@ -235,9 +235,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             this.controller.requestDerivative(record);
         }, this);
         this.featureOfInterestCombo.on('select', function(combo, record, index) {
-            var layerClone = record.clone().getLayer();
-            this.controller.requestFeatureOfInterest(layerClone);
-            this.controller.featureLayers.allFeatures = layerClone;
+            this.controller.requestFeatureOfInterest(record);
         }, this);
         this.scenarioCombo.on('select', function(combo, record, index) {
             this.controller.requestScenario(record);
