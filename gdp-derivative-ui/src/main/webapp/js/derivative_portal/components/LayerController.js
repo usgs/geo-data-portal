@@ -144,8 +144,6 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
         if (!derivRecord) return;
         this.derivative = derivRecord;
         
-        // TODO get derivative record and modify scenario and gcm stores
-        //var derivName = derivRecord.get('derivative');
         this.fireEvent('changederiv', {
             record : derivRecord
         })
@@ -155,8 +153,6 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
         if (!scenRecord) return;
         this.scenario = scenRecord;
         
-        // TODO get derivative record and modify scenario and gcm stores
-        //var derivName = derivRecord.get('derivative');
         this.fireEvent('changescenario', {
             record : scenRecord
         })
@@ -166,8 +162,6 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
         if (!gcmRecord) return;
         this.gcm = gcmRecord;
         
-        // TODO get derivative record and modify scenario and gcm stores
-        //var derivName = derivRecord.get('derivative');
         this.fireEvent('changegcm', {
             record : gcmRecord
         })
@@ -302,12 +296,10 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
     },
     loadedDerivStore : function(args) {
         LOG.debug('LayerController:loadedDerivStore: Firing event "loaded-derivstore"');
-        //this.modifyLegendStore(args.record.data);
         this.fireEvent('loaded-derivstore', args);
     },
     loadedLeafStore : function(args) {
         LOG.debug('LayerController:loadedLeafStore: Firing event "loaded-leafstore"');
-        //this.modifyLegendStore(args.record.data);
         this.fireEvent('loaded-leafstore', args);
     },
     capabilitiesExceptionOccurred : function(args) {

@@ -122,40 +122,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             var foiLayer = args;
             
             foiLayer.setVisibility(true);
-            //            foivectorlayer.events.on({
-            //                'featureselected': function(feature) {
-            //                    LOG.debug(feature.feature.fid);
-            //                    var csvToPlot = function() {
-            //                        var csvs = [
-            //                        'resources/a1b-a2.csv',
-            //                        'resources/kansas.csv',
-            //                        'resources/wisconsin.csv'
-            //                        ]
-            //                        var currentCsv = Ext.ComponentMgr.get('plotterPanel').csv;
-            //                        Ext.each(csvs, function(csv, index) {
-            //                            if (csv === currentCsv) csvs.splice(index, 1);
-            //                        })
-            //                        var chosenIndex = Math.floor(Math.random()*(csvs.length));
-            //                        LOG.debug("chosenIndex=" + chosenIndex);
-            //                        return (csvs[chosenIndex])
-            //                    }();
-            //                    
-            //                    this.layerController.updatePlotter({
-            //                        csv : csvToPlot,
-            //                        featureTitle : this.layerController.getDerivative().data.derivative + " - " + feature.feature.attributes.STATE
-            //                    });
-            //                    
-            //                    // TODO - There should be a better way of getting at this. 
-            //                    // Look into OpenLayers scoping for layer.on events
-            //                    Ext.ComponentMgr.get('mapPanel').notificationWindow.close();
-            //                },
-            //                'featureunselected': function(feature) {
-            //                    LOG.debug(feature.feature.fid);
-            //                // TODO -Remove this fid from the plotter
-            //                },
-            //                scope : this
-            //            }
-            //            );
+            foiLayer.name = "foilayer";
             foiLayer.events.on({
                 'added' : function(features) {
                     // Pull defaults for Ext.ux.NotifyMgr settings to be reset later
@@ -171,7 +138,6 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                             title: 'Areas Of Interest',
                             titleIconCls: 'titleicon-info',
                             hideDelay: 30000,
-                            // hideDelay: 0, // Do not close until we decide to close it
                             msg: 'Click the area of interest you would like to plot an annual time series for.',
                             isClosable : true
                         }).show(document);
@@ -280,7 +246,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         LOG.debug('BaseMap:clearLayers: Handling request.');
         Ext.each(this.layers.data.getRange(), function(item, index, allItems){
             var layer = item.data.layer;
-            if (layer.isBaseLayer || layer.CLASS_NAME === 'OpenLayers.Layer.Vector') {
+            if (layer.isBaseLayer || layer.CLASS_NAME === 'OpenLayers.Layer.Vector' || layer.name === 'foilayer') {
                 LOG.debug('BaseMap:clearLayers: Layer '+layer.id+' is a base layer and will not be cleared.');
                 return;
             }                
