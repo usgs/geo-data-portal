@@ -343,6 +343,21 @@ function initializeQuickTips() {
 
 // This is here just for shortcutting some processes in order to test stuff like XML parsing
 function test() { 
+    var store = new GDP.SOSGetObservationStore({
+        url : 'resources/Sample.SOS.GetObservations.xml',
+        autoLoad : true,
+        opts : {
+            offering: "test",
+            observedProperty: "test"
+        },
+        listeners: {
+            load: function(store) {
+                LOG.debug(store);
+            }
+        }
+    });
+    store.load();
+    
 //    var store = new GeoExt.data.WFSCapabilitiesStore({
 //        url:"proxy/http://localhost:8081/geoserver/wfs?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetCapabilities",
 //        protocolOptions: {version: "1.1.0"},

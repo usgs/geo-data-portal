@@ -12,6 +12,7 @@
 
 <%-- Modified library js modules??? --%>
 <script src='${param["ComponentDir"]}/CSW/Format/v2_0_2.js'></script>
+<script src='${param["ComponentDir"]}/SOS/Format/SOSGetObservation.js'></script>
 
 <%-- Custom Application Modules Here --%>
 <script type="text/javascript" src='${param["ComponentDir"]}/LayerController.js'></script>
@@ -27,6 +28,8 @@
 <script type="text/javascript" src='${param["ComponentDir"]}/WPS/WPSDescribeProcessReader.js'></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/CSW/CSWGetRecordsStore.js'></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/CSW/CSWGetRecordsReader.js'></script>
+<script type="text/javascript" src='${param["ComponentDir"]}/SOS/SOSGetObservationStore.js'></script>
+<script type="text/javascript" src='${param["ComponentDir"]}/SOS/SOSGetObservationReader.js'></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/panels/WPSPanel.js'></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/panels/WPSProcessPanel.js'></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/panels/EndpointPanel.js'></script>

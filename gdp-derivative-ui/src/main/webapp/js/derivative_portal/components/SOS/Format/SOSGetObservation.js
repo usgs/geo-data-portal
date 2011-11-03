@@ -86,7 +86,7 @@ OpenLayers.Format.SOSGetObservation = OpenLayers.Class(OpenLayers.Format.XML, {
         if(data && data.nodeType == 9) {
             data = data.documentElement;
         }
-        var info = {measurements: [], observations: []};
+        var info = {measurements: [], observations: [], attributes: []};
         this.readNode(data, info);
         return info;
     },
@@ -134,7 +134,9 @@ OpenLayers.Format.SOSGetObservation = OpenLayers.Class(OpenLayers.Format.XML, {
                 this.readChildNodes(node, measurement);
             },
             "Observation": function(node, observationCollection) {
-                var observation = {};
+                var observation = {
+                    attributes: {}
+                };
                 observationCollection.observations.push(observation);
                 this.readChildNodes(node, observation);
             },
@@ -170,7 +172,8 @@ OpenLayers.Format.SOSGetObservation = OpenLayers.Class(OpenLayers.Format.XML, {
             "result": function(node, measurement) {
                 var result = {};
                 measurement.result = result;
-                if (this.getChildValue(node) !== '') {
+                var childValue = this.getChildValue(node);
+                if (!childValue || !/^\s*$/.test(childValue)) {
                     result.value = this.getChildValue(node);
                     result.uom = node.getAttribute("uom");
                 } else {
@@ -237,13 +240,26 @@ OpenLayers.Format.SOSGetObservation = OpenLayers.Class(OpenLayers.Format.XML, {
                 field.uom = uom;
             },
             "encoding": function(node, dataArray) {
-                // skip for now
+                var encoding = {};
+                dataArray.encoding = encoding;
+                this.readChildNodes(node, encoding);
             },
             "TextBlock": function(node, encoding) {
-                // skip for now
+                var blockSeparator = node.getAttribute("blockSeparator");
+                var decimalSeparator = node.getAttribute("decimalSeparator");
+                var tokenSeparator = node.getAttribute("tokenSeparator");
+                encoding.blockSeparator = blockSeparator;
+                encoding.decimalSeparator = decimalSeparator;
+                encoding.tokenSeparator = tokenSeparator;
             },
             "values": function(node, dataArray) {
-                
+                var values = [];
+                dataArray.values = values;
+                var encodedValues = this.getChildValue(node);
+                var blocks = encodedValues.split(dataArray.encoding.blockSeparator);
+                blocks.forEach(function(block) {
+                    values.push(block.split(dataArray.encoding.tokenSeparator));
+                });
             }
         }
     },
