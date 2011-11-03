@@ -127,6 +127,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             });
             
             Ext.each(this.map.getControlsByClass('OpenLayers.Control.WMSGetFeatureInfo'), function(item){
+                item.deactivate();
                 this.removeControl(item);
             }, this.map);
             
