@@ -178,19 +178,19 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                     item.destroy();
                 })
                 
-                var csvToPlot = function() {
-                    var csvs = [
-                    'resources/a1b-a2.csv',
-                    'resources/kansas.csv',
-                    'resources/wisconsin.csv'
+                var gmlidToPlot = function() {
+                    var gmlids = [
+                    'resources/a1b-a2.xml',
+                    'resources/kansas.xml',
+                    'resources/wisconsin.xml'
                     ]
-                    var currentCsv = Ext.ComponentMgr.get('plotterPanel').csv;
-                    Ext.each(csvs, function(csv, index) {
-                        if (csv === currentCsv) csvs.splice(index, 1);
+                    var currentGmlid = Ext.ComponentMgr.get('plotterPanel').gmlid;
+                    Ext.each(gmlids, function(gmlid, index) {
+                        if (gmlid === currentGmlid) gmlids.splice(index, 1);
                     })
-                    var chosenIndex = Math.floor(Math.random()*(csvs.length));
+                    var chosenIndex = Math.floor(Math.random()*(gmlids.length));
                     LOG.debug("chosenIndex=" + chosenIndex);
-                    return (csvs[chosenIndex])
+                    return (gmlids[chosenIndex])
                 }();
 
                 // http://internal.cida.usgs.gov/jira/browse/GDP-423
@@ -204,7 +204,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                     return '';
                 }();
                 this.layerController.updatePlotter({
-                    csv : csvToPlot,
+                    gmlid : gmlidToPlot,
                     featureTitle : this.layerController.getDerivative().data.derivative + " - " + evt.features[0].attributes.TITLE
                 });
                 

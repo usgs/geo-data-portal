@@ -275,7 +275,7 @@ function initializeMapping() {
         baseLayerStore : baseLayerStore,
         capabilitiesStore : capabilitiesStore,
         getRecordsStore : getRecordsStore
-    })
+    });
 
     var plotterPanel = new GDP.Plotter({
         id : 'plotterPanel',
@@ -285,7 +285,8 @@ function initializeMapping() {
         region : 'south',
         border : true,
         height : 200,
-        csv : 'resources/a1b-a2.csv',
+        //csv : 'resources/a1b-a2.csv',
+        gmlid : 'resources/a1b-a2.xml',
         controller : layerController
     });
     

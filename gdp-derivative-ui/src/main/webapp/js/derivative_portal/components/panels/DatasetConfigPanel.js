@@ -60,12 +60,12 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             mode : 'local',
             triggerAction : 'all',
             store : this.scenarioStore,
-            fieldLabel : '<tpl for="."><span ext:qtip="Some information about emmissions scenario" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Scenario',
+            fieldLabel : '<tpl for="."><span ext:qtip="Some information about emission scenario" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Scenario',
             forceSelection : true,
             lazyInit : false,
             editable : false,
             displayField : 'scenario',
-            emptyText : 'Choose Emmissions Scenario',
+            emptyText : 'Choose Emission Scenario',
             tpl : '<tpl for="."><div ext:qtip="<b>{scenario}</b><br /><br />{quicktip}" class="x-combo-list-item">{scenario}</div></tpl>'
         });
         
@@ -329,7 +329,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         this.gcmStore.loadData(args.record.get("gcms"), true);
         
         this.derivativeCombo.label.update('<tpl for="."><span ext:qtip="' + args.record.get("fieldLabels").derivative + '" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Derivative');
-        this.scenarioCombo.label.update('<tpl for="."><span ext:qtip="' + args.record.get("fieldLabels").scenario + '" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Emmissions Scenario');
+        this.scenarioCombo.label.update('<tpl for="."><span ext:qtip="' + args.record.get("fieldLabels").scenario + '" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Emissions Scenario');
         this.gcmCombo.label.update('<tpl for="."><span ext:qtip="' + args.record.get("fieldLabels").gcm + '" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Climate Model');
         
         // http://internal.cida.usgs.gov/jira/browse/GDP-416

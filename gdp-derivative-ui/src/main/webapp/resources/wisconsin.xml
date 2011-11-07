@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- http://localhost:8080/thredds/sos/gsod/sample.ncml?service=sos&version=1.0.0&request=getObservation&offering=demo_HUCs.1&observedProperty=mean -->
+<om:ObservationCollection xmlns:om="http://www.opengis.net/om/1.0" xmlns:gml="http://www.opengis.net/gml" xmlns:swe="http://www.opengis.net/swe/1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" gml:id="demo_HUCs.1" xsi:schemaLocation="http://www.opengis.net/om/1.0 http://schemas.opengis.net/om/1.0.0/observation.xsd">
+	<gml:description>Empty Description</gml:description>
+	<gml:name>Sample Station Time Series</gml:name>
+	<gml:boundedBy>
+		<gml:Envelope srsName="EPSG:4326">
+			<!-- overwrite these with your actual offering ROI -->
+			<gml:lowerCorner>41.00000 -109.00000 0</gml:lowerCorner>
+			<gml:upperCorner>41.00000 -109.00000 0</gml:upperCorner>
+		</gml:Envelope>
+	</gml:boundedBy>
+	<om:member>
+		<om:Observation>
+			<gml:description>Precipitation - Wisconsin</gml:description>
+			<gml:name>Precipitation - Wisconsin</gml:name>
+			<gml:boundedBy>
+				<gml:Envelope srsName="urn:tds:station.sos:demo_HUCs.1">
+					<gml:lowerCorner>41.00000 -109.00000 0</gml:lowerCorner>
+					<gml:upperCorner>41.00000 -109.00000 0</gml:upperCorner>
+				</gml:Envelope>
+			</gml:boundedBy>
+			<om:samplingTime>
+				<gml:TimePeriod gml:id="DATA_TIME">
+					<gml:beginPosition>2000-01-01T00:00:00Z</gml:beginPosition>
+					<gml:endPosition>2000-01-10T00:00:00Z</gml:endPosition>
+				</gml:TimePeriod>
+			</om:samplingTime>
+			<om:procedure xlink:href="file:/Users/tkunicki/Data/GSOD/netcdf/sample.ncml"/>
+			<om:observedProperty xlink:href="http://marinemetadata.org/cf#mean"/>
+			<om:featureOfInterest xlink:href="http://localhost:18080/geoserver/sample/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typeName=sample:demo_HUCs&amp;outputFormat=text/xml;%20subtype=gml/3.1.1&amp;featureId=demo_HUCs.1"/>
+			<om:result>
+				<swe:DataArray>
+					<swe:elementCount>
+						<swe:Count>
+							<swe:value>10</swe:value>
+						</swe:Count>
+					</swe:elementCount>
+					<swe:elementType name="SimpleDataArray">
+						<swe:DataRecord>
+							<swe:field name="time">
+								<swe:Time definition="urn:ogc:phenomenon:time:iso8601"/>
+							</swe:field>
+							<swe:field name="Precipitation">
+								<swe:Quantity definition="urn:ogc:def:phenomenon:mmisw.org:cf:mean">
+									<swe:uom code="mm/d"/>
+								</swe:Quantity>
+							</swe:field>
+						</swe:DataRecord>
+					</swe:elementType>
+					<swe:encoding>
+						<swe:TextBlock blockSeparator=" " decimalSeparator="." tokenSeparator=","/>
+					</swe:encoding>
+					<swe:values>1970-01-01,0.3724005 1970-01-02,0.24169381 1970-01-03,0.20283718 1970-01-04,0.26453963 1970-01-05,0.03667221 1970-01-06,0.15227637 1970-01-07,0.38198352 1970-01-08,0.3205171 1970-01-09,0.13279834 1970-01-10,0.18404177 1970-01-11,0.3657422 1970-01-12,0.114294104 1970-01-13,0.48905894 1970-01-14,0.4379547 1970-01-15,0.6278886 1970-01-16,1.0995448 1970-01-17,0.8573888 1970-01-18,0.053008553 1970-01-19,0.012039403 1970-01-20,0.026614506 1970-01-21,0.113509186 1970-01-22,0.3543397 1970-01-23,0.13629527 1970-01-24,0.7318782 1970-01-25,1.8534232 1970-01-26,1.5487592 1970-01-27,2.2495267 1970-01-28,2.4957786 1970-01-29,0.3599007 1970-01-30,0.012794168 1970-01-31,0.019368222 1970-02-01,0.07865018 1970-02-02,0.077574536 1970-02-03,0.69601524 1970-02-04,1.5390711 1970-02-05,0.33129984 1970-02-06,0.17774734 1970-02-07,0.36698648 1970-02-08,0.44410938 1970-02-09,0.30619127 1970-02-10,0.2618074 1970-02-11,0.063505575 1970-02-12,0.19509901 1970-02-13,0.03275691 1970-02-14,0.025048677 1970-02-15,0.047610942 1970-02-16,0.016080774 1970-02-17,0.035979997 1970-02-18,0.098552994 1970-02-19,0.02140842 1970-02-20,0.0018383254 1970-02-21,8.883131E-6 1970-02-22,0.0 1970-02-23,0.0 1970-02-24,0.024533283 1970-02-25,0.397455 1970-02-26,0.7144615 1970-02-27,0.23804633 1970-02-28,1.1382384 1970-03-01,1.2901609 1970-03-02,5.8141613 1970-03-03,9.720834 1970-03-04,1.6987681 1970-03-05,0.6028569 1970-03-06,0.43061754 1970-03-07,0.5039625 1970-03-08,0.7801941 1970-03-09,0.049850658 1970-03-10,0.0021820138 1970-03-11,0.0 1970-03-12,0.046169177 1970-03-13,0.05285722 1970-03-14,0.010464872 1970-03-15,0.0 1970-03-16,0.0 1970-03-17,0.0 1970-03-18,0.41055351 1970-03-19,4.8480587 1970-03-20,3.9234636 1970-03-21,0.03516307 1970-03-22,4.1791634E-4 1970-03-23,0.0013677262 1970-03-24,0.014848007 1970-03-25,0.1922947 1970-03-26,0.35520458 1970-03-27,0.18696924 1970-03-28,0.07847251 1970-03-29,0.23498523 1970-03-30,0.18671599 1970-03-31,0.071625076 1970-04-01,0.5467501 1970-04-02,0.48574084 1970-04-03,0.12621506 1970-04-04,0.17977093 1970-04-05,1.1925533 1970-04-06,0.52160275 1970-04-07,1.13977185E-4 1970-04-08,0.0 1970-04-09,0.0 1970-04-10,0.0013783687 1970-04-11,0.103797965 1970-04-12,2.3437011 1970-04-13,3.2837281 1970-04-14,0.4209516 1970-04-15,2.0960946 1970-04-16,1.6220616 1970-04-17,0.0051491763 1970-04-18,0.987799 1970-04-19,10.794817 1970-04-20,8.55149 1970-04-21,1.2032536 1970-04-22,4.548386 1970-04-23,2.6299965 1970-04-24,0.21808405 1970-04-25,0.049939122 1970-04-26,0.36833373 1970-04-27,0.58485323 1970-04-28,0.5298782 1970-04-29,1.1425273 1970-04-30,3.5906057 1970-05-01,3.8138678 1970-05-02,0.3861683 1970-05-03,0.16929178 1970-05-04,0.45250478 1970-05-05,0.347453 1970-05-06,0.08174038 1970-05-07,0.62860477 1970-05-08,1.8675746 1970-05-09,6.5054827 1970-05-10,5.176807 1970-05-11,7.52321 1970-05-12,10.583831 1970-05-13,6.3974724 1970-05-14,7.4192915 1970-05-15,3.9678602 1970-05-16,0.4675882 1970-05-17,0.07642736 1970-05-18,0.11521658 1970-05-19,0.3711808 1970-05-20,2.3851988 1970-05-21,13.564089 1970-05-22,14.833247 1970-05-23,7.1394677 1970-05-24,6.9951143 1970-05-25,2.64585 1970-05-26,0.73956233 1970-05-27,9.060195 1970-05-28,6.7703214 1970-05-29,5.530975 1970-05-30,13.179987 1970-05-31,14.224756 1970-06-01,7.040434</swe:values>
+				</swe:DataArray>
+			</om:result>
+		</om:Observation>
+	</om:member>
+</om:ObservationCollection>

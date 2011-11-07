@@ -216,14 +216,15 @@ OpenLayers.Format.SOSGetObservation = OpenLayers.Class(OpenLayers.Format.XML, {
                 this.readChildNodes(node, dataArray);
             },
             "DataRecord": function(node, dataArray) {
-                var dataRecord = {};
+                var dataRecord = [];
                 dataArray.dataRecord = dataRecord;
                 this.readChildNodes(node, dataRecord);
             },
             "field": function(node, dataRecord) {
                 var field = {};
                 var name = node.getAttribute("name");
-                dataRecord[name] = field;
+                field.name = name;
+                dataRecord.push(field);
                 this.readChildNodes(node, field);
             },
             "Time": function(node, field) {
