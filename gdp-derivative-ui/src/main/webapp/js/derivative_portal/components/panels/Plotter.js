@@ -78,7 +78,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
     },
     loadSOSStore : function() {
         this.sosStore = new GDP.SOSGetObservationStore({
-            url : this.gmlid, // gmlid is url for now, eventually, use SOS endpoint + gmlid or whatever param
+            url : encodeURI(this.gmlid), // gmlid is url for now, eventually, use SOS endpoint + gmlid or whatever param
             autoLoad : true,
             opts : {
                 offering: "test",

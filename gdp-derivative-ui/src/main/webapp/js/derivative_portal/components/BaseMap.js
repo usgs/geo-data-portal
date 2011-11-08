@@ -203,7 +203,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                     if (fid == 'derivative:fws_lcc') return evt.features[0].attributes.area_names
                     return '';
                 }();
-                var gmlidToPlot = 'resources/' + evt.features[0].attributes.TITLE.toLowerCase() + '.xml';
+                var gmlidToPlot = 'resources/states/' + evt.features[0].attributes.TITLE.toLowerCase() + '.xml';
                 this.layerController.updatePlotter({
                     gmlid : gmlidToPlot,
                     featureTitle : this.layerController.getDerivative().data.derivative + " - " + evt.features[0].attributes.TITLE
