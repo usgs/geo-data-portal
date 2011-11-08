@@ -72,7 +72,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         this.timestepName = 'time';
         this.timestepStore = new Ext.data.ArrayStore({
             storeId : 'timestepStore',
-            fields: [this.timestepName]
+            fields: [this.timestepName, 'timestepDisplayName']
         });
         this.timestepComboConfig = {
             mode : 'local',
@@ -80,7 +80,10 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             store : this.timestepStore,
             forceSelection : true,
             lazyInit : false,
-            displayField : this.timestepName,
+            valueField : this.timestepName,
+            displayField : 'timestepDisplayName',
+            //tpl : '<tpl for=".">{timestepDisplayName}</tpl>',
+            //valueField : this.timestepName,
             editable : false,
             autoWidth : true
         }

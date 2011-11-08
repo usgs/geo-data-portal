@@ -178,20 +178,20 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                     item.destroy();
                 })
                 
-                var gmlidToPlot = function() {
-                    var gmlids = [
-                    'resources/a1b-a2.xml',
-                    'resources/kansas.xml',
-                    'resources/wisconsin.xml'
-                    ]
-                    var currentGmlid = Ext.ComponentMgr.get('plotterPanel').gmlid;
-                    Ext.each(gmlids, function(gmlid, index) {
-                        if (gmlid === currentGmlid) gmlids.splice(index, 1);
-                    })
-                    var chosenIndex = Math.floor(Math.random()*(gmlids.length));
-                    LOG.debug("chosenIndex=" + chosenIndex);
-                    return (gmlids[chosenIndex])
-                }();
+//                var gmlidToPlot = function() {
+//                    var gmlids = [
+//                    'resources/a1b-a2.xml',
+//                    'resources/kansas.xml',
+//                    'resources/wisconsin.xml'
+//                    ]
+//                    var currentGmlid = Ext.ComponentMgr.get('plotterPanel').gmlid;
+//                    Ext.each(gmlids, function(gmlid, index) {
+//                        if (gmlid === currentGmlid) gmlids.splice(index, 1);
+//                    })
+//                    var chosenIndex = Math.floor(Math.random()*(gmlids.length));
+//                    LOG.debug("chosenIndex=" + chosenIndex);
+//                    return (gmlids[chosenIndex])
+//                }();
 
                 // http://internal.cida.usgs.gov/jira/browse/GDP-423
                 evt.features[0].attributes.TITLE = function() {
@@ -203,6 +203,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                     if (fid == 'derivative:fws_lcc') return evt.features[0].attributes.area_names
                     return '';
                 }();
+                var gmlidToPlot = 'resources/' + evt.features[0].attributes.TITLE.toLowerCase() + '.xml';
                 this.layerController.updatePlotter({
                     gmlid : gmlidToPlot,
                     featureTitle : this.layerController.getDerivative().data.derivative + " - " + evt.features[0].attributes.TITLE

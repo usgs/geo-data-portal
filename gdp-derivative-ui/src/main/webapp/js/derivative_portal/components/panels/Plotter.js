@@ -7,6 +7,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
     legendWidth : undefined,
     controller : undefined,
     gmlid : undefined,
+    plotterTitle : undefined,
     sosStore : undefined,
     dataArray : [],
     graph : undefined,
@@ -17,6 +18,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         this.legendWidth = config.legendWidth || 250;
         this.height = config.height || 200;
         this.gmlid = config.gmlid;
+        this.plotterTitle = config.title;
         //this.csv = config.csv;
             
         this.controller = config.controller;
@@ -57,6 +59,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
     updatePlotter : function(args) {
         LOG.debug('Plotter:updatePlotter: Observed request to update plotter');
         this.gmlid = args.gmlid;
+        this.plotterTitle = args.featureTitle;
         this.loadSOSStore();
         //this.graph.updateOptions({
             //title : args.featureTitle,
@@ -83,8 +86,8 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
             },
             listeners : {
                 load : function(store) {
-                    //this.dataArray = store.getAt(0).get('values');
                     var record = store.getAt(0);
+                    var yaxisUnits = undefined;
                     if (this.graph) this.graph.destroy();
                     this.graph = new Dygraph(
                         Ext.get(this.plotterDiv).dom,
@@ -101,20 +104,43 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                         }(record.get('values')),
                         {
                             //errorBars : true,
-                            title : record.get('name'),
+                            //title : record.get('name'),  // bring back when SOS has something of value for title
+                            title : this.plotterTitle,
                             legend: 'always',
                             labels: function(recordArray) {
                                 var columnNames = [];
                                 Ext.each(recordArray, function(item) {
-                                    columnNames.push(item.name + ((item.uom) ? " (" + item.uom + ")" : ""));
+                                    columnNames.push(item.name); // + ((item.uom) ? " (" + item.uom + ")" : ""));
+                                    yaxisUnits = item.uom;
                                 });
                                 return columnNames;
                             }(record.get('dataRecord')),
+                            //ylabel: record.get('')
                             labelsDiv: Ext.get(this.legendDiv).dom,
                             labelsDivWidth: this.legendWidth,
                             labelsSeparateLines : true,
                             labelsDivStyles: {
                                 'textAlign': 'right'
+                            },
+                            axes: {
+                              x: {
+                                valueFormatter: function(ms) {
+                                  return '<span style="font-weight: bold; text-size: big">' +
+                                      new Date(ms).strftime('%Y') +
+                                      '</span>';
+                                },
+                                axisLabelFormatter: function(d) {
+                                  return d.strftime('%Y');
+                                }
+                              },
+                              y: {
+                                valueFormatter: function(y) {
+                                  return y + " " + yaxisUnits;
+                                }
+//                                axisLabelFormatter: function(y) {
+//                                  return 'yalf(' + y.toPrecision(2) + ')';
+//                                }
+                              }
                             },
                             showRangeSelector: true
                         }

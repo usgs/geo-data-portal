@@ -237,7 +237,9 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
                 if (index > maxNum) {
                     return false;
                 } else {
-                    timesToLoad.push([item.trim()]);
+                    var time = item.trim();
+                    var timerange = time.substring(0,4) + " - " + (29 + parseInt(time.substring(0,4)));
+                    timesToLoad.push([time, timerange]);
                 }
                 return true;
             }, this);

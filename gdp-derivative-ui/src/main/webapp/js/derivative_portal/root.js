@@ -240,6 +240,20 @@ function initializeMapping() {
         storeId : 'capabilitiesStore'
     });
     
+    /*
+     * Documenting this, because this is very much a convention, close to a hack
+     * Parent record is a starting point, the id is all we need to enter a 
+     * "CSW tree".
+     * 
+     * The "CSW tree" needs to have the following dynamics
+     * - Parent record enumerates keywords of all children, broken into categories
+     * - Children only contain the keywords that describe data in their branch
+     * - The leaf record contains both a data endpoint and wms endpoint (sos?)
+     * - The WMS layer name for the GCM (you might change gcm to something else)
+     *   must be the same as the keyword for that type
+     * - Keywords are used to build the UI, which then are used to get to the
+     *   map layer or data
+     */
     var getRecordsStore = new GDP.CSWGetRecordsStore({
         url : "geonetwork/csw",
         storeId : 'cswStore',
