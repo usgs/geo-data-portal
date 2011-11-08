@@ -6,7 +6,6 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.GridUtility.IndexToCoordinateBuilder;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dt.GridCoordSystem;
 
 /**
@@ -32,11 +31,8 @@ public class GridCellGeometry {
 
 		this.gridCRS = CRSUtility.getCRSFromGridCoordSystem(gridCoordSystem);
 
-        CoordinateAxis xAxis = gridCoordSystem.getXHorizAxis();
-        CoordinateAxis yAxis = gridCoordSystem.getYHorizAxis();
-
-        xCellCount = xAxis.getShape(xAxis.getRank() - 1);
-        yCellCount = yAxis.getShape(0);
+        xCellCount = GridUtility.getXAxisLength(gridCoordSystem);
+        yCellCount = GridUtility.getYAxisLength(gridCoordSystem);
         cellCount = xCellCount * yCellCount;
 
 		geometryFactory = new GeometryFactory(

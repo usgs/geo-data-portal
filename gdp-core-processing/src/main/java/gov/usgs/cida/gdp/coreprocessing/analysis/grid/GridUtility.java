@@ -27,6 +27,32 @@ import ucar.unidata.geoloc.ProjectionRect;
 public abstract class GridUtility {
 
     private GridUtility() {}
+    
+    public static int getXAxisLength(GridCoordSystem gcs) {
+        if (!checkXYAxisIsValid(gcs.getXHorizAxis())) {
+            throw new IllegalArgumentException("Grid Coordinate System does not contain valid X axis");
+        }
+        return getXAxisLengthQuick(gcs);
+    }
+    
+    public static int getYAxisLength(GridCoordSystem gcs) {
+        if (!checkXYAxisIsValid(gcs.getYHorizAxis())) {
+            throw new IllegalArgumentException("Grid Coordinate System does not contain valid X axis");
+        }
+        return getYAxisLengthQuick(gcs);
+    }
+    
+    private static boolean checkXYAxisIsValid(CoordinateAxis axis) {
+        return (axis instanceof CoordinateAxis1D || axis instanceof CoordinateAxis2D);
+    }
+    
+    public static int getXAxisLengthQuick(GridCoordSystem gcs) {
+        return gcs.getXHorizAxis().getShape(gcs.getXHorizAxis().getRank() - 1);
+    }
+    
+    public static int getYAxisLengthQuick(GridCoordSystem gcs) {
+        return gcs.getYHorizAxis().getShape(0);
+    }
 
 	public static BoundingBox getBoundingBox(GridDatatype gdt) {
 		return getBoundingBox(gdt.getCoordinateSystem());
@@ -143,7 +169,7 @@ public abstract class GridUtility {
     }
 
     // Handle bugs in NetCDF 4.1 for X or Y CoordinateAxis with < 3 grid cells 
-    // in any dimension, Edges being were incorrectly calculated without 
+    // in any dimension, Edges being were inconsistently calculated without 
     // addition of buffer cells.
 	public static Range[] bufferXYRanges(GridCoordSystem gcs, Range[] ranges) throws InvalidRangeException {
 		int lowerX = ranges[0].first();
@@ -154,8 +180,7 @@ public abstract class GridUtility {
 		// Buffer X dimension, need minimum source width of 3, otherwise grid cell width calc fails.
         // NOTE: NetCDF ranges are upper edge inclusive
         int deltaX = upperX - lowerX;
-        CoordinateAxis xAxis = gcs.getXHorizAxis();
-        int maxX = xAxis.getShape(xAxis.getRank() - 1) - 1; // inclusive
+        int maxX = getXAxisLengthQuick(gcs) - 1; // inclusive
         if (maxX < 2) {
             throw new InvalidRangeException("Source grid too small");
         }
@@ -179,8 +204,7 @@ public abstract class GridUtility {
         // Buffer Y dimension, need minimum source width of 3, otherwise grid cell width calc fails.
         // NOTE: NetCDF ranges are upper edge inclusive
         int deltaY = upperY - lowerY;
-        CoordinateAxis yAxis = gcs.getYHorizAxis();
-        int maxY = yAxis.getShape(0)  - 1 ; // inclusive
+        int maxY = getYAxisLengthQuick(gcs) - 1 ; // inclusive
         if (maxY < 2) {
             throw new InvalidRangeException("Source grid too small");
         }
@@ -207,57 +231,6 @@ public abstract class GridUtility {
         };
 
 	}
-
-    @Deprecated
-    public static CoordinateBuilder generateCoordinateBuilder(GridCoordSystem gridCoordSystem) {
-        return gridCoordSystem.isLatLon()
-                ? new CoordinateBuilder()
-                : new ProjectedCoordinateBuilder(gridCoordSystem);
-    }
-
-    public static GridCellCenterAdapter generateGridCellCenterAdapterX(GridCoordSystem gridCoordSystem) {
-        CoordinateAxis axis = gridCoordSystem.getXHorizAxis();
-        if (axis instanceof CoordinateAxis1D) {
-            return new GridCellCenterAdapterAxis1DX((CoordinateAxis1D)axis);
-        } else if (axis instanceof CoordinateAxis2D) {
-            return new GridCellCenterAdapterAxis2DX((CoordinateAxis2D)axis);
-        } else {
-            throw new IllegalStateException("Unknown coordinate axis type");
-        }
-    }
-
-    public static GridCellCenterAdapter generateGridCellCenterAdapterY(GridCoordSystem gridCoordSystem) {
-        CoordinateAxis axis = gridCoordSystem.getYHorizAxis();
-        if (axis instanceof CoordinateAxis1D) {
-            return new GridCellCenterAdapterAxis1DY((CoordinateAxis1D)axis);
-        } else if (axis instanceof CoordinateAxis2D) {
-            return new GridCellCenterAdapterAxis2DY((CoordinateAxis2D)axis);
-        } else {
-            throw new IllegalStateException("Unknown coordinate axis type");
-        }
-    }
-
-    public static GridCellEdgeAdapter generateGridCellEdgeAdapterX(GridCoordSystem gridCoordSystem) {
-        CoordinateAxis axis = gridCoordSystem.getXHorizAxis();
-        if (axis instanceof CoordinateAxis1D) {
-            return new GridCellEdgeAdapterAxis1DX((CoordinateAxis1D)axis);
-        } else if (axis instanceof CoordinateAxis2D) {
-            return new GridCellEdgeAdapterAxis2DX((CoordinateAxis2D)axis);
-        } else {
-            throw new IllegalStateException("Unknown coordinate axis type");
-        }
-    }
-
-    public static GridCellEdgeAdapter generateGridCellEdgeAdapterY(GridCoordSystem gridCoordSystem) {
-        CoordinateAxis axis = gridCoordSystem.getYHorizAxis();
-        if (axis instanceof CoordinateAxis1D) {
-            return new GridCellEdgeAdapterAxis1DY((CoordinateAxis1D)axis);
-        } else if (axis instanceof CoordinateAxis2D) {
-            return new GridCellEdgeAdapterAxis2DY((CoordinateAxis2D)axis);
-        } else {
-            throw new IllegalStateException("Unknown coordinate axis type");
-        }
-    }
 
     @Deprecated
     public static IndexToCoordinateBuilder generateIndexToCellCenterLatLonCoordinateBuilder(GridCoordSystem gridCoordSystem) {
@@ -291,11 +264,11 @@ public abstract class GridUtility {
 
     public static class IndexToCoordinateBuilder {
 
-        protected final CoordinateBuilder coordinateBuilder;
-        protected final XYIndexToAxisValueAdapter xValueAdapter;
-        protected final XYIndexToAxisValueAdapter yValueAdapter;
+        private final CoordinateBuilder coordinateBuilder;
+        private final XYIndexToAxisValueAdapter xValueAdapter;
+        private final XYIndexToAxisValueAdapter yValueAdapter;
 
-        public IndexToCoordinateBuilder(CoordinateBuilder coordinateBuilder,
+        private IndexToCoordinateBuilder(CoordinateBuilder coordinateBuilder,
                 XYIndexToAxisValueAdapter xValueAdapter,
                 XYIndexToAxisValueAdapter yValueAdapter) {
             this.coordinateBuilder = coordinateBuilder;
@@ -317,8 +290,59 @@ public abstract class GridUtility {
             return yValueAdapter.getValueCount();
         }
     }
+    
+    @Deprecated
+    private static CoordinateBuilder generateCoordinateBuilder(GridCoordSystem gridCoordSystem) {
+        return gridCoordSystem.isLatLon()
+                ? new CoordinateBuilder()
+                : new ProjectedCoordinateBuilder(gridCoordSystem);
+    }
 
-    public static class CoordinateBuilder {
+    private static GridCellCenterAdapter generateGridCellCenterAdapterX(GridCoordSystem gridCoordSystem) {
+        CoordinateAxis axis = gridCoordSystem.getXHorizAxis();
+        if (axis instanceof CoordinateAxis1D) {
+            return new GridCellCenterAdapterAxis1DX((CoordinateAxis1D)axis);
+        } else if (axis instanceof CoordinateAxis2D) {
+            return new GridCellCenterAdapterAxis2DX((CoordinateAxis2D)axis);
+        } else {
+            throw new IllegalStateException("Unknown coordinate axis type");
+        }
+    }
+
+    private static GridCellCenterAdapter generateGridCellCenterAdapterY(GridCoordSystem gridCoordSystem) {
+        CoordinateAxis axis = gridCoordSystem.getYHorizAxis();
+        if (axis instanceof CoordinateAxis1D) {
+            return new GridCellCenterAdapterAxis1DY((CoordinateAxis1D)axis);
+        } else if (axis instanceof CoordinateAxis2D) {
+            return new GridCellCenterAdapterAxis2DY((CoordinateAxis2D)axis);
+        } else {
+            throw new IllegalStateException("Unknown coordinate axis type");
+        }
+    }
+
+    private static GridCellEdgeAdapter generateGridCellEdgeAdapterX(GridCoordSystem gridCoordSystem) {
+        CoordinateAxis axis = gridCoordSystem.getXHorizAxis();
+        if (axis instanceof CoordinateAxis1D) {
+            return new GridCellEdgeAdapterAxis1DX((CoordinateAxis1D)axis);
+        } else if (axis instanceof CoordinateAxis2D) {
+            return new GridCellEdgeAdapterAxis2DX((CoordinateAxis2D)axis);
+        } else {
+            throw new IllegalStateException("Unknown coordinate axis type");
+        }
+    }
+
+    private static GridCellEdgeAdapter generateGridCellEdgeAdapterY(GridCoordSystem gridCoordSystem) {
+        CoordinateAxis axis = gridCoordSystem.getYHorizAxis();
+        if (axis instanceof CoordinateAxis1D) {
+            return new GridCellEdgeAdapterAxis1DY((CoordinateAxis1D)axis);
+        } else if (axis instanceof CoordinateAxis2D) {
+            return new GridCellEdgeAdapterAxis2DY((CoordinateAxis2D)axis);
+        } else {
+            throw new IllegalStateException("Unknown coordinate axis type");
+        }
+    }
+
+    private static class CoordinateBuilder {
 
         public Coordinate getCoordinate(double x, double y) {
             return new Coordinate(x, y);
@@ -326,7 +350,7 @@ public abstract class GridUtility {
     }
 
     @Deprecated
-    public static class ProjectedCoordinateBuilder extends CoordinateBuilder {
+    private static class ProjectedCoordinateBuilder extends CoordinateBuilder {
 
         private final Projection projection;
         private final ProjectionPointImpl projectionPoint;
@@ -346,16 +370,16 @@ public abstract class GridUtility {
         }
     }
 
-    public interface XYIndexToAxisValueAdapter {
+    private interface XYIndexToAxisValueAdapter {
         public int getValueCount();
         public double getValue(int xIndex, int yIndex);
     }
 
-    public interface GridCellCenterAdapter extends XYIndexToAxisValueAdapter { }
+    private interface GridCellCenterAdapter extends XYIndexToAxisValueAdapter { }
 
-    public interface GridCellEdgeAdapter extends XYIndexToAxisValueAdapter { }
+    private interface GridCellEdgeAdapter extends XYIndexToAxisValueAdapter { }
 
-    public abstract static class GridCellCenterAdapterAxis1D implements GridCellCenterAdapter {
+    private abstract static class GridCellCenterAdapterAxis1D implements GridCellCenterAdapter {
 
         protected final double[] cellCenters;
 
@@ -369,7 +393,7 @@ public abstract class GridUtility {
         }
     }
 
-    public static class GridCellCenterAdapterAxis1DX extends GridCellCenterAdapterAxis1D {
+    private static class GridCellCenterAdapterAxis1DX extends GridCellCenterAdapterAxis1D {
 
         public GridCellCenterAdapterAxis1DX(CoordinateAxis1D axis1D) {
             super(axis1D);
@@ -381,7 +405,7 @@ public abstract class GridUtility {
         }
     }
 
-    public static class GridCellCenterAdapterAxis1DY extends GridCellCenterAdapterAxis1D {
+    private static class GridCellCenterAdapterAxis1DY extends GridCellCenterAdapterAxis1D {
 
         public GridCellCenterAdapterAxis1DY(CoordinateAxis1D axis1D) {
             super(axis1D);
@@ -393,7 +417,7 @@ public abstract class GridUtility {
         }
     }
 
-    public abstract static class GridCellCenterAdapterAxis2D implements GridCellCenterAdapter {
+    private abstract static class GridCellCenterAdapterAxis2D implements GridCellCenterAdapter {
 
         protected final ArrayDouble.D2 cellCenters;
 
@@ -408,7 +432,7 @@ public abstract class GridUtility {
         }
     }
 
-    public static class GridCellCenterAdapterAxis2DX extends GridCellCenterAdapterAxis2D {
+    private static class GridCellCenterAdapterAxis2DX extends GridCellCenterAdapterAxis2D {
 
         public GridCellCenterAdapterAxis2DX(CoordinateAxis2D axis2D) {
             super(axis2D);
@@ -420,7 +444,7 @@ public abstract class GridUtility {
         }
     }
 
-    public static class GridCellCenterAdapterAxis2DY extends GridCellCenterAdapterAxis2D {
+    private static class GridCellCenterAdapterAxis2DY extends GridCellCenterAdapterAxis2D {
 
         public GridCellCenterAdapterAxis2DY(CoordinateAxis2D axis2D) {
             super(axis2D);
@@ -432,7 +456,7 @@ public abstract class GridUtility {
         }
     }
 
-    public abstract static class GridCellEdgeAdapterAxis1D implements GridCellEdgeAdapter {
+    private abstract static class GridCellEdgeAdapterAxis1D implements GridCellEdgeAdapter {
 
         protected final double[] cellEdges;
 
@@ -446,7 +470,7 @@ public abstract class GridUtility {
         }
     }
 
-    public static class GridCellEdgeAdapterAxis1DX extends GridCellEdgeAdapterAxis1D {
+    private static class GridCellEdgeAdapterAxis1DX extends GridCellEdgeAdapterAxis1D {
 
         public GridCellEdgeAdapterAxis1DX(CoordinateAxis1D axis1D) {
             super(axis1D);
@@ -458,7 +482,7 @@ public abstract class GridUtility {
         }
     }
 
-    public static class GridCellEdgeAdapterAxis1DY extends GridCellEdgeAdapterAxis1D {
+    private static class GridCellEdgeAdapterAxis1DY extends GridCellEdgeAdapterAxis1D {
 
         public GridCellEdgeAdapterAxis1DY(CoordinateAxis1D axis1D) {
             super(axis1D);
@@ -470,7 +494,7 @@ public abstract class GridUtility {
         }
     }
 
-    public abstract static class GridCellEdgeAdapterAxis2D implements GridCellEdgeAdapter {
+    private abstract static class GridCellEdgeAdapterAxis2D implements GridCellEdgeAdapter {
 
         protected final ArrayDouble.D2 cellEdges;
 
@@ -485,7 +509,7 @@ public abstract class GridUtility {
         }
     }
 
-    public static class GridCellEdgeAdapterAxis2DX extends GridCellEdgeAdapterAxis2D {
+    private static class GridCellEdgeAdapterAxis2DX extends GridCellEdgeAdapterAxis2D {
 
         public GridCellEdgeAdapterAxis2DX(CoordinateAxis2D axis2D) {
             super(axis2D);
@@ -497,7 +521,7 @@ public abstract class GridUtility {
         }
     }
 
-    public static class GridCellEdgeAdapterAxis2DY extends GridCellEdgeAdapterAxis2D {
+    private static class GridCellEdgeAdapterAxis2DY extends GridCellEdgeAdapterAxis2D {
 
         public GridCellEdgeAdapterAxis2DY(CoordinateAxis2D axis2D) {
             super(axis2D);

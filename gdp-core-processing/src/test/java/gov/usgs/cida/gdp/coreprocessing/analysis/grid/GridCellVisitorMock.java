@@ -34,14 +34,16 @@ public class GridCellVisitorMock extends GridCellVisitor {
         traverseCount++;
     }
 
-    public void tStart(int tIndex) {
+    public boolean tStart(int tIndex) {
+        return true;
     }
 
     public void tEnd(int tIndex) {
         tCount++;
     }
 
-    public void zStart(int zIndex) {
+    public boolean zStart(int zIndex) {
+        return true;
     }
 
     public void zEnd(int zIndex) {

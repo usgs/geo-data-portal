@@ -1,6 +1,6 @@
 package gov.usgs.cida.gdp.coreprocessing.analysis.grid;
 
-import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.GridDatatype;
 
 /**
  *
@@ -8,13 +8,13 @@ import ucar.nc2.dt.GridCoordSystem;
  */
 public abstract class GridCellVisitor {
 
-    public void traverseStart(GridCoordSystem gridCoordSystem) {}
+    public void traverseStart(GridDatatype gridDatatype) {}
     public void traverseEnd() {}
 
-    public void tStart(int tIndex) {}
+    public boolean tStart(int tIndex) { return true; }
     public void tEnd(int tIndex) {}
 
-    public void zStart(int zIndex) {}
+    public boolean zStart(int zIndex) { return true; }
     public void zEnd(int zIndex) {}
 
     public void yxStart() {}

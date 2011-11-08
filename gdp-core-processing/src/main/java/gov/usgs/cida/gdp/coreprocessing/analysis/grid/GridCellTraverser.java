@@ -6,6 +6,9 @@
 package gov.usgs.cida.gdp.coreprocessing.analysis.grid;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
@@ -58,50 +61,76 @@ public class GridCellTraverser {
         CoordinateAxis1DTime tAxis = gridCoordSystem.getTimeAxis1D();
 
         // will handle both CoordinateAxis1D or CoordinateAxis2D for x and y
-        xCellCount = xAxis.getShape(xAxis.getRank() - 1);
-        yCellCount = yAxis.getShape(0);
+        xCellCount = GridUtility.getXAxisLength(gridCoordSystem);
+        yCellCount = GridUtility.getYAxisLength(gridCoordSystem);
         zCellCount = zAxis == null ? 0 : zAxis.getShape(0);
         tCellCount = tAxis == null ? 0 : tAxis.getShape(0);
     }
 
     public void traverse(GridCellVisitor visitor) throws IOException {
-
+        traverse(Arrays.asList(new GridCellVisitor[] { visitor }));
+    }
+    
+    public void traverse(List<GridCellVisitor> visitorList) throws IOException {
         if (gridType == GridType.OTHER) {
             throw new IllegalStateException("Unable to traverse this grid type.");
         }
-
-        visitor.traverseStart(gridDataType.getCoordinateSystem());
+        
+        for (GridCellVisitor visitor : visitorList) {
+            visitor.traverseStart(gridDataType);
+        }
         if (gridType == GridType.YX) {
             Array array = readDataSlice(INVALID_INDEX, INVALID_INDEX);
-            doTraverseXY(visitor, array);
+            for (GridCellVisitor visitor : visitorList) {
+                doTraverseXY(visitor, array);
+            }
         } else if (gridType == GridType.ZYX) {
             for (int zCellIndex = 0; zCellIndex < zCellCount; ++zCellIndex) {
-                visitor.zStart(zCellIndex);
-                Array array = readDataSlice(INVALID_INDEX, zCellIndex);
-                doTraverseXY(visitor, array);
-                visitor.zEnd(zCellIndex);
+                for (GridCellVisitor visitor : visitorList) {
+                    if (visitor.zStart(zCellIndex)) {
+                        Array array = readDataSlice(INVALID_INDEX, zCellIndex);
+                        doTraverseXY(visitor, array);
+                        visitor.zEnd(zCellIndex);
+                    }
+                }
             }
         } else if (gridType == GridType.TYX) {
             for (int tCellIndex = 0; tCellIndex < tCellCount; ++tCellIndex) {
-                visitor.tStart(tCellIndex);
-                Array array = readDataSlice(tCellIndex, INVALID_INDEX);
-                doTraverseXY(visitor, array);
-                visitor.tEnd(tCellIndex);
+                for (GridCellVisitor visitor : visitorList) {
+                    if (visitor.tStart(tCellIndex)) {
+                        Array array = readDataSlice(tCellIndex, INVALID_INDEX);
+                        doTraverseXY(visitor, array);
+                        visitor.tEnd(tCellIndex);
+                    }
+                }
             }
         } else if (gridType == GridType.TZYX) {
             for (int tCellIndex = 0; tCellIndex < tCellCount; ++tCellIndex) {
-                visitor.tStart(tCellIndex);
-                for (int zCellIndex = 0; zCellIndex < zCellCount; ++zCellIndex) {
-                    visitor.zStart(zCellIndex);
-                    Array array = readDataSlice(tCellIndex, zCellIndex);
-                    doTraverseXY(visitor, array);
-                    visitor.zEnd(zCellIndex);
+                ArrayList<GridCellVisitor> tVisitorList = new ArrayList<GridCellVisitor>(visitorList);
+                for (GridCellVisitor visitor : visitorList) {
+                    if (!visitor.tStart(tCellIndex)) {
+                        tVisitorList.remove(visitor);
+                    }
                 }
-                visitor.tEnd(tCellIndex);
+                if (!tVisitorList.isEmpty()) {
+                    for (int zCellIndex = 0; zCellIndex < zCellCount; ++zCellIndex) {
+                        for (GridCellVisitor tVisitor : tVisitorList) {
+                            if (tVisitor.zStart(zCellIndex)) {
+                                Array array = readDataSlice(tCellIndex, zCellIndex);
+                                doTraverseXY(tVisitor, array);
+                                tVisitor.zEnd(zCellIndex);
+                            }
+                        }
+                    }
+                    for (GridCellVisitor tVisitor : tVisitorList) {
+                        tVisitor.tEnd(tCellIndex);
+                    }
+                }
             }
         }
-        visitor.traverseEnd();
-
+        for (GridCellVisitor visitor : visitorList) {
+            visitor.traverseEnd();
+        }
     }
 
     protected Array readDataSlice(int t_index, int z_index) throws java.io.IOException {

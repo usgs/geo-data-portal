@@ -211,8 +211,8 @@ public class FeatureCategoricalGridCoverage {
         }
 
         @Override
-        public void traverseStart(GridCoordSystem gridCoordSystem) {
-            coordinateBuilder = GridUtility.generateIndexToCellCenterCoordinateBuilder(gridCoordSystem);
+        public void traverseStart(GridDatatype gridDatatype) {
+            coordinateBuilder = GridUtility.generateIndexToCellCenterCoordinateBuilder(gridDatatype.getCoordinateSystem());
         }
 
         @Override

@@ -217,7 +217,7 @@ public class FeatureCoverageWeightedGridStatistics {
         }
 
         @Override
-        public void traverseStart(GridCoordSystem gridCoordSystem) {
+        public void traverseStart(GridDatatype gridDatatype) {
             try {
                 writer.writerHeader(null);
             } catch (IOException ex) {
@@ -264,7 +264,7 @@ public class FeatureCoverageWeightedGridStatistics {
         }
 
         @Override
-        public void traverseStart(GridCoordSystem gridCoordSystem) {
+        public void traverseStart(GridDatatype gridDatatype) {
             
             try {
                 writer.writerHeader(FeatureCoverageWeightedGridStatisticsWriter.TIMESTEPS_LABEL);
@@ -276,7 +276,7 @@ public class FeatureCoverageWeightedGridStatistics {
                     createPerAttributeStatisticsMap();
             allTimestepAllAttributeStatistics = new WeightedStatistics1D();
             
-            tAxis = gridCoordSystem.getTimeAxis1D();
+            tAxis = gridDatatype.getCoordinateSystem().getTimeAxis1D();
         }
 
         @Override

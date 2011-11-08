@@ -51,7 +51,7 @@ public class DelimitedWriter {
                     if (variable != null) {
                         variableList.add(variable);
                     } else {
-                        // do we care?
+                        log.error("data variable {} not found in data set", variableName);
                     }
                 }
                 GroupBy.StationOption groupBy = null;
