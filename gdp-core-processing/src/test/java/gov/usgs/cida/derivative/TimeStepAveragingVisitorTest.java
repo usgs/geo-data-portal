@@ -41,26 +41,26 @@ public class TimeStepAveragingVisitorTest {
     @Ignore
     public void testSomeMethod() throws IOException {
         FeatureDataset fds = null;
-//        try {
-//            fds = FeatureDatasetFactoryManager.open(
-//                FeatureType.GRID,
-//                "/Users/tkunicki/Downloads/derivatives/derivative-days_above_threshold.ncml",
-//                null,
-//                new Formatter(System.err));
-//            if (fds instanceof GridDataset) {
-//                GridDataset gds = (GridDataset)fds;
-//                List<GridDatatype> gdtl = gds.getGrids();
-//                for (GridDatatype gdt : gdtl) {
-//                    System.out.println("running " + gdt.getName());
-//                    GridCellTraverser t = new GridCellTraverser(gdt);
-//                    GridCellVisitor v = new TimeStepAveragingVisitor();
-//                    t.traverse(v);
-//                }
-//            }
-//           
-//        } finally {
-//            if (fds != null) fds.close();
-//        }
+        try {
+            fds = FeatureDatasetFactoryManager.open(
+                FeatureType.GRID,
+                "/Users/tkunicki/Downloads/derivatives/derivative-days_above_threshold.ncml",
+                null,
+                new Formatter(System.err));
+            if (fds instanceof GridDataset) {
+                GridDataset gds = (GridDataset)fds;
+                List<GridDatatype> gdtl = gds.getGrids();
+                for (GridDatatype gdt : gdtl) {
+                    System.out.println("running " + gdt.getName());
+                    GridCellTraverser t = new GridCellTraverser(gdt);
+                    GridCellVisitor v = new TimeStepAveragingVisitor();
+                    t.traverse(v);
+                }
+            }
+           
+        } finally {
+            if (fds != null) fds.close();
+        }
         try {
             fds = FeatureDatasetFactoryManager.open(
                 FeatureType.GRID,

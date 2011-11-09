@@ -6,6 +6,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 public class FeatureCoverageWeightedGridStatisticsWriter {
@@ -56,7 +57,6 @@ public class FeatureCoverageWeightedGridStatisticsWriter {
     private final BufferedWriter writer;
 
     private final StringBuilder lineSB;
-//    private final Formatter formatter;
 
     public FeatureCoverageWeightedGridStatisticsWriter(
             List<Object> attributeList,
@@ -91,8 +91,6 @@ public class FeatureCoverageWeightedGridStatisticsWriter {
         this.writer = writer;
 
         lineSB = new StringBuilder();
-//        formatter = new Formatter(lineSB);
-
 
     }
     
@@ -104,7 +102,7 @@ public class FeatureCoverageWeightedGridStatisticsWriter {
         return summarizeFeatureAttribute;
     }
 
-    public void writerHeader(String rowLabel) throws IOException {
+    public void writerHeader(Collection<String> rowLabels) throws IOException {
 
         int sCount = statisticList.size();
         String[] statisticLabel = new String[sCount];
@@ -128,6 +126,13 @@ public class FeatureCoverageWeightedGridStatisticsWriter {
         }
 
         lineSB.setLength(0);
+        if (rowLabels != null && rowLabels.size() > 0) {
+            // pad with delimieters to align headers.
+            int rowLabelCount = rowLabels.size();
+            for (int rowLabelIndex = 1; rowLabelIndex < rowLabelCount; ++rowLabelIndex ) {
+                lineSB.append(delimiter);
+            }
+        }
         if (groupByStatistic) {
             for (int sIndex = 0; sIndex < sCount; ++sIndex) {
                 for (int aIndex = 0; aIndex < aCount; ++aIndex ) {
@@ -153,8 +158,12 @@ public class FeatureCoverageWeightedGridStatisticsWriter {
         writer.newLine();
 
         lineSB.setLength(0);
-        if (rowLabel != null) {
-            lineSB.append(rowLabel);
+        if (rowLabels != null && rowLabels.size() > 0) {
+            Iterator<String> rowLabelIterator = rowLabels.iterator();
+            lineSB.append(rowLabelIterator.next());
+            while (rowLabelIterator.hasNext()) {
+                lineSB.append(delimiter).append(rowLabelIterator.next());
+            }
         }
         
         if (groupByStatistic) {
@@ -177,14 +186,18 @@ public class FeatureCoverageWeightedGridStatisticsWriter {
     }
 
     public void writeRow(
-            String rowLabel,
+            Collection<String> rowLabels,
             Collection<WeightedStatistics1D> rowValues,
             WeightedStatistics1D rowSummary)
             throws IOException
     {
         lineSB.setLength(0);
-        if (rowLabel != null) {
-            lineSB.append(rowLabel);
+        if (rowLabels != null && rowLabels.size() > 0) {
+            Iterator<String> rowLabelIterator = rowLabels.iterator();
+            lineSB.append(rowLabelIterator.next());
+            while (rowLabelIterator.hasNext()) {
+                lineSB.append(delimiter).append(rowLabelIterator.next());
+            }
         }
 
         if (groupByStatistic) {

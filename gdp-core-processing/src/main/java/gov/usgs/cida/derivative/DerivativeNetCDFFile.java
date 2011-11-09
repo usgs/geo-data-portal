@@ -79,7 +79,27 @@ public class DerivativeNetCDFFile {
             if (valueDescriptor.getOutputUnits() != null) {
                 derivativeOutputVariable.addAttribute(new Attribute("units", valueDescriptor.getOutputUnits()));
             }
-            derivativeOutputVariable.addAttribute(new Attribute("missing_value", -1));
+            DataType outputDataType = valueDescriptor.getOutputDataType();
+            switch (outputDataType) {
+                case BYTE:
+                    derivativeOutputVariable.addAttribute(new Attribute("missing_value", Byte.valueOf((byte)-1)));
+                    break;
+                case SHORT:
+                    derivativeOutputVariable.addAttribute(new Attribute("missing_value", Short.valueOf((short)-1)));
+                    break;
+                case INT:
+                    derivativeOutputVariable.addAttribute(new Attribute("missing_value", Integer.valueOf((int)-1)));
+                    break;
+                case LONG:
+                    derivativeOutputVariable.addAttribute(new Attribute("missing_value", Long.valueOf((long)-1)));
+                    break;
+                case FLOAT:
+                    derivativeOutputVariable.addAttribute(new Attribute("missing_value", Float.valueOf((float)-1)));
+                    break;
+                case DOUBLE:
+                    derivativeOutputVariable.addAttribute(new Attribute("missing_value", Double.valueOf((double)-1)));
+                    break;
+            }
             netCDFFile.create();
             Array timeArray = Array.factory(DataType.INT, timeVariable.getShape());
             Array timeBoundsArray = Array.factory(DataType.INT, timeBoundsVariable.getShape());

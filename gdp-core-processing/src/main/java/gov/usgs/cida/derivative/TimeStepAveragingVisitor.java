@@ -9,7 +9,6 @@ import org.joda.time.Interval;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.DataType;
-import ucar.ma2.Range;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
@@ -98,10 +97,11 @@ public class TimeStepAveragingVisitor extends DerivativeVisitor {
     @Override
     public void processGridCell(int xCellIndex, int yCellIndex, double value) {
         int arrayIndex = thresholdIndex * yxCount + yCellIndex * xCount + xCellIndex;
-        if (value > 0) {
+        if (value > -1) {
             double current = outputArray.getShort(arrayIndex);
-//            outputArray.setShort(arrayIndex, current += value);
             outputArray.setObject(arrayIndex, current += (value / 30d));
+        } else {
+            outputArray.setObject(arrayIndex, -1);
         }
     }
 

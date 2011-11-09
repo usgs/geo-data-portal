@@ -147,8 +147,8 @@ public class GridCellCoverageTest {
                 Delimiter.COMMA);
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void testWeightedGenerateTZYXUnsupported() throws InvalidRangeException, IOException, FactoryException, TransformException, SchemaException {
+    @Test
+    public void testWeightedGenerateTZYXSupported() throws InvalidRangeException, IOException, FactoryException, TransformException, SchemaException {
         ncLocation = getResourceDir() + File.separator + "testGridCellCoverageTZYX.ncml";
         timeRange = new Range(0, 0);
 
