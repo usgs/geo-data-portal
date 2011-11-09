@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- http://localhost:8080/thredds/sos/gsod/sample.ncml?service=sos&version=1.0.0&request=getObservation&offering=demo_HUCs.1&observedProperty=mean -->
+<om:ObservationCollection xmlns:om="http://www.opengis.net/om/1.0" xmlns:gml="http://www.opengis.net/gml" xmlns:swe="http://www.opengis.net/swe/1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" gml:id="demo_HUCs.1" xsi:schemaLocation="http://www.opengis.net/om/1.0 http://schemas.opengis.net/om/1.0.0/observation.xsd">
+	<gml:description>Empty Description</gml:description>
+	<gml:name>Sample Station Time Series</gml:name>
+	<gml:boundedBy>
+		<gml:Envelope srsName="EPSG:4326">
+			<!-- overwrite these with your actual offering ROI -->
+			<gml:lowerCorner>41.00000 -109.00000 0</gml:lowerCorner>
+			<gml:upperCorner>41.00000 -109.00000 0</gml:upperCorner>
+		</gml:Envelope>
+	</gml:boundedBy>
+	<om:member>
+		<om:Observation>
+			<gml:description>Temperature - Delaware</gml:description>
+			<gml:name>Temperature - Delaware</gml:name>
+			<gml:boundedBy>
+				<gml:Envelope srsName="urn:tds:station.sos:demo_HUCs.1">
+					<gml:lowerCorner>41.00000 -109.00000 0</gml:lowerCorner>
+					<gml:upperCorner>41.00000 -109.00000 0</gml:upperCorner>
+				</gml:Envelope>
+			</gml:boundedBy>
+			<om:samplingTime>
+				<gml:TimePeriod gml:id="DATA_TIME">
+					<gml:beginPosition>2000-01-01T00:00:00Z</gml:beginPosition>
+					<gml:endPosition>2000-01-10T00:00:00Z</gml:endPosition>
+				</gml:TimePeriod>
+			</om:samplingTime>
+			<om:procedure xlink:href="file:/Users/tkunicki/Data/GSOD/netcdf/sample.ncml"/>
+			<om:observedProperty xlink:href="http://marinemetadata.org/cf#mean"/>
+			<om:featureOfInterest xlink:href="http://localhost:18080/geoserver/sample/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typeName=sample:demo_HUCs&amp;outputFormat=text/xml;%20subtype=gml/3.1.1&amp;featureId=demo_HUCs.1"/>
+			<om:result>
+				<swe:DataArray>
+					<swe:elementCount>
+						<swe:Count>
+							<swe:value>10</swe:value>
+						</swe:Count>
+					</swe:elementCount>
+					<swe:elementType name="SimpleDataArray">
+						<swe:DataRecord>
+							<swe:field name="time">
+								<swe:Time definition="urn:ogc:phenomenon:time:iso8601"/>
+							</swe:field>
+							<swe:field name="Days Above Temperature (25 C)">
+								<swe:Quantity definition="urn:ogc:def:phenomenon:mmisw.org:cf:mean">
+									<swe:uom code="days"/>
+								</swe:Quantity>
+							</swe:field>
+						</swe:DataRecord>
+					</swe:elementType>
+					<swe:encoding>
+						<swe:TextBlock blockSeparator=" " decimalSeparator="." tokenSeparator=","/>
+					</swe:encoding>
+					<swe:values>1960-01-01T00:00:00Z,41.856293 1961-01-01T00:00:00Z,31.639692 1962-01-01T00:00:00Z,29.815174 1963-01-01T00:00:00Z,55.513893 1964-01-01T00:00:00Z,49.53762 1965-01-01T00:00:00Z,35.9707 1966-01-01T00:00:00Z,43.722454 1967-01-01T00:00:00Z,40.60064 1968-01-01T00:00:00Z,43.770893 1969-01-01T00:00:00Z,50.095825 1970-01-01T00:00:00Z,65.411835 1971-01-01T00:00:00Z,58.839947 1972-01-01T00:00:00Z,50.1952 1973-01-01T00:00:00Z,52.334667 1974-01-01T00:00:00Z,51.471443 1975-01-01T00:00:00Z,17.33416 1976-01-01T00:00:00Z,53.144062 1977-01-01T00:00:00Z,58.909615 1978-01-01T00:00:00Z,47.246464 1979-01-01T00:00:00Z,55.998466 1980-01-01T00:00:00Z,52.442215 1981-01-01T00:00:00Z,36.265053 1982-01-01T00:00:00Z,48.532135 1983-01-01T00:00:00Z,32.228752 1984-01-01T00:00:00Z,37.317955 1985-01-01T00:00:00Z,62.561604 1986-01-01T00:00:00Z,33.502365 1987-01-01T00:00:00Z,41.68015 1988-01-01T00:00:00Z,46.255905 1989-01-01T00:00:00Z,59.58396 1990-01-01T00:00:00Z,53.377304 1991-01-01T00:00:00Z,33.50242 1992-01-01T00:00:00Z,57.185772 1993-01-01T00:00:00Z,35.589336 1994-01-01T00:00:00Z,67.91325 1995-01-01T00:00:00Z,68.88519 1996-01-01T00:00:00Z,63.360672 1997-01-01T00:00:00Z,30.830399 1998-01-01T00:00:00Z,34.65075 1999-01-01T00:00:00Z,37.76611 2000-01-01T00:00:00Z,37.20153 2001-01-01T00:00:00Z,42.560223 2002-01-01T00:00:00Z,55.04618 2003-01-01T00:00:00Z,72.07535 2004-01-01T00:00:00Z,35.385418 2005-01-01T00:00:00Z,49.968716 2006-01-01T00:00:00Z,45.86716 2007-01-01T00:00:00Z,71.87148 2008-01-01T00:00:00Z,41.36554 2009-01-01T00:00:00Z,35.763462 2010-01-01T00:00:00Z,51.15105 2011-01-01T00:00:00Z,44.506676 2012-01-01T00:00:00Z,59.44114 2013-01-01T00:00:00Z,37.07663 2014-01-01T00:00:00Z,43.749725 2015-01-01T00:00:00Z,44.479687 2016-01-01T00:00:00Z,62.8069 2017-01-01T00:00:00Z,61.515953 2018-01-01T00:00:00Z,77.60796 2019-01-01T00:00:00Z,67.76292 2020-01-01T00:00:00Z,48.419647 2021-01-01T00:00:00Z,42.769226 2022-01-01T00:00:00Z,40.198074 2023-01-01T00:00:00Z,60.454178 2024-01-01T00:00:00Z,48.942738 2025-01-01T00:00:00Z,54.74417 2026-01-01T00:00:00Z,59.550682 2027-01-01T00:00:00Z,45.39672 2028-01-01T00:00:00Z,33.18042 2029-01-01T00:00:00Z,45.0114 2030-01-01T00:00:00Z,83.66908 2031-01-01T00:00:00Z,54.776814 2032-01-01T00:00:00Z,60.55898 2033-01-01T00:00:00Z,66.93757 2034-01-01T00:00:00Z,72.30843 2035-01-01T00:00:00Z,80.894165 2036-01-01T00:00:00Z,56.382698 2037-01-01T00:00:00Z,66.39603 2038-01-01T00:00:00Z,88.8464 2039-01-01T00:00:00Z,48.939632 2040-01-01T00:00:00Z,80.96424 2041-01-01T00:00:00Z,69.6705 2042-01-01T00:00:00Z,70.904106 2043-01-01T00:00:00Z,67.59921 2044-01-01T00:00:00Z,74.22879 2045-01-01T00:00:00Z,42.339794 2046-01-01T00:00:00Z,45.537586 2047-01-01T00:00:00Z,82.56322 2048-01-01T00:00:00Z,63.046474 2049-01-01T00:00:00Z,66.863304 2050-01-01T00:00:00Z,68.3312 2051-01-01T00:00:00Z,81.0491 2052-01-01T00:00:00Z,84.58164 2053-01-01T00:00:00Z,81.9175 2054-01-01T00:00:00Z,85.72257 2055-01-01T00:00:00Z,61.953007 2056-01-01T00:00:00Z,88.76986 2057-01-01T00:00:00Z,78.34393 2058-01-01T00:00:00Z,72.80971 2059-01-01T00:00:00Z,69.84757 2060-01-01T00:00:00Z,36.55186 2061-01-01T00:00:00Z,72.90057 2062-01-01T00:00:00Z,88.335075 2063-01-01T00:00:00Z,89.81364 2064-01-01T00:00:00Z,73.10577 2065-01-01T00:00:00Z,49.36107 2066-01-01T00:00:00Z,80.56453 2067-01-01T00:00:00Z,67.42749 2068-01-01T00:00:00Z,96.22374 2069-01-01T00:00:00Z,93.65214 2070-01-01T00:00:00Z,57.989784 2071-01-01T00:00:00Z,79.47558 2072-01-01T00:00:00Z,73.63549 2073-01-01T00:00:00Z,89.87727 2074-01-01T00:00:00Z,73.96059 2075-01-01T00:00:00Z,91.30783 2076-01-01T00:00:00Z,97.77792 2077-01-01T00:00:00Z,97.55643 2078-01-01T00:00:00Z,80.61911 2079-01-01T00:00:00Z,74.85841 2080-01-01T00:00:00Z,87.425156 2081-01-01T00:00:00Z,68.3902 2082-01-01T00:00:00Z,78.041306 2083-01-01T00:00:00Z,99.697784 2084-01-01T00:00:00Z,71.18696 2085-01-01T00:00:00Z,84.12612 2086-01-01T00:00:00Z,90.66593 2087-01-01T00:00:00Z,81.02689 2088-01-01T00:00:00Z,81.655495 2089-01-01T00:00:00Z,85.37622 2090-01-01T00:00:00Z,77.783676 2091-01-01T00:00:00Z,60.135124 2092-01-01T00:00:00Z,92.09103 2093-01-01T00:00:00Z,77.60676 2094-01-01T00:00:00Z,61.75325 2095-01-01T00:00:00Z,78.94517 2096-01-01T00:00:00Z,68.58925 2097-01-01T00:00:00Z,65.50803 2098-01-01T00:00:00Z,82.43271 2099-01-01T00:00:00Z,108.07388</swe:values>
+				</swe:DataArray>
+			</om:result>
+		</om:Observation>
+	</om:member>
+</om:ObservationCollection>
