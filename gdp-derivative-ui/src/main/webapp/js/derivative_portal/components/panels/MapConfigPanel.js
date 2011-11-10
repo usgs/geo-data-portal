@@ -15,12 +15,6 @@ GDP.MapConfigPanel = Ext.extend(Ext.Panel, {
 
         this.controller = config.controller;
         
-        this.activityBar = new GDP.MapActivityBar({
-            id : 'activityBar',
-            map : config.map,
-            layerController : this.controller
-        });
-        
         this.legendCombo = new Ext.form.ComboBox({
             xtype : 'combo'
             ,mode : 'local'
@@ -42,20 +36,12 @@ GDP.MapConfigPanel = Ext.extend(Ext.Panel, {
             })
         });
         
-        this.instructionPanel =  new Ext.Panel({
-            html:'To access the underlying data, select the Draw a Bounding Box tool and select your area of interest', 
-            border : false
-        })
-        
-        
         config = Ext.apply({
             id : 'map-configuration-panel',
             layout : 'form',
             items : [
-                this.activityBar, 
                 this.legendCombo,
-                this.layerOpacitySlider,
-                this.instructionPanel
+                this.layerOpacitySlider
             ],
             title : 'Map Configuration'
         }, config);
