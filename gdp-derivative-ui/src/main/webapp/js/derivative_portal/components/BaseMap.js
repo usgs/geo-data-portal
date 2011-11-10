@@ -25,18 +25,39 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         
         if (!config) config = {};
 		
+
+        var zoomBox = new OpenLayers.Control.ZoomBox({title:"Zoom box: Selecting it you can zoom on an area by clicking and dragging."});
+        var mouseDefaults = new OpenLayers.Control.MouseDefaults({title:'You can use the default mouse configuration'});
+        var mapControlPanel = new OpenLayers.Control.Panel({
+            defaultControl: mouseDefaults,
+            autoActivate : true
+        });
+        mapControlPanel.addControls([
+                mouseDefaults, 
+                zoomBox
+                
+//                new OpenLayers.Control.DrawFeature(vlayer, OpenLayers.Handler.Path,
+//                    {title:'Draw a feature'}),
+//                new OpenLayers.Control.ZoomToMaxExtent({title:"Zoom to the max extent"}) 
+            ]);                
+                
         var map = new OpenLayers.Map({
             maxResolution: MAX_RESOLUTION,
             maxExtent: new OpenLayers.Bounds(-180, -90, 180, 90),
             controls: [
-            new OpenLayers.Control.MousePosition()
-            ,new OpenLayers.Control.ScaleLine()
-            ,new OpenLayers.Control.ArgParser()
-            ,new OpenLayers.Control.Attribution()
-            ,new OpenLayers.Control.PanZoomBar()
+            new OpenLayers.Control.MousePosition(),
+            new OpenLayers.Control.ScaleLine(),
+            new OpenLayers.Control.ArgParser(),
+            new OpenLayers.Control.Attribution(),
+            new OpenLayers.Control.PanZoomBar({
+                    panIcons : false,
+                    position : new OpenLayers.Pixel(3,30)
+                }),
+            mapControlPanel
             ]
         });
-			
+
+        map.addControl(mapControlPanel);
         config = Ext.apply({
             map : map,
             center : new OpenLayers.LonLat(-96, 38),
