@@ -101,7 +101,7 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
         
         config = Ext.apply({
             buttonAlign: 'center',
-            items: [zoomToExtentAction, ' ', '-', ' ',zoomAction, ' ','-',' ', navigationAction, ' ','-',' ', drawBboxAction]
+            items: [drawBboxAction]
         }, config);
         GDP.MapActivityBar.superclass.constructor.call(this, config);
         LOG.debug('MapActivityBar:constructor: Construction complete.');
