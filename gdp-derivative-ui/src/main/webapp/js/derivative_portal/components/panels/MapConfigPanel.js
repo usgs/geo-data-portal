@@ -21,22 +21,6 @@ GDP.MapConfigPanel = Ext.extend(Ext.Panel, {
             layerController : this.controller
         });
         
-        this.baseLayerStore = config.baseLayerStore;
-        this.baseLayerCombo = new Ext.form.ComboBox({
-            id : 'baseLayerCombo',
-            xtype : 'combo',
-            mode : 'local',
-            triggerAction: 'all',
-            fieldLabel : 'Base Layer',
-            forceSelection : true,
-            lazyInit : false,
-            displayField : 'title',
-            editable : false,
-            emptyText : 'Loading...',
-            autoSelect : false, // Value is programatically selected on store load
-            store : this.baseLayerStore
-        });
-        
         this.legendCombo = new Ext.form.ComboBox({
             xtype : 'combo'
             ,mode : 'local'
@@ -69,7 +53,6 @@ GDP.MapConfigPanel = Ext.extend(Ext.Panel, {
             layout : 'form',
             items : [
                 this.activityBar, 
-                this.baseLayerCombo,
                 this.legendCombo,
                 this.layerOpacitySlider,
                 this.instructionPanel
@@ -80,10 +63,6 @@ GDP.MapConfigPanel = Ext.extend(Ext.Panel, {
         LOG.debug('MapConfigPanel:constructor: Construction complete.');
         
         LOG.debug('MapConfigPanel:constructor: Registering listeners.');
-        this.baseLayerCombo.on('select', function(combo, record, index) {
-            LOG.debug('MapConfigPanel: Base Layer Combo Box ' + combo.getEl().id + ' observed select.');
-            this.controller.requestBaseLayer(record);
-        }, this);
         this.legendCombo.on('select', function(obj, rec, ind) {
             LOG.debug('MapConfigPanel: A new legend style chosen: ' + rec.id + ' (' + rec.data.abstrakt + ')');
             this.controller.requestLegendRecord(rec);

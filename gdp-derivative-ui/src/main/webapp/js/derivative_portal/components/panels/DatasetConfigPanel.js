@@ -361,8 +361,6 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         LOG.debug("DatasetConfigPanel: onChangeLayer()");
         
         var layer = this.controller.getLayer();
-        if (layer) {
-        }
 
         if (this.zlayerCombo) {
             this.mapFieldSet.remove(this.zlayerCombo);

@@ -24,23 +24,22 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         this.layerController = config.layerController;
         
         if (!config) config = {};
-		
 
-        var zoomBox = new OpenLayers.Control.ZoomBox({title:"Zoom box: Selecting it you can zoom on an area by clicking and dragging."});
-        var mouseDefaults = new OpenLayers.Control.MouseDefaults({title:'You can use the default mouse configuration'});
+        var zoomBox = new OpenLayers.Control.ZoomBox({
+            title:"Zoom box: Selecting it you can zoom on an area by clicking and dragging."
+        });
+        var mouseDefaults = new OpenLayers.Control.MouseDefaults({
+            title:'You can use the default mouse configuration'
+        });
         var mapControlPanel = new OpenLayers.Control.Panel({
             defaultControl: mouseDefaults,
             autoActivate : true
         });
         mapControlPanel.addControls([
-                mouseDefaults, 
-                zoomBox
-                
-//                new OpenLayers.Control.DrawFeature(vlayer, OpenLayers.Handler.Path,
-//                    {title:'Draw a feature'}),
-//                new OpenLayers.Control.ZoomToMaxExtent({title:"Zoom to the max extent"}) 
-            ]);                
-                
+            mouseDefaults, 
+            zoomBox
+        ]);                
+
         var map = new OpenLayers.Map({
             maxResolution: MAX_RESOLUTION,
             maxExtent: new OpenLayers.Bounds(-180, -90, 180, 90),
@@ -50,16 +49,20 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             new OpenLayers.Control.ArgParser(),
             new OpenLayers.Control.Attribution(),
             new OpenLayers.Control.PanZoomBar({
-                    panIcons : false,
-                    position : new OpenLayers.Pixel(3,30)
-                }),
-            mapControlPanel
+                panIcons : false,
+                position : new OpenLayers.Pixel(3,30)
+            }),
+            mapControlPanel,
+            new OpenLayers.Control.LayerSwitcher({
+                position : new OpenLayers.Pixel(window.width,300)
+            })
             ]
         });
 
         map.addControl(mapControlPanel);
         config = Ext.apply({
             map : map,
+            layers : config.baseLayerStore,
             center : new OpenLayers.LonLat(-96, 38),
             zoom : 4
         }, config);
@@ -107,10 +110,6 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         this.legendWindow.show();
                 
         LOG.debug('BaseMap:constructor: Registering Listeners.');
-        this.layerController.on('changebaselayer', function() {
-            LOG.debug('BaseMap: Observed "changebaselayer".');
-            this.onReplaceBaseLayer();
-        },this);
         this.layerController.on('changelayer', function() {
             LOG.debug('BaseMap: Observed "changelayer".');
             this.onChangeLayer();
@@ -154,6 +153,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             
             var foiLayer = args.clone().getLayer();
             
+            foiLayer.displayInLayerSwitcher = false;
             foiLayer.setVisibility(true);
             foiLayer.name = "foilayer";
             foiLayer.events.on({
@@ -199,20 +199,20 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                     item.destroy();
                 })
                 
-//                var gmlidToPlot = function() {
-//                    var gmlids = [
-//                    'resources/a1b-a2.xml',
-//                    'resources/kansas.xml',
-//                    'resources/wisconsin.xml'
-//                    ]
-//                    var currentGmlid = Ext.ComponentMgr.get('plotterPanel').gmlid;
-//                    Ext.each(gmlids, function(gmlid, index) {
-//                        if (gmlid === currentGmlid) gmlids.splice(index, 1);
-//                    })
-//                    var chosenIndex = Math.floor(Math.random()*(gmlids.length));
-//                    LOG.debug("chosenIndex=" + chosenIndex);
-//                    return (gmlids[chosenIndex])
-//                }();
+                //                var gmlidToPlot = function() {
+                //                    var gmlids = [
+                //                    'resources/a1b-a2.xml',
+                //                    'resources/kansas.xml',
+                //                    'resources/wisconsin.xml'
+                //                    ]
+                //                    var currentGmlid = Ext.ComponentMgr.get('plotterPanel').gmlid;
+                //                    Ext.each(gmlids, function(gmlid, index) {
+                //                        if (gmlid === currentGmlid) gmlids.splice(index, 1);
+                //                    })
+                //                    var chosenIndex = Math.floor(Math.random()*(gmlids.length));
+                //                    LOG.debug("chosenIndex=" + chosenIndex);
+                //                    return (gmlids[chosenIndex])
+                //                }();
 
                 // http://internal.cida.usgs.gov/jira/browse/GDP-423
                 evt.features[0].attributes.TITLE = function() {
@@ -241,7 +241,8 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                                 fillOpacity: 0.2,
                                 fillColor: "#98c0f4"
                             })
-                        })
+                        }),
+                        displayInLayerSwitcher : false
                     }
                     );
                 selectedLayer.addFeatures(evt.features);
@@ -379,32 +380,6 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             this.currentLayer.getLayer().setOpacity(this.layerController.getLayerOpacity());
         }
     },
-    onReplaceBaseLayer : function(record) {
-        LOG.debug('BaseMap:onReplaceBaseLayer: Handling Request.');
-        if (!record) {
-            LOG.debug('BaseMap:onReplaceBaseLayer: A record object was not passed in. Using map\'s baselayer.');
-            record = this.layerController.getBaseLayer()
-        }
-            
-        var baseLayerIndex = 0;
-        if (this.layers.getCount() > 0) {
-            LOG.debug('BaseMap:onReplaceBaseLayer: Trying to find current base layer to remove it.');
-            baseLayerIndex = this.layers.findBy(function(r, id){
-                return r.data.layer.isBaseLayer
-            });
-                
-            if (baseLayerIndex > -1 ) {
-                this.layers.removeAt(baseLayerIndex);
-                LOG.debug('BaseMap:onReplaceBaseLayer: Removed base layer from this object\'s map.layers at index ' + baseLayerIndex);
-            } else {
-                // Not sure why this would happen
-                LOG.debug('BaseMap:onReplaceBaseLayer: Base layer not found.');
-            }
-        }
-            
-        this.layers.add([record]);
-        LOG.debug('BaseMap:onReplaceBaseLayer: Added base layer to this object\'s map.layers at index ' + baseLayerIndex);
-    },
     replaceLayer : function(record, params, existingIndex) {
         LOG.debug('BaseMap:replaceLayer: Handling request.');
         if (!record) return;
@@ -433,6 +408,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                 styles : (params.styles) ? params.styles : this.layerController.getLegendRecord().id
             }, params);
 
+            copy.get('layer').displayInLayerSwitcher = false;
             copy.get('layer').mergeNewParams(params);
             copy.getLayer().setOpacity(this.layerController.getLayerOpacity());
             copy.get('layer')['url'] = GDP.PROXY_PREFIX + copy.get('layer')['url'];

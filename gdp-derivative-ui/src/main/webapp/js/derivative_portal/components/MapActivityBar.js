@@ -15,7 +15,7 @@ GDP.MapActivityBar = Ext.extend(Ext.Toolbar, {
         var toggleGroup = 'draw';
         var zoomToExtentAction, navigationAction, bboxVector, drawBboxAction;
         
-        bboxVector = new OpenLayers.Layer.Vector('bboxvector');
+        bboxVector = new OpenLayers.Layer.Vector('bboxvector', {displayInLayerSwitcher : false});
         map.addLayers([bboxVector]);
         
         var control = new OpenLayers.Control();

@@ -14,7 +14,7 @@ Ext.onReady(function () {
     GDP.DEFAULT_LEGEND_NAME = 'boxfill/greyscale';
     GDP.PROCESS_ENDPOINT = 'http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/gdp-process-wps/WebProcessingService';
     //    GDP.PROCESS_ENDPOINT = 'http://localhost:8080/gdp-process-wps/WebProcessingService'; // Development
-//    OpenLayers.ProxyHost = "proxy/";
+//    OpenLayers.ProxyHost = "proxy/"; // TODO - OGCProxy 
     initializeLogging();
     initializeNotification();
     initializeMapping();
@@ -181,32 +181,36 @@ function initializeMapping() {
     
     var baseLayerStore = new GeoExt.data.LayerStore({
         layers : [
+        new OpenLayers.Layer.XYZ(
+            "Shaded Relief",
+            "http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_ShadedRelief_World_2D/MapServer/tile/${z}/${y}/${x}",
+            {
+                layers : "0",
+                isBaseLayer : true
+            }
+            ),
         new OpenLayers.Layer.WMS(
             "Blue Marble",
             "http://maps.opengeo.org/geowebcache/service/wms",
             {
-                layers: "bluemarble"
+                layers: "bluemarble",
+                isBaseLayer : true
             }
             ),
         new OpenLayers.Layer.WMS(
             "NAIP",
             "http://isse.cr.usgs.gov/ArcGIS/services/Combined/SDDS_Imagery/MapServer/WMSServer",
             {
-                layers: "0"
-            }
-            ),
-        new OpenLayers.Layer.XYZ(
-            "Shaded Relief",
-            "http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_ShadedRelief_World_2D/MapServer/tile/${z}/${y}/${x}",
-            {
-                layers : "0"
+                layers: "0",
+                isBaseLayer : true
             }
             ),
         new OpenLayers.Layer.XYZ(
             "Street Map",
             "http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_StreetMap_World_2D/MapServer/tile/${z}/${y}/${x}",
             {
-                layers : "0"
+                layers : "0",
+                isBaseLayer : true
             }
             )
         ]
@@ -214,7 +218,7 @@ function initializeMapping() {
 
     var layerController = new GDP.LayerController({
         id : 'layerController',
-        baseLayer : baseLayerStore.getAt(2),
+        baseLayer : baseLayerStore.getAt(0),
         legendStore : legendStore,
         dimensions : ['time', 'elevation']
     });
@@ -225,6 +229,7 @@ function initializeMapping() {
         layout : 'fit',
         border: false,
         layerController : layerController,
+        baseLayerStore : baseLayerStore,
         title: 'USGS Derived Downscaled Climate Portal'
     });
 
@@ -331,10 +336,6 @@ function initializeMapping() {
         autoShow: true,
         contentEl: 'usgs-footer-panel'
     });
-    
-    // Pull in the base layer
-    LOG.debug('root: Triggering LayerController:requestBaseLayer.');
-    layerController.requestBaseLayer(layerController.getBaseLayer());
     
     new Ext.Viewport({
         renderTo : document.body,
