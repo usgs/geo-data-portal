@@ -9,6 +9,7 @@ import ucar.nc2.dt.GridDatatype;
 public abstract class GridCellVisitor {
 
     public void traverseStart(GridDatatype gridDatatype) {}
+    public boolean traverseContinue() { return true; }
     public void traverseEnd() {}
 
     public boolean tStart(int tIndex) { return true; }
@@ -21,5 +22,5 @@ public abstract class GridCellVisitor {
     public void yxEnd() {}
 
     public abstract void processGridCell(int xCellIndex, int yCellIndex, double value);
-
+    
 }

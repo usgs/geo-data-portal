@@ -1,5 +1,6 @@
 package gov.usgs.cida.derivative;
 
+import com.google.common.primitives.Doubles;
 import gov.usgs.cida.derivative.time.IntervalTimeStepDescriptor;
 import gov.usgs.cida.derivative.time.NetCDFDateUtil;
 import gov.usgs.cida.derivative.time.TimeStepDescriptor;
@@ -15,6 +16,7 @@ import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.units.DateRange;
+import ucar.nc2.units.SimpleUnit;
 
 /**
  *
@@ -31,34 +33,35 @@ public class TimeStepAveragingVisitor extends DerivativeVisitor {
     private DerivativeValueDescriptor valueDescriptor;
     private TimeStepDescriptor timeStepDescriptor;
     
+    
+    private CoordinateAxis1DTime timeAxis;
+    
     private int thresholdIndex = 0;
+    
+    private double outputTimeStepLengthYears;
     
     public TimeStepAveragingVisitor() {
         
     }
     
-    CoordinateAxis1DTime timeAxis;
+    
     @Override
     public void traverseStart(GridDatatype gridDatatype) {
         
-        CoordinateAxis1D thesholdAxis = gridDatatype.getCoordinateSystem().getVerticalAxis();
-        Variable thresholdVariable = thesholdAxis.getOriginalVariable();
-        float thresholdMinimum = (float)thesholdAxis.getMinValue();
-        float thresholdIncrement = (float)thesholdAxis.getIncrement();
-        int thresholdCount = thesholdAxis.getShape(0);
+        CoordinateAxis1D thresholdAxis = gridDatatype.getCoordinateSystem().getVerticalAxis();
+        Variable thresholdVariable = thresholdAxis.getOriginalVariable();
         
         Variable gridVariable = gridDatatype.getVariable();
         
         valueDescriptor = new DerivativeValueDescriptor(
                 thresholdVariable.getShortName(), // name
                 thresholdVariable.findAttribute("standard_name").getStringValue(), // standard_name
-                thresholdVariable.getUnitsString(),
-                thresholdMinimum, // start   // TODO: parameterize;
-                thresholdIncrement, // increment // TODO: parameterize;
-                thresholdCount, // count    // TODO: parameterize;
-                gridVariable.getShortName() + "-P30Y", // name
+                SimpleUnit.factory(thresholdVariable.getUnitsString()),
+                thresholdVariable.getDataType(),
+                Doubles.asList(thresholdAxis.getCoordValues()),
+                gridVariable.getShortName(), // name
                 gridVariable.findAttribute("standard_name").getStringValue(), // standard name TODO: ???
-                "days", // units
+                SimpleUnit.factory("days"), // units
                 DataType.FLOAT);
         
         timeAxis = gridDatatype.getCoordinateSystem().getTimeAxis1D();
@@ -70,7 +73,7 @@ public class TimeStepAveragingVisitor extends DerivativeVisitor {
                     new Interval("1961-01-01/1991-01-01"),
                     new Interval("2011-01-01/2041-01-01"),
                     new Interval("2041-01-01/2071-01-01"),
-                    new Interval("2071-01-01/2099-01-01"),
+                    new Interval("2071-01-01/2098-01-01"),
                 }));             // TODO: parameterize;
         
         GridCoordSystem gridCoordSystem = gridDatatype.getCoordinateSystem();
@@ -90,18 +93,23 @@ public class TimeStepAveragingVisitor extends DerivativeVisitor {
     
     @Override
     public boolean tStart(int tIndex) {
-        LOGGER.debug("Starting t index of {}, {}", tIndex, timeAxis.getTimeDate(tIndex));
-        return super.tStart(tIndex);
+        if (super.tStart(tIndex)) {
+            LOGGER.debug("Starting t index of {}, {}", tIndex, timeAxis.getTimeDate(tIndex).toGMTString());
+            outputTimeStepLengthYears = timeStepDescriptor.getOutputTimeStepInterval(getOutputCurrentTimeStep()).toPeriod().getYears();
+            return true;
+        } else {
+            return false;
+        }
     }
     
     @Override
     public void processGridCell(int xCellIndex, int yCellIndex, double value) {
         int arrayIndex = thresholdIndex * yxCount + yCellIndex * xCount + xCellIndex;
-        if (value > -1) {
-            double current = outputArray.getShort(arrayIndex);
-            outputArray.setObject(arrayIndex, current += (value / 30d));
-        } else {
+        double current = outputArray.getDouble(arrayIndex);
+        if (value < 0 || current < 0) {
             outputArray.setObject(arrayIndex, -1);
+        } else {
+            outputArray.setObject(arrayIndex, current += (value / outputTimeStepLengthYears));
         }
     }
 
@@ -114,9 +122,4 @@ public class TimeStepAveragingVisitor extends DerivativeVisitor {
     public TimeStepDescriptor getTimeStepDescriptor() {
         return timeStepDescriptor;
     }
-    
-    public static void main(String[] args) {
-        
-    }
-
 }

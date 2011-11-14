@@ -1,7 +1,7 @@
 package gov.usgs.cida.derivative;
 
-import gov.usgs.cida.derivative.time.TimeStepDescriptor;
 import com.google.common.base.Joiner;
+import gov.usgs.cida.derivative.time.TimeStepDescriptor;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.GridCellVisitor;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.GridUtility;
 import java.io.IOException;
@@ -26,11 +26,12 @@ public abstract class DerivativeVisitor extends GridCellVisitor {
     
     private int xCount;
     private int yCount;
+    
     private int timeStepCount;
     
     private CoordinateAxis1DTime timeAxis;
     
-    private int timeStepCurrent;
+    private int outputCurrentTimeStep;
     
     private DerivativeNetCDFFile derivativeNetCDFFile;
     
@@ -58,7 +59,7 @@ public abstract class DerivativeVisitor extends GridCellVisitor {
         xCount = GridUtility.getXAxisLength(gridCoordSystem);
         yCount = GridUtility.getYAxisLength(gridCoordSystem);
       
-        timeStepCurrent = -1;
+        outputCurrentTimeStep = -1;
         
         timeStepCount = getTimeStepDescriptor().getOutputTimeStepCount();
         
@@ -68,12 +69,9 @@ public abstract class DerivativeVisitor extends GridCellVisitor {
         if (outputBaseFileName == null || outputBaseFileName.length() < 1) {
             outputBaseFileName = Joiner.on(".").join(
                     "derivative",
-                    gridDatatype.getName(),
-                    getValueDescriptor().getOutputName(),
-                    Joiner.on(":").join(
-                        getValueDescriptor().getCoordinateStart(),
-                        getValueDescriptor().getCoordinateIncrement(),
-                        getValueDescriptor().getCoordinateCount())
+                    gridDatatype.getVariable().getName(),
+                    getValueDescriptor().getCoordinateName()
+//                    Joiner.on(":").join(getValueDescriptor().getCoordinateValues()),
                     );
         }
         
@@ -90,7 +88,7 @@ public abstract class DerivativeVisitor extends GridCellVisitor {
     @Override
     public void traverseEnd() {
         try {
-            if (timeStepCurrent > -1) {
+            if (outputCurrentTimeStep > -1) {
                 writeTimeStepData();
             }
             derivativeNetCDFFile.getNetCDFFile().close();
@@ -102,42 +100,46 @@ public abstract class DerivativeVisitor extends GridCellVisitor {
     @Override
     public boolean tStart(int tIndex) {
         timeStepDateTime = new DateTime(timeAxis.getTimeDate(tIndex));
-        int timeStep = getTimeStepDescriptor().getOutputTimeStepIndex(timeStepDateTime);
-        if (timeStep != timeStepCurrent) {
-            if (timeStepCurrent > -1) {
+        int outputNextTimeStep = getTimeStepDescriptor().getOutputTimeStepIndex(timeStepDateTime);
+        if (outputNextTimeStep != outputCurrentTimeStep) {
+            if (outputCurrentTimeStep > -1) {
                 LOGGER.info("Finished parsing data for {} to {}",
-                        getTimeStepDescriptor().getOutputTimeStepLowerBound(timeStepCurrent).toString(),
-                        getTimeStepDescriptor().getOutputTimeStepUpperBound(timeStepCurrent).toString());
+                        getTimeStepDescriptor().getOutputTimeStepLowerBound(outputCurrentTimeStep).toString(),
+                        getTimeStepDescriptor().getOutputTimeStepUpperBound(outputCurrentTimeStep).toString());
                 writeTimeStepData();
-                int arrayCount = xCount * yCount * getValueDescriptor().getCoordinateCount();
+                int arrayCount = xCount * yCount * getValueDescriptor().getCoordinateValues().size();
                 for (int arrayIndex = 0; arrayIndex < arrayCount; ++arrayIndex) {
                     outputArray.setObject(arrayIndex, 0); // TODO:  how to know type?
                 }
             } else {
                 outputArray = Array.factory(
                         getValueDescriptor().getOutputDataType(),
-                        new int[] {1, getValueDescriptor().getCoordinateCount(), yCount, xCount});
+                        new int[] {1, getValueDescriptor().getCoordinateValues().size(), yCount, xCount});
             }
-            timeStepCurrent = timeStep;
-            if (timeStepCurrent > -1 && timeStepCurrent < getTimeStepDescriptor().getOutputTimeStepCount()) {
+            outputCurrentTimeStep = outputNextTimeStep;
+            if (outputCurrentTimeStep > -1 && outputCurrentTimeStep < getTimeStepDescriptor().getOutputTimeStepCount()) {
                 LOGGER.info("Start parsing data for {} to {}",
-                            getTimeStepDescriptor().getOutputTimeStepLowerBound(timeStepCurrent).toString(),
-                            getTimeStepDescriptor().getOutputTimeStepUpperBound(timeStepCurrent).toString());
+                            getTimeStepDescriptor().getOutputTimeStepLowerBound(outputCurrentTimeStep).toString(),
+                            getTimeStepDescriptor().getOutputTimeStepUpperBound(outputCurrentTimeStep).toString());
             }
         }
-        return timeStepCurrent > -1;
+        return outputCurrentTimeStep > -1;
     }
  
     private void writeTimeStepData() {
         try {
             derivativeNetCDFFile.getNetCDFFile().write(
                     getValueDescriptor().getOutputName(),
-                    new int[] { timeStepCurrent, 0, 0, 0},
+                    new int[] { outputCurrentTimeStep, 0, 0, 0},
                     outputArray);
         } catch (IOException e) {
             LOGGER.error("Error writing values to netcdf file", e);
         } catch (InvalidRangeException e) {
             LOGGER.error("Error writing values to netcdf file", e);
         }
+    }
+    
+    public int getOutputCurrentTimeStep() {
+        return outputCurrentTimeStep;
     }
 }

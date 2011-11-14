@@ -59,25 +59,26 @@ public class DerivativeNetCDFFile {
             Dimension yDimension = netCDFFile.addDimension(gridCoordSystem.getYHorizAxis().getName(), yCount);
             Dimension timeDimension = netCDFFile.addDimension("time", timeStepDescriptor.getOutputTimeStepCount());
             Dimension timeBoundsDimension = netCDFFile.addDimension("time_bounds", 2);
-            Dimension derivativeCoordinateDimension = netCDFFile.addDimension(valueDescriptor.getCoordinateName(), valueDescriptor.getCoordinateCount());
+            Dimension derivativeCoordinateDimension = netCDFFile.addDimension(valueDescriptor.getCoordinateName(), valueDescriptor.getCoordinateValues().size());
             Variable timeVariable = netCDFFile.addVariable("time", DataType.INT, new Dimension[]{timeDimension});
             timeVariable.addAttribute(new Attribute("units", "days since " + CalendarUtil.formatCF_UTC(timeStepDescriptor.getOutputInterval().getStart().toDate())));
             timeVariable.addAttribute(new Attribute("climatology", "time_bounds"));
             Variable timeBoundsVariable = netCDFFile.addVariable("time_bounds", DataType.INT, new Dimension[]{timeDimension, timeBoundsDimension});
-            derivativeCoordinateVariable = netCDFFile.addVariable(valueDescriptor.getCoordinateName(), DataType.FLOAT, new Dimension[]{derivativeCoordinateDimension});
+            derivativeCoordinateVariable = netCDFFile.addVariable(valueDescriptor.getCoordinateName(), valueDescriptor.getCoordinateDataType(), new Dimension[]{derivativeCoordinateDimension});
             if (valueDescriptor.getCoordinateStandardName() != null) {
                 derivativeCoordinateVariable.addAttribute(new Attribute("standard_name", valueDescriptor.getCoordinateStandardName()));
             }
-            if (valueDescriptor.getCoordinateUnits() != null) {
-                derivativeCoordinateVariable.addAttribute(new Attribute("units", valueDescriptor.getCoordinateUnits()));
+            if (valueDescriptor.getCoordinateUnit() != null) {
+                // TODO:  may need crosswalk between javax.measure and UD Units
+                derivativeCoordinateVariable.addAttribute(new Attribute("units", valueDescriptor.getCoordinateUnit().getUnitString()));
             }
             derivativeCoordinateVariable.addAttribute(new Attribute("positive", "up"));
             derivativeOutputVariable = netCDFFile.addVariable(valueDescriptor.getOutputName(), valueDescriptor.getOutputDataType(), new Dimension[]{timeDimension, derivativeCoordinateDimension, yDimension, xDimension});
             if (valueDescriptor.getOutputStandardName() != null) {
                 derivativeOutputVariable.addAttribute(new Attribute("standard_name", valueDescriptor.getOutputStandardName()));
             }
-            if (valueDescriptor.getOutputUnits() != null) {
-                derivativeOutputVariable.addAttribute(new Attribute("units", valueDescriptor.getOutputUnits()));
+            if (valueDescriptor.getOutputUnit() != null) {
+                derivativeOutputVariable.addAttribute(new Attribute("units", valueDescriptor.getOutputUnit().getUnitString()));
             }
             DataType outputDataType = valueDescriptor.getOutputDataType();
             switch (outputDataType) {
@@ -114,9 +115,10 @@ public class DerivativeNetCDFFile {
             }
             netCDFFile.write(timeVariable.getName(), timeArray);
             netCDFFile.write(timeBoundsVariable.getName(), timeBoundsArray);
-            Array derivativeValuesArray = Array.factory(DataType.FLOAT, derivativeCoordinateVariable.getShape());
-            for (int derivativesValueIndex = 0; derivativesValueIndex < valueDescriptor.getCoordinateCount(); ++derivativesValueIndex) {
-                derivativeValuesArray.setFloat(derivativesValueIndex, valueDescriptor.getCoordinateValue(derivativesValueIndex));
+            Array derivativeValuesArray = Array.factory(valueDescriptor.getCoordinateDataType(), derivativeCoordinateVariable.getShape());
+            int valueCount = valueDescriptor.getCoordinateValues().size();
+            for (int valueIndex = 0; valueIndex < valueCount; ++valueIndex) {
+                derivativeValuesArray.setObject(valueIndex, valueDescriptor.getCoordinateValues().get(valueIndex));
             }
             netCDFFile.write(derivativeCoordinateVariable.getName(), derivativeValuesArray);
         } finally {

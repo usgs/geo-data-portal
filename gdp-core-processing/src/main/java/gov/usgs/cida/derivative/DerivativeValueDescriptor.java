@@ -1,42 +1,81 @@
 package gov.usgs.cida.derivative;
 
+import java.util.ArrayList;
+import java.util.List;
 import ucar.ma2.DataType;
+import ucar.nc2.units.SimpleUnit;
+import ucar.units.Unit;
 
 /**
  *
  * @author tkunicki
  */
 public class DerivativeValueDescriptor {
+    
     private final String coordinateName;
     private final String coordinateStandardName;
-    private final String coordinateUnits;
-    private final int coordinateCount;
-    private final float coordinateStart;
-    private final float coordinateIncrement;
+    private final SimpleUnit coordinateUnit;
+    private final DataType coordinateDataType;
+    
+    private List<? extends Number> coordinateValues;
+    
     private final String outputName;
     private final String outputStandardName;
-    private final String outputUnits;
+    private final SimpleUnit outputUnit;
     private final DataType outputDataType;
 
-    public DerivativeValueDescriptor(String coordinateName, String coordinateStandardName, String coordinateUnits, float coordinateStart, float coordinateIncrement, int coordinateCount, String outputName, String outputStandardName, String outputUnits, DataType outputDataType) {
+    public DerivativeValueDescriptor(
+            String coordinateName,
+            String coordinateStandardName,
+            SimpleUnit coordinateUnit,
+            DataType coordinateDataType,
+            float coordinateStart,
+            float coordinateIncrement,
+            int coordinateCount,
+            String outputName,
+            String outputStandardName,
+            SimpleUnit outputUnit,
+            DataType outputDataType) {
+        
         this.coordinateName = coordinateName;
         this.coordinateStandardName = coordinateStandardName;
-        this.coordinateUnits = coordinateUnits;
-        this.coordinateStart = coordinateStart;
-        this.coordinateIncrement = coordinateIncrement;
-        this.coordinateCount = coordinateCount;
+        this.coordinateUnit = coordinateUnit;
+        this.coordinateDataType = coordinateDataType;
+        
+        List<Float> coordinateValues = new ArrayList<Float>(coordinateCount);
+        for(int coordinateIndex = 0; coordinateIndex < coordinateCount; ++coordinateIndex) {
+            coordinateValues.add(Float.valueOf(coordinateStart + coordinateIndex * coordinateIncrement));
+        }
+        this.coordinateValues = coordinateValues;
+        
         this.outputName = outputName;
         this.outputStandardName = outputStandardName;
-        this.outputUnits = outputUnits;
+        this.outputUnit = outputUnit;
         this.outputDataType = outputDataType;
     }
-
-    public int getCoordinateCount() {
-        return coordinateCount;
-    }
-
-    public float getCoordinateIncrement() {
-        return coordinateIncrement;
+    
+    public DerivativeValueDescriptor(
+            String coordinateName,
+            String coordinateStandardName,
+            SimpleUnit coordinateUnit,
+            DataType coordinateDataType,
+            List<? extends Number> coordinateValues,
+            String outputName,
+            String outputStandardName,
+            SimpleUnit outputUnit,
+            DataType outputDataType) {
+        
+        this.coordinateName = coordinateName;
+        this.coordinateStandardName = coordinateStandardName;
+        this.coordinateUnit = coordinateUnit;
+        this.coordinateDataType = coordinateDataType;
+        
+        this.coordinateValues = coordinateValues;
+        
+        this.outputName = outputName;
+        this.outputStandardName = outputStandardName;
+        this.outputUnit = outputUnit;
+        this.outputDataType = outputDataType;
     }
 
     public String getCoordinateName() {
@@ -47,12 +86,16 @@ public class DerivativeValueDescriptor {
         return coordinateStandardName;
     }
 
-    public float getCoordinateStart() {
-        return coordinateStart;
+    public SimpleUnit getCoordinateUnit() {
+        return coordinateUnit;
     }
-
-    public String getCoordinateUnits() {
-        return coordinateUnits;
+    
+    public DataType getCoordinateDataType() {
+        return coordinateDataType;
+    }
+    
+    public List<? extends Number> getCoordinateValues() {
+        return coordinateValues;
     }
 
     public String getOutputName() {
@@ -63,16 +106,12 @@ public class DerivativeValueDescriptor {
         return outputStandardName;
     }
 
-    public String getOutputUnits() {
-        return outputUnits;
+    public SimpleUnit getOutputUnit() {
+        return outputUnit;
     }
 
     public DataType getOutputDataType() {
         return outputDataType;
     }
 
-    public float getCoordinateValue(int coordinateIndex) {
-        return coordinateStart + ((float) coordinateIndex * coordinateIncrement);
-    }
-    
 }
