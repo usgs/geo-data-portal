@@ -28,15 +28,15 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         var zoomBox = new OpenLayers.Control.ZoomBox({
             title:"Zoom box: Selecting it you can zoom on an area by clicking and dragging."
         });
-        var mouseDefaults = new OpenLayers.Control.MouseDefaults({
-            title:'You can use the default mouse configuration'
-        });
-        var mapControlPanel = new OpenLayers.Control.Panel({
-            defaultControl: mouseDefaults,
+        var navigationCtrl = new OpenLayers.Control.Navigation({
+            title:'You can use the default mouse configuration',
             autoActivate : true
         });
+        var mapControlPanel = new OpenLayers.Control.Panel({
+            defaultControl: navigationCtrl
+        });
         mapControlPanel.addControls([
-            mouseDefaults, 
+            navigationCtrl, 
             zoomBox
         ]);                
 
@@ -46,8 +46,6 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             controls: [
             new OpenLayers.Control.MousePosition(),
             new OpenLayers.Control.ScaleLine(),
-            new OpenLayers.Control.ArgParser(),
-            new OpenLayers.Control.Attribution(),
             new OpenLayers.Control.PanZoomBar({
                 panIcons : false,
                 position : new OpenLayers.Pixel(3,30)
