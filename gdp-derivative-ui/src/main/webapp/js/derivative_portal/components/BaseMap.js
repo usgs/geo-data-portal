@@ -10,7 +10,9 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
     currentLayer : undefined,
     legendWindow : undefined,
     legendImage : undefined, 
+    legendCombo : undefined,
     notificationWindow : undefined,
+    layerOpacitySlider : undefined,
     DEFAULT_LEGEND_X : 110,
     DEFAULT_LEGEND_Y : 293,
     constructor : function(config) {
@@ -38,7 +40,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         mapControlPanel.addControls([
             navigationCtrl, 
             zoomBox
-        ]);                
+            ]);                
 
         var map = new OpenLayers.Map({
             maxResolution: MAX_RESOLUTION,
@@ -58,11 +60,39 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         });
 
         map.addControl(mapControlPanel);
+        
+        this.legendCombo = new Ext.form.ComboBox({
+            xtype : 'combo',
+            mode : 'local',
+            triggerAction: 'all',
+            store : this.layerController.getLegendStore(),
+            forceSelection : true,
+            lazyInit : false,
+            displayField : 'title',
+            editable : false,
+            emptyText : 'Loading...'
+        })
+        this.layerOpacitySlider = new Ext.slider.SingleSlider({
+            value : this.layerController.getLayerOpacity() * 100,
+            width: 100,
+            plugins: new GeoExt.LayerOpacitySliderTip({
+                template: '<div>Opacity: {opacity}%</div>'
+            })
+        });
         config = Ext.apply({
             map : map,
             layers : config.baseLayerStore,
             center : new OpenLayers.LonLat(-96, 38),
-            zoom : 4
+            zoom : 4,
+            tbar : new Ext.Toolbar({
+                items : [
+                'Legend: ',
+                this.legendCombo,
+                '-',
+                'Opacity: ',
+                this.layerOpacitySlider,
+                ]
+            })
         }, config);
                 
         GDP.BaseMap.superclass.constructor.call(this, config);
@@ -90,7 +120,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             resizable: false,
             draggable: false,
             border: false,
-            frame: true,
+            frame: false,
             shadow: false,
             layout: 'absolute',
             items: [this.legendImage],
@@ -108,6 +138,23 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         this.legendWindow.show();
                 
         LOG.debug('BaseMap:constructor: Registering Listeners.');
+        this.legendCombo.on('select', function(obj, rec, ind) {
+            LOG.debug('BaseMap: A new legend style chosen: ' + rec.id + ' (' + rec.data.abstrakt + ')');
+            this.layerController.requestLegendRecord(rec);
+        },this);
+        this.legendCombo.store.on('load', function(store) {
+            LOG.debug('BaseMap: Legend Combobox store Loaded.');
+            //  http://internal.cida.usgs.gov/jira/browse/GDP-372
+            var recordIndex = store.find('name', GDP.DEFAULT_LEGEND_NAME);
+            recordIndex = (recordIndex < 0) ? 0 : recordIndex;
+            this.legendCombo.setValue(store.getAt(recordIndex).get('name'));
+        }, this);
+        this.layerOpacitySlider.on('change', function() {
+            LOG.debug('BaseMap:layerOpacitySlider: Observed \'change\'.');
+            this.layerController.requestOpacity(this.layerOpacitySlider.getValue() / 100);
+        }, this, {
+            buffer: 5
+        });
         this.layerController.on('changelayer', function() {
             LOG.debug('BaseMap: Observed "changelayer".');
             this.onChangeLayer();

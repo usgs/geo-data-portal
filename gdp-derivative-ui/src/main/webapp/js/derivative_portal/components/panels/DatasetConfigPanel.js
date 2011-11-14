@@ -179,6 +179,8 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             id : 'dataset-configuration-panel',
             title : 'Dataset Configuration',
             width : config.width || undefined,
+            animate : true,
+            border : false,
             items : [{
                 xtype: 'fieldset',
                 labelAlign : 'top',

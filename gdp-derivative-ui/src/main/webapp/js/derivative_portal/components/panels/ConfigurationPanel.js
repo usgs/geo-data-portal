@@ -20,43 +20,43 @@ GDP.ConfigurationPanel = Ext.extend(Ext.Panel, {
             capabilitiesStore : config.capabilitiesStore,
             getRecordsStore : config.getRecordsStore,
             featureOfIneterestEndpointStore : config.featureOfIneterestEndpointStore,
-            width : config.width || undefined,
-            iconCls : 'blank-icon'
+            width : config.width || undefined
+//            iconCls : 'blank-icon'
         });
         
-        this.mapConfigPanel = new GDP.MapConfigPanel({
-            controller : this.controller,
-            //url : config.url,
-            map : config.map,
-            baseLayerStore : config.baseLayerStore,
-            width : config.width || undefined,
-            iconCls : 'blank-icon'
-        });
-        
-        this.processingPanel = new GDP.ProcessingPanel({
-            controller : this.controller,
-            width : config.width || undefined,
-            iconCls : 'blank-icon'
-        });
+//        this.mapConfigPanel = new GDP.MapConfigPanel({
+//            controller : this.controller,
+//            //url : config.url,
+//            map : config.map,
+//            baseLayerStore : config.baseLayerStore,
+//            width : config.width || undefined,
+//            iconCls : 'blank-icon'
+//        });
+//        
+//        this.processingPanel = new GDP.ProcessingPanel({
+//            controller : this.controller,
+//            width : config.width || undefined,
+//            iconCls : 'blank-icon'
+//        });
         
         config = Ext.apply({
-            layout : 'accordion',
+//            layout : 'accordion',
             animate : true,
-            title : 'Control Panel',
+//            title : 'Control Panel',
             border : false,
             items : [
-                this.datasetConfigPanel,
-                this.mapConfigPanel,
-                this.processingPanel
+                this.datasetConfigPanel
+//                this.mapConfigPanel,
+//                this.processingPanel
             ]
         }, config);
         GDP.ConfigurationPanel.superclass.constructor.call(this, config);
         LOG.debug('ConfigurationPanel:constructor: Construction complete.');
         
-        this.processingPanel.on('request-attention', function(args){
-            this.onRequestAttention(args);
-            LOG.debug('ConfigurationPanel: Processing panel requested attention.');
-        }, this);
+//        this.processingPanel.on('request-attention', function(args){
+//            this.onRequestAttention(args);
+//            LOG.debug('ConfigurationPanel: Processing panel requested attention.');
+//        }, this);
     },
     onRequestAttention : function(args) {
         if (this.activeItem != args.obj) {

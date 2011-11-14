@@ -283,7 +283,7 @@ function initializeMapping() {
         }
     });
     
-    var configPanel = new GDP.ConfigurationPanel({
+    var configPanel = new GDP.DatasetConfigPanel({
         controller : layerController,
         collapsible : true,
         region: 'west',
