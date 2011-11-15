@@ -79,7 +79,7 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
             
         LOG.debug('LayerController:constructor: Registering Observables.');
         this.addEvents(
-//            "changebaselayer",
+            "changebaselayer",
             "changelayer",
             "changelegend",
             "changedimension",
@@ -98,7 +98,15 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
             "requestfoi",
             "updateplotter"
         );
+        this.requestBaseLayer(config.baseLayer);
     },
+    requestBaseLayer : function(baseLayer) {
+        LOG.debug('LayerController:requestBaseLayer');
+        if (!baseLayer) return;
+        this.baseLayer = baseLayer;
+        LOG.debug('LayerController:requestBaseLayer: Added new base layer to LayerController. Firing "changebaselayer".');
+        this.fireEvent('changebaselayer');
+    },    
     requestLayer : function(layerRecord) {
         LOG.debug('LayerController:requestLayer');
         if (!layerRecord) return;

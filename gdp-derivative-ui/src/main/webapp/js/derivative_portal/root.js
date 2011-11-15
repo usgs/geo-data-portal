@@ -222,7 +222,7 @@ function initializeMapping() {
         legendStore : legendStore,
         dimensions : ['time', 'elevation']
     });
-
+    
     var mapPanel = new GDP.BaseMap({
         id : 'mapPanel',
         region: 'center',
@@ -233,6 +233,8 @@ function initializeMapping() {
         title: 'USGS Derived Downscaled Climate Portal'
     });
 
+    layerController.requestBaseLayer(layerController.getBaseLayer());
+    
     var endpointUrls = [
         ['http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/ncWMS/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1'],
         ['http://igsarmewmaccave:8081/ncWMS/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1'],
