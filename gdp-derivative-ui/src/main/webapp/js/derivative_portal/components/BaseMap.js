@@ -96,13 +96,20 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             zoom : 4,
             tbar : new Ext.Toolbar({
                 items : [
+                '->',
                 'Base Layer: ',
                 this.baseLayerCombo,
+                ' ',
+                '-',
+                ' ',
                 'Legend: ',
                 this.legendCombo,
+                ' ',
                 '-',
+                ' ',
                 'Opacity: ',
                 this.layerOpacitySlider,
+                ' ',' ',' ',' ',' ',' '
                 ]
             })
         }, config);

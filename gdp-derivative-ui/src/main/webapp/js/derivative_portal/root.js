@@ -229,8 +229,7 @@ function initializeMapping() {
         layout : 'fit',
         border: false,
         layerController : layerController,
-        baseLayerStore : baseLayerStore,
-        title: 'USGS Derived Downscaled Climate Portal'
+        baseLayerStore : baseLayerStore
     });
 
     layerController.requestBaseLayer(layerController.getBaseLayer());
