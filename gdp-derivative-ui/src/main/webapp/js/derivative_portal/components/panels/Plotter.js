@@ -108,9 +108,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                         );
                     this.topToolbar.doLayout();
                     
-                    this.graph = new Dygraph(
-                        Ext.get(this.plotterDiv).dom,
-                        function(values) {
+                    var values = function(values) {
                             Ext.each(values, function(item, index, allItems) {
                                 for(var i=0; i<item.length; i++) {
                                     var value;
@@ -124,7 +122,11 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                                 }
                             });
                             return values;
-                        }(record.get('values')),
+                        }(record.get('values'))
+                        
+                    this.graph = new Dygraph(
+                        Ext.get(this.plotterDiv).dom,
+                        values,
                         {
                             legend: 'always',
                             labels: function(recordArray) {
@@ -143,6 +145,15 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                             },
                             ylabel: record.data.dataRecord[1].name,                            
                             yAxisLabelWidth: 75,
+                            valueRange: function(values){
+                                var intArray = new Array();
+                                Ext.each(values, function(item){
+                                    this.push(item[1]);
+                                }, intArray)
+                                var min = Array.min(intArray);
+                                var max = Array.max(intArray);
+                                return [min, max];
+                            }(values),
                             axes: {
                                 x: {
                                     valueFormatter: function(ms) {
