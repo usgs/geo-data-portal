@@ -20,7 +20,6 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         this.height = config.height || 200;
         this.gmlid = config.gmlid;
         this.plotterTitle = config.title;
-        //this.csv = config.csv;
             
         this.controller = config.controller;
         this.toolbar = new Ext.Toolbar({
@@ -30,11 +29,15 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         })
         var contentPanel = new Ext.Panel({
             contentEl : this.plotterDiv,
+            itemId : 'contentPanel',
+            ref : '../contentPanel',
             layout : 'fit',
             region : 'center',
             autoShow : true
         });
         var legendPanel = new Ext.Panel({
+            itemId : 'legendPanel',
+            ref : '../legendPanel',
             contentEl : this.legendDiv,
             layout : 'fit', 
             region : 'east',
@@ -71,8 +74,6 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
     resizePlotter : function() {
         var divPlotter = Ext.get(this.plotterDiv);
         var divLegend = Ext.get(this.legendDiv);
-//        var yLegend = Ext.query('.dygraph-ylabel')[0];
-//        var yLegendWidth = (yLegend) ? Ext.query('.dygraph-ylabel')[0].parentNode.style.width : 0 ;
         divPlotter.setWidth(this.getWidth() - (this.legendWidth + 2));
         divLegend.setWidth(this.legendWidth);
         divPlotter.setHeight(this.height - this.toolbar.getHeight());
@@ -140,7 +141,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                             labelsDivStyles: {
                                 'textAlign': 'right'
                             },
-                            ylabel: 'Days Above Temperature Threshold',                            
+                            ylabel: record.data.dataRecord[1].name,                            
                             yAxisLabelWidth: 75,
                             axes: {
                                 x: {
