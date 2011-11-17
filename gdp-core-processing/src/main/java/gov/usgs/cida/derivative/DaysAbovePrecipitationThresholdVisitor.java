@@ -24,7 +24,7 @@ public class DaysAbovePrecipitationThresholdVisitor extends DaysAboveThresholdVi
                 DataType.FLOAT,
                 Floats.asList(new float[] { 1f, 2f, 3f, 4f } ),
                 "days_above_threshold", // name
-                "number_of_days_with_lwe_thickness_of_precipitation_amount_above_threshold", // standard name TODO: ???
+                "number_of_days_with_lwe_thickness_of_precipitation_amount_above_threshold", // standard name
                 SimpleUnit.factory("days"), // units
                 DataType.SHORT);
     }

@@ -22,16 +22,16 @@ public abstract class DerivativeVisitor extends GridCellVisitor {
     
     private final static Logger LOGGER = LoggerFactory.getLogger(DerivativeVisitor.class);
 
-    private DateTime timeStepDateTime;
+    private DateTime inputTimeStepDateTime;
     
     private int xCount;
     private int yCount;
     
-    private int timeStepCount;
+    private int outputTimeStepCount;
     
     private CoordinateAxis1DTime timeAxis;
     
-    private int outputCurrentTimeStep;
+    private int outputTimeStepCurrentIndex;
     
     private DerivativeNetCDFFile derivativeNetCDFFile;
     
@@ -59,18 +59,18 @@ public abstract class DerivativeVisitor extends GridCellVisitor {
         xCount = GridUtility.getXAxisLength(gridCoordSystem);
         yCount = GridUtility.getYAxisLength(gridCoordSystem);
       
-        outputCurrentTimeStep = -1;
+        outputTimeStepCurrentIndex = -1;
         
-        timeStepCount = getTimeStepDescriptor().getOutputTimeStepCount();
+        outputTimeStepCount = getTimeStepDescriptor().getOutputTimeStepCount();
         
-        LOGGER.info("Calculating derivatives for {} time steps", timeStepCount);
+        LOGGER.info("Calculating derivatives for {} time steps", outputTimeStepCount);
         
         String outputBaseFileName = getOutputFileBaseName();
         if (outputBaseFileName == null || outputBaseFileName.length() < 1) {
             outputBaseFileName = Joiner.on(".").join(
                     "derivative",
                     gridDatatype.getVariable().getName(),
-                    getValueDescriptor().getCoordinateName()
+                    getValueDescriptor().getOutputName()
 //                    Joiner.on(":").join(getValueDescriptor().getCoordinateValues()),
                     );
         }
@@ -88,7 +88,8 @@ public abstract class DerivativeVisitor extends GridCellVisitor {
     @Override
     public void traverseEnd() {
         try {
-            if (outputCurrentTimeStep > -1) {
+            if (outputTimeStepCurrentIndex > -1) {
+                outputTimeStepEnd(outputTimeStepCurrentIndex);
                 writeTimeStepData();
             }
             derivativeNetCDFFile.getNetCDFFile().close();
@@ -99,13 +100,14 @@ public abstract class DerivativeVisitor extends GridCellVisitor {
     
     @Override
     public boolean tStart(int tIndex) {
-        timeStepDateTime = new DateTime(timeAxis.getTimeDate(tIndex));
-        int outputNextTimeStep = getTimeStepDescriptor().getOutputTimeStepIndex(timeStepDateTime);
-        if (outputNextTimeStep != outputCurrentTimeStep) {
-            if (outputCurrentTimeStep > -1) {
+        inputTimeStepDateTime = new DateTime(timeAxis.getTimeDate(tIndex));
+        int outputTimeStepNextIndex = getTimeStepDescriptor().getOutputTimeStepIndex(inputTimeStepDateTime);
+        if (outputTimeStepNextIndex != outputTimeStepCurrentIndex) {
+            if (outputTimeStepCurrentIndex > -1) {
+                outputTimeStepEnd(outputTimeStepCurrentIndex);
                 LOGGER.info("Finished parsing data for {} to {}",
-                        getTimeStepDescriptor().getOutputTimeStepLowerBound(outputCurrentTimeStep).toString(),
-                        getTimeStepDescriptor().getOutputTimeStepUpperBound(outputCurrentTimeStep).toString());
+                        getTimeStepDescriptor().getOutputTimeStepLowerBound(outputTimeStepCurrentIndex).toString(),
+                        getTimeStepDescriptor().getOutputTimeStepUpperBound(outputTimeStepCurrentIndex).toString());
                 writeTimeStepData();
                 int arrayCount = xCount * yCount * getValueDescriptor().getCoordinateValues().size();
                 for (int arrayIndex = 0; arrayIndex < arrayCount; ++arrayIndex) {
@@ -116,21 +118,22 @@ public abstract class DerivativeVisitor extends GridCellVisitor {
                         getValueDescriptor().getOutputDataType(),
                         new int[] {1, getValueDescriptor().getCoordinateValues().size(), yCount, xCount});
             }
-            outputCurrentTimeStep = outputNextTimeStep;
-            if (outputCurrentTimeStep > -1 && outputCurrentTimeStep < getTimeStepDescriptor().getOutputTimeStepCount()) {
+            outputTimeStepCurrentIndex = outputTimeStepNextIndex;
+            if (outputTimeStepCurrentIndex > -1 && outputTimeStepCurrentIndex < getTimeStepDescriptor().getOutputTimeStepCount()) {
+                outputTimeStepStart(outputTimeStepCurrentIndex);
                 LOGGER.info("Start parsing data for {} to {}",
-                            getTimeStepDescriptor().getOutputTimeStepLowerBound(outputCurrentTimeStep).toString(),
-                            getTimeStepDescriptor().getOutputTimeStepUpperBound(outputCurrentTimeStep).toString());
+                            getTimeStepDescriptor().getOutputTimeStepLowerBound(outputTimeStepCurrentIndex).toString(),
+                            getTimeStepDescriptor().getOutputTimeStepUpperBound(outputTimeStepCurrentIndex).toString());
             }
         }
-        return outputCurrentTimeStep > -1;
+        return outputTimeStepCurrentIndex > -1;
     }
  
     private void writeTimeStepData() {
         try {
             derivativeNetCDFFile.getNetCDFFile().write(
                     getValueDescriptor().getOutputName(),
-                    new int[] { outputCurrentTimeStep, 0, 0, 0},
+                    new int[] { outputTimeStepCurrentIndex, 0, 0, 0},
                     outputArray);
         } catch (IOException e) {
             LOGGER.error("Error writing values to netcdf file", e);
@@ -140,6 +143,10 @@ public abstract class DerivativeVisitor extends GridCellVisitor {
     }
     
     public int getOutputCurrentTimeStep() {
-        return outputCurrentTimeStep;
+        return outputTimeStepCurrentIndex;
     }
+    
+    protected void outputTimeStepStart(int outputTimeStepIndex) {}
+    protected void outputTimeStepEnd(int outputTimeStepIndex) {}
+    
 }

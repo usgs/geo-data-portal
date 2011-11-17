@@ -10,21 +10,21 @@ import ucar.nc2.units.SimpleUnit;
  *
  * @author tkunicki
  */
-public class DaysBelowTemperatureThresholdVisitor extends DaysBelowThresholdVisitor {
-    
-    private final static Logger LOGGER = LoggerFactory.getLogger(DaysBelowTemperatureThresholdVisitor.class);
+public class RunBelowPrecipitationThresholdVisitor extends RunBelowThresholdVisitor {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(RunBelowPrecipitationThresholdVisitor.class);
     
     private DerivativeValueDescriptor valueDescriptor;
     
-    public DaysBelowTemperatureThresholdVisitor() {
+    public RunBelowPrecipitationThresholdVisitor() {
         valueDescriptor = new DerivativeValueDescriptor(
                 "threshold", // name
-                "air_temperature", // standard_name
-                SimpleUnit.factory("degF"),
+                "lwe_thickness_of_precipitation_amount", // standard_name
+                SimpleUnit.factory("mm"),
                 DataType.FLOAT,
-                Floats.asList(new float[] { 32f, 10f, 0f}),
-                "days_below_threshold", // name
-                "number_of_days_with_air_temperature_below_threshold", // standard name TODO: ???
+                Floats.asList(new float[] { 3f } ),
+                "spell_length_below_threshold", // name
+                "spell_length_of_days_with_lwe_thickness_of_precipitation_amount_below_threshold", // standard name
                 SimpleUnit.factory("days"), // units
                 DataType.SHORT);
     }

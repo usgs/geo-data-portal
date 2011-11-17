@@ -22,7 +22,7 @@ public class DaysAboveTemperatureThresholdVisitor extends DaysAboveThresholdVisi
                 "air_temperature", // standard_name
                 SimpleUnit.factory("degF"),
                 DataType.FLOAT,
-                Floats.asList(new float[] { 32f, 10f, 0f } ),
+                Floats.asList(new float[] { 90f, 95f, 100f } ),
                 "days_above_threshold", // name
                 "number_of_days_with_air_temperature_above_threshold", // standard name TODO: ???
                 SimpleUnit.factory("days"), // units

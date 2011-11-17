@@ -53,12 +53,12 @@ public class DerivativeAnalysisTest {
     @Test
     @Ignore
     public void testSomeMethod() throws IOException {
-        ExecutorService executorService = Executors.newFixedThreadPool(8);
+        ExecutorService executorService = Executors.newFixedThreadPool(4);
         FeatureDataset fds = null;
         try {
             fds = FeatureDatasetFactoryManager.open(
                 FeatureType.GRID,
-                "/Volumes/Data/thredds/dcp/conus_grid.ncml",
+                "/Users/tkunicki/Data/thredds/dcp/conus_grid.ncml",
                 null,
                 new Formatter(System.err));
             if (fds instanceof GridDataset) {
@@ -69,24 +69,31 @@ public class DerivativeAnalysisTest {
                         @Override
                         public void run() {
                             try {
+                                if (true /* gdt.getName().startsWith("ccsm3_a1b") */) {
                                 if (gdt.getName().endsWith("pr")) {
                                     System.out.println("running " + gdt.getName());
                                     GridCellTraverser t = new GridCellTraverser(gdt);
-                                    GridCellVisitor v = new DaysAbovePrecipitationThresholdVisitor();
-                                    t.traverse(v);
+                                    t.traverse(Arrays.asList(new GridCellVisitor[] {
+                                        new DaysAbovePrecipitationThresholdVisitor(),
+                                        new RunBelowPrecipitationThresholdVisitor()
+                                    }));
                                 }
-//                                if (gdt.getName().endsWith("tmax")) {
-//                                    System.out.println("running " + gdt.getName());
-//                                    GridCellTraverser t = new GridCellTraverser(gdt);
-//                                    GridCellVisitor v = new DaysAboveTemperatureThresholdVisitor();
-//                                    t.traverse(v);
-//                                }
-//                                if (gdt.getName().endsWith("tmin")) {
-//                                    System.out.println("running " + gdt.getName());
-//                                    GridCellTraverser t = new GridCellTraverser(gdt);
-//                                    GridCellVisitor v = new DaysBelowTemperatureThresholdVisitor();
-//                                    t.traverse(v);
-//                                }
+                                if (gdt.getName().endsWith("tmax")) {
+                                    System.out.println("running " + gdt.getName());
+                                    GridCellTraverser t = new GridCellTraverser(gdt);
+                                    t.traverse(Arrays.asList(new GridCellVisitor[] {
+                                        new DaysAboveTemperatureThresholdVisitor(),
+                                        new RunAboveTemperatureThresholdVisitor()
+                                    }));
+                                }
+                                if (gdt.getName().endsWith("tmin")) {
+                                    System.out.println("running " + gdt.getName());
+                                    GridCellTraverser t = new GridCellTraverser(gdt);
+                                    t.traverse(Arrays.asList(new GridCellVisitor[] {
+                                        new DaysBelowTemperatureThresholdVisitor(),
+                                    }));
+                                }
+                                }
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -115,6 +122,8 @@ public class DerivativeAnalysisTest {
                     "/Users/tkunicki/Downloads/derivatives/derivative-days_above_threshold.pr.ncml",
                     "/Users/tkunicki/Downloads/derivatives/derivative-days_above_threshold.tmax.ncml",
                     "/Users/tkunicki/Downloads/derivatives/derivative-days_below_threshold.tmin.ncml",
+                    "/Users/tkunicki/Downloads/derivatives/derivative-spell_length_above_threshold.tmax.ncml",
+                    "/Users/tkunicki/Downloads/derivatives/derivative-spell_length_below_threshold.pr.ncml",
                 });
 
         for (String gridP1Y : gridP1YList) {

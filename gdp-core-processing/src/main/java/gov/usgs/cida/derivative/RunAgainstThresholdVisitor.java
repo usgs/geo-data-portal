@@ -22,7 +22,7 @@ import ucar.units.Converter;
  *
  * @author tkunicki
  */
-public abstract class DaysAgainstThresholdVisitor extends DerivativeVisitor {
+public abstract class RunAgainstThresholdVisitor extends DerivativeVisitor {
     
     private final static Logger LOGGER = LoggerFactory.getLogger(DaysAboveTemperatureThresholdVisitor.class);
     
@@ -39,7 +39,8 @@ public abstract class DaysAgainstThresholdVisitor extends DerivativeVisitor {
     
     private int thresholdCount;
     
-    private short[][] outputTimeStepCurrentData;
+    private short[][] outputTimeStepCurrentObservedRunData;
+    private short[][] outputTimeStepMaximumObservedRunData;
     
     @Override
     public void traverseStart(GridDatatype gridDatatype) {
@@ -69,7 +70,8 @@ public abstract class DaysAgainstThresholdVisitor extends DerivativeVisitor {
         }
         
         thresholdCount = getValueDescriptor().getCoordinateValues().size();
-        outputTimeStepCurrentData = new short[thresholdCount][yxCount];
+        outputTimeStepCurrentObservedRunData = new short[thresholdCount][yxCount];
+        outputTimeStepMaximumObservedRunData = new short[thresholdCount][yxCount];
         
         super.traverseStart(gridDatatype);
     }
@@ -84,10 +86,14 @@ public abstract class DaysAgainstThresholdVisitor extends DerivativeVisitor {
         int yxIndex = yCellIndex * xCount + xCellIndex;
         for (int thresholdIndex = 0; thresholdIndex < thresholdCount; ++thresholdIndex) {
             float threshold = convertedThresholdValueList.get(thresholdIndex).floatValue();
-            if (Double.isNaN(value)) {
-                outputTimeStepCurrentData[thresholdIndex][yxIndex] = -1;
-            } else if (includeValue(threshold, value)) {
-                ++outputTimeStepCurrentData[thresholdIndex][yxIndex];
+            if (includeValue(threshold, value)) {
+                short current = ++outputTimeStepCurrentObservedRunData[thresholdIndex][yxIndex];
+                short maximum = outputTimeStepMaximumObservedRunData[thresholdIndex][yxIndex];
+                if (current > maximum) {
+                    outputTimeStepMaximumObservedRunData[thresholdIndex][yxIndex] = current;
+                }
+            } else {
+                outputTimeStepCurrentObservedRunData[thresholdIndex][yxIndex] = 0;
             }
         }
     }
@@ -98,12 +104,16 @@ public abstract class DaysAgainstThresholdVisitor extends DerivativeVisitor {
     }
 
     public abstract boolean includeValue(double threshold, double value);
-    
+
+
     @Override
     protected void outputTimeStepStart(int outputTimeStepIndex) {
         super.outputTimeStepStart(outputTimeStepIndex);
         
-        for (short[] runData : outputTimeStepCurrentData) {
+        for (short[] runData : outputTimeStepCurrentObservedRunData) {
+            Arrays.fill(runData, (short)0);
+        }
+        for (short[] runData : outputTimeStepMaximumObservedRunData) {
             Arrays.fill(runData, (short)0);
         }
     }
@@ -115,9 +125,11 @@ public abstract class DaysAgainstThresholdVisitor extends DerivativeVisitor {
         for (int thresholdIndex = 0; thresholdIndex < thresholdCount; ++thresholdIndex) {
             for (int yxIndex = 0; yxIndex < yxCount; ++yxIndex) {
                 int arrayIndex = thresholdIndex * yxCount + yxIndex;
-                outputArray.setShort(arrayIndex, outputTimeStepCurrentData[thresholdIndex][yxIndex]);
+                outputArray.setShort(arrayIndex, outputTimeStepMaximumObservedRunData[thresholdIndex][yxIndex]);
             }
         }
         
     }
+    
+    
 }

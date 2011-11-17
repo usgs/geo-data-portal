@@ -1,5 +1,6 @@
 package gov.usgs.cida.derivative;
 
+import com.google.common.base.Joiner;
 import com.google.common.primitives.Doubles;
 import gov.usgs.cida.derivative.time.IntervalTimeStepDescriptor;
 import gov.usgs.cida.derivative.time.NetCDFDateUtil;
@@ -33,16 +34,13 @@ public class TimeStepAveragingVisitor extends DerivativeVisitor {
     private DerivativeValueDescriptor valueDescriptor;
     private TimeStepDescriptor timeStepDescriptor;
     
+    private String outputFileBaseName;
     
     private CoordinateAxis1DTime timeAxis;
     
     private int thresholdIndex = 0;
     
     private double outputTimeStepLengthYears;
-    
-    public TimeStepAveragingVisitor() {
-        
-    }
     
     
     @Override
@@ -81,6 +79,10 @@ public class TimeStepAveragingVisitor extends DerivativeVisitor {
         yCount = GridUtility.getYAxisLength(gridCoordSystem);
         yxCount = yCount * xCount;
         
+        outputFileBaseName = Joiner.on(".").join(
+                    "derivative",
+                    gridDatatype.getVariable().getName());
+        
         super.traverseStart(gridDatatype);
     }
 
@@ -89,17 +91,6 @@ public class TimeStepAveragingVisitor extends DerivativeVisitor {
         LOGGER.debug("Starting z index of {}", zIndex);
         thresholdIndex = zIndex;
         return super.zStart(zIndex);
-    }
-    
-    @Override
-    public boolean tStart(int tIndex) {
-        if (super.tStart(tIndex)) {
-            LOGGER.debug("Starting t index of {}, {}", tIndex, timeAxis.getTimeDate(tIndex).toGMTString());
-            outputTimeStepLengthYears = timeStepDescriptor.getOutputTimeStepInterval(getOutputCurrentTimeStep()).toPeriod().getYears();
-            return true;
-        } else {
-            return false;
-        }
     }
     
     @Override
@@ -122,4 +113,16 @@ public class TimeStepAveragingVisitor extends DerivativeVisitor {
     public TimeStepDescriptor getTimeStepDescriptor() {
         return timeStepDescriptor;
     }
+    
+    @Override
+    protected void outputTimeStepStart(int outputTimeStepIndex) {
+        outputTimeStepLengthYears = timeStepDescriptor.getOutputTimeStepInterval(getOutputCurrentTimeStep()).toPeriod().getYears();
+    }
+
+    @Override
+    public String getOutputFileBaseName() {
+        return outputFileBaseName;
+    }
+    
+    
 }
