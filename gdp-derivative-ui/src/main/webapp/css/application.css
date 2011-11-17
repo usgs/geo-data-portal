@@ -52,8 +52,8 @@
     background-image: url("../js/openlayers/theme/default/img/pan_off.png");
 }
 .olControlPanel .olControlZoomBoxItemInactive { 
-/*    width:  22px;  
-    height: 22px;*/
+    width:  22px;  
+    height: 22px;
     background-color: orange;
     background-image: url("../images/draw_rect_off.gif");
 }

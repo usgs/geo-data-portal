@@ -97,8 +97,8 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             tbar : new Ext.Toolbar({
                 items : [
                 '->',
-                'Base Layer: ',
-                this.baseLayerCombo,
+                'Opacity: ',
+                this.layerOpacitySlider,
                 ' ',
                 '-',
                 ' ',
@@ -107,9 +107,9 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                 ' ',
                 '-',
                 ' ',
-                'Opacity: ',
-                this.layerOpacitySlider,
-                ' ',' ',' ',' ',' ',' '
+                'Base Layer: ',
+                this.baseLayerCombo,
+                ' '
                 ]
             })
         }, config);
