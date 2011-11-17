@@ -5,6 +5,26 @@
     Description:
         IDs and Classes specific to this application
 */
+.dygraph-ylabel {
+    color: #15428B; 
+    font-family: tahoma,arial,verdana,sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.dygraph-axis-label-x {
+    color: #15428B; 
+    font-family: tahoma,arial,verdana,sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.dygraph-axis-label-y {
+    color: #15428B; 
+    font-family: tahoma,arial,verdana,sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+}
 
 .xtb-text { 
     /* Overrides toolbar text styling in extjs (plain, black)
