@@ -109,25 +109,26 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                     this.topToolbar.doLayout();
                     
                     var values = function(values) {
-                            Ext.each(values, function(item, index, allItems) {
-                                for(var i=0; i<item.length; i++) {
-                                    var value;
-                                    if (i==0) {
-                                        value = new Date(item[i])
-                                    }
-                                    else {
-                                        value = parseFloat(item[i])
-                                    }
-                                    allItems[index][i] = value;
+                        Ext.each(values, function(item, index, allItems) {
+                            for(var i=0; i<item.length; i++) {
+                                var value;
+                                if (i==0) {
+                                    value = new Date(item[i])
                                 }
-                            });
-                            return values;
-                        }(record.get('values'))
+                                else {
+                                    value = parseFloat(item[i])
+                                }
+                                allItems[index][i] = value;
+                            }
+                        });
+                        return values;
+                    }(record.get('values'))
                         
                     this.graph = new Dygraph(
                         Ext.get(this.plotterDiv).dom,
                         values,
-                        {
+                        { // http://dygraphs.com/options.html
+                            hideOverlayOnMouseOut : false,
                             legend: 'always',
                             labels: function(recordArray) {
                                 var columnNames = [];
@@ -143,6 +144,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                             labelsDivStyles: {
                                 'textAlign': 'right'
                             },
+                            showRangeSelector: true,
                             ylabel: record.data.dataRecord[1].name,                            
                             yAxisLabelWidth: 75,
                             valueRange: function(values){
@@ -170,8 +172,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                                         return y + " " + yaxisUnits;
                                     }
                                 }
-                            },
-                            showRangeSelector: true
+                            }
                         }
                         );
                 }
