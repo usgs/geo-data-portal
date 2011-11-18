@@ -144,6 +144,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                             labelsDivStyles: {
                                 'textAlign': 'right'
                             },
+                            rightGap : 5,
                             showRangeSelector: true,
                             ylabel: record.data.dataRecord[1].name,                            
                             yAxisLabelWidth: 75,
@@ -169,7 +170,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                                 },
                                 y: {
                                     valueFormatter: function(y) {
-                                        return y + " " + yaxisUnits;
+                                        return "<br />" + y + " " + yaxisUnits + " <br /><br />";
                                     }
                                 }
                             }
