@@ -35,7 +35,7 @@ public class EmailHandlerTest {
     /**
      * Test of sendMessage method, of class EmailHandler.
      */
-    @Test
+//    @Test
     public void testSendMessageWithBcc() throws Exception {
         List<String> bcc = new ArrayList<String>();
         bcc.add("test@test.ing.gov");
@@ -54,7 +54,7 @@ public class EmailHandlerTest {
     /**
      * Test of sendMessage method, of class EmailHandler.
      */
-    @Test
+//    @Test
     public void testSendMessageWithCc() throws Exception {
         List<String> bcc = new ArrayList<String>();
         bcc.add("test@test.ing.gov");
@@ -73,7 +73,7 @@ public class EmailHandlerTest {
 	  /**
      * Test of sendMessage method, of class EmailHandler.
      */
-    @Test
+//    @Test
     public void testSendMessageNoCcBcc() throws Exception {
         List<String> bcc = new LinkedList<String>();
         EmailMessage message = new EmailMessage("test@test.doesnt.exist.gov", "test@testing.purposes.on.ly.gov", null, "Test", "Test");
