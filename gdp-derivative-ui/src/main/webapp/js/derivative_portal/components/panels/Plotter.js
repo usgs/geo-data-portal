@@ -152,7 +152,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                                 }, intArray)
                                 var min = Array.min(intArray);
                                 var max = Array.max(intArray);
-                                return [min, max];
+                                return [min - 10 , max + 10];
                             }(values),
                             axes: {
                                 x: {
