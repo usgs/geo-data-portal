@@ -11,11 +11,14 @@
             <param-value>/proxy/*</param-value>
         </init-param>
     </servlet>
+    <servlet>
+        <servlet-name>Export</servlet-name>
+        <servlet-class>gov.usgs.cida.communication.Export</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>OWSProxy</servlet-name>
         <url-pattern>/proxy/*</url-pattern>
     </servlet-mapping>
-    
     <servlet>
         <servlet-name>GeonetworkProxy</servlet-name>
         <servlet-class>gov.usgs.cida.geonetwork.GeonetworkProxy</servlet-class>
@@ -23,5 +26,13 @@
     <servlet-mapping>
         <servlet-name>GeonetworkProxy</servlet-name>
         <url-pattern>/geonetwork/csw</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Export</servlet-name>
+        <url-pattern>/export</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Export</servlet-name>
+        <url-pattern>/Export</url-pattern>
     </servlet-mapping>
 </web-app>

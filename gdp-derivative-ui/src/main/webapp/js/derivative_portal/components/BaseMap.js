@@ -52,8 +52,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             new OpenLayers.Control.PanZoomBar({
                 panIcons : false,
                 position : new OpenLayers.Pixel(3,30)
-            }),
-            mapControlPanel
+            })
             ]
         });
 

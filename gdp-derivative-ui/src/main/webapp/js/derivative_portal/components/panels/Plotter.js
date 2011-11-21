@@ -12,6 +12,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
     dataArray : [],
     graph : undefined,
     toolbar : undefined,
+    plotterValues : undefined,
     constructor : function(config) {
         config = config || {};
         this.plotterDiv = config.plotterDiv || 'dygraph-content';
@@ -103,12 +104,16 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                             id : 'title',
                             html : this.plotterTitle
                         }),
-                        new Ext.Toolbar.Fill()
-                        // TODO- Add controls here
+                        new Ext.Toolbar.Fill(),
+                        new Ext.Button({
+                            itemId : 'plotter-toolbar-download-button',
+                            text : 'Download',
+                            ref : 'plotter-toolbar-download-button'
+                        })
                         );
                     this.topToolbar.doLayout();
                     
-                    var values = function(values) {
+                    this.plotterValues = function(values) {
                         Ext.each(values, function(item, index, allItems) {
                             for(var i=0; i<item.length; i++) {
                                 var value;
@@ -123,10 +128,10 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                         });
                         return values;
                     }(record.get('values'))
-                        
+                    
                     this.graph = new Dygraph(
                         Ext.get(this.plotterDiv).dom,
-                        values,
+                        this.plotterValues,
                         { // http://dygraphs.com/options.html
                             hideOverlayOnMouseOut : false,
                             legend: 'always',
@@ -156,7 +161,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                                 var min = Array.min(intArray);
                                 var max = Array.max(intArray);
                                 return [min - 10 , max + 10];
-                            }(values),
+                            }(this.plotterValues),
                             axes: {
                                 x: {
                                     valueFormatter: function(ms) {
@@ -183,6 +188,63 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
             
         });
         this.resizePlotter();
+        
+        this.topToolbar["plotter-toolbar-download-button"].on('click', function(){
+            var id = Ext.id();
+            var frame = document.createElement('iframe');
+            frame.id = id;
+            frame.name = id;
+            frame.className = 'x-hidden';
+            if (Ext.isIE) {
+                frame.src = Ext.SSL_SECURE_URL;
+            }
+            document.body.appendChild(frame);
+                        
+            if (Ext.isIE) {
+                document.frames[id].name = id;
+            }
+                        
+            var form = Ext.DomHelper.append(document.body, {
+                tag:'form',
+                method:'post',
+                action: 'export?filename=export.csv',
+                target:id
+            });
+            Ext.DomHelper.append(form, {
+                tag:'input',
+                name : 'data',
+                value: function(arr) {
+                    var csv = '';
+                    Ext.each(arr, function(item) {
+                        csv += item[0] + ',' + item[1] + '&crlf;'; // Posting this strips "\n"- We do replacement on the server end
+                    });
+                    return csv;
+                }(this.plotterValues)
+            }); 
+                        
+            document.body.appendChild(form);
+            var callback = function(e) {
+                var rstatus = (e && typeof e.type !== 'undefined'?e.type:this.dom.readyState );
+        
+                switch(rstatus){
+                    case 'loading':  //IE  has several readystate transitions
+                    case 'interactive': //IE
+
+                        break;
+           
+                    case 'load': //Gecko, Opera
+                    case 'complete': //IE
+                        if(Ext.isIE){
+                            this.dom.src = "javascript:false"; //cleanup
+                        }
+                        break;
+                    default:
+                }
+            };
+                
+            Ext.EventManager.on(frame, Ext.isIE?'readystatechange':'load', callback);
+            form.submit();
+        }, this)
     }
 });
 
