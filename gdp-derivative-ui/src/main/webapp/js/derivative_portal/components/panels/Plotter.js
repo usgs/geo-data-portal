@@ -129,6 +129,63 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                         return values;
                     }(record.get('values'))
                     
+                    this.topToolbar["plotter-toolbar-download-button"].on('click', function(){
+                        var id = Ext.id();
+                        var frame = document.createElement('iframe');
+                        frame.id = id;
+                        frame.name = id;
+                        frame.className = 'x-hidden';
+                        if (Ext.isIE) {
+                            frame.src = Ext.SSL_SECURE_URL;
+                        }
+                        document.body.appendChild(frame);
+                        
+                        if (Ext.isIE) {
+                            document.frames[id].name = id;
+                        }
+                        
+                        var form = Ext.DomHelper.append(document.body, {
+                            tag:'form',
+                            method:'post',
+                            action: 'export?filename=export.csv',
+                            target:id
+                        });
+                        Ext.DomHelper.append(form, {
+                            tag:'input',
+                            name : 'data',
+                            value: function(arr) {
+                                var csv = '';
+                                Ext.each(arr, function(item) {
+                                    csv += item[0] + ',' + item[1] + '&crlf;';
+                                });
+                                return csv;
+                            }(this.plotterValues)
+                        }); 
+                        
+                        document.body.appendChild(form);
+                        var callback = function(e) {
+                            var rstatus = (e && typeof e.type !== 'undefined'?e.type:this.dom.readyState );
+        
+                            switch(rstatus){
+                                case 'loading':  //IE  has several readystate transitions
+                                case 'interactive': //IE
+
+                                    break;
+           
+                                case 'load': //Gecko, Opera
+                                case 'complete': //IE
+                                    if(Ext.isIE){
+                                        this.dom.src = "javascript:false"; //cleanup
+                                    }
+                                    break;
+                                default:
+                            }
+                        };
+                
+                        Ext.EventManager.on(frame, Ext.isIE?'readystatechange':'load', callback);
+                        form.submit();
+                    }, this)
+                    
                     this.graph = new Dygraph(
                         Ext.get(this.plotterDiv).dom,
                         this.plotterValues,
@@ -188,63 +245,6 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
             
         });
         this.resizePlotter();
-        
-        this.topToolbar["plotter-toolbar-download-button"].on('click', function(){
-            var id = Ext.id();
-            var frame = document.createElement('iframe');
-            frame.id = id;
-            frame.name = id;
-            frame.className = 'x-hidden';
-            if (Ext.isIE) {
-                frame.src = Ext.SSL_SECURE_URL;
-            }
-            document.body.appendChild(frame);
-                        
-            if (Ext.isIE) {
-                document.frames[id].name = id;
-            }
-                        
-            var form = Ext.DomHelper.append(document.body, {
-                tag:'form',
-                method:'post',
-                action: 'export?filename=export.csv',
-                target:id
-            });
-            Ext.DomHelper.append(form, {
-                tag:'input',
-                name : 'data',
-                value: function(arr) {
-                    var csv = '';
-                    Ext.each(arr, function(item) {
-                        csv += item[0] + ',' + item[1] + '&crlf;'; // Posting this strips "\n"- We do replacement on the server end
-                    });
-                    return csv;
-                }(this.plotterValues)
-            }); 
-                        
-            document.body.appendChild(form);
-            var callback = function(e) {
-                var rstatus = (e && typeof e.type !== 'undefined'?e.type:this.dom.readyState );
-        
-                switch(rstatus){
-                    case 'loading':  //IE  has several readystate transitions
-                    case 'interactive': //IE
-
-                        break;
-           
-                    case 'load': //Gecko, Opera
-                    case 'complete': //IE
-                        if(Ext.isIE){
-                            this.dom.src = "javascript:false"; //cleanup
-                        }
-                        break;
-                    default:
-                }
-            };
-                
-            Ext.EventManager.on(frame, Ext.isIE?'readystatechange':'load', callback);
-            form.submit();
-        }, this)
     }
 });
 
