@@ -3,11 +3,15 @@ package gov.usgs.cida.communication;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URLDecoder;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -20,7 +24,7 @@ public class Export extends HttpServlet {
             throws ServletException, IOException {
 
         String filename = request.getParameter("filename");
-        String data = request.getParameter("data");
+        String data =  URLDecoder.decode(request.getParameter("data"), "UTF-8");
 
         if (StringUtils.isBlank(filename) || StringUtils.isBlank(data)) {
             response.sendError(500, "Either 'filename' or 'data' elements were empty.");
@@ -37,7 +41,7 @@ public class Export extends HttpServlet {
             response.setHeader("Expires", "0");
 
 
-            StringBuilder sb = new StringBuilder(data.replace("&crlf;", "\n"));
+            StringBuilder sb = new StringBuilder(data);
             in = new ByteArrayInputStream(sb.toString().getBytes("UTF-8"));
 
             byte[] outputByte = new byte[4096];
