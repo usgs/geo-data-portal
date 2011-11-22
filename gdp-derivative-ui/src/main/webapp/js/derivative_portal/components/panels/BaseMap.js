@@ -12,6 +12,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
     legendWindow : undefined,
     legendImage : undefined, 
     legendCombo : undefined,
+    legendSwitch : undefined,
     notificationWindow : undefined,
     layerOpacitySlider : undefined,
     DEFAULT_LEGEND_X : 110,
@@ -89,6 +90,18 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                 template: '<div>Opacity: {opacity}%</div>'
             })
         });
+        this.legendSwitch = new Ext.Button({
+            text : 'Off'
+        })
+        this.legendSwitch.on('click', function(){
+            if (this.legendWindow.hidden) {
+                this.legendWindow.show();
+                this.legendSwitch.setText('Off');
+            } else {
+                this.legendWindow.hide();
+                this.legendSwitch.setText('On');
+            }
+        }, this)
         config = Ext.apply({
             map : map,
             center : new OpenLayers.LonLat(-96, 38),
@@ -101,13 +114,14 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                 ' ',
                 '-',
                 ' ',
-                'Legend: ',
-                this.legendCombo,
+                'Base Layer: ',
+                this.baseLayerCombo,
                 ' ',
                 '-',
                 ' ',
-                'Base Layer: ',
-                this.baseLayerCombo,
+                'Legend: ',
+                this.legendSwitch,
+                this.legendCombo,
                 ' '
                 ]
             })
@@ -145,13 +159,9 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             height: this.DEFAULT_LEGEND_Y,
             width: this.DEFAULT_LEGEND_X,
             closable : false,
-            collapsible : true,
+            collapsible : false,
             collapsed : true,
-            expandOnShow : false,
-            headerCfg : {
-                html : 'Legend',
-                cls : 'x-panel-header'
-            }
+            expandOnShow : false
         });
         this.legendWindow.show();
                 
