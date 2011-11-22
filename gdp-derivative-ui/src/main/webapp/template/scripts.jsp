@@ -1,49 +1,30 @@
 <%-- Base EXT modules & Extensions --%>
 <script type="text/javascript" src="js/ext/adapter/ext/ext-base.js"></script>
-<script type="text/javascript" src="js/ext/ext-all-debug.js"></script>
+<script type="text/javascript" src="js/ext/ext-all.js"></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/extension/notify.js'></script>
 
 <%-- Other JavaScript modules (Mapping, logging, etc) --%>
-<script src="js/log4javascript/log4javascript.js" type="text/javascript"></script>
-<%--script src="js/openlayers/OpenLayers.js" type="text/javascript"></script--%>
-<script src="js/openlayers/lib/OpenLayers.js" type="text/javascript"></script>
-<script src="js/geoext/GeoExt.js" type="text/javascript"></script>
-<script src="js/dygraph/dygraph-combined.js" type="text/javascript"></script>
+<script type="text/javascript" src="js/log4javascript/log4javascript.js" ></script>
+<script type="text/javascript" src="js/openlayers/OpenLayers.js"></script>
+<script type="text/javascript" src="js/geoext/GeoExt.js"></script>
+<script type="text/javascript" src="js/dygraph/dygraph-combined.js"></script>
 
-<%-- Modified library js modules??? --%>
-<script src='${param["ComponentDir"]}/CSW/Format/v2_0_2.js'></script>
-<script src='${param["ComponentDir"]}/SOS/Format/SOSGetObservation.js'></script>
-
-<%-- Custom Application Modules Here --%>
-<script type="text/javascript" src='${param["ComponentDir"]}/LayerController.js'></script>
-<script type="text/javascript" src='${param["ComponentDir"]}/BoundsPanelSubmitButton.js'></script>
-
-<script type="text/javascript" src='${param["ComponentDir"]}/MapActivityBar.js'></script>
-<script type="text/javascript" src='${param["ComponentDir"]}/WPS/processes/FeatureCoverageOPeNDAPIntersection.js'></script>
-<script type="text/javascript" src='${param["ComponentDir"]}/WPS/WPSCapabilitiesStore.js'></script>
-<script type="text/javascript" src='${param["ComponentDir"]}/WPS/WPSExecuteResponseStore.js'></script>
-<script type="text/javascript" src='${param["ComponentDir"]}/WPS/WPSCapabilitiesReader.js'></script>
-<script type="text/javascript" src='${param["ComponentDir"]}/WPS/WPSExecuteResponseReader.js'></script>
-<script type="text/javascript" src='${param["ComponentDir"]}/WPS/WPSDescribeProcessStore.js'></script>
-<script type="text/javascript" src='${param["ComponentDir"]}/WPS/WPSDescribeProcessReader.js'></script>
+<%-- Extended Openlayers/GeoExt readers/writers --%>
+<script type="text/javascript" src='${param["ComponentDir"]}/CSW/Format/v2_0_2.js'></script>
+<script type="text/javascript" src='${param["ComponentDir"]}/SOS/Format/SOSGetObservation.js'></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/CSW/CSWGetRecordsStore.js'></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/CSW/CSWGetRecordsReader.js'></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/SOS/SOSGetObservationStore.js'></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/SOS/SOSGetObservationReader.js'></script>
-<script type="text/javascript" src='${param["ComponentDir"]}/panels/WPSPanel.js'></script>
-<script type="text/javascript" src='${param["ComponentDir"]}/panels/WPSProcessPanel.js'></script>
-<script type="text/javascript" src='${param["ComponentDir"]}/panels/EndpointPanel.js'></script>
+
+<%-- Custom Application Modules Here --%>
+<script type="text/javascript" src='${param["ComponentDir"]}/LayerController.js'></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/panels/DatasetConfigPanel.js'></script>
-<script type="text/javascript" src='${param["ComponentDir"]}/panels/ConfigurationPanel.js'></script>
-<script type="text/javascript" src='${param["ComponentDir"]}/panels/MapConfigPanel.js'></script>
-<script type="text/javascript" src='${param["ComponentDir"]}/panels/ProcessingPanel.js'></script>
-<script type="text/javascript" src='${param["ComponentDir"]}/panels/PolygonPOIPanel.js'></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/panels/Plotter.js'></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/panels/BaseMap.js'></script>
 
-
 <%-- Root Module --%>
-<script src='${param["UIScriptFile"]}' type="text/javascript"></script>
+<script type="text/javascript" src='${param["UIScriptFile"]}'></script>
 
 
 <script type="text/javascript">
