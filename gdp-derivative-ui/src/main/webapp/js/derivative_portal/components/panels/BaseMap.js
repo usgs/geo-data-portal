@@ -90,9 +90,10 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                 template: '<div>Opacity: {opacity}%</div>'
             })
         });
+        
         this.legendSwitch = new Ext.Button({
             text : 'Off'
-        })
+        });
         this.legendSwitch.on('click', function(){
             if (this.legendWindow.hidden) {
                 this.legendWindow.show();
@@ -101,7 +102,8 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                 this.legendWindow.hide();
                 this.legendSwitch.setText('On');
             }
-        }, this)
+        }, this);
+        
         config = Ext.apply({
             map : map,
             center : new OpenLayers.LonLat(-96, 38),
@@ -121,8 +123,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                 ' ',
                 'Legend: ',
                 this.legendSwitch,
-                this.legendCombo,
-                ' '
+                this.legendCombo
                 ]
             })
         }, config);
