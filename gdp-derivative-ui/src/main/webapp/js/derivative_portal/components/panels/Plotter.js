@@ -129,6 +129,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                         return values;
                     }(record.get('values'))
                     
+                    // Set up the download CSV button
                     this.topToolbar["plotter-toolbar-download-button"].on('click', function(){
                         var id = Ext.id();
                         var frame = document.createElement('iframe');

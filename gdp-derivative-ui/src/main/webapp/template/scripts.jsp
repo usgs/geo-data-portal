@@ -17,7 +17,7 @@
 <%-- Custom Application Modules Here --%>
 <script type="text/javascript" src='${param["ComponentDir"]}/LayerController.js'></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/BoundsPanelSubmitButton.js'></script>
-<script type="text/javascript" src='${param["ComponentDir"]}/BaseMap.js'></script>
+
 <script type="text/javascript" src='${param["ComponentDir"]}/MapActivityBar.js'></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/WPS/processes/FeatureCoverageOPeNDAPIntersection.js'></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/WPS/WPSCapabilitiesStore.js'></script>
@@ -39,6 +39,7 @@
 <script type="text/javascript" src='${param["ComponentDir"]}/panels/ProcessingPanel.js'></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/panels/PolygonPOIPanel.js'></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/panels/Plotter.js'></script>
+<script type="text/javascript" src='${param["ComponentDir"]}/panels/BaseMap.js'></script>
 
 
 <%-- Root Module --%>
