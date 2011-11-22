@@ -1,5 +1,5 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>USGS Derived Downscaled Climate Portal</title>
+<title>USGS Derived Downscaled Climate Projection Portal</title>
 <meta name="title" content="GDP Derivative UI">
 <meta name="description" content="GDP Derivative UI">
 <meta name="author" content="Ivan Suftin, David Sibley, Jordan Walker">

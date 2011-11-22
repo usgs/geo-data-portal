@@ -20,7 +20,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         this.legendWidth = config.legendWidth || 250;
         this.height = config.height || 200;
         this.gmlid = config.gmlid;
-        this.plotterTitle = config.title;
+        this.plotterTitle = config.title || '';
             
         this.controller = config.controller;
         this.toolbar = new Ext.Toolbar({

@@ -299,13 +299,11 @@ function initializeMapping() {
 
     var plotterPanel = new GDP.Plotter({
         id : 'plotterPanel',
-        //contentEl : 'dygraph-area',
         plotterDiv : 'dygraph-content',
         legendDiv : 'dygraph-legend',
         region : 'south',
         border : true,
         height : 200,
-        //csv : 'resources/a1b-a2.csv',
         gmlid : 'resources/a1b-a2.xml',
         controller : layerController
     });

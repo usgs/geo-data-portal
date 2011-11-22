@@ -82,8 +82,6 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             lazyInit : false,
             valueField : this.timestepName,
             displayField : 'timestepDisplayName',
-            //tpl : '<tpl for=".">{timestepDisplayName}</tpl>',
-            //valueField : this.timestepName,
             editable : false,
             autoWidth : true
         }
@@ -127,14 +125,12 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         };
         
         this.zlayerCombo = new Ext.form.ComboBox(Ext.apply({
-            //fieldLabel : '<tpl for="."><span ext:qtip="Which threshold to display the derivative data for" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> ' + this.controller.getZAxisName(),
             editable : false,
             hidden : true
         }, this.zlayerComboConfig));
         
         var foiGetCapsStore = new GeoExt.data.WMSCapabilitiesStore({
-            //TODO - Bring this out
-            url: config.foiGetCapsURL,//GDP.PROXY_PREFIX + "http://igsarm-cida-javadev1.er.usgs.gov:8081/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities",
+            url: config.foiGetCapsURL,
             autoLoad: true,
             listeners: {
                 load: function(data) {
@@ -356,8 +352,6 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         this.controller.fireEvent('selected-dataset', {
             url : GDP.PROXY_PREFIX + args.record.get("wms")
         });
-    // this might be where I gray out some of the options
-    // also probably call WMS GetCaps
     },
     onChangeLayer : function() {
         LOG.debug("DatasetConfigPanel: onChangeLayer()");
@@ -386,7 +380,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             if (time) {
                 LOG.debug('DatasetConfigPanel: Time found for layer. Re-adding time step combobox.');
                 this.timestepCombo = new Ext.form.ComboBox(Ext.apply({
-                    fieldLabel : '<tpl for="."><span ext:qtip="Some information about time period" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Time Period',
+                    fieldLabel : '<tpl for="."><span ext:qtip="Some information about time period" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Time Period For Map',
                     listWidth : this.width
                 }, this.timestepComboConfig));
                 this.timestepCombo.on('added', function(me, parent){
