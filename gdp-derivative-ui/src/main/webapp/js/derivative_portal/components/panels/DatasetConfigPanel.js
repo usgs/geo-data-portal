@@ -195,6 +195,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             },
             {
                 xtype: 'fieldset',
+                id : 'plotFieldSet',
                 labelAlign : 'top',
                 ref : 'plotFieldSet',
                 title: 'Plot',
@@ -202,7 +203,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
                 defaultType: 'combo',
                 layout : 'form',
                 items : [
-                this.featureOfInterestCombo
+                    this.featureOfInterestCombo
                 ]
             }
             ]

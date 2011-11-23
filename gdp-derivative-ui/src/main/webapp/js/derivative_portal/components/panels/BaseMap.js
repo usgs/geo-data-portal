@@ -135,7 +135,8 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                 
         GDP.BaseMap.superclass.constructor.call(this, config);
         LOG.debug('BaseMap:constructor: Construction complete.');
-        
+        LOG.debug('BaseMap: Setting up legend window.');
+        // Set up the legend 
         var legendImage = Ext.extend(GeoExt.LegendImage, {
             setUrl: function(url) {
                 this.url = url;
@@ -153,7 +154,6 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             }
         });
         this.legendImage = new legendImage();
-                
         this.legendWindow = new Ext.Window({
             resizable: false,
             draggable: false,
@@ -180,10 +180,6 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             LOG.debug('BaseMap: Observed "changebaselayer".');
             this.baseLayerCombo.setValue(this.layerController.getBaseLayer().data.title);
         }, this);
-        this.legendCombo.on('select', function(obj, rec, ind) {
-            LOG.debug('BaseMap: A new legend style chosen: ' + rec.id + ' (' + rec.data.abstrakt + ')');
-            this.layerController.requestLegendRecord(rec);
-        },this);
         this.legendCombo.store.on('load', function(store) {
             LOG.debug('BaseMap: Legend Combobox store Loaded.');
             //  http://internal.cida.usgs.gov/jira/browse/GDP-372
@@ -191,6 +187,10 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             recordIndex = (recordIndex < 0) ? 0 : recordIndex;
             this.legendCombo.setValue(store.getAt(recordIndex).get('name'));
         }, this);
+        this.legendCombo.on('select', function(obj, rec) {
+            LOG.debug('BaseMap: A new legend style chosen: ' + rec.id + ' (' + rec.data.abstrakt + ')');
+            this.layerController.requestLegendRecord(rec);
+        },this);
         this.layerOpacitySlider.on('change', function() {
             LOG.debug('BaseMap:layerOpacitySlider: Observed \'change\'.');
             this.layerController.requestOpacity(this.layerOpacitySlider.getValue() / 100);
@@ -251,9 +251,13 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                 'added' : function(features) {
                     // Pull defaults for Ext.ux.NotifyMgr settings to be reset later
                     var alignment = Ext.ux.NotifyMgr.alignment;
+                    var offsets = Ext.ux.NotifyMgr.offsets;
                     
                     // Set up the notification
-                    Ext.ux.NotifyMgr.alignment = 'top-center';
+                    // http://internal.cida.usgs.gov/jira/browse/GDP-425
+                    Ext.ux.NotifyMgr.alignment = 'top-left';
+                    var tooltipTopPosition = Ext.ComponentMgr.get('plotFieldSet').getPosition()[1] + Ext.ComponentMgr.get('plotFieldSet').getHeight() + 5;
+                    Ext.ux.NotifyMgr.offsets = [tooltipTopPosition,10];
                     
                     // TODO - There should be a better way of getting at this. 
                     // Look into OpenLayers scoping for layer.on events
@@ -269,6 +273,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 
                     // Reset back to default settings
                     Ext.ux.NotifyMgr.alignment = alignment;
+                    Ext.ux.NotifyMgr.offsets = offsets;
                     features.object.map.zoomToExtent(features.layer.getExtent());
                 }
             })
