@@ -217,14 +217,6 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             LOG.debug('BaseMap: Observed "changelegend".');
             this.onChangeLegend();
         }, this);
-        this.layerController.on('submit-bounds', function(args) {
-            LOG.debug('BaseMap: Observed "submit-bounds".');
-            this.createGeomOverlay(args);
-        }, this);
-        this.layerController.on('creategeomoverlay', function(args) {
-            LOG.debug('BaseMap: Observed "creategeomoverlay".');
-            this.createGeomOverlay(args);
-        }, this);
         this.layerController.on('requestfoi', function(args){
             LOG.debug('BaseMap: Observed "requestfoi".');
             
@@ -244,6 +236,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             
             var foiLayer = args.clone().getLayer();
             
+            foiLayer.setZIndex(this.getHighestZIndex() + 1);
             foiLayer.displayInLayerSwitcher = false;
             foiLayer.setVisibility(true);
             foiLayer.name = "foilayer";
@@ -280,7 +273,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             
             var selectorControl = new OpenLayers.Control.WMSGetFeatureInfo({
                 id : 'clickcontrol',
-                maxFeatures : 50,
+                maxFeatures : 1,
                 output : 'features',
                 infoFormat : 'application/vnd.ogc.gml',
                 clickCallback : 'click',
@@ -346,6 +339,13 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         this.on('resize', function() {
             this.realignLegend();
         }, this);
+    },
+    getHighestZIndex : function() {
+        var highestZIndex = 0;
+        Ext.each(this.map.layers, function(item) {
+            if (highestZIndex < item.getZIndex()) highestZIndex = item.getZIndex();
+        }, highestZIndex)
+        return highestZIndex;
     },
     realignLegend : function() {
         if (this.legendWindow) {
@@ -515,6 +515,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                 transparent : true,
                 styles : (params.styles) ? params.styles : this.layerController.getLegendRecord().id
             }, params);
+            
 
             copy.get('layer').displayInLayerSwitcher = false;
             copy.get('layer').mergeNewParams(params);
@@ -524,6 +525,11 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                 if (LOADMASK) LOADMASK.hide();
             });
             this.layers.add(copy);
+            
+            var foilayer = this.map.getLayersByName('foilayer');
+            if (foilayer.length) {
+                foilayer[0].setZIndex(this.getHighestZIndex() + 1);
+            }
         }
         
     },
