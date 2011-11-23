@@ -21,8 +21,8 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         this.height = config.height || 200;
         this.gmlid = config.gmlid;
         this.plotterTitle = config.title || '';
-            
         this.controller = config.controller;
+        
         this.toolbar = new Ext.Toolbar({
             itemId : 'plotterToolbar',
             ref : '../plotterToolbar',
@@ -52,8 +52,6 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         }, config);
         
         GDP.Plotter.superclass.constructor.call(this, config);
-        
-        //this.loadSOSStore();
         
         this.on("afterrender", function () {
             this.resizePlotter();

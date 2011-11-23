@@ -17,21 +17,32 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
     layerOpacitySlider : undefined,
     DEFAULT_LEGEND_X : 110,
     DEFAULT_LEGEND_Y : 293,
+    // From GDP (with Zoerb's comments):
+    // Got this number from Hollister, and he's not sure where it came from.
+    // Without this line, the esri road and relief layers will not display
+    // outside of the upper western hemisphere.
+    MAX_RESOLUTION : 1.40625/2,
     constructor : function(config) {
         LOG.debug('BaseMap:constructor: Constructing self.');
-        // From GDP (with Zoerb's comments)
-        // Got this number from Hollister, and he's not sure where it came from.
-        // Without this line, the esri road and relief layers will not display
-        // outside of the upper western hemisphere.
-        var MAX_RESOLUTION = 1.40625/2;
         
         this.layerController = config.layerController;
         
         if (!config) config = {};
 
-        var zoomBox = new OpenLayers.Control.ZoomBox({
-            title:"Zoom box: Selecting it you can zoom on an area by clicking and dragging."
+        // Set up the map and controls on the map
+        var map = new OpenLayers.Map({
+            maxResolution: this.MAX_RESOLUTION,
+            maxExtent: new OpenLayers.Bounds(-180, -90, 180, 90),
+            controls: [
+                new OpenLayers.Control.MousePosition(),
+                new OpenLayers.Control.ScaleLine(),
+                new OpenLayers.Control.PanZoomBar({
+                    panIcons : false,
+                    position : new OpenLayers.Pixel(3,30)
+                })
+            ]
         });
+
         var navigationCtrl = new OpenLayers.Control.Navigation({
             title:'You can use the default mouse configuration',
             autoActivate : true
@@ -41,23 +52,13 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         });
         mapControlPanel.addControls([
             navigationCtrl, 
-            zoomBox
-            ]);                
-
-        var map = new OpenLayers.Map({
-            maxResolution: MAX_RESOLUTION,
-            maxExtent: new OpenLayers.Bounds(-180, -90, 180, 90),
-            controls: [
-            new OpenLayers.Control.MousePosition(),
-            new OpenLayers.Control.ScaleLine(),
-            new OpenLayers.Control.PanZoomBar({
-                panIcons : false,
-                position : new OpenLayers.Pixel(3,30)
+            new OpenLayers.Control.ZoomBox({
+                title:"Zoom box: Selecting it you can zoom on an area by clicking and dragging."
             })
-            ]
-        });
-
+        ]);                
         map.addControl(mapControlPanel);
+        
+        // Set up the toolbar above the map
         this.baseLayerCombo = new Ext.form.ComboBox({
             id : 'baseLayerCombo',
             xtype : 'combo',
@@ -72,6 +73,23 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             autoSelect : false, // Value is programatically selected on store load
             store : config.baseLayerStore
         });
+        this.legendSwitch = new Ext.Button({
+            text : 'Off',
+            pressed: true,
+            enableToggle: true
+        });
+        this.legendSwitch.on('click', function(){
+            if (this.legendWindow.hidden) {
+                this.legendWindow.show();
+                this.legendWindow.show();
+                this.legendSwitch.setText('Off');
+                this.legendSwitch.pressed = true;
+            } else {
+                this.legendWindow.hide();
+                this.legendSwitch.setText('On');
+                this.legendSwitch.pressed = false;
+            }
+        }, this);
         this.legendCombo = new Ext.form.ComboBox({
             xtype : 'combo',
             mode : 'local',
@@ -90,19 +108,6 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                 template: '<div>Opacity: {opacity}%</div>'
             })
         });
-        
-        this.legendSwitch = new Ext.Button({
-            text : 'Off'
-        });
-        this.legendSwitch.on('click', function(){
-            if (this.legendWindow.hidden) {
-                this.legendWindow.show();
-                this.legendSwitch.setText('Off');
-            } else {
-                this.legendWindow.hide();
-                this.legendSwitch.setText('On');
-            }
-        }, this);
         
         config = Ext.apply({
             map : map,
