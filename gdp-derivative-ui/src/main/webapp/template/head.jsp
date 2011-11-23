@@ -1,5 +1,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>USGS Derived Downscaled Climate Projection Portal</title>
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9"> 
+<!--[if IE]><script src="js/dygraph/excanvas.js"></script><![endif]-->
 <meta name="title" content="GDP Derivative UI">
 <meta name="description" content="GDP Derivative UI">
 <meta name="author" content="Ivan Suftin, David Sibley, Jordan Walker">

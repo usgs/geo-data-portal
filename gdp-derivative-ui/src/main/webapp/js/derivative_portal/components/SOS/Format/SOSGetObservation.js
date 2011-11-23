@@ -173,7 +173,7 @@ OpenLayers.Format.SOSGetObservation = OpenLayers.Class(OpenLayers.Format.XML, {
                 var result = {};
                 measurement.result = result;
                 var childValue = this.getChildValue(node);
-                if (!childValue || !/^\s*$/.test(childValue)) {
+                if (childValue && !/^\s*$/.test(childValue)) {
                     result.value = this.getChildValue(node);
                     result.uom = node.getAttribute("uom");
                 } else {
@@ -258,9 +258,9 @@ OpenLayers.Format.SOSGetObservation = OpenLayers.Class(OpenLayers.Format.XML, {
                 dataArray.values = values;
                 var encodedValues = this.getChildValue(node);
                 var blocks = encodedValues.split(dataArray.encoding.blockSeparator);
-                blocks.forEach(function(block) {
-                    values.push(block.split(dataArray.encoding.tokenSeparator));
-                });
+                for (var i = 0, len = blocks.length;i < len;i++) {
+                    values.push(blocks[i].split(dataArray.encoding.tokenSeparator));
+                }
             }
         }
     },
