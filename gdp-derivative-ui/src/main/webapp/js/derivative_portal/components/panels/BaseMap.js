@@ -329,7 +329,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                     Ext.ComponentMgr.get('mapPanel').notificationWindow.animHide();
                     Ext.ComponentMgr.get('mapPanel').notificationWindow = undefined;
                 }
-               
+                this.map.getLayersByName('foilayer')[0].setZIndex(this.getHighestZIndex() + 1);
             });
             
             this.map.addLayers([foiLayer]);
