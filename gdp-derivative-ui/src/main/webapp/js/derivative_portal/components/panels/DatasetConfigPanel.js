@@ -345,6 +345,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         this.gcmStore.removeAll();
         this.gcmStore.loadData(args.record.get("gcms"), true);
         
+        this.timestepCombo.label.update('<tpl for="."><span ext:qtip="' + args.record.get("fieldLabels").timeperiod + '" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Time Period For Map');
         this.derivativeCombo.label.update('<tpl for="."><span ext:qtip="' + args.record.get("fieldLabels").derivative + '" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Derivative');
         this.scenarioCombo.label.update('<tpl for="."><span ext:qtip="' + args.record.get("fieldLabels").scenario + '" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Emissions Scenario');
         this.gcmCombo.label.update('<tpl for="."><span ext:qtip="' + args.record.get("fieldLabels").gcm + '" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Climate Model');
@@ -397,7 +398,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             if (time) {
                 LOG.debug('DatasetConfigPanel: Time found for layer. Re-adding time step combobox.');
                 this.timestepCombo = new Ext.form.ComboBox(Ext.apply({
-                    fieldLabel : '<tpl for="."><span ext:qtip="Some information about time period" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Time Period For Map',
+                    fieldLabel : '<tpl for="."><span ext:qtip="' +this.getRecordsStore.data.items[0].data.fieldLabels.timeperiod + '" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span></tpl> Time Period For Map',
                     listWidth : this.width
                 }, this.timestepComboConfig));
                 this.timestepCombo.on('added', function(me, parent){
