@@ -9,6 +9,18 @@
 <script type="text/javascript" src="js/geoext/GeoExt.js"></script>
 <script type="text/javascript" src="js/dygraph/dygraph-combined.js"></script>
 
+<!--To be used if dygraphs is not working and needs to be debugged-->
+<!--<script type="text/javascript" src="js/dygraph-unminified/dygraph-layout.js"></script>
+<script type="text/javascript" src="js/dygraph-unminified/dygraph-canvas.js"></script>
+<script type="text/javascript" src="js/dygraph-unminified/dygraph.js"></script>
+<script type="text/javascript" src="js/dygraph-unminified/dygraph-utils.js"></script>
+<script type="text/javascript" src="js/dygraph-unminified/dygraph-gviz.js"></script>
+<script type="text/javascript" src="js/dygraph-unminified/dygraph-interaction-model.js"></script>
+<script type="text/javascript" src="js/dygraph-unminified/dygraph-range-selector.js"></script>
+<script type="text/javascript" src="js/dygraph-unminified/dygraph-tickers.js"></script>
+<script type="text/javascript" src="js/dygraph-unminified/rgbcolor/rgbcolor.js"></script>
+<script type="text/javascript" src="js/dygraph-unminified/strftime/strftime-min.js"></script>-->
+
 <%-- Extended Openlayers/GeoExt readers/writers --%>
 <script type="text/javascript" src='${param["ComponentDir"]}/CSW/Format/v2_0_2.js'></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/SOS/Format/SOSGetObservation.js'></script>
@@ -35,7 +47,22 @@
     Array.min = function( array ){
         return Math.min.apply( Math, array );
     };
+    
+    // http://jibbering.com/faq/#parseDate
+    Date.parseISO8601 = function(dateStringInRange){
+        var isoExp = /^\s*(\d{4})-(\d\d)-(\d\d)\s*$/,
+        date = new Date(NaN), month,
+        parts = isoExp.exec(dateStringInRange);
 
+        if(parts) {
+            month = +parts[2];
+            date.setFullYear(parts[1], month - 1, parts[3]);
+            if(month != date.getMonth() + 1) {
+                date.setTime(NaN);
+            }
+        }
+        return date;
+    };
 
     
     Ext.BLANK_IMAGE_URL = 'images/s.gif';

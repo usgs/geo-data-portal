@@ -116,7 +116,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                             for(var i=0; i<item.length; i++) {
                                 var value;
                                 if (i==0) {
-                                    value = new Date(item[i])
+                                    value = Date.parseISO8601(item[i].split('T')[0]);
                                 }
                                 else {
                                     value = parseFloat(item[i])
