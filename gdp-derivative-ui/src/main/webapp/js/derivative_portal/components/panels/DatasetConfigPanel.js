@@ -180,16 +180,25 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             items : [{
                 xtype: 'fieldset',
                 labelAlign : 'top',
+                autoHeight : true,
+                ref : 'derivativeFieldSet',
+                defaultType: 'combo',
+                layout : 'form',
+                items : [
+                this.derivativeCombo,
+                this.zlayerCombo
+                ]
+            },{
+                xtype: 'fieldset',
+                labelAlign : 'top',
                 title: 'Map',
                 autoHeight : true,
                 ref : 'mapFieldSet',
                 defaultType: 'combo',
                 layout : 'form',
                 items : [
-                this.derivativeCombo,
                 this.scenarioCombo,
                 this.gcmCombo,
-                this.zlayerCombo,
                 this.timestepCombo
                 ]
             },
@@ -203,7 +212,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
                 defaultType: 'combo',
                 layout : 'form',
                 items : [
-                    this.featureOfInterestCombo
+                this.featureOfInterestCombo
                 ]
             }
             ]
@@ -360,7 +369,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         var layer = this.controller.getLayer();
 
         if (this.zlayerCombo) {
-            this.mapFieldSet.remove(this.zlayerCombo);
+            this.derivativeFieldSet.remove(this.zlayerCombo);
         }
         
         if (this.timestepCombo) {
@@ -408,7 +417,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
                 this.zlayerCombo.on('added', function(me, parent){
                     me.setWidth(parent.ownerCt.width - 15);
                 });
-                this.mapFieldSet.add(this.zlayerCombo);
+                this.derivativeFieldSet.add(this.zlayerCombo);
 
                 LOG.debug('DatasetConfigPanel: Setting z-layer combobox to threshold: ' + threshold);
                 this.zlayerCombo.setValue(threshold);
