@@ -1,5 +1,6 @@
 package gov.usgs.cida.communication;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,28 +29,32 @@ public class Export extends HttpServlet {
             return;
         }
         
-        ServletOutputStream out = response.getOutputStream();
-        InputStream in = null;
+        BufferedOutputStream out = null;
         
+        StringBuilder sb = new StringBuilder(data);
+        byte[] csvData = sb.toString().getBytes("UTF-8");
+        int length = csvData.length;
+        
+        InputStream in = null;
         try {
             response.setContentType("application/octet-stream");
+            response.setContentLength(length);
             response.setHeader("Content-Disposition", "attachment;filename=" + filename);
             response.setHeader("Pragma", "no-cache");
             response.setHeader("Expires", "0");
-
-
-            StringBuilder sb = new StringBuilder(data);
-            in = new ByteArrayInputStream(sb.toString().getBytes("UTF-8"));
-
+            
+            in = new ByteArrayInputStream(csvData);
+            out = new BufferedOutputStream(response.getOutputStream());
+            
             byte[] outputByte = new byte[4096];
-            //copy binary contect to output stream
             while (in.read(outputByte, 0, 4096) != -1) {
                 out.write(outputByte, 0, 4096);
             }
-        } finally {
-            in.close();
             out.flush();
             out.close();
+        } finally {
+            if (out != null) out.close();
+            if (in != null) in.close();
         }
     }
 

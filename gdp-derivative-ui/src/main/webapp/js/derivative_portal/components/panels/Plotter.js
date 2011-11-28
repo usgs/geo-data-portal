@@ -155,6 +155,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                             value: function(arr) {
                                 var csv = '';
                                 Ext.each(arr, function(item) {
+                                    LOG.debug(item[0] + ',' + item[1]);
                                     csv += item[0] + ',' + item[1] + '\n';
                                 });
                                 return encodeURI(csv);
