@@ -52,25 +52,29 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         }, config);
         
         GDP.Plotter.superclass.constructor.call(this, config);
-        
+
         this.on("afterrender", function () {
+            LOG.debug('Plotter:afterrender');
             this.resizePlotter();
         }, this);
         this.controller.on('updateplotter', function(args){
+            LOG.debug('Plotter:updateplotter');
             this.updatePlotter(args);
         }, this),
         this.on('resize', function() {
+            LOG.debug('Plotter:resize');
             this.resizePlotter();
         }, this)
     },
     
     updatePlotter : function(args) {
-        LOG.debug('Plotter:updatePlotter: Observed request to update plotter');
+        LOG.debug('Plotter:updatePlotter()');
         this.gmlid = args.gmlid;
         this.plotterTitle = args.featureTitle;
         this.loadSOSStore();
     },
     resizePlotter : function() {
+        LOG.debug('Plotter:resizePlotter()');
         var divPlotter = Ext.get(this.plotterDiv);
         var divLegend = Ext.get(this.legendDiv);
         divPlotter.setWidth(this.getWidth() - (this.legendWidth + 2));

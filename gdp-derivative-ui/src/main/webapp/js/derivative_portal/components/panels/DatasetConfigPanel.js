@@ -7,7 +7,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
     controller : undefined,
     capabilitiesStore : undefined,
     derivRecordStore : undefined,
-    derivRecordStoreLoaded : false, // TODO find a better way to do this
+    derivRecordStoreLoaded : false, 
     derivativeStore : undefined,
     derivativeCombo : undefined,
     featureOfInterestCombo : undefined,
@@ -218,9 +218,8 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             ]
         }, config);
         GDP.DatasetConfigPanel.superclass.constructor.call(this, config);
-        
-        this.parentRecordStore.load();
         LOG.debug('DatasetConfigPanel:constructor: Construction complete.');
+        this.parentRecordStore.load();        
         
         LOG.debug('DatasetConfigPanel:constructor: Registering listeners.');
         this.capabilitiesStore.on('load', function(capStore) {
@@ -297,6 +296,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         }, this);
     },
     capStoreOnLoad : function(capStore) {
+        LOG.debug("DatasetConfigPanel: capStoreOnLoad()");
         var index = capStore.findBy(this.capsFindBy, this, 0);
         if (index > -1) {
             this.controller.loadedCapabilitiesStore({
@@ -305,18 +305,21 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         }
     },
     catStoreOnLoad : function(catStore) {
+        LOG.debug("DatasetConfigPanel: catStoreOnLoad()");
         this.controller.loadedGetRecordsStore({
             record : catStore.getAt(0)
         });
         if (LOADMASK) LOADMASK.hide();
     },
     derivStoreOnLoad : function(derivStore) {
+        LOG.debug("DatasetConfigPanel: derivStoreOnLoad()");
         this.controller.loadedDerivStore({
             record : derivStore.getAt(0)
         });
         if (LOADMASK) LOADMASK.hide();
     },
     leafStoreOnLoad : function(leafStore) {
+        LOG.debug("DatasetConfigPanel: leafStoreOnLoad()");
         this.controller.loadedLeafStore({
             record : leafStore.getAt(0)
         });
@@ -324,14 +327,17 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         if (LOADMASK) LOADMASK.hide();
     },
     onSelectedDataset : function(args) {
+        LOG.debug("DatasetConfigPanel: onSelectedDataset()");
         this.capabilitiesStore.proxy.setApi(Ext.data.Api.actions.read, args.url);
         this.capabilitiesStore.load();
     },
     onLoadedCapstore : function(args) {
+        LOG.debug("DatasetConfigPanel: onLoadedCapStore()");
         this.controller.fireEvent('changegcm');
         this.controller.fireEvent('changelayer');
     },
     onLoadedCatstore : function(args) {
+        LOG.debug("DatasetConfigPanel: onLoadedCatStore()");
         this.derivativeStore.removeAll();
         this.derivativeStore.loadData(args.record.get("derivatives"), true);
         this.scenarioStore.removeAll();
@@ -352,6 +358,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         this.gcmCombo.fireEvent('select', this, this.gcmCombo.getStore().data.items[0]);
     },
     onLoadedDerivStore : function(args) {
+        LOG.debug("DatasetConfigPanel: onLoadedDerivStore()");
         // this might be where I gray out some of the options
         this.derivRecordStoreLoaded = true;
         this.loadLeafRecordStore();
@@ -431,12 +438,14 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         }
     },
     onChangeDerivative : function () {
+        LOG.debug("DatasetConfigPanel: onChangeDerivative()");
         var derivative = this.controller.getDerivative();
         if (derivative) {
         }
         this.loadDerivRecordStore();
     },
     onChangeScenario : function () {
+        LOG.debug("DatasetConfigPanel: onChangeScenario()");
         var scenario = this.controller.getScenario();
         if (scenario) {
         }
@@ -445,6 +454,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         }
     },
     onChangeGcm : function () {
+        LOG.debug("DatasetConfigPanel: onChangeGcm()");
         var gcm = this.controller.getGcm();
         if (gcm) {
             //this.gcmCombo.setValue(gcm.get("gcm"));
@@ -454,12 +464,14 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         }
     },
     onChangeDimension : function() {
+        LOG.debug("DatasetConfigPanel: onChangeDimension()");
         var threshold = this.controller.getDimension(this.zlayerName);
         if (threshold & this.zlayerCombo) {
             this.zlayerCombo.setValue(threshold);
         }
     },
     capsFindBy : function(record, id) {
+        LOG.debug("DatasetConfigPanel: capsFindBy()");
         var gcm = this.controller.getGcm()
         if (gcm) {
             return (gcm.get("gcm") === record.get('layer').name);
@@ -467,6 +479,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         return false;
     },
     loadDerivRecordStore : function() {
+        LOG.debug("DatasetConfigPanel: loadDerivRecordStore()");
         // TODO fail nicely if this fails
         var derivative = this.controller.getDerivative();
         this.derivRecordStore = new GDP.CSWGetRecordsStore({
@@ -518,6 +531,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         this.derivRecordStore.load();
     },
     loadLeafRecordStore : function() {
+        LOG.debug("DatasetConfigPanel: loadLeafRecordStore()");
         var scenario = this.controller.getScenario();
         if (!scenario) return;
         this.leafRecordStore = new GDP.CSWGetRecordsStore({
