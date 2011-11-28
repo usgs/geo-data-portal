@@ -232,7 +232,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                                 },
                                 y: {
                                     valueFormatter: function(y) {
-                                        return "<br />" + y + " " + yaxisUnits + " <br /><br />";
+                                        return "<br />" + Math.round(y) + " " + yaxisUnits + " <br /><br />";
                                     }
                                 }
                             }
