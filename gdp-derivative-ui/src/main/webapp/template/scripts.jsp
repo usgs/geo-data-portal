@@ -1,6 +1,6 @@
 <%-- Base EXT modules & Extensions --%>
 <script type="text/javascript" src="js/ext/adapter/ext/ext-base.js"></script>
-<script type="text/javascript" src="js/ext/ext-all.js"></script>
+<script type="text/javascript" src="js/ext/ext-all-debug.js"></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/extension/notify.js'></script>
 
 <%-- Other JavaScript modules (Mapping, logging, etc) --%>
@@ -43,12 +43,30 @@
     // http://ejohn.org/blog/fast-javascript-maxmin/
     Array.max = function( array , maxVal ){
         var arrMax = Math.max.apply( Math, array );
-        return (arrMax > maxVal) ? arrMax : maxVal;
+        if (arguments.length == 1) {
+            return arrMax;
+        }
+        else {
+            return (arrMax > maxVal) ? arrMax : maxVal;
+        }
     };
     Array.min = function( array , minVal ){
         var arrMin = Math.min.apply( Math, array );
-        return (arrMin < minVal) ? arrMin : minVal;
+        if (arguments.length == 1) {
+            return arrMin;
+        }
+        else {
+            return (arrMin < minVal) ? arrMin : minVal;
+        }
     };
+    Array.mean = function( array ) {
+        if (array.length == 0) return NaN;
+        var total = 0;
+        Ext.each(array, function(item) {
+           total += item; 
+        });
+        return total / array.length;
+    }
     
     // http://jibbering.com/faq/#parseDate
     Date.parseISO8601 = function(dateStringInRange){

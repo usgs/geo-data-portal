@@ -17,7 +17,7 @@ GDP.SOSGetObservationStore = function(meta) {
         this,
         Ext.apply(meta, {
             proxy: meta.proxy || (!meta.data ? new Ext.data.HttpProxy({url: meta.url, disableCaching: false, method: "POST"}) : undefined),
-            baseParams : { xmlData : meta.format.write(meta.opts) },
+            baseParams : meta.baseParams || { xmlData : meta.format.write(meta.opts) },
             reader: new GDP.SOSGetObservationReader(meta)
         })
     );

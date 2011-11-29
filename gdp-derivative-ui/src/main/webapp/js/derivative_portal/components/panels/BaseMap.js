@@ -298,10 +298,12 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                     if (fid == 'derivative:fws_lcc') return evt.features[0].attributes.area_names
                     return '';
                 }();
-                var gmlidToPlot = 'resources/states/' + evt.features[0].attributes.TITLE.toLowerCase() + '.xml';
+                var featureAttribute = evt.features[0].attributes.TITLE;
                 this.layerController.updatePlotter({
-                    gmlid : gmlidToPlot,
-                    featureTitle : this.layerController.getDerivative().data.derivative + ' - Spatial average for ' + evt.features[0].attributes.TITLE
+                    // need to get this from csw record
+                    url : 'http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/thredds/sos/dcp/CONUS_states,{gcm}_{scenario}_tmax-spell_length_above_threshold,95.0,dsg.nc',
+                    offering : featureAttribute,
+                    featureTitle : this.layerController.getDerivative().data.derivative + ' - Spatial average for ' + featureAttribute
                 });
                 
                 var selectedLayer = new OpenLayers.Layer.Vector(

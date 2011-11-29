@@ -6,12 +6,12 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
     height : undefined,
     legendWidth : undefined,
     controller : undefined,
-    gmlid : undefined,
     plotterTitle : undefined,
-    sosStore : undefined,
-    dataArray : [],
+    sosStore : [],
+    plotterData : [],
     graph : undefined,
     toolbar : undefined,
+    scenarioGcmJSON : {},
     
     yLabels : [],
     plotterYMin : 10000000,
@@ -22,7 +22,6 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         this.legendDiv = config.legendDiv || 'dygraph-legend';
         this.legendWidth = config.legendWidth || 250;
         this.height = config.height || 200;
-        this.gmlid = config.gmlid;
         this.plotterTitle = config.title || '';
         this.controller = config.controller;
         
@@ -63,23 +62,30 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         this.controller.on('updateplotter', function(args){
             LOG.debug('Plotter:updateplotter');
             this.updatePlotter(args);
-        }, this),
+        }, this);
         this.on('resize', function() {
             LOG.debug('Plotter:resize');
             this.resizePlotter();
-        }, this)
+        }, this);
+        this.controller.on('loaded-catstore', function(args) {
+            LOG.debug('Plotter:onLoadedCatstore');
+            this.onLoadedCatstore(args);
+        }, this);
     },
     
     updatePlotter : function(args) {
         LOG.debug('Plotter:updatePlotter: Observed request to update plotter');
         
-        this.gmlid = args.gmlid;
+        var endpoint = args.url;
+        var offering = args.offering;
         this.plotterTitle = args.featureTitle;
         this.yLabels = [];
         // TODO this is not working, fixme
-        this.sosStore.clear();
+        if (this.sosStore) {
+            this.sosStore= new Array();
+        }
         if (this.graph) {
-            this.graph.destroy()
+            this.graph.destroy();
         }
         
         this.topToolbar.removeAll(true);
@@ -90,52 +96,26 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                 id : 'title',
                 html : this.plotterTitle
             }),
-            new Ext.Toolbar.Fill()//,
-//            new Ext.Button({
-//                itemId : 'plotter-toolbar-download-button',
-//                text : 'Download',
-//                ref : 'plotter-toolbar-download-button'
-//            })
+            new Ext.Toolbar.Fill(),
+            new Ext.Button({
+                itemId : 'plotter-toolbar-download-button',
+                text : 'Download',
+                ref : 'plotter-toolbar-download-button'
+            })
             );
         this.topToolbar.doLayout();
         
-        this.graph = new Dygraph(
-            Ext.get(this.plotterDiv).dom,
-            this.dataArray,
-            { // http://dygraphs.com/options.html
-                hideOverlayOnMouseOut : false,
-                legend: 'always',
-                labels: this.yLabels,
-                labelsDiv: Ext.get(this.legendDiv).dom,
-                labelsDivWidth: this.legendWidth,
-                labelsSeparateLines : true,
-                labelsDivStyles: {
-                    'textAlign': 'right'
-                },
-                rightGap : 5,
-                showRangeSelector: true,
-                //ylabel: record.data.dataRecord[1].name,                            
-                yAxisLabelWidth: 75,
-                axes: {
-                    x: {
-                        valueFormatter: function(ms) {
-                            return '<span style="font-weight: bold; text-size: big">' +
-                            new Date(ms).strftime('%Y') +
-                            '</span>';
-                        },
-                        axisLabelFormatter: function(d) {
-                            return d.strftime('%Y');
-                        }
-                    }
-                }
-            }
-            );
-        var endpointArray = [{scenario: "a1b", gcm: "ccsm3", endpoint: "resources/states/texas.xml"}, "resources/states/alabama.xml", "resources/states/arizona.xml", "resources/states/iowa.xml"];
-        this.completionArray(endpointArray.length);
-        Ext.each(completionArray, function(it, ind){ this.completionArray[ind] = false}, this);
-        Ext.each(endpointArray, function(endpoint, index) {
-            this.loadSOSStore(endpoint, index);
-        });
+        Ext.iterate(this.scenarioGcmJSON, function(scenario, object) {
+            Ext.iterate(object, function(gcm, valueArray) {
+                var meta = {};
+                var url = endpoint.replace('{gcm}', gcm);
+                url = url.replace('{scenario}', scenario);
+                meta.url = url;
+                meta.scenario = scenario;
+                meta.gcm = gcm;
+                this.loadSOSStore(meta, offering);
+            }, this);
+        }, this);
         
         // TODO Make sure everything is done!
         // Set up the download CSV button
@@ -204,14 +184,29 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         divLegend.setWidth(this.legendWidth);
         divPlotter.setHeight(this.height - this.toolbar.getHeight()); 
     },
-    loadSOSStore : function(endpoint, indexOfThisStore) {
+    onLoadedCatstore : function(args) {
+        Ext.each(args.record.get("scenarios"), function(scenario) {
+            var scenarioKey = this.cleanUpIdentifiers(scenario[0]);
+            this.scenarioGcmJSON[scenarioKey] = {};
+            Ext.each(args.record.get("gcms"), function(gcm) {
+               var gcmKey = this.cleanUpIdentifiers(gcm[0]);
+               this.scenarioGcmJSON[scenarioKey][gcmKey] = [];
+            }, this);
+        }, this);
+    },
+    loadSOSStore : function(meta, offering) {
+        var url = "proxy/" + meta.url + "?service=SOS&request=GetObservation&version=1.0.0&offering=" +
+            encodeURI(offering) + "&observedProperty=mean";
+        
         this.sosStore.push(new GDP.SOSGetObservationStore({
-            url : encodeURI(endpoint.endpoint + "&feature=" + this.gmlid), // gmlid is url for now, eventually, use SOS endpoint + gmlid or whatever param
+            url : url, // gmlid is url for now, eventually, use SOS endpoint + gmlid or whatever param
             autoLoad : true,
-            opts : {
-                offering: "test",
-                observedProperty: "test"
-            },
+//            opts : {
+//                offering: offering,
+//                observedProperties: ["mean"]
+//            },
+            proxy : new Ext.data.HttpProxy({url: url, disableCaching: false, method: "GET"}),
+            baseParams : {},
             listeners : {
                 load : function(store) {
 // Ivan's IE fix
@@ -290,10 +285,10 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
 //                        
 //                        document.body.appendChild(form);
 //                        var callback = function(e) {
-//                            var rstatus = (e && typeof e.type !== 'undefined'?e.type:this.dom.readyState );
+//                        var rstatus = (e && typeof e.type !== 'undefined'?e.type:this.dom.readyState );
 
-                    this.dygraphUpdateOptions(store);
-                    this.globalArrayUpdate(indexOfThisStore, endpoint.scenario);
+                    //this.dygraphUpdateOptions(store);
+                    this.globalArrayUpdate(store, meta);
                 },
                 scope: this
             }
@@ -301,30 +296,14 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         }));
         this.resizePlotter();
     },
-    globalArrayUpdate : function(indexOfThisStore) {
-        this.globalArray[indexOfThisStore] = true;
-        // Do calculation on what we have so far
-        // Notify user that we are still working
-        var myValues = this.plotterValuesArray[indexOfThisStore];
-        
-        
-        if (!globalArray.indexOf(false)) {
-            // We are done
-            // Notify user that all has been received
-        }
-        // updatePlotter()
-    },
-    dygraphUpdateOptions : function(store) {
+    globalArrayUpdate : function(store, meta) {
         var record = store.getAt(0);
-        var yaxisUnits = undefined;
-
-        this.plotterValuesArray.push(function(values) {
-            var context = { scenario : 'a1b'}
+        this.scenarioGcmJSON[meta.scenario][meta.gcm] = function(values) {
             Ext.each(values, function(item, index, allItems) {
                 for(var i=0; i<item.length; i++) {
                     var value;
                     if (i==0) {
-                        value = new Date(item[i])
+                        value = Date.parseISO8601(item[i].split('T')[0]);
                     }
                     else {
                         value = parseFloat(item[i])
@@ -332,37 +311,113 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                     allItems[index][i] = value;
                 }
             });
-            context.values = values;
-            return context;
-        }(record.get('values')));
-// My version with for multi-plotting
-        
-        // TODO figure out what to do if dataRecord has more than time and mean
-        yaxisUnits = record.get('dataRecord')[1].uom;
-        this.yLabels.push(record.get('dataRecord')[1].name);
+            return values;
+        }(record.get('values'));
 
-        this.graph.updateOptions(
+        var isComplete = true;
+
+        Ext.iterate(this.scenarioGcmJSON, function(key, value, object) {
+            Ext.iterate(value, function(key, value, object) {
+                if (value.length == 0) {
+                    isComplete = false;
+                }
+            }, this);
+        }, this);
+        if (isComplete) {
+            // calculate this.plotterData;
+            this.plotterData = [];
+            var observationsLength;
+            var scenarios = [];
+            var gcms = [];
+            Ext.iterate(this.scenarioGcmJSON, function(scenario, value) {
+                scenarios.push(scenario);
+               Ext.iterate(value, function(gcm, value) {
+                   if(gcms.indexOf(gcm) == -1) {
+                       gcms.push(gcm);
+                   }
+                   if (!observationsLength) {
+                       observationsLength = value.length;
+                   }
+               });
+            });
+            
+            this.yLabels = scenarios;
+            
+            for (var i=0; i<observationsLength; i++) {
+                this.plotterData.push(new Array());
+                this.plotterData[i][0] = this.scenarioGcmJSON[scenarios[0]][gcms[0]][i][0];
+
+                Ext.each(scenarios, function(scenario) {
+                    var scenarioArray = [];
+                    Ext.each(gcms, function(gcm) {
+                        scenarioArray.push(this.scenarioGcmJSON[scenario][gcm][i][1]);
+                    }, this);
+                    var min = Array.min(scenarioArray);
+                    var mean = Array.mean(scenarioArray);
+                    var max = Array.max(scenarioArray);
+                    this.plotterData[i].push([min, mean, max]);
+                    if (min < this.plotterYMin) {this.plotterYMin = min}
+                    if (max > this.plotterYMax) {this.plotterYMax = max}
+                }, this);
+            }
+            this.dygraphUpdateOptions(store);
+        }
+    },
+    dygraphUpdateOptions : function(store) {
+        var record = store.getAt(0);
+        // this is mean for us, probably figure this out better?
+        var yaxisUnits = record.get('dataRecord')[1].uom;
+
+        // TODO figure out what to do if dataRecord has more than time and mean
+        //this.yLabels.push(record.get('dataRecord')[1].name);
+        //this.yLabels = this.scenarioGcmJSON.keys
+        this.graph = new Dygraph(
+            Ext.get(this.plotterDiv).dom,
+            this.plotterData,
             { // http://dygraphs.com/options.html
-                data: this.plotterData,
-                ylabel: this.graph.ylabel || record.data.dataRecord[1].name,
-                valueRange: function(values){
-                    var intArray = new Array();
-                    Ext.each(values, function(item){
-                        this.push(item[1]);
-                    }, intArray)
-                    this.plotterYMin = Array.min(intArray, this.plotterYMin);
-                    this.plotterYMax = Array.max(intArray, this.plotterYMax);
-                    return [this.plotterYMin - 10 , this.plotterYMax + 10];
-                }(this.plotterValuesArray[this.plotterValuesArray.length-1]),
+                hideOverlayOnMouseOut : false,
+                legend: 'always',
+                customBars: true,
+                errorBars: true,
+                labels: ["Date"].concat(this.yLabels),
+                labelsDiv: Ext.get(this.legendDiv).dom,
+                labelsDivWidth: this.legendWidth,
+                labelsSeparateLines : true,
+                labelsDivStyles: {
+                    'textAlign': 'right'
+                },
+                rightGap : 5,
+                showRangeSelector: true,
+                //ylabel: record.data.dataRecord[1].name,                            
+                yAxisLabelWidth: 75,
+                ylabel: this.controller.getDerivative(),
+                valueRange: [this.plotterYMin - 10 , this.plotterYMax + 10],
                 axes: {
+                    x: {
+                        valueFormatter: function(ms) {
+                            return '<span style="font-weight: bold; text-size: big">' +
+                            new Date(ms).strftime('%Y') +
+                            '</span>';
+                        },
+                        axisLabelFormatter: function(d) {
+                            return d.strftime('%Y');
+                        }
+                    },
                     y: {
                         valueFormatter: function(y) {
-                            return "<br />" + y + " " + yaxisUnits + " <br /><br />";
+                            return Math.round(y) + " " + yaxisUnits;
                         }
                     }
                 }
             }
             );
+    },
+    // These are some business rules for how our scenario or gcms appear in urls
+    cleanUpIdentifiers : function(str) {
+        str = str.toLowerCase();
+        str = str.replace(' ', '_');
+        str = str.replace('.', '-');
+        return str;
     }
 });
 

@@ -259,7 +259,7 @@ OpenLayers.Format.SOSGetObservation = OpenLayers.Class(OpenLayers.Format.XML, {
             "values": function(node, dataArray) {
                 var values = [];
                 dataArray.values = values;
-                var encodedValues = this.getChildValue(node);
+                var encodedValues = this.getChildValue(node).trim();
                 var blocks = encodedValues.split(dataArray.encoding.blockSeparator);
                 for (var i = 0, len = blocks.length;i < len;i++) {
                     values.push(blocks[i].split(dataArray.encoding.tokenSeparator));
@@ -291,7 +291,9 @@ OpenLayers.Format.SOSGetObservation = OpenLayers.Class(OpenLayers.Format.XML, {
                     this.writeNode("procedure", options.procedures[procedure], node);
                 }
                 for (var observedProperty in options.observedProperties) {
-                    this.writeNode("observedProperty", options.observedProperties[observedProperty], node);
+                    if (options.observedProperties.hasOwnProperty(observedProperty)) {
+                        this.writeNode("observedProperty", options.observedProperties[observedProperty], node);
+                    }
                 }
                 if (options.foi) {
                     this.writeNode("featureOfInterest", options.foi, node);
