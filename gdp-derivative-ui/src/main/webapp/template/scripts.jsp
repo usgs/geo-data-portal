@@ -41,11 +41,13 @@
 
 <script type="text/javascript">
     // http://ejohn.org/blog/fast-javascript-maxmin/
-    Array.max = function( array ){
-        return Math.max.apply( Math, array );
+    Array.max = function( array , maxVal ){
+        var arrMax = Math.max.apply( Math, array );
+        return (arrMax > maxVal) ? arrMax : maxVal;
     };
-    Array.min = function( array ){
-        return Math.min.apply( Math, array );
+    Array.min = function( array , minVal ){
+        var arrMin = Math.min.apply( Math, array );
+        return (arrMin < minVal) ? arrMin : minVal;
     };
     
     // http://jibbering.com/faq/#parseDate

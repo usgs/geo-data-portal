@@ -358,68 +358,9 @@ function initializeQuickTips() {
 
 // This is here just for shortcutting some processes in order to test stuff like XML parsing
 function test() { 
-    var store = new GDP.SOSGetObservationStore({
-        url : 'resources/Sample.SOS.GetObservations.xml',
-        autoLoad : true,
-        opts : {
-            offering: "test",
-            observedProperty: "test"
-        },
-        listeners: {
-            load: function(store) {
-                LOG.debug(store);
-            }
-        }
-    });
-    store.load();
-    
-//    var store = new GeoExt.data.WFSCapabilitiesStore({
-//        url:"proxy/http://localhost:8081/geoserver/wfs?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetCapabilities",
-//        protocolOptions: {version: "1.1.0"},
-//        autoLoad: true,
-//        listeners: {
-//			load: function(store) {
-//			  //store_WMS.add({records: store.getRange()},{add: true});
-//			}
-//		}
-//
-//    })
-//store.load();
-
-
-
-
-
-
-//    LOG.debug('derp');
-//    var xml = 'some XML string';
-//    
-//    // We can create an XML DOM to test
-//    var doc;
-//    if(window.ActiveXObject){
-//        // We are in IE
-//        doc = new ActiveXObject("Microsoft.XMLDOM");
-//        doc.async = "false";
-//        doc.loadXML(xml);
-//    }else{
-//        // We are in a decent browser
-//        doc = new DOMParser().parseFromString(xml,"text/xml");
-//    }
-//    
-//    // Create a reader here and feed it the doc
-//    
-//    //Or test some AJAX
-//    Ext.Ajax.request({
-//        url : 'proxy/' + 'http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/gdp-process-wps/WebProcessingService',
-//        method: 'POST',
-//        xmlData : doc,
-//        scope : this,
-//        success: function ( result, request ) {
-//            // Test success here
-//        },
-//        failure: function ( result, request) {
-//            // Test fail here
-//        }
-//    });
-    
+   var testArray = [2, 3, 4, 5];
+   LOG.debug(Array.max(testArray, 2));
+   LOG.debug(Array.max(testArray, 11));
+   LOG.debug(Array.min(testArray, 0));
+   LOG.debug(Array.min(testArray, 22));
 }

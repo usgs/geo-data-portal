@@ -190,6 +190,9 @@ OpenLayers.Format.SOSGetObservation = OpenLayers.Class(OpenLayers.Format.XML, {
             },
             "timePosition": function(node, timeInstant) {
                 timeInstant.timePosition = this.getChildValue(node);
+            },
+            "description": function(node, obj) {
+                obj.description = this.getChildValue(node);
             }
         }, OpenLayers.Format.SOSGetFeatureOfInterest.prototype.readers.gml),
         "swe": {
