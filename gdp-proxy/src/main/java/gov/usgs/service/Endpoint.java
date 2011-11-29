@@ -25,6 +25,7 @@ public class Endpoint {
 	private static final Pattern wfsPattern;
 	private static final Pattern wpsPattern;
 	private static final Pattern cswPattern;
+    private static final Pattern sosPattern;
 
 	static {
 		Pattern pat1 = null;
@@ -32,12 +33,14 @@ public class Endpoint {
 		Pattern pat3 = null;
 		Pattern pat4 = null;
 		Pattern pat5 = null;
+        Pattern pat6 = null;
 		try {
 			pat1 = Pattern.compile(".*(?i:service=(?:wms)|wms).*");
 			pat2 = Pattern.compile(".*(?i:service=(?:wcs)|wcs).*");
 			pat3 = Pattern.compile(".*(?i:service=(?:wfs)|wfs).*");
 			pat4 = Pattern.compile(".*(?i:service=(?:wps)|wps|webprocessingservice).*");
 			pat5 = Pattern.compile(".*(?i:service=(?:csw)|csw).*");
+            pat6 = Pattern.compile(".*(?i:service=(?:sos)|sos).*");
 		}
 		catch (Exception ex) {
 			log.error("Unable to compile regular expression " + ex.getMessage());
@@ -48,6 +51,7 @@ public class Endpoint {
 			wfsPattern = pat3;
 			wpsPattern = pat4;
 			cswPattern = pat5;
+            sosPattern = pat6;
 		}
 	}
 
@@ -57,6 +61,7 @@ public class Endpoint {
 		WFS,
 		WPS,
 		CSW,
+        SOS,
 		UNKNOWN;
 	}
 
@@ -91,6 +96,11 @@ public class Endpoint {
 			matcher = cswPattern.matcher(url);
 			if (matcher.matches()) {
 				type = EndpointType.CSW;
+				return;
+			}
+            matcher = sosPattern.matcher(url);
+			if (matcher.matches()) {
+				type = EndpointType.SOS;
 				return;
 			}
 			type = EndpointType.UNKNOWN;
@@ -133,6 +143,10 @@ public class Endpoint {
 		StringBuilder buildstr = new StringBuilder(url.replaceAll("\\?[^?]*$", ""));
 		buildstr.append("?request=GetCapabilities&service=");
 		buildstr.append(type);
+        if (type == EndpointType.SOS) {
+            // current ncSOS implementation requires all or none
+            buildstr.append("&version=1.0.0");
+        }
 		return new URL(buildstr.toString());
 	}
 
@@ -170,7 +184,4 @@ public class Endpoint {
 		}
 		return false;
 	}
-
-
-
 }
