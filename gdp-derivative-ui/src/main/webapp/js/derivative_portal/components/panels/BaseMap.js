@@ -299,12 +299,8 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                     return '';
                 }();
                 var featureAttribute = evt.features[0].attributes.TITLE;
-                this.layerController.updatePlotter({
-                    // need to get this from csw record
-                    url : 'http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/thredds/sos/dcp/CONUS_states,{gcm}_{scenario}_tmax-spell_length_above_threshold,95.0,dsg.nc',
-                    offering : featureAttribute,
-                    featureTitle : this.layerController.getDerivative().data.derivative + ' - Spatial average for ' + featureAttribute
-                });
+                this.layerController.featureAttribute = featureAttribute;
+                this.layerController.updatePlotter();
                 
                 var selectedLayer = new OpenLayers.Layer.Vector(
                     "selectedFeature",

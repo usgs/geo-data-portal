@@ -110,6 +110,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                 var meta = {};
                 var url = endpoint.replace('{gcm}', gcm);
                 url = url.replace('{scenario}', scenario);
+                url = url.replace('{threshold}', this.controller.getThreshold());
                 meta.url = url;
                 meta.scenario = scenario;
                 meta.gcm = gcm;
@@ -117,64 +118,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
             }, this);
         }, this);
         
-        // TODO Make sure everything is done!
-        // Set up the download CSV button
-        this.topToolbar["plotter-toolbar-download-button"].on('click', function(){
-            var id = Ext.id();
-            var frame = document.createElement('iframe');
-            frame.id = id;
-            frame.name = id;
-            frame.className = 'x-hidden';
-            if (Ext.isIE) {
-                frame.src = Ext.SSL_SECURE_URL;
-            }
-            document.body.appendChild(frame);
 
-            if (Ext.isIE) {
-                document.frames[id].name = id;
-            }
-
-            var form = Ext.DomHelper.append(document.body, {
-                tag:'form',
-                method:'post',
-                action: 'export?filename=export.csv',
-                target:id
-            });
-            Ext.DomHelper.append(form, {
-                tag:'input',
-                name : 'data',
-                value: function(arr) {
-                    var csv = '';
-                    Ext.each(arr, function(item) {
-                        csv += item[0] + ',' + item[1] + '\n';
-                    });
-                    return encodeURI(csv);
-                }(this.plotterValues)
-            }); 
-
-            document.body.appendChild(form);
-            var callback = function(e) {
-                var rstatus = (e && typeof e.type !== 'undefined'?e.type:this.dom.readyState );
-
-                switch(rstatus){
-                    case 'loading':  //IE  has several readystate transitions
-                    case 'interactive': //IE
-
-                        break;
-
-                    case 'load': //Gecko, Opera
-                    case 'complete': //IE
-                        if(Ext.isIE){
-                            this.dom.src = "javascript:false"; //cleanup
-                        }
-                        break;
-                    default:
-                }
-            };
-
-            Ext.EventManager.on(frame, Ext.isIE?'readystatechange':'load', callback);
-            form.submit();
-        }, this)
     },
     resizePlotter : function() {
         LOG.debug('Plotter:resizePlotter()');
@@ -189,103 +133,107 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
             var scenarioKey = this.cleanUpIdentifiers(scenario[0]);
             this.scenarioGcmJSON[scenarioKey] = {};
             Ext.each(args.record.get("gcms"), function(gcm) {
-               var gcmKey = this.cleanUpIdentifiers(gcm[0]);
-               this.scenarioGcmJSON[scenarioKey][gcmKey] = [];
+                var gcmKey = this.cleanUpIdentifiers(gcm[0]);
+                this.scenarioGcmJSON[scenarioKey][gcmKey] = [];
             }, this);
         }, this);
     },
     loadSOSStore : function(meta, offering) {
         var url = "proxy/" + meta.url + "?service=SOS&request=GetObservation&version=1.0.0&offering=" +
-            encodeURI(offering) + "&observedProperty=mean";
+        encodeURI(offering) + "&observedProperty=mean";
         
         this.sosStore.push(new GDP.SOSGetObservationStore({
             url : url, // gmlid is url for now, eventually, use SOS endpoint + gmlid or whatever param
             autoLoad : true,
-//            opts : {
-//                offering: offering,
-//                observedProperties: ["mean"]
-//            },
-            proxy : new Ext.data.HttpProxy({url: url, disableCaching: false, method: "GET"}),
+            //            opts : {
+            //                offering: offering,
+            //                observedProperties: ["mean"]
+            //            },
+            proxy : new Ext.data.HttpProxy({
+                url: url, 
+                disableCaching: false, 
+                method: "GET"
+            }),
             baseParams : {},
             listeners : {
                 load : function(store) {
-// Ivan's IE fix
-//                    var record = store.getAt(0);
-//                    var yaxisUnits = undefined;
-//                    
-//                    if (this.graph) this.graph.destroy();
-//                    
-//                    this.topToolbar.removeAll(true);
-//                    
-//                    // Add the title
-//                    this.topToolbar.add(
-//                        new Ext.Toolbar.TextItem({
-//                            id : 'title',
-//                            html : this.plotterTitle
-//                        }),
-//                        new Ext.Toolbar.Fill(),
-//                        new Ext.Button({
-//                            itemId : 'plotter-toolbar-download-button',
-//                            text : 'Download',
-//                            ref : 'plotter-toolbar-download-button'
-//                        })
-//                        );
-//                    this.topToolbar.doLayout();
-//                    
-//                    this.plotterValues = function(values) {
-//                        Ext.each(values, function(item, index, allItems) {
-//                            for(var i=0; i<item.length; i++) {
-//                                var value;
-//                                if (i==0) {
-//                                    value = Date.parseISO8601(item[i].split('T')[0]);
-//                                }
-//                                else {
-//                                    value = parseFloat(item[i])
-//                                }
-//                                allItems[index][i] = value;
-//                            }
-//                        });
-//                        return values;
-//                    }(record.get('values'))
-//                    
-//                    // Set up the download CSV button
-//                    this.topToolbar["plotter-toolbar-download-button"].on('click', function(){
-//                        var id = Ext.id();
-//                        var frame = document.createElement('iframe');
-//                        frame.id = id;
-//                        frame.name = id;
-//                        frame.className = 'x-hidden';
-//                        if (Ext.isIE) {
-//                            frame.src = Ext.SSL_SECURE_URL;
-//                        }
-//                        document.body.appendChild(frame);
-//                        
-//                        if (Ext.isIE) {
-//                            document.frames[id].name = id;
-//                        }
-//                        
-//                        var form = Ext.DomHelper.append(document.body, {
-//                            tag:'form',
-//                            method:'post',
-//                            action: 'export?filename=export.csv',
-//                            target:id
-//                        });
-//                        Ext.DomHelper.append(form, {
-//                            tag:'input',
-//                            name : 'data',
-//                            value: function(arr) {
-//                                var csv = '';
-//                                Ext.each(arr, function(item) {
-//                                    LOG.debug(item[0] + ',' + item[1]);
-//                                    csv += item[0] + ',' + item[1] + '\n';
-//                                });
-//                                return encodeURI(csv);
-//                            }(this.plotterValues)
-//                        }); 
-//                        
-//                        document.body.appendChild(form);
-//                        var callback = function(e) {
-//                        var rstatus = (e && typeof e.type !== 'undefined'?e.type:this.dom.readyState );
+                    // Ivan's IE fix
+                    //                    var record = store.getAt(0);
+                    //                    var yaxisUnits = undefined;
+                    //                    
+                    //                    if (this.graph) this.graph.destroy();
+                    //                    
+                    //                    this.topToolbar.removeAll(true);
+                    //                    
+                    //                    // Add the title
+                    //                    this.topToolbar.add(
+                    //                        new Ext.Toolbar.TextItem({
+                    //                            id : 'title',
+                    //                            html : this.plotterTitle
+                    //                        }),
+                    //                        new Ext.Toolbar.Fill(),
+                    //                        new Ext.Button({
+                    //                            itemId : 'plotter-toolbar-download-button',
+                    //                            text : 'Download',
+                    //                            ref : 'plotter-toolbar-download-button'
+                    //                        })
+                    //                        );
+                    //                    this.topToolbar.doLayout();
+                    //                    
+                    //                    this.plotterValues = function(values) {
+                    //                        Ext.each(values, function(item, index, allItems) {
+                    //                            for(var i=0; i<item.length; i++) {
+                    //                                var value;
+                    //                                if (i==0) {
+                    //                                    value = Date.parseISO8601(item[i].split('T')[0]);
+                    //                                }
+                    //                                else {
+                    //                                    value = parseFloat(item[i])
+                    //                                }
+                    //                                allItems[index][i] = value;
+                    //                            }
+                    //                        });
+                    //                        return values;
+                    //                    }(record.get('values'))
+                    //                    
+                    //                    // Set up the download CSV button
+                    //                    this.topToolbar["plotter-toolbar-download-button"].on('click', function(){
+                    //                        var id = Ext.id();
+                    //                        var frame = document.createElement('iframe');
+                    //                        frame.id = id;
+                    //                        frame.name = id;
+                    //                        frame.className = 'x-hidden';
+                    //                        if (Ext.isIE) {
+                    //                            frame.src = Ext.SSL_SECURE_URL;
+                    //                        }
+                    //                        document.body.appendChild(frame);
+                    //                        
+                    //                        if (Ext.isIE) {
+                    //                            document.frames[id].name = id;
+                    //                        }
+                    //                        
+                    //                        var form = Ext.DomHelper.append(document.body, {
+                    //                            tag:'form',
+                    //                            method:'post',
+                    //                            action: 'export?filename=export.csv',
+                    //                            target:id
+                    //                        });
+                    //                        Ext.DomHelper.append(form, {
+                    //                            tag:'input',
+                    //                            name : 'data',
+                    //                            value: function(arr) {
+                    //                                var csv = '';
+                    //                                Ext.each(arr, function(item) {
+                    //                                    LOG.debug(item[0] + ',' + item[1]);
+                    //                                    csv += item[0] + ',' + item[1] + '\n';
+                    //                                });
+                    //                                return encodeURI(csv);
+                    //                            }(this.plotterValues)
+                    //                        }); 
+                    //                        
+                    //                        document.body.appendChild(form);
+                    //                        var callback = function(e) {
+                    //                        var rstatus = (e && typeof e.type !== 'undefined'?e.type:this.dom.readyState );
 
                     //this.dygraphUpdateOptions(store);
                     this.globalArrayUpdate(store, meta);
@@ -294,7 +242,6 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
             }
             
         }));
-        this.resizePlotter();
     },
     globalArrayUpdate : function(store, meta) {
         var record = store.getAt(0);
@@ -331,17 +278,20 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
             var gcms = [];
             Ext.iterate(this.scenarioGcmJSON, function(scenario, value) {
                 scenarios.push(scenario);
-               Ext.iterate(value, function(gcm, value) {
-                   if(gcms.indexOf(gcm) == -1) {
-                       gcms.push(gcm);
-                   }
-                   if (!observationsLength) {
-                       observationsLength = value.length;
-                   }
-               });
+                Ext.iterate(value, function(gcm, value) {
+                    if(gcms.indexOf(gcm) == -1) {
+                        gcms.push(gcm);
+                    }
+                    if (!observationsLength) {
+                        observationsLength = value.length;
+                    }
+                });
             });
             
             this.yLabels = scenarios;
+            
+            this.plotterYMin = 1000000;
+            this.plotterYMax = 0;
             
             for (var i=0; i<observationsLength; i++) {
                 this.plotterData.push(new Array());
@@ -356,17 +306,106 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                     var mean = Array.mean(scenarioArray);
                     var max = Array.max(scenarioArray);
                     this.plotterData[i].push([min, mean, max]);
-                    if (min < this.plotterYMin) {this.plotterYMin = min}
-                    if (max > this.plotterYMax) {this.plotterYMax = max}
+                    if (min < this.plotterYMin) {
+                        this.plotterYMin = min
+                        }
+                    if (max > this.plotterYMax) {
+                        this.plotterYMax = max
+                        }
                 }, this);
             }
             this.dygraphUpdateOptions(store);
+            
+            // TODO Make sure everything is done!
+            // Set up the download CSV button
+            this.topToolbar["plotter-toolbar-download-button"].on('click', function(){
+                var id = Ext.id();
+                var frame = document.createElement('iframe');
+                frame.id = id;
+                frame.name = id;
+                frame.className = 'x-hidden';
+                if (Ext.isIE) {
+                    frame.src = Ext.SSL_SECURE_URL;
+                }
+                document.body.appendChild(frame);
+
+                if (Ext.isIE) {
+                    document.frames[id].name = id;
+                }
+
+                var form = Ext.DomHelper.append(document.body, {
+                    tag:'form',
+                    method:'post',
+                    action: 'export?filename=export.csv',
+                    target:id
+                });
+                Ext.DomHelper.append(form, {
+                    tag:'input',
+                    name : 'data',
+                    value: function(dataJSON) {
+                        var observationsLength;
+                        var scenarios = [];
+                        var gcms = [];
+                        Ext.iterate(dataJSON, function(scenario, value) {
+                            scenarios.push(scenario);
+                            Ext.iterate(value, function(gcm, value) {
+                                if(gcms.indexOf(gcm) == -1) {
+                                    gcms.push(gcm);
+                                }
+                                if (!observationsLength) {
+                                    observationsLength = value.length;
+                                }
+                            });
+                        });
+                    
+                        var csv = '';
+                        for (var i=0; i<observationsLength; i++) {
+                            var line = '';
+                            line += dataJSON[scenarios[0]][gcms[0]][i][0] + ",";
+
+                            Ext.each(scenarios, function(scenario) {
+                                Ext.each(gcms, function(gcm) {
+                                    line += dataJSON[scenario][gcm][i][1] + ",";
+                                }, this);
+                            }, this);
+                            csv += line.substr(0, line.length - 1) + "\n";
+                        }
+
+                        return encodeURI(csv);
+                    }(this.scenarioGcmJSON)
+                }); 
+
+                document.body.appendChild(form);
+                var callback = function(e) {
+                    var rstatus = (e && typeof e.type !== 'undefined'?e.type:this.dom.readyState );
+
+                    switch(rstatus){
+                        case 'loading':  //IE  has several readystate transitions
+                        case 'interactive': //IE
+
+                            break;
+
+                        case 'load': //Gecko, Opera
+                        case 'complete': //IE
+                            if(Ext.isIE){
+                                this.dom.src = "javascript:false"; //cleanup
+                            }
+                            break;
+                        default:
+                    }
+                };
+
+                Ext.EventManager.on(frame, Ext.isIE?'readystatechange':'load', callback);
+                form.submit();
+            }, this)
         }
     },
     dygraphUpdateOptions : function(store) {
         var record = store.getAt(0);
         // this is mean for us, probably figure this out better?
         var yaxisUnits = record.get('dataRecord')[1].uom;
+        //var valueRangeMax = this.plotterYMax + (this.plotterYMax / 10);
+        //var valueRangeMin
 
         // TODO figure out what to do if dataRecord has more than time and mean
         //this.yLabels.push(record.get('dataRecord')[1].name);
@@ -390,8 +429,9 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                 showRangeSelector: true,
                 //ylabel: record.data.dataRecord[1].name,                            
                 yAxisLabelWidth: 75,
-                ylabel: this.controller.getDerivative(),
-                valueRange: [this.plotterYMin - 10 , this.plotterYMax + 10],
+                ylabel: this.controller.getDerivative().get('derivative') + " (" +
+                this.controller.getThreshold() + this.controller.getUnits() + ")",
+                valueRange: [this.plotterYMin - (this.plotterYMin / 10) , this.plotterYMax + (this.plotterYMax / 10)],
                 axes: {
                     x: {
                         valueFormatter: function(ms) {
@@ -405,7 +445,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                     },
                     y: {
                         valueFormatter: function(y) {
-                            return Math.round(y) + " " + yaxisUnits;
+                            return Math.round(y) + " " + yaxisUnits + "<br />";
                         }
                     }
                 }

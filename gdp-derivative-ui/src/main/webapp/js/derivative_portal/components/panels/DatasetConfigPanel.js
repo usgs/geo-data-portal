@@ -429,6 +429,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
 
                 LOG.debug('DatasetConfigPanel: Setting z-layer combobox to threshold: ' + threshold);
                 this.zlayerCombo.setValue(threshold);
+                this.controller.threshold = threshold;
 
                 this.zlayerCombo.on('select', function(combo, record, index) {
                     LOG.debug('DatasetConfigPanel:zlayerCombo: observed "select"');
@@ -444,6 +445,9 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         if (derivative) {
         }
         this.loadDerivRecordStore();
+        if (this.controller.getFeatureAttribute()) {
+            this.controller.updatePlotter();
+        }
     },
     onChangeScenario : function () {
         LOG.debug("DatasetConfigPanel: onChangeScenario()");
@@ -467,8 +471,12 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
     onChangeDimension : function() {
         LOG.debug("DatasetConfigPanel: onChangeDimension()");
         var threshold = this.controller.getDimension(this.zlayerName);
-        if (threshold & this.zlayerCombo) {
+        if (threshold && this.zlayerCombo) {
             this.zlayerCombo.setValue(threshold);
+            this.controller.threshold = threshold;
+        }
+        if (this.controller.getFeatureAttribute()) {
+            this.controller.updatePlotter();
         }
     },
     capsFindBy : function(record, id) {

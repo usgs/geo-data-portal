@@ -14,6 +14,14 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
     getDerivative : function() {
         return this.derivative;
     },
+    threshold : undefined,
+    getThreshold : function() {
+        return this.threshold;
+    },
+    units : undefined,
+    getUnits : function() {
+        return this.units;  
+    },
     scenario : undefined,
     getScenario : function() {
         return this.scenario;
@@ -56,6 +64,10 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
     opendapEndpoint : undefined,
     getOPeNDAPEndpoint : function() {
         return this.opendapEndpoint;
+    },
+    featureAttribute : undefined,
+    getFeatureAttribute : function() {
+        return this.featureAttribute;
     },
     constructor : function(config) {
         LOG.debug('LayerController:constructor: Constructing self.');
@@ -120,7 +132,8 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
         var layerName = layerRecord.get('name');
         //this.zaxisName = dims.elevation.name + ' (' + dims.elevation.units + ')
         //TODO switch back to above, with proper variable name
-        this.zaxisName = 'Threshold (' + dims.elevation.units + ')';
+        this.units = dims.elevation.units;
+        this.zaxisName = 'Threshold (' + this.units + ')';
         LOG.debug('LayerController:requestLayer: Firing event "changelayer".');
         this.modifyLegendStore(layerRecord.data);
         this.fireEvent('changelayer', {
@@ -313,8 +326,14 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
         LOG.debug('LayerController:setOPeNDAPEndpoint: Setting current OPeNDAP endpoint to ' + args);
         this.opendapEndpoint = args;
     },
-    updatePlotter : function(args) {
+    updatePlotter : function() {
         LOG.debug('LayerController:updatePlotter: Firing event "updateplotter"');
-        this.fireEvent('updateplotter', args);
+        this.fireEvent('updateplotter', 
+            {
+                // need to get this from csw record
+                url : 'http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/thredds/sos/dcp/CONUS_states,{gcm}_{scenario}_tmax-spell_length_above_threshold,{threshold},dsg.nc',
+                offering : this.getFeatureAttribute(),
+                featureTitle : this.getDerivative().data.derivative + ' - Spatial average for ' + this.getFeatureAttribute()
+            });
     }
 });
