@@ -107,6 +107,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         
         Ext.iterate(this.scenarioGcmJSON, function(scenario, object) {
             Ext.iterate(object, function(gcm, valueArray) {
+                this.scenarioGcmJSON[scenario][gcm] = new Array();
                 var meta = {};
                 var url = endpoint.replace('{gcm}', gcm);
                 url = url.replace('{scenario}', scenario);
@@ -249,6 +250,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         }));
     },
     globalArrayUpdate : function(store, meta) {
+        LOG.debug('Plotter:globalArrayUpdate()');
         var record = store.getAt(0);
         this.scenarioGcmJSON[meta.scenario][meta.gcm] = function(values) {
             Ext.each(values, function(item, index, allItems) {
@@ -321,8 +323,8 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
             }
             this.dygraphUpdateOptions(store);
             
-            // TODO Make sure everything is done!
             // Set up the download CSV button
+            this.topToolbar["plotter-toolbar-download-button"].un('click');          
             this.topToolbar["plotter-toolbar-download-button"].on('click', function(){
                 var id = Ext.id();
                 var frame = document.createElement('iframe');
@@ -403,6 +405,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                 Ext.EventManager.on(frame, Ext.isIE?'readystatechange':'load', callback);
                 form.submit();
             }, this)
+            
         }
     },
     dygraphUpdateOptions : function(store) {
