@@ -12,6 +12,7 @@ GDP.CSWGetRecordsStore = function(meta) {
         {name: "gcms"}, // Array of objects
         {name: "opendap", type: "string"},
         {name: "wms", type: "string"},
+        {name: "sos", type: "string"},
         {name: "fieldLabels"},
         {name: "helptext"}
     ]

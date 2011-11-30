@@ -13,6 +13,7 @@ GDP.CSWGetRecordsReader = function(meta, recordType) {
             {name: "gcms"}, // Array of objects
             {name: "opendap", type: "string"},
             {name: "wms", type: "string"},
+            {name: "sos", type: "string"},
             {name: "fieldLabels"},
             {name: "helptext"} 
         ]
@@ -135,6 +136,9 @@ Ext.extend(GDP.CSWGetRecordsReader, Ext.data.DataReader, {
                         }
                         else if (serviceId === "OGC-WMS") {
                             values.wms = endpoint;
+                        }
+                        else if (serviceId === "OGC-SOS") {
+                            values.sos = endpoint;
                         }
                     } 
                 }

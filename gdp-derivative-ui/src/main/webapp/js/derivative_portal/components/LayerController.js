@@ -69,6 +69,14 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
     getFeatureAttribute : function() {
         return this.featureAttribute;
     },
+    sosEndpoint : undefined,
+    getSOSEndpoint : function() {
+        return this.sosEndpoint;
+    },
+    currentFOI : undefined,
+    getCurrentFOI : function() {
+        return this.currentFOI;
+    },
     constructor : function(config) {
         LOG.debug('LayerController:constructor: Constructing self.');
             
@@ -331,7 +339,7 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
         this.fireEvent('updateplotter', 
             {
                 // need to get this from csw record
-                url : 'http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/thredds/sos/dcp/CONUS_states,{gcm}_{scenario}_tmax-spell_length_above_threshold,{threshold},dsg.nc',
+                url : this.getSOSEndpoint(),
                 offering : this.getFeatureAttribute(),
                 featureTitle : this.getDerivative().data.derivative + ' - Spatial average for ' + this.getFeatureAttribute()
             });

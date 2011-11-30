@@ -109,7 +109,8 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
             Ext.iterate(object, function(gcm, valueArray) {
                 this.scenarioGcmJSON[scenario][gcm] = new Array();
                 var meta = {};
-                var url = endpoint.replace('{gcm}', gcm);
+                var url = endpoint.replace("{shapefile}", this.controller.getCurrentFOI());
+                url = url.replace('{gcm}', gcm);
                 url = url.replace('{scenario}', scenario);
                 url = url.replace('{threshold}', this.controller.getThreshold());
                 meta.url = url;

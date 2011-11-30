@@ -243,6 +243,8 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         }, this);
         this.featureOfInterestCombo.on('select', function(combo, record, index) {
             this.controller.requestFeatureOfInterest(record);
+            var foiName = record.get('name');
+            this.controller.currentFOI = foiName.substr(foiName.indexOf(":")+1);
         }, this);
         this.scenarioCombo.on('select', function(combo, record, index) {
             this.controller.requestScenario(record);
@@ -362,6 +364,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         LOG.debug("DatasetConfigPanel: onLoadedDerivStore()");
         // this might be where I gray out some of the options
         this.derivRecordStoreLoaded = true;
+        this.controller.sosEndpoint = args.record.get("sos");
         this.loadLeafRecordStore();
     },
     onLoadedLeafStore : function(args) {
