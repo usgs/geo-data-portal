@@ -13,11 +13,8 @@ GDP.CSWGetRecordsReader = function(meta, recordType) {
             {name: "gcms"}, // Array of objects
             {name: "opendap", type: "string"},
             {name: "wms", type: "string"},
-            {name: "fieldLabels"}
-//            {name: "operationsMetadata"}, // Array of objects
-//            {name: "processOfferings"}, // Object
-//            {name: "serviceIdentification"}, // Object
-//            {name: "serviceProvider"}
+            {name: "fieldLabels"},
+            {name: "helptext"} 
         ]
         );
     }
@@ -143,6 +140,7 @@ Ext.extend(GDP.CSWGetRecordsReader, Ext.data.DataReader, {
                 }
                 if (abstrakt != null) {
                     values.fieldLabels = abstrakt.fieldlabels;
+                    values.helptext = abstrakt.helptext;
                 }
                 
             }, this);

@@ -12,12 +12,8 @@ GDP.CSWGetRecordsStore = function(meta) {
         {name: "gcms"}, // Array of objects
         {name: "opendap", type: "string"},
         {name: "wms", type: "string"},
-        {name: "fieldLabels"}
-//        {name: "languages"}, // Array of objects
-//        {name: "operationsMetadata"}, // Array of objects
-//        {name: "processOfferings"}, // Object
-//        {name: "serviceIdentification"}, // Object
-//        {name: "serviceProvider"}
+        {name: "fieldLabels"},
+        {name: "helptext"}
     ]
     GDP.CSWGetRecordsStore.superclass.constructor.call(
         this,

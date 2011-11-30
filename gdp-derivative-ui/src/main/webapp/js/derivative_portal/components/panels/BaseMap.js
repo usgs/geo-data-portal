@@ -1,11 +1,13 @@
 Ext.ns("GDP");
 
-// TODO- When a legend first loads, the legend window expands.  When a new legend is requested, the legend window 
-// contracts. When a new legend is loaded, the legend window does not re-expand and must be expanded manually.
-// Originally I had wanted to collapse the legend window when a user changes the legend, and have it re-expand
-// when the new legend image has been loaded but I'm still not able to get the timing right.
-
 GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
+    // From GDP (with Zoerb's comments):
+    // Got this number from Hollister, and he's not sure where it came from.
+    // Without this line, the esri road and relief layers will not display
+    // outside of the upper western hemisphere.
+    MAX_RESOLUTION : 1.40625/2,
+    DEFAULT_LEGEND_X : 110,
+    DEFAULT_LEGEND_Y : 293,
     layerController : undefined,
     currentLayer : undefined,
     baseLayerCombo : undefined,
@@ -15,13 +17,6 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
     legendSwitch : undefined,
     notificationWindow : undefined,
     layerOpacitySlider : undefined,
-    DEFAULT_LEGEND_X : 110,
-    DEFAULT_LEGEND_Y : 293,
-    // From GDP (with Zoerb's comments):
-    // Got this number from Hollister, and he's not sure where it came from.
-    // Without this line, the esri road and relief layers will not display
-    // outside of the upper western hemisphere.
-    MAX_RESOLUTION : 1.40625/2,
     constructor : function(config) {
         LOG.debug('BaseMap:constructor: Constructing self.');
         
@@ -34,15 +29,16 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             maxResolution: this.MAX_RESOLUTION,
             maxExtent: new OpenLayers.Bounds(-180, -90, 180, 90),
             controls: [
-                new OpenLayers.Control.MousePosition(),
-                new OpenLayers.Control.ScaleLine(),
-                new OpenLayers.Control.PanZoomBar({
-                    panIcons : false,
-                    position : new OpenLayers.Pixel(3,30)
-                })
+            new OpenLayers.Control.MousePosition(),
+            new OpenLayers.Control.ScaleLine(),
+            new OpenLayers.Control.PanZoomBar({
+                panIcons : false,
+                position : new OpenLayers.Pixel(3,30)
+            })
             ]
         });
 
+        // Set up the map control panel
         var navigationCtrl = new OpenLayers.Control.Navigation({
             title:'You can use the default mouse configuration',
             autoActivate : true
@@ -55,7 +51,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             new OpenLayers.Control.ZoomBox({
                 title:"Zoom box: Selecting it you can zoom on an area by clicking and dragging."
             })
-        ]);                
+            ]);                
         map.addControl(mapControlPanel);
         
         // Set up the toolbar above the map
@@ -80,7 +76,6 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         });
         this.legendSwitch.on('click', function(){
             if (this.legendWindow.hidden) {
-                this.legendWindow.show();
                 this.legendWindow.show();
                 this.legendSwitch.setText('Off');
                 this.legendSwitch.pressed = true;
@@ -108,35 +103,37 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                 template: '<div>Opacity: {opacity}%</div>'
             })
         });
+        var toolbar = new Ext.Toolbar({
+            items : [
+            '->',
+            'Opacity: ',
+            this.layerOpacitySlider,
+            ' ',
+            '-',
+            ' ',
+            'Base Layer: ',
+            this.baseLayerCombo,
+            ' ',
+            '-',
+            ' ',
+            'Legend: ',
+            this.legendSwitch,
+            this.legendCombo
+            ]
+        })
+        
         
         config = Ext.apply({
             map : map,
             center : new OpenLayers.LonLat(-96, 38),
             zoom : 4,
-            tbar : new Ext.Toolbar({
-                items : [
-                '->',
-                'Opacity: ',
-                this.layerOpacitySlider,
-                ' ',
-                '-',
-                ' ',
-                'Base Layer: ',
-                this.baseLayerCombo,
-                ' ',
-                '-',
-                ' ',
-                'Legend: ',
-                this.legendSwitch,
-                this.legendCombo
-                ]
-            })
+            tbar : toolbar
         }, config);
                 
         GDP.BaseMap.superclass.constructor.call(this, config);
         LOG.debug('BaseMap:constructor: Construction complete.');
+        
         LOG.debug('BaseMap: Setting up legend window.');
-        // Set up the legend 
         var legendImage = Ext.extend(GeoExt.LegendImage, {
             setUrl: function(url) {
                 this.url = url;
@@ -334,6 +331,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             this.map.addControl(selectorControl);
             selectorControl.activate();
         }, this);
+        
         this.on('resize', function() {
             this.realignLegend();
         }, this);
@@ -371,7 +369,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
     },
     clearLayers : function() { 
         LOG.debug('BaseMap:clearLayers: Handling request.');
-        Ext.each(this.layers.data.getRange(), function(item, index, allItems){
+        Ext.each(this.layers.data.getRange(), function(item){
             var layer = item.data.layer;
             if (layer.isBaseLayer || layer.CLASS_NAME === 'OpenLayers.Layer.Vector' || layer.name === 'foilayer') {
                 LOG.debug('BaseMap:clearLayers: Layer '+layer.id+' is a base layer and will not be cleared.');
@@ -483,7 +481,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         }
             
         this.layers.add([record]);
-//        this.redraw();
+        //        this.redraw();
         LOG.debug('BaseMap:onReplaceBaseLayer: Added base layer to this object\'s map.layers at index ' + baseLayerIndex);
     },    
     replaceLayer : function(record, params, existingIndex) {

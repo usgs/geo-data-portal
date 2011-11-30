@@ -137,6 +137,11 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                 this.scenarioGcmJSON[scenarioKey][gcmKey] = [];
             }, this);
         }, this);
+        Ext.DomHelper.append(Ext.DomQuery.selectNode("div[id='dygraph-content']"), {
+            tag : 'div', 
+            id : 'plotter-prefill-text',
+            html : args.record.get('helptext')['plotWindowIntroText']
+        });
     },
     loadSOSStore : function(meta, offering) {
         var url = "proxy/" + meta.url + "?service=SOS&request=GetObservation&version=1.0.0&offering=" +
@@ -410,6 +415,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         // TODO figure out what to do if dataRecord has more than time and mean
         //this.yLabels.push(record.get('dataRecord')[1].name);
         //this.yLabels = this.scenarioGcmJSON.keys
+        var plotterDiv = Ext.get(this.plotterDiv).dom;
         this.graph = new Dygraph(
             Ext.get(this.plotterDiv).dom,
             this.plotterData,
