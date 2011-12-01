@@ -299,15 +299,15 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                         csv += line.substr(0, line.length - 1) + "\n";
                         
                         for (var i=0; i<observationsLength; i++) {
-                            var line = '';
-                            line += scope.scenarioGcmJSON[scenarios[0]][gcms[0]][i][0] + ",";
+                            var line2 = '';
+                            line2 += scope.scenarioGcmJSON[scenarios[0]][gcms[0]][i][0].getFullYear() + ",";
 
                             Ext.each(scenarios, function(scenario) {
                                 Ext.each(gcms, function(gcm) {
-                                    line += scope.scenarioGcmJSON[scenario][gcm][i][1] + ",";
+                                    line2 += scope.scenarioGcmJSON[scenario][gcm][i][1] + ",";
                                 }, this);
                             }, this);
-                            csv += line.substr(0, line.length - 1) + "\n";
+                            csv += line2.substr(0, line2.length - 1) + "\n";
                         }
 
                         return encodeURI(csv);
