@@ -11,7 +11,7 @@ if (Ext.isIE) { // http://www.mail-archive.com/users@openlayers.org/msg01838.htm
 } 
 Ext.onReady(function () {
     GDP.PROXY_PREFIX = 'proxy/';
-    GDP.DEFAULT_LEGEND_NAME = 'boxfill/greyscale';
+    GDP.DEFAULT_LEGEND_NAME = 'boxfill/occam';
     GDP.PROCESS_ENDPOINT = 'http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/gdp-process-wps/WebProcessingService';
     //    GDP.PROCESS_ENDPOINT = 'http://localhost:8080/gdp-process-wps/WebProcessingService'; // Development
 //    OpenLayers.ProxyHost = "proxy/"; // TODO - OGCProxy 
