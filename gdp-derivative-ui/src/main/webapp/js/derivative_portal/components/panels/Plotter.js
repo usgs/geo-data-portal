@@ -149,7 +149,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         });
         
         // This tooltip will show up to the right of any title text
-        this.titleTipText = '&nbsp;&nbsp;<span ext:qtip="'+args.record.get('helptext')['plotHelp']+'"><img class="quicktip-img" src="images/info.gif" /></span>';
+        this.titleTipText = '&nbsp;&nbsp;<span ext:qtip="'+args.record.get('helptext')['plotHelp']+'" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span>';
     },
     loadSOSStore : function(meta, offering) {
         var url = "proxy/" + meta.url + "?service=SOS&request=GetObservation&version=1.0.0&offering=" +

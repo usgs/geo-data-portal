@@ -6,6 +6,10 @@
         IDs and Classes specific to this application
 */
 
+div#title.xtb-text span.x-combo-list-item {
+    border-color: #D0DEF0 !important;
+}
+
 #plotter-prefill-text {
     color: #15428B; 
     width: 100%;
