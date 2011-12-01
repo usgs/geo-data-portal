@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
@@ -88,6 +89,7 @@ public class OWSProxyServletX extends HttpServlet {
 	public static final String INVALID_ENDPOINT = 
             "Service you are requesting is not a valid OWS service." +
 			"  If this is incorrect, register this url by submitting a GetCapabilities request.";
+    public static final String ENDPOINT_CONFIG = "endpoints.xml";
 
 	private Set<Endpoint> verifiedEndpointCache = Collections.synchronizedSet(new HashSet<Endpoint>());
 	private BlacklistInterface blacklist = BlacklistFactory.setActiveBlacklist(DELAY_ONLY);
@@ -129,7 +131,13 @@ public class OWSProxyServletX extends HttpServlet {
 		ignoredServerResponseHeaderSet.add("keep-alive");       // don't parameterize
 		ignoredServerResponseHeaderSet.add("set-cookie");       // parameterize (cookies passthru?)
 		ignoredServerResponseHeaderSet.add("authorization");    // parameterize (authorization passthru?)
-//		ignoredServerResponseHeaderSet.add("content-length");   // allow for now, NOTE: are you doing response body content rewrite?
+//		ignoredServerResponseHeaderSet.add("content-length");   // allow for now, NOTE: are you doing response body content rewrite?\
+        
+        // Endpoints we know we are going to be used can just be fed into the verified endpoint cache
+        InputStream configStream = OWSProxyServletX.class.getClassLoader().getResourceAsStream(ENDPOINT_CONFIG);
+        if (null != configStream) {
+            readValidEndpointsFromConfig(configStream);
+        }
         
         // If enabled setup a memory/heap cache for server responses.  If we
         // want we could setup a layered L1/L2/... cache scheme by wrapping
@@ -496,6 +504,30 @@ public class OWSProxyServletX extends HttpServlet {
 		}
 		return false;
 	}
+    
+    private void readValidEndpointsFromConfig(InputStream in) {
+        Properties props = null;
+        try {
+            props = new Properties();
+            props.loadFromXML(in);
+        } catch (IOException ex) {
+            LOGGER.error("Could not load properties from file", ex);
+        } finally {
+            IOUtils.closeQuietly(in);
+        }
+        for (String key : props.stringPropertyNames()) {
+            String value = props.getProperty(key);
+            Endpoint endpt = new Endpoint(value);
+            if (endpt.getType() != Endpoint.EndpointType.UNKNOWN) {
+                LOGGER.debug("Adding " + value + " to verifiedCache");
+                verifiedEndpointCache.add(endpt);
+            }
+            else {
+                LOGGER.debug("Unable to determine endpoint type");
+            }
+        }
+        
+    }
     
     public static class ProxyException extends Exception {
         public ProxyException(String message) {
