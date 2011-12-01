@@ -301,6 +301,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                 this.layerController.featureTitle = function() {
                     var fid = evt.object.layers[0].params.LAYERS.toLowerCase();
                     if (fid == 'derivative:wbdhu8_alb_simp') return evt.features[0].attributes.SUBBASIN;
+                    if (fid == 'derivative:us_counties') return evt.features[0].attributes.COUNTY;
                     return evt.features[0].attributes.TITLE;
                 }();
                 this.layerController.featureAttribute = evt.features[0].attributes.TITLE;
