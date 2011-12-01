@@ -79,7 +79,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         
         var endpoint = args.url;
         var offering = args.offering;
-        this.plotterTitle = args.featureTitle + this.titleTipText;
+        this.plotterTitle = args.featureTitle;
         this.yLabels = [];
         // TODO this is not working, fixme
         if (this.sosStore) {
@@ -95,7 +95,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         this.topToolbar.add(
             new Ext.Toolbar.TextItem({
                 id : 'title',
-                html : this.plotterTitle
+                html : this.plotterTitle + this.titleTipText
             }),
             new Ext.Toolbar.Fill(),
             new Ext.Button({
@@ -273,11 +273,11 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                 Ext.DomHelper.append(form, {
                     tag:'input',
                     name : 'data',
-                    value: function(dataJSON) {
+                    value: function(scope) {
                         var observationsLength;
                         var scenarios = [];
                         var gcms = [];
-                        Ext.iterate(dataJSON, function(scenario, value) {
+                        Ext.iterate(scope.scenarioGcmJSON, function(scenario, value) {
                             scenarios.push(scenario);
                             Ext.iterate(value, function(gcm, value) {
                                 if(gcms.indexOf(gcm) == -1) {
@@ -289,21 +289,29 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                             });
                         });
                     
-                        var csv = '';
+                        var csv = '#' + scope.plotterTitle + ' calculated by ' + window.location + '\n';
+                        var line = 'date, '
+                        Ext.each(scenarios, function(scenario) {
+                            Ext.each(gcms, function(gcm) {
+                                line += gcm + " " + scenario + ",";
+                            }, this);
+                        }, this);
+                        csv += line.substr(0, line.length - 1) + "\n";
+                        
                         for (var i=0; i<observationsLength; i++) {
                             var line = '';
-                            line += dataJSON[scenarios[0]][gcms[0]][i][0] + ",";
+                            line += scope.scenarioGcmJSON[scenarios[0]][gcms[0]][i][0] + ",";
 
                             Ext.each(scenarios, function(scenario) {
                                 Ext.each(gcms, function(gcm) {
-                                    line += dataJSON[scenario][gcm][i][1] + ",";
+                                    line += scope.scenarioGcmJSON[scenario][gcm][i][1] + ",";
                                 }, this);
                             }, this);
                             csv += line.substr(0, line.length - 1) + "\n";
                         }
 
                         return encodeURI(csv);
-                    }(this.scenarioGcmJSON)
+                    }(this)
                 }); 
 
                 document.body.appendChild(form);
@@ -358,8 +366,8 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                 showRangeSelector: true,
                 //ylabel: record.data.dataRecord[1].name,                            
                 yAxisLabelWidth: 75,
-                ylabel: this.controller.getDerivative().get('derivative') + " (" +
-                this.controller.getThreshold() + this.controller.getUnits() + ")",
+                ylabel: this.controller.getDerivative().get('derivative') + " " +
+                this.controller.getThreshold() + " " + this.controller.getUnits(),
                 valueRange: [this.plotterYMin - (this.plotterYMin / 10) , this.plotterYMax + (this.plotterYMax / 10)],
                 axes: {
                     x: {
