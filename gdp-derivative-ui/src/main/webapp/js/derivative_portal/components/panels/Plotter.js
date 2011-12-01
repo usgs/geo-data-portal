@@ -94,16 +94,29 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         // Add the title
         this.topToolbar.add(
             new Ext.Toolbar.TextItem({
-                id : 'title',
+                itemId : 'title',
                 html : this.plotterTitle + this.titleTipText
             }),
             new Ext.Toolbar.Fill(),
+            new Ext.Button({
+                itemId : 'errorBarsButton',
+                text : 'Error Bars',
+                ref : 'plotter-toolbar-errorbars-button',
+                pressed : true,
+                enableToggle: true
+            }),
+            new Ext.Toolbar.Spacer(),
             new Ext.Button({
                 itemId : 'plotter-toolbar-download-button',
                 text : 'Download',
                 ref : 'plotter-toolbar-download-button'
             })
             );
+        this.topToolbar["plotter-toolbar-errorbars-button"].on('click', function(obj) {
+            this.graph.updateOptions({
+                fillAlpha : obj.pressed ? 0.15 : 0.0
+            })
+        }, this);          
         this.topToolbar.doLayout();
         
         Ext.iterate(this.scenarioGcmJSON, function(scenario, object) {
@@ -239,10 +252,10 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                     this.plotterData[i].push([min, mean, max]);
                     if (min < this.plotterYMin) {
                         this.plotterYMin = min
-                        }
+                    }
                     if (max > this.plotterYMax) {
                         this.plotterYMax = max
-                        }
+                    }
                 }, this);
             }
             this.dygraphUpdateOptions(store);
