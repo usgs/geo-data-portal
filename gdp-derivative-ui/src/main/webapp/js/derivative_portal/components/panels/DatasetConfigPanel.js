@@ -292,9 +292,9 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             LOG.debug('DatasetConfigPanel: Observed "changegcm".');
             this.onChangeGcm();
         }, this);
-        this.controller.on('changedimension', function() {
+        this.controller.on('changedimension', function(extentName) {
             LOG.debug('DatasetConfigPanel: Observed \'changedimension\'.');
-            this.onChangeDimension();
+            this.onChangeDimension(extentName);
         }, this);
     },
     capStoreOnLoad : function(capStore) {
@@ -471,14 +471,14 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             this.controller.requestLayer(this.capabilitiesStore.getAt(index));
         }
     },
-    onChangeDimension : function() {
+    onChangeDimension : function(extentName) {
         LOG.debug("DatasetConfigPanel: onChangeDimension()");
         var threshold = this.controller.getDimension(this.zlayerName);
         if (threshold && this.zlayerCombo) {
             this.zlayerCombo.setValue(threshold);
             this.controller.threshold = threshold;
         }
-        if (this.controller.getFeatureAttribute()) {
+        if (extentName === this.zlayerName && this.controller.getFeatureAttribute()) {
             this.controller.updatePlotter();
         }
     },

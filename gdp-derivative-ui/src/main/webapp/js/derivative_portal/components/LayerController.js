@@ -228,7 +228,8 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
         if (!extentName) return;
         if (this.modifyDimensions(extentName, value)) {
             LOG.debug('LayerController:requestDimension: Firing event "changedimension".');
-            this.fireEvent('changedimension');
+
+            this.fireEvent('changedimension', extentName);
         } else {
             LOG.info('Requested dimension (' + extentName + ') does not exist');
         }

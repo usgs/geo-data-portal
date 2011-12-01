@@ -202,9 +202,9 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             LOG.debug('BaseMap: Observed "changelayer".');
             this.onChangeLayer();
         }, this);
-        this.layerController.on('changedimension', function() {
+        this.layerController.on('changedimension', function(extentName) {
             LOG.debug('BaseMap: Observed "changedimension".');
-            this.onChangeDimension();
+            this.onChangeDimension(extentName);
         }, this);
         this.layerController.on('changeopacity', function() {
             LOG.debug('BaseMap: Observed "changeopacity".');
@@ -231,9 +231,10 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                 this.removeControl(item);
             }, this.map);
             
-            var foiLayer = args.clone().getLayer();
             
-            foiLayer.setZIndex(this.getHighestZIndex() + 1);
+            var foiLayer = args.clone().getLayer();
+            var highestZ = this.getHighestZIndex();
+            foiLayer.setZIndex(highestZ + 1);
             foiLayer.displayInLayerSwitcher = false;
             foiLayer.setVisibility(true);
             foiLayer.name = "foilayer";
@@ -332,7 +333,9 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                     Ext.ComponentMgr.get('mapPanel').notificationWindow.animHide();
                     Ext.ComponentMgr.get('mapPanel').notificationWindow = undefined;
                 }
-                this.map.getLayersByName('foilayer')[0].setZIndex(this.getHighestZIndex() + 1);
+                var highestZ = this.getHighestZIndex();
+                this.map.getLayersByName('foilayer')[0].setZIndex(highestZ + 1);
+                selectedLayer.setZIndex(highestZ + 2);
             });
             
             this.map.addLayers([foiLayer]);
@@ -406,7 +409,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         }
         this.currentLayer = this.findCurrentLayer();
     },
-    onChangeDimension : function() {
+    onChangeDimension : function(extentName) {
         LOG.debug('BaseMap:onChangeDimension: Handling request.');
         var existingLayerIndex = this.layers.findBy(function(record, id) {
             LOG.debug(' BaseMap:onChangeDimension: Checking existing layer index.');
@@ -531,9 +534,15 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             this.layers.add(copy);
             
             var foilayer = this.map.getLayersByName('foilayer');
+            var selectedLayer = this.map.getLayersByName('selectedlayer');
+            var highestZ = this.getHighestZIndex();
             if (foilayer.length) {
-                foilayer[0].setZIndex(this.getHighestZIndex() + 1);
+                foilayer[0].setZIndex(highestZ + 1);
             }
+            if (selectedLayer.length) {
+                selectedLayer[0].setZIndex(highestZ + 2);
+            }
+            
         }
         
     },

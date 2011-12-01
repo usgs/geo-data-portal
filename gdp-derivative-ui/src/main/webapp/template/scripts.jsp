@@ -1,6 +1,6 @@
 <%-- Base EXT modules & Extensions --%>
 <script type="text/javascript" src="js/ext/adapter/ext/ext-base.js"></script>
-<script type="text/javascript" src="js/ext/ext-all-debug.js"></script>
+<script type="text/javascript" src="js/ext/ext-all.js"></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/extension/notify.js'></script>
 
 <%-- Other JavaScript modules (Mapping, logging, etc) --%>

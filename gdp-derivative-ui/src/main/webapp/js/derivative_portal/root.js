@@ -304,7 +304,6 @@ function initializeMapping() {
         region : 'south',
         border : true,
         height : 200,
-        gmlid : 'resources/a1b-a2.xml',
         controller : layerController
     });
     
