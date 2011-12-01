@@ -94,10 +94,37 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         // Add the title
         this.topToolbar.add(
             new Ext.Toolbar.TextItem({
-                itemId : 'title',
+                id : 'title',
                 html : this.plotterTitle + this.titleTipText
             }),
             new Ext.Toolbar.Fill(),
+            new Ext.ButtonGroup({
+                columns : 4,
+                layout : 'table',
+                ref : 'plotter-toolbar-buttongroup',
+                items : [{
+                    text : 'a1fi',
+                    sequencePosition : 0,
+                    pressed : true,
+                    enableToggle: true
+                },{
+                    text : 'a2',
+                    sequencePosition : 1,
+                    pressed : false,
+                    enableToggle: true
+                }, {
+                    text : 'a1b',
+                    sequencePosition : 2,
+                    pressed : false,
+                    enableToggle: true
+                }, {
+                    text : 'b1',
+                    sequencePosition : 3,
+                    pressed : false,
+                    enableToggle: true
+                }
+                ]
+            }),
             new Ext.Button({
                 itemId : 'errorBarsButton',
                 text : 'Error Bars',
@@ -112,6 +139,13 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                 ref : 'plotter-toolbar-download-button'
             })
             );
+            
+            for (var i = 0, itemCount = this.topToolbar['plotter-toolbar-buttongroup'].items.getCount();i < itemCount;i++) {
+                var item = this.topToolbar['plotter-toolbar-buttongroup'].items.itemAt(i);
+                item.on('click', function(obj) {
+                    this.graph.setVisibility(obj.sequencePosition, obj.pressed );
+                }, this)
+            }
         this.topToolbar["plotter-toolbar-errorbars-button"].on('click', function(obj) {
             this.graph.updateOptions({
                 fillAlpha : obj.pressed ? 0.15 : 0.0
@@ -382,6 +416,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                 ylabel: this.controller.getDerivative().get('derivative') + " " +
                 this.controller.getThreshold() + " " + this.controller.getUnits(),
                 valueRange: [this.plotterYMin - (this.plotterYMin / 10) , this.plotterYMax + (this.plotterYMax / 10)],
+                visibility : [true, false, false, false],
                 axes: {
                     x: {
                         valueFormatter: function(ms) {
