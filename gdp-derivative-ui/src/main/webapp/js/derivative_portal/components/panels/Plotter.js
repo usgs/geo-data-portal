@@ -267,7 +267,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                 var form = Ext.DomHelper.append(document.body, {
                     tag:'form',
                     method:'post',
-                    action: 'export?filename=export.csv',
+                    action: 'export?filename='+ (this.controller.getCurrentFOI() + "_" + this.controller.getFeatureTitle()).replace(' ', '-') +'.csv',
                     target:id
                 });
                 Ext.DomHelper.append(form, {
