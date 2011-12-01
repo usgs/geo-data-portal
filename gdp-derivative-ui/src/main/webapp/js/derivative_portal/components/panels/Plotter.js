@@ -82,7 +82,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         this.yLabels = [];
         // TODO this is not working, fixme
         if (this.sosStore) {
-            this.sosStore= new Array();
+            this.sosStore = new Array();
         }
         if (this.graph) {
             this.graph.destroy();
@@ -106,7 +106,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         this.topToolbar.doLayout();
         
         Ext.iterate(this.scenarioGcmJSON, function(scenario, object) {
-            Ext.iterate(object, function(gcm, valueArray) {
+            Ext.iterate(object, function(gcm) {
                 this.scenarioGcmJSON[scenario][gcm] = new Array();
                 var meta = {};
                 var url = endpoint.replace("{shapefile}", this.controller.getCurrentFOI());
@@ -152,10 +152,6 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         this.sosStore.push(new GDP.SOSGetObservationStore({
             url : url, // gmlid is url for now, eventually, use SOS endpoint + gmlid or whatever param
             autoLoad : true,
-            //            opts : {
-            //                offering: offering,
-            //                observedProperties: ["mean"]
-            //            },
             proxy : new Ext.data.HttpProxy({
                 url: url, 
                 disableCaching: false, 
@@ -164,85 +160,6 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
             baseParams : {},
             listeners : {
                 load : function(store) {
-                    // Ivan's IE fix
-                    //                    var record = store.getAt(0);
-                    //                    var yaxisUnits = undefined;
-                    //                    
-                    //                    if (this.graph) this.graph.destroy();
-                    //                    
-                    //                    this.topToolbar.removeAll(true);
-                    //                    
-                    //                    // Add the title
-                    //                    this.topToolbar.add(
-                    //                        new Ext.Toolbar.TextItem({
-                    //                            id : 'title',
-                    //                            html : this.plotterTitle
-                    //                        }),
-                    //                        new Ext.Toolbar.Fill(),
-                    //                        new Ext.Button({
-                    //                            itemId : 'plotter-toolbar-download-button',
-                    //                            text : 'Download',
-                    //                            ref : 'plotter-toolbar-download-button'
-                    //                        })
-                    //                        );
-                    //                    this.topToolbar.doLayout();
-                    //                    
-                    //                    this.plotterValues = function(values) {
-                    //                        Ext.each(values, function(item, index, allItems) {
-                    //                            for(var i=0; i<item.length; i++) {
-                    //                                var value;
-                    //                                if (i==0) {
-                    //                                    value = Date.parseISO8601(item[i].split('T')[0]);
-                    //                                }
-                    //                                else {
-                    //                                    value = parseFloat(item[i])
-                    //                                }
-                    //                                allItems[index][i] = value;
-                    //                            }
-                    //                        });
-                    //                        return values;
-                    //                    }(record.get('values'))
-                    //                    
-                    //                    // Set up the download CSV button
-                    //                    this.topToolbar["plotter-toolbar-download-button"].on('click', function(){
-                    //                        var id = Ext.id();
-                    //                        var frame = document.createElement('iframe');
-                    //                        frame.id = id;
-                    //                        frame.name = id;
-                    //                        frame.className = 'x-hidden';
-                    //                        if (Ext.isIE) {
-                    //                            frame.src = Ext.SSL_SECURE_URL;
-                    //                        }
-                    //                        document.body.appendChild(frame);
-                    //                        
-                    //                        if (Ext.isIE) {
-                    //                            document.frames[id].name = id;
-                    //                        }
-                    //                        
-                    //                        var form = Ext.DomHelper.append(document.body, {
-                    //                            tag:'form',
-                    //                            method:'post',
-                    //                            action: 'export?filename=export.csv',
-                    //                            target:id
-                    //                        });
-                    //                        Ext.DomHelper.append(form, {
-                    //                            tag:'input',
-                    //                            name : 'data',
-                    //                            value: function(arr) {
-                    //                                var csv = '';
-                    //                                Ext.each(arr, function(item) {
-                    //                                    LOG.debug(item[0] + ',' + item[1]);
-                    //                                    csv += item[0] + ',' + item[1] + '\n';
-                    //                                });
-                    //                                return encodeURI(csv);
-                    //                            }(this.plotterValues)
-                    //                        }); 
-                    //                        
-                    //                        document.body.appendChild(form);
-                    //                        var callback = function(e) {
-                    //                        var rstatus = (e && typeof e.type !== 'undefined'?e.type:this.dom.readyState );
-
-                    //this.dygraphUpdateOptions(store);
                     this.globalArrayUpdate(store, meta);
                 },
                 scope: this
@@ -411,15 +328,11 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
     },
     dygraphUpdateOptions : function(store) {
         var record = store.getAt(0);
+        
         // this is mean for us, probably figure this out better?
         var yaxisUnits = record.get('dataRecord')[1].uom;
-        //var valueRangeMax = this.plotterYMax + (this.plotterYMax / 10);
-        //var valueRangeMin
 
         // TODO figure out what to do if dataRecord has more than time and mean
-        //this.yLabels.push(record.get('dataRecord')[1].name);
-        //this.yLabels = this.scenarioGcmJSON.keys
-        var plotterDiv = Ext.get(this.plotterDiv).dom;
         this.graph = new Dygraph(
             Ext.get(this.plotterDiv).dom,
             this.plotterData,

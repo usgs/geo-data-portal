@@ -286,13 +286,15 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                 })
                 
                 // http://internal.cida.usgs.gov/jira/browse/GDP-423
+                // http://internal.cida.usgs.gov/jira/browse/GDP-435
                 evt.features[0].attributes.TITLE = function() {
                     var fid = evt.object.layers[0].params.LAYERS.toLowerCase();
                     if (fid == 'derivative:conus_states') return evt.features[0].attributes.STATE;
-                    if (fid == 'derivative:us_counties') return evt.features[0].attributes.COUNTY
-                    if (fid == 'derivative:level_iii_ecoregions') return evt.features[0].attributes.LEVEL3_NAM
-                    if (fid == 'derivative:wbdhu8_alb_simp') return evt.features[0].attributes.SUBBASIN
-                    if (fid == 'derivative:fws_lcc') return evt.features[0].attributes.area_names
+                    if (fid == 'derivative:us_counties') return evt.features[0].attributes.FIPS;
+                    if (fid == 'derivative:level_iii_ecoregions') return evt.features[0].attributes.LEVEL3_NAM;
+                    if (fid == 'derivative:wbdhu8_alb_simp') return evt.features[0].attributes.HUC_8;
+                    if (fid == 'derivative:fws_lcc') return evt.features[0].attributes.area_names;
+                    if (fid == 'derivative:nca_regions') return evt.features[0].attributes.NCA_Region;
                     return '';
                 }();
                 var featureAttribute = evt.features[0].attributes.TITLE;
