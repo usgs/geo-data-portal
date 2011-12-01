@@ -69,6 +69,10 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
     getFeatureAttribute : function() {
         return this.featureAttribute;
     },
+    featureTitle : undefined,
+    getFeatureTitle : function() {
+        return this.featureTitle || '';
+    },
     sosEndpoint : undefined,
     getSOSEndpoint : function() {
         return this.sosEndpoint;
@@ -341,7 +345,7 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
                 // need to get this from csw record
                 url : this.getSOSEndpoint(),
                 offering : this.getFeatureAttribute(),
-                featureTitle : this.getDerivative().data.derivative + ' - Spatial average for ' + this.getFeatureAttribute()
+                featureTitle : this.getDerivative().data.derivative + ' - Spatial average for ' + this.getFeatureTitle()
             });
     }
 });

@@ -297,8 +297,13 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                     if (fid == 'derivative:nca_regions') return evt.features[0].attributes.NCA_Region;
                     return '';
                 }();
-                var featureAttribute = evt.features[0].attributes.TITLE;
-                this.layerController.featureAttribute = featureAttribute;
+                
+                this.layerController.featureTitle = function() {
+                    var fid = evt.object.layers[0].params.LAYERS.toLowerCase();
+                    if (fid == 'derivative:wbdhu8_alb_simp') return evt.features[0].attributes.SUBBASIN;
+                    return evt.features[0].attributes.TITLE;
+                }();
+                this.layerController.featureAttribute = evt.features[0].attributes.TITLE;
                 this.layerController.updatePlotter();
                 
                 var selectedLayer = new OpenLayers.Layer.Vector(
