@@ -1,21 +1,21 @@
 Ext.ns("GDP");
 
 GDP.Plotter = Ext.extend(Ext.Panel, {
+    sosStore : [],
+    plotterData : [],
+    scenarioGcmJSON : {},
+    yLabels : [],
+    plotterYMin : 10000000,
+    plotterYMax : 0,
     plotterDiv : undefined,
     legendDiv : undefined,
     height : undefined,
     legendWidth : undefined,
     controller : undefined,
     plotterTitle : undefined,
-    sosStore : [],
-    plotterData : [],
+    titleTipText : undefined,
     graph : undefined,
     toolbar : undefined,
-    scenarioGcmJSON : {},
-    
-    yLabels : [],
-    plotterYMin : 10000000,
-    plotterYMax : 0,
     constructor : function(config) {
         config = config || {};
         this.plotterDiv = config.plotterDiv || 'dygraph-content';
@@ -24,6 +24,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         this.height = config.height || 200;
         this.plotterTitle = config.title || '';
         this.controller = config.controller;
+        this.titleTipText = config.titleTipText;
         
         this.toolbar = new Ext.Toolbar({
             itemId : 'plotterToolbar',
@@ -78,7 +79,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         
         var endpoint = args.url;
         var offering = args.offering;
-        this.plotterTitle = args.featureTitle;
+        this.plotterTitle = args.featureTitle + this.titleTipText;
         this.yLabels = [];
         // TODO this is not working, fixme
         if (this.sosStore) {
@@ -139,11 +140,16 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                 this.scenarioGcmJSON[scenarioKey][gcmKey] = [];
             }, this);
         }, this);
+        
+        // Set up the text for the initial view of the plotter panel
         Ext.DomHelper.append(Ext.DomQuery.selectNode("div[id='dygraph-content']"), {
             tag : 'div', 
             id : 'plotter-prefill-text',
             html : args.record.get('helptext')['plotWindowIntroText']
         });
+        
+        // This tooltip will show up to the right of any title text
+        this.titleTipText = '&nbsp;&nbsp;<span ext:qtip="'+args.record.get('helptext')['plotHelp']+'"><img class="quicktip-img" src="images/info.gif" /></span>';
     },
     loadSOSStore : function(meta, offering) {
         var url = "proxy/" + meta.url + "?service=SOS&request=GetObservation&version=1.0.0&offering=" +
