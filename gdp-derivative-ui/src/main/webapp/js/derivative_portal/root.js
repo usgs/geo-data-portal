@@ -196,7 +196,8 @@ function initializeMapping() {
             "http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_ShadedRelief_World_2D/MapServer/tile/${z}/${y}/${x}",
             {
                 layers : "0",
-                isBaseLayer : true
+                isBaseLayer : true,
+                numZoomLevels : 7
             }
             ),
         new OpenLayers.Layer.WMS(
@@ -204,7 +205,8 @@ function initializeMapping() {
             "http://maps.opengeo.org/geowebcache/service/wms",
             {
                 layers: "bluemarble",
-                isBaseLayer : true
+                isBaseLayer : true,
+                numZoomLevels : 7
             }
             ),
         new OpenLayers.Layer.WMS(
@@ -212,7 +214,8 @@ function initializeMapping() {
             "http://isse.cr.usgs.gov/ArcGIS/services/Combined/SDDS_Imagery/MapServer/WMSServer",
             {
                 layers: "0",
-                isBaseLayer : true
+                isBaseLayer : true,
+                numZoomLevels : 7
             }
             ),
         new OpenLayers.Layer.XYZ(
@@ -220,7 +223,8 @@ function initializeMapping() {
             "http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_StreetMap_World_2D/MapServer/tile/${z}/${y}/${x}",
             {
                 layers : "0",
-                isBaseLayer : true
+                isBaseLayer : true,
+                numZoomLevels : 7
             }
             )
         ]

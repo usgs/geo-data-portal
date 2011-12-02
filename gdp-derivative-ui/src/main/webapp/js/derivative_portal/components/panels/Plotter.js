@@ -199,8 +199,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         this.titleTipText = '&nbsp;&nbsp;<span ext:qtip="'+args.record.get('helptext')['plotHelp']+'" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span>';
     },
     loadSOSStore : function(meta, offering) {
-        var url = "proxy/" + meta.url + "?service=SOS&request=GetObservation&version=1.0.0&offering=" +
-        encodeURI(offering) + "&observedProperty=mean";
+        var url = "proxy/" + meta.url + "?service=SOS&request=GetObservation&version=1.0.0&offering=" + encodeURI(offering) + "&observedProperty=mean";
         
         this.sosStore.push(new GDP.SOSGetObservationStore({
             url : url, // gmlid is url for now, eventually, use SOS endpoint + gmlid or whatever param

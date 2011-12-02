@@ -5,7 +5,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
     // Got this number from Hollister, and he's not sure where it came from.
     // Without this line, the esri road and relief layers will not display
     // outside of the upper western hemisphere.
-    MAX_RESOLUTION : 1.40625/2,
+    MAX_RESOLUTION : 1.40625/2, //0.703125
     DEFAULT_LEGEND_X : 110,
     DEFAULT_LEGEND_Y : 293,
     layerController : undefined,
@@ -27,14 +27,13 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         // Set up the map and controls on the map
         var map = new OpenLayers.Map({
             maxResolution: this.MAX_RESOLUTION,
-            maxExtent: new OpenLayers.Bounds(-180, -90, 180, 90),
             controls: [
-            new OpenLayers.Control.MousePosition(),
-            new OpenLayers.Control.ScaleLine(),
-            new OpenLayers.Control.PanZoomBar({
-                panIcons : false,
-                position : new OpenLayers.Pixel(3,30)
-            })
+                new OpenLayers.Control.MousePosition(),
+                new OpenLayers.Control.ScaleLine(),
+                new OpenLayers.Control.PanZoomBar({
+                    panIcons : false,
+                    position : new OpenLayers.Pixel(3,30)
+                })
             ]
         });
 
@@ -126,7 +125,6 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         config = Ext.apply({
             map : map,
             center : new OpenLayers.LonLat(-96, 38),
-            zoom : 4,
             tbar : toolbar
         }, config);
                 
