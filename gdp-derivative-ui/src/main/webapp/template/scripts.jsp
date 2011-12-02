@@ -5,7 +5,7 @@
 <script type="text/javascript" src="js/ext/ext-all.js"></script>
 <script type="text/javascript" src='${param["ComponentDir"]}/extension/notify.js'></script>
 
-<%-- Other JavaScript modules (Mapping, logging, etc) --%>
+<%-- Other JavaScript modules (Mapping, logging and plotting) --%>
 <script type="text/javascript" src="js/log4javascript/log4javascript.js" ></script>
 <script type="text/javascript" src="js/openlayers/lib/OpenLayers.js"></script>
 <script type="text/javascript" src="js/geoext/GeoExt.js"></script>
@@ -40,9 +40,12 @@
 <%-- Root Module --%>
 <script type="text/javascript" src='${param["UIScriptFile"]}'></script>
 
-
 <script type="text/javascript">
+    GDP.LOG4JS_PATTERN_LAYOUT = '<%= StringUtils.isBlank(System.getProperty("LOG4JS_PATTERN_LAYOUT")) ? "%rms - %-5p - %m%n" : System.getProperty("LOG4JS_PATTERN_LAYOUT") %>';
+    GDP.PROXY_PREFIX = '<%= StringUtils.isBlank(System.getProperty("PROXY_PREFIX")) ? "proxy/" : System.getProperty("PROXY_PREFIX") %>';
+    GDP.DEFAULT_LEGEND_NAME = '<%= StringUtils.isBlank(System.getProperty("DEFAULT_LEGEND_NAME")) ? "boxfill/occam" : System.getProperty("DEFAULT_LEGEND_NAME") %>';
     GDP.CSW_QUERY_CONSTRAINT_FILTER_VALUE = '<%= StringUtils.isBlank(System.getProperty("CSW_QUERY_CONSTRAINT_FILTER_VALUE")) ? "a0a3c56c-2be5-4d45-9924-72b13e348919" : System.getProperty("CSW_QUERY_CONSTRAINT_FILTER_VALUE") %>';
+    GDP.FOI_GETCAPS_URL = GDP.PROXY_PREFIX + '<%= StringUtils.isBlank(System.getProperty("FOI_GETCAPS_URL")) ? "http://igsarm-cida-javadev1.er.usgs.gov:8081/geoserver/derivative/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities" : System.getProperty("FOI_GETCAPS_URL") %>';
     
     // http://ejohn.org/blog/fast-javascript-maxmin/
     Array.max = function( array , maxVal ){

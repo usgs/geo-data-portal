@@ -1,7 +1,6 @@
 var LOG;
 var NOTIFY;
 var LOADMASK;
-var FOI_GETCAPS_URL;
 // TODO- We may want to begin preloading images here. At least over a VPN connection
 // it seems to take ages to load action/toolbar icons. This happens due to map tiles
 // loading at the same time.
@@ -9,16 +8,12 @@ var FOI_GETCAPS_URL;
 if (Ext.isIE) { // http://www.mail-archive.com/users@openlayers.org/msg01838.html
     document.namespaces;
 } 
-Ext.onReady(function () {
-    GDP.PROXY_PREFIX = 'proxy/';
-    GDP.DEFAULT_LEGEND_NAME = 'boxfill/occam';
-    FOI_GETCAPS_URL = GDP.PROXY_PREFIX + "http://igsarm-cida-javadev1.er.usgs.gov:8081/geoserver/derivative/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities";
 
+Ext.onReady(function () {
     initializeLogging();
     initializeNotification();
     initializeMapping();
     initializeQuickTips();
-    
 });
 
 /**
@@ -27,7 +22,7 @@ Ext.onReady(function () {
 function initializeLogging() {
     LOG = log4javascript.getLogger();
     
-    var layout = new log4javascript.PatternLayout("%rms - %-5p - %m%n");
+    var layout = new log4javascript.PatternLayout(GDP.LOG4JS_PATTERN_LAYOUT);
     
     var appender = new log4javascript.BrowserConsoleAppender();
     
@@ -304,7 +299,7 @@ function initializeMapping() {
         width : 265,
         minWidth : 265,
         map : mapPanel.map,
-        foiGetCapsURL : FOI_GETCAPS_URL,
+        foiGetCapsURL : GDP.FOI_GETCAPS_URL,
         baseLayerStore : baseLayerStore,
         capabilitiesStore : capabilitiesStore,
         getRecordsStore : getRecordsStore
