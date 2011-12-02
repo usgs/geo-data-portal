@@ -137,9 +137,9 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
         this.layer = layerRecord;
 		
         var dims = layerRecord.get('dimensions');
-        Ext.iterate(dims, function(key, value) {
-            this.modifyDimensions(key, value['default']);
-        }, this);
+//        Ext.iterate(dims, function(key, value) {
+//            this.modifyDimensions(key, value['default']);
+//        }, this);
 		
         var layerName = layerRecord.get('name');
         //this.zaxisName = dims.elevation.name + ' (' + dims.elevation.units + ')
@@ -236,7 +236,7 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
     },
     modifyDimensions : function(extentName, value) {
         LOG.debug('LayerController:modifyDimensions: Handling request.');
-        if (this.dimensions.hasOwnProperty(extentName)) {
+        if (this.dimensions && this.dimensions.hasOwnProperty(extentName)) {
             var val = value || '';
             this.dimensions[extentName] = val;
             return true;
@@ -251,20 +251,35 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
 
         store.removeAll();
 
+//        if (!this.dimensions) {
+//            this.dimensions = [];
+//            Ext.each(record.get('dimensions'), function(item){
+//                Ext.iterate(item, function(key, value) {
+//                    this.dimensions[key] = value['default'];
+//                }, this);
+//            }, this);
+//        }
         var extents = record.get('dimensions')[extentName];
         if (extents) {
-            var currentExtent = extents['default'];
+            
             var timesToLoad = [];
+            var cleanedTimes = [];
             Ext.each(extents.values, function(item, index, allItems){
                 if (index > maxNum) {
                     return false;
                 } else {
                     var time = item.trim();
                     var timerange = time.substring(0,4) + " - " + (29 + parseInt(time.substring(0,4)));
+                    cleanedTimes.push(time);
                     timesToLoad.push([time, timerange]);
                 }
                 return true;
             }, this);
+
+            if (cleanedTimes.indexOf(this.dimensions[extentName]) == -1) {
+                this.dimensions[extentName] = extents['default'];
+            }
+            var currentExtent = this.dimensions[extentName];
 
             store.loadData(timesToLoad);
             return {
