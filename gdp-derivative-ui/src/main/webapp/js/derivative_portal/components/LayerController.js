@@ -81,6 +81,10 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
     getCurrentFOI : function() {
         return this.currentFOI;
     },
+    showChange : false,
+    getShowChange : function() {
+        return this.showChange;
+    },
     constructor : function(config) {
         LOG.debug('LayerController:constructor: Constructing self.');
             
@@ -123,6 +127,10 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
             "updateplotter"
         );
         this.requestBaseLayer(config.baseLayer);
+    },
+    onChangeProductToggled : function(pressed) {
+        this.showChange = pressed;
+        this.fireEvent('changescenario')
     },
     requestBaseLayer : function(baseLayer) {
         LOG.debug('LayerController:requestBaseLayer');

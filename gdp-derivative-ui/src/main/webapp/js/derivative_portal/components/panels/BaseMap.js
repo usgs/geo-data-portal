@@ -17,6 +17,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
     legendSwitch : undefined,
     notificationWindow : undefined,
     layerOpacitySlider : undefined,
+    changeProdToggleButton : undefined, 
     constructor : function(config) {
         LOG.debug('BaseMap:constructor: Constructing self.');
         
@@ -68,6 +69,16 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             autoSelect : false, // Value is programatically selected on store load
             store : config.baseLayerStore
         });
+        
+                
+        this.changeProdToggleButton = new Ext.Button({
+            itemId : 'changeProdToggleButton',
+            text : 'Show Change From Historical Period',
+            ref : 'change-product-toggle-button',
+            pressed : false,
+            enableToggle: true
+        })
+        
         this.legendSwitch = new Ext.Button({
             text : 'Off',
             pressed: true,
@@ -104,7 +115,16 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         });
         var toolbar = new Ext.Toolbar({
             items : [
+            new Ext.Button({
+                itemId : 'infoButton',
+                text : 'INFO',
+                ref : 'toolbar-info-button'
+            }),
             '->',
+            this.changeProdToggleButton,
+            ' ' ,
+            '-',
+            ' ',
             'Opacity: ',
             this.layerOpacitySlider,
             ' ',
@@ -120,7 +140,15 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             this.legendCombo
             ]
         })
-        
+        LOG.debug('DatasetConfigPanel:constructor: Registering listeners.');
+        this.changeProdToggleButton.on('click', function(button){
+            this.layerController.onChangeProductToggled(button.pressed);
+            // Change WMS Capabilities store to new URL
+            // Change Get Legend store to new URL
+        }, this)
+//        this.toolbar["toolbar-info-button"].on('click', function() {
+//            
+//        }, this);          
         
         config = Ext.apply({
             map : map,

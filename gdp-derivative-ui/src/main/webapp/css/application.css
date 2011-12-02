@@ -6,19 +6,19 @@
         IDs and Classes specific to this application
 */
 
-#plotter-toolbar-btngrp-table1 button:nth-of-type(1) {
+#plotter-toolbar-btngrp-table1 button {
     font-weight: bold;
     color: #668000;
 }
-#plotter-toolbar-btngrp-table2 button:nth-of-type(1) {
+#plotter-toolbar-btngrp-table2 button {
     font-weight: bold;
     color: #003380;
 }
-#plotter-toolbar-btngrp-table3 button:nth-of-type(1) {
+#plotter-toolbar-btngrp-table3 button {
     font-weight: bold;
     color: #008033;
 }
-#plotter-toolbar-btngrp-table4 button:nth-of-type(1) {
+#plotter-toolbar-btngrp-table4 button {
     font-weight: bold;
     color: #660080;
 }

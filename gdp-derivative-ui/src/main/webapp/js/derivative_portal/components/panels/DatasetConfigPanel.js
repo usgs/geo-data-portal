@@ -168,8 +168,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
                 me.setValue('');
             })
         }, this);
-        
-        
+
         
         config = Ext.apply({
             id : 'dataset-configuration-panel',
@@ -200,6 +199,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
                 this.scenarioCombo,
                 this.gcmCombo,
                 this.timestepCombo
+                
                 ]
             },
             {
@@ -219,9 +219,14 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         }, config);
         GDP.DatasetConfigPanel.superclass.constructor.call(this, config);
         LOG.debug('DatasetConfigPanel:constructor: Construction complete.');
-        this.parentRecordStore.load();        
-        
-        LOG.debug('DatasetConfigPanel:constructor: Registering listeners.');
+        this.parentRecordStore.load(); 
+        this.capabilitiesStore.on('beforeload', function() {
+            var url = this.capabilitiesStore.url;
+            
+
+            
+            this.capabilitiesStore.url = url;
+        }, this);
         this.capabilitiesStore.on('load', function(capStore) {
             LOG.debug('DatasetConfigPanel: Capabilities store has finished loading.');
             this.capStoreOnLoad(capStore);
@@ -296,6 +301,9 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             LOG.debug('DatasetConfigPanel: Observed \'changedimension\'.');
             this.onChangeDimension(extentName);
         }, this);
+        this.controller.on('changeproducttoggled', function(pressed) {
+            
+        }, this)
     },
     capStoreOnLoad : function(capStore) {
         LOG.debug("DatasetConfigPanel: capStoreOnLoad()");
@@ -330,8 +338,14 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
     },
     onSelectedDataset : function(args) {
         LOG.debug("DatasetConfigPanel: onSelectedDataset()");
-        this.capabilitiesStore.proxy.setApi(Ext.data.Api.actions.read, args.url);
-        this.capabilitiesStore.load();
+        
+        if (this.controller.getShowChange()) { 
+            this.capabilitiesStore.proxy.setApi(Ext.data.Api.actions.read, args.url + '_delta');
+            this.capabilitiesStore.load();
+        } else {
+            this.capabilitiesStore.proxy.setApi(Ext.data.Api.actions.read, args.url);
+            this.capabilitiesStore.load();
+        }
     },
     onLoadedCapstore : function(args) {
         LOG.debug("DatasetConfigPanel: onLoadedCapStore()");
@@ -455,8 +469,6 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
     onChangeScenario : function () {
         LOG.debug("DatasetConfigPanel: onChangeScenario()");
         var scenario = this.controller.getScenario();
-        if (scenario) {
-        }
         if (this.derivRecordStoreLoaded) {
             this.loadLeafRecordStore();
         }
