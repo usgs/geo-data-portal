@@ -5,6 +5,24 @@
     Description:
         IDs and Classes specific to this application
 */
+
+#plotter-toolbar-btngrp-table1 button:nth-of-type(1) {
+    font-weight: bold;
+    color: #668000;
+}
+#plotter-toolbar-btngrp-table2 button:nth-of-type(1) {
+    font-weight: bold;
+    color: #003380;
+}
+#plotter-toolbar-btngrp-table3 button:nth-of-type(1) {
+    font-weight: bold;
+    color: #008033;
+}
+#plotter-toolbar-btngrp-table4 button:nth-of-type(1) {
+    font-weight: bold;
+    color: #660080;
+}
+
 div#title.xtb-text span.x-combo-list-item {
     border-color: #D0DEF0 !important;
 }

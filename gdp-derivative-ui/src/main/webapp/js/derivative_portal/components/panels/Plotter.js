@@ -102,27 +102,39 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                 columns : 4,
                 layout : 'table',
                 ref : 'plotter-toolbar-buttongroup',
-                items : [{
+                items : [
+                new Ext.Button({
                     text : 'a1fi',
+                    id : 'plotter-toolbar-btngrp-table1',
                     sequencePosition : 0,
                     pressed : true,
                     enableToggle: true
-                },{
+                }),
+                new Ext.Button({
                     text : 'a2',
+                    id : 'plotter-toolbar-btngrp-table2',
                     sequencePosition : 1,
                     pressed : false,
-                    enableToggle: true
-                }, {
+                    enableToggle: true,
+                    style : {  
+                        'font-weight' : 'bold',
+                        'color' : '#003380'
+                    }
+                }), 
+                new Ext.Button({
                     text : 'a1b',
+                    id : 'plotter-toolbar-btngrp-table3',
                     sequencePosition : 2,
                     pressed : false,
                     enableToggle: true
-                }, {
+                }), 
+                new Ext.Button({
                     text : 'b1',
+                    id : 'plotter-toolbar-btngrp-table4',
                     sequencePosition : 3,
                     pressed : false,
                     enableToggle: true
-                }
+                })
                 ]
             }),
             new Ext.Button({
@@ -140,12 +152,12 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
             })
             );
             
-            for (var i = 0, itemCount = this.topToolbar['plotter-toolbar-buttongroup'].items.getCount();i < itemCount;i++) {
-                var item = this.topToolbar['plotter-toolbar-buttongroup'].items.itemAt(i);
-                item.on('click', function(obj) {
-                    this.graph.setVisibility(obj.sequencePosition, obj.pressed );
-                }, this)
-            }
+        for (var i = 0, itemCount = this.topToolbar['plotter-toolbar-buttongroup'].items.getCount();i < itemCount;i++) {
+            var item = this.topToolbar['plotter-toolbar-buttongroup'].items.itemAt(i);
+            item.on('click', function(obj) {
+                this.graph.setVisibility(obj.sequencePosition, obj.pressed );
+            }, this)
+        }
         this.topToolbar["plotter-toolbar-errorbars-button"].on('click', function(obj) {
             this.graph.updateOptions({
                 fillAlpha : obj.pressed ? 0.15 : 0.0
