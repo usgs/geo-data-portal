@@ -167,7 +167,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                 this.loadSOSStore(meta, offering);
             }, this);
         }, this);
-        
+        this.resizePlotter();
 
     },
     resizePlotter : function() {
