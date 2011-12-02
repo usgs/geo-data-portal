@@ -73,12 +73,14 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         });
         this.infoButton = new Ext.Button({
             itemId : 'infoButton',
+            id : 'infoButton',
             text : 'INFO',
             ref : 'toolbar-info-button'
         })
                 
         this.changeProdToggleButton = new Ext.Button({
             itemId : 'changeProdToggleButton',
+            id : 'changeProdToggleButton',
             text : 'Show Change From Historical Period',
             ref : 'change-product-toggle-button',
             pressed : false,

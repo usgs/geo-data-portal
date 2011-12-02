@@ -6,6 +6,16 @@
         IDs and Classes specific to this application
 */
 
+#infoButton button {
+    font-weight: bold;
+    color: #15428B;
+}
+
+#changeProdToggleButton button {
+    font-weight: bold;
+    color: #15428B;
+}
+
 #plotter-toolbar-btngrp-table1 button {
     font-weight: bold;
     color: #668000;
