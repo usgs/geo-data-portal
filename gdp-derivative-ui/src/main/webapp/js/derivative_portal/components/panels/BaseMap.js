@@ -11,6 +11,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
     layerController : undefined,
     currentLayer : undefined,
     baseLayerCombo : undefined,
+    infoButton : undefined,
     legendWindow : undefined,
     legendImage : undefined, 
     legendCombo : undefined,
@@ -18,6 +19,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
     notificationWindow : undefined,
     layerOpacitySlider : undefined,
     changeProdToggleButton : undefined, 
+    infoText : undefined,
     constructor : function(config) {
         LOG.debug('BaseMap:constructor: Constructing self.');
         
@@ -69,11 +71,11 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             autoSelect : false, // Value is programatically selected on store load
             store : config.baseLayerStore
         });
-//        this.infoButton = new Ext.Button({
-//                itemId : 'infoButton',
-//                text : 'INFO',
-//                ref : 'toolbar-info-button'
-//            })
+        this.infoButton = new Ext.Button({
+            itemId : 'infoButton',
+            text : 'INFO',
+            ref : 'toolbar-info-button'
+        })
                 
         this.changeProdToggleButton = new Ext.Button({
             itemId : 'changeProdToggleButton',
@@ -119,11 +121,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         });
         var toolbar = new Ext.Toolbar({
             items : [
-            new Ext.Button({
-                itemId : 'infoButton',
-                text : 'INFO',
-                ref : 'toolbar-info-button'
-            }),
+            this.infoButton,
             '->',
             this.changeProdToggleButton,
             ' ' ,
@@ -148,9 +146,26 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         this.changeProdToggleButton.on('click', function(button){
             this.layerController.onChangeProductToggled(button.pressed);
         }, this)
-//        this.toolbarInfoButton.on('click', function() {
-//            
-//        }, this);          
+        this.infoButton.on('click', function() {
+            var win = new Ext.Window({
+                width:640,
+                shadow : true,
+                title:'USGS Derived Downscaled Climate Projection Portal Information',
+                autoScroll:true,
+                modal:true,
+                floating : true
+            });
+            var iframeID = win.getId() + '_iframe';
+            var iframe = {
+                id:iframeID,
+                tag:'div',
+                width:'100%',
+                height:'100%'
+            }
+            win.show();
+            Ext.DomHelper.insertFirst(win.body, iframe);
+            Ext.DomHelper.append(Ext.DomQuery.selectNode('div[id="'+iframeID+'"]'), this.infoText);
+        }, this);          
         
         config = Ext.apply({
             map : map,
@@ -222,6 +237,10 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         }, this, {
             buffer: 5
         });
+        this.layerController.on('loaded-catstore', function(args) {
+            LOG.debug('BaseMap:onLoadedCatstore');
+            this.onLoadedCatstore(args);
+        }, this);
         this.layerController.on('changebaselayer', function() {
             LOG.debug('BaseMap: Observed "changebaselayer".');
             this.onReplaceBaseLayer();
@@ -374,6 +393,9 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         this.on('resize', function() {
             this.realignLegend();
         }, this);
+    },
+    onLoadedCatstore : function(args) {
+        this.infoText = args.record.get('helptext')['plotWindowIntroText'];
     },
     getHighestZIndex : function() {
         var highestZIndex = 0;

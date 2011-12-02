@@ -139,7 +139,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
             }),
             new Ext.Button({
                 itemId : 'errorBarsButton',
-                text : 'Error Bars',
+                text : 'Min/Max',
                 ref : 'plotter-toolbar-errorbars-button',
                 pressed : true,
                 enableToggle: true

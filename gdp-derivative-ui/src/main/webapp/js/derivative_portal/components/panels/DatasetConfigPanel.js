@@ -169,7 +169,6 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             })
         }, this);
 
-        
         config = Ext.apply({
             id : 'dataset-configuration-panel',
             title : 'Dataset Configuration',
@@ -198,8 +197,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
                 items : [
                 this.scenarioCombo,
                 this.gcmCombo,
-                this.timestepCombo
-                
+                this.timestepCombo                
                 ]
             },
             {
@@ -222,9 +220,6 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         this.parentRecordStore.load(); 
         this.capabilitiesStore.on('beforeload', function() {
             var url = this.capabilitiesStore.url;
-            
-
-            
             this.capabilitiesStore.url = url;
         }, this);
         this.capabilitiesStore.on('load', function(capStore) {
