@@ -1,7 +1,7 @@
 var LOG;
 var NOTIFY;
 var LOADMASK;
-
+var FOI_GETCAPS_URL;
 // TODO- We may want to begin preloading images here. At least over a VPN connection
 // it seems to take ages to load action/toolbar icons. This happens due to map tiles
 // loading at the same time.
@@ -12,28 +12,50 @@ if (Ext.isIE) { // http://www.mail-archive.com/users@openlayers.org/msg01838.htm
 Ext.onReady(function () {
     GDP.PROXY_PREFIX = 'proxy/';
     GDP.DEFAULT_LEGEND_NAME = 'boxfill/occam';
-    GDP.PROCESS_ENDPOINT = 'http://cida-wiwsc-gdp1qa.er.usgs.gov:8080/gdp-process-wps/WebProcessingService';
-    //    GDP.PROCESS_ENDPOINT = 'http://localhost:8080/gdp-process-wps/WebProcessingService'; // Development
-//    OpenLayers.ProxyHost = "proxy/"; // TODO - OGCProxy 
+    FOI_GETCAPS_URL = GDP.PROXY_PREFIX + "http://igsarm-cida-javadev1.er.usgs.gov:8081/geoserver/derivative/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities";
+
     initializeLogging();
     initializeNotification();
     initializeMapping();
     initializeQuickTips();
-//    test();
+    
 });
 
+/**
+ * http://log4javascript.org/
+ */
 function initializeLogging() {
     LOG = log4javascript.getLogger();
-    var layout = new log4javascript.PatternLayout("%rms - %d{HH:mm:ss.SSS} %-5p - %m%n");
+    
+    var layout = new log4javascript.PatternLayout("%rms - %-5p - %m%n");
+    
     var appender = new log4javascript.BrowserConsoleAppender();
+    
     appender.setLayout(layout);
+    //    Thresholds:
+    //    log4javascript.Level.ALL
+    //    log4javascript.Level.TRACE
+    //    log4javascript.Level.DEBUG
+    //    log4javascript.Level.INFO
+    //    log4javascript.Level.WARN
+    //    log4javascript.Level.ERROR
+    //    log4javascript.Level.FATAL
+    //    log4javascript.Level.OFF
+    appender.setThreshold(log4javascript.Level.ALL);
+    
     LOG.addAppender(appender);
-    LOG.info('Derivative Portal: Logging initialized.');
+    
+    LOG.info('Derivative Portal: Log4javascript v.'+log4javascript.version+' initialized.');
 }
 
+/**
+ * Usage example : 
+ *      NOTIFY.error({
+ *          msg : 'Message here'
+ *      });
+ */
 function initializeNotification() {
     LOG.info('Derivative Portal: Initializing Notification.');
-    LOG.debug('root:initializeNotification');
     
     var defaultConfig = {
         msgWidth: 400,
@@ -44,6 +66,7 @@ function initializeNotification() {
      * ERROR
      */
     var _notifyError = function(args) {
+        LOG.trace('Derivative Portal: Showing error popup');
         var config = args || {};
 	
         var moreInfo = new Ext.Button({
@@ -61,8 +84,7 @@ function initializeNotification() {
             msgIconCls: 'msgicon-error',
             msg: config.msg || 'An error has occured.',
             buttons: buttons
-        }, defaultConfig)
-        );
+        }, defaultConfig));
 		
         if (config.moreInfoAction) {
             moreInfo.on('click', function() {
@@ -78,7 +100,7 @@ function initializeNotification() {
      * SUCCESS
      */
     var _notifySuccess = function(msg) {
-        LOG.debug('GDP-DUI: Showing success popup');
+        LOG.trace('Derivative Portal: Showing success popup');
         new Ext.ux.Notify(Ext.applyIf({
             title: 'Success!',
             titleIconCls: 'titleicon-success',
@@ -90,7 +112,7 @@ function initializeNotification() {
      * DEBUG NOTIFY
      */    
     var _notifyDebug = function(msg) {
-        LOG.debug('GDP-DUI: Showing (debug) notify popup');
+        LOG.debug('Derivative Portal: Showing debug popup');
         new Ext.ux.Notify(Ext.applyIf({
             title: 'DEBUG',
             titleIconCls: 'titleicon-debug',
@@ -102,7 +124,7 @@ function initializeNotification() {
      * WARNING
      */
     var _notifyWarning = function(msg) {
-        LOG.debug('GDP-DUI: Showing warning popup');
+        LOG.debug('Derivative Portal: Showing warning popup');
         new Ext.ux.Notify(Ext.applyIf({
             title: 'WARNING',
             titleIconCls: 'titleicon-warning',
@@ -114,7 +136,7 @@ function initializeNotification() {
      * INFO
      */
     var _notifyInfo = function(msg) {
-        LOG.debug('GDP-DUI: Showing information popup');
+        LOG.debug('Derivative Portal: Showing info popup');
         new Ext.ux.Notify(Ext.applyIf({
             title: 'INFO',
             titleIconCls: 'titleicon-info',
@@ -137,45 +159,38 @@ function initializeMapping() {
     LOG.info('Derivative Portal: Initializing Mapping.');
 	
     LOG.debug('Derivative Portal:initializeMapping: Constructing endpoint panel.');
-    var foiGetCapsURL = GDP.PROXY_PREFIX + "http://igsarm-cida-javadev1.er.usgs.gov:8081/geoserver/derivative/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities";
     var legendStore = new Ext.data.JsonStore({
         idProperty: 'name',
         root: 'styles',
         fields: [
-            {
-                name: 'name', 
-                mapping: 'name'
-            },
-
-            {
-                name: 'title', 
-                mapping: 'title'
-            },
-
-            {
-                name: 'abstrakt', 
-                mapping: 'abstract'
-            },
-
-            {
-                name: 'width', 
-                mapping: 'legend.width'
-            },
-
-            {
-                name: 'height', 
-                mapping: 'legend.height'
-            },
-
-            {
-                name: 'format', 
-                mapping: 'legend.format'
-            },
-
-            {
-                name: 'href', 
-                mapping: 'legend.href'
-            }
+        {
+            name: 'name', 
+            mapping: 'name'
+        },
+        {
+            name: 'title', 
+            mapping: 'title'
+        },
+        {
+            name: 'abstrakt', 
+            mapping: 'abstract'
+        },
+        {
+            name: 'width', 
+            mapping: 'legend.width'
+        },
+        {
+            name: 'height', 
+            mapping: 'legend.height'
+        },
+        {
+            name: 'format', 
+            mapping: 'legend.format'
+        },
+        {
+            name: 'href', 
+            mapping: 'legend.href'
+        }
         ]
     });
     
@@ -274,9 +289,7 @@ function initializeMapping() {
                     Filter : {
                         type : '==',
                         property : 'identifier',
-                        // this value (id of parent record) should come from some config thing
-                        // TODO basically don't hard code this
-                        value : 'a0a3c56c-2be5-4d45-9924-72b13e348919'
+                        value : GDP.CSW_QUERY_CONSTRAINT_FILTER_VALUE
                     },
                     version : '1.1.0'
                 }
@@ -291,7 +304,7 @@ function initializeMapping() {
         width : 265,
         minWidth : 265,
         map : mapPanel.map,
-        foiGetCapsURL : foiGetCapsURL,
+        foiGetCapsURL : FOI_GETCAPS_URL,
         baseLayerStore : baseLayerStore,
         capabilitiesStore : capabilitiesStore,
         getRecordsStore : getRecordsStore
@@ -357,9 +370,9 @@ function initializeQuickTips() {
 
 // This is here just for shortcutting some processes in order to test stuff like XML parsing
 function test() { 
-   var testArray = [2, 3, 4, 5];
-   LOG.debug(Array.max(testArray, 2));
-   LOG.debug(Array.max(testArray, 11));
-   LOG.debug(Array.min(testArray, 0));
-   LOG.debug(Array.min(testArray, 22));
+    var testArray = [2, 3, 4, 5];
+    LOG.debug(Array.max(testArray, 2));
+    LOG.debug(Array.max(testArray, 11));
+    LOG.debug(Array.min(testArray, 0));
+    LOG.debug(Array.min(testArray, 22));
 }

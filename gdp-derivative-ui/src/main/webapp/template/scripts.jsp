@@ -1,3 +1,5 @@
+<%@page import="org.apache.commons.lang.StringUtils"%>
+
 <%-- Base EXT modules & Extensions --%>
 <script type="text/javascript" src="js/ext/adapter/ext/ext-base.js"></script>
 <script type="text/javascript" src="js/ext/ext-all.js"></script>
@@ -40,6 +42,8 @@
 
 
 <script type="text/javascript">
+    GDP.CSW_QUERY_CONSTRAINT_FILTER_VALUE = '<%= StringUtils.isBlank(System.getProperty("CSW_QUERY_CONSTRAINT_FILTER_VALUE")) ? "a0a3c56c-2be5-4d45-9924-72b13e348919" : System.getProperty("CSW_QUERY_CONSTRAINT_FILTER_VALUE") %>';
+    
     // http://ejohn.org/blog/fast-javascript-maxmin/
     Array.max = function( array , maxVal ){
         var arrMax = Math.max.apply( Math, array );
