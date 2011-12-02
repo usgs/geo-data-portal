@@ -69,7 +69,11 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             autoSelect : false, // Value is programatically selected on store load
             store : config.baseLayerStore
         });
-        
+//        this.infoButton = new Ext.Button({
+//                itemId : 'infoButton',
+//                text : 'INFO',
+//                ref : 'toolbar-info-button'
+//            })
                 
         this.changeProdToggleButton = new Ext.Button({
             itemId : 'changeProdToggleButton',
@@ -143,10 +147,8 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         LOG.debug('DatasetConfigPanel:constructor: Registering listeners.');
         this.changeProdToggleButton.on('click', function(button){
             this.layerController.onChangeProductToggled(button.pressed);
-            // Change WMS Capabilities store to new URL
-            // Change Get Legend store to new URL
         }, this)
-//        this.toolbar["toolbar-info-button"].on('click', function() {
+//        this.toolbarInfoButton.on('click', function() {
 //            
 //        }, this);          
         

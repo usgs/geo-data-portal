@@ -167,16 +167,18 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         
         Ext.iterate(this.scenarioGcmJSON, function(scenario, object) {
             Ext.iterate(object, function(gcm) {
-                this.scenarioGcmJSON[scenario][gcm] = new Array();
-                var meta = {};
-                var url = endpoint.replace("{shapefile}", this.controller.getCurrentFOI());
-                url = url.replace('{gcm}', gcm);
-                url = url.replace('{scenario}', scenario);
-                url = url.replace('{threshold}', this.controller.getThreshold());
-                meta.url = url;
-                meta.scenario = scenario;
-                meta.gcm = gcm;
-                this.loadSOSStore(meta, offering);
+                if (gcm != 'ensemble') {
+                    this.scenarioGcmJSON[scenario][gcm] = new Array();
+                    var meta = {};
+                    var url = endpoint.replace("{shapefile}", this.controller.getCurrentFOI());
+                    url = url.replace('{gcm}', gcm);
+                    url = url.replace('{scenario}', scenario);
+                    url = url.replace('{threshold}', this.controller.getThreshold());
+                    meta.url = url;
+                    meta.scenario = scenario;
+                    meta.gcm = gcm;
+                    this.loadSOSStore(meta, offering);
+                }
             }, this);
         }, this);
         this.resizePlotter();
@@ -195,8 +197,10 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
             var scenarioKey = this.cleanUpIdentifiers(scenario[0]);
             this.scenarioGcmJSON[scenarioKey] = {};
             Ext.each(args.record.get("gcms"), function(gcm) {
-                var gcmKey = this.cleanUpIdentifiers(gcm[0]);
-                this.scenarioGcmJSON[scenarioKey][gcmKey] = [];
+                if (gcm[0] != 'Ensemble') {
+                    var gcmKey = this.cleanUpIdentifiers(gcm[0]);
+                    this.scenarioGcmJSON[scenarioKey][gcmKey] = [];
+                }
             }, this);
         }, this);
         
@@ -268,7 +272,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
             Ext.iterate(this.scenarioGcmJSON, function(scenario, value) {
                 scenarios.push(scenario);
                 Ext.iterate(value, function(gcm, value) {
-                    if(gcms.indexOf(gcm) == -1) {
+                    if(gcms.indexOf(gcm) == -1 && gcm != 'ensemble') {
                         gcms.push(gcm);
                     }
                     if (!observationsLength) {
@@ -338,7 +342,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                         Ext.iterate(scope.scenarioGcmJSON, function(scenario, value) {
                             scenarios.push(scenario);
                             Ext.iterate(value, function(gcm, value) {
-                                if(gcms.indexOf(gcm) == -1) {
+                                if(gcms.indexOf(gcm) == -1 && gcm != 'ensemble') {
                                     gcms.push(gcm);
                                 }
                                 if (!observationsLength) {
