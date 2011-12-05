@@ -15,6 +15,8 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
     plotterTitle : undefined,
     titleTipText : undefined,
     graph : undefined,
+    visibility : undefined,
+    errorBarsOn : undefined,
     toolbar : undefined,
     constructor : function(config) {
         config = config || {};
@@ -25,6 +27,8 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         this.plotterTitle = config.title || '';
         this.controller = config.controller;
         this.titleTipText = config.titleTipText;
+        this.visibility = config.visibility || [true, false, false, false];
+        this.errorBarsOn = config.errorBars || true;
         
         this.toolbar = new Ext.Toolbar({
             itemId : 'plotterToolbar',
@@ -107,32 +111,28 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                     text : 'a1fi',
                     id : 'plotter-toolbar-btngrp-table1',
                     sequencePosition : 0,
-                    pressed : true,
+                    pressed : this.visibility[0],
                     enableToggle: true
                 }),
                 new Ext.Button({
                     text : 'a2',
                     id : 'plotter-toolbar-btngrp-table2',
                     sequencePosition : 1,
-                    pressed : false,
-                    enableToggle: true,
-                    style : {  
-                        'font-weight' : 'bold',
-                        'color' : '#003380'
-                    }
+                    pressed : this.visibility[1],
+                    enableToggle: true
                 }), 
                 new Ext.Button({
                     text : 'a1b',
                     id : 'plotter-toolbar-btngrp-table3',
                     sequencePosition : 2,
-                    pressed : false,
+                    pressed : this.visibility[2],
                     enableToggle: true
                 }), 
                 new Ext.Button({
                     text : 'b1',
                     id : 'plotter-toolbar-btngrp-table4',
                     sequencePosition : 3,
-                    pressed : false,
+                    pressed : this.visibility[3],
                     enableToggle: true
                 })
                 ]
@@ -141,7 +141,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                 itemId : 'errorBarsButton',
                 text : 'Min/Max',
                 ref : 'plotter-toolbar-errorbars-button',
-                pressed : true,
+                pressed : this.errorBarsOn,
                 enableToggle: true
             }),
             new Ext.Toolbar.Spacer(),
@@ -156,12 +156,15 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
             var item = this.topToolbar['plotter-toolbar-buttongroup'].items.itemAt(i);
             item.on('click', function(obj) {
                 this.graph.setVisibility(obj.sequencePosition, obj.pressed );
+                this.visibility[obj.sequencePosition] = obj.pressed;
             }, this)
         }
         this.topToolbar["plotter-toolbar-errorbars-button"].on('click', function(obj) {
             this.graph.updateOptions({
                 fillAlpha : obj.pressed ? 0.15 : 0.0
-            })
+                
+            });
+            this.errorBarsOn = obj.pressed;
         }, this);          
         this.topToolbar.doLayout();
         
@@ -417,6 +420,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                 legend: 'always',
                 customBars: true,
                 errorBars: true,
+                fillAlpha: this.errorBarsOn ? 0.15 : 0.0,
                 labels: ["Date"].concat(this.yLabels),
                 labelsDiv: Ext.get(this.legendDiv).dom,
                 labelsDivWidth: this.legendWidth,
@@ -430,7 +434,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                 yAxisLabelWidth: 75,
                 ylabel: this.controller.getDerivative().get('derivative') + " " + this.controller.getThreshold() + " " + this.controller.getUnits().replace('deg', '&deg;'),
                 valueRange: [this.plotterYMin - (this.plotterYMin / 10) , this.plotterYMax + (this.plotterYMax / 10)],
-                visibility : [true, false, false, false],
+                visibility : this.visibility,
                 axes: {
                     x: {
                         valueFormatter: function(ms) {
