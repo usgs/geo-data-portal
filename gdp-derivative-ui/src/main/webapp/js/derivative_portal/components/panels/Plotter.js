@@ -92,6 +92,15 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         if (this.graph) {
             this.graph.destroy();
         }
+        else {
+            Ext.get(this.plotterDiv).dom.innerHTML = '';
+        }
+        var height = Math.round(0.5 * parseInt(Ext.get(this.plotterDiv).dom.style.height));
+        LOADMASK = new Ext.LoadMask(Ext.get(this.plotterDiv).dom, {
+            msg: '<div id="cida-load-msg">Loading...</div><img height="' + height + '" src="images/cida-anim.gif" />', 
+            msgCls: 'cida-load-plotter'
+        });
+        LOADMASK.show();
         
         this.topToolbar.removeAll(true);
         
@@ -232,6 +241,10 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
             listeners : {
                 load : function(store) {
                     this.globalArrayUpdate(store, meta);
+                },
+                exception : function() {
+                    LOG.debug('Plotter: SOS store has encountered an exception.');
+                    this.controller.sosExceptionOccurred();
                 },
                 scope: this
             }
