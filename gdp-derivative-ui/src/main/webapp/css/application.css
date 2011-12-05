@@ -11,6 +11,21 @@
     color: #15428B;
 }
 
+#information_div {
+    margin: 10px;
+    background-image: url("../images/CIDA_4C_logo_no_usgs.jpg");
+    background-origin: content-box;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-color: #FFFFFF;
+    color: #15428B;
+}
+
+#infowindow .x-window-mc{
+    background-color: #FFFFFF !important;
+}
+
 #changeProdToggleButton button {
     font-weight: bold;
     color: #15428B;

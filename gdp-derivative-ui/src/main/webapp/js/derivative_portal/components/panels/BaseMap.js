@@ -150,6 +150,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         }, this)
         this.infoButton.on('click', function() {
             var win = new Ext.Window({
+                id : 'infowindow',
                 width:640,
                 shadow : true,
                 title:'USGS Derived Downscaled Climate Projection Portal Information',
@@ -157,16 +158,18 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                 modal:true,
                 floating : true
             });
-            var iframeID = win.getId() + '_iframe';
-            var iframe = {
-                id:iframeID,
+            
+            var infoDivId = 'information_div';
+            var infoDiv = {
+                id: infoDivId,
                 tag:'div',
                 width:'100%',
                 height:'100%'
             }
+            
             win.show();
-            Ext.DomHelper.insertFirst(win.body, iframe);
-            Ext.DomHelper.append(Ext.DomQuery.selectNode('div[id="'+iframeID+'"]'), this.infoText);
+            Ext.DomHelper.insertFirst(win.body, infoDiv);
+            Ext.DomHelper.append(Ext.DomQuery.selectNode('div[id="'+infoDivId+'"]'), this.infoText);
         }, this);          
         
         config = Ext.apply({
