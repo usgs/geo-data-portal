@@ -75,9 +75,13 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             itemId : 'infoButton',
             id : 'infoButton',
             text : 'INFO',
-            ref : 'toolbar-info-button'
+            ref : 'toolbar-info-button',
+            hidden: true
         })
-                
+        this.layerController.on('updateplotter', function(){
+            this.infoButton.show();
+        }, this)
+        
         this.changeProdToggleButton = new Ext.Button({
             itemId : 'changeProdToggleButton',
             id : 'changeProdToggleButton',
