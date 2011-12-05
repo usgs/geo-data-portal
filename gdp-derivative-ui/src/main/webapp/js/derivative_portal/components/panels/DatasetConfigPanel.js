@@ -449,6 +449,9 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
                 }, this);
             }
             this.doLayout();
+            if (this.controller.getFeatureAttribute()) {
+                this.controller.updatePlotter();
+            }
         }
     },
     onChangeDerivative : function () {
@@ -457,9 +460,9 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         if (derivative) {
         }
         this.loadDerivRecordStore();
-        if (this.controller.getFeatureAttribute()) {
-            this.controller.updatePlotter();
-        }
+//        if (this.controller.getFeatureAttribute()) {
+//            this.controller.updatePlotter();
+//        }
     },
     onChangeScenario : function () {
         LOG.debug("DatasetConfigPanel: onChangeScenario()");
@@ -481,9 +484,9 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
     onChangeDimension : function(extentName) {
         LOG.debug("DatasetConfigPanel: onChangeDimension()");
         var threshold = this.controller.getDimension(this.zlayerName);
+        this.controller.threshold = threshold;
         if (threshold && this.zlayerCombo) {
-            this.zlayerCombo.setValue(threshold);
-            this.controller.threshold = threshold;
+            this.zlayerCombo.setValue(threshold); 
         }
         if (extentName === this.zlayerName && this.controller.getFeatureAttribute()) {
             this.controller.updatePlotter();

@@ -398,6 +398,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
     },
     onLoadedCatstore : function(args) {
         this.infoText = args.record.get('helptext')['plotWindowIntroText'];
+        this.changeProdToggleButton.setTooltip(args.record.get('helptext')['changeProdText']);
     },
     getHighestZIndex : function() {
         var highestZIndex = 0;

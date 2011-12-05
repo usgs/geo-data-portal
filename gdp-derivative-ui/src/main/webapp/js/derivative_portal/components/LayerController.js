@@ -276,6 +276,7 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
                 if (index > maxNum) {
                     return false;
                 } else {
+                    // currently for both time and elevation, probably should distinguish them
                     var time = item.trim();
                     var timerange = time.substring(0,4) + " - " + (29 + parseInt(time.substring(0,4)));
                     cleanedTimes.push(time);
