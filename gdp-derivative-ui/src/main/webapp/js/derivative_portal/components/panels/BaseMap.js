@@ -203,6 +203,11 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             }
         });
         this.legendImage = new legendImage();
+        this.legendImage.on('afterrender', function() {
+            (function() {
+                if(LOADMASK) LOADMASK.hide();
+            }).defer(2000);
+        });
         this.legendWindow = new Ext.Window({
             resizable: false,
             draggable: false,
@@ -589,7 +594,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             copy.getLayer().setOpacity(this.layerController.getLayerOpacity());
             copy.get('layer')['url'] = GDP.PROXY_PREFIX + copy.get('layer')['url'];
             copy.getLayer().events.register('loadend', this, function() {
-                if (LOADMASK) LOADMASK.hide();
+//                if (LOADMASK) LOADMASK.hide();
             });
             this.layers.add(copy);
             

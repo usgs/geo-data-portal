@@ -314,14 +314,14 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         this.controller.loadedGetRecordsStore({
             record : catStore.getAt(0)
         });
-        if (LOADMASK) LOADMASK.hide();
+//        if (LOADMASK) LOADMASK.hide();
     },
     derivStoreOnLoad : function(derivStore) {
         LOG.debug("DatasetConfigPanel: derivStoreOnLoad()");
         this.controller.loadedDerivStore({
             record : derivStore.getAt(0)
         });
-        if (LOADMASK) LOADMASK.hide();
+//        if (LOADMASK) LOADMASK.hide();
     },
     leafStoreOnLoad : function(leafStore) {
         LOG.debug("DatasetConfigPanel: leafStoreOnLoad()");
@@ -329,7 +329,7 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             record : leafStore.getAt(0)
         });
 
-        if (LOADMASK) LOADMASK.hide();
+//        if (LOADMASK) LOADMASK.hide();
     },
     onSelectedDataset : function(args) {
         LOG.debug("DatasetConfigPanel: onSelectedDataset()");

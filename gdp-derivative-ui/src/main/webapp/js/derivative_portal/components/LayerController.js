@@ -345,7 +345,7 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
     },
     capabilitiesExceptionOccurred : function(args) {
         LOG.debug('LayerController:capabilitiesExceptionFired: Firing event "exception-capstore"');
-        if (LOADMASK) LOADMASK.hide();
+//        if (LOADMASK) LOADMASK.hide();
         NOTIFY.error({
             msg : 'Could not access WMS endpoint. Application will not be functional until another endpoint is chosen.'
         });
@@ -353,7 +353,7 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
     },
     getRecordsExceptionOccurred : function(args) {
         LOG.debug('LayerController:getRecordsExceptionFired: Firing event "exception-catstore"');
-        if (LOADMASK) LOADMASK.hide();
+//        if (LOADMASK) LOADMASK.hide();
         NOTIFY.error({
             msg : 'Could not access CSW catalog. Application will not be functional until another endpoint is chosen.'
         });

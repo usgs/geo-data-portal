@@ -327,7 +327,10 @@ function initializeMapping() {
     });
     
     LOG.info('Derivative Portal: Mapping initialized.');
-    LOADMASK = new Ext.LoadMask(Ext.getBody());
+    LOADMASK = new Ext.LoadMask(Ext.getBody(), {
+        msg: '<div id="cida-load-msg">Loading...</div><img src="images/cida-anim.gif" />', 
+        msgCls: 'cida-load'
+    });
     LOADMASK.show();
 
     var headerPanel = new Ext.Panel({
