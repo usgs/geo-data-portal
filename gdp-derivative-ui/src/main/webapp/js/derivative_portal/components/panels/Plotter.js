@@ -90,13 +90,17 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         var offering = args.offering;
         this.plotterTitle = args.featureTitle;
         this.yLabels = [];
-        // TODO this is not working, fixme
+        
         if (this.sosStore) {
             this.sosStore = new Array();
         }
-        if (this.graph) {
-            this.graph.destroy();
-        }
+        // TODO- Figure out how to clear the graph (and memory).
+        // Leaving this in causes the graph object to lose its 
+        // maindiv_ variable which causes errors when clicking on a second
+        // feature of interest.
+        //        if (this.graph) {
+        //            this.graph.destroy();
+        //        }
         else {
             Ext.get(this.plotterDiv).dom.innerHTML = '';
         }
@@ -199,17 +203,17 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
             }, this);
         }, this);
         this.resizePlotter();
-
     },
     resizePlotter : function() {
         LOG.debug('Plotter:resizePlotter()');
         var divPlotter = Ext.get(this.plotterDiv);
         var divLegend = Ext.get(this.legendDiv);
-        divPlotter.setWidth(this.getWidth() - (this.legendWidth + 2));
+        
         divLegend.setWidth(this.legendWidth);
+        divPlotter.setWidth(this.getWidth() - (this.legendWidth + 2));
         divPlotter.setHeight(this.getHeight() - this.toolbar.getHeight()); 
         if (this.graph) {
-            this.graph.resize();
+            this.graph.resize(divPlotter.getWidth(), divPlotter.getHeight());
         }
     },
     onLoadedCatstore : function(args) {
