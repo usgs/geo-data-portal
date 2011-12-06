@@ -10,6 +10,7 @@
 <script type="text/javascript" src="js/openlayers/OpenLayers.js"></script>
 <script type="text/javascript" src="js/geoext/GeoExt.js"></script>
 <script type="text/javascript" src="js/dygraph/dygraph-combined.js"></script>
+<script type="text/javascript" src="js/dygraph/dygraph-extra.js"></script>
 
 <!--To be used if dygraphs is not working and needs to be debugged-->
 <!--<script type="text/javascript" src="js/dygraph-unminified/dygraph-layout.js"></script>

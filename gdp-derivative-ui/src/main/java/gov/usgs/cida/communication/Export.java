@@ -6,11 +6,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
+import sun.misc.BASE64Decoder;
 
 /**
  *
@@ -23,7 +23,8 @@ public class Export extends HttpServlet {
 
         String filename = request.getParameter("filename");
         String data =  URLDecoder.decode(request.getParameter("data"), "UTF-8");
-
+        String type = request.getParameter("type");
+        
         if (StringUtils.isBlank(filename) || StringUtils.isBlank(data)) {
             response.sendError(500, "Either 'filename' or 'data' elements were empty.");
             return;
@@ -32,7 +33,12 @@ public class Export extends HttpServlet {
         BufferedOutputStream out = null;
         
         StringBuilder sb = new StringBuilder(data);
-        byte[] csvData = sb.toString().getBytes("UTF-8");
+        byte[] csvData;
+        if ("image/png;base64".equalsIgnoreCase(type)) {
+            csvData = new BASE64Decoder().decodeBuffer(sb.toString());
+        } else {
+            csvData = sb.toString().getBytes("UTF-8");
+        }
         int length = csvData.length;
         
         InputStream in = null;
