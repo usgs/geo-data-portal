@@ -21,6 +21,11 @@
     border-width: 0;
 }
 
+#expandContractButton button {
+    font-weight: bold;
+    color: #15428B;    
+}
+
 #infoButton button {
     font-weight: bold;
     color: #15428B;

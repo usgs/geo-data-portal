@@ -55,7 +55,8 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
             items : [contentPanel, legendPanel],
             layout : 'border',
             autoShow : true,
-            tbar : this.toolbar
+            tbar : this.toolbar,
+            bufferResize : true
         }, config);
         
         GDP.Plotter.superclass.constructor.call(this, config);

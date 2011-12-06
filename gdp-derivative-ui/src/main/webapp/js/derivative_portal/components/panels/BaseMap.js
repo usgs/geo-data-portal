@@ -225,7 +225,8 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         config = Ext.apply({
             map : map,
             center : new OpenLayers.LonLat(-96, 38),
-            tbar : toolbar
+            tbar : toolbar,
+            bufferResize : true
         }, config);
                 
         GDP.BaseMap.superclass.constructor.call(this, config);
