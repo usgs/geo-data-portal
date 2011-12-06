@@ -184,14 +184,15 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         this.expandContractButton = new Ext.Button({
            itemId : 'expandContractButtion',
            id : 'expandContractButton',
-           text : 'Expand',
+           icon : 'images/expand.png',
            ref : '../expandContractButton',
            enableToggle: true,
            listeners : {
                click : function(button) {
                    var expandContractText = button.pressed ? 'Contract' : 'Expand';
+                   var expandContractIcon = button.pressed ? 'images/contract.png' : 'images/expand.png';
                    LOG.debug('BaseMap:expandContractButton:Clicked: User wants to '+expandContractText+' application view');
-                   button.setText(expandContractText)
+                   button.setIcon(expandContractIcon);
                    this.layerController.requestApplicationResize(button.pressed);
                },
                scope : this
