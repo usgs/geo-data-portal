@@ -6,11 +6,6 @@
         IDs and Classes specific to this application
 */
 
-.ext-el-mask {
-  opacity: 0.9;
-  z-index: 20000;
-}
-
 .cida-load div {
     font-size: 16px;
     font-weight: bold;
@@ -31,6 +26,16 @@
     color: #15428B;
 }
 
+#changeProdToggleButton button {
+    font-weight: bold;
+    color: #15428B;
+}
+
+.ext-el-mask {
+  opacity: 0.9;
+  z-index: 20000;
+}
+
 #information_div {
     margin: 10px;
     background-image: url("../images/CIDA_4C_logo_no_usgs.jpg");
@@ -46,10 +51,6 @@
     background-color: #FFFFFF !important;
 }
 
-#changeProdToggleButton button {
-    font-weight: bold;
-    color: #15428B;
-}
 
 #plotter-toolbar-btngrp-table1 button {
     font-weight: bold;

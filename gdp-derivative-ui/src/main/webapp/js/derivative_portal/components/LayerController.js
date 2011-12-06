@@ -107,27 +107,32 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
             
         LOG.debug('LayerController:constructor: Registering Observables.');
         this.addEvents(
+            "application-resize",
+            "bboxbuttonactivated",
+            "creategeomoverlay",
             "changebaselayer",
             "changelayer",
             "changelegend",
             "changedimension",
             "changeopacity",
             "drewbbox",
-            "bboxbuttonactivated",
-            "creategeomoverlay",
-            "submit-bounds",
-            "selected-dataset",
-            "selected-deriv",
-            "loaded-capstore",
-            "loaded-catstore",
-            "loaded-derivstore",
             "exception-capstore",
             "exception-catstore",
             "exception-sosstore",
+            "loaded-capstore",
+            "loaded-catstore",
+            "loaded-derivstore",
             "requestfoi",
+            "submit-bounds",
+            "selected-dataset",
+            "selected-deriv",
             "updateplotter"
         );
         this.requestBaseLayer(config.baseLayer);
+    },
+    requestApplicationResize : function(expand) {
+        LOG.debug('LayerController:requestApplicationResize: Expand: ' + expand);
+        this.fireEvent('application-resize', expand);
     },
     onChangeProductToggled : function(pressed) {
         this.showChange = pressed;

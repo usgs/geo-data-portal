@@ -296,9 +296,6 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             LOG.debug('DatasetConfigPanel: Observed \'changedimension\'.');
             this.onChangeDimension(extentName);
         }, this);
-        this.controller.on('changeproducttoggled', function(pressed) {
-            
-        }, this)
     },
     capStoreOnLoad : function(capStore) {
         LOG.debug("DatasetConfigPanel: capStoreOnLoad()");

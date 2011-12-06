@@ -6,20 +6,23 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
     // Without this line, the esri road and relief layers will not display
     // outside of the upper western hemisphere.
     MAX_RESOLUTION : 1.40625/2, //0.703125
+    
     DEFAULT_LEGEND_X : 110,
     DEFAULT_LEGEND_Y : 293,
-    layerController : undefined,
+    
+    changeProdToggleButton : undefined, 
     currentLayer : undefined,
     baseLayerCombo : undefined,
+    expandContractButton : undefined,
     infoButton : undefined,
-    legendWindow : undefined,
-    legendImage : undefined, 
-    legendCombo : undefined,
-    legendSwitch : undefined,
-    notificationWindow : undefined,
-    layerOpacitySlider : undefined,
-    changeProdToggleButton : undefined, 
     infoText : undefined,
+    layerController : undefined,
+    layerOpacitySlider : undefined,
+    legendCombo : undefined,
+    legendImage : undefined, 
+    legendSwitch : undefined,
+    legendWindow : undefined,
+    notificationWindow : undefined,
     constructor : function(config) {
         LOG.debug('BaseMap:constructor: Constructing self.');
         
@@ -31,12 +34,12 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         var map = new OpenLayers.Map({
             maxResolution: this.MAX_RESOLUTION,
             controls: [
-                new OpenLayers.Control.MousePosition(),
-                new OpenLayers.Control.ScaleLine(),
-                new OpenLayers.Control.PanZoomBar({
-                    panIcons : false,
-                    position : new OpenLayers.Pixel(3,30)
-                })
+            new OpenLayers.Control.MousePosition(),
+            new OpenLayers.Control.ScaleLine(),
+            new OpenLayers.Control.PanZoomBar({
+                panIcons : false,
+                position : new OpenLayers.Pixel(3,30)
+            })
             ]
         });
 
@@ -53,7 +56,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             new OpenLayers.Control.ZoomBox({
                 title:"Zoom box: Selecting it you can zoom on an area by clicking and dragging."
             })
-            ]);                
+        ]);                
         map.addControl(mapControlPanel);
         
         // Set up the toolbar above the map
@@ -69,18 +72,15 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             editable : false,
             emptyText : 'Loading...',
             autoSelect : false, // Value is programatically selected on store load
-            store : config.baseLayerStore
+            store : config.baseLayerStore,
+            listeners : {
+                select : function(combo, record) {
+                    LOG.debug('BaseMap: Base Layer Combo Box ' + combo.getEl().id + ' observed select.');
+                    this.layerController.requestBaseLayer(record);
+                },
+                scope : this
+            }
         });
-        this.infoButton = new Ext.Button({
-            itemId : 'infoButton',
-            id : 'infoButton',
-            text : 'INFO',
-            ref : 'toolbar-info-button',
-            hidden: true
-        })
-        this.layerController.on('updateplotter', function(){
-            this.infoButton.show();
-        }, this)
         
         this.changeProdToggleButton = new Ext.Button({
             itemId : 'changeProdToggleButton',
@@ -88,25 +88,34 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             text : 'Show Change From Historical Period',
             ref : 'change-product-toggle-button',
             pressed : false,
-            enableToggle: true
+            enableToggle: true,
+            listeners : {
+                click : function(button) {
+                    this.layerController.onChangeProductToggled(button.pressed);
+                },
+                scope : this
+            }
         })
         
         this.legendSwitch = new Ext.Button({
             text : 'Off',
             pressed: true,
-            enableToggle: true
-        });
-        this.legendSwitch.on('click', function(){
-            if (this.legendWindow.hidden) {
-                this.legendWindow.show();
-                this.legendSwitch.setText('Off');
-                this.legendSwitch.pressed = true;
-            } else {
-                this.legendWindow.hide();
-                this.legendSwitch.setText('On');
-                this.legendSwitch.pressed = false;
+            enableToggle: true,
+            listeners : {
+                click : function() {
+                    if (this.legendWindow.hidden) {
+                        this.legendWindow.show();
+                        this.legendSwitch.setText('Off');
+                        this.legendSwitch.pressed = true;
+                    } else {
+                        this.legendWindow.hide();
+                        this.legendSwitch.setText('On');
+                        this.legendSwitch.pressed = false;
+                    }
+                },
+                scope : this
             }
-        }, this);
+        });
         this.legendCombo = new Ext.form.ComboBox({
             xtype : 'combo',
             mode : 'local',
@@ -116,8 +125,22 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             lazyInit : false,
             displayField : 'title',
             editable : false,
-            emptyText : 'Loading...'
-        })
+            emptyText : 'Loading...',
+            listeners : {
+                select : function(obj, rec) {
+                    LOG.debug('BaseMap: A new legend style chosen: ' + rec.id + ' (' + rec.data.abstrakt + ')');
+                    this.layerController.requestLegendRecord(rec);
+                },
+                scope : this
+            }
+        });
+        this.legendCombo.store.on('load', function(store) {
+            LOG.debug('BaseMap: Legend Combobox store Loaded.');
+            //  http://internal.cida.usgs.gov/jira/browse/GDP-372
+            var recordIndex = store.find('name', GDP.DEFAULT_LEGEND_NAME);
+            recordIndex = (recordIndex < 0) ? 0 : recordIndex;
+            this.legendCombo.setValue(store.getAt(recordIndex).get('name'));
+        }, this);
         this.layerOpacitySlider = new Ext.slider.SingleSlider({
             value : this.layerController.getLayerOpacity() * 100,
             width: 100,
@@ -125,9 +148,59 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                 template: '<div>Opacity: {opacity}%</div>'
             })
         });
+        
+        this.infoButton = new Ext.Button({
+            itemId : 'infoButton',
+            id : 'infoButton',
+            text : 'INFO',
+            ref : '../toolbar-info-button',
+            hidden: true,
+            listeners: {
+                click : function() {
+                    var win = new Ext.Window({
+                        id : 'infowindow',
+                        width:640,
+                        shadow : true,
+                        title:'USGS Derived Downscaled Climate Projection Portal Information',
+                        autoScroll:true,
+                        modal:true,
+                        floating : true
+                    });
+            
+                    var infoDivId = 'information_div';
+                    var infoDiv = {
+                        id: infoDivId,
+                        tag:'div',
+                        width:'100%',
+                        height:'100%'
+                    }
+                    win.show();
+                    Ext.DomHelper.insertFirst(win.body, infoDiv);
+                    Ext.DomHelper.append(Ext.DomQuery.selectNode('div[id="'+infoDivId+'"]'), this.infoText);
+                },
+                scope : this
+            }
+        });
+        this.expandContractButton = new Ext.Button({
+           itemId : 'expandContractButtion',
+           id : 'expandContractButton',
+           text : 'Expand',
+           ref : '../expandContractButton',
+           enableToggle: true,
+           listeners : {
+               click : function(button) {
+                   var expandContractText = button.pressed ? 'Contract' : 'Expand';
+                   LOG.debug('BaseMap:expandContractButton:Clicked: User wants to '+expandContractText+' application view');
+                   button.setText(expandContractText)
+                   this.layerController.requestApplicationResize(button.pressed);
+               },
+               scope : this
+           }
+        });
         var toolbar = new Ext.Toolbar({
             items : [
             this.infoButton,
+            this.expandContractButton,
             '->',
             this.changeProdToggleButton,
             ' ' ,
@@ -149,33 +222,6 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             ]
         })
         LOG.debug('DatasetConfigPanel:constructor: Registering listeners.');
-        this.changeProdToggleButton.on('click', function(button){
-            this.layerController.onChangeProductToggled(button.pressed);
-        }, this)
-        this.infoButton.on('click', function() {
-            var win = new Ext.Window({
-                id : 'infowindow',
-                width:640,
-                shadow : true,
-                title:'USGS Derived Downscaled Climate Projection Portal Information',
-                autoScroll:true,
-                modal:true,
-                floating : true
-            });
-            
-            var infoDivId = 'information_div';
-            var infoDiv = {
-                id: infoDivId,
-                tag:'div',
-                width:'100%',
-                height:'100%'
-            }
-            
-            win.show();
-            Ext.DomHelper.insertFirst(win.body, infoDiv);
-            Ext.DomHelper.append(Ext.DomQuery.selectNode('div[id="'+infoDivId+'"]'), this.infoText);
-        }, this);          
-        
         config = Ext.apply({
             map : map,
             center : new OpenLayers.LonLat(-96, 38),
@@ -185,66 +231,14 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         GDP.BaseMap.superclass.constructor.call(this, config);
         LOG.debug('BaseMap:constructor: Construction complete.');
         
-        LOG.debug('BaseMap: Setting up legend window.');
-        var legendImage = Ext.extend(GeoExt.LegendImage, {
-            setUrl: function(url) {
-                this.url = url;
-                var el = this.getEl();
-                if (el) {
-                    el.dom.src = '';
-                    el.un("error", this.onImageLoadError, this);
-                    el.on("error", this.onImageLoadError, this, {
-                        single: true
-                    });
-                    el.dom.src = url;
-                }
-                LOG.debug('BaseMap: Expanding legend window');
-                this.ownerCt.expand(true);
-            }
-        });
-        this.legendImage = new legendImage();
-        this.legendImage.on('afterrender', function() {
-            (function() {
-                if(LOADMASK) LOADMASK.hide();
-            }).defer(2000);
-        });
-        this.legendWindow = new Ext.Window({
-            resizable: false,
-            draggable: false,
-            border: false,
-            frame: false,
-            shadow: false,
-            layout: 'absolute',
-            items: [this.legendImage],
-            height: this.DEFAULT_LEGEND_Y,
-            width: this.DEFAULT_LEGEND_X,
-            closable : false,
-            collapsible : false,
-            collapsed : true,
-            expandOnShow : false
-        });
-        this.legendWindow.show();
-                
         LOG.debug('BaseMap:constructor: Registering Listeners.');
-        this.baseLayerCombo.on('select', function(combo, record, index) {
-            LOG.debug('BaseMap: Base Layer Combo Box ' + combo.getEl().id + ' observed select.');
-            this.layerController.requestBaseLayer(record);
-        }, this);
+        this.layerController.on('updateplotter', function(){
+            this.infoButton.show();
+        }, this)
         this.layerController.on('changebaselayer', function() {
             LOG.debug('BaseMap: Observed "changebaselayer".');
             this.baseLayerCombo.setValue(this.layerController.getBaseLayer().data.title);
         }, this);
-        this.legendCombo.store.on('load', function(store) {
-            LOG.debug('BaseMap: Legend Combobox store Loaded.');
-            //  http://internal.cida.usgs.gov/jira/browse/GDP-372
-            var recordIndex = store.find('name', GDP.DEFAULT_LEGEND_NAME);
-            recordIndex = (recordIndex < 0) ? 0 : recordIndex;
-            this.legendCombo.setValue(store.getAt(recordIndex).get('name'));
-        }, this);
-        this.legendCombo.on('select', function(obj, rec) {
-            LOG.debug('BaseMap: A new legend style chosen: ' + rec.id + ' (' + rec.data.abstrakt + ')');
-            this.layerController.requestLegendRecord(rec);
-        },this);
         this.layerOpacitySlider.on('change', function() {
             LOG.debug('BaseMap:layerOpacitySlider: Observed \'change\'.');
             this.layerController.requestOpacity(this.layerOpacitySlider.getValue() / 100);
@@ -407,6 +401,49 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         this.on('resize', function() {
             this.realignLegend();
         }, this);
+        
+        this.createLegendImage();
+    },
+    createLegendImage : function() {
+        LOG.debug('BaseMap: Setting up legend window.');
+        var legendImage = Ext.extend(GeoExt.LegendImage, {
+            setUrl: function(url) {
+                this.url = url;
+                var el = this.getEl();
+                if (el) {
+                    el.dom.src = '';
+                    el.un("error", this.onImageLoadError, this);
+                    el.on("error", this.onImageLoadError, this, {
+                        single: true
+                    });
+                    el.dom.src = url;
+                }
+                LOG.debug('BaseMap: Expanding legend window');
+                this.ownerCt.expand(true);
+            }
+        });
+        this.legendImage = new legendImage();
+        this.legendImage.on('afterrender', function() {
+            (function() {
+                if(LOADMASK) LOADMASK.hide();
+            }).defer(2000);
+        });
+        this.legendWindow = new Ext.Window({
+            resizable: false,
+            draggable: false,
+            border: false,
+            frame: false,
+            shadow: false,
+            layout: 'absolute',
+            items: [this.legendImage],
+            height: this.DEFAULT_LEGEND_Y,
+            width: this.DEFAULT_LEGEND_X,
+            closable : false,
+            collapsible : false,
+            collapsed : true,
+            expandOnShow : false
+        });
+        this.legendWindow.show();
     },
     onLoadedCatstore : function(args) {
         this.infoText = args.record.get('helptext')['plotWindowIntroText'];
@@ -594,8 +631,8 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             copy.getLayer().setOpacity(this.layerController.getLayerOpacity());
             copy.get('layer')['url'] = GDP.PROXY_PREFIX + copy.get('layer')['url'];
             copy.getLayer().events.register('loadend', this, function() {
-//                if (LOADMASK) LOADMASK.hide();
-            });
+                //                if (LOADMASK) LOADMASK.hide();
+                });
             this.layers.add(copy);
             
             var foilayer = this.map.getLayersByName('foilayer');

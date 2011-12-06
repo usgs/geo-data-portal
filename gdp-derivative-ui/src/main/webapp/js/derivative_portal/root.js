@@ -350,11 +350,23 @@ function initializeMapping() {
         contentEl: 'usgs-footer-panel'
     });
     
-    new Ext.Viewport({
+    var viewPort = new Ext.Viewport({
         renderTo : document.body,
         items : [headerPanel, centerPanel, configPanel, footerPanel], 
         layout: 'border'
     });
+    
+    layerController.on('application-resize', function(collapse){
+        LOG.debug('Root:Observed "application-resize": Expand: ' + collapse);
+        if (collapse) {
+            headerPanel.hide();
+            footerPanel.hide();
+        } else {
+            headerPanel.show();
+            footerPanel.show();
+        }
+        viewPort.doLayout();
+    }, this)
     
 }
 
