@@ -56,7 +56,8 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
             layout : 'border',
             autoShow : true,
             tbar : this.toolbar,
-            bufferResize : true
+            bufferResize : true,
+            split: true
         }, config);
         
         GDP.Plotter.superclass.constructor.call(this, config);
@@ -77,6 +78,9 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
             LOG.debug('Plotter:onLoadedCatstore');
             this.onLoadedCatstore(args);
         }, this);
+        this.on('resize', function(){
+            this.resizePlotter();
+        }, this)
     },
     
     updatePlotter : function(args) {
@@ -203,7 +207,10 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         var divLegend = Ext.get(this.legendDiv);
         divPlotter.setWidth(this.getWidth() - (this.legendWidth + 2));
         divLegend.setWidth(this.legendWidth);
-        divPlotter.setHeight(this.height - this.toolbar.getHeight()); 
+        divPlotter.setHeight(this.getHeight() - this.toolbar.getHeight()); 
+        if (this.graph) {
+            this.graph.resize();
+        }
     },
     onLoadedCatstore : function(args) {
         Ext.each(args.record.get("scenarios"), function(scenario) {

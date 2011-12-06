@@ -152,7 +152,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         this.infoButton = new Ext.Button({
             itemId : 'infoButton',
             id : 'infoButton',
-            text : 'INFO',
+            text : 'Info',
             ref : '../toolbar-info-button',
             hidden: true,
             listeners: {
