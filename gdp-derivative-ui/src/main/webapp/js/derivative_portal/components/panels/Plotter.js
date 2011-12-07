@@ -18,6 +18,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
     visibility : undefined,
     errorBarsOn : undefined,
     toolbar : undefined,
+    errorDisplayed : undefined,
     constructor : function(config) {
         config = config || {};
         this.plotterDiv = config.plotterDiv || 'dygraph-content';
@@ -29,6 +30,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         this.titleTipText = config.titleTipText;
         this.visibility = config.visibility || [true, false, false, false];
         this.errorBarsOn = config.errorBars || true;
+        this.errorDisplayed = false;
         
         this.toolbar = new Ext.Toolbar({
             itemId : 'plotterToolbar',
@@ -87,6 +89,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         
         var endpoint = args.url;
         var offering = args.offering;
+        this.errorDisplayed = false;
         this.plotterTitle = args.featureTitle;
         this.yLabels = [];
         
@@ -331,7 +334,11 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                 },
                 exception : function() {
                     LOG.debug('Plotter: SOS store has encountered an exception.');
-                    this.controller.sosExceptionOccurred();
+                    // I only want to display this message once per request,
+                    if (!this.errorDisplayed) {
+                        this.errorDisplayed = true;
+                        this.controller.sosExceptionOccurred();
+                    }
                 },
                 scope: this
             }
@@ -341,6 +348,13 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
     globalArrayUpdate : function(store, meta) {
         LOG.debug('Plotter:globalArrayUpdate()');
         var record = store.getAt(0);
+        if (!record) {
+            if (!this.errorDisplayed) {
+                this.errorDisplayed = true;
+                this.controller.sosExceptionOccurred();
+            }
+            return;
+        }
         this.scenarioGcmJSON[meta.scenario][meta.gcm] = function(values) {
             Ext.each(values, function(item, index, allItems) {
                 for(var i=0; i<item.length; i++) {
