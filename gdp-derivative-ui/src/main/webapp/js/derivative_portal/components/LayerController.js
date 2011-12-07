@@ -2,6 +2,9 @@ Ext.ns("GDP");
 
 GDP.LayerController = Ext.extend(Ext.util.Observable, {
     MAXIMUM_DIMENSION_COUNT : 101,
+    CSW_ERROR_MSG : 'Could not access CSW catalog. Application will not be functional.  Either reload the application or contact system administrator.',
+    WMS_ERROR_MSG : 'Could not access WMS endpoint. Application will not be functional.  Either reload the application or contact system administrator.',
+    SOS_ERROR_MSG : 'Could not access SOS endpoint. Application will not be functional.  Either reload the application or contact system administrator.',
     baseLayer : undefined,
     getBaseLayer : function() {
         return this.baseLayer;
@@ -151,11 +154,8 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
         this.layer = layerRecord;
 		
         var dims = layerRecord.get('dimensions');
-//        Ext.iterate(dims, function(key, value) {
-//            this.modifyDimensions(key, value['default']);
-//        }, this);
 		
-        var layerName = layerRecord.get('name');
+        // var layerName = layerRecord.get('name');
         //this.zaxisName = dims.elevation.name + ' (' + dims.elevation.units + ')
         //TODO switch back to above, with proper variable name
         this.units = dims.elevation.units;
@@ -353,7 +353,7 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
         LOG.debug('LayerController:capabilitiesExceptionFired: Firing event "exception-capstore"');
         if (LOADMASK) LOADMASK.hide();
         NOTIFY.error({
-            msg : 'Could not access WMS endpoint. Application will not be functional until another endpoint is chosen.'
+            msg : this.WMS_ERROR_MSG
         });
         this.fireEvent('exception-capstore', args);
     },
@@ -361,7 +361,7 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
         LOG.debug('LayerController:getRecordsExceptionFired: Firing event "exception-catstore"');
         if (LOADMASK) LOADMASK.hide();
         NOTIFY.error({
-            msg : 'Could not access CSW catalog. Application will not be functional until another endpoint is chosen.'
+            msg : this.CSW_ERROR_MSG
         });
         this.fireEvent('exception-catstore', args);
     },
@@ -369,7 +369,7 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
         LOG.debug('LayerController:sosExceptionFired: Firing event "exception-sosstore"');
         if (LOADMASK) LOADMASK.hide();
         NOTIFY.error({
-            msg : 'Could not access SOS endpoint. Application will not be functional until another endpoint is chosen.'
+            msg : this.SOS_ERROR_MSG
         });
         this.fireEvent('exception-sosstore', args);
     },

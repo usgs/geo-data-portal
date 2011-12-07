@@ -296,6 +296,9 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
             LOG.debug('DatasetConfigPanel: Observed \'changedimension\'.');
             this.onChangeDimension(extentName);
         }, this);
+        this.controller.on('exception-catstore', function() {
+            this.collapse();
+        }, this);
     },
     capStoreOnLoad : function(capStore) {
         LOG.debug("DatasetConfigPanel: capStoreOnLoad()");
@@ -311,22 +314,18 @@ GDP.DatasetConfigPanel = Ext.extend(Ext.Panel, {
         this.controller.loadedGetRecordsStore({
             record : catStore.getAt(0)
         });
-//        if (LOADMASK) LOADMASK.hide();
     },
     derivStoreOnLoad : function(derivStore) {
         LOG.debug("DatasetConfigPanel: derivStoreOnLoad()");
         this.controller.loadedDerivStore({
             record : derivStore.getAt(0)
         });
-//        if (LOADMASK) LOADMASK.hide();
     },
     leafStoreOnLoad : function(leafStore) {
         LOG.debug("DatasetConfigPanel: leafStoreOnLoad()");
         this.controller.loadedLeafStore({
             record : leafStore.getAt(0)
         });
-
-//        if (LOADMASK) LOADMASK.hide();
     },
     onSelectedDataset : function(args) {
         LOG.debug("DatasetConfigPanel: onSelectedDataset()");

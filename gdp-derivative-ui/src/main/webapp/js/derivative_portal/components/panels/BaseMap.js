@@ -399,7 +399,9 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             this.map.addControl(selectorControl);
             selectorControl.activate();
         }, this);
-        
+        this.layerController.on('exception-catstore', function() {
+            
+        }, this);
         this.on('resize', function() {
             this.realignLegend();
         }, this);

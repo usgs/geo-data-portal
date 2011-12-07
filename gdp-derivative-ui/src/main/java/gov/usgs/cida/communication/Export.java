@@ -2,6 +2,8 @@ package gov.usgs.cida.communication;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
@@ -22,7 +24,7 @@ public class Export extends HttpServlet {
             throws ServletException, IOException {
 
         String filename = request.getParameter("filename");
-        String data =  URLDecoder.decode(request.getParameter("data"), "UTF-8");
+        String data =  request.getParameter("data");
         String type = request.getParameter("type");
         
         if (StringUtils.isBlank(filename) || StringUtils.isBlank(data)) {
@@ -30,18 +32,19 @@ public class Export extends HttpServlet {
             return;
         }
         
-        BufferedOutputStream out = null;
-        
         StringBuilder sb = new StringBuilder(data);
-        byte[] csvData;
+        byte[] dataByteArr;
         if ("image/png;base64".equalsIgnoreCase(type)) {
-            csvData = new BASE64Decoder().decodeBuffer(sb.toString());
+            dataByteArr = new BASE64Decoder().decodeBuffer(sb.toString());
         } else {
-            csvData = sb.toString().getBytes("UTF-8");
+            dataByteArr = sb.toString().getBytes("UTF-8");
         }
-        int length = csvData.length;
+        int length = dataByteArr.length;
         
         InputStream in = null;
+        BufferedOutputStream out = null;
+//        File tempFileOut = File.createTempFile("test", ".");
+//        FileOutputStream fos = new FileOutputStream(tempFileOut);
         try {
             response.setContentType("application/octet-stream");
             response.setContentLength(length);
@@ -49,13 +52,16 @@ public class Export extends HttpServlet {
             response.setHeader("Pragma", "no-cache");
             response.setHeader("Expires", "0");
             
-            in = new ByteArrayInputStream(csvData);
+            in = new ByteArrayInputStream(dataByteArr);
             out = new BufferedOutputStream(response.getOutputStream());
             
             byte[] outputByte = new byte[4096];
             while (in.read(outputByte, 0, 4096) != -1) {
+//                fos.write(outputByte, 0, 4096);
                 out.write(outputByte, 0, 4096);
             }
+//            fos.flush();
+//            fos.close();
             out.flush();
             out.close();
         } finally {

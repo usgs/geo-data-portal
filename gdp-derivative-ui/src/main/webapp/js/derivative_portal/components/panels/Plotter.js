@@ -61,26 +61,25 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         }, config);
         
         GDP.Plotter.superclass.constructor.call(this, config);
-
-        this.on("afterrender", function () {
-            LOG.debug('Plotter:afterrender');
-            this.resizePlotter();
-        }, this);
         this.controller.on('updateplotter', function(args){
             LOG.debug('Plotter:updateplotter');
             this.updatePlotter(args);
-        }, this);
-        this.on('resize', function() {
-            LOG.debug('Plotter:resize');
-            this.resizePlotter();
         }, this);
         this.controller.on('loaded-catstore', function(args) {
             LOG.debug('Plotter:onLoadedCatstore');
             this.onLoadedCatstore(args);
         }, this);
-        this.on('resize', function(){
+        this.controller.on('exception-catstore', function() {
+            this.collapse();
+        }, this);
+        this.on('resize', function() {
+            LOG.debug('Plotter:resize');
             this.resizePlotter();
-        }, this)
+        }, this);
+        this.on("afterrender", function () {
+            LOG.debug('Plotter:afterrender');
+            this.resizePlotter();
+        }, this);
     },
     
     updatePlotter : function(args) {
@@ -101,9 +100,10 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
         //        if (this.graph) {
         //            this.graph.destroy();
         //        }
-        else {
+        //        
+        //        else {
             Ext.get(this.plotterDiv).dom.innerHTML = '';
-        }
+        //        }
         var height = Math.round(0.5 * parseInt(Ext.get(this.plotterDiv).dom.style.height));
         LOADMASK = new Ext.LoadMask(Ext.get(this.plotterDiv).dom, {
             msg: '<div id="cida-load-msg">Loading...</div><img height="' + height + '" src="images/cida-anim.gif" />', 
@@ -194,7 +194,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                         var frame = document.createElement('iframe');
                         frame.id = id;
                         frame.name = id;
-                        frame.className = 'x-hidden';
+                        frame.className = 'x-hidden'; 
                         if (Ext.isIE) {
                             frame.src = Ext.SSL_SECURE_URL;
                         }
