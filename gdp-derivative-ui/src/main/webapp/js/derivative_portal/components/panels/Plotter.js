@@ -187,6 +187,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                         canvas.width = dygraph.width_;
                         canvas.height = dygraph.height_ + options.legendHeight;
 
+                        Dygraph.Export.drawBackground(canvas, "white");
                         Dygraph.Export.drawPlot(canvas, dygraph, options);    
                         Dygraph.Export.drawLegend(canvas, dygraph, options);
 
@@ -263,6 +264,10 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
             this.errorBarsOn = obj.pressed;
         }, this);          
         this.topToolbar.doLayout();
+        if (Ext.isIE) {
+            // TODO should do this
+            //this.topToolbar.remove("../plotter-toolbar-download-as-image-button");
+        }
         
         Ext.iterate(this.scenarioGcmJSON, function(scenario, object) {
             Ext.iterate(object, function(gcm) {

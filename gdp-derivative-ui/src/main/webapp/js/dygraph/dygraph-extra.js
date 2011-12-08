@@ -76,6 +76,16 @@ Dygraph.Export.asPNG = function (dygraph, img, userOptions) {
     img.src = canvas.toDataURL();
 };
 
+Dygraph.Export.drawBackground = function (canvas, color) {
+    "use strict";
+    var ctx = canvas.getContext("2d");
+    
+    ctx.save();
+    ctx.fillStyle = color;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.restore();
+};
+
 /**
  * Adds the plot and the axes to a canvas context.
  */
@@ -158,10 +168,9 @@ Dygraph.Export.putVerticalLabel = function (ctx, divLabel, options, font, color,
     var top = parseInt(divLabel.style.top, 10);
     var left = parseInt(divLabel.style.left, 10) + parseInt(divLabel.style.width, 10);
     var text = divLabel.innerText || divLabel.textContent;
-
+    
     if (textAlign == "center") {
-        var textDim = ctx.measureText(text);
-        top = Math.ceil((ctx.canvas.height - textDim.width) / 2);
+        top = ctx.canvas.height / 2;
     }
     
     ctx.save();
@@ -171,7 +180,7 @@ Dygraph.Export.putVerticalLabel = function (ctx, divLabel, options, font, color,
     ctx.fillStyle = color;
     ctx.font = font;
     ctx.textAlign = textAlign;
-    ctx.fillText(text, top, left);
+    ctx.fillText(text, top, left, ctx.canvas.height);
     
     ctx.restore();
 };
@@ -208,12 +217,17 @@ Dygraph.Export.drawLegend = function (canvas, dygraph, options) {
     var colors = dygraph.getColors();
     // Drop the first element, which is the label for the time dimension
     var labels = dygraph.attr_("labels").slice(1);
+    var visibility = dygraph.attr_("visibility");
     
     // 1. Compute the width of the labels:
     var labelsWidth = 0;
     
     var i;
     for (i = 0; i < labels.length; i++) {
+        if (!visibility[i]) {
+            labels[i] = undefined;
+            continue;
+        }
         labelsWidth = labelsWidth + ctx.measureText("- " + labels[i]).width + labelMargin;
     }
 
@@ -223,8 +237,13 @@ Dygraph.Export.drawLegend = function (canvas, dygraph, options) {
     ctx.font = options.legendFont;
     ctx.textAlign = "left";
     ctx.textBaseline = "middle";
+    var skipped = 0;
     for (i = 0; i < labels.length; i++) {
-        ctx.fillStyle = colors[i];
+        if (!labels[i]) {
+            skipped++;
+            continue;
+        }
+        ctx.fillStyle = colors[i-skipped];
         //TODO Replace the minus sign by a proper dash, although there is a
         //     problem when the page encoding is different than the encoding 
         //     of this file (UTF-8).
