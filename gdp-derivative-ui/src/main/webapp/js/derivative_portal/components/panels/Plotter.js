@@ -175,6 +175,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                 itemId : 'plotter-toolbar-download-as-image-button',
                 text : 'Download As Image',
                 ref : '../plotter-toolbar-download-as-image-button',
+                hidden : ((Ext.isIE6 || Ext.isIE7 || Ext.isIE8) && !Ext.isIE9) ? true : false, // IE6,7,8 doesn't do canvas, so no image downloads for plotter
                 listeners : {
                     click : function() {
                         var dygraph = this.graph;
