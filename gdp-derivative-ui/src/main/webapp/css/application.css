@@ -82,6 +82,7 @@ div#title.xtb-text span.x-combo-list-item {
     color: #15428B; 
     width: 100%;
     height: 100%;
+    overflow: auto;
     background-image: url('../images/CIDA_4C_logo_no_usgs.jpg');
     background-repeat: no-repeat;
     background-position: center;

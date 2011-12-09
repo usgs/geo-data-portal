@@ -319,6 +319,8 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
             html : args.record.get('helptext')['plotWindowIntroText']
         });
         
+        this.doLayout();
+        
         // This tooltip will show up to the right of any title text
         this.titleTipText = '&nbsp;&nbsp;<span ext:qtip="'+args.record.get('helptext')['plotHelp']+'" class="x-combo-list-item"><img class="quicktip-img" src="images/info.gif" /></span>';
     },

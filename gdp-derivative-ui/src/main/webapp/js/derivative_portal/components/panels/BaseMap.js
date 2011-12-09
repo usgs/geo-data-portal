@@ -103,12 +103,12 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             enableToggle: true,
             listeners : {
                 click : function() {
-                    if (this.legendWindow.hidden) {
-                        this.legendWindow.show();
+                    if (this.legendWindow.collapsed) {
+                        this.legendWindow.expand();
                         this.legendSwitch.setText('Off');
                         this.legendSwitch.pressed = true;
                     } else {
-                        this.legendWindow.hide();
+                        this.legendWindow.collapse();
                         this.legendSwitch.setText('On');
                         this.legendSwitch.pressed = false;
                     }
@@ -447,6 +447,16 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             collapsed : true,
             expandOnShow : false
         });
+        this.legendWindow.on('beforeexpand', function() {
+                if (this.legendSwitch.pressed) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            },
+            this
+        );
         this.legendWindow.show();
     },
     onLoadedCatstore : function(args) {
