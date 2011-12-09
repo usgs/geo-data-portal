@@ -304,7 +304,6 @@ function initializeMapping() {
         minWidth : 265,
         map : mapPanel.map,
         foiGetCapsURL : GDP.FOI_GETCAPS_URL,
-        baseLayerStore : baseLayerStore,
         capabilitiesStore : capabilitiesStore,
         getRecordsStore : getRecordsStore
     });

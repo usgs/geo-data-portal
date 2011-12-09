@@ -23,6 +23,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
     legendSwitch : undefined,
     legendWindow : undefined,
     notificationWindow : undefined,
+    bounds : undefined,
     constructor : function(config) {
         LOG.debug('BaseMap:constructor: Constructing self.');
         
@@ -516,7 +517,10 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         var layer = this.layerController.getLayer();
 
         if (!this.currentLayer || this.currentLayer.getLayer() !== layer) {
-            this.zoomToExtent(layer);
+            if (!this.bounds) {
+                this.bounds = OpenLayers.Bounds.fromArray(layer.get("llbbox"))
+                this.zoomToExtent(layer);
+            }
             this.clearLayers();
 
             var params = {};
