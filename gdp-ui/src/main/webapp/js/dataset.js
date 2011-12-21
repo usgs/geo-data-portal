@@ -1313,7 +1313,10 @@ var Dataset = function() {
         if (showSimpleCSWClient && Constant.endpoint.csw.length > 0) {
             logger.trace('GDP: Application configuration is set to show the "simple" CSW dialog.');
             $(CSWDialogTableRow).hide();
-
+            
+            // http://internal.cida.usgs.gov/jira/browse/GDP-445
+            $(datasetURLInputRow).show();
+            
             logger.trace('GDP: Appending the Submit buttom for the CSW client into the "simple" CSW client.');
             searchSubmitButton.attr('value', 'Display Available Datasets');
             $(_CSW_CLIENT).find('tbody').prepend(
