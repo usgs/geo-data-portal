@@ -58,7 +58,7 @@ var Dataset = function() {
             logger.warn('GDP: createAlgorithmDropdown() was called but the Algorithm object was not populated.');
             $(_ALGORITHM_DROPDOWN).append(
                 $(Constant.optionString).attr('value', 'No Algorithms Found - Reload application')
-            );
+                );
             $(_ALGORITHM_DROPDOWN).attr('disabled', 'disabled');
             return false;
         }
@@ -73,7 +73,7 @@ var Dataset = function() {
                     'value' : _algorithmList[0],
                     'selected' : 'selected'
                 })
-            );
+                );
             configureDocumentationLink(Algorithm.algorithms[_algorithmList[0]].title, Algorithm.algorithms[_algorithmList[0]].abstrakt);
             bindAlgorithmDropDown();
             bindSubmitForProcessingButton()
@@ -274,7 +274,7 @@ var Dataset = function() {
         $(xml).find('DataInputs > Input').each(function(index, element){
             $(_ALGORITHM_DYNAMIC_CONTAINER_CONTENT).append(
                 createHTMLInputField(element)
-            );
+                );
             $('.di_identifier').hide();
         });
         initializeTips();
@@ -857,7 +857,7 @@ var Dataset = function() {
                     'src' : 'images/question-mark.png',
                     'alt' : 'informational question mark'
                 })
-            )
+                )
         }
         
         $(containerDiv).append($(Constant.spanString).addClass('di_algorithm_input_title').html(titleText).prepend(tooltip));
@@ -885,11 +885,11 @@ var Dataset = function() {
             
             if (dataType == 'boolean') {
                 var literalCheckbox = $(Constant.inputString).
-                    attr({
-                        'type' : 'checkbox',
-                        'name' : identifierText
-                    }).
-                    addClass('di_field_input');
+                attr({
+                    'type' : 'checkbox',
+                    'name' : identifierText
+                }).
+                addClass('di_field_input');
                 $(inputContainer).append(literalCheckbox);
                 if (defaultValue.toLowerCase() == 'true') $(literalCheckbox).attr('checked','checked');
                 else $(literalCheckbox).removeAttr('checked');
@@ -978,7 +978,9 @@ var Dataset = function() {
         logger.debug('GDP: Attempting to retrieve grids using WCS.');
         gDatasetType = _datasetTypeEnum.WCS;
 
-        callWCS({'request' : 'DescribeCoverage'},
+        callWCS({
+            'request' : 'DescribeCoverage'
+        },
         datasetURL,
         populateDatasetIdSelect,
         errorCallback
@@ -1018,7 +1020,7 @@ var Dataset = function() {
                 $(_DATASET_ID_SELECTBOX).append(
                     // name attr used for matching wms
                     $(Constant.optionString).attr('value', id).attr('name', title).html(displayName)
-                );
+                    );
             });
         } else { //     == datasetTypeEnum.OPENDAP
             if (!WPS.checkWpsResponse(xml, "Error getting dataset ID's from server.")) return;
@@ -1037,7 +1039,7 @@ var Dataset = function() {
                 $(_DATASET_ID_SELECTBOX).append(
                     // name attr used for matching wms
                     $(Constant.optionString).attr('value', shortName).attr('name', shortName).html(displayName)
-                );
+                    );
             });
             
             var firstOption = $(_DATASET_ID_SELECTBOX).find('option').first();
@@ -1068,7 +1070,7 @@ var Dataset = function() {
             getTimeRangeWpsOutput, 
             false, 
             initDatePickers
-        );
+            );
     }
 
     function initDatePickers(xml) {
@@ -1252,33 +1254,33 @@ var Dataset = function() {
      * This sets up a configuration of the application where we only have one
      * algorithm to display to the user.
      */
-//    function setupSingleAlgorithmView(algorithm) {
-//        // TODO - Currently if we have a single algorithm with nothing to configure, the configure link shows up anyway.
-//        // When a user clicks it, it goes away and nothing happens. We need a way to know before this view shows up whether or
-//        // not we can configure the algorithm.  If not, don't show the link or remove it at this point.
-//        var singleAlgorithm = Algorithm.algorithms[algorithm]
-//            
-//        // Protect ourselves from front-end garbage -- This means config is configured for a nonexistent algorithm -- default to the dropdown
-//        if (!singleAlgorithm) {
-//            populateAlgorithmDropdownView();
-//        } else {
-//            var abstractText = singleAlgorithm.abstrakt;
-//            var title = singleAlgorithm.title;
-//
-//            // Append the current algorithm we're displaying to the html body
-//            $('#algorithm_dropdown_container').append($('<span></span>').attr('id', 'algorithm_display_span').append('Algorithm: ', title));
-//            $('#algorithm_dropdown_container').append('&nbsp;&nbsp;<a href="#" id="configure_algorithm_link"> Configure</a>');
-//            if (abstractText) {
-//                $('#algorithm_dropdown_container').append('&nbsp;&nbsp;<a href="#" id="algorithm_documentation_link"> Documentation</a>');
-//                configureDocumentationLink(singleAlgorithm.title, abstractText);
-//            }
-//            
-//            // Wire up the configure link
-//            $('#configure_algorithm_link').click(function() { 
-//                populateDynamicContent(singleAlgorithm.xml); 
-//            });
-//        }
-//    }
+    //    function setupSingleAlgorithmView(algorithm) {
+    //        // TODO - Currently if we have a single algorithm with nothing to configure, the configure link shows up anyway.
+    //        // When a user clicks it, it goes away and nothing happens. We need a way to know before this view shows up whether or
+    //        // not we can configure the algorithm.  If not, don't show the link or remove it at this point.
+    //        var singleAlgorithm = Algorithm.algorithms[algorithm]
+    //            
+    //        // Protect ourselves from front-end garbage -- This means config is configured for a nonexistent algorithm -- default to the dropdown
+    //        if (!singleAlgorithm) {
+    //            populateAlgorithmDropdownView();
+    //        } else {
+    //            var abstractText = singleAlgorithm.abstrakt;
+    //            var title = singleAlgorithm.title;
+    //
+    //            // Append the current algorithm we're displaying to the html body
+    //            $('#algorithm_dropdown_container').append($('<span></span>').attr('id', 'algorithm_display_span').append('Algorithm: ', title));
+    //            $('#algorithm_dropdown_container').append('&nbsp;&nbsp;<a href="#" id="configure_algorithm_link"> Configure</a>');
+    //            if (abstractText) {
+    //                $('#algorithm_dropdown_container').append('&nbsp;&nbsp;<a href="#" id="algorithm_documentation_link"> Documentation</a>');
+    //                configureDocumentationLink(singleAlgorithm.title, abstractText);
+    //            }
+    //            
+    //            // Wire up the configure link
+    //            $('#configure_algorithm_link').click(function() { 
+    //                populateDynamicContent(singleAlgorithm.xml); 
+    //            });
+    //        }
+    //    }
 
     function setupCSWClientView() {
         logger.debug("GDP: Setting up CSW Client.");
@@ -1324,10 +1326,10 @@ var Dataset = function() {
                     $(Constant.tableDataString).attr('colspan','4').append(
                         $(Constant.divString).attr('id','simple_csw_button_div').append(
                             searchSubmitButton
+                            )
                         )
                     )
-                )
-            );
+                );
         } else  if (!showCSWDatasetUrl) {
             logger.trace('GDP: Application configuration is set to not show the URL row in the CSW client. Hiding.');
             $(datasetURLInputRow).hide();
@@ -1362,7 +1364,7 @@ var Dataset = function() {
         if (dsUrl) {  //Incoming dataset URL should override a default dataset URL if one exists
             logger.trace('GDP: Adding dataset URL "'+ decodeURIComponent(dsUrl) +'" parsed from incoming URL.');
             $(_DATASET_URL_INPUT_BOX).val(decodeURIComponent(dsUrl));
-             $(_SELECT_DATASET_BUTTON).click();
+            $(_SELECT_DATASET_BUTTON).click();
         }
 
         $(_DATASET_ID_SELECTBOX).change(function() {
@@ -1400,9 +1402,13 @@ var Dataset = function() {
         $(_TO_DATE_PICKER).datepicker(datePickerOptions);
         
         
-        $(_CSW_HOST_SET_BUTTON).button({'label' : 'Set'});
+        $(_CSW_HOST_SET_BUTTON).button({
+            'label' : 'Set'
+        });
         $(searchSubmitButton).button();
-        $(_SELECT_DATASET_BUTTON).button({'label' : 'Select'});
+        $(_SELECT_DATASET_BUTTON).button({
+            'label' : 'Select'
+        });
     }
     
     function bindRetrieveOutputButton() {
@@ -1435,11 +1441,21 @@ var Dataset = function() {
             if (createAlgorithmDropdown()) logger.debug('GDP: Algorithm dropdown successfully created.');
             else logger.warn('GDP: Algorithm dropdown creation failed.');
             
-            $(_ALGORITHM_DOC_LINK).button({'label' : 'Documentation'});
-            $(_ALGORITHM_CONFIG_LINK).button({'label' : 'Configure'});
-            $(_SUBMIT_FOR_PROCESSING_LINK).button({'label' : 'Submit For Processing'});
-            $(_RETRIEVE_OUTPUT_BUTTON).button({'label' : 'Retrieve Output'});
-            $(_RETRIEVE_PROC_INFO_BUTTON).button({'label' : 'Retreive Process Input'});
+            $(_ALGORITHM_DOC_LINK).button({
+                'label' : 'Documentation'
+            });
+            $(_ALGORITHM_CONFIG_LINK).button({
+                'label' : 'Configure'
+            });
+            $(_SUBMIT_FOR_PROCESSING_LINK).button({
+                'label' : 'Submit For Processing'
+            });
+            $(_RETRIEVE_OUTPUT_BUTTON).button({
+                'label' : 'Retrieve Output'
+            });
+            $(_RETRIEVE_PROC_INFO_BUTTON).button({
+                'label' : 'Retreive Process Input'
+            });
             
             if ($(_DATASET_URL_INPUT_BOX).val()) $(_SELECT_DATASET_BUTTON).click();
         },
@@ -1472,9 +1488,9 @@ var Dataset = function() {
             return $.datepicker.formatDate('yy-mm-ddT00:00:00.000Z', to);
         },
 		
-		setDatasetType: function(datasetType) {
-			gDatasetType = datasetType;
-		},
+        setDatasetType: function(datasetType) {
+            gDatasetType = datasetType;
+        },
 
         datasetSelected : function(datasetURL, wmsURL, useCache){
             _datasetURL = datasetURL;
