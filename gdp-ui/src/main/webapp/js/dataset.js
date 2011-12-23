@@ -1288,6 +1288,8 @@ var Dataset = function() {
         var showSimpleCSWClient = parseInt(Constant.ui.view_simple_csw_client);
         var showCSWURLInputBox = parseInt(Constant.ui.view_show_csw_url_input);
         var showCSWDatasetUrl = parseInt(Constant.ui.view_show_csw_dataset_url);
+        var showDisplayDatasetsButton = parseInt(Constant.ui.view_show_display_datasets_button);
+        
         var dsUrl = $.url().param('dataset'); //TODO- We can actually probably use the parseURI script for this. 
         
         var CSWDialogTableRow = $('.csw-dialog-tablerow');
@@ -1318,6 +1320,11 @@ var Dataset = function() {
             
             // http://internal.cida.usgs.gov/jira/browse/GDP-445
             $(datasetURLInputRow).show();
+            if (showDisplayDatasetsButton) {
+                searchSubmitButton.show();
+            } else {
+                searchSubmitButton.hide();
+            }
             
             logger.trace('GDP: Appending the Submit buttom for the CSW client into the "simple" CSW client.');
             searchSubmitButton.attr('value', 'Display Available Datasets');

@@ -99,6 +99,7 @@ public class PropertiesServlet extends HttpServlet {
             defaultProperties.setProperty("ui.view_show_csw_dataset_url", "1");
             defaultProperties.setProperty("ui.view_show_csw_dialog", "1");
             defaultProperties.setProperty("ui.view_show_csw_url_input", "1");
+            defaultProperties.setProperty("ui.view_show_display_datasets_button", "0");
             defaultProperties.setProperty("ui.view_show_service_draw_feature", "1");
             defaultProperties.setProperty("ui.view_show_service_upload", "1");
             defaultProperties.setProperty("ui.view_show_service_waters", "1");
