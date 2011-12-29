@@ -42,6 +42,20 @@ public abstract class GridUtility {
         return getYAxisLengthQuick(gcs);
     }
     
+    public static Range getXAxisRange(GridCoordSystem gcs) {
+        if (!checkXYAxisIsValid(gcs.getXHorizAxis())) {
+            throw new IllegalArgumentException("Grid Coordinate System does not contain valid X axis");
+        }
+        return getXAxisRangeQuick(gcs);
+    }
+    
+    public static Range getYAxisRange(GridCoordSystem gcs) {
+        if (!checkXYAxisIsValid(gcs.getYHorizAxis())) {
+            throw new IllegalArgumentException("Grid Coordinate System does not contain valid X axis");
+        }
+        return getYAxisRangeQuick(gcs);
+    }
+    
     private static boolean checkXYAxisIsValid(CoordinateAxis axis) {
         return (axis instanceof CoordinateAxis1D || axis instanceof CoordinateAxis2D);
     }
@@ -52,6 +66,14 @@ public abstract class GridUtility {
     
     public static int getYAxisLengthQuick(GridCoordSystem gcs) {
         return gcs.getYHorizAxis().getShape(0);
+    }
+    
+    public static Range getXAxisRangeQuick(GridCoordSystem gcs) {
+        return gcs.getXHorizAxis().getRanges().get(gcs.getXHorizAxis().getRank() - 1);
+    }
+    
+    public static Range getYAxisRangeQuick(GridCoordSystem gcs) {
+        return gcs.getYHorizAxis().getRanges().get(0);
     }
 
 	public static BoundingBox getBoundingBox(GridDatatype gdt) {
