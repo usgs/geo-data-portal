@@ -10,14 +10,14 @@
         <module>gdp-common-utilities</module>
         <module>gdp-data-access</module>
         <module>gdp-core-processing</module>
+        <!-- can't add in until netcdf-jna, netcdf-dsg and aparapi projects as added to jenkins/maven -->
+<!--        <module>gdp-derivative-processing</module>-->
         <module>gdp-geotiff</module>
         <module>gdp-proxy</module>
         <module>gdp-52n-wps-patches</module>
         <module>gdp-utility-wps</module>
         <module>gdp-process-wps</module>
-<!--        <module>gdp-sos-server</module>-->
         <module>geoserver</module>
-<!--        <module>geonetwork</module>-->
         <module>gdp-ui</module>
         <module>gdp-derivative-ui</module>
         <module>gdp-deployer</module>
