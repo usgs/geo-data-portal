@@ -86,7 +86,7 @@
             <activation>
                 <property>
                     <name>env.CARGO_DEPLOY_PROFILE</name>
-                    <value>production-8083</value>
+                    <value>production-8080</value>
                 </property>
             </activation>
             <properties>
