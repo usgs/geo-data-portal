@@ -11,5 +11,7 @@
 <literal></literal>
 <sortby></sortby>
 <sortorder>ASC</sortorder>
+<bboxlc></bboxlc>
+<bboxuc></bboxuc>
 <id></id>
 </defaults>

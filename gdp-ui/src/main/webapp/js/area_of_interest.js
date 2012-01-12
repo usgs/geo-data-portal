@@ -9,11 +9,15 @@ var AOI = function() {
     var _CLEAR_AOI_BUTTON = '#clear-aoi-button';
     var _CLEAR_DRAW_FEATURE_BUTTON = '#clearDrawFeatureButton';
     var _SUBMIT_DRAW_FEATURE_BUTTON = '#submitDrawFeatureButton';
+    var _ATTRIBUTE_BOUNDS = {};
     
     // Maps attribute values to the GML IDs of the features that have those values.
     // The associated IDs of a value are at the same index in the IDs array as the
     // value is in the values array. Each element of IDs is an array.
-    var valueToIDsMap = {values: [], IDs: []};
+    var valueToIDsMap = {
+        values: [], 
+        IDs: []
+    };
 
     var aoiHasAttributes;
     
@@ -31,7 +35,7 @@ var AOI = function() {
             var name = $(element).text();
             $(_AOI_SELECTBOX).append(
                 $(Constant.optionString).attr('value', name).html(name)
-            );
+                );
         });
     }
 
@@ -53,7 +57,7 @@ var AOI = function() {
             if (text != 'the_geom' && text != featureTypeWithoutNamespace) {
                 $(_AVAILABLE_ATTRIBUTES_SELECTBOX).append(
                     $(Constant.optionString).attr('value', text).html(text)
-                );
+                    );
             }
         });
 
@@ -97,12 +101,13 @@ var AOI = function() {
             // means use all of them).
             $(_AVAILABLE_ATTRIBUTE_VALUES_SELECTBOX).append(
                 $(Constant.optionString).attr('value', '*').html('*')
-            );
+                );
             $(_AVAILABLE_ATTRIBUTE_VALUES_SELECTBOX).children().each(function(i, e) {
                 $(e).attr('selected', 'selected');
             });
             
             showNotification("Too many attribute values to display. All polygons will be used for processing");
+            setSelectedAttributeBoundingBox();
             return this;
         }
 
@@ -111,7 +116,7 @@ var AOI = function() {
 
             $(_AVAILABLE_ATTRIBUTE_VALUES_SELECTBOX).append(
                 $(Constant.optionString).attr('value', value).html(value)
-            );
+                );
         }
 
         sortListbox(_AVAILABLE_ATTRIBUTE_VALUES_SELECTBOX);
@@ -122,6 +127,7 @@ var AOI = function() {
         });
 
         $(_AVAILABLE_ATTRIBUTE_VALUES).fadeIn(Constant.ui.fadespeed);
+        setSelectedAttributeBoundingBox();
         return this;
     }
 
@@ -205,7 +211,7 @@ var AOI = function() {
                 config_key : 'view_show_service_draw_feature',
                 all_elements : '#draw-feature-button-container',
                 input_elements : ['#featuretype-name-input-cell', '#clear-input-cell',
-                                  '#submit-input-cell'],
+                '#submit-input-cell'],
                 tips : '#draw-feature-tooltip-text',
                 on_depress : function() {
                     deselectFeatureType();
@@ -213,7 +219,7 @@ var AOI = function() {
                     showInformationalNotification(
                         "<center><h4>How To Draw A Polygon</h4></center>Begin drawing your polygon by clicking on the map.<br /><br />Subsequent clicks create polygon points.<br /><br />Double click to finish your polygon.", 
                         true
-                    );
+                        );
                 },
                 on_release : function() {
                     deactivateDrawFeature();
@@ -279,10 +285,14 @@ var AOI = function() {
                 buttonDown(this);
         });
 
-        $(_SUBMIT_DRAW_FEATURE_BUTTON).button({'label':'Submit'});
+        $(_SUBMIT_DRAW_FEATURE_BUTTON).button({
+            'label':'Submit'
+        });
         $(_SUBMIT_DRAW_FEATURE_BUTTON).click(submitDrawFeature);
         
-        $(_CLEAR_DRAW_FEATURE_BUTTON).button({'label' : 'Clear Polygon'});
+        $(_CLEAR_DRAW_FEATURE_BUTTON).button({
+            'label' : 'Clear Polygon'
+        });
         $(_CLEAR_DRAW_FEATURE_BUTTON).click(clearDrawFeatureLayer);
 
         // If we are configured for uploading shapefiles
@@ -334,10 +344,12 @@ var AOI = function() {
             // Don't get or show attributes and attribute values if user
             // selects a drawn or waters polygon.
             if (!/^(draw|waters):/.test(selectedFeatureType)) {
-                WFS.callWFS({'request': 'DescribeFeatureType',
-                          'typename': selectedFeatureType},
-                    true,
-                    populateAttributesSelectbox
+                WFS.callWFS({
+                    'request': 'DescribeFeatureType',
+                    'typename': selectedFeatureType
+                },
+                true,
+                populateAttributesSelectbox
                 );
                 aoiHasAttributes = true;
             } else {
@@ -393,9 +405,51 @@ var AOI = function() {
 
             var attr = $(_AVAILABLE_ATTRIBUTES_SELECTBOX).val();
             highlightFeatures(attr, attrValues);
+            setSelectedAttributeBoundingBox(AOI.getSelectedFeatureType(), AOI.getSelectedAttribute(), AOI.getSelectedFeatures());
+            
+            logger.debug('test');
         });
     }
-
+    
+    function setSelectedAttributeBoundingBox() {
+        var wfsXML = '<![CDATA[' + Dataset.createGetFeatureXML(AOI.getSelectedFeatureType(), AOI.getSelectedAttribute(), AOI.getSelectedFeatures()) + ']]>';
+            
+        var wpsExecuteRequest = '';
+        wpsExecuteRequest += '<?xml version="1.0" encoding="UTF-8"?>' + 
+        '<wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">' +
+        '<ows:Identifier>gs:Bounds</ows:Identifier>' + 
+        '<wps:DataInputs>' + 
+        '<wps:Input>' + 
+        '<ows:Identifier>features</ows:Identifier>' + 
+        '<wps:Reference mimeType="application/wfs-collection-1.1" xlink:href="'+Constant.endpoint.geoserver + '/wfs" method="POST">' + 
+        '<wps:Body>' + 
+        wfsXML + 
+        '</wps:Body>' + 
+        '</wps:Reference>' + 
+        '</wps:Input>' + 
+        '</wps:DataInputs>' + 
+        '<wps:ResponseForm>' + 
+        '<wps:RawDataOutput>' + 
+        '<ows:Identifier>bounds</ows:Identifier>' + 
+        '</wps:RawDataOutput>' + 
+        '</wps:ResponseForm>' + 
+        '</wps:Execute>';
+    
+        $.ajax( {
+            url : Constant.endpoint.proxy + Constant.endpoint.geoserver + "/ows",
+            type : 'post',
+            data : wpsExecuteRequest,
+            processData : false,
+            dataType : 'xml',
+            contentType : 'text/xml',
+            context : this,
+            success : function(data, textStatus, XMLHttpRequest) {
+                this.AOI.attributeBounds.lowerCorner = $(data).find('LowerCorner')[0].textContent
+                this.AOI.attributeBounds.upperCorner = $(data).find('UpperCorner')[0].textContent
+            }
+        });    
+    }
+    
     function bindClearAOIButton() {
         logger.debug('GDP: Clear Available AOI Button has been clicked.');
         $(_CLEAR_AOI_BUTTON).click(function () {
@@ -422,16 +476,16 @@ var AOI = function() {
                 $('<tr></tr>').append(
                     $('<td></td>').append(
                         $('<a></a>').
-                            attr('id','download_shapefile_link').
-                            attr('href', '#').
-                            addClass('hidden bold-link').
-                            html('Download Shapefile').
-                            click(function() {
-                                $.download(rootUrl,kvpParams,'get')
-                            })
-                    )
-                ).attr('id','download_shapefile_link_row')
-            )
+                        attr('id','download_shapefile_link').
+                        attr('href', '#').
+                        addClass('hidden bold-link').
+                        html('Download Shapefile').
+                        click(function() {
+                            $.download(rootUrl,kvpParams,'get')
+                        })
+                        )
+                    ).attr('id','download_shapefile_link_row')
+                )
             $('#download_shapefile_link').fadeIn(Constant.ui.fadeSpeed);
         }
     }
@@ -439,6 +493,7 @@ var AOI = function() {
     // Public members and methods
     return {
         htmlID: _HTML_ID,
+        attributeBounds : _ATTRIBUTE_BOUNDS,
         init: function() {
             logger.info("GDP: Initializing Area of Interest.");
             

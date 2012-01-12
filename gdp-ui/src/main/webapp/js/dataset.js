@@ -420,7 +420,7 @@ var Dataset = function() {
         }
     }
 
-    function createGetFeatureXML(featureType, attribute, featureIDs) {
+    function _createGetFeatureXML(featureType, attribute, featureIDs) {
         // For now, we're assuming that the geometry is associated with attribute
         // 'the_geom', which might not be true for all WFS servers. So make sure
         // that 'the_geom' is an attribute, and throw an error if not. Note that
@@ -619,7 +619,7 @@ var Dataset = function() {
                 if (!processDescriptionInputsObject[k]) delete submitWpsStringInputs[k]
             });
 
-            var wfsXML = createGetFeatureXML(featureType, attribute, features);
+            var wfsXML = _createGetFeatureXML(featureType, attribute, features);
             var wfsWpsXML = WPS.createWfsWpsReference(Constant.endpoint.geoserver + "/wfs", wfsXML);
             var submitWpsXmlInputs = {
                 'FEATURE_COLLECTION': [wfsWpsXML]
@@ -1438,6 +1438,8 @@ var Dataset = function() {
         hasTimeRange : _hasTimeRange,
 
         datasetTypeEnum : _datasetTypeEnum,
+        
+        createGetFeatureXML : _createGetFeatureXML,
         
         init: function() {
             logger.info("GDP: Initializing Dataset/Submit View.");

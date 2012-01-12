@@ -357,6 +357,8 @@ var CSWClient = function() {
             setXpathValue(defaults_xml, "/defaults/outputschema", schema + '');
             setXpathValue(defaults_xml, "/defaults/propertyname", queryable + '');
             setXpathValue(defaults_xml, "/defaults/literal", query + '');
+            setXpathValue(defaults_xml, "/defaults/bboxlc", AOI.attributeBounds.lowerCorner + '');
+            setXpathValue(defaults_xml, "/defaults/bboxuc", AOI.attributeBounds.upperCorner + '');
             //this.setXpathValue(defaults_xml, "/this.defaults/literal", query + '');
             setXpathValue(defaults_xml, "/defaults/startposition", start + '');
             var sortby = document.theForm.sortby.value;
