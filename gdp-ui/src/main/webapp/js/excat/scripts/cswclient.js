@@ -49,7 +49,7 @@ var CSWClient = function() {
 
         var outputDiv = document.getElementById("csw-output");
         if (request == "getrecordbyid") outputDiv = document.getElementById("metadata");
-        outputDiv.innerHTML = output;
+        outputDiv.innerHTML = replaceURLWithHTMLLinks(output);
         $(outputDiv).dialog({
             'modal' : true,
             width : '90%',
@@ -60,6 +60,13 @@ var CSWClient = function() {
             zIndex: 9999
         });
     }
+
+    // http://stackoverflow.com/questions/37684/how-to-replace-plain-urls-with-links
+    function replaceURLWithHTMLLinks(text) {
+        var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+        return text.replace(exp,"<a href='$1' target='_blank'>$1</a>"); 
+    }
+
 
     function getRecordById(id) {
 
