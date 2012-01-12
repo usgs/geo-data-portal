@@ -497,7 +497,7 @@ GDP.Plotter = Ext.extend(Ext.Panel, {
                             csv += line2.substr(0, line2.length - 1) + "\n";
                         }
 
-                        return encodeURI(csv);
+                        return encodeURIComponent(csv);
                     }(this)
                 }); 
 

@@ -2,8 +2,6 @@ package gov.usgs.cida.communication;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
@@ -37,14 +35,12 @@ public class Export extends HttpServlet {
         if ("image/png;base64".equalsIgnoreCase(type)) {
             dataByteArr = new BASE64Decoder().decodeBuffer(sb.toString());
         } else {
-            dataByteArr = sb.toString().getBytes("UTF-8");
+            dataByteArr = URLDecoder.decode(sb.toString(), "UTF-8").getBytes("UTF-8");
         }
         int length = dataByteArr.length;
         
         InputStream in = null;
         BufferedOutputStream out = null;
-//        File tempFileOut = File.createTempFile("test", ".");
-//        FileOutputStream fos = new FileOutputStream(tempFileOut);
         try {
             response.setContentType("application/octet-stream");
             response.setContentLength(length);
@@ -57,11 +53,8 @@ public class Export extends HttpServlet {
             
             byte[] outputByte = new byte[4096];
             while (in.read(outputByte, 0, 4096) != -1) {
-//                fos.write(outputByte, 0, 4096);
                 out.write(outputByte, 0, 4096);
             }
-//            fos.flush();
-//            fos.close();
             out.flush();
             out.close();
         } finally {
