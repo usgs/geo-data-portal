@@ -52,10 +52,10 @@ var CSWClient = function() {
         outputDiv.innerHTML = output;
         $(outputDiv).dialog({
             'modal' : true,
-            width : '50%',
-            height : request == "getrecordbyid" ? $(window).height() : 'auto',
-            resizable : false,
-            draggable: false,
+            width : '90%',
+            height : request == "getrecordbyid" ? $(window).height() / 1.25 : 'auto',
+            resizable : true,
+            draggable: true,
             'title' : request == "getrecordbyid" ? 'Dataset metadata' : 'Choose a data set',
             zIndex: 9999
         });
