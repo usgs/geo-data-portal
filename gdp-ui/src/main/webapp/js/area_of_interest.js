@@ -9,7 +9,10 @@ var AOI = function() {
     var _CLEAR_AOI_BUTTON = '#clear-aoi-button';
     var _CLEAR_DRAW_FEATURE_BUTTON = '#clearDrawFeatureButton';
     var _SUBMIT_DRAW_FEATURE_BUTTON = '#submitDrawFeatureButton';
-    var _ATTRIBUTE_BOUNDS = {};
+    var _ATTRIBUTE_BOUNDS = {
+        lowerCorner : '',
+        upperCorner : ''
+    };
     
     // Maps attribute values to the GML IDs of the features that have those values.
     // The associated IDs of a value are at the same index in the IDs array as the
@@ -37,6 +40,7 @@ var AOI = function() {
                 $(Constant.optionString).attr('value', name).html(name)
                 );
         });
+        
     }
 
     function populateAttributesSelectbox(data) {
@@ -107,7 +111,6 @@ var AOI = function() {
             });
             
             showNotification("Too many attribute values to display. All polygons will be used for processing");
-            setSelectedAttributeBoundingBox();
             return this;
         }
 
@@ -127,7 +130,7 @@ var AOI = function() {
         });
 
         $(_AVAILABLE_ATTRIBUTE_VALUES).fadeIn(Constant.ui.fadespeed);
-        setSelectedAttributeBoundingBox();
+        //        setSelectedAttributeBoundingBox();
         return this;
     }
 
@@ -366,6 +369,25 @@ var AOI = function() {
             }
             
             $(_CLEAR_AOI_BUTTON).fadeIn(Constant.ui.fadeSpeed);
+            
+            $(WFS.cachedGetCapabilities).find('FeatureType').each(function(i, elem) {
+                if ($(elem).find('Name').text() == selectedFeatureType) {
+                    var bbox = $(elem).find('ows|WGS84BoundingBox');
+                    var lowerCorner = $(bbox).find('ows|LowerCorner').text().split(' ');
+                    var upperCorner = $(bbox).find('ows|UpperCorner').text().split(' ');
+
+                    var minx = lowerCorner[0];
+                    var miny = lowerCorner[1];
+                    var maxx = upperCorner[0];
+                    var maxy = upperCorner[1];
+
+                    _ATTRIBUTE_BOUNDS = {
+                        lowerCorner : minx + ' ' + miny,
+                        upperCorner : maxx + ' ' + maxy
+                    }
+                }
+            });  
+            logger.debug('Bounds for chosen layer are: LOWER CORNER: ' + _ATTRIBUTE_BOUNDS.lowerCorner + ', UPPER CORNER: ' + _ATTRIBUTE_BOUNDS.upperCorner)
         });
     }
 
@@ -406,48 +428,28 @@ var AOI = function() {
             var attr = $(_AVAILABLE_ATTRIBUTES_SELECTBOX).val();
             highlightFeatures(attr, attrValues);
             setSelectedAttributeBoundingBox(AOI.getSelectedFeatureType(), AOI.getSelectedAttribute(), AOI.getSelectedFeatures());
-            
-            logger.debug('test');
         });
     }
     
     function setSelectedAttributeBoundingBox() {
         var wfsXML = '<![CDATA[' + Dataset.createGetFeatureXML(AOI.getSelectedFeatureType(), AOI.getSelectedAttribute(), AOI.getSelectedFeatures()) + ']]>';
             
-        var wpsExecuteRequest = '';
-        wpsExecuteRequest += '<?xml version="1.0" encoding="UTF-8"?>' + 
-        '<wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">' +
-        '<ows:Identifier>gs:Bounds</ows:Identifier>' + 
-        '<wps:DataInputs>' + 
-        '<wps:Input>' + 
-        '<ows:Identifier>features</ows:Identifier>' + 
-        '<wps:Reference mimeType="application/wfs-collection-1.1" xlink:href="'+Constant.endpoint.geoserver + '/wfs" method="POST">' + 
-        '<wps:Body>' + 
-        wfsXML + 
-        '</wps:Body>' + 
-        '</wps:Reference>' + 
-        '</wps:Input>' + 
-        '</wps:DataInputs>' + 
-        '<wps:ResponseForm>' + 
-        '<wps:RawDataOutput>' + 
-        '<ows:Identifier>bounds</ows:Identifier>' + 
-        '</wps:RawDataOutput>' + 
-        '</wps:ResponseForm>' + 
-        '</wps:Execute>';
-    
-        $.ajax( {
-            url : Constant.endpoint.proxy + Constant.endpoint.geoserver + "/ows",
-            type : 'post',
-            data : wpsExecuteRequest,
-            processData : false,
-            dataType : 'xml',
-            contentType : 'text/xml',
-            context : this,
-            success : function(data, textStatus, XMLHttpRequest) {
-                this.AOI.attributeBounds.lowerCorner = $(data).find('LowerCorner')[0].textContent
-                this.AOI.attributeBounds.upperCorner = $(data).find('UpperCorner')[0].textContent
-            }
-        });    
+        if (wfsXML) {
+            $.ajax( {
+                url : Constant.endpoint.proxy + Constant.endpoint.geoserver + "/ows",
+                type : 'post',
+                data : WPS.createGeoserverBoundingBoxWPSRequest(wfsXML),
+                processData : false,
+                dataType : 'xml',
+                contentType : 'text/xml',
+                context : this,
+                success : function(data, textStatus, XMLHttpRequest) {
+                    _ATTRIBUTE_BOUNDS.lowerCorner.lowerCorner = $(data).find('LowerCorner')[0].textContent
+                    _ATTRIBUTE_BOUNDS.upperCorner = $(data).find('UpperCorner')[0].textContent
+                    logger.debug('Bounds for chosen layer attribtue(s) are: LOWER CORNER: ' + _ATTRIBUTE_BOUNDS.lowerCorner + ', UPPER CORNER: ' + _ATTRIBUTE_BOUNDS.upperCorner)
+                }
+            });  
+        }
     }
     
     function bindClearAOIButton() {

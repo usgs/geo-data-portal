@@ -1,8 +1,8 @@
 WPS = function() {
-
+    
     function createWpsExecuteXML(wpsAlgorithm, stringInputs, xmlInputs, outputs, async) {
         var xml =
-            '<?xml version="1.0" encoding="UTF-8"?> \
+        '<?xml version="1.0" encoding="UTF-8"?> \
              <wps:Execute service="WPS" version="1.0.0" \
                  xmlns:wps="http://www.opengis.net/wps/1.0.0" \
                  xmlns:ows="http://www.opengis.net/ows/1.1" \
@@ -32,26 +32,26 @@ WPS = function() {
                 xml +=
                 '<wps:Input> \
                    <ows:Identifier>' + xmlProp + '</ows:Identifier>' +
-                   xmlInputs[xmlProp][j] +
+                xmlInputs[xmlProp][j] +
                 '</wps:Input>';
             }
         }
 
         xml +=
-              '</wps:DataInputs> \
+        '</wps:DataInputs> \
                <wps:ResponseForm> \
                  <wps:ResponseDocument' + (async ? ' storeExecuteResponse="true" status="true"' : '') + '>';
 
         for (var k = 0; k < outputs.length; k++) {
             xml +=
-                  '<wps:Output' + (async ? ' asReference="true"' : '') + '> \
+            '<wps:Output' + (async ? ' asReference="true"' : '') + '> \
                      <ows:Identifier>' + outputs[k] + '</ows:Identifier> \
                    </wps:Output>';
 
         }
 
         xml +=
-                '</wps:ResponseDocument> \
+        '</wps:ResponseDocument> \
                </wps:ResponseForm> \
              </wps:Execute>';
 
@@ -60,10 +60,23 @@ WPS = function() {
 
     // Public members and methods
     return {
-        getCapabilitiesParams: {'Request' : 'GetCapabilities', 'Service' : 'WPS', 'AcceptVersions' : '1.0.0', 'Language' : 'en-CA', 'Version' : '1.0.0'},
+        getCapabilitiesParams: {
+            'Request' : 'GetCapabilities', 
+            'Service' : 'WPS', 
+            'AcceptVersions' : '1.0.0', 
+            'Language' : 'en-CA', 
+            'Version' : '1.0.0'
+        },
         describeProcessParams: function(processID) {
-                return {'Request' : 'DescribeProcess', 'Service' : 'WPS', 'Identifier' : processID ,'AcceptVersions' : '1.0.0', 'Language' : 'en-CA', 'Version' : '1.0.0'};
-            },
+            return {
+                'Request' : 'DescribeProcess', 
+                'Service' : 'WPS', 
+                'Identifier' : processID ,
+                'AcceptVersions' : '1.0.0', 
+                'Language' : 'en-CA', 
+                'Version' : '1.0.0'
+            };
+        },
         processDescriptions: {},
         
         // Inputs should be an object with the key equaling the input identifier, and
@@ -101,10 +114,10 @@ WPS = function() {
         // Creates the wps:Reference element which holds the WFS request
         createWfsWpsReference: function(wfsEndpoint, wfsXML) {
             var xml =
-                '<wps:Reference xlink:href="' + wfsEndpoint + '"> \
+            '<wps:Reference xlink:href="' + wfsEndpoint + '"> \
                    <wps:Body>' +
-                     wfsXML +
-                  '</wps:Body> \
+            wfsXML +
+            '</wps:Body> \
                  </wps:Reference>';
 
             return xml;
@@ -113,7 +126,7 @@ WPS = function() {
             var success = $(response).find('ns|ExecuteResponse');
 
             if (success.length > 0) {
-                 return true;
+                return true;
             } else {
                 var error = $(response).find('ns|Exception');
 
@@ -127,6 +140,29 @@ WPS = function() {
                 logger.error("GDP: A WPS error was encountered: " + message);
                 return false;
             }
+        },
+        createGeoserverBoundingBoxWPSRequest : function(wfsXML) {
+            var wpsExecuteRequest = '';
+            if (wfsXML) wpsExecuteRequest += '<?xml version="1.0" encoding="UTF-8"?>' + 
+                '<wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">' +
+                '<ows:Identifier>gs:Bounds</ows:Identifier>' + 
+                '<wps:DataInputs>' + 
+                '<wps:Input>' + 
+                '<ows:Identifier>features</ows:Identifier>' + 
+                '<wps:Reference mimeType="application/wfs-collection-1.1" xlink:href="'+Constant.endpoint.geoserver + '/wfs" method="POST">' + 
+                '<wps:Body>' + 
+                wfsXML + 
+                '</wps:Body>' + 
+                '</wps:Reference>' + 
+                '</wps:Input>' + 
+                '</wps:DataInputs>' + 
+                '<wps:ResponseForm>' + 
+                '<wps:RawDataOutput>' + 
+                '<ows:Identifier>bounds</ows:Identifier>' + 
+                '</wps:RawDataOutput>' + 
+                '</wps:ResponseForm>' + 
+                '</wps:Execute>';
+            return wpsExecuteRequest;
         }
     }
 }

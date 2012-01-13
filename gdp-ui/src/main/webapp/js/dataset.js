@@ -468,7 +468,6 @@ var Dataset = function() {
 
         xml += '</wfs:Query> \
              </wfs:GetFeature>';
-        logger.debug('GDP: Resulting WFS XML: \n' + xml)
         return xml;
     }
 
