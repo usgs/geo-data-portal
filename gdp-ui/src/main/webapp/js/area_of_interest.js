@@ -10,8 +10,8 @@ var AOI = function() {
     var _CLEAR_DRAW_FEATURE_BUTTON = '#clearDrawFeatureButton';
     var _SUBMIT_DRAW_FEATURE_BUTTON = '#submitDrawFeatureButton';
     var _ATTRIBUTE_BOUNDS = {
-        lowerCorner : '',
-        upperCorner : ''
+        lowerCorner : '-180 -90',
+        upperCorner : '180 90'
     };
     
     // Maps attribute values to the GML IDs of the features that have those values.
@@ -130,7 +130,6 @@ var AOI = function() {
         });
 
         $(_AVAILABLE_ATTRIBUTE_VALUES).fadeIn(Constant.ui.fadespeed);
-        //        setSelectedAttributeBoundingBox();
         return this;
     }
 
@@ -444,9 +443,20 @@ var AOI = function() {
                 contentType : 'text/xml',
                 context : this,
                 success : function(data, textStatus, XMLHttpRequest) {
-                    AOI.attributeBounds.lowerCorner.lowerCorner = $(data).find('LowerCorner')[0].textContent
+                    if ($(data).find('ExceptionReport ').length > 0) {
+                        AOI.attributeBounds.lowerCorner = '-180 -90';
+                        AOI.attributeBounds.upperCorner = '180 90';
+                        logger.warn('Unable to retrieve bounds for chosen attribute. Resetting to default bounds: LOWER CORNER: ' + AOI.attributeBounds.lowerCorner + ', UPPER CORNER: ' + AOI.attributeBounds.upperCorner);
+                        return;
+                    }
+                    AOI.attributeBounds.lowerCorner = $(data).find('LowerCorner')[0].textContent
                     AOI.attributeBounds.upperCorner = $(data).find('UpperCorner')[0].textContent
                     logger.debug('Bounds for chosen layer attribtue(s) are: LOWER CORNER: ' + AOI.attributeBounds.lowerCorner + ', UPPER CORNER: ' + AOI.attributeBounds.upperCorner)
+                }, 
+                error : function(jqXHR, textStatus, errorThrown) {
+                    AOI.attributeBounds.lowerCorner = '-180 -90';
+                    AOI.attributeBounds.upperCorner = '180 90';
+                    logger.warn('Unable to retrieve bounds for chosen attribute. Resetting to default bounds: LOWER CORNER: ' + AOI.attributeBounds.lowerCorner + ', UPPER CORNER: ' + AOI.attributeBounds.upperCorner);
                 }
             });  
         }
