@@ -381,13 +381,13 @@ var AOI = function() {
                     var maxx = upperCorner[0];
                     var maxy = upperCorner[1];
 
-                    _ATTRIBUTE_BOUNDS = {
+                    AOI.attributeBounds = {
                         lowerCorner : minx + ' ' + miny,
                         upperCorner : maxx + ' ' + maxy
                     }
                 }
             });  
-            logger.debug('Bounds for chosen layer are: LOWER CORNER: ' + _ATTRIBUTE_BOUNDS.lowerCorner + ', UPPER CORNER: ' + _ATTRIBUTE_BOUNDS.upperCorner)
+            logger.debug('Bounds for chosen layer are: LOWER CORNER: ' + AOI.attributeBounds.lowerCorner + ', UPPER CORNER: ' + AOI.attributeBounds.upperCorner)
         });
     }
 
@@ -444,9 +444,9 @@ var AOI = function() {
                 contentType : 'text/xml',
                 context : this,
                 success : function(data, textStatus, XMLHttpRequest) {
-                    _ATTRIBUTE_BOUNDS.lowerCorner.lowerCorner = $(data).find('LowerCorner')[0].textContent
-                    _ATTRIBUTE_BOUNDS.upperCorner = $(data).find('UpperCorner')[0].textContent
-                    logger.debug('Bounds for chosen layer attribtue(s) are: LOWER CORNER: ' + _ATTRIBUTE_BOUNDS.lowerCorner + ', UPPER CORNER: ' + _ATTRIBUTE_BOUNDS.upperCorner)
+                    AOI.attributeBounds.lowerCorner.lowerCorner = $(data).find('LowerCorner')[0].textContent
+                    AOI.attributeBounds.upperCorner = $(data).find('UpperCorner')[0].textContent
+                    logger.debug('Bounds for chosen layer attribtue(s) are: LOWER CORNER: ' + AOI.attributeBounds.lowerCorner + ', UPPER CORNER: ' + AOI.attributeBounds.upperCorner)
                 }
             });  
         }

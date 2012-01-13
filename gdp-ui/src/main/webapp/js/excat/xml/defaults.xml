@@ -11,7 +11,8 @@
 <literal></literal>
 <sortby></sortby>
 <sortorder>ASC</sortorder>
-<bboxlc></bboxlc>
-<bboxuc></bboxuc>
+<!-- This is the extent of the CONUS States Shapefile -->
+<bboxlc>-124 24</bboxlc>
+<bboxuc>-66 49</bboxuc>
 <id></id>
 </defaults>
