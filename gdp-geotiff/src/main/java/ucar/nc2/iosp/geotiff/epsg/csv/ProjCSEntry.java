@@ -1,14 +1,14 @@
 package ucar.nc2.iosp.geotiff.epsg.csv;
 
-import ucar.nc2.iosp.geotiff.epsg.GeogCS;
-import ucar.nc2.iosp.geotiff.epsg.ProjCS;
-import ucar.nc2.iosp.geotiff.epsg.UnitOfMeasure;
+import ucar.nc2.iosp.geotiff.epsg.GTGeogCS;
+import ucar.nc2.iosp.geotiff.epsg.GTProjCS;
+import ucar.nc2.iosp.geotiff.epsg.GTUnitOfMeasure;
 
 /**
  *
  * @author tkunicki
  */
-public class ProjCSEntry implements CSVEntry, ProjCS {
+public class ProjCSEntry implements CSVEntry, GTProjCS {
 
     private int code;
     private String name;
@@ -16,39 +16,47 @@ public class ProjCSEntry implements CSVEntry, ProjCS {
     private int sourceGeogCSCode;
     private int coordOpCode;
     private int coordOpMethodCode;
-    private int parameter1Code;
-    private int parameter1UnitOfMeasureCode;
-    private double parameter1Value;
-    private int parameter2Code;
-    private int parameter2UnitOfMeasureCode;
-    private double parameter2Value;
-    private int parameter3Code;
-    private int parameter3UnitOfMeasureCode;
-    private double parameter3Value;
-    private int parameter4Code;
-    private int parameter4UnitOfMeasureCode;
-    private double parameter4Value;
-    private int parameter5Code;
-    private int parameter5UnitOfMeasureCode;
-    private double parameter5Value;
-    private int parameter6Code;
-    private int parameter6UnitOfMeasureCode;
-    private double parameter6Value;
-    private int parameter7Code;
-    private int parameter7UnitOfMeasureCode;
-    private double parameter7Value;
+    
+    private int parameter1Code = MISSING_CODE;
+    private int parameter1UnitOfMeasureCode = MISSING_CODE;;
+    private double parameter1Value = MISSING_VALUE;
+    
+    private int parameter2Code = MISSING_CODE;
+    private int parameter2UnitOfMeasureCode = MISSING_CODE;
+    private double parameter2Value = MISSING_VALUE;
+    
+    private int parameter3Code = MISSING_CODE;
+    private int parameter3UnitOfMeasureCode = MISSING_CODE;
+    private double parameter3Value = MISSING_VALUE;
+    
+    private int parameter4Code = MISSING_CODE;
+    private int parameter4UnitOfMeasureCode = MISSING_CODE;
+    private double parameter4Value = MISSING_VALUE;
+    
+    private int parameter5Code = MISSING_CODE;
+    private int parameter5UnitOfMeasureCode = MISSING_CODE;
+    private double parameter5Value = MISSING_VALUE;
+    
+    private int parameter6Code = MISSING_CODE;
+    private int parameter6UnitOfMeasureCode = MISSING_CODE;
+    private double parameter6Value = MISSING_VALUE;
+    
+    private int parameter7Code = MISSING_CODE;
+    private int parameter7UnitOfMeasureCode = MISSING_CODE;
+    private double parameter7Value = MISSING_VALUE;
 
-    private GeogCS sourceGeogCS;
-    private UnitOfMeasure unitOfMeasure;
+    private GeogCSEntry sourceGeogCS;
+    private UnitOfMeasureEntry unitOfMeasure;
 
-    private UnitOfMeasure parameter1UnitOfMeasure;
-    private UnitOfMeasure parameter2UnitOfMeasure;
-    private UnitOfMeasure parameter3UnitOfMeasure;
-    private UnitOfMeasure parameter4UnitOfMeasure;
-    private UnitOfMeasure parameter5UnitOfMeasure;
-    private UnitOfMeasure parameter6UnitOfMeasure;
-    private UnitOfMeasure parameter7UnitOfMeasure;
+    private UnitOfMeasureEntry parameter1UnitOfMeasure;
+    private UnitOfMeasureEntry parameter2UnitOfMeasure;
+    private UnitOfMeasureEntry parameter3UnitOfMeasure;
+    private UnitOfMeasureEntry parameter4UnitOfMeasure;
+    private UnitOfMeasureEntry parameter5UnitOfMeasure;
+    private UnitOfMeasureEntry parameter6UnitOfMeasure;
+    private UnitOfMeasureEntry parameter7UnitOfMeasure;
 
+    @Override
     public int getCode() {
         return code;
     }
@@ -57,6 +65,7 @@ public class ProjCSEntry implements CSVEntry, ProjCS {
         this.code = code;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -65,6 +74,7 @@ public class ProjCSEntry implements CSVEntry, ProjCS {
         this.name = name;
     }
 
+    @Override
     public int getCoordOpCode() {
         return coordOpCode;
     }
@@ -73,6 +83,7 @@ public class ProjCSEntry implements CSVEntry, ProjCS {
         this.coordOpCode = coordOpCode;
     }
 
+    @Override
     public int getCoordOpMethodCode() {
         return coordOpMethodCode;
     }
@@ -81,6 +92,7 @@ public class ProjCSEntry implements CSVEntry, ProjCS {
         this.coordOpMethodCode = coordOpMethodCode;
     }
 
+    @Override
     public int getParameter1Code() {
         return parameter1Code;
     }
@@ -97,6 +109,7 @@ public class ProjCSEntry implements CSVEntry, ProjCS {
         this.parameter1UnitOfMeasureCode = parameter1UnitOfMeasureCode;
     }
 
+    @Override
     public double getParameter1Value() {
         return parameter1Value;
     }
@@ -105,6 +118,7 @@ public class ProjCSEntry implements CSVEntry, ProjCS {
         this.parameter1Value = parameter1Value;
     }
 
+    @Override
     public int getParameter2Code() {
         return parameter2Code;
     }
@@ -121,6 +135,7 @@ public class ProjCSEntry implements CSVEntry, ProjCS {
         this.parameter2UnitOfMeasureCode = parameter2UnitOfMeasureCode;
     }
 
+    @Override
     public double getParameter2Value() {
         return parameter2Value;
     }
@@ -129,6 +144,7 @@ public class ProjCSEntry implements CSVEntry, ProjCS {
         this.parameter2Value = parameter2Value;
     }
 
+    @Override
     public int getParameter3Code() {
         return parameter3Code;
     }
@@ -145,6 +161,7 @@ public class ProjCSEntry implements CSVEntry, ProjCS {
         this.parameter3UnitOfMeasureCode = parameter3UnitOfMeasureCode;
     }
 
+    @Override
     public double getParameter3Value() {
         return parameter3Value;
     }
@@ -153,6 +170,7 @@ public class ProjCSEntry implements CSVEntry, ProjCS {
         this.parameter3Value = parameter3Value;
     }
 
+    @Override
     public int getParameter4Code() {
         return parameter4Code;
     }
@@ -169,6 +187,7 @@ public class ProjCSEntry implements CSVEntry, ProjCS {
         this.parameter4UnitOfMeasureCode = parameter4UnitOfMeasureCode;
     }
 
+    @Override
     public double getParameter4Value() {
         return parameter4Value;
     }
@@ -177,6 +196,7 @@ public class ProjCSEntry implements CSVEntry, ProjCS {
         this.parameter4Value = parameter4Value;
     }
 
+    @Override
     public int getParameter5Code() {
         return parameter5Code;
     }
@@ -193,6 +213,7 @@ public class ProjCSEntry implements CSVEntry, ProjCS {
         this.parameter5UnitOfMeasureCode = parameter5UnitOfMeasureCode;
     }
 
+    @Override
     public double getParameter5Value() {
         return parameter5Value;
     }
@@ -201,6 +222,7 @@ public class ProjCSEntry implements CSVEntry, ProjCS {
         this.parameter5Value = parameter5Value;
     }
 
+    @Override
     public int getParameter6Code() {
         return parameter6Code;
     }
@@ -217,6 +239,7 @@ public class ProjCSEntry implements CSVEntry, ProjCS {
         this.parameter6UnitOfMeasureCode = parameter6UnitOfMeasureCode;
     }
 
+    @Override
     public double getParameter6Value() {
         return parameter6Value;
     }
@@ -225,6 +248,7 @@ public class ProjCSEntry implements CSVEntry, ProjCS {
         this.parameter6Value = parameter6Value;
     }
 
+    @Override
     public int getParameter7Code() {
         return parameter7Code;
     }
@@ -241,6 +265,7 @@ public class ProjCSEntry implements CSVEntry, ProjCS {
         this.parameter7UnitOfMeasureCode = parameter7UnitOfMeasureCode;
     }
 
+    @Override
     public double getParameter7Value() {
         return parameter7Value;
     }
@@ -265,93 +290,103 @@ public class ProjCSEntry implements CSVEntry, ProjCS {
         this.unitsOfMeasureCode = unitsOfMeasureCode;
     }
 
-    public synchronized UnitOfMeasure getUnitOfMeasure() {
+    @Override
+    public synchronized GTUnitOfMeasure getUnitOfMeasure() {
         if (unitOfMeasure == null) {
-            unitOfMeasure = EPSG.findUnitOfMeasureByCode(unitsOfMeasureCode);
+            unitOfMeasure = CSVEPSGFactory.getInstance().findUnitOfMeasureByCode(unitsOfMeasureCode);
         }
         return unitOfMeasure;
     }
 
-    public GeogCS getSourceGeogCS() {
+    @Override
+    public GTGeogCS getSourceGeogCS() {
         if (sourceGeogCS == null) {
-            sourceGeogCS = EPSG.findGeogCSByCode(sourceGeogCSCode);
+            sourceGeogCS = CSVEPSGFactory.getInstance().findGeogCSByCode(sourceGeogCSCode);
         }
         return sourceGeogCS;
     }
 
-    public synchronized UnitOfMeasure getParameter1UnitOfMeasure() {
-        if (parameter1UnitOfMeasure == null) {
-            parameter1UnitOfMeasure = EPSG.findUnitOfMeasureByCode(parameter1UnitOfMeasureCode);
+    @Override
+    public synchronized UnitOfMeasureEntry getParameter1UnitOfMeasure() {
+        if (parameter1UnitOfMeasure == null && parameter1UnitOfMeasureCode != MISSING_CODE) {
+            parameter1UnitOfMeasure = CSVEPSGFactory.getInstance().findUnitOfMeasureByCode(parameter1UnitOfMeasureCode);
         }
         return parameter1UnitOfMeasure;
     }
 
-    public synchronized UnitOfMeasure getParameter2UnitOfMeasure() {
-        if (parameter2UnitOfMeasure == null) {
-            parameter2UnitOfMeasure = EPSG.findUnitOfMeasureByCode(parameter2UnitOfMeasureCode);
+    @Override
+    public synchronized UnitOfMeasureEntry getParameter2UnitOfMeasure() {
+        if (parameter2UnitOfMeasure == null && parameter4UnitOfMeasureCode != MISSING_CODE) {
+            parameter2UnitOfMeasure = CSVEPSGFactory.getInstance().findUnitOfMeasureByCode(parameter2UnitOfMeasureCode);
         }
         return parameter2UnitOfMeasure;
     }
 
-    public synchronized UnitOfMeasure getParameter3UnitOfMeasure() {
-        if (parameter3UnitOfMeasure == null) {
-            parameter3UnitOfMeasure = EPSG.findUnitOfMeasureByCode(parameter3UnitOfMeasureCode);
+    @Override
+    public synchronized UnitOfMeasureEntry getParameter3UnitOfMeasure() {
+        if (parameter3UnitOfMeasure == null && parameter3UnitOfMeasureCode != MISSING_CODE) {
+            parameter3UnitOfMeasure = CSVEPSGFactory.getInstance().findUnitOfMeasureByCode(parameter3UnitOfMeasureCode);
         }
         return parameter3UnitOfMeasure;
     }
 
-    public synchronized UnitOfMeasure getParameter4UnitOfMeasure() {
-        if (parameter4UnitOfMeasure == null) {
-            parameter4UnitOfMeasure = EPSG.findUnitOfMeasureByCode(parameter4UnitOfMeasureCode);
+    @Override
+    public synchronized UnitOfMeasureEntry getParameter4UnitOfMeasure() {
+        if (parameter4UnitOfMeasure == null && parameter4UnitOfMeasureCode != MISSING_CODE) {
+            parameter4UnitOfMeasure = CSVEPSGFactory.getInstance().findUnitOfMeasureByCode(parameter4UnitOfMeasureCode);
         }
         return parameter4UnitOfMeasure;
     }
 
-    public synchronized UnitOfMeasure getParameter5UnitOfMeasure() {
-        if (parameter5UnitOfMeasure == null) {
-            parameter5UnitOfMeasure = EPSG.findUnitOfMeasureByCode(parameter5UnitOfMeasureCode);
+    @Override
+    public synchronized UnitOfMeasureEntry getParameter5UnitOfMeasure() {
+        if (parameter5UnitOfMeasure == null && parameter5UnitOfMeasureCode != MISSING_CODE) {
+            parameter5UnitOfMeasure = CSVEPSGFactory.getInstance().findUnitOfMeasureByCode(parameter5UnitOfMeasureCode);
         }
         return parameter5UnitOfMeasure;
     }
 
-    public synchronized UnitOfMeasure getParameter6UnitOfMeasure() {
-        if (parameter6UnitOfMeasure == null) {
-            parameter6UnitOfMeasure = EPSG.findUnitOfMeasureByCode(parameter6UnitOfMeasureCode);
+    @Override
+    public synchronized UnitOfMeasureEntry getParameter6UnitOfMeasure() {
+        if (parameter6UnitOfMeasure == null && parameter6UnitOfMeasureCode != MISSING_CODE) {
+            parameter6UnitOfMeasure = CSVEPSGFactory.getInstance().findUnitOfMeasureByCode(parameter6UnitOfMeasureCode);
         }
         return parameter6UnitOfMeasure;
     }
 
-    public synchronized UnitOfMeasure getParameter7UnitOfMeasure() {
-        if (parameter7UnitOfMeasure == null) {
-            parameter7UnitOfMeasure = EPSG.findUnitOfMeasureByCode(parameter7UnitOfMeasureCode);
+    @Override
+    public synchronized UnitOfMeasureEntry getParameter7UnitOfMeasure() {
+        if (parameter7UnitOfMeasure == null && parameter7UnitOfMeasureCode != MISSING_CODE) {
+            parameter7UnitOfMeasure = CSVEPSGFactory.getInstance().findUnitOfMeasureByCode(parameter7UnitOfMeasureCode);
         }
         return parameter7UnitOfMeasure;
     }
 
+    @Override
     public double getParameterValueByCode(int parameterCode) {
         // so lame
-        if (parameter1Code == parameterCode) {
-            return parameter1Value;
+        if (parameter1Code == parameterCode && parameter1Code != MISSING_CODE) {
+            return getParameter1UnitOfMeasure().convertToTargetUnitOfMeasure(parameter1Value);
         }
-        if (parameter2Code == parameterCode) {
-            return parameter2Value;
+        if (parameter2Code == parameterCode && parameter2Code != MISSING_CODE) {
+            return getParameter2UnitOfMeasure().convertToTargetUnitOfMeasure(parameter2Value);
         }
-        if (parameter3Code == parameterCode) {
-            return parameter3Value;
+        if (parameter3Code == parameterCode && parameter3Code != MISSING_CODE) {
+            return getParameter3UnitOfMeasure().convertToTargetUnitOfMeasure(parameter3Value);
         }
-        if (parameter4Code == parameterCode) {
-            return parameter4Value;
+        if (parameter4Code == parameterCode && parameter4Code != MISSING_CODE) {
+            return getParameter4UnitOfMeasure().convertToTargetUnitOfMeasure(parameter4Value);
         }
-        if (parameter5Code == parameterCode) {
-            return parameter5Value;
+        if (parameter5Code == parameterCode && parameter5Code != MISSING_CODE) {
+            return getParameter5UnitOfMeasure().convertToTargetUnitOfMeasure(parameter5Value);
         }
-        if (parameter6Code == parameterCode) {
-            return parameter6Value;
+        if (parameter6Code == parameterCode && parameter6Code != MISSING_CODE) {
+            return getParameter6UnitOfMeasure().convertToTargetUnitOfMeasure(parameter6Value);
         }
-        if (parameter7Code == parameterCode) {
-            return parameter7Value;
+        if (parameter7Code == parameterCode && parameter7Code != MISSING_CODE) {
+            return getParameter7UnitOfMeasure().convertToTargetUnitOfMeasure(parameter7Value);
         }
-        return Double.NaN;
+        return MISSING_VALUE;
     }
 
     @Override

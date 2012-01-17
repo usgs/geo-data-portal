@@ -1,31 +1,32 @@
 package ucar.nc2.iosp.geotiff.epsg.csv;
 
-import ucar.nc2.iosp.geotiff.epsg.Datum;
-import ucar.nc2.iosp.geotiff.epsg.Ellipsoid;
-import ucar.nc2.iosp.geotiff.epsg.GeogCS;
-import ucar.nc2.iosp.geotiff.epsg.PrimeMeridian;
-import ucar.nc2.iosp.geotiff.epsg.UnitOfMeasure;
+import ucar.nc2.iosp.geotiff.epsg.GTDatum;
+import ucar.nc2.iosp.geotiff.epsg.GTEllipsoid;
+import ucar.nc2.iosp.geotiff.epsg.GTGeogCS;
+import ucar.nc2.iosp.geotiff.epsg.GTPrimeMeridian;
+import ucar.nc2.iosp.geotiff.epsg.GTUnitOfMeasure;
 
 /**
  *
  * @author tkunicki
  */
-public class GeogCSEntry implements CSVEntry, GeogCS {
+public class GeogCSEntry implements CSVEntry, GTGeogCS {
 
     private int code;
     private String name;
     private int datumCode;
-    private int greenwichDatumCode;
+//    private int greenwichDatumCode;
     private int unitOfMeasureCode;
     private int ellipsoidCode;
     private int primeMeridianCode;
 
-    private Datum datum;
-    private Ellipsoid ellipsoid;
-    private Datum greenwichDatum;
-    private PrimeMeridian primeMeridian;
-    private UnitOfMeasure unitOfMeasure;
+    private GTDatum datum;
+    private GTEllipsoid ellipsoid;
+//    private GTDatum greenwichDatum;
+    private GTPrimeMeridian primeMeridian;
+    private GTUnitOfMeasure unitOfMeasure;
 
+    @Override
     public int getCode() {
         return code;
     }
@@ -43,10 +44,11 @@ public class GeogCSEntry implements CSVEntry, GeogCS {
     }
 
 
-    public void setGreenwichDatumCode(int greenwichDatumCode) {
-        this.greenwichDatumCode = greenwichDatumCode;
-    }
+//    public void setGreenwichDatumCode(int greenwichDatumCode) {
+//        this.greenwichDatumCode = greenwichDatumCode;
+//    }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -63,37 +65,34 @@ public class GeogCSEntry implements CSVEntry, GeogCS {
         this.unitOfMeasureCode = unitOfMeasureCode;
     }
 
-    public synchronized Datum getDatum() {
+    @Override
+    public synchronized GTDatum getDatum() {
         if (datum == null) {
-            datum = EPSG.findDatumByCode(datumCode);
+            datum = CSVEPSGFactory.getInstance().findDatumByCode(datumCode);
         }
         return datum;
     }
 
-    public synchronized Ellipsoid getEllipsoid() {
+    @Override
+    public synchronized GTEllipsoid getEllipsoid() {
         if (ellipsoid == null) {
-            ellipsoid = EPSG.findEllipsoidByCode(ellipsoidCode);
+            ellipsoid = CSVEPSGFactory.getInstance().findEllipsoidByCode(ellipsoidCode);
         }
         return ellipsoid;
     }
 
-    public synchronized Datum getGreenwichDatum() {
-        if (greenwichDatum == null) {
-            greenwichDatum = EPSG.findDatumByCode(greenwichDatumCode);
-        }
-        return greenwichDatum;
-    }
-
-    public synchronized PrimeMeridian getPrimeMeridian() {
+    @Override
+    public synchronized GTPrimeMeridian getPrimeMeridian() {
         if (primeMeridian == null) {
-            primeMeridian = EPSG.findPrimeMeridianByCode(primeMeridianCode);
+            primeMeridian = CSVEPSGFactory.getInstance().findPrimeMeridianByCode(primeMeridianCode);
         }
         return primeMeridian;
     }
 
-    public synchronized UnitOfMeasure getUnitOfMeasure() {
+    @Override
+    public synchronized GTUnitOfMeasure getUnitOfMeasure() {
         if (unitOfMeasure == null) {
-            unitOfMeasure = EPSG.findUnitOfMeasureByCode(unitOfMeasureCode);
+            unitOfMeasure = CSVEPSGFactory.getInstance().findUnitOfMeasureByCode(unitOfMeasureCode);
         }
         return unitOfMeasure;
     }

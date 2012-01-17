@@ -1,21 +1,22 @@
 package ucar.nc2.iosp.geotiff.epsg.csv;
 
-import ucar.nc2.iosp.geotiff.epsg.PrimeMeridian;
-import ucar.nc2.iosp.geotiff.epsg.UnitOfMeasure;
+import ucar.nc2.iosp.geotiff.epsg.GTPrimeMeridian;
+import ucar.nc2.iosp.geotiff.epsg.GTUnitOfMeasure;
 
 /**
  *
  * @author tkunicki
  */
-public class PrimeMeridianEntry implements CSVEntry, PrimeMeridian {
+public class PrimeMeridianEntry implements CSVEntry, GTPrimeMeridian {
 
     private int code;
     private String name;
     private double longitude;
     private int unitOfMeasureCode;
 
-    private UnitOfMeasure unitOfMeasure;
+    private GTUnitOfMeasure unitOfMeasure;
 
+    @Override
     public int getCode() {
         return code;
     }
@@ -24,6 +25,7 @@ public class PrimeMeridianEntry implements CSVEntry, PrimeMeridian {
         this.code = code;
     }
 
+    @Override
     public double getLongitude() {
         return longitude;
     }
@@ -32,6 +34,7 @@ public class PrimeMeridianEntry implements CSVEntry, PrimeMeridian {
         this.longitude = longitude;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -44,9 +47,10 @@ public class PrimeMeridianEntry implements CSVEntry, PrimeMeridian {
         this.unitOfMeasureCode = unitOfMeasureCode;
     }
 
-    public synchronized UnitOfMeasure getUnitOfMeasure() {
+    @Override
+    public synchronized GTUnitOfMeasure getUnitOfMeasure() {
         if (unitOfMeasure == null) {
-            unitOfMeasure = EPSG.findUnitOfMeasureByCode(unitOfMeasureCode);
+            unitOfMeasure = CSVEPSGFactory.getInstance().findUnitOfMeasureByCode(unitOfMeasureCode);
         }
         return unitOfMeasure;
     }

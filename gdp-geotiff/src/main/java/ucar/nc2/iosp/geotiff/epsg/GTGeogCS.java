@@ -9,20 +9,18 @@ package ucar.nc2.iosp.geotiff.epsg;
  *
  * @author tkunicki
  */
-public interface GeogCS {
+public interface GTGeogCS {
 
     public int getCode();
 
     public String getName();
 
-    public Datum getDatum();
+    public GTDatum getDatum();
 
-    public Datum getGreenwichDatum();
+    public GTUnitOfMeasure getUnitOfMeasure();
 
-    public UnitOfMeasure getUnitOfMeasure();
+    public GTEllipsoid getEllipsoid();
 
-    public Ellipsoid getEllipsoid();
-
-    public PrimeMeridian getPrimeMeridian();
+    public GTPrimeMeridian getPrimeMeridian();
 
 }

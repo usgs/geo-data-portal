@@ -1,10 +1,12 @@
 package ucar.nc2.iosp.geotiff.epsg;
 
+import javax.measure.unit.Unit;
+
 /**
  *
  * @author tkunicki
  */
-public interface UnitOfMeasure {
+public interface GTUnitOfMeasure {
 
     public int getCode();
 
@@ -12,10 +14,8 @@ public interface UnitOfMeasure {
 
     public String getType();
 
-    public UnitOfMeasure getTargetUnitOfMeasure();
-
-    public double getFactorB();
-
-    public double getFactorC();
+    public GTUnitOfMeasure getTargetUnitOfMeasure();
     
+    public Unit<?> getUnit();
+        
 }

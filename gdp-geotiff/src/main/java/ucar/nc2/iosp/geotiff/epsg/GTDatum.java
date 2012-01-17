@@ -4,7 +4,7 @@ package ucar.nc2.iosp.geotiff.epsg;
  *
  * @author tkunicki
  */
-public interface Datum {
+public interface GTDatum {
 
     enum Type {
         geodetic,
@@ -17,8 +17,8 @@ public interface Datum {
 
     public Type getType();
 
-    public Ellipsoid getEllipsoid();
+    public GTEllipsoid getEllipsoid();
 
-    public PrimeMeridian getPrimeMeridian();
+    public GTPrimeMeridian getPrimeMeridian();
     
 }

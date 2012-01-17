@@ -1,10 +1,10 @@
 package ucar.nc2.iosp.geotiff.epsg.csv;
 
-import ucar.nc2.iosp.geotiff.epsg.Datum;
-import ucar.nc2.iosp.geotiff.epsg.Ellipsoid;
-import ucar.nc2.iosp.geotiff.epsg.PrimeMeridian;
+import ucar.nc2.iosp.geotiff.epsg.GTDatum;
+import ucar.nc2.iosp.geotiff.epsg.GTEllipsoid;
+import ucar.nc2.iosp.geotiff.epsg.GTPrimeMeridian;
 
-public class DatumEntry implements CSVEntry, Datum {
+public class DatumEntry implements CSVEntry, GTDatum {
 
     private int code;
     private String name;
@@ -12,9 +12,10 @@ public class DatumEntry implements CSVEntry, Datum {
     private int ellipsoidCode;
     private int primeMeridianCode;
 
-    private Ellipsoid ellipsoid;
-    private PrimeMeridian primeMeridian;
+    private GTEllipsoid ellipsoid;
+    private GTPrimeMeridian primeMeridian;
 
+    @Override
     public int getCode() {
         return code;
     }
@@ -27,6 +28,7 @@ public class DatumEntry implements CSVEntry, Datum {
         this.ellipsoidCode = ellipsoidCode;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -39,18 +41,20 @@ public class DatumEntry implements CSVEntry, Datum {
         this.primeMeridianCode = primeMeridianCode;
     }
 
-    public Datum.Type getType() {
-        return Datum.Type.valueOf(typeAsString);
+    @Override
+    public Type getType() {
+        return Type.valueOf(typeAsString);
     }
 
     public void setTypeAsString(String typeAsString) {
         this.typeAsString = typeAsString;
     }
 
-    public synchronized Ellipsoid getEllipsoid() {
+    @Override
+    public synchronized GTEllipsoid getEllipsoid() {
         if (ellipsoid == null) {
-            if (getType() == Datum.Type.geodetic) {
-                ellipsoid = EPSG.findEllipsoidByCode(ellipsoidCode);
+            if (getType() == Type.geodetic) {
+                ellipsoid = CSVEPSGFactory.getInstance().findEllipsoidByCode(ellipsoidCode);
             } else {
                 throw new IllegalStateException("attempt to access ellipsoid for non-geodetic datum");
             }
@@ -58,10 +62,11 @@ public class DatumEntry implements CSVEntry, Datum {
         return ellipsoid;
     }
 
-    public synchronized PrimeMeridian getPrimeMeridian() {
+    @Override
+    public synchronized GTPrimeMeridian getPrimeMeridian() {
         if (primeMeridian == null) {
-            if (getType() == Datum.Type.geodetic) {
-                primeMeridian = EPSG.findPrimeMeridianByCode(primeMeridianCode);
+            if (getType() == Type.geodetic) {
+                primeMeridian = CSVEPSGFactory.getInstance().findPrimeMeridianByCode(primeMeridianCode);
             } else {
                 throw new IllegalStateException("attempt to access prime meridian for non-geodetic datum");
             }

@@ -4,16 +4,14 @@ import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.iosp.geotiff.epsg.Ellipsoid;
-import ucar.nc2.iosp.geotiff.epsg.GeogCS;
+import ucar.nc2.iosp.geotiff.epsg.GTEllipsoid;
+import ucar.nc2.iosp.geotiff.epsg.GTGeogCS;
 
-public class GeogCSHandler implements CSHandler {
+public class GeogCSGridMappingAdapter implements GridMappingAdapter {
 
-    private GeogCS geogCS;
+    private GTGeogCS geogCS;
 
-    private Variable variable;
-
-    public GeogCSHandler(GeogCS geogCS) {
+    public GeogCSGridMappingAdapter(GTGeogCS geogCS) {
         this.geogCS = geogCS;
     }
 
@@ -23,34 +21,23 @@ public class GeogCSHandler implements CSHandler {
     }
 
     @Override
-    public synchronized String getName() {
-        if (variable == null) {
-            throw new IllegalStateException("Coordinate reference system not generated for this instance");
-        }
-        return variable.getName();
-    }
+    public synchronized Variable generateGridMappingVariable(NetcdfFile netCDFFile, int index) {
+        
+        Variable variable = new Variable(netCDFFile, null, null, "crs" + index);
+        variable.setDataType(DataType.INT);
+        variable.setIsScalar();
+        variable.addAttribute(new Attribute("grid_mapping_name", "latitude_longitude"));
 
-    @Override
-    public synchronized Variable generateCRSVariable(NetcdfFile netCDFFile, int index) {
-        if (variable == null) {
-          
-            variable = new Variable(netCDFFile, null, null, "crs" + index);
-            variable.setDataType(DataType.INT);
-            variable.setIsScalar();
-            variable.addAttribute(new Attribute("grid_mapping_name", "latitude_longitude"));
+        augmentCRSVariable(variable);
 
-            augmentCRSVariable(variable);
-
-            return variable;
-        }
-        throw new IllegalStateException("Coordinate reference system already generated for this instance");
+        return variable;
     }
 
     public void augmentCRSVariable(Variable variable) {
         
         variable.addAttribute(new Attribute("longitude_of_prime_meridian", geogCS.getPrimeMeridian().getLongitude()));
 
-        Ellipsoid ellipsoid = geogCS.getEllipsoid();
+        GTEllipsoid ellipsoid = geogCS.getEllipsoid();
         double semiMajor = ellipsoid.getSemiMajorAxis();
         double semiMinor = ellipsoid.getSemiMinorAxis();
         double inverse = ellipsoid.getInverseFlattening();
@@ -73,7 +60,7 @@ public class GeogCSHandler implements CSHandler {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final GeogCSHandler other = (GeogCSHandler) obj;
+        final GeogCSGridMappingAdapter other = (GeogCSGridMappingAdapter) obj;
         if (this.geogCS != other.geogCS && (this.geogCS == null || !this.geogCS.equals(other.geogCS))) {
             return false;
         }

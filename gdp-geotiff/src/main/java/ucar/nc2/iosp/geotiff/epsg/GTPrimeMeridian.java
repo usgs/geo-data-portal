@@ -4,7 +4,7 @@ package ucar.nc2.iosp.geotiff.epsg;
  *
  * @author tkunicki
  */
-public interface PrimeMeridian {
+public interface GTPrimeMeridian {
 
     public int getCode();
 
@@ -12,5 +12,5 @@ public interface PrimeMeridian {
 
     public double getLongitude();
 
-    public UnitOfMeasure getUnitOfMeasure();
+    public GTUnitOfMeasure getUnitOfMeasure();
 }

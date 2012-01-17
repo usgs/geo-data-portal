@@ -1,28 +1,28 @@
 package ucar.nc2.iosp.geotiff;
 
-import ucar.nc2.iosp.geotiff.epsg.ProjCS;
-import ucar.nc2.iosp.geotiff.epsg.Datum;
-import ucar.nc2.iosp.geotiff.cs.GeogCSHandler;
-import ucar.nc2.iosp.geotiff.cs.ProjCSHandler;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import ucar.nc2.iosp.geotiff.epsg.GeogCS;
+import javax.imageio.metadata.IIOMetadata;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
-import java.util.Arrays;
-import javax.imageio.metadata.IIOMetadata;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.iosp.geotiff.cs.CSHandler;
-import ucar.nc2.iosp.geotiff.epsg.csv.EPSG;
-
+import ucar.nc2.iosp.geotiff.cs.GeogCSGridMappingAdapter;
+import ucar.nc2.iosp.geotiff.cs.GridMappingAdapter;
+import ucar.nc2.iosp.geotiff.cs.ProjCSGridMappingAdapter;
+import ucar.nc2.iosp.geotiff.epsg.GTDatum;
+import ucar.nc2.iosp.geotiff.epsg.EPSGFactory;
+import ucar.nc2.iosp.geotiff.epsg.EPSGFactoryManager;
+import ucar.nc2.iosp.geotiff.epsg.GTGeogCS;
+import ucar.nc2.iosp.geotiff.epsg.GTProjCS;
 import static ucar.nc2.iosp.geotiff.GeoTiffIIOMetadataAdapter.*;
 
-public class GeoTIFFIIOCoordSys {
+public class GeoTiffCoordSys {
 
-    // harvested for ProJ documentation and libgeotiff geo_normalize.c
+    // harvested from ProJ documentation and libgeotiff geo_normalize.c
     enum ProjCoordTrans {
         CT_TransverseMercator(1, 9807),
         CT_TransvMercator_Modified_Alaska(2),
@@ -112,20 +112,22 @@ public class GeoTIFFIIOCoordSys {
     public final static int EPSGInitialLongitude = 8830;
     public final static int EPSGZoneWidth = 8831;
 
-    int width;
-    int height;
+    private int width;
+    private int height;
 
-    double[] pixelScales;
-    double[] tiePoints;
-    double[] transformation;
+    private double[] pixelScales;
+    private double[] tiePoints;
+    private double[] transformation;
 
-    int modelType;
-    int geographicType;
-    int rasterType;
+    private int modelType;
+    private int geographicType;
+    private int rasterType;
 
-    CSHandler csHandler;
-
-    public GeoTIFFIIOCoordSys(IIOMetadata metadata, int width, int height) {
+    private GridMappingAdapter gridMappingAdapter;
+    
+    final private EPSGFactory epsgFactory;
+    
+    public GeoTiffCoordSys(IIOMetadata metadata, int width, int height) {
 
         this.width = width;
         this.height = height;
@@ -139,60 +141,63 @@ public class GeoTIFFIIOCoordSys {
         modelType = toInt(metadataAdapter.getGeoKey(GTModelTypeGeoKey));
         geographicType = toInt(metadataAdapter.getGeoKey(GeographicTypeGeoKey));
         rasterType = toInt(metadataAdapter.getGeoKey(GTRasterTypeGeoKey));
+        
+        epsgFactory = EPSGFactoryManager.getInstance().getEPSGFactory();
 
         if (modelType != ModelTypeGeocentric) {
-            GeogCSHandler geogCSHandler = generateGeogCSHandler(metadataAdapter);
+            GeogCSGridMappingAdapter geogCSGridMappingAdapter = generateGeogCSHandler(metadataAdapter);
             if (modelType == ModelTypeProjected) {
-                csHandler = generateProjCSHandler(metadataAdapter, geogCSHandler);
+                gridMappingAdapter = generateProjCSHandler(metadataAdapter, geogCSGridMappingAdapter);
             } else {
-                csHandler = geogCSHandler;
+                gridMappingAdapter = geogCSGridMappingAdapter;
             }
         } // else { /* don't support geocentric yet. */ }
     }
 
-    private GeogCSHandler generateGeogCSHandler(GeoTiffIIOMetadataAdapter metadata) {
-        GeogCS geogCS = null;
-        geogCS = EPSG.findGeogCSByCode(geographicType);
+    private GeogCSGridMappingAdapter generateGeogCSHandler(GeoTiffIIOMetadataAdapter metadata) {
+        GTGeogCS geogCS = null;
+        geogCS = epsgFactory.findGeogCSByCode(geographicType);
         if (geogCS == null) {
             int datumCode = toInt(metadata.getGeoKey(GeogGeodeticDatumGeoKey));
             if (datumCode != Integer.MIN_VALUE) { // no data code
-                Datum datum = EPSG.findDatumByCode(datumCode);
+                GTDatum datum = epsgFactory.findDatumByCode(datumCode);
                 if (datum != null) {
-                    geogCS = EPSG.findGeogCSByDatum(datum);
+                    geogCS = epsgFactory.findGeogCSByDatum(datum);
                 }
             }
         }
         return (geogCS == null) ?
             null :
-            new GeogCSHandler(geogCS);
+            new GeogCSGridMappingAdapter(geogCS);
     }
 
-    private ProjCSHandler generateProjCSHandler(
+    private ProjCSGridMappingAdapter generateProjCSHandler(
             GeoTiffIIOMetadataAdapter metadata,
-            GeogCSHandler geogCSHandler) {
+            GeogCSGridMappingAdapter geogCSGridMappingAdapter) {
 
-        ProjCSHandler pcsh = generateProjCSHandlerFromProjectedCSType(
-                metadata, geogCSHandler);
+        ProjCSGridMappingAdapter pcsh = generateProjCSHandlerFromProjectedCSType(
+                metadata, geogCSGridMappingAdapter);
+        // TCK - 2012.01.02 - don't remember why this wasn't pursued, maybe required data wasn't in our CSV EPSG dumps?
 //        if (pcsh == null) {
 //            pcsh = generateProjCSHandlerFromProjection(
-//                  metadata, geogCSHandler);
+//                  metadata, geogCSGridMappingAdapter);
 //        }
         if (pcsh == null) {
             pcsh = generateProjCSHandlerFromProjCoordTrans(
-                    metadata, geogCSHandler);
+                    metadata, geogCSGridMappingAdapter);
         }
         return pcsh;
     }
 
-    private ProjCSHandler generateProjCSHandlerFromProjectedCSType(
+    private ProjCSGridMappingAdapter generateProjCSHandlerFromProjectedCSType(
             GeoTiffIIOMetadataAdapter metadata,
-            GeogCSHandler geogCSHandler) {
+            GeogCSGridMappingAdapter geogCSHandler) {
 
         int projectedCSType = toInt(metadata.getGeoKey(ProjectedCSTypeGeoKey));
 
         String gridMappingName = null;
         Map<String, Double> pMap = new LinkedHashMap<String, Double>();
-        ProjCS projCS = EPSG.findProjCSByCode(projectedCSType);
+        GTProjCS projCS = epsgFactory.findProjCSByCode(projectedCSType);
         if (projCS == null) {
             return null;
         }
@@ -284,12 +289,12 @@ public class GeoTIFFIIOCoordSys {
         }
         return (gridMappingName == null) ?
             null :
-            new ProjCSHandler(geogCSHandler, gridMappingName, pMap);
+            new ProjCSGridMappingAdapter(geogCSHandler, gridMappingName, pMap);
     }
 
-    private ProjCSHandler generateProjCSHandlerFromProjCoordTrans(
+    private ProjCSGridMappingAdapter generateProjCSHandlerFromProjCoordTrans(
             GeoTiffIIOMetadataAdapter metadata,
-            GeogCSHandler geogCSHandler) {
+            GeogCSGridMappingAdapter geogCSHandler) {
 
         int projCoordTrans = toInt(metadata.getGeoKey(ProjCoordTransGeoKey));
 
@@ -453,20 +458,22 @@ public class GeoTIFFIIOCoordSys {
         }
         return (gridMappingName == null) ?
             null :
-            new ProjCSHandler(geogCSHandler, gridMappingName, pMap);
+            new ProjCSGridMappingAdapter(geogCSHandler, gridMappingName, pMap);
     }
-
-
 
     boolean isSupported() {
         return width > -1 && height > -1 &&
                 pixelScales != null &&
                 tiePoints != null &&
-                csHandler != null;
+                gridMappingAdapter != null;
     }
 
-    public CSHandler getCSHandler() {
-        return csHandler;
+    public GridMappingAdapter getGridMappingAdapter() {
+        return gridMappingAdapter;
+    }
+    
+    public CoordSysAdapter getCoordSysAdapter() {
+        return new CoordSysAdapter();
     }
 
     private static int toInt(String string) {
@@ -499,7 +506,7 @@ public class GeoTIFFIIOCoordSys {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final GeoTIFFIIOCoordSys other = (GeoTIFFIIOCoordSys) obj;
+        final GeoTiffCoordSys other = (GeoTiffCoordSys) obj;
         if (this.width != other.width) {
             return false;
         }
@@ -515,7 +522,7 @@ public class GeoTIFFIIOCoordSys {
         if (!Arrays.equals(this.transformation, other.transformation)) {
             return false;
         }
-        if (this.csHandler != other.csHandler && (this.csHandler == null || !this.csHandler.equals(other.csHandler))) {
+        if (this.gridMappingAdapter != other.gridMappingAdapter && (this.gridMappingAdapter == null || !this.gridMappingAdapter.equals(other.gridMappingAdapter))) {
             return false;
         }
         return true;
@@ -529,30 +536,22 @@ public class GeoTIFFIIOCoordSys {
         hash = 17 * hash + Arrays.hashCode(this.pixelScales);
         hash = 17 * hash + Arrays.hashCode(this.tiePoints);
         hash = 17 * hash + Arrays.hashCode(this.transformation);
-        hash = 17 * hash + (this.csHandler != null ? this.csHandler.hashCode() : 0);
+        hash = 17 * hash + (this.gridMappingAdapter != null ? this.gridMappingAdapter.hashCode() : 0);
         return hash;
     }
 
-    public class Adapter {
-
-        private NetcdfFile ncFile;
+    public class CoordSysAdapter {
 
         private String dimensionsAsString;
         private String coordinatesAsString;
 
-        private boolean generated;
-
-        public Adapter(NetcdfFile ncFile) {
-            this.ncFile = ncFile;
+        private CoordSysAdapter() {
         }
 
-        public synchronized void generate(int index) {
-            if (generated) {
-                throw new IllegalStateException("Coordinate system already generated for this instance");
-            }
+        public void generate(NetcdfFile ncFile, int index) {
 
             Dimension xDim = ncFile.addDimension(
-                    null,new Dimension("x" + index, width));
+                    null, new Dimension("x" + index, width));
             Dimension yDim = ncFile.addDimension(
                     null, new Dimension("y" + index, height));
 
@@ -615,19 +614,17 @@ public class GeoTIFFIIOCoordSys {
 
             dimensionsAsString = yDim.getName() + " " + xDim.getName();
             coordinatesAsString = yVar.getName() + " " + xVar.getName();
-
-            generated = true;
         }
 
-        public synchronized String getDimensionsAsString() {
-            if (!generated) {
+        public String getDimensionsAsString() {
+            if (dimensionsAsString == null) {
                 throw new IllegalStateException("Coordinate system not generated for this instance");
             }
             return dimensionsAsString;
         }
 
-        public synchronized String getCoordinatesAsString() {
-            if (!generated) {
+        public String getCoordinatesAsString() {
+            if (coordinatesAsString == null) {
                 throw new IllegalStateException("Coordinate system not generated for this instance");
             }
             return coordinatesAsString;

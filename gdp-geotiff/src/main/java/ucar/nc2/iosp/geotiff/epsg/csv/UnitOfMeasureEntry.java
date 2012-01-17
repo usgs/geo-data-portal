@@ -1,22 +1,22 @@
 package ucar.nc2.iosp.geotiff.epsg.csv;
 
-import ucar.nc2.iosp.geotiff.epsg.UnitOfMeasure;
+import javax.measure.unit.Unit;
+import ucar.nc2.iosp.geotiff.epsg.GTUnitOfMeasure;
 
 /**
  *
  * @author tkunicki
  */
-public class UnitOfMeasureEntry implements CSVEntry, UnitOfMeasure {
+public class UnitOfMeasureEntry implements CSVEntry, GTUnitOfMeasure {
 
     private int code;
     private String name;
     private String type;
     private int targetUnitOfMeasureCode;
-    private double factorB;
-    private double factorC;
-    
-    private UnitOfMeasure targetUnitOfMeasure;
+    private double factorB = Double.NaN;
+    private double factorC = Double.NaN;
 
+    @Override
     public int getCode() {
         return code;
     }
@@ -25,22 +25,7 @@ public class UnitOfMeasureEntry implements CSVEntry, UnitOfMeasure {
         this.code = code;
     }
 
-    public double getFactorB() {
-        return factorB;
-    }
-
-    public void setFactorB(double factorB) {
-        this.factorB = factorB;
-    }
-
-    public double getFactorC() {
-        return factorC;
-    }
-
-    public void setFactorC(double factorC) {
-        this.factorC = factorC;
-    }
-
+    @Override
     public String getName() {
         return name;
     }
@@ -48,11 +33,16 @@ public class UnitOfMeasureEntry implements CSVEntry, UnitOfMeasure {
     public void setName(String name) {
         this.name = name;
     }
-
+    
+    public int getTargetUnitOfMeasureCode() {
+        return targetUnitOfMeasureCode;
+    }
+    
     public void setTargetUnitOfMeasureCode(int targetUnitOfMeasureCode) {
         this.targetUnitOfMeasureCode = targetUnitOfMeasureCode;
     }
 
+    @Override
     public String getType() {
         return type;
     }
@@ -60,12 +50,34 @@ public class UnitOfMeasureEntry implements CSVEntry, UnitOfMeasure {
     public void setType(String type) {
         this.type = type;
     }
-
-    public synchronized UnitOfMeasure getTargetUnitOfMeasure() {
-        if (targetUnitOfMeasure == null) {
-            targetUnitOfMeasure = EPSG.findUnitOfMeasureByCode(targetUnitOfMeasureCode);
-        }
-        return targetUnitOfMeasure;
+    
+    public double getFactorB() {
+        return factorB;
+    }
+    
+    public void setFactorB(double factorB) {
+        this.factorB = factorB;
+    }
+    
+    public double getFactorC() {
+        return factorC;
+    }
+    
+    public void setFactorC(double factorC) {
+        this.factorC = factorC;
     }
 
+    @Override
+    public Unit<?> getUnit() {
+        return UnitOfMeasureUtil.convert(this);
+    }
+
+    @Override
+    public GTUnitOfMeasure getTargetUnitOfMeasure() {
+        return CSVEPSGFactory.getInstance().findUnitOfMeasureByCode(targetUnitOfMeasureCode);
+    }
+    
+    public double convertToTargetUnitOfMeasure(double value) {
+        return getUnit().getConverterTo(getTargetUnitOfMeasure().getUnit()).convert(value);
+    }
 }

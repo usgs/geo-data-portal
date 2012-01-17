@@ -1,6 +1,5 @@
 package ucar.nc2.iosp.geotiff;
 
-import ucar.nc2.iosp.geotiff.cs.CSHandler;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
@@ -9,13 +8,10 @@ import java.awt.image.renderable.ParameterBlock;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Formatter;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
@@ -24,14 +20,6 @@ import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
 import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import org.w3c.dom.Node;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
@@ -40,14 +28,9 @@ import ucar.ma2.Section;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
+import ucar.nc2.iosp.geotiff.GeoTiffCoordSys.CoordSysAdapter;
+import ucar.nc2.iosp.geotiff.cs.GridMappingAdapter;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -67,7 +50,6 @@ public class GeoTiffIOServiceProvider extends AbstractIOServiceProvider {
     private final static String ATTRIBUTE_IMAGE = "image";
 
     private String location;
-
 
     static {
         ImageIO.scanForPlugins();
@@ -93,9 +75,10 @@ public class GeoTiffIOServiceProvider extends AbstractIOServiceProvider {
             imageInputStream = ImageIO.createImageInputStream(new File(location));
             imageReader.setInput(imageInputStream);
 
-            Map<GeoTIFFIIOCoordSys, GeoTIFFIIOCoordSys.Adapter> csAdapterMap =
-                    new HashMap<GeoTIFFIIOCoordSys, GeoTIFFIIOCoordSys.Adapter>();
-            Set<CSHandler> csHandlerSet = new HashSet<CSHandler>();
+            Map<GeoTiffCoordSys, CoordSysAdapter> coordSysAdapterMap =
+                    new HashMap<GeoTiffCoordSys, CoordSysAdapter>();
+            Map<GridMappingAdapter, Variable> gridMappingVariableMap = 
+                    new HashMap<GridMappingAdapter, Variable>();
 
             int imageCount = imageReader.getNumImages(true);
             for (int imageIndex = 0; imageIndex < imageCount; ++imageIndex) {
@@ -104,29 +87,31 @@ public class GeoTiffIOServiceProvider extends AbstractIOServiceProvider {
                 int imageHeightPixels = imageReader.getHeight(imageIndex);
                 IIOMetadata imageMetadata = imageReader.getImageMetadata(imageIndex);
 
-                GeoTIFFIIOCoordSys cs = new GeoTIFFIIOCoordSys(
+                GeoTiffCoordSys coordSys = new GeoTiffCoordSys(
                         imageMetadata, imageWidthPixels, imageHeightPixels);
 
-                if (cs.isSupported()) {
+                if (coordSys.isSupported()) {
 
-                    GeoTIFFIIOCoordSys.Adapter csAdapter = csAdapterMap.get(cs);
-                    if (csAdapter == null) {
-                        csAdapter = cs.new Adapter(ncfile);
-                        csAdapter.generate(csAdapterMap.size());
-                        csAdapterMap.put(cs, csAdapter);
+                    CoordSysAdapter coordSysAdapter = coordSysAdapterMap.get(coordSys);
+                    if (coordSysAdapter == null) {
+                        coordSysAdapter = coordSys.getCoordSysAdapter();
+                        coordSysAdapter.generate(ncfile, coordSysAdapterMap.size());
+                        coordSysAdapterMap.put(coordSys, coordSysAdapter);
                     }
 
-                    CSHandler crsHandler = cs.getCSHandler();
-                    if (!csHandlerSet.contains(crsHandler)) {
-                        Variable crsVariable = crsHandler.generateCRSVariable(ncfile, csHandlerSet.size());
-                        ncfile.addVariable(null, crsVariable);
-                        csHandlerSet.add(crsHandler);
+                    GridMappingAdapter gridMappingAdapter = coordSys.getGridMappingAdapter();
+                    Variable gridMappingVariable = gridMappingVariableMap.get(gridMappingAdapter);
+                    if (gridMappingVariable == null) {
+                        gridMappingVariable = gridMappingAdapter.generateGridMappingVariable(ncfile, gridMappingVariableMap.size());
+                        ncfile.addVariable(null, gridMappingVariable);
+                        gridMappingVariableMap.put(gridMappingAdapter, gridMappingVariable);
                     }
 
                     ImageTypeSpecifier imageTypeSpecifier = imageReader.getRawImageType(imageIndex);
                     DataType bandDataType = createDataType(imageTypeSpecifier);
-                    String bandDimensions = csAdapter.getDimensionsAsString();
-                    String bandCoordinates = csAdapter.getCoordinatesAsString();
+                    String bandDimensions = coordSysAdapter.getDimensionsAsString();
+                    String bandCoordinates = coordSysAdapter.getCoordinatesAsString();
+                    String gridMappingName = gridMappingVariable.getName();
                     int bandCount = imageTypeSpecifier.getNumBands();
                     for (int bandIndex = 0; bandIndex < bandCount; ++bandIndex) {
                         Variable dataVariable = new Variable(ncfile, null, null,
@@ -135,13 +120,13 @@ public class GeoTiffIOServiceProvider extends AbstractIOServiceProvider {
                         dataVariable.setDimensions(bandDimensions);
                         dataVariable.addAttribute(new Attribute(ATTRIBUTE_IMAGE, imageIndex));
                         dataVariable.addAttribute(new Attribute(ATTRIBUTE_BAND, bandIndex));
-                        dataVariable.addAttribute(new Attribute("grid_mapping", crsHandler.getName()));
+                        dataVariable.addAttribute(new Attribute("grid_mapping", gridMappingName));
                         dataVariable.addAttribute(new Attribute("coordinates", bandCoordinates));
                         ncfile.addVariable(null, dataVariable);
                     }
                 }
             }
-            ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.5"));
+            ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.6"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (Exception e) {
@@ -335,54 +320,6 @@ public class GeoTiffIOServiceProvider extends AbstractIOServiceProvider {
             default:
                 return null;
         }
-    }
-
-    public static void dumpMetaDataXML(IIOMetadata metadata) {
-        try {
-            Node node = metadata.getAsTree(metadata.getNativeMetadataFormatName());
-            Source source = new DOMSource(node);
-            Result result = new StreamResult(System.out);
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.transform(source, result);
-        } catch (Exception e) { }
-    }
-
-    public static void main(String[] args) throws Exception {
-
-        NetcdfFile.registerIOProvider(GeoTiffIOServiceProvider.class);
-
-        FeatureDataset fd = FeatureDatasetFactoryManager.open(FeatureType.GRID, "/Users/tkunicki/Downloads/nlcd-9.tiff", null, new Formatter(System.err));
-
-        fd.getNetcdfFile().writeCDL(System.out, true);
-
-        if (fd instanceof GridDataset) {
-            GridDataset gd = (GridDataset)fd;
-//            for (GridDatatype gdt : gd.getGrids()) {
-                GridDatatype gdt = gd.findGridDatatype("I0B0"); {
-                System.out.println(gdt.getName());
-                GridCoordSystem gcs = gdt.getCoordinateSystem();
-
-                CoordinateAxis1D xAxis = (CoordinateAxis1D)gcs.getXHorizAxis();
-                CoordinateAxis1D yAxis = (CoordinateAxis1D)gcs.getYHorizAxis();
-
-                System.out.println(xAxis.getMinValue() + " : " + xAxis.getMaxValue());
-                System.out.println(yAxis.getMinValue() + " : " + yAxis.getMaxValue());
-
-                Array a = gdt.makeSubset(null, null, null, null, new Range(0, 1021, 1), new Range(0,3060,1)).readVolumeData(-1);
-                Double min = Double.MAX_VALUE;
-                Double max = -Double.MAX_VALUE;
-                while (a.hasNext()) {
-                    double v = a.nextDouble();
-                    if (v < min) min = v;
-                    if (v > max) max = v;
-                }
-                System.out.println(min + " : " + max);
-            }
-        }
-
-        fd.close();
-
     }
 
 }

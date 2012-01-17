@@ -1,9 +1,9 @@
 package ucar.nc2.iosp.geotiff.epsg.csv;
 
-import ucar.nc2.iosp.geotiff.epsg.Ellipsoid;
-import ucar.nc2.iosp.geotiff.epsg.UnitOfMeasure;
+import ucar.nc2.iosp.geotiff.epsg.GTEllipsoid;
+import ucar.nc2.iosp.geotiff.epsg.GTUnitOfMeasure;
 
-public class EllipsoidEntry implements CSVEntry, Ellipsoid {
+public class EllipsoidEntry implements CSVEntry, GTEllipsoid {
 
     private int code;
     private String name;
@@ -12,8 +12,9 @@ public class EllipsoidEntry implements CSVEntry, Ellipsoid {
     private double inverseFlattening;
     private int unitOfMeasureCode;
 
-    private UnitOfMeasure unitOfMeasure;
+    private GTUnitOfMeasure unitOfMeasure;
 
+    @Override
     public int getCode() {
         return code;
     }
@@ -22,6 +23,7 @@ public class EllipsoidEntry implements CSVEntry, Ellipsoid {
         this.code = code;
     }
 
+    @Override
     public double getInverseFlattening() {
         return inverseFlattening;
     }
@@ -30,6 +32,7 @@ public class EllipsoidEntry implements CSVEntry, Ellipsoid {
         this.inverseFlattening = inverseFlattening;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -38,6 +41,7 @@ public class EllipsoidEntry implements CSVEntry, Ellipsoid {
         this.name = name;
     }
 
+    @Override
     public double getSemiMajorAxis() {
         return semiMajorAxis;
     }
@@ -46,6 +50,7 @@ public class EllipsoidEntry implements CSVEntry, Ellipsoid {
         this.semiMajorAxis = semiMajorAxis;
     }
 
+    @Override
     public double getSemiMinorAxis() {
         return semiMinorAxis;
     }
@@ -58,9 +63,10 @@ public class EllipsoidEntry implements CSVEntry, Ellipsoid {
         this.unitOfMeasureCode = unitOfMeasureCode;
     }
 
-    public synchronized UnitOfMeasure getUnitOfMeasure() {
+    @Override
+    public synchronized GTUnitOfMeasure getUnitOfMeasure() {
         if (unitOfMeasure == null) {
-            unitOfMeasure = EPSG.findUnitOfMeasureByCode(unitOfMeasureCode);
+            unitOfMeasure = CSVEPSGFactory.getInstance().findUnitOfMeasureByCode(unitOfMeasureCode);
         }
         return unitOfMeasure;
     }

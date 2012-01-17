@@ -4,7 +4,7 @@ package ucar.nc2.iosp.geotiff.epsg;
  *
  * @author tkunicki
  */
-public interface Ellipsoid {
+public interface GTEllipsoid {
 
     public int getCode();
 
@@ -16,5 +16,5 @@ public interface Ellipsoid {
 
     public double getInverseFlattening();
 
-    public UnitOfMeasure getUnitOfMeasure();
+    public GTUnitOfMeasure getUnitOfMeasure();
 }

@@ -8,61 +8,74 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import ucar.nc2.iosp.geotiff.epsg.Datum;
-import ucar.nc2.iosp.geotiff.epsg.Ellipsoid;
-import ucar.nc2.iosp.geotiff.epsg.GeogCS;
-import ucar.nc2.iosp.geotiff.epsg.PrimeMeridian;
-import ucar.nc2.iosp.geotiff.epsg.ProjCS;
-import ucar.nc2.iosp.geotiff.epsg.UnitOfMeasure;
+import ucar.nc2.iosp.geotiff.epsg.GTDatum;
+import ucar.nc2.iosp.geotiff.epsg.GTDatum.Type;
+import ucar.nc2.iosp.geotiff.epsg.EPSGFactory;
+import ucar.nc2.iosp.geotiff.epsg.GTEllipsoid;
+import ucar.nc2.iosp.geotiff.epsg.GTGeogCS;
+import ucar.nc2.iosp.geotiff.epsg.GTPrimeMeridian;
+import ucar.nc2.iosp.geotiff.epsg.GTProjCS;
+import ucar.nc2.iosp.geotiff.epsg.GTUnitOfMeasure;
 import ucar.nc2.iosp.geotiff.epsg.csv.CSVFilteredMappingStrategy.Filter;
 
 /**
  *
  * @author tkunicki
  */
-public class EPSG {
+public class CSVEPSGFactory implements EPSGFactory {
 
-    private final static String RESOURCE_GCS = "ucar/nc2/iosp/geotiff/epsg/csv/gcs.csv";
-    private final static String RESOURCE_PCS = "ucar/nc2/iosp/geotiff/epsg/csv/pcs.csv";
-    private final static String RESOURCE_DATUM = "ucar/nc2/iosp/geotiff/epsg/csv/datum.csv";
-    private final static String RESOURCE_ELLIPSOID = "ucar/nc2/iosp/geotiff/epsg/csv/ellipsoid.csv";
-    private final static String RESOURCE_PRIMEMERIDIAN = "ucar/nc2/iosp/geotiff/epsg/csv/prime_meridian.csv";
-    private final static String RESOURCE_UNITOFMEASURE = "ucar/nc2/iosp/geotiff/epsg/csv/unit_of_measure.csv";
+    private final static String RESOURCE_GCS = "/ucar/nc2/iosp/geotiff/epsg/csv/gcs.csv";
+    private final static String RESOURCE_PCS = "/ucar/nc2/iosp/geotiff/epsg/csv/pcs.csv";
+    private final static String RESOURCE_DATUM = "/ucar/nc2/iosp/geotiff/epsg/csv/datum.csv";
+    private final static String RESOURCE_ELLIPSOID = "/ucar/nc2/iosp/geotiff/epsg/csv/ellipsoid.csv";
+    private final static String RESOURCE_PRIMEMERIDIAN = "/ucar/nc2/iosp/geotiff/epsg/csv/prime_meridian.csv";
+    private final static String RESOURCE_UNITOFMEASURE = "/ucar/nc2/iosp/geotiff/epsg/csv/unit_of_measure.csv";
 
-    private static Map<Integer, GeogCSEntry> geogCSMap;
+    private static CSVEPSGFactory instance;
+    public synchronized static CSVEPSGFactory getInstance() {
+        if (instance == null) {
+            instance = new CSVEPSGFactory();
+        }
+        return instance;
+    }
+    
+    private Map<Integer, GeogCSEntry> geogCSMap;
+    private Map<Integer, ProjCSEntry> projCSMap;
+    private Map<Integer, DatumEntry> datumMap;
+    private Map<Integer, EllipsoidEntry> ellipsoidMap;
+    private Map<Integer, PrimeMeridianEntry> primeMeridianMap;
+    private Map<Integer, UnitOfMeasureEntry> unitOfMeasureMap;
 
-    public synchronized static GeogCS findGeogCSByCode(int code) {
+    private CSVEPSGFactory() {
+        
+    }
+    
+    @Override
+    public synchronized GeogCSEntry findGeogCSByCode(int code) {
         if (geogCSMap == null) {
-            geogCSMap = new HashMap<Integer, GeogCSEntry>();
+            geogCSMap = new LinkedHashMap<Integer, GeogCSEntry>();
 
             Map<String, String> cm = new HashMap<String, String>();
             cm.put("COORD_REF_SYS_CODE", "code");
             cm.put("COORD_REF_SYS_NAME", "name");
             cm.put("DATUM_CODE", "datumCode");
-            cm.put("GREENWICH_DATUM", "greenwichDatumCode");
+//            cm.put("GREENWICH_DATUM", "greenwichDatumCode");
             cm.put("UOM_CODE", "unitOfMeasureCode");
             cm.put("ELLIPSOID_CODE", "ellipsoidCode");
             cm.put("PRIME_MERIDIAN_CODE", "primeMeridianCode");
 
-            InputStream is = null;
-            try {
-                is = getResourceAsStream(RESOURCE_GCS);
-                
-                loadBeansFromCSV(GeogCSEntry.class, geogCSMap, cm, null, is);
-            } finally {
-                if (is != null) try { is.close(); } catch (IOException e) {}
-            }
-
-            
+            loadBeansFromCSV(GeogCSEntry.class, geogCSMap, cm, null, RESOURCE_GCS);
         }
         return geogCSMap.get(code);
     }
 
-    public static GeogCS findGeogCSByDatum(Datum datum) {
-        GeogCS geogCS = null;
-        if (datum.getType() == Datum.Type.geodetic) {
+    @Override
+    public synchronized GeogCSEntry findGeogCSByDatum(GTDatum datum) {
+        GeogCSEntry geogCS = null;
+        if (datum.getType() == Type.geodetic) {
             // Try quick estimate, datumCode - 2000. This should usually work
             // except for the archaic datums.
             // NOTE: This is also used to load the geogCSMap if it hasn't
@@ -73,7 +86,7 @@ public class EPSG {
                 geogCS = null;
                 Iterator<GeogCSEntry> geogCSIterator = geogCSMap.values().iterator();
                 while (geogCSIterator.hasNext() && geogCS == null) {
-                    GeogCS next = geogCSIterator.next();
+                    GeogCSEntry next = geogCSIterator.next();
                     if (next.getDatum().getCode() == datum.getCode()) {
                         geogCS = next;
                     }
@@ -83,11 +96,10 @@ public class EPSG {
         return geogCS;
     }
 
-    private static Map<Integer, ProjCSEntry> projCSMap;
-
-    public synchronized static ProjCS findProjCSByCode(int code) {
+    @Override
+    public synchronized ProjCSEntry findProjCSByCode(int code) {
         if (projCSMap == null) {
-            projCSMap = new HashMap<Integer, ProjCSEntry>();
+            projCSMap = new LinkedHashMap<Integer, ProjCSEntry>();
 
             Map<String, String> cm = new HashMap<String, String>();
             cm.put("COORD_REF_SYS_CODE", "code");
@@ -118,23 +130,15 @@ public class EPSG {
             cm.put("PARAMETER_UOM_7", "parameter7UnitOfMeasureCode");
             cm.put("PARAMETER_VALUE_7", "parameter7Value");
 
-            InputStream is = null;
-            try {
-                is = getResourceAsStream(RESOURCE_PCS);
-                loadBeansFromCSV(ProjCSEntry.class, projCSMap, cm, null, is);
-            } finally {
-                if (is != null) try { is.close(); } catch (IOException e) {}
-            }
+            loadBeansFromCSV(ProjCSEntry.class, projCSMap, cm, null, RESOURCE_PCS);
         }
         return projCSMap.get(code);
     }
 
-
-    private static Map<Integer, DatumEntry> datumMap;
-
-    public synchronized static Datum findDatumByCode(int code) {
+    @Override
+    public synchronized DatumEntry findDatumByCode(int code) {
         if (datumMap == null) {
-            datumMap = new HashMap<Integer, DatumEntry>();
+            datumMap = new LinkedHashMap<Integer, DatumEntry>();
 
             Map<String, String> cm = new HashMap<String, String>();
             cm.put("datum_code", "code");
@@ -143,22 +147,15 @@ public class EPSG {
             cm.put("ellipsoid_code", "ellipsoidCode");
             cm.put("prime_meridian_code", "primeMeridianCode");
 
-            InputStream is = null;
-            try {
-                is = getResourceAsStream(RESOURCE_DATUM);
-                loadBeansFromCSV(DatumEntry.class, datumMap, cm, null, is);
-            } finally {
-                if (is != null) try { is.close(); } catch (IOException e) {}
-            }
+            loadBeansFromCSV(DatumEntry.class, datumMap, cm, null, RESOURCE_DATUM);
         }
         return datumMap.get(code);
     }
 
-    private static Map<Integer, EllipsoidEntry> ellipsoidMap;
-
-    public synchronized static Ellipsoid findEllipsoidByCode(int code) {
+    @Override
+    public synchronized EllipsoidEntry findEllipsoidByCode(int code) {
         if (ellipsoidMap == null) {
-            ellipsoidMap = new HashMap<Integer, EllipsoidEntry>();
+            ellipsoidMap = new LinkedHashMap<Integer, EllipsoidEntry>();
 
             Map<String, String> cm = new HashMap<String, String>();
             cm.put("ellipsoid_code", "code");
@@ -168,22 +165,15 @@ public class EPSG {
             cm.put("inv_flattening", "inverseFlattening");
             cm.put("uom_code", "unitOfMeasureCode");
 
-            InputStream is = null;
-            try {
-                is = getResourceAsStream(RESOURCE_ELLIPSOID);
-                loadBeansFromCSV(EllipsoidEntry.class, ellipsoidMap, cm, null, is);
-            } finally {
-                if (is != null) try { is.close(); } catch (IOException e) {}
-            }
+            loadBeansFromCSV(EllipsoidEntry.class, ellipsoidMap, cm, null, RESOURCE_ELLIPSOID);
         }
         return ellipsoidMap.get(code);
     }
 
-    private static Map<Integer, PrimeMeridianEntry> primeMeridianMap;
-
-    synchronized static PrimeMeridian findPrimeMeridianByCode(int code) {
+    @Override
+    public synchronized PrimeMeridianEntry findPrimeMeridianByCode(int code) {
         if (primeMeridianMap == null) {
-            primeMeridianMap = new HashMap<Integer, PrimeMeridianEntry>();
+            primeMeridianMap = new LinkedHashMap<Integer, PrimeMeridianEntry>();
 
             Map<String, String> cm = new HashMap<String, String>();
             cm.put("PRIME_MERIDIAN_CODE", "code");
@@ -191,22 +181,15 @@ public class EPSG {
             cm.put("GREENWICH_LONGITUDE", "longitude");
             cm.put("UOM_CODE", "unitOfMeasureCode");
 
-            InputStream is = null;
-            try {
-                is = getResourceAsStream(RESOURCE_PRIMEMERIDIAN);
-                loadBeansFromCSV(PrimeMeridianEntry.class, primeMeridianMap, cm, null, is);
-            } finally {
-                if (is != null) try { is.close(); } catch (IOException e) {}
-            }
+            loadBeansFromCSV(PrimeMeridianEntry.class, primeMeridianMap, cm, null, RESOURCE_PRIMEMERIDIAN);
         }
         return primeMeridianMap.get(code);
     }
 
-    private static Map<Integer, UnitOfMeasureEntry> unitOfMeasureMap;
-
-    public synchronized static UnitOfMeasure findUnitOfMeasureByCode(int code) {
+    @Override
+    public synchronized UnitOfMeasureEntry findUnitOfMeasureByCode(int code) {
         if (unitOfMeasureMap == null) {
-            unitOfMeasureMap = new HashMap<Integer, UnitOfMeasureEntry>();
+            unitOfMeasureMap = new LinkedHashMap<Integer, UnitOfMeasureEntry>();
 
             Map<String, String> cm = new HashMap<String, String>();
             cm.put("uom_code", "code");
@@ -216,22 +199,34 @@ public class EPSG {
             cm.put("factor_b", "factorB");
             cm.put("factor_c", "factorC");
 
-            InputStream is = null;
-            try {
-                is = getResourceAsStream(RESOURCE_UNITOFMEASURE);
-                loadBeansFromCSV(UnitOfMeasureEntry.class, unitOfMeasureMap, cm, null, is);
-            } finally {
-                if (is != null) try { is.close(); } catch (IOException e) {}
-            }
+            loadBeansFromCSV(UnitOfMeasureEntry.class, unitOfMeasureMap, cm, null, RESOURCE_UNITOFMEASURE);
         }
         return unitOfMeasureMap.get(code);
     }
-
-    private static InputStream getResourceAsStream(String resource) {
-        return EPSG.class.getClassLoader().getResourceAsStream(resource);
+    
+    private InputStream getResourceAsStream(String resource) {
+        return getClass().getResourceAsStream(resource);
     }
 
-    private synchronized static <T extends CSVEntry> void loadBeansFromCSV (
+    private synchronized <T extends CSVEntry> void loadBeansFromCSV (
+            Class<T> beanClass,
+            Map<Integer, T> beanMap,
+            Map<String, String> columnMap,
+            Filter filter,
+            String  csvResourceName) {
+
+            InputStream is = null;
+            try {
+                is = getResourceAsStream(csvResourceName);
+                loadBeansFromCSV(beanClass, beanMap, columnMap, filter, is);
+            } finally {
+                if (is != null) {
+                    try { is.close(); } catch (IOException e) { }
+                }
+            }
+    }
+    
+    private synchronized <T extends CSVEntry> void loadBeansFromCSV (
             Class<T> beanClass,
             Map<Integer, T> beanMap,
             Map<String, String> columnMap,
@@ -255,14 +250,10 @@ public class EPSG {
         }
 
     }
-
+    
     public static void main(String[] args) {
-        findProjCSByCode(-1);
-        findGeogCSByCode(4326);
-        findDatumByCode(6326);
-        findEllipsoidByCode(-1);
-        findPrimeMeridianByCode(-1);
-        findUnitOfMeasureByCode(9001);
+        GTGeogCS geogCS = getInstance().findGeogCSByCode(4326);
+        System.out.println(geogCS);
     }
 
 }
