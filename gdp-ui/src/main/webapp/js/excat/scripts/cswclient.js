@@ -277,6 +277,11 @@ var CSWClient = function() {
                 cswhost = Constant.endpoint.csw;
             }
 
+            if ($.browser.msie && $.browser.version=="9.0") {
+                window.XMLSerializer = function(){};
+                window.XMLSerializer.prototype.serializeToString = function(oNode){ return oNode.xml}
+            }
+
             proxy = Constant.endpoint.proxy;
             if (typeof host != "undefined") {
                 proxy = host + Constant.endpoint.proxy;
