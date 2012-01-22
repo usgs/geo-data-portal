@@ -101,4 +101,7 @@
         </dependency>
         <!-- LOGGING END-->
     </dependencies>
+    <properties>
+        <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
+    </properties>
 </project>
