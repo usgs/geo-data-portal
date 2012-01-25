@@ -1,4 +1,5 @@
 <%@page import="org.apache.commons.lang.StringUtils"%>
+<%@page import="gov.usgs.cida.config.DynamicReadOnlyProperties"%>
 
 <%-- Base EXT modules & Extensions --%>
 <script type="text/javascript" src="js/ext/adapter/ext/ext-base.js"></script>
@@ -41,12 +42,15 @@
 <%-- Root Module --%>
 <script type="text/javascript" src='${param["UIScriptFile"]}'></script>
 
+<%-- Read JNDI config from context.xml --%>
+<% DynamicReadOnlyProperties props = DynamicReadOnlyProperties.initProps(); %>
+
 <script type="text/javascript">
-    GDP.LOG4JS_PATTERN_LAYOUT = '<%= StringUtils.isBlank(System.getProperty("LOG4JS_PATTERN_LAYOUT")) ? "%rms - %-5p - %m%n" : System.getProperty("LOG4JS_PATTERN_LAYOUT") %>';
-    GDP.PROXY_PREFIX = '<%= StringUtils.isBlank(System.getProperty("PROXY_PREFIX")) ? "proxy/" : System.getProperty("PROXY_PREFIX") %>';
-    GDP.DEFAULT_LEGEND_NAME = '<%= StringUtils.isBlank(System.getProperty("DEFAULT_LEGEND_NAME")) ? "boxfill/occam" : System.getProperty("DEFAULT_LEGEND_NAME") %>';
-    GDP.CSW_QUERY_CONSTRAINT_FILTER_VALUE = '<%= StringUtils.isBlank(System.getProperty("CSW_QUERY_CONSTRAINT_FILTER_VALUE")) ? "a0a3c56c-2be5-4d45-9924-72b13e348919" : System.getProperty("CSW_QUERY_CONSTRAINT_FILTER_VALUE") %>';
-    GDP.FOI_GETCAPS_URL = GDP.PROXY_PREFIX + '<%= StringUtils.isBlank(System.getProperty("FOI_GETCAPS_URL")) ? "http://cida-wiwsc-gdp2qa.er.usgs.gov:8082/geoserver/derivative/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities" : System.getProperty("FOI_GETCAPS_URL") %>';
+    GDP.LOG4JS_PATTERN_LAYOUT = '<%= props.getProperty("LOG4JS_PATTERN_LAYOUT", "%rms - %-5p - %m%n") %>';
+    GDP.PROXY_PREFIX = '<%= props.getProperty("PROXY_PREFIX", "proxy/") %>';
+    GDP.DEFAULT_LEGEND_NAME = '<%= props.getProperty("DEFAULT_LEGEND_NAME", "boxfill/occam") %>';
+    GDP.CSW_QUERY_CONSTRAINT_FILTER_VALUE = '<%= props.getProperty("CSW_QUERY_CONSTRAINT_FILTER_VALUE", "a0a3c56c-2be5-4d45-9924-72b13e348919") %>';
+    GDP.FOI_GETCAPS_URL = GDP.PROXY_PREFIX + '<%= props.getProperty("FOI_GETCAPS_URL", "http://cida-wiwsc-gdp2qa.er.usgs.gov:8082/geoserver/derivative/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities") %>';
     
     // http://ejohn.org/blog/fast-javascript-maxmin/
     Array.max = function( array , maxVal ){
