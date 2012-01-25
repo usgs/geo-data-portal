@@ -100,44 +100,6 @@
 
     
     Ext.BLANK_IMAGE_URL = 'images/s.gif';
-    
-    Ext.override(Ext.Container, {
-        doLayout : function(shallow){
-            if(!this.isVisible() || this.collapsed){
-                this.deferLayout = this.deferLayout || !shallow;
-                return;
-            }
-            shallow = shallow && !this.deferLayout;
-            delete this.deferLayout;
-            if(this.rendered && this.layout){
-                this.layout.layout();
-            }
-            if(shallow !== false && this.items){
-                var cs = this.items.items;
-                for(var i = 0, len = cs.length; i < len; i++) {
-                    var c  = cs[i];
-                    if(c.doLayout){
-                        c.doLayout();
-                    }
-                }
-            }
-        },
-        onShow : function(){
-            Ext.Container.superclass.onShow.apply(this, arguments);
-            if(this.deferLayout !== undefined){
-                this.doLayout(true);
-            }
-        }
-    });
-    Ext.override(Ext.Panel, {
-        afterExpand : function(){
-            this.collapsed = false;
-            this.afterEffect();
-            if(this.deferLayout !== undefined){
-                this.doLayout(true);
-            }
-            this.fireEvent('expand', this);
-        }
-    });
+
 </script>
 
