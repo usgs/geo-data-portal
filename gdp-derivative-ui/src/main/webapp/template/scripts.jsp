@@ -46,7 +46,7 @@
     GDP.PROXY_PREFIX = '<%= StringUtils.isBlank(System.getProperty("PROXY_PREFIX")) ? "proxy/" : System.getProperty("PROXY_PREFIX") %>';
     GDP.DEFAULT_LEGEND_NAME = '<%= StringUtils.isBlank(System.getProperty("DEFAULT_LEGEND_NAME")) ? "boxfill/occam" : System.getProperty("DEFAULT_LEGEND_NAME") %>';
     GDP.CSW_QUERY_CONSTRAINT_FILTER_VALUE = '<%= StringUtils.isBlank(System.getProperty("CSW_QUERY_CONSTRAINT_FILTER_VALUE")) ? "a0a3c56c-2be5-4d45-9924-72b13e348919" : System.getProperty("CSW_QUERY_CONSTRAINT_FILTER_VALUE") %>';
-    GDP.FOI_GETCAPS_URL = GDP.PROXY_PREFIX + '<%= StringUtils.isBlank(System.getProperty("FOI_GETCAPS_URL")) ? "http://igsarm-cida-javadev1.er.usgs.gov:8081/geoserver/derivative/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities" : System.getProperty("FOI_GETCAPS_URL") %>';
+    GDP.FOI_GETCAPS_URL = GDP.PROXY_PREFIX + '<%= StringUtils.isBlank(System.getProperty("FOI_GETCAPS_URL")) ? "http://cida-wiwsc-gdp2qa.er.usgs.gov:8082/geoserver/derivative/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities" : System.getProperty("FOI_GETCAPS_URL") %>';
     
     // http://ejohn.org/blog/fast-javascript-maxmin/
     Array.max = function( array , maxVal ){
