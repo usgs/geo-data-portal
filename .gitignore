@@ -1,0 +1,12 @@
+/gdp-common-utilities/target/
+/gdp-data-access/target/
+/gdp-core-processing/target/
+/gdp-proxy/target/
+/gdp-utility-wps/target/
+/gdp-52n-wps-patches/target/
+/gdp-process-wps/target/
+/geoserver/target/
+/gdp-geotiff/target/
+
+/**/src/main/webapp/META-INF/context.xml
+/**/nb-configuration.xml
