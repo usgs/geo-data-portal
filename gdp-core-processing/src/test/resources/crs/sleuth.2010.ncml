@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+  <dimension name="x" length="25837" />
+  <dimension name="y" length="29181" />
+  <attribute name="GDAL_AREA_OR_POINT" value="Area" />
+  <attribute name="Conventions" value="CF-1.5" />
+  <attribute name="GDAL" value="GDAL 1.9.0, released 2011/12/29" />
+  <attribute name="history" value="Fri Feb 03 09:30:47 2012: GDAL CreateCopy( /Volumes/Striped/temp/netCDF/2010.nc, ... )" />
+  <variable name="Band1" shape="y x" type="short">
+    <attribute name="long_name" value="GDAL Band Number 1" />
+    <attribute name="_FillValue" type="short" value="127" />
+    <attribute name="grid_mapping" value="albers_conical_equal_area" />
+  </variable>
+  <variable name="albers_conical_equal_area" type="char">
+    <attribute name="grid_mapping_name" value="albers_conical_equal_area" />
+    <attribute name="false_easting" type="double" value="0." />
+    <attribute name="false_northing" type="double" value="0." />
+    <attribute name="latitude_of_projection_origin" type="double" value="23." />
+    <attribute name="longitude_of_central_meridian" type="double" value="-96." />
+    <attribute name="standard_parallel" type="double" value="29.5 45.5" />
+    <attribute name="longitude_of_prime_meridian" type="double" value="0." />
+    <attribute name="semi_major_axis" type="double" value="6378137." />
+    <attribute name="inverse_flattening" type="double" value="298.257222101" />
+    <attribute name="spatial_ref" value="PROJCS[&quot;unnamed&quot;,GEOGCS[&quot;NAD83&quot;,DATUM[&quot;North_American_Datum_1983&quot;,SPHEROID[&quot;GRS 1980&quot;,6378137,298.2572221010002,AUTHORITY[&quot;EPSG&quot;,&quot;7019&quot;]],AUTHORITY[&quot;EPSG&quot;,&quot;6269&quot;]],PRIMEM[&quot;Greenwich&quot;,0],UNIT[&quot;degree&quot;,0.0174532925199433],AUTHORITY[&quot;EPSG&quot;,&quot;4269&quot;]],PROJECTION[&quot;Albers_Conic_Equal_Area&quot;],PARAMETER[&quot;standard_parallel_1&quot;,29.5],PARAMETER[&quot;standard_parallel_2&quot;,45.5],PARAMETER[&quot;latitude_of_center&quot;,23],PARAMETER[&quot;longitude_of_center&quot;,-96],PARAMETER[&quot;false_easting&quot;,0],PARAMETER[&quot;false_northing&quot;,0],UNIT[&quot;metre&quot;,1,AUTHORITY[&quot;EPSG&quot;,&quot;9001&quot;]]]" />
+    <attribute name="GeoTransform" value="285248.7729999997 60 0 2014772.078 0 -60 " />
+  </variable>
+  <variable name="x" shape="x" type="double">
+    <attribute name="standard_name" value="projection_x_coordinate" />
+    <attribute name="long_name" value="x coordinate of projection" />
+    <attribute name="units" value="m" />
+  </variable>
+  <variable name="y" shape="y" type="double">
+    <attribute name="standard_name" value="projection_y_coordinate" />
+    <attribute name="long_name" value="y coordinate of projection" />
+    <attribute name="units" value="m" />
+  </variable>
+</netcdf>

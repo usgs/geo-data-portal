@@ -316,19 +316,14 @@ public class CRSUtility {
 
 	private static DefaultEllipsoid generateEllipsoid(Map<String, Parameter> parameterMap) {
         
-        Parameter unitParameter = parameterMap.get("unit");
-        // NetCDF-Java uses 'km' internally, assume 'km' unless alternate unit is specified.
-        Unit<Length> unit = unitParameter == null ? SI.KILOMETER : Unit.valueOf(unitParameter.getStringValue()).asType(Length.class);
-        UnitConverter unitConverter = unit.getConverterTo(SI.METER);
-        
 		Parameter earthRadiusParameter = parameterMap.get("earth_radius");
 		Parameter semiMajorAxisParameter =  parameterMap.get("semi_major_axis");
 		Parameter semiMinorAxisParameter = parameterMap.get("semi_minor_axis");
 		Parameter inverseFlatteningParameter = parameterMap.get("inverse_flattening");
 
-		double earthRadius = earthRadiusParameter == null ? Double.NaN : unitConverter.convert(earthRadiusParameter.getNumericValue());
-		double semiMajorAxis = semiMajorAxisParameter == null ? Double.NaN : unitConverter.convert(semiMajorAxisParameter.getNumericValue());
-		double semiMinorAxis = semiMinorAxisParameter == null ? Double.NaN : unitConverter.convert(semiMinorAxisParameter.getNumericValue());
+		double earthRadius = earthRadiusParameter == null ? Double.NaN : earthRadiusParameter.getNumericValue();
+		double semiMajorAxis = semiMajorAxisParameter == null ? Double.NaN : semiMajorAxisParameter.getNumericValue();
+		double semiMinorAxis = semiMinorAxisParameter == null ? Double.NaN : semiMinorAxisParameter.getNumericValue();
 		double inverseFlattening = inverseFlatteningParameter == null ? Double.NaN : inverseFlatteningParameter.getNumericValue();
 
 		if (earthRadius == earthRadius) {

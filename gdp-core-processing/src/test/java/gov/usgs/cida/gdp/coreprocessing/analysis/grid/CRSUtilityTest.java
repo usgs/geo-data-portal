@@ -1,22 +1,13 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gov.usgs.cida.gdp.coreprocessing.analysis.grid;
 
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.List;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Test;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.crs.ProjectedCRS;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.ft.FeatureDataset;
@@ -28,41 +19,29 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
  */
 public class CRSUtilityTest {
     
-    public CRSUtilityTest() {
-    }
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-    
-    @Before
-    public void setUp() {
-    }
-    
-    @After
-    public void tearDown() {
-    }
-
-    /**
-     * 
-     */
-    @Ignore
     @Test
-    public void testGetCRSFromGridDatatype() throws IOException {
+    public void testCRSSleuth2010() throws IOException {
         FeatureDataset fd = FeatureDatasetFactoryManager.open(
                 FeatureType.ANY,
-                "dods://igsarm-cida-javatest2.er.usgs.gov:8080/thredds/dodsC/testdata/molokai_radar.ncml",
-                null, new Formatter(System.err));
+                "src/test/resources/crs/sleuth.2010.ncml",
+                null, 
+                new Formatter(System.err));
         if (fd != null && fd instanceof GridDataset) {
             GridDataset gd = (GridDataset)fd;
             List<GridDatatype> gdts = gd.getGrids();
-            for (GridDatatype gdt : gdts) {
-                System.out.println (CRSUtility.getCRSFromGridDatatype(gdt));
-            }
+            assertEquals(1, gdts.size());
+            CoordinateReferenceSystem crs = CRSUtility.getCRSFromGridCoordSystem(gdts.get(0).getCoordinateSystem());
+            
+            // verify prior issue resolution.
+            assertTrue(crs instanceof ProjectedCRS);
+            ProjectedCRS pcrs = (ProjectedCRS)crs;
+            assertEquals(6378137., pcrs.getDatum().getEllipsoid().getSemiMajorAxis(), 0);
+            assertEquals(298.257222101, pcrs.getDatum().getEllipsoid().getInverseFlattening(), 1e-7);
+            
+        } else {
+            fail("Unable to open test dataset.");
         }
     }
+   
 }
