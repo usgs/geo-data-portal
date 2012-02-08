@@ -7,6 +7,7 @@
 /gdp-process-wps/target/
 /geoserver/target/
 /gdp-geotiff/target/
+/gdp-derivative-processing/target/
 
 /**/src/main/webapp/META-INF/context.xml
 /**/nb-configuration.xml
