@@ -24,7 +24,7 @@
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <cida.maven.url>http://cida-wiwsc-maven.er.usgs.gov:8080/maven</cida.maven.url>
+        <cida.maven.url>http://internal.cida.usgs.gov/maven</cida.maven.url>
         <cida.svn.url>https://cida-svn.er.usgs.gov/repos/dev</cida.svn.url>
         <n52-wps.version>2.0-RC6</n52-wps.version>
         <geotools.version>2.6.6</geotools.version>
