@@ -451,7 +451,7 @@ var Dataset = function() {
                   xmlns:gml="http://www.opengis.net/gml" \
                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" \
                   xsi:schemaLocation="http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd"> \
-               <wfs:Query typeName="' + featureType + '"> \
+               <wfs:Query typeName="' + featureType + '"  srsName="EPSG:4326"> \
                  <wfs:PropertyName>the_geom</wfs:PropertyName> \
                  <wfs:PropertyName>' + attribute + '</wfs:PropertyName>';
 
