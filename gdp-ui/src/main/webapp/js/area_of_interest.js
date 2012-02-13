@@ -431,7 +431,7 @@ var AOI = function() {
     }
     
     function setSelectedAttributeBoundingBox() {
-        var wfsXML = '<![CDATA[' + Dataset.createGetFeatureXML(AOI.getSelectedFeatureType(), AOI.getSelectedAttribute(), AOI.getSelectedFeatures()) + ']]>';
+        var wfsXML = '<![CDATA[' + Dataset.createGetFeatureXML(AOI.getSelectedFeatureType(), AOI.getSelectedAttribute(), AOI.getSelectedFeatures(), {srs : 'EPSG:4326'}) + ']]>';
             
         if (wfsXML) {
             $.ajax( {

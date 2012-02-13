@@ -420,7 +420,7 @@ var Dataset = function() {
         }
     }
 
-    function _createGetFeatureXML(featureType, attribute, featureIDs) {
+    function _createGetFeatureXML(featureType, attribute, featureIDs, options) {
         // For now, we're assuming that the geometry is associated with attribute
         // 'the_geom', which might not be true for all WFS servers. So make sure
         // that 'the_geom' is an attribute, and throw an error if not. Note that
@@ -428,6 +428,9 @@ var Dataset = function() {
         // the error. I put it here so that the assumption check is close to
         // where the assumption is made (below, when creating the xml).
         logger.debug('GDP: Creating XML needed for inline WFS call for process.')
+        
+        if (!options) options = {};
+        
         AOI.callDescribeFeatureType(featureType, function(data) {
             var attrNames = [];
 
@@ -451,7 +454,7 @@ var Dataset = function() {
                   xmlns:gml="http://www.opengis.net/gml" \
                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" \
                   xsi:schemaLocation="http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd"> \
-               <wfs:Query typeName="' + featureType + '"  srsName="EPSG:4326"> \
+               <wfs:Query typeName="' + featureType + '" ' + (options.srs) ? 'srsName="' + options.srs + '"'  : '' + '> \
                  <wfs:PropertyName>the_geom</wfs:PropertyName> \
                  <wfs:PropertyName>' + attribute + '</wfs:PropertyName>';
 
