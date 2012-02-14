@@ -68,8 +68,6 @@ public class ProjCSGridMappingAdapter implements GridMappingAdapter {
             variable.addAttribute(new Attribute("standard_parallel", standardParallel));
         }
         
-        variable.addAttribute(new Attribute("units", "m"));
-        
         geogCSGridMappingAdapter.augmentCRSVariable(variable);
 
         return variable;
