@@ -13,22 +13,10 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.xml.namespace.NamespaceContext;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 import org.apache.commons.io.IOUtils;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
@@ -39,10 +27,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.cs.AxisDirection;
 import org.opengis.referencing.operation.TransformException;
 import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.iosp.geotiff.GeoTiffIOServiceProvider;
 
 /**
  *
@@ -51,68 +36,6 @@ import ucar.nc2.iosp.geotiff.GeoTiffIOServiceProvider;
 public class WCSUtil {
 
     private static final int MAX_COVERAGE_SIZE = 64 << 20; // 64 MB
-
-    public static class WCSNamespaceContext implements NamespaceContext {
-
-        public final static Map<String, String> namespaceMap;
-
-        static {
-            namespaceMap = new HashMap<String, String>();
-            namespaceMap.put("wcs", "http://www.opengis.net/wcs/1.1.1");
-            namespaceMap.put("ows", "http://www.opengis.net/ows/1.1");
-        }
-
-        @Override
-        public String getNamespaceURI(String prefix) {
-            if (prefix == null) {
-                throw new NullPointerException("prefix is null");
-            }
-            return namespaceMap.get(prefix);
-        }
-
-        @Override
-        public String getPrefix(String namespaceURI) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public Iterator<String> getPrefixes(String namespaceURI) {
-            throw new UnsupportedOperationException();
-        }
-    }
-    private final static String descriptionNodeXPath = "/wcs:CoverageDescriptions/wcs:CoverageDescription[wcs:Identifier='%s']";
-    private final static String gridBaseCRSXPath = descriptionNodeXPath + "/wcs:Domain/wcs:SpatialDomain/wcs:GridCRS/wcs:GridBaseCRS";
-    private final static String gridTypeXPath = descriptionNodeXPath + "/wcs:Domain/wcs:SpatialDomain/wcs:GridCRS/wcs:GridType";
-    private final static String gridOffsetsXPath = descriptionNodeXPath + "/wcs:Domain/wcs:SpatialDomain/wcs:GridCRS/wcs:GridOffsets";
-    private final static String gridBoundingBoxNodeXPath = descriptionNodeXPath + "/wcs:Domain/wcs:SpatialDomain/ows:BoundingBox[@crs='%s']";
-    private final static String gridLowerCornerXPath = gridBoundingBoxNodeXPath + "/ows:LowerCorner";
-    private final static String gridUpperCornerXPath = gridBoundingBoxNodeXPath + "/ows:UpperCorner";
-    private final static String gridDataTypeXPath = descriptionNodeXPath + "/wcs:Range/wcs:Field/wcs:Axis/ows:DataType";
-    private final static String gridSupportedFormatsXPath = descriptionNodeXPath + "/wcs:SupportedFormat";
-
-
-    private final static DocumentBuilder DOCUMENT_BUILDER;
-
-    static {
-
-        DocumentBuilder documentBuilder = null;
-        try {
-            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-            documentBuilderFactory.setNamespaceAware(true);
-            documentBuilder = documentBuilderFactory.newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            System.err.println(e);
-        }
-        DOCUMENT_BUILDER = documentBuilder;
-        
-        try {
-            NetcdfFile.registerIOProvider(GeoTiffIOServiceProvider.class);
-        } catch (IllegalAccessException ex) {
-            Logger.getLogger(WCSUtil.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            Logger.getLogger(WCSUtil.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
 
     public static URI extractWCSBaseURI(URI wcsURI) throws URISyntaxException {
         return new URI(
@@ -139,51 +62,48 @@ public class WCSUtil {
             try {
                 URL wcsCapabilitiesURL = new URL(wcsGetCapabilitiesURIString);
                 wcsCapabilitiesInputStream = wcsCapabilitiesURL.openStream();
-                document = DOCUMENT_BUILDER.parse(wcsCapabilitiesInputStream);
+                document = DocumentUtil.createDocument(wcsCapabilitiesInputStream);
             } catch (IOException e) {
-                throw new RuntimeException("Error obtaining capabilities document from " +  wcsGetCapabilitiesURIString, e);
+                throw new RuntimeException("Error obtaining WCS DescribeCoverage document from " +  wcsGetCapabilitiesURIString, e);
             } catch (SAXException e) {
-                throw new RuntimeException("Error parsing capabilities document from " +  wcsGetCapabilitiesURIString, e);
+                throw new RuntimeException("Error parsing WCS DescribeCoverage document from " +  wcsGetCapabilitiesURIString, e);
             } finally {
                 IOUtils.closeQuietly(wcsCapabilitiesInputStream);
             }
 
-            // XPath infrastructure is not thread-safe, nor renetrant... bah.
-            XPath xpath = XPathFactory.newInstance().newXPath();
-            xpath.setNamespaceContext(new WCSNamespaceContext());
-            XPathWrapper wrapper = new XPathWrapper(xpath, document);
+            WCSDescribeCoverageInspector_1_1 inspector = new WCSDescribeCoverageInspector_1_1(document, wcsIdentifier);
 
-            String gridBaseCRSString = wrapper.textAsString(String.format(gridBaseCRSXPath, wcsIdentifier));
+            String gridBaseCRSString = inspector.getGridBaseCRSAsString();
             if (gridBaseCRSString.length() == 0) {
                 throw new RuntimeException("Can't extract GridBaseCRS for WCS Coverage");
             }
 
-            String gridTypeString = wrapper.textAsString(String.format(gridTypeXPath, wcsIdentifier));
+            String gridTypeString = inspector.getGridTypeAsString();
             if (gridTypeString.length() == 0) {
                 gridTypeString = "urn:ogc:def:method:WCS:1.1:2dSimpleGrid";
             }
 
-            double[] gridOffsets = wrapper.textAsDoubleArray(String.format(gridOffsetsXPath, wcsIdentifier));
+            double[] gridOffsets = inspector.getGridOffsets();
             if (gridOffsets.length == 0 || gridOffsets.length % 2 != 0) {
                 throw new RuntimeException("Can't parse GridOffsets for WCS Coverage");
             }
 
-            double[] gridLowerCorner = wrapper.textAsDoubleArray(String.format(gridLowerCornerXPath, wcsIdentifier, gridBaseCRSString));
+            double[] gridLowerCorner = inspector.getGridLowerCorner();
             if (gridLowerCorner.length == 0 || gridLowerCorner.length != 2) {
                 throw new RuntimeException("Can't parse Grid BoundingBox lower corner for WCS Coverage");
             }
 
-            double[] gridUpperCorner = wrapper.textAsDoubleArray(String.format(gridUpperCornerXPath, wcsIdentifier, gridBaseCRSString));
+            double[] gridUpperCorner = inspector.getGridUpperCorner();
             if (gridLowerCorner == null || gridLowerCorner.length != 2) {
                 throw new RuntimeException("Can't parse Grid BoundingBox upper corner for WCS Coverage");
             }
 
-            String gridDataTypeString = wrapper.textAsString(String.format(gridDataTypeXPath, wcsIdentifier));
+            String gridDataTypeString = inspector.getGridDataTypeAsString();
             if (gridDataTypeString.length() == 0) {
                 throw new RuntimeException("Can't extract Grid Range DataType for WCS Coverage");
             }
 
-            String[] gridSupportedFormats = wrapper.nodeListTextContentAsStringArray(String.format(gridSupportedFormatsXPath, wcsIdentifier));
+            String[] gridSupportedFormats = inspector.getGridSupportedFormats();
             if (gridSupportedFormats.length == 0) {
                 throw new RuntimeException("Can't extract Supported Formats for WCS Coverage");
             }
@@ -270,6 +190,7 @@ public class WCSUtil {
             double requestSamplingFactor = (requestSizeBytes > MAX_COVERAGE_SIZE)
                     ? Math.ceil(Math.sqrt((double) requestSizeBytes / MAX_COVERAGE_SIZE))
                     : 1;
+            requestSamplingFactor = 1;
 
             // TODO: do what we can to figure this out.  I expect the logic
             // below might become quite complicated... The variable 'swapXYForTransform'
@@ -378,67 +299,9 @@ public class WCSUtil {
             throw new RuntimeException(e);
         } catch (FactoryException e) {
             throw new RuntimeException(e);
-        } catch (XPathExpressionException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         return tiffFile;
-    }
-
-    public static class XPathWrapper {
-
-        public final static String DEFAULT_REGEX = "\\s+";
-        private final XPath xpath;
-        private final Document document;
-
-        public XPathWrapper(XPath xpath, Document document) {
-            this.xpath = xpath;
-            this.document = document;
-        }
-
-        public String textAsString(String expression) throws XPathExpressionException {
-            return xpath.evaluate(expression, document);
-        }
-
-        public String[] textAsStringArray(String expression) throws XPathExpressionException {
-            return textAsStringArray(expression, DEFAULT_REGEX);
-        }
-
-        public String[] textAsStringArray(String expression, String regex) throws XPathExpressionException {
-            String string = xpath.evaluate(expression, document);
-            if (string != null && string.length() > 0) {
-                return string.split(regex);
-            } else {
-                return new String[0];
-            }
-        }
-
-        public double[] textAsDoubleArray(String expression) throws XPathExpressionException {
-            return textAsDoubleArray(expression, DEFAULT_REGEX);
-        }
-
-        public double[] textAsDoubleArray(String expression, String regex) throws XPathExpressionException {
-            String[] split = textAsStringArray(expression, regex);
-            double[] doubles = new double[split.length];
-            for (int i = 0; i < split.length; ++i) {
-                doubles[i] = Double.parseDouble(split[i]);
-            }
-            return doubles;
-        }
-
-        public String[] nodeListTextContentAsStringArray(String expression) throws XPathExpressionException {
-            Object object = xpath.evaluate(expression, document, XPathConstants.NODESET);
-            if (object instanceof NodeList) {
-                NodeList nodeList = (NodeList)object;
-                String strings[] = new String[nodeList.getLength()];
-                for (int i = 0; i < nodeList.getLength(); ++i) {
-                    strings[i] = nodeList.item(i).getTextContent();
-                }
-                return strings;
-            } else {
-                return new String[0];
-            }
-        }
     }
 }
