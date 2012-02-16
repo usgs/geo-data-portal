@@ -18,16 +18,28 @@ public class WCSDescribeCoverageInspector_1_1Test {
     }
 
     @Test
-    public void testArcGISServerResponse_10() throws SAXException, IOException {
-
+    public void testArcGISServerResponse_1_1_0() throws SAXException, IOException {
         // ArcGIS server (10.x??)
         // wcs -> "http://www.opengis.net/wcs/1.1";
         // ows -> "http://www.opengis.net/ows";
         // owcs -> "http://www.opengis.net/wcs/1.1/ows";
+        validateArcGISServerResponseParsing("/ArcGIS.DescribeCoverage.1.1.0.xml");
+    }
+
+    @Test
+    public void testArcGISServerResponse_1_1_1() throws SAXException, IOException {
+        // ArcGIS server (10.x??)
+        // wcs -> "http://www.opengis.net/wcs/1.1.1";
+        // ows -> "http://www.opengis.net/ows/1.1";
+        // owcs -> <none>;
+        validateArcGISServerResponseParsing("/ArcGIS.DescribeCoverage.1.1.1.xml");
+    }
+
+    public void validateArcGISServerResponseParsing(String resourceName) throws SAXException, IOException {
 
         InputStream inputStream = null;
         try {
-            inputStream = getClass().getResourceAsStream("/ArcGIS.DescribeCoverage.1.xml");
+            inputStream = getClass().getResourceAsStream(resourceName);
             assertNotNull(inputStream);
 
             WCSDescribeCoverageInspector_1_1 inspector = new WCSDescribeCoverageInspector_1_1(
@@ -57,11 +69,12 @@ public class WCSDescribeCoverageInspector_1_1Test {
 
             String[] supportedFormats = inspector.getGridSupportedFormats();
             assertArrayEquals(
-                    new String[] { "image/GeoTIFF", "image/NITF", "image/HDF" },
+                    new String[]{"image/GeoTIFF", "image/NITF", "image/HDF"},
                     supportedFormats);
 
         } finally {
             IOUtils.closeQuietly(inputStream);
         }
     }
+
 }
