@@ -1,5 +1,6 @@
 package gov.usgs.cida.gdp.wps.algorithm;
 
+import com.google.common.base.Joiner;
 import gov.usgs.cida.gdp.coreprocessing.Delimiter;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCoverageWeightedGridStatistics;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCoverageWeightedGridStatistics.GroupBy;
@@ -140,16 +141,20 @@ public class PRMSFeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotate
     @Process
     public void process() {
 
+        List<File> prmsFileList = new ArrayList<File>();
+        List<File> csvFileList = new ArrayList<File>();
 //        FeatureDataset featureDataset = null;
-        BufferedWriter writer = null;
+        BufferedWriter paramWriter = null;
         try {
             if (featureCollection.getSchema().getDescriptor(featureAttributeName) == null) {
                 addError("Attribute " + featureAttributeName + " not found in feature collection");
                 return;
             }
 
-            output = File.createTempFile(getClass().getSimpleName(), ".csv");
-            writer = new BufferedWriter(new FileWriter(output));
+            output = File.createTempFile(getClass().getSimpleName(), ".param");
+
+            prmsFileList.add(output);
+            paramWriter = new BufferedWriter(new FileWriter(output));
 
             for (String currentDatasetId : datasetId) {
                 GridDatatype gridDatatype = GDPAlgorithmUtil.generateGridDataType(
@@ -181,13 +186,34 @@ public class PRMSFeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotate
                         summarizeTimeStep,
                         summarizeFeatureAttribute);
                 csvWriter.close();
+                csvFileList.add(csvTempFile);
+                
+                // params writer
                 BufferedReader csvReader = new BufferedReader(new FileReader(csvTempFile));
-                csv2prms(csvReader, writer);
+                csv2param(csvReader, paramWriter);
                 csvReader.close();
-                csvTempFile.delete();
-
 
             }
+            
+            // data writer
+            File dataFile = File.createTempFile(getClass().getSimpleName(), ".data");
+            prmsFileList.add(dataFile);
+            
+            BufferedWriter dataWriter = new BufferedWriter(new FileWriter(dataFile));
+            List<BufferedReader> csvReaderList = new ArrayList<BufferedReader>(csvFileList.size());
+            for (File csvFile : csvFileList) {
+                csvReaderList.add(new BufferedReader(new FileReader(csvFile)));
+            }
+            csv2data(csvReaderList, dataWriter);
+
+            for (BufferedReader csvReader : csvReaderList) {
+                IOUtils.closeQuietly(csvReader);
+            }
+            for (File csvFile : csvFileList) {
+                 csvFile.delete();
+            }
+
+
         } catch (InvalidRangeException e) {
             addError("Error subsetting gridded data: " + e.getMessage());
         } catch (IOException e) {
@@ -202,25 +228,40 @@ public class PRMSFeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotate
             addError("General Error: " + e.getMessage());
         } finally {
 //            if (featureDataset != null) try { featureDataset.close(); } catch (IOException e) { }
-            IOUtils.closeQuietly(writer);
+            IOUtils.closeQuietly(paramWriter);
         }
     }
 
 
-    public static void csv2prms(File in, File out) throws FileNotFoundException, IOException {
+    public static void csv2param(List<File> inList, File out) throws FileNotFoundException, IOException {
         BufferedReader r = null;
         BufferedWriter w = null;
         try {
-            r = new BufferedReader(new FileReader(in));
             w = new BufferedWriter(new FileWriter(out));
-            csv2prms(r, w);
+            for (File in : inList) {
+                r = new BufferedReader(new FileReader(in));
+                csv2param(r, w);
+                IOUtils.closeQuietly(r);
+            }
         } finally {
-            if (r != null) {
-                try { r.close(); } catch (IOException e) {}
+            IOUtils.closeQuietly(w);
+        }
+    }
+
+    public static void csv2data(List<File> inList, File out) throws FileNotFoundException, IOException {
+        List<BufferedReader> rList = new ArrayList<BufferedReader>(inList.size());
+        BufferedWriter w = null;
+        try {
+            for (File in : inList) {
+                rList.add(new BufferedReader(new FileReader(in)));
             }
-            if (w != null) {
-                try { w.close(); } catch (IOException e) {}
+            w = new BufferedWriter(new FileWriter(out));
+            csv2data(rList, w);
+        } finally {
+            for (BufferedReader r : rList) {
+                IOUtils.closeQuietly(r);
             }
+            IOUtils.closeQuietly(w);
         }
     }
 
@@ -228,7 +269,7 @@ public class PRMSFeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotate
         "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec",
     };
 
-    public static void csv2prms(BufferedReader csvReader, BufferedWriter prmsWriter) throws IOException {
+    public static void csv2param(BufferedReader csvReader, BufferedWriter paramWriter) throws IOException {
 
         String varName = csvReader.readLine().substring(2).toLowerCase(); // assumes '# '
 
@@ -273,25 +314,97 @@ public class PRMSFeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotate
         }
         Collections.sort(hruList, new ComparatorHRU());
 
-        prmsWriter.write("####"); prmsWriter.newLine();
-        prmsWriter.write("mean_" + varName + " 0"); prmsWriter.newLine();
-        prmsWriter.write("1"); prmsWriter.newLine();
-        prmsWriter.write("nhru"); prmsWriter.newLine();
-        prmsWriter.write(Integer.toString(hruCount)); prmsWriter.newLine();
-        prmsWriter.write("2"); prmsWriter.newLine();
+        paramWriter.write("####"); paramWriter.newLine();
+        paramWriter.write("mean_" + varName + " 0"); paramWriter.newLine();
+        paramWriter.write("1"); paramWriter.newLine();
+        paramWriter.write("nhru"); paramWriter.newLine();
+        paramWriter.write(Integer.toString(hruCount)); paramWriter.newLine();
+        paramWriter.write("2"); paramWriter.newLine();
         for (int h = 0; h < hruCount; ++h) {
-            prmsWriter.write(Double.toString(mean[hruList.get(h).inputIndex].getMean())); prmsWriter.newLine();
+            paramWriter.write(Double.toString(mean[hruList.get(h).inputIndex].getMean())); paramWriter.newLine();
         }
         for (int m = 0; m < 12; ++m) {
-            prmsWriter.write("####"); prmsWriter.newLine();
-            prmsWriter.write("mean_" + varName + "_" + mon[m] + " 0"); prmsWriter.newLine();
-            prmsWriter.write("1"); prmsWriter.newLine();
-            prmsWriter.write("nhru"); prmsWriter.newLine();
-            prmsWriter.write(Integer.toString(hruCount)); prmsWriter.newLine();
-            prmsWriter.write("2"); prmsWriter.newLine();
+            paramWriter.write("####"); paramWriter.newLine();
+            paramWriter.write("mean_" + varName + "_" + mon[m] + " 0"); paramWriter.newLine();
+            paramWriter.write("1"); paramWriter.newLine();
+            paramWriter.write("nhru"); paramWriter.newLine();
+            paramWriter.write(Integer.toString(hruCount)); paramWriter.newLine();
+            paramWriter.write("2"); paramWriter.newLine();
             for (int h = 0; h < hruCount; ++h) {
-                prmsWriter.write(Double.toString(meanMonthly[m][hruList.get(h).inputIndex].getMean())); prmsWriter.newLine();
+                paramWriter.write(Double.toString(meanMonthly[m][hruList.get(h).inputIndex].getMean())); paramWriter.newLine();
             }
+        }
+
+    }
+
+    public static void csv2data(List<BufferedReader> csvReaderList, BufferedWriter dataWriter) throws IOException {
+
+        Joiner joiner = Joiner.on(' ');
+
+        dataWriter.write("Created by USGS GeoDataPortal, w00t!"); dataWriter.newLine();
+        dataWriter.write("########################################"); dataWriter.newLine();
+
+
+        int varCount = csvReaderList.size();
+
+        String[] varNameA = new String[varCount];
+        String[] split = null;
+        String[] hruLabel = null;
+        int hruCount = 0;
+        for (int v = 0; v < varCount; ++v) {
+            varNameA[v] = csvReaderList.get(v).readLine().substring(2).toLowerCase(); // assumes '# '
+
+            if (v == 0) {
+                split = csvReaderList.get(v).readLine().split(",");
+                hruLabel = Arrays.copyOfRange(split, 2, split.length);
+                hruCount = hruLabel.length;
+            } else {
+                //swallow
+                csvReaderList.get(v).readLine();
+            }
+            csvReaderList.get(v).readLine();
+            
+            dataWriter.write(varNameA[v] + " " + hruCount); dataWriter.newLine();
+        }
+
+        List<HRU> hruList = new ArrayList<HRU>(hruCount);
+        for (int h = 0; h < hruCount; ++h) {
+            hruList.add(new HRU(hruLabel[h], h));
+        }
+        Collections.sort(hruList, new ComparatorHRU());
+
+        DateTimeFormatter formatter = ISODateTimeFormat.dateTimeParser();
+
+        String csvLine;
+
+        while ((csvLine = csvReaderList.get(0).readLine()) != null && !csvLine.startsWith("ALL")) {
+            split = csvLine.split(",");
+            DateTime currentDateTime = formatter.parseDateTime(split[0]).toDateTime(DateTimeZone.UTC);
+
+            String[] hruValues = Arrays.copyOfRange(split, 2, split.length);
+
+            dataWriter.write(Joiner.on(' ').join(
+                    currentDateTime.getYear(),
+                    currentDateTime.getMonthOfYear(),
+                    currentDateTime.getDayOfMonth() - 1,
+                    currentDateTime.getHourOfDay(),
+                    currentDateTime.getMinuteOfHour(),
+                    currentDateTime.getSecondOfMinute()));
+
+            for (int h = 0; h < hruCount; ++h) {
+                dataWriter.write(" " + hruValues[hruList.get(h).inputIndex]);
+            }
+
+            for (int v = 1; v < varCount; ++v) {
+                csvLine = csvReaderList.get(v).readLine();
+                split = csvLine.split(",");
+                hruValues = Arrays.copyOfRange(split, 2, split.length);
+                for (int h = 0; h < hruCount; ++h) {
+                    dataWriter.write(" " + hruValues[hruList.get(h).inputIndex]);
+                }
+            }
+
+            dataWriter.newLine();
         }
 
     }
