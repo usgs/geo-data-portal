@@ -29,6 +29,11 @@
             <artifactId>gdp-data-access</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>gov.usgs.cida.gdp</groupId>
+            <artifactId>gdp-52n-wps-patches</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- version numbers set in parent pom -->
         <dependency>
             <groupId>gov.usgs.cida.jmx</groupId>
@@ -101,7 +106,4 @@
         </dependency>
         <!-- LOGGING END-->
     </dependencies>
-    <properties>
-        <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
-    </properties>
 </project>

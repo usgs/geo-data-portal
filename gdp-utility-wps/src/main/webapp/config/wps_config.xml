@@ -232,7 +232,7 @@
         </Repository>
 
     </AlgorithmRepositoryList>
-    <Server hostname="localhost" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="gdp-utility-wps">
+    <Server hostname="@hostname@" hostport="@hostport@" webappPath="@webappPath@" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false">
         <Database/>
     </Server>
 </WPSConfiguration>

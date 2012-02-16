@@ -1,4 +1,4 @@
-package gov.usgs.cida.gdp.servlet;
+package gov.usgs.cida.n52.wps.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -45,10 +45,10 @@ public class ResponseURLFilter implements Filter {
         if (requestHTTP != null && responseHTTP != null) {
             String requestURLString = extractRequestURLString(requestHTTP);
             String baseURLString = requestURLString.replaceAll("/[^/]*$", "");
-            LOGGER.info("Wrapping response for URL filtering");
+            LOGGER.debug("Wrapping response for URL filtering");
             chain.doFilter(request, new BaseURLFilterHttpServletResponse(responseHTTP, configURLString, baseURLString));
         } else {
-            LOGGER.warn("Unable to to wrap response for URL filtering");
+            LOGGER.debug("Unable to to wrap response for URL filtering");
             chain.doFilter(request, response);
         }
     }
@@ -64,9 +64,9 @@ public class ResponseURLFilter implements Filter {
         String requestURLString = request.getHeader("X-REQUEST-URL");
         if (requestURLString == null || requestURLString.length() == 0) {
             requestURLString = request.getRequestURL().toString();
-            LOGGER.warn("HTTP request header \"X-REQUEST-URL\" is missing");
+            LOGGER.debug("HTTP request header \"X-REQUEST-URL\" is missing");
         } else {
-            LOGGER.info("HTTP request header \"X-REQUEST-URL\" is {}", requestURLString);
+            LOGGER.debug("HTTP request header \"X-REQUEST-URL\" is {}", requestURLString);
         }
         return requestURLString;
     }
@@ -86,13 +86,13 @@ public class ResponseURLFilter implements Filter {
         public ServletOutputStream getOutputStream() throws IOException {
             String contentType = getContentType();
             if (enableFiltering(contentType)) {
-                LOGGER.info("Content-type: {}, response URL filtering enabled for response to {}", contentType, requestURLString);
+                LOGGER.debug("Content-type: {}, response URL filtering enabled for response to {}", contentType, requestURLString);
                 return new ServletOutputStreamWrapper(
                         getResponse().getOutputStream(),
                         configURLString,
                         requestURLString);
             } else {
-                LOGGER.info("Content-type: {}, response URL filtering disabled for response to {}", contentType, requestURLString);
+                LOGGER.debug("Content-type: {}, response URL filtering disabled for response to {}", contentType, requestURLString);
                 return getResponse().getOutputStream();
             }
         }
@@ -135,7 +135,7 @@ public class ResponseURLFilter implements Filter {
         
         private boolean allowHeader(String name, String value) {
             if (HEADER_CONTENT_LENGTH.equalsIgnoreCase(name) && enableFiltering(getContentType())) {
-                LOGGER.info("Refusing to set \"Content-Length\" response header, response filtering is enabled and reponse length could change.");
+                LOGGER.debug("Refusing to set \"Content-Length\" response header, response filtering is enabled and reponse length could change.");
                 return false;
             } else {
                 return true;
@@ -144,7 +144,7 @@ public class ResponseURLFilter implements Filter {
         
         private boolean allowHeader(String name, int value) {
             if (HEADER_CONTENT_LENGTH.equalsIgnoreCase(name) && enableFiltering(getContentType())) {
-                LOGGER.info("Refusing to set \"Content-Length\" response header, response filtering is enabled and reponse length could change.");
+                LOGGER.debug("Refusing to set \"Content-Length\" response header, response filtering is enabled and reponse length could change.");
                 return false;
             } else {
                 return true;
