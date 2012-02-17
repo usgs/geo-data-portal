@@ -54,6 +54,8 @@
     GDP.FOI_GETCAPS_URL = GDP.PROXY_PREFIX + '<%= props.getProperty("derivative/FOI_GETCAPS_URL", 
             "http://cida-wiwsc-gdp2qa.er.usgs.gov:8082/geoserver/derivative/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities") %>';
     
+    Ext.override(Ext.data.Connection, { timeout: 60000 });
+    
     // http://ejohn.org/blog/fast-javascript-maxmin/
     Array.max = function( array , maxVal ){
         var arrMax = Math.max.apply( Math, array );
