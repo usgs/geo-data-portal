@@ -10,6 +10,7 @@
      xmlns:cat="http://www.esri.com/metadata/csw/"
      xmlns:csw="http://www.opengis.net/cat/csw/2.0.2"
      xmlns:gml="http://www.opengis.net/gml"
+     xmlns:gml32="http://www.opengis.net/gml/3.2"
      xmlns:gmd2="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
      xmlns:gts="http://www.isotc211.org/2005/gts"
      xmlns:gmx="http://www.isotc211.org/2005/gmx"
@@ -448,11 +449,11 @@
                         <table class="meta">
                             <xsl:call-template name="tablerow">
                                 <xsl:with-param name="cname" select="'Time Start'"/>
-                                <xsl:with-param name="cvalue" select="./gmd:EX_TemporalExtent/gmd:extent/gml:TimePeriod/gml:beginPosition"/>
+                                <xsl:with-param name="cvalue" select="./gmd:EX_TemporalExtent/gmd:extent/gml32:TimePeriod/gml32:beginPosition"/>
                             </xsl:call-template>
                             <xsl:call-template name="tablerow">
                                 <xsl:with-param name="cname" select="'Time End'"/>
-                                <xsl:with-param name="cvalue" select="./gmd:EX_TemporalExtent/gmd:extent/gml:TimePeriod/gml:endPosition"/>
+                                <xsl:with-param name="cvalue" select="./gmd:EX_TemporalExtent/gmd:extent/gml32:TimePeriod/gml32:endPosition"/>
                             </xsl:call-template>
                         </table>
                     </td>
