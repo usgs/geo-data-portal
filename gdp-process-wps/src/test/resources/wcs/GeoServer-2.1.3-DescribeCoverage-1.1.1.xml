@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wcs:CoverageDescriptions xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://igsarmewmaccave.gs.doi.net:8082/geoserver/schemas/wcs/1.1.1/wcsDescribeCoverage.xsd">
+  <wcs:CoverageDescription>
+    <ows:Title>ned</ows:Title>
+    <ows:Abstract>Generated from ImageMosaic</ows:Abstract>
+    <ows:Keywords>
+      <ows:Keyword>WCS</ows:Keyword>
+      <ows:Keyword>ImageMosaic</ows:Keyword>
+      <ows:Keyword>geotiffs</ows:Keyword>
+    </ows:Keywords>
+    <wcs:Identifier>sample:ned</wcs:Identifier>
+    <wcs:Domain>
+      <wcs:SpatialDomain>
+        <ows:BoundingBox crs="urn:ogc:def:crs:OGC:1.3:CRS84" dimensions="2">
+          <ows:LowerCorner>-125.00055555559999 23.99944444362398</ows:LowerCorner>
+          <ows:UpperCorner>-65.99944444444448 50.00055555462258</ows:UpperCorner>
+        </ows:BoundingBox>
+        <ows:BoundingBox crs="urn:ogc:def:crs:EPSG::4269" dimensions="2">
+          <ows:LowerCorner>23.999444444325704 -125.0005555556</ows:LowerCorner>
+          <ows:UpperCorner>50.0005555555512 -65.99944444444448</ows:UpperCorner>
+        </ows:BoundingBox>
+        <wcs:GridCRS>
+          <wcs:GridBaseCRS>urn:ogc:def:crs:EPSG::4269</wcs:GridBaseCRS>
+          <wcs:GridType>urn:ogc:def:method:WCS:1.1:2dGridIn2dCrs</wcs:GridType>
+          <wcs:GridOrigin>-125.00050925930371 50.000509259254905</wcs:GridOrigin>
+          <wcs:GridOffsets>9.259259259300022E-5 0.0 0.0 -9.259259259300022E-5</wcs:GridOffsets>
+          <wcs:GridCS>urn:ogc:def:cs:OGC:0.0:Grid2dSquareCS</wcs:GridCS>
+        </wcs:GridCRS>
+      </wcs:SpatialDomain>
+    </wcs:Domain>
+    <wcs:Range>
+      <wcs:Field>
+        <wcs:Identifier>contents</wcs:Identifier>
+        <wcs:Definition>
+          <ows:AnyValue/>
+        </wcs:Definition>
+        <wcs:InterpolationMethods>
+          <wcs:InterpolationMethod>linear</wcs:InterpolationMethod>
+          <wcs:InterpolationMethod>cubic</wcs:InterpolationMethod>
+          <wcs:Default>nearest neighbour</wcs:Default>
+        </wcs:InterpolationMethods>
+        <wcs:Axis identifier="Bands">
+          <wcs:AvailableKeys>
+            <wcs:Key>GRAY_INDEX</wcs:Key>
+          </wcs:AvailableKeys>
+        </wcs:Axis>
+      </wcs:Field>
+    </wcs:Range>
+    <wcs:SupportedCRS>urn:ogc:def:crs:EPSG::4269</wcs:SupportedCRS>
+    <wcs:SupportedCRS>EPSG:4269</wcs:SupportedCRS>
+    <wcs:SupportedFormat>image/tiff;subtype="geotiff"</wcs:SupportedFormat>
+    <wcs:SupportedFormat>image/gif</wcs:SupportedFormat>
+    <wcs:SupportedFormat>image/png</wcs:SupportedFormat>
+    <wcs:SupportedFormat>image/jpeg</wcs:SupportedFormat>
+    <wcs:SupportedFormat>image/tiff</wcs:SupportedFormat>
+  </wcs:CoverageDescription>
+</wcs:CoverageDescriptions>

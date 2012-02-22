@@ -15,7 +15,7 @@ import org.w3c.dom.Document;
  *
  * @author tkunicki
  */
-public class WCSDescribeCoverageInspector_1_1 {
+public class WCSDescribeCoverageInspector_1_1_X {
 
     private final static String ROOT_ELEMENT_NAME = "CoverageDescriptions";
 
@@ -35,16 +35,18 @@ public class WCSDescribeCoverageInspector_1_1 {
     private final static String GRID_BASE_CRS_SPATH = COVERAGE_DESCRIPTION_XPATH + "/wcs:Domain/wcs:SpatialDomain/wcs:GridCRS/wcs:GridBaseCRS";
     private final static String GRID_TYPE_XPATH = COVERAGE_DESCRIPTION_XPATH + "/wcs:Domain/wcs:SpatialDomain/wcs:GridCRS/wcs:GridType";
     private final static String GRID_OFFSETS_XPATH = COVERAGE_DESCRIPTION_XPATH + "/wcs:Domain/wcs:SpatialDomain/wcs:GridCRS/wcs:GridOffsets";
+    private final static String GRID_ORIGIN_XPATH = COVERAGE_DESCRIPTION_XPATH + "/wcs:Domain/wcs:SpatialDomain/wcs:GridCRS/wcs:GridOrigin";
     private final static String GRID_BOUNDING_BOX_XPATH = COVERAGE_DESCRIPTION_XPATH + "/wcs:Domain/wcs:SpatialDomain/ows:BoundingBox[@crs='%s']";
     private final static String GRID_LOWER_CORNER_XPATH = GRID_BOUNDING_BOX_XPATH + "/ows:LowerCorner";
     private final static String GRID_UPPER_CORNER_XPATH = GRID_BOUNDING_BOX_XPATH + "/ows:UpperCorner";
     private final static String GRID_DATA_TYPE_XPATH = COVERAGE_DESCRIPTION_XPATH + "/wcs:Range/wcs:Field/wcs:Axis/owcs:DataType";
     private final static String GRID_SUPPORTED_FORMATS_XPATH = COVERAGE_DESCRIPTION_XPATH + "/wcs:SupportedFormat";
+    private final static String GRID_SUPPORTED_CRS_XPATH = COVERAGE_DESCRIPTION_XPATH + "/wcs:SupportedCRS";
 
     private final XPathWrapper wrapper;
     private final String wcsIdentifier;
 
-    public WCSDescribeCoverageInspector_1_1(Document describeCoverageDocument, String coverageIdentifier) {
+    public WCSDescribeCoverageInspector_1_1_X(Document describeCoverageDocument, String coverageIdentifier) {
 
         WCSNamespaceContext namespaceContext = new WCSNamespaceContext();
 
@@ -89,7 +91,7 @@ public class WCSDescribeCoverageInspector_1_1 {
             }
 
         } catch (XPathExpressionException ex) {
-            Logger.getLogger(WCSDescribeCoverageInspector_1_1.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(WCSDescribeCoverageInspector_1_1_X.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -97,7 +99,7 @@ public class WCSDescribeCoverageInspector_1_1 {
         try {
             return wrapper.textAsString(String.format(GRID_BASE_CRS_SPATH, wcsIdentifier));
         } catch (XPathExpressionException ex) {
-            Logger.getLogger(WCSDescribeCoverageInspector_1_1.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(WCSDescribeCoverageInspector_1_1_X.class.getName()).log(Level.SEVERE, null, ex);
             return "";
         }
     }
@@ -106,7 +108,7 @@ public class WCSDescribeCoverageInspector_1_1 {
         try {
             return wrapper.textAsString(String.format(GRID_TYPE_XPATH, wcsIdentifier));
         } catch (XPathExpressionException ex) {
-            Logger.getLogger(WCSDescribeCoverageInspector_1_1.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(WCSDescribeCoverageInspector_1_1_X.class.getName()).log(Level.SEVERE, null, ex);
             return "";
         }
     }
@@ -115,7 +117,16 @@ public class WCSDescribeCoverageInspector_1_1 {
         try {
             return wrapper.textAsDoubleArray(String.format(GRID_OFFSETS_XPATH, wcsIdentifier));
         } catch (XPathExpressionException ex) {
-            Logger.getLogger(WCSDescribeCoverageInspector_1_1.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(WCSDescribeCoverageInspector_1_1_X.class.getName()).log(Level.SEVERE, null, ex);
+            return new double[0];
+        }
+    }
+    
+    public double[] getGridOrigin() {
+        try {
+            return wrapper.textAsDoubleArray(String.format(GRID_ORIGIN_XPATH, wcsIdentifier));
+        } catch (XPathExpressionException ex) {
+            Logger.getLogger(WCSDescribeCoverageInspector_1_1_X.class.getName()).log(Level.SEVERE, null, ex);
             return new double[0];
         }
     }
@@ -124,7 +135,7 @@ public class WCSDescribeCoverageInspector_1_1 {
         try {
             return wrapper.textAsDoubleArray(String.format(GRID_LOWER_CORNER_XPATH, wcsIdentifier, getGridBaseCRSAsString()));
         } catch (XPathExpressionException ex) {
-            Logger.getLogger(WCSDescribeCoverageInspector_1_1.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(WCSDescribeCoverageInspector_1_1_X.class.getName()).log(Level.SEVERE, null, ex);
             return new double[0];
         }
     }
@@ -133,7 +144,7 @@ public class WCSDescribeCoverageInspector_1_1 {
         try {
             return wrapper.textAsDoubleArray(String.format(GRID_UPPER_CORNER_XPATH, wcsIdentifier, getGridBaseCRSAsString()));
         } catch (XPathExpressionException ex) {
-            Logger.getLogger(WCSDescribeCoverageInspector_1_1.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(WCSDescribeCoverageInspector_1_1_X.class.getName()).log(Level.SEVERE, null, ex);
             return new double[0];
         }
     }
@@ -142,7 +153,7 @@ public class WCSDescribeCoverageInspector_1_1 {
         try {
             return wrapper.textAsString(String.format(GRID_DATA_TYPE_XPATH, wcsIdentifier));
         } catch (XPathExpressionException ex) {
-            Logger.getLogger(WCSDescribeCoverageInspector_1_1.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(WCSDescribeCoverageInspector_1_1_X.class.getName()).log(Level.SEVERE, null, ex);
             return "";
         }
     }
@@ -151,7 +162,16 @@ public class WCSDescribeCoverageInspector_1_1 {
         try {
             return wrapper.nodeListTextContentAsStringArray(String.format(GRID_SUPPORTED_FORMATS_XPATH, wcsIdentifier));
         } catch (XPathExpressionException ex) {
-            Logger.getLogger(WCSDescribeCoverageInspector_1_1.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(WCSDescribeCoverageInspector_1_1_X.class.getName()).log(Level.SEVERE, null, ex);
+            return new String[0];
+        }
+    }
+
+    public String[] getGridSupportedCRS() {
+        try {
+            return wrapper.nodeListTextContentAsStringArray(String.format(GRID_SUPPORTED_CRS_XPATH, wcsIdentifier));
+        } catch (XPathExpressionException ex) {
+            Logger.getLogger(WCSDescribeCoverageInspector_1_1_X.class.getName()).log(Level.SEVERE, null, ex);
             return new String[0];
         }
     }

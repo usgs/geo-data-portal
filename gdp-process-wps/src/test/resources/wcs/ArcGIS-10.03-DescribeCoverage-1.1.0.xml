@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CoverageDescriptions xmlns="http://www.opengis.net/wcs/1.1" xmlns:ows="http://www.opengis.net/ows" xmlns:owcs="http://www.opengis.net/wcs/1.1/ows" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/wcs/1.1 ../wcsDescribeCoverage.xsd http://www.opengis.net/wcs/1.1/ows ../owsDataIdentification.xsd">
+  <CoverageDescription>
+    <ows:Title>NLCD 2006_1</ows:Title>
+    <ows:Abstract/>
+    <Identifier>1</Identifier>
+    <Domain>
+      <SpatialDomain>
+        <ows:BoundingBox crs="urn:ogc:def:crs:OGC::imageCRS" dimension="2">
+          <ows:LowerCorner>0 0</ows:LowerCorner>
+          <ows:UpperCorner>189693 88732</ows:UpperCorner>
+        </ows:BoundingBox>
+        <ows:BoundingBox crs="urn:ogc:def:crs:EPSG::4326">
+          <ows:LowerCorner>-130.23282801580851 21.742267815738465</ows:LowerCorner>
+          <ows:UpperCorner>-63.672225313878272 52.877263965065147</ows:UpperCorner>
+        </ows:BoundingBox>
+        <GridCRS>
+          <GridBaseCRS>urn:ogc:def:crs:EPSG::4326</GridBaseCRS>
+          <GridOrigin>-130.23265257377369 52.877088523030338</GridOrigin>
+          <GridOffsets>0.00035088406961701602 -0.00035088406961701602</GridOffsets>
+        </GridCRS>
+      </SpatialDomain>
+    </Domain>
+    <Range>
+      <Field>
+        <Title>Field_1</Title>
+        <Abstract>Field_1</Abstract>
+        <Identifier>Field_1</Identifier>
+        <Definition>
+          <owcs:AnyValue/>
+        </Definition>
+        <NullValue>255</NullValue>
+        <owcs:InterpolationMethods>
+          <owcs:DefaultMethod>nearest</owcs:DefaultMethod>
+          <owcs:OtherMethod>bilinear</owcs:OtherMethod>
+          <owcs:OtherMethod>bicubic</owcs:OtherMethod>
+        </owcs:InterpolationMethods>
+        <Axis identifier="BAND">
+          <AvailableKeys>
+            <Key>1</Key>
+          </AvailableKeys>
+          <owcs:DataType>Byte</owcs:DataType>
+        </Axis>
+      </Field>
+    </Range>
+    <SupportedCRS>urn:ogc:def:crs:EPSG::4326</SupportedCRS>
+    <SupportedCRS>urn:ogc:def:crs:EPSG::4326</SupportedCRS>
+    <SupportedFormat>image/GeoTIFF</SupportedFormat>
+    <SupportedFormat>image/NITF</SupportedFormat>
+    <SupportedFormat>image/HDF</SupportedFormat>
+    <SupportedFormat>image/JPEG</SupportedFormat>
+    <SupportedFormat>image/JPEG2000</SupportedFormat>
+    <SupportedFormat>image/PNG</SupportedFormat>
+  </CoverageDescription>
+</CoverageDescriptions>

@@ -1,12 +1,8 @@
 package gov.usgs.cida.gdp.wps.util;
 
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.junit.Ignore;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  *
@@ -14,28 +10,38 @@ import org.junit.Test;
  */
 public class WCSUtilTest {
 
-
     @Test
-    @Ignore
-    public void testEROS_NED() throws URISyntaxException {
+    public void testIsOGC_URN() {
+        // stuff we would expect to see that passes
+        assertTrue(WCSUtil.isOGC("urn:ogc:def:crs:EPSG::4326"));
+        assertTrue(WCSUtil.isOGC("urn:ogc-x:def:crs:EPSG::4326"));
+        assertTrue(WCSUtil.isOGC("urn:x-ogc:def:crs:EPSG::4326"));
+        assertTrue(WCSUtil.isOGC("urn:ogc:def:crs:EPSG::4326"));
+        assertTrue(WCSUtil.isOGC("urn:ogc-x:def:crs:EPSG:6.9:4326"));
+        assertTrue(WCSUtil.isOGC("urn:x-ogc:def:crs:EPSG:6.9:4326"));
+        assertTrue(WCSUtil.isOGC("urn:ogc:def:crs:EPSG:6.9:4326"));
 
-        File f = WCSUtil.generateTIFFFile(
-                new URI("http://incus.cr.usgs.gov/ArcGIS/services/NED_1/MapServer/WCSServer"),
-                "1",
-                new ReferencedEnvelope(-91, -89, 46, 44, DefaultGeographicCRS.WGS84),
-                true);
-        f.renameTo(new File("target/test.tif"));
+        // stuff we would expect to see that fails
+        assertFalse(WCSUtil.isOGC("EPSG:4326"));
+
+        // random permutations we wouldn't expect to see that should fail
+        assertFalse(WCSUtil.isOGC("urn:ogc:def:crs:EPSG::4326:"));
+        assertFalse(WCSUtil.isOGC("urn:y-ogc:def:crs:EPSG:6.9:4326"));
+        assertFalse(WCSUtil.isOGC("urn:ogc-y:def:crs:EPSG:6.9:4326"));
+        assertFalse(WCSUtil.isOGC("urn:cida:def:crs:EPSG::4326"));
+        assertFalse(WCSUtil.isOGC("urn:cida-x:def:crs:EPSG::4326"));
+        assertFalse(WCSUtil.isOGC("urn:x-cida:def:crs:EPSG::4326"));
     }
 
     @Test
-    @Ignore
-    public void testCIDA_NLCD() throws URISyntaxException {
-
-        File f = WCSUtil.generateTIFFFile(
-                new URI("http://cida.usgs.gov/ArcGIS/services/NLCD_2006/MapServer/WCSServer"),
-                "1",
-                new ReferencedEnvelope(-91, -89, 46, 44, DefaultGeographicCRS.WGS84),
-                true);
-        f.renameTo(new File("target/test.tif"));
+    public void testConvertToNonOGC_URN() {
+        assertEquals("EPSG:4326", WCSUtil.convertCRSToNonOGC("urn:ogc:def:crs:EPSG::4326"));
+        assertEquals("EPSG:4326", WCSUtil.convertCRSToNonOGC("urn:ogc-x:def:crs:EPSG::4326"));
+        assertEquals("EPSG:4326", WCSUtil.convertCRSToNonOGC("urn:x-ogc:def:crs:EPSG::4326"));
+        assertEquals("EPSG:4326", WCSUtil.convertCRSToNonOGC("urn:ogc:def:crs:EPSG::4326"));
+        assertEquals("EPSG:4326", WCSUtil.convertCRSToNonOGC("urn:ogc-x:def:crs:EPSG:6.9:4326"));
+        assertEquals("EPSG:4326", WCSUtil.convertCRSToNonOGC("urn:x-ogc:def:crs:EPSG:6.9:4326"));
+        assertEquals("EPSG:4326", WCSUtil.convertCRSToNonOGC("urn:ogc:def:crs:EPSG:6.9:4326"));
     }
+
 }
