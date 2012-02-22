@@ -174,7 +174,7 @@ function initializeView() {
 
     initializePrevNextButtons();
         
-    $('#show-info-link').click(function() { createPopupView(Constant.ui.view_popup_info_txt, true) })
+    $('#show-info-link').click(function() {createPopupView(Constant.ui.view_popup_info_txt, true)})
     return true;
 }
 
@@ -340,9 +340,21 @@ function resizeMapDiv() {
     $(MAP_DIV).height(mapDivHeight);
 }
 
-function showThrobber() {$(THROBBER).fadeIn(Constant.ui.fadespeed);}
+function showThrobber(recurring) {
+    if (recurring) {
+        $(THROBBER).addClass("donthide");
+    }
+    $(THROBBER).fadeIn(Constant.ui.fadespeed);
+}
 
-function hideThrobber() {$(THROBBER).fadeOut(Constant.ui.fadespeed);}
+function hideThrobber(recurring) {
+    if (recurring) {
+        $(THROBBER).removeClass("donthide");
+    }
+    if (!$(THROBBER).hasClass("donthide")) {
+        $(THROBBER).fadeOut(Constant.ui.fadespeed);
+    }
+}
 
 function showWarningNotification(message, sticky) {
     showNotification(message, sticky, 'theme-warning');
@@ -411,7 +423,7 @@ function createPopupView(popupText, overrideCookie) {
         draggable: false,
         zIndex: 9999,
         // GDP-383
-        open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); } 
+        open: function(event, ui) {$(".ui-dialog-titlebar-close").hide();} 
     });
     return true;
 }

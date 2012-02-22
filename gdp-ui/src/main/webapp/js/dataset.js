@@ -315,6 +315,7 @@ var Dataset = function() {
     }
 
     function submitForProcessingCallback(xml) {
+        showThrobber(true);
         if (!WPS.checkWpsResponse(xml, 'Error submitting request for processing.')) {
             $(_RETRIEVE_OUTPUT_BUTTON).fadeOut(Constant.ui.fadeSpeed);
             $(_RETRIEVE_PROC_INFO_BUTTON).fadeOut(Constant.ui.fadeSpeed);
@@ -345,8 +346,8 @@ var Dataset = function() {
                     statusCallback(XMLHttpRequest.responseText, intervalID, statusID);
                 },
                 error : function() {
-                    $(_SUBMIT_FOR_PROCESSING_LINK).fadeIn(Constant.ui.fadeSpeed);
-                    window.clearInterval(intervalID);
+                    //$(_SUBMIT_FOR_PROCESSING_LINK).fadeIn(Constant.ui.fadeSpeed);
+                    //window.clearInterval(intervalID);
                 }
             });
         }, 5000);
@@ -378,6 +379,7 @@ var Dataset = function() {
         if (!WPS.checkWpsResponse(xml, 'Error checking status of submission. Automatic checking has been cancelled.')) {
             logger.warn('GDP: error xml = \'' + xmlText + '\'');
             window.clearInterval(intervalID);
+            hideThrobber(true);
             logger.debug('GDP: Hiding retrieve process output link');
             $(_RETRIEVE_OUTPUT_BUTTON).fadeOut(Constant.ui.fadeSpeed);
             logger.debug('GDP: Hiding retrieve process information link');
@@ -391,6 +393,7 @@ var Dataset = function() {
             logger.debug('GDP: STATUS: Process started.');
         } else if ($(xml).find('ns|ProcessSucceeded').length > 0) {
             window.clearInterval(intervalID);
+            hideThrobber(true);
             logger.debug('GDP: STATUS: Process successfully completed.')
             showNotification('Your request has successfully completed.', true);
             _RETRIEVE_OUTPUT_URL = $(xml).find('ns|Output').find('ns|Reference').attr('href');
@@ -406,6 +409,7 @@ var Dataset = function() {
             $(_RETRIEVE_PROC_INFO_BUTTON).fadeIn(Constant.ui.fadeSpeed);
         } else if ($(xml).find('ns|ProcessFailed').length > 0) {
             window.clearInterval(intervalID);
+            hideThrobber(true);
             logger.warn('GDP: STATUS: Process Failed: '+ $(xml).find('ns|ProcessFailed').find('ns1|ExceptionText').text())
             showErrorNotification('Process failed: ' + $(xml).find('ns|ProcessFailed').find('ns1|ExceptionText').text());
             logger.debug('GDP: Hiding retrieve process output link');
