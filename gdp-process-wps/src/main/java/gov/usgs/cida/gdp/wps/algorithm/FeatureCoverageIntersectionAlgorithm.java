@@ -50,8 +50,7 @@ public class FeatureCoverageIntersectionAlgorithm extends AbstractAnnotatedAlgor
     @LiteralDataInput(
             identifier=GDPAlgorithmConstants.DATASET_ID_IDENTIFIER,
             title=GDPAlgorithmConstants.DATASET_ID_TITLE,
-            abstrakt=GDPAlgorithmConstants.DATASET_ID_ABSTRACT,
-            maxOccurs= Integer.MAX_VALUE)
+            abstrakt=GDPAlgorithmConstants.DATASET_ID_ABSTRACT)
     public void setDatasetId(String datasetId) {
         this.datasetId = datasetId;
     }
