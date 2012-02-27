@@ -59,7 +59,7 @@ public class WCSUtilFunctonalTest {
 
     @Test
     @Ignore
-    public void testArcServer_CIDA_NLCD2001() throws URISyntaxException {
+    public void testArcServer_EROS_NLCD2001() throws URISyntaxException {
 
         File f = WCSUtil.generateTIFFFile(
                 new URI("http://incus.cr.usgs.gov/ArcGIS/services/NLCD_2001/MapServer/WCSServer"),
