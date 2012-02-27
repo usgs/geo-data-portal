@@ -140,6 +140,12 @@ public class WCSUtil {
             if (sharedFormats.size() < 1) {
                 throw new RuntimeException("WCS coverage not available in an allowed format (geotiff)");
             }
+            // BAH!  GeoServer Hack...  Refeactor this block (above/below) into GeoTIFFUtil...  It's
+            // list is only case independent, we also need preferred ordering image/tiff 
+            // is never wanted in the presense of another options...
+            if (sharedFormats.size() > 1 && sharedFormats.contains("image/tiff")) {
+                sharedFormats.remove("image/tiff");
+            }
             String requestGridFormat = sharedFormats.get(0);
 
             final boolean gridBaseCRSIsOGC = isOGC(gridBaseCRSString);
@@ -185,12 +191,12 @@ public class WCSUtil {
             int crsXIndex = gridBaseCRSRequiresSwapXY ? 1 : 0;
             int crsYIndex = gridBaseCRSRequiresSwapXY ? 0 : 1;
             final boolean gridBoundsInCRSOrder =
-                    !gridBaseCRSIsOGC ||
+                    !gridBaseCRSRequiresSwapXY ||
                     (   Math.abs((gridXOffset > 0 ? gridLowerCorner[crsXIndex] : gridUpperCorner[crsXIndex]) - gridOrigin[0]) < Math.abs(gridXOffset) &&
                         Math.abs((gridYOffset > 0 ? gridLowerCorner[crsYIndex] : gridUpperCorner[crsYIndex]) - gridOrigin[1]) < Math.abs(gridYOffset) );
             final boolean serviceRespectsCRSOrder = gridBaseCRSIsOGC && gridBoundsInCRSOrder;
 
-            ReferencedEnvelope gridBounds = gridBaseCRSRequiresSwapXY & !gridBoundsInCRSOrder
+            ReferencedEnvelope gridBounds = gridBaseCRSRequiresSwapXY && !gridBoundsInCRSOrder
                     ? new ReferencedEnvelope(gridYMin, gridYMax, gridXMin, gridXMax, gridBaseCRS)
                     : new ReferencedEnvelope(gridXMin, gridXMax, gridYMin, gridYMax, gridBaseCRS);
 
@@ -218,16 +224,19 @@ public class WCSUtil {
                     : 1;
 
             String requestBaseCRSString = gridBaseCRSString;
-            boolean requestBaseCRSIsOGC = gridBaseCRSIsOGC;
+            boolean requestBaseCRSCovertedToNonOGC = false;
             if (gridBaseCRSIsOGC) {
                 String gridBaseNonOGCCCRSString = convertCRSToNonOGC(gridBaseCRSString);
                 if (Arrays.asList(gridSupportedCRS).contains(gridBaseNonOGCCCRSString)) {
                     requestBaseCRSString = gridBaseNonOGCCCRSString;
-                    requestBaseCRSIsOGC = false;
+                    requestBaseCRSCovertedToNonOGC = true;
                 }
             }
 
-            final boolean swapXYForRequest = !(requestBaseCRSIsOGC && gridBaseCRSIsOGC && gridBaseCRSRequiresSwapXY && serviceRespectsCRSOrder);
+            final boolean swapXYForRequest = 
+                    gridBaseCRSIsOGC &&
+                    gridBaseCRSRequiresSwapXY &&
+                    (requestBaseCRSCovertedToNonOGC || !serviceRespectsCRSOrder);
 
             StringBuilder requestBoundingBoxBuilder = new StringBuilder();
             if (swapXYForRequest) {

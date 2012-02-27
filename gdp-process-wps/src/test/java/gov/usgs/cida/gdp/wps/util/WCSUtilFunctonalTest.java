@@ -21,6 +21,7 @@ public class WCSUtilFunctonalTest {
     public ReferencedEnvelope testEnvelope = new ReferencedEnvelope(-90.05, -89.95, 44.95, 45.05, DefaultGeographicCRS.WGS84);
 
     @Test
+    @Ignore
     public void testArcServer_EROS_NED() throws URISyntaxException {
 
         File f = WCSUtil.generateTIFFFile(
@@ -32,6 +33,7 @@ public class WCSUtilFunctonalTest {
     }
 
     @Test
+    @Ignore
     public void testGeoServer_CIDA_NED() throws URISyntaxException, IOException {
 
         File s = WCSUtil.generateTIFFFile(
@@ -44,14 +46,26 @@ public class WCSUtilFunctonalTest {
     }
 
     @Test
-    public void testArcServer_CIDA_NLCD() throws URISyntaxException {
+    @Ignore
+    public void testArcServer_CIDA_NLCD2006() throws URISyntaxException {
 
         File f = WCSUtil.generateTIFFFile(
                 new URI("http://cida.usgs.gov/ArcGIS/services/NLCD_2006/MapServer/WCSServer"),
                 "1",
                 testEnvelope,
                 true);
-        f.renameTo(new File("target/testArcServer_CIDA_NLCD.tif"));
+        f.renameTo(new File("target/testArcServer_CIDA_NLCD2006.tif"));
     }
 
+    @Test
+    @Ignore
+    public void testArcServer_CIDA_NLCD2001() throws URISyntaxException {
+
+        File f = WCSUtil.generateTIFFFile(
+                new URI("http://incus.cr.usgs.gov/ArcGIS/services/NLCD_2001/MapServer/WCSServer"),
+                "2",
+                testEnvelope,
+                true);
+        f.renameTo(new File("target/testArcServer_CIDA_NLCD2001.tif"));
+    }
 }
