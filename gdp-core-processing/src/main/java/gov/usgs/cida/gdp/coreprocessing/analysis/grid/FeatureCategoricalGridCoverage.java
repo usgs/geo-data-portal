@@ -74,7 +74,7 @@ public class FeatureCategoricalGridCoverage {
         GridCoordSystem gcs = gridDataType.getCoordinateSystem();
         GridType gt = GridType.findGridType(gcs);
         if (gt != GridType.YX) {
-            throw new IllegalStateException("Currently require y-x or t-y-x grid for this operation");
+            throw new IllegalStateException("Currently require y-x grid for this operation");
         }
 
         // these two calls are used to test for coverage/intersection based on 'requireFullCoverage',
