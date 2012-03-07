@@ -15,7 +15,7 @@ import org.junit.Test;
  *
  * @author tkunicki
  */
-//@Ignore
+@Ignore
 public class WCSUtilFunctonalTest {
 
     public ReferencedEnvelope testEnvelope = new ReferencedEnvelope(-90.05, -89.95, 44.95, 45.05, DefaultGeographicCRS.WGS84);
@@ -46,7 +46,7 @@ public class WCSUtilFunctonalTest {
     }
 
     @Test
-//    @Ignore
+    @Ignore
     public void testGeoServer_CIDA_NEDMosaic() throws URISyntaxException, IOException {
 
         File s = WCSUtil.generateTIFFFile(
