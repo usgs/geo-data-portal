@@ -314,6 +314,11 @@
                 <artifactId>jmx-log4j</artifactId>
                 <version>1.0</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.santuario</groupId>
+                <artifactId>xmlsec</artifactId>
+                <version>1.4.6</version>
+            </dependency>
             <!-- NetCDF-Java and dependencies -->
             <dependency>
                 <groupId>edu.ucar</groupId>
