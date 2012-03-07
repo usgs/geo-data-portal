@@ -141,7 +141,6 @@ public class PRMSFeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotate
     @Process
     public void process() {
 
-        List<File> prmsFileList = new ArrayList<File>();
         List<File> csvFileList = new ArrayList<File>();
 //        FeatureDataset featureDataset = null;
         BufferedWriter paramWriter = null;
@@ -151,10 +150,10 @@ public class PRMSFeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotate
                 return;
             }
 
-            output = File.createTempFile(getClass().getSimpleName(), ".param");
+            File prmsParamFile = File.createTempFile(getClass().getSimpleName(), ".param");
+            File prmsDataFile = File.createTempFile(getClass().getSimpleName(), ".data");
 
-            prmsFileList.add(output);
-            paramWriter = new BufferedWriter(new FileWriter(output));
+            paramWriter = new BufferedWriter(new FileWriter(prmsParamFile));
 
             for (String currentDatasetId : datasetId) {
                 GridDatatype gridDatatype = GDPAlgorithmUtil.generateGridDataType(
@@ -188,18 +187,15 @@ public class PRMSFeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotate
                 csvWriter.close();
                 csvFileList.add(csvTempFile);
                 
-                // params writer
+                // PRMS .params writer
                 BufferedReader csvReader = new BufferedReader(new FileReader(csvTempFile));
                 csv2param(csvReader, paramWriter);
                 csvReader.close();
 
             }
             
-            // data writer
-            File dataFile = File.createTempFile(getClass().getSimpleName(), ".data");
-            prmsFileList.add(dataFile);
-            
-            BufferedWriter dataWriter = new BufferedWriter(new FileWriter(dataFile));
+            // PRMS .data writer
+            BufferedWriter dataWriter = new BufferedWriter(new FileWriter(prmsDataFile));
             List<BufferedReader> csvReaderList = new ArrayList<BufferedReader>(csvFileList.size());
             for (File csvFile : csvFileList) {
                 csvReaderList.add(new BufferedReader(new FileReader(csvFile)));
@@ -212,6 +208,10 @@ public class PRMSFeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotate
             for (File csvFile : csvFileList) {
                  csvFile.delete();
             }
+
+            // need to zip
+            output = prmsDataFile;
+//            output = prmsParamFile;
 
 
         } catch (InvalidRangeException e) {
