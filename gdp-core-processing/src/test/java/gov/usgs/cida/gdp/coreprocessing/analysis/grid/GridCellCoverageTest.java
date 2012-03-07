@@ -84,11 +84,11 @@ public class GridCellCoverageTest {
                 (GridDataset) dataset,
                 variableName,
                 timeRange,
-                Arrays.asList(new FeatureCoverageWeightedGridStatisticsWriter.Statistic[]{
-                    FeatureCoverageWeightedGridStatisticsWriter.Statistic.MEAN,
-                    FeatureCoverageWeightedGridStatisticsWriter.Statistic.MAXIMUM,}),
+                Arrays.asList(new Statistics1DWriter.Statistic[]{
+                    Statistics1DWriter.Statistic.MEAN,
+                    Statistics1DWriter.Statistic.MAXIMUM,}),
                 writer,
-                FeatureCoverageWeightedGridStatistics.GroupBy.FEATURE_ATTRIBUTE,
+                Statistics1DWriter.GroupBy.FEATURE_ATTRIBUTE,
                 Delimiter.COMMA);
         // Check it in some way?
     }
@@ -103,11 +103,11 @@ public class GridCellCoverageTest {
                 (GridDataset) dataset,
                 variableName,
                 timeRange,
-                Arrays.asList(new FeatureCoverageWeightedGridStatisticsWriter.Statistic[]{
-                    FeatureCoverageWeightedGridStatisticsWriter.Statistic.MEAN,
-                    FeatureCoverageWeightedGridStatisticsWriter.Statistic.MAXIMUM,}),
+                Arrays.asList(new Statistics1DWriter.Statistic[]{
+                    Statistics1DWriter.Statistic.MEAN,
+                    Statistics1DWriter.Statistic.MAXIMUM,}),
                 writer,
-                FeatureCoverageWeightedGridStatistics.GroupBy.FEATURE_ATTRIBUTE,
+                Statistics1DWriter.GroupBy.FEATURE_ATTRIBUTE,
                 Delimiter.COMMA);
     }
 
@@ -121,11 +121,11 @@ public class GridCellCoverageTest {
                 (GridDataset) dataset,
                 variableName,
                 timeRange,
-                Arrays.asList(new FeatureCoverageWeightedGridStatisticsWriter.Statistic[]{
-                    FeatureCoverageWeightedGridStatisticsWriter.Statistic.MEAN,
-                    FeatureCoverageWeightedGridStatisticsWriter.Statistic.MAXIMUM,}),
+                Arrays.asList(new Statistics1DWriter.Statistic[]{
+                    Statistics1DWriter.Statistic.MEAN,
+                    Statistics1DWriter.Statistic.MAXIMUM,}),
                 writer,
-                FeatureCoverageWeightedGridStatistics.GroupBy.FEATURE_ATTRIBUTE,
+                Statistics1DWriter.GroupBy.FEATURE_ATTRIBUTE,
                 Delimiter.COMMA);
     }
 
@@ -139,11 +139,11 @@ public class GridCellCoverageTest {
                 (GridDataset) dataset,
                 variableName,
                 timeRange,
-                Arrays.asList(new FeatureCoverageWeightedGridStatisticsWriter.Statistic[]{
-                    FeatureCoverageWeightedGridStatisticsWriter.Statistic.MEAN,
-                    FeatureCoverageWeightedGridStatisticsWriter.Statistic.MAXIMUM,}),
+                Arrays.asList(new Statistics1DWriter.Statistic[]{
+                    Statistics1DWriter.Statistic.MEAN,
+                    Statistics1DWriter.Statistic.MAXIMUM,}),
                 writer,
-                FeatureCoverageWeightedGridStatistics.GroupBy.FEATURE_ATTRIBUTE,
+                Statistics1DWriter.GroupBy.FEATURE_ATTRIBUTE,
                 Delimiter.COMMA);
     }
 
@@ -158,11 +158,11 @@ public class GridCellCoverageTest {
                 (GridDataset) dataset,
                 variableName,
                 timeRange,
-                Arrays.asList(new FeatureCoverageWeightedGridStatisticsWriter.Statistic[]{
-                    FeatureCoverageWeightedGridStatisticsWriter.Statistic.MEAN,
-                    FeatureCoverageWeightedGridStatisticsWriter.Statistic.MAXIMUM,}),
+                Arrays.asList(new Statistics1DWriter.Statistic[]{
+                    Statistics1DWriter.Statistic.MEAN,
+                    Statistics1DWriter.Statistic.MAXIMUM,}),
                 writer,
-                FeatureCoverageWeightedGridStatistics.GroupBy.FEATURE_ATTRIBUTE,
+                Statistics1DWriter.GroupBy.FEATURE_ATTRIBUTE,
                 Delimiter.COMMA);
     }
 
@@ -174,16 +174,16 @@ public class GridCellCoverageTest {
                 (GridDataset) dataset,
                 variableName,
                 timeRange,
-                Arrays.asList(new FeatureCoverageWeightedGridStatisticsWriter.Statistic[]{
-                    FeatureCoverageWeightedGridStatisticsWriter.Statistic.MEAN,
-                    FeatureCoverageWeightedGridStatisticsWriter.Statistic.MAXIMUM,
-                    FeatureCoverageWeightedGridStatisticsWriter.Statistic.MINIMUM,
-                    FeatureCoverageWeightedGridStatisticsWriter.Statistic.VARIANCE,
-                    FeatureCoverageWeightedGridStatisticsWriter.Statistic.STD_DEV,
-                    FeatureCoverageWeightedGridStatisticsWriter.Statistic.WEIGHT_SUM,
-                    FeatureCoverageWeightedGridStatisticsWriter.Statistic.COUNT,}),
+                Arrays.asList(new Statistics1DWriter.Statistic[]{
+                    Statistics1DWriter.Statistic.MEAN,
+                    Statistics1DWriter.Statistic.MAXIMUM,
+                    Statistics1DWriter.Statistic.MINIMUM,
+                    Statistics1DWriter.Statistic.VARIANCE,
+                    Statistics1DWriter.Statistic.STD_DEV,
+                    Statistics1DWriter.Statistic.WEIGHT_SUM,
+                    Statistics1DWriter.Statistic.COUNT,}),
                 writer,
-                FeatureCoverageWeightedGridStatistics.GroupBy.FEATURE_ATTRIBUTE,
+                Statistics1DWriter.GroupBy.FEATURE_ATTRIBUTE,
                 Delimiter.COMMA);
     }
 

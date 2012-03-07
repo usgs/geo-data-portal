@@ -3,7 +3,8 @@ package gov.usgs.cida.gdp.coreprocessing.analysis.grid;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import org.slf4j.Logger;
 import gov.usgs.cida.gdp.coreprocessing.Delimiter;
-import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCoverageWeightedGridStatisticsWriter.Statistic;
+import gov.usgs.cida.gdp.coreprocessing.analysis.grid.Statistics1DWriter.GroupBy;
+import gov.usgs.cida.gdp.coreprocessing.analysis.grid.Statistics1DWriter.Statistic;
 import gov.usgs.cida.gdp.coreprocessing.analysis.statistics.WeightedStatistics1D;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.GridCellCoverageFactory.GridCellCoverageByIndex;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.GridCellCoverageFactory.GridCellIndexCoverage;
@@ -37,11 +38,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class FeatureCoverageWeightedGridStatistics {
     
     public final static Logger LOGGER = LoggerFactory.getLogger(FeatureCoverageWeightedGridStatistics.class);
-
-    public enum GroupBy {
-        STATISTIC,
-        FEATURE_ATTRIBUTE;
-    }
 
     public static void execute(
             FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection,
@@ -110,8 +106,8 @@ public class FeatureCoverageWeightedGridStatistics {
 
         List<Object> attributeList = coverageByIndex.getAttributeValueList();
 
-        FeatureCoverageWeightedGridStatisticsWriter writerX =
-                new FeatureCoverageWeightedGridStatisticsWriter(
+        Statistics1DWriter writerX =
+                new Statistics1DWriter(
                     attributeList,
                     gridDatatype.getName(),
                     variableUnits,
@@ -175,7 +171,7 @@ public class FeatureCoverageWeightedGridStatistics {
 
     protected static abstract class WeightedGridStatisticsVisitor extends FeatureCoverageGridCellVisitor {
 
-        protected final FeatureCoverageWeightedGridStatisticsWriter writer;
+        protected final Statistics1DWriter writer;
         
         protected Map<Object, WeightedStatistics1D> perAttributeStatistics;
         protected WeightedStatistics1D allAttributeStatistics;
@@ -184,7 +180,7 @@ public class FeatureCoverageWeightedGridStatistics {
         protected int zIndex;
         protected double zValue;
         
-        public WeightedGridStatisticsVisitor(GridCellCoverageByIndex coverageByIndex, FeatureCoverageWeightedGridStatisticsWriter writer) {
+        public WeightedGridStatisticsVisitor(GridCellCoverageByIndex coverageByIndex, Statistics1DWriter writer) {
             super(coverageByIndex);
             this.writer = writer;
         }
@@ -233,7 +229,7 @@ public class FeatureCoverageWeightedGridStatistics {
 
         WeightedGridStatisticsVisitor_YX(
                 GridCellCoverageByIndex coverageByIndex,
-                FeatureCoverageWeightedGridStatisticsWriter writer) {
+                Statistics1DWriter writer) {
             super(coverageByIndex, writer);
         }
 
@@ -307,7 +303,7 @@ public class FeatureCoverageWeightedGridStatistics {
 
         public WeightedGridStatisticsVisitor_TYX(
                 GridCellCoverageByIndex coverageByIndex,
-                FeatureCoverageWeightedGridStatisticsWriter writer) {
+                Statistics1DWriter writer) {
             super(coverageByIndex, writer);
             
             dateFormat = new SimpleDateFormat(DATE_FORMAT);
@@ -319,7 +315,7 @@ public class FeatureCoverageWeightedGridStatistics {
             super.traverseStart(gridDatatype);
             try {
                 List<String> rowLabelList = new ArrayList<String>();
-                rowLabelList.add(FeatureCoverageWeightedGridStatisticsWriter.TIMESTEPS_LABEL);
+                rowLabelList.add(Statistics1DWriter.TIMESTEPS_LABEL);
                 if (zAxis != null) {
                     String zAxisName = zAxis.getName();
                     rowLabelList.add(zAxisName + "(" + zAxis.getUnitsString() + ")");
@@ -395,7 +391,7 @@ public class FeatureCoverageWeightedGridStatistics {
             try {
                 if (writer.isSummarizeFeatureAttribute()) {
                     List<String> rowLabelList = new ArrayList<String>();
-                    rowLabelList.add(FeatureCoverageWeightedGridStatisticsWriter.ALL_TIMESTEPS_LABEL);
+                    rowLabelList.add(Statistics1DWriter.ALL_TIMESTEPS_LABEL);
                     if (zAxis != null) {
                         rowLabelList.add("");
                     }

@@ -4,7 +4,7 @@ package gov.usgs.cida.gdp.coreprocessing.analysis.statistics;
  *
  * @author tkunicki
  */
-public class Statistics1D {
+public class Statistics1D implements IStatistics1D {
 
     private long count;
     
@@ -77,6 +77,9 @@ public class Statistics1D {
     }
 
     public void accumulate(Statistics1D sa) {
+        if (sa == this) {
+            return;
+        }
         if(sa != null && sa.count > 0) {
             if (count > 0) {
 
@@ -128,10 +131,17 @@ public class Statistics1D {
         }
     }
 
+    @Override
     public long getCount() {
         return count;
     }
 
+    @Override
+    public double getWeightSum() {
+        return (double)count;
+    }
+
+    @Override
     public double getMean() {
         return count > 0 ? mean : Double.NaN;
     }
@@ -149,26 +159,32 @@ public class Statistics1D {
     }
 
 
+    @Override
     public double getSampleVariance() {
         return count > 1 ?  m2 / (double) (count - 1) : Double.NaN;
     }
 
+    @Override
     public double getSampleStandardDeviation() {
         return Math.sqrt(getSampleVariance());
     }
 
+    @Override
     public double getPopulationVariance() {
         return count > 0 ? m2 / (double) count : Double.NaN;
     }
 
+    @Override
     public double getPopulationStandardDeviation() {
         return Math.sqrt(getPopulationVariance());
     }
 
+    @Override
     public double getMinimum() {
         return count > 0 ? minimum : Double.NaN;
     }
 
+    @Override
     public double getMaximum() {
         return count > 0 ? maximum : Double.NaN;
     }
@@ -177,12 +193,14 @@ public class Statistics1D {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Statistics Accumulator1D ").append(System.identityHashCode(this)).append('\n');
-        sb.append("  count              : ").append(getCount()).append('\n');
-        sb.append("  mean               : ").append(getMean()).append('\n');
-        sb.append("  minimum            : ").append(getMinimum()).append('\n');
-        sb.append("  maximum            : ").append(getMaximum()).append('\n');
-        sb.append("  variance           : ").append(getSampleVariance()).append('\n');
-        sb.append("  standard deviation : ").append(getSampleStandardDeviation()).append('\n');
+        sb.append("  count     : ").append(getCount()).append('\n');
+        sb.append("  mean      : ").append(getMean()).append('\n');
+        sb.append("  minimum   : ").append(getMinimum()).append('\n');
+        sb.append("  maximum   : ").append(getMaximum()).append('\n');
+        sb.append("  s var     : ").append(getSampleVariance()).append('\n');
+        sb.append("  s std dev : ").append(getSampleStandardDeviation()).append('\n');
+        sb.append("  p var     : ").append(getSampleVariance()).append('\n');
+        sb.append("  p std dev : ").append(getSampleStandardDeviation()).append('\n');
         return sb.toString();
     }
 

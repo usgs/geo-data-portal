@@ -4,7 +4,7 @@ package gov.usgs.cida.gdp.coreprocessing.analysis.statistics;
  *
  * @author tkunicki
  */
-public class WeightedStatistics1D {
+public class WeightedStatistics1D implements IStatistics1D {
 
     private long count;
 
@@ -75,39 +75,47 @@ public class WeightedStatistics1D {
         }
     }
 
+    @Override
     public long getCount() {
         return count;
     }
-    
+
+    @Override
     public double getWeightSum() {
         return weightSum;
     }
 
+    @Override
     public double getMean() {
         return count > 0 ? mean : Double.NaN;
     }
 
-
+    @Override
     public double getSampleVariance() {
-        return count > 1 ? S * (double) count / ( (double) (count - 1) * weightSum) : Double.NaN;
+        return count > 1 ? S * (double) count / ((double) (count - 1) * weightSum) : Double.NaN;
     }
 
+    @Override
     public double getSampleStandardDeviation() {
         return Math.sqrt(getSampleVariance());
     }
 
+    @Override
     public double getPopulationVariance() {
         return weightSum > 0d ? S / weightSum : Double.NaN;
     }
 
+    @Override
     public double getPopulationStandardDeviation() {
         return Math.sqrt(getPopulationVariance());
     }
 
+    @Override
     public double getMinimum() {
         return count > 0 ? minimum : Double.NaN;
     }
 
+    @Override
     public double getMaximum() {
         return count > 0 ? maximum : Double.NaN;
     }

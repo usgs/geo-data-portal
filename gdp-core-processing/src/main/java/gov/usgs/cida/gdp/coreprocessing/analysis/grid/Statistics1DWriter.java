@@ -1,7 +1,6 @@
 package gov.usgs.cida.gdp.coreprocessing.analysis.grid;
 
-import gov.usgs.cida.gdp.coreprocessing.analysis.statistics.WeightedStatistics1D;
-
+import gov.usgs.cida.gdp.coreprocessing.analysis.statistics.IStatistics1D;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.Collection;
@@ -9,28 +8,33 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-public class FeatureCoverageWeightedGridStatisticsWriter {
+public class Statistics1DWriter {
     
     public final static String ALL_ATTRIBUTES_LABEL = "ALL ATTRIBUTES";
     public final static String ALL_TIMESTEPS_LABEL = "ALL TIMESTEPS";
     public final static String TIMESTEPS_LABEL = "TIMESTEP";
 
+    public enum GroupBy {
+        STATISTIC,
+        FEATURE_ATTRIBUTE;
+    }
+
     public enum Statistic {
 
         MEAN("%f", "%s")
-        { @Override public Number getValue(WeightedStatistics1D wsa) { return (float)wsa.getMean(); } },
+        { @Override public Number getValue(IStatistics1D wsa) { return (float)wsa.getMean(); } },
         MINIMUM("%f", "%s")
-        { @Override public Number getValue(WeightedStatistics1D wsa) { return (float)wsa.getMinimum(); } },
+        { @Override public Number getValue(IStatistics1D wsa) { return (float)wsa.getMinimum(); } },
         MAXIMUM("%f", "%s")
-        { @Override public Number getValue(WeightedStatistics1D wsa) { return (float)wsa.getMaximum(); } },
+        { @Override public Number getValue(IStatistics1D wsa) { return (float)wsa.getMaximum(); } },
         VARIANCE("%f", "%s^2")
-        { @Override public Number getValue(WeightedStatistics1D wsa) { return (float)wsa.getSampleVariance(); } },
+        { @Override public Number getValue(IStatistics1D wsa) { return (float)wsa.getSampleVariance(); } },
         STD_DEV("%f", "%s")
-        { @Override public Number getValue(WeightedStatistics1D wsa) { return (float)wsa.getSampleStandardDeviation(); } },
+        { @Override public Number getValue(IStatistics1D wsa) { return (float)wsa.getSampleStandardDeviation(); } },
         WEIGHT_SUM("%f")
-        { @Override public Number getValue(WeightedStatistics1D wsa) { return (float)wsa.getWeightSum(); } },
+        { @Override public Number getValue(IStatistics1D wsa) { return (float)wsa.getWeightSum(); } },
         COUNT("%d")
-        { @Override public Number getValue(WeightedStatistics1D wsa) { return wsa.getCount(); } };
+        { @Override public Number getValue(IStatistics1D wsa) { return wsa.getCount(); } };
 
         private final String valueFormat;
         private final String unitFormat;
@@ -43,7 +47,7 @@ public class FeatureCoverageWeightedGridStatisticsWriter {
         public String getValueFormat() { return valueFormat; }
         public String getUnitFormat() {  return unitFormat; }
         public boolean getNeedsUnits() { return unitFormat != null && unitFormat.length() > 0; }
-        public abstract Number getValue(WeightedStatistics1D wsa);
+        public abstract Number getValue(IStatistics1D wsa);
     }
 
     private final List<Object> attributeList;
@@ -58,7 +62,7 @@ public class FeatureCoverageWeightedGridStatisticsWriter {
 
     private final StringBuilder lineSB;
 
-    public FeatureCoverageWeightedGridStatisticsWriter(
+    public Statistics1DWriter(
             List<Object> attributeList,
             String variableName,
             String variableUnits,
@@ -69,7 +73,7 @@ public class FeatureCoverageWeightedGridStatisticsWriter {
         this(attributeList,variableName,variableUnits,statisticList,groupByStatistic,delimiter, false, false, writer);
     }
     
-    public FeatureCoverageWeightedGridStatisticsWriter(
+    public Statistics1DWriter(
             List<Object> attributeList,
             String variableName,
             String variableUnits,
@@ -187,8 +191,8 @@ public class FeatureCoverageWeightedGridStatisticsWriter {
 
     public void writeRow(
             Collection<String> rowLabels,
-            Collection<WeightedStatistics1D> rowValues,
-            WeightedStatistics1D rowSummary)
+            Collection<? extends IStatistics1D> rowValues,
+            IStatistics1D rowSummary)
             throws IOException
     {
         lineSB.setLength(0);
@@ -202,7 +206,7 @@ public class FeatureCoverageWeightedGridStatisticsWriter {
 
         if (groupByStatistic) {
             for (Statistic field : statisticList) {
-                for (WeightedStatistics1D rowValue : rowValues) {
+                for (IStatistics1D rowValue : rowValues) {
                     lineSB.append(delimiter).append(field.getValue(rowValue));
                 }
                 if (summarizeTimeStep) {
@@ -211,7 +215,7 @@ public class FeatureCoverageWeightedGridStatisticsWriter {
                 }
             }
         } else {
-            for (WeightedStatistics1D rowValue : rowValues) {
+            for (IStatistics1D rowValue : rowValues) {
                 for (Statistic field : statisticList) {
                     lineSB.append(delimiter).append(field.getValue(rowValue));
                 }

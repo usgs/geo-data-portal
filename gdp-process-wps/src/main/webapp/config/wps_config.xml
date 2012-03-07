@@ -48,6 +48,7 @@
 		<Repository name="LocalAlgorithmRepository" className="org.n52.wps.server.LocalAlgorithmRepository" active="true">
             <Property name="Algorithm" active="true">gov.usgs.cida.gdp.wps.algorithm.FeatureCategoricalGridCoverageAlgorithm</Property>
             <Property name="Algorithm" active="true">gov.usgs.cida.gdp.wps.algorithm.FeatureWeightedGridStatisticsAlgorithm</Property>
+            <Property name="Algorithm" active="true">gov.usgs.cida.gdp.wps.algorithm.FeatureGridStatisticsAlgorithm</Property>
             <Property name="Algorithm" active="true">gov.usgs.cida.gdp.wps.algorithm.FeatureCoverageIntersectionAlgorithm</Property>
             <Property name="Algorithm" active="true">gov.usgs.cida.gdp.wps.algorithm.FeatureCoverageOPeNDAPIntersectionAlgorithm</Property>
             <Property name="Algorithm" active="true">gov.usgs.cida.gdp.wps.algorithm.PRMSFeatureWeightedGridStatisticsAlgorithm</Property>

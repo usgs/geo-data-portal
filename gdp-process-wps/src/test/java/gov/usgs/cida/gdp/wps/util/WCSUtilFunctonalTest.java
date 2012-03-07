@@ -15,7 +15,7 @@ import org.junit.Test;
  *
  * @author tkunicki
  */
-@Ignore
+//@Ignore
 public class WCSUtilFunctonalTest {
 
     public ReferencedEnvelope testEnvelope = new ReferencedEnvelope(-90.05, -89.95, 44.95, 45.05, DefaultGeographicCRS.WGS84);
@@ -38,7 +38,20 @@ public class WCSUtilFunctonalTest {
 
         File s = WCSUtil.generateTIFFFile(
                 new URI("http://igsarmewmaccave.gs.doi.net:8082/geoserver/wcs"),
-                "sample:ned",
+                "sample:ned-sample",
+                testEnvelope,
+                true);
+        File d = new File("target/testGeoServer_CIDA_NED.tif");
+        FileUtils.copyFile(s, d);
+    }
+
+    @Test
+//    @Ignore
+    public void testGeoServer_CIDA_NEDMosaic() throws URISyntaxException, IOException {
+
+        File s = WCSUtil.generateTIFFFile(
+                new URI("http://igsarmewmaccave.gs.doi.net:8082/geoserver/wcs"),
+                "sample:ned-mosaic",
                 testEnvelope,
                 true);
         File d = new File("target/testGeoServer_CIDA_NED.tif");
