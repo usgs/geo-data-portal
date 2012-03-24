@@ -21,7 +21,8 @@
         <module>gdp-ui</module>
         <module>gdp-derivative-ui</module>
         <module>gdp-deployer</module>
-    </modules>
+    <module>gdp-prms-ui</module>
+  </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <cida.maven.url>http://internal.cida.usgs.gov/maven</cida.maven.url>
