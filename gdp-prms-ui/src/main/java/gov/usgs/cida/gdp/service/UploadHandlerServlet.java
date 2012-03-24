@@ -4,6 +4,7 @@ import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -36,20 +37,24 @@ public class UploadHandlerServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-        DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
-        int maxFileSize = Integer.parseInt(props.get("gdp.prms.ui.file.maxsize"));
+        DynamicReadOnlyProperties props = null;
+        try {
+            props = new DynamicReadOnlyProperties().addJNDIContexts((String[]) null);
+        } catch (NamingException ex) {
+            Logger.getLogger(UploadHandlerServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        int maxFileSize = Integer.parseInt(props.getProperty("gdp.prms.ui.file.maxsize"));
         int fileSize = Integer.parseInt(request.getHeader("Content-Length"));
         if (fileSize > maxFileSize) {
             sendErrorResponse(response, "Upload exceeds max file size of " + maxFileSize + " bytes");
             return;
         }
 
-        // qqfile is parameter passed by our javascript uploader
         String filename = request.getParameter("filename");
-        String utilityWpsUrl = request.getParameter("utility-wps-url");
+        String utilityWpsUrl = request.getParameter("utility-wps-url") + "/WebProcessingService?service=WPS&version=1.0.0&request=Execute&identifier=gov.usgs.cida.gdp.wps.algorithm.filemanagement.ReceiveFiles";
         String wfsEndpoint = request.getParameter("wfs-url");
         String tempDir = System.getProperty("java.io.tmpdir");
-
         File destinationFile = new File(tempDir + File.separator + filename);
 
         // Handle form-based upload (from IE)
@@ -64,7 +69,7 @@ public class UploadHandlerServlet extends HttpServlet {
                 while (iter.hasNext()) {
                     FileItemStream item = iter.next();
                     String name = item.getFieldName();
-                    if ("qqfile".equals(name)) {
+                    if ("file-path".equals(name)) {
                         saveFileFromRequest(item.openStream(), destinationFile);
                         break;
                     }

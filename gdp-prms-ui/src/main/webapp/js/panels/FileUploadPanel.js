@@ -21,8 +21,9 @@ PRMS.FileUploadPanel = Ext.extend(Ext.form.FormPanel, {
                     var fp = Ext.getCmp('panel-fileupload');
                     if(fp.getForm().isValid()) {
                         fp.getForm().submit({
-                            url: 'service/upload',
+                            url: 'service/upload?filename=' + fp.form.items.get('form-file').value + '&utility-wps-url=' + encodeURIComponent(CONFIG.WPS_UTILITY_URL) + '&wfs-url=' + encodeURIComponent(CONFIG.GEOSERVER_URL),
                             params : {
+                                'filename' : fp.form.items.get('form-file').value,
                                 'utility-wps-url' : CONFIG.WPS_UTILITY_URL,
                                 'wfs-url' : CONFIG.GEOSERVER_URL
                             },
@@ -40,7 +41,7 @@ PRMS.FileUploadPanel = Ext.extend(Ext.form.FormPanel, {
                             failure: function(fp, o) {
                                 Ext.Msg.show({
                                     title: 'Failure',
-                                    msg: o.result.message,
+                                    msg: o.response.responseXML.activeElement.textContent,
                                     minWidth: 200,
                                     modal: true,
                                     icon: Ext.Msg.INFO,
