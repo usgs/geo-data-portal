@@ -10,7 +10,12 @@ Ext.onReady(function() {
         id: 'body-panel',
         region: 'center',
         border: false,
-        html: 'It works'
+        items : [
+        new PRMS.FileUploadPanel({
+            region : 'center',
+            width : 'auto'
+        })  
+        ]
     })
         
     var headerPanel = new Ext.Panel({
@@ -39,7 +44,6 @@ Ext.onReady(function() {
         footerPanel
         ]
     });
-    LOADMASK.hide();
 });
 
 function initializeAjax() {

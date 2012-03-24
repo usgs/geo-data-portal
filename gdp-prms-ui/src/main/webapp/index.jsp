@@ -20,7 +20,7 @@
         </jsp:include>
 
         <script type="text/javascript">
-            var CONFIG = {};
+            var CONFIG = {}, PRMS = {};
             
             <% 
                 DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();

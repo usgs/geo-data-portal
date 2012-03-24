@@ -6,7 +6,18 @@
             30
         </session-timeout>
     </session-config>
+    <servlet>
+        <description>
+            Handles Base64 encoding and sending WPS call to upload x-zipped-shp
+        </description>
+        <servlet-name>UploadHandlerServlet</servlet-name>
+        <servlet-class>gov.usgs.cida.gdp.service.UploadHandlerServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UploadHandlerServlet</servlet-name>
+        <url-pattern>/service/upload</url-pattern>
+    </servlet-mapping>
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
-        </welcome-file-list>
-    </web-app>
+    </welcome-file-list>
+</web-app>
