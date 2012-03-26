@@ -11,6 +11,10 @@
     <jsp:param name="debug-qualifier" value="${param['debug-qualifier']}" />
 </jsp:include>
 
+<jsp:include page="js/jquery/jquery.jsp">
+    <jsp:param name="debug-qualifier" value="${param['debug-qualifier']}"/>
+</jsp:include>
+
 <jsp:include page="js/log4javascript/log4javascript.jsp"/>
 <jsp:include page="js/ext/ux/fileuploadfield/upload.jsp"/>
 <jsp:include page="js/geoext/ux/WPS/WPS.jsp" />

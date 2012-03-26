@@ -2,32 +2,39 @@ Ext.ns('PRMS');
 
 PRMS.EmailWhenFinishedProcess  = function(args) {
     if (!args) args = {};
-    var _identifier = 'gs:ConstituentSummary';
-    var _placeId = args['place_id'] || [];
+    var identifier = 'gov.usgs.cida.gdp.wps.algorithm.communication.EmailWhenFinishedAlgorithm';
+    var wpsCheckpoint = args['wps-checkpoint'];
+    var email = args.email;
     var that = {
         init : function(args) {
             that.placeId = args['place_id'] || [];
         },
-        wpsEndpoint : "/ows?service=WPS&version=1.0.0&request=Execute&identifier=gs:ConstituentSummary",
-        identifier : _identifier,
-        placeId : _placeId,
+        identifier : identifier,
+        wpsCheckpoint : wpsCheckpoint,
+        email : email,
         createWpsExecuteReference : function() {
                     
             var dataInputs = [];
             
-            if (that.placeId) {
-                Ext.each(that.placeId, function(val) {
-                    dataInputs.push({
-                        title : 'place_id',
-                        identifier : 'place_id',
-                        data : {
-                            literalData : {
-                                value : val
-                            }
-                        }
-                    }) 
-                }, this)
-            } 
+            dataInputs.push({
+                title : 'wps-checkpoint',
+                identifier : 'wps-checkpoint',
+                data : {
+                    literalData : {
+                        value : that.wpsCheckpoint
+                    }
+                }
+            }) 
+
+            dataInputs.push({
+                title : 'email',
+                identifier : 'email',
+                data : {
+                    literalData : {
+                        value : that.email
+                    }
+                }
+            }) 
             
             return {
                 mimeType : "text/xml; subtype=wfs-collection/1.0",
@@ -37,10 +44,13 @@ PRMS.EmailWhenFinishedProcess  = function(args) {
                     identifier : that.identifier,
                     dataInputs : dataInputs,
                     responseForm : {
-                        rawDataOutput : {
-                            mimeType : "text/xml; subtype=wfs-collection/1.0",
-                            identifier : 'output'
+                        responseDocument : {
+                            output : {
+                                identifier : 'result',
+                                title : 'result'
+                            }
                         }
+                        
                     }
                 }
             };

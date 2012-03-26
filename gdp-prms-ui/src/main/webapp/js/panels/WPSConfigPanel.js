@@ -15,9 +15,9 @@ PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
     constructor : function(config) {
         if (!config) config = {};
         
-        this.layerCombo = new Ext.form.ComboBox({id : this.layerComboId});
-        
-        //http://igsarm-cida-javadev1.er.usgs.gov:8081/geoserver/watersmart/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=watersmart:se_sites&maxFeatures=50
+        this.layerCombo = new Ext.form.ComboBox({
+            id : this.layerComboId
+            });
         this['wfs-url'] = config['wfs-url'];
         this['wps-processing-url'] = config['wps-processing-url'];
 
@@ -25,57 +25,57 @@ PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
             id: 'panel-wpsconfig',
             layout : 'form',
             items: [
-                this.layerCombo,
-                {
-                    xtype : 'textfield',
-                    fieldLabel : 'Attribtue',
-                    id : this.inputAttributeId
-                },
-                {
-                    xtype : 'textfield',
-                    fieldLabel : 'Dataset URI',
-                    id : this.inputDatasetUriId
-                },
-                {
-                    xtype : 'textfield',
-                    fieldLabel : 'Dataset ID',
-                    id : this.datasetIdId
-                },
-                {
-                    xtype : 'datefield',
-                    fieldLabel : 'Begin Date',
-                    allowBlank: true,
-                    id : this.datasetDateBeginId
-                },
-                {
-                    xtype : 'datefield',
-                    fieldLabel : 'End Date',
-                    allowBlank: true,
-                    id : this.datasetDateEndId
-                },
-                {
-                    xtype : 'checkbox',
-                    fieldLabel : 'Require Full Coverage',
-                    id : this.requireFullCoverageId
-                },{
-                    xtype : 'textfield',
-                    fieldLabel : 'E-Mail',
-                    id : this.datasetEmailId
-                }
+            this.layerCombo,
+            {
+                xtype : 'textfield',
+                fieldLabel : 'Attribtue',
+                id : this.inputAttributeId
+            },
+            {
+                xtype : 'textfield',
+                fieldLabel : 'Dataset URI',
+                id : this.inputDatasetUriId
+            },
+            {
+                xtype : 'textfield',
+                fieldLabel : 'Dataset ID',
+                id : this.datasetIdId
+            },
+            {
+                xtype : 'datefield',
+                fieldLabel : 'Begin Date',
+                allowBlank: true,
+                id : this.datasetDateBeginId
+            },
+            {
+                xtype : 'datefield',
+                fieldLabel : 'End Date',
+                allowBlank: true,
+                id : this.datasetDateEndId
+            },
+            {
+                xtype : 'checkbox',
+                fieldLabel : 'Require Full Coverage',
+                id : this.requireFullCoverageId
+            },{
+                xtype : 'textfield',
+                fieldLabel : 'E-Mail',
+                id : this.datasetEmailId
+            }
             ],
             buttons: [
-                {
-                    xtype : 'button',
-                    text : 'Submit',
-                    listeners : {
-                        click : this.submitButtonClicked,
-                        scope : this
-                    }
-                },
-                {
-                    xtype : 'button',
-                    text : 'Clear'
+            {
+                xtype : 'button',
+                text : 'Submit',
+                listeners : {
+                    click : this.submitButtonClicked,
+                    scope : this
                 }
+            },
+            {
+                xtype : 'button',
+                text : 'Clear'
+            }
             ]
         }, config);
         PRMS.WPSConfigPanel.superclass.constructor.call(this, config);
@@ -145,9 +145,56 @@ PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
             datasetDateBegin : datasetDateBegin,
             datasetDateEnd : datasetDateEnd,
             requireFullCoverage : requireFullCoverage,
-            datasetEmail : datasetEmail,
             wfsUrl : this['wfs-url'] + "/wfs"
         }).createWpsExecuteRequest();
-        LOG.debug('');
+        
+        Ext.Ajax.request({
+            url : 'proxy?url=' + CONFIG.WPS_PROCESS_URL + '/WebProcessingService',
+            method : "POST",
+            xmlData : PRMSProcXml,
+            scope : {
+                that : this,
+                initializeEmailProcess : this.initializeEmailProcess,
+                email : datasetEmail
+            },
+            success : function(response) {
+                if ($(response.responseXML).find('ns\\:ProcessStarted').length) {
+                    var statusURL = $(response.responseXML).find('ns\\:ExecuteResponse').attr('statusLocation');
+                    this.initializeEmailProcess({
+                        statusURL : statusURL,
+                        email : this.email
+                    });
+                } else {
+                    LOG.debug('The process failed')
+                }
+            },
+            failure : function(response) {
+                LOG.debug('')
+            }
+        })
+        
+    },
+    initializeEmailProcess : function(args) {
+        var emailProcXml = new PRMS.EmailWhenFinishedProcess({
+            email : args.email,
+            'wps-checkpoint' : args.statusURL
+        }).createWpsExecuteRequest();
+        
+        Ext.Ajax.request({
+            url : 'proxy?url=' + CONFIG.WPS_UTILITY_URL + '/WebProcessingService',
+            method : "POST",
+            xmlData : emailProcXml,
+            scope : this,
+            success : function(response) {
+                if ($(response.responseXML).find('ns\\:ProcessSucceeded').length) {
+                    alert($(response.responseXML).find('ns\\:Output > ns\\:Data > ns\\:LiteralData').text());
+                } else {
+                    LOG.debug('The process failed')
+                }
+            },
+            failure : function(response) {
+                LOG.debug('')
+            }
+        })
     }
 });

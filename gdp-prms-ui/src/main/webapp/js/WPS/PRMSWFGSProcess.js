@@ -16,7 +16,6 @@ PRMS.PRMSWFGSProcess  = function(args) {
     var that = {
         init : function(args) {
         },
-        wpsEndpoint : "/ows?service=WPS&version=1.0.0&request=Execute&identifier=gov.usgs.cida.gdp.wps.algorithm.PRMSFeatureWeightedGridStatisticsAlgorithm",
         identifier : _identifier,
         layerName : layerName,
         storeName : storeName,
@@ -52,8 +51,8 @@ PRMS.PRMSWFGSProcess  = function(args) {
             })
             
             dataInputs.push({
-                title : 'FEATURE_ATTRIBTUE_NAME',
-                identifier : 'FEATURE_ATTRIBTUE_NAME',
+                title : 'FEATURE_ATTRIBUTE_NAME',
+                identifier : 'FEATURE_ATTRIBUTE_NAME',
                 data : {
                     literalData : {
                         value : that.attribute
