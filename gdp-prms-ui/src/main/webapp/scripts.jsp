@@ -15,7 +15,10 @@
 <jsp:include page="js/ext/ux/fileuploadfield/upload.jsp"/>
 <jsp:include page="js/geoext/ux/WPS/WPS.jsp" />
 
+<script type="text/javascript" src="js/WPS/PRMSWFGSProcess.js"></script>
+<script type="text/javascript" src="js/WPS/EmaiWhenFinishedProcess.js"></script>
 <script type="text/javascript" src="js/panels/FileUploadPanel.js"></script>
 <script type="text/javascript" src="js/panels/WPSConfigPanel.js"></script>
+
 
 <script type="text/javascript" src="js/OnReady.js"></script>

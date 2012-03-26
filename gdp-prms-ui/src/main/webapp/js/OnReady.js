@@ -16,11 +16,13 @@ Ext.onReady(function() {
             items : [
             new PRMS.WPSConfigPanel({
                 region : 'south',
+                width : '30%',
                 'wfs-url' : CONFIG.GEOSERVER_URL ,
                 'wps-processing-url' : CONFIG.WPS_PROCESS_URL
             }),
             new PRMS.FileUploadPanel({
-                region : 'center'
+                region : 'center',
+                width : '30%'
             }) 
             ]
         })
