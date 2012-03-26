@@ -9,21 +9,23 @@ Ext.onReady(function() {
     var bodyPanel = new Ext.Panel({
         id: 'body-panel',
         region: 'center',
-        width: '50%',
+        layout: 'fit',
         border: false,
         items : [
         new Ext.Panel({
             items : [
             new PRMS.WPSConfigPanel({
-                region : 'south',
+                title : 'Launch Process',
+                region : 'center',
                 width : '30%',
                 'wfs-url' : CONFIG.GEOSERVER_URL ,
                 'wps-processing-url' : CONFIG.WPS_PROCESS_URL
             }),
             new PRMS.FileUploadPanel({
-                region : 'center',
+                title : 'Upload Shapefile',
+                region : 'south',
                 width : '30%'
-            }) 
+            })
             ]
         })
         ]
