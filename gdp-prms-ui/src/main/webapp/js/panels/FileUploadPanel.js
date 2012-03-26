@@ -23,10 +23,11 @@ PRMS.FileUploadPanel = Ext.extend(Ext.form.FormPanel, {
                         fp.getForm().submit({
                             url: 'service/upload?filename=' + fp.form.items.get('form-file').value + '&utility-wps-url=' + encodeURIComponent(CONFIG.WPS_UTILITY_URL) + '&wfs-url=' + encodeURIComponent(CONFIG.GEOSERVER_URL),
                             waitMsg: 'Please be patient while your file uploads',
+                            clientValidation : false,
                             success: function(fp, o) {
                                 Ext.Msg.show({
                                     title: 'Success',
-                                    msg: o.result.file + ' uploaded',
+                                    msg: o.result.msg,
                                     minWidth: 200,
                                     modal: true,
                                     icon: Ext.Msg.INFO,
@@ -36,7 +37,7 @@ PRMS.FileUploadPanel = Ext.extend(Ext.form.FormPanel, {
                             failure: function(fp, o) {
                                 Ext.Msg.show({
                                     title: 'Failure',
-                                    msg: o.response.responseXML.activeElement.textContent,
+                                    msg: o.result.msg,
                                     minWidth: 200,
                                     modal: true,
                                     icon: Ext.Msg.INFO,

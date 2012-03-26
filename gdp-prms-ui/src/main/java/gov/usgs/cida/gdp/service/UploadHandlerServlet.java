@@ -1,7 +1,9 @@
 package gov.usgs.cida.gdp.service;
 
+import com.sun.jndi.toolkit.url.UrlUtil;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import java.io.*;
+import java.net.URLEncoder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.NamingException;
@@ -9,6 +11,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpUtils;
 import org.apache.commons.codec.binary.Base64OutputStream;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileItemIterator;
@@ -21,6 +24,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -90,9 +94,12 @@ public class UploadHandlerServlet extends HttpServlet {
         String responseText = null;
         try {
             String wpsResponse = postToWPS(utilityWpsUrl, wfsEndpoint, destinationFile);
-
-            responseText = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-                         + "<wpsResponse><![CDATA[" + wpsResponse + "]]></wpsResponse>";
+            
+            if (wpsResponse.toLowerCase().contains("exceptionreport")) {
+                responseText = "{ 'success' : false, 'msg' : 'Unable to upload file'}";
+            } else {
+                responseText = "{ 'success' : true, 'msg' : 'Your upload has completed succesfully'}";
+            }
 
         } catch (Exception ex) {
             Logger.getLogger(UploadHandlerServlet.class.getName()).log(Level.SEVERE, null, ex);
@@ -106,15 +113,13 @@ public class UploadHandlerServlet extends HttpServlet {
     }
 
     public static void sendErrorResponse(HttpServletResponse response, String text) {
-        sendResponse(response, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-                             + "<error>" + text + "</error>");
+        
+        sendResponse(response, "{ 'success' : false, 'msg' : '" + text + "'}");
     }
 
     public static void sendResponse(HttpServletResponse response, String text) {
-
-        response.setContentType("text/xml");
         response.setCharacterEncoding("utf-8");
-
+        response.setContentType("text/html");  
         try {
             Writer writer = response.getWriter();
             writer.write(text);
