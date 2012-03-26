@@ -123,11 +123,16 @@ PRMS.PRMSWFGSProcess  = function(args) {
                     identifier : that.identifier,
                     dataInputs : dataInputs,
                     responseForm : {
-                        output : {
-                            identifier : 'OUTPUT',
-                            title : 'OUTPUT',
-                            asReference : true
+                        responseDocument : {
+                            storeExecuteResponse : true,
+                            status : true,
+                            output : {
+                                identifier : 'OUTPUT',
+                                title : 'OUTPUT',
+                                asReference : true
+                            }
                         }
+                        
                     }
                 }
             };
