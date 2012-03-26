@@ -8,5 +8,4 @@
     <Environment name="gdp.prms.ui.wps.process.url" type="java.lang.String" value="http://igsarm-cida-javadev1.er.usgs.gov:8080/gdp-process-wps" />
     <Environment name="gdp.prms.ui.wps.utility.url" type="java.lang.String" value="http://igsarm-cida-javadev1.er.usgs.gov:8080/gdp-utility-wps" />
     <Environment name="gdp.prms.ui.file.maxsize" type="java.lang.String" value="10485760" />
-
 </Context>

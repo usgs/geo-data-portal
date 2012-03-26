@@ -146,7 +146,7 @@ PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
             datasetDateEnd : datasetDateEnd,
             requireFullCoverage : requireFullCoverage,
             datasetEmail : datasetEmail,
-            wfsUrl : this['wfs-url']
+            wfsUrl : this['wfs-url'] + "/wfs"
         }).createWpsExecuteRequest();
         LOG.debug('');
     }

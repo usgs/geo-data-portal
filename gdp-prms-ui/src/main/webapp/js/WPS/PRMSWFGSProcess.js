@@ -36,21 +36,18 @@ PRMS.PRMSWFGSProcess  = function(args) {
                 title : 'FEATURE_COLLECTION',
                 identifier : 'FEATURE_COLLECTION',
                 reference : {
+                    href : that.wfsUrl,
                     body : {
-                        wfs : new OpenLayers.Format.WFST({
-	            featureNS: "http://www.openplans.org/topp",
-	            featureType: ["states", "cities"],
-	            featurePrefix: "topp",
-	            geometryName: "the_geom"
-	        })
-                    },
-//                        this.createWfsGetFeatureRequest({
-//                        attribute : that.attribute,
-//                        layerName : that.layerName,
-//                        storeName : that.storeName,
-//                        filter : ''
-//                    }),
-                    "xlink:href" : wfsUrl
+                        wfs : new OpenLayers.Format.WFST.v1_1_0({
+                            featureType: that.layerName,
+                            featurePrefix: that.storeName,
+                            geometryName: "the_geom",
+                            outputFormat: 'text/xml; subtype=gml/3.1.1',
+                            version: '1.1.0',
+                            propertyNames : ['the_geom', that.attribute],
+                            filter : null
+                        })
+                    }
                 }
             })
             
@@ -90,7 +87,7 @@ PRMS.PRMSWFGSProcess  = function(args) {
                     identifier : 'TIME_START',
                     data : {
                         literalData : {
-                            value : that.datasetDateBegin
+                            value : that.datasetDateBegin.format('Y-m-d') + 'T00:00:00.000Z'
                         }
                     }
                 }) 
@@ -102,7 +99,7 @@ PRMS.PRMSWFGSProcess  = function(args) {
                     identifier : 'TIME_END',
                     data : {
                         literalData : {
-                            value : that.datasetDateEnd
+                            value : that.datasetDateEnd.format('Y-m-d') + 'T00:00:00.000Z'
                         }
                     }
                 }) 
@@ -152,12 +149,12 @@ PRMS.PRMSWFGSProcess  = function(args) {
             
             var xml = '';
             xml += '<wfs:GetFeature service="WFS" version="1.1.0" outputFormat="text/xml; subtype=gml/3.1.1" xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd">'
-                + '<wfs:Query typeName="'+storeName+':'+layerName+'">'
-                + '<wfs:PropertyName>the_geom</wfs:PropertyName>'
-                + '<wfs:PropertyName>'+attribute+'</wfs:PropertyName>'
-//                + filter ? '' : ''
-                + '</wfs:Query>'
-                + '</wfs:GetFeature>';
+            + '<wfs:Query typeName="'+storeName+':'+layerName+'">'
+            + '<wfs:PropertyName>the_geom</wfs:PropertyName>'
+            + '<wfs:PropertyName>'+attribute+'</wfs:PropertyName>'
+            //                + filter ? '' : ''
+            + '</wfs:Query>'
+            + '</wfs:GetFeature>';
             
             return xml;
         }
