@@ -13,6 +13,7 @@
 
 <jsp:include page="js/log4javascript/log4javascript.jsp"/>
 <jsp:include page="js/ext/ux/fileuploadfield/upload.jsp"/>
+<jsp:include page="js/geoext/ux/WPS/WPS.jsp" />
 
 <script type="text/javascript" src="js/panels/FileUploadPanel.js"></script>
 <script type="text/javascript" src="js/panels/WPSConfigPanel.js"></script>
