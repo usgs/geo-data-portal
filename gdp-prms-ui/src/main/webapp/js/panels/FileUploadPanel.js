@@ -33,6 +33,9 @@ PRMS.FileUploadPanel = Ext.extend(Ext.form.FormPanel, {
                                     icon: Ext.Msg.INFO,
                                     buttons: Ext.Msg.OK
                                 });
+                                
+                                Ext.getCmp('panel-wpsconfig').initializeLayerCombo();
+                                fp.items.get('form-file').setValue('');
                             },
                             failure: function(fp, o) {
                                 Ext.Msg.show({
@@ -43,6 +46,7 @@ PRMS.FileUploadPanel = Ext.extend(Ext.form.FormPanel, {
                                     icon: Ext.Msg.INFO,
                                     buttons: Ext.Msg.OK
                                 });
+                                fp.items.get('form-file').setValue('');
                             }
                         });
                     }
