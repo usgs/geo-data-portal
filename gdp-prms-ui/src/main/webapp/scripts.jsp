@@ -15,5 +15,6 @@
 <jsp:include page="js/ext/ux/fileuploadfield/upload.jsp"/>
 
 <script type="text/javascript" src="js/panels/FileUploadPanel.js"></script>
+<script type="text/javascript" src="js/panels/WPSConfigPanel.js"></script>
 
 <script type="text/javascript" src="js/OnReady.js"></script>

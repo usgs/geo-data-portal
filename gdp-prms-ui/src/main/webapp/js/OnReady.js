@@ -9,12 +9,20 @@ Ext.onReady(function() {
     var bodyPanel = new Ext.Panel({
         id: 'body-panel',
         region: 'center',
+        width: '400',
         border: false,
         items : [
-        new PRMS.FileUploadPanel({
-            region : 'center',
-            width : 'auto'
-        })  
+        new Ext.Panel({
+            items : [
+            new PRMS.WPSConfigPanel({
+                region : 'south'
+            }),
+            new PRMS.FileUploadPanel({
+                region : 'center',
+                width : '30%'
+            }) 
+            ]
+        })
         ]
     })
         
