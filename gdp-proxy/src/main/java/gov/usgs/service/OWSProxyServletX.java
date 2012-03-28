@@ -1,23 +1,11 @@
 package gov.usgs.service;
 
 import gov.usgs.cida.blacklist.BlacklistFactory;
+import static gov.usgs.cida.blacklist.BlacklistFactory.BlacklistType.DELAY_ONLY;
 import gov.usgs.cida.blacklist.BlacklistInterface;
-import static gov.usgs.cida.blacklist.BlacklistFactory.BlacklistType.*;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Properties;
-import java.util.Set;
-import java.util.TreeSet;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -25,24 +13,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpEntityEnclosingRequest;
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
+import org.apache.http.*;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.cache.CacheResponseStatus;
 import org.apache.http.client.cache.HttpCacheEntry;
 import org.apache.http.client.cache.HttpCacheStorage;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpHead;
-import org.apache.http.client.methods.HttpOptions;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpTrace;
-import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.*;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.cache.BasicHttpCacheStorage;
@@ -51,9 +28,9 @@ import org.apache.http.impl.client.cache.CachingHttpClient;
 import org.apache.http.impl.conn.SchemeRegistryFactory;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.message.BasicHeader;
-import org.apache.http.params.HttpParams;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
@@ -64,7 +41,8 @@ import org.w3c.dom.Document;
 
 /**
  *
- * @author jwalker
+ * As of 2012/03/28 the behavior has changed so that the proxy will proxy to
+ * the encoded url in [servletPath]?[url]
  */
 public class OWSProxyServletX extends HttpServlet {
     
@@ -466,7 +444,13 @@ public class OWSProxyServletX extends HttpServlet {
         if (requestQueryString != null) {
             requestBuffer.append('?').append(requestQueryString);
         }
-        return requestBuffer.substring(proxyPath.length());
+        String target = requestBuffer.substring(proxyPath.length());
+        try {
+            return URLDecoder.decode(target, "UTF-8");
+        }
+        catch (UnsupportedEncodingException ex) {
+            return target;
+        }
     }
     
 	private boolean isValidRequest(HttpServletRequest request) {
