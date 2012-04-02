@@ -14,3 +14,4 @@
 /**/nb-configuration.xml
 /gdp-prms-ui/target/
 !/gdp-prms-ui/src/main/webapp/META-INF/context.xml
+/geonetwork/target/
