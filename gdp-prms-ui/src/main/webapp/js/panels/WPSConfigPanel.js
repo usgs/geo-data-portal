@@ -16,8 +16,9 @@ PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
         if (!config) config = {};
         
         this.layerCombo = new Ext.form.ComboBox({
-            id : this.layerComboId
-            });
+            id : this.layerComboId,
+            fieldLabel : 'Choose A Layer'
+        });
         this['wfs-url'] = config['wfs-url'];
         this['wps-processing-url'] = config['wps-processing-url'];
 
@@ -67,6 +68,7 @@ PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
             {
                 xtype : 'button',
                 text : 'Submit',
+                id : 'submit-button',
                 listeners : {
                     click : this.submitButtonClicked,
                     scope : this
@@ -74,7 +76,8 @@ PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
             },
             {
                 xtype : 'button',
-                text : 'Clear'
+                text : 'Clear',
+                id : 'clear-button'
             }
             ]
         }, config);
@@ -86,6 +89,7 @@ PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
     comboSelectFunctionality : function(store, record) {
         var chosenLayer = record.id;
         
+        
     },
     initializeLayerCombo : function() {
         Ext.Ajax.request({
@@ -93,32 +97,39 @@ PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
             disableCaching : false,
             success : function(response) {
                 var responseJSON = Ext.util.JSON.decode(response.responseText);
-                var layerStore = new Ext.data.JsonStore({
-                    storeId: 'layer-store',
-                    root: 'dataStores.dataStore',
-                    idProperty: 'name',
-                    fields: ['name']
-                });
-                layerStore.loadData(responseJSON);
+                if (!responseJSON.dataStores) {
+                    this.layerCombo.setRawValue('Upload a shapefile');
+                    this.layerCombo.setDisabled(true);
+                    Ext.each(this.buttons, function(button){ button.setDisabled(true) })
+                } else {
+                    var layerStore = new Ext.data.JsonStore({
+                        storeId: 'layer-store',
+                        root: 'dataStores.dataStore',
+                        idProperty: 'name',
+                        fields: ['name']
+                    });
+                    layerStore.loadData(responseJSON);
                 
-                this.remove(this.layerComboId);
-                this.layerCombo = new Ext.form.ComboBox({
-                    id : this.layerComboId,
-                    fieldLabel : 'Layer',
-                    emptyText : 'Choose A Layer',
-                    triggerAction: 'all',
-                    mode : 'local',
-                    store : layerStore,
-                    valueField: 'name',
-                    displayField: 'name',
-                    editable: false,
-                    listeners : {
-                        select : this.comboSelectFunctionality,
-                        scope : this
-                    }
-                })
-                this.insert(0, this.layerCombo);
-                this.doLayout();
+                    this.remove(this.layerComboId);
+                    this.layerCombo = new Ext.form.ComboBox({
+                        id : this.layerComboId,
+                        fieldLabel : 'Layer',
+                        emptyText : 'Choose A Layer',
+                        triggerAction: 'all',
+                        mode : 'local',
+                        store : layerStore,
+                        valueField: 'name',
+                        displayField: 'name',
+                        editable: false,
+                        listeners : {
+                            select : this.comboSelectFunctionality,
+                            scope : this
+                        }
+                    })
+                    this.insert(0, this.layerCombo);
+                    Ext.each(this.buttons, function(button){ button.setDisabled(false) })
+                    this.doLayout();
+                }
             }, 
             failure : function() {
                 LOG.debug('')
