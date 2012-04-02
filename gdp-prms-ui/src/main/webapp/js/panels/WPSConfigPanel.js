@@ -2,6 +2,7 @@ Ext.ns("PRMS");
 
 PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
     attributeCombo : undefined,
+    compositeFieldDates : 'composite-field-dates',
     layerCombo : undefined,
     layerComboId : 'input-layer',
     inputAttributeId : 'input-attribute',
@@ -49,6 +50,7 @@ PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
                 xtype : 'compositefield',
                 labelWidth : 120,
                 fieldLabel : 'Begin/End Dates',
+                id : this.compositeFieldDates,
                 items : [
                 {
                     xtype : 'datefield',
@@ -62,7 +64,6 @@ PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
                 }
                 ]
             },
-            
             {
                 xtype : 'checkbox',
                 fieldLabel : 'Require Full Coverage',
@@ -191,14 +192,14 @@ PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
         var attribute = form.getComponent(this.inputAttributeId).getValue();
         var datasetUri = form.getComponent(this.inputDatasetUriId).getValue();
         var datasetId = form.getComponent(this.datasetIdId).getValue();
-        var datasetDateBegin = form.getComponent(this.datasetDateBeginId).getValue();
-        var datasetDateEnd = form.getComponent(this.datasetDateEndId).getValue();
+        var datasetDateBegin = form.getComponent(this.compositeFieldDates).items.get(this.datasetDateBeginId).getValue();
+        var datasetDateEnd = form.getComponent(this.compositeFieldDates).items.get(this.datasetDateEndId).getValue();
         var requireFullCoverage = form.getComponent(this.requireFullCoverageId).getValue(); 
         var datasetEmail = form.getComponent(this.datasetEmailId).getValue(); 
         
         var PRMSProcXml = new PRMS.PRMSWFGSProcess({
             layerName : layerName,
-            attribute : attribute,
+            attribute : attribute.split(','),
             datasetUri : datasetUri,
             datasetId : datasetId,
             datasetDateBegin : datasetDateBegin,

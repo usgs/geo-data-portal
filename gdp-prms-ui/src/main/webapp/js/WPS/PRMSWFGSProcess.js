@@ -43,7 +43,7 @@ PRMS.PRMSWFGSProcess  = function(args) {
                             geometryName: "the_geom",
                             outputFormat: 'text/xml; subtype=gml/3.1.1',
                             version: '1.1.0',
-                            propertyNames : ['the_geom', that.attribute],
+                            propertyNames : that.attribute,
                             filter : null
                         })
                     }
@@ -55,10 +55,21 @@ PRMS.PRMSWFGSProcess  = function(args) {
                 identifier : 'FEATURE_ATTRIBUTE_NAME',
                 data : {
                     literalData : {
-                        value : that.attribute
+                        value : 'the_geom'
                     }
                 }
             }) 
+            Ext.each(that.attribute, function(attribute) {
+                this.push({
+                    title : 'FEATURE_ATTRIBUTE_NAME',
+                    identifier : 'FEATURE_ATTRIBUTE_NAME',
+                    data : {
+                        literalData : {
+                            value : attribute
+                        }
+                    }
+                }) 
+            }, dataInputs)
             
             dataInputs.push({
                 title : 'DATASET_URI',
