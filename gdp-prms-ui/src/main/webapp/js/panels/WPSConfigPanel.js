@@ -1,6 +1,7 @@
 Ext.ns("PRMS");
 
 PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
+    attributeCombo : undefined,
     layerCombo : undefined,
     layerComboId : 'input-layer',
     inputAttributeId : 'input-attribute',
@@ -14,7 +15,13 @@ PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
     'wps-processing-url' : undefined,
     constructor : function(config) {
         if (!config) config = {};
-        
+
+        this.attributeCombo = new Ext.form.TextField({
+            id : this.inputAttributeId,
+            fieldLabel : 'Attributes',
+            disabled : true
+        })
+    
         this.layerCombo = new Ext.form.ComboBox({
             id : this.layerComboId,
             fieldLabel : 'Choose A Layer'
@@ -27,11 +34,7 @@ PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
             layout : 'form',
             items: [
             this.layerCombo,
-            {
-                xtype : 'textfield',
-                fieldLabel : 'Attribtue',
-                id : this.inputAttributeId
-            },
+            this.attributeCombo,
             {
                 xtype : 'textfield',
                 fieldLabel : 'Dataset URI',
@@ -95,6 +98,41 @@ PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
     comboSelectFunctionality : function(store, record) {
         var chosenLayer = record.id;
         
+        Ext.Ajax.request({
+            url : 'proxy?url=' + this['wfs-url'] + '/rest/workspaces/upload/datastores/' + chosenLayer + '/featuretypes/' + chosenLayer + '.json',
+            disableCaching : false,
+            success : function(response) {
+                var responseJSON = Ext.util.JSON.decode(response.responseText);
+                var attributeStore = new Ext.data.JsonStore({
+                        storeId: 'attribute-store',
+                        root: 'featureType.attributes.attribute',
+                        idProperty: 'name',
+                        fields: ['name']
+                    });
+                attributeStore.loadData(responseJSON);  
+                
+                // We automatically remove the_geom as that's included automatically later - usually at 0 index but who knows...
+                attributeStore.removeAt(attributeStore.findExact('name', 'the_geom'));
+                
+                this.remove(this.inputAttributeId);
+                this.attributeCombo = new Ext.ux.form.SuperBoxSelect({
+                    id : this.inputAttributeId,
+                    fieldLabel : 'Attributes',
+                    mode : 'local',
+                    store : attributeStore,
+                    valueField: 'name',
+                    displayField: 'name',
+                    editable: false,
+                    width : '50%'
+                })
+                this.insert(1, this.attributeCombo);
+                this.doLayout();
+            }, 
+            failure : function() {
+                LOG.debug('')
+            },
+            scope : this
+        })
         
     },
     initializeLayerCombo : function() {
