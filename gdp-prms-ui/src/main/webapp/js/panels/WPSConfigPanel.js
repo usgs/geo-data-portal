@@ -43,17 +43,23 @@ PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
                 id : this.datasetIdId
             },
             {
-                xtype : 'datefield',
-                fieldLabel : 'Begin Date',
-                allowBlank: true,
-                id : this.datasetDateBeginId
+                xtype : 'compositefield',
+                labelWidth : 120,
+                fieldLabel : 'Begin/End Dates',
+                items : [
+                {
+                    xtype : 'datefield',
+                    allowBlank: true,
+                    id : this.datasetDateBeginId
+                },
+                {
+                    xtype : 'datefield',
+                    allowBlank: true,
+                    id : this.datasetDateEndId
+                }
+                ]
             },
-            {
-                xtype : 'datefield',
-                fieldLabel : 'End Date',
-                allowBlank: true,
-                id : this.datasetDateEndId
-            },
+            
             {
                 xtype : 'checkbox',
                 fieldLabel : 'Require Full Coverage',
@@ -100,7 +106,9 @@ PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
                 if (!responseJSON.dataStores) {
                     this.layerCombo.setRawValue('Upload a shapefile');
                     this.layerCombo.setDisabled(true);
-                    Ext.each(this.buttons, function(button){ button.setDisabled(true) })
+                    Ext.each(this.buttons, function(button){
+                        button.setDisabled(true)
+                    })
                 } else {
                     var layerStore = new Ext.data.JsonStore({
                         storeId: 'layer-store',
@@ -127,7 +135,9 @@ PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
                         }
                     })
                     this.insert(0, this.layerCombo);
-                    Ext.each(this.buttons, function(button){ button.setDisabled(false) })
+                    Ext.each(this.buttons, function(button){
+                        button.setDisabled(false)
+                    })
                     this.doLayout();
                 }
             }, 
