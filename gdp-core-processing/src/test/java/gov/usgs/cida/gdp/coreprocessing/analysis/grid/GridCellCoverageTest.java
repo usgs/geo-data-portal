@@ -180,7 +180,7 @@ public class GridCellCoverageTest {
                     Statistics1DWriter.Statistic.MINIMUM,
                     Statistics1DWriter.Statistic.VARIANCE,
                     Statistics1DWriter.Statistic.STD_DEV,
-                    Statistics1DWriter.Statistic.WEIGHT_SUM,
+                    Statistics1DWriter.Statistic.SUM,
                     Statistics1DWriter.Statistic.COUNT,}),
                 writer,
                 Statistics1DWriter.GroupBy.FEATURE_ATTRIBUTE,

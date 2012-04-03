@@ -16,6 +16,8 @@ public class Statistics1D implements IStatistics1D {
 
     private double minimum;
     private double maximum;
+    
+    private double sum;
 
     public Statistics1D() {
 
@@ -38,6 +40,8 @@ public class Statistics1D implements IStatistics1D {
 
         this.minimum = Double.MAX_VALUE;
         this.maximum = -Double.MAX_VALUE;
+        
+        this.sum = 0;
     }
 
     public void accumulate(double value) {
@@ -68,11 +72,14 @@ public class Statistics1D implements IStatistics1D {
             if(value > maximum) {
                 maximum = value;
             }
+            
+            sum += value;
         } else {
             count = 1;
             mean = value;
             minimum = value;
             maximum = value;
+            sum = value;
         }
     }
 
@@ -118,6 +125,8 @@ public class Statistics1D implements IStatistics1D {
                 if(sa.maximum > maximum) {
                 	maximum = sa.maximum;
                 }
+                
+                sum += sa.sum;
             } else {
             	count = sa.count;
             	mean = sa.mean;
@@ -126,6 +135,7 @@ public class Statistics1D implements IStatistics1D {
             	m4 = sa.m4;
             	minimum = sa.minimum;
             	maximum = sa.maximum;
+                sum = sa.sum;
             }
 
         }
@@ -137,8 +147,8 @@ public class Statistics1D implements IStatistics1D {
     }
 
     @Override
-    public double getWeightSum() {
-        return (double)count;
+    public double getSum() {
+        return sum;
     }
 
     @Override

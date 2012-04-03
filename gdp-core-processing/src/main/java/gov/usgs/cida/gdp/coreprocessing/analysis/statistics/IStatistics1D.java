@@ -8,7 +8,7 @@ public interface IStatistics1D {
 
     long getCount();
 
-    double getWeightSum();
+    double getSum();
 
     double getMean();
 

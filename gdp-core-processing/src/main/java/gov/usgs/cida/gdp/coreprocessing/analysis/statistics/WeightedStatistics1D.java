@@ -81,7 +81,7 @@ public class WeightedStatistics1D implements IStatistics1D {
     }
 
     @Override
-    public double getWeightSum() {
+    public double getSum() {
         return weightSum;
     }
 

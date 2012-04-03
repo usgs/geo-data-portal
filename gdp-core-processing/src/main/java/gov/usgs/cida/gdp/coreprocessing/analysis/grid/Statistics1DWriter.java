@@ -31,8 +31,8 @@ public class Statistics1DWriter {
         { @Override public Number getValue(IStatistics1D wsa) { return (float)wsa.getSampleVariance(); } },
         STD_DEV("%f", "%s")
         { @Override public Number getValue(IStatistics1D wsa) { return (float)wsa.getSampleStandardDeviation(); } },
-        WEIGHT_SUM("%f")
-        { @Override public Number getValue(IStatistics1D wsa) { return (float)wsa.getWeightSum(); } },
+        SUM("%f")
+        { @Override public Number getValue(IStatistics1D wsa) { return (float)wsa.getSum(); } },
         COUNT("%d")
         { @Override public Number getValue(IStatistics1D wsa) { return wsa.getCount(); } };
 
