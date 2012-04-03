@@ -199,8 +199,8 @@ public class Statistics1D implements IStatistics1D {
         sb.append("  maximum   : ").append(getMaximum()).append('\n');
         sb.append("  s var     : ").append(getSampleVariance()).append('\n');
         sb.append("  s std dev : ").append(getSampleStandardDeviation()).append('\n');
-        sb.append("  p var     : ").append(getSampleVariance()).append('\n');
-        sb.append("  p std dev : ").append(getSampleStandardDeviation()).append('\n');
+        sb.append("  p var     : ").append(getPopulationVariance()).append('\n');
+        sb.append("  p std dev : ").append(getPopulationStandardDeviation()).append('\n');
         return sb.toString();
     }
 
