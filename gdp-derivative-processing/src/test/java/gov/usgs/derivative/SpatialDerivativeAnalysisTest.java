@@ -5,11 +5,10 @@
 package gov.usgs.derivative;
 
 import java.util.Map;
-import java.util.logging.Level;
 import org.slf4j.Logger;
 import com.google.common.base.Joiner;
 import java.io.File;
-import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCoverageWeightedGridStatisticsWriter.Statistic;
+import gov.usgs.cida.gdp.coreprocessing.analysis.grid.Statistics1DWriter.Statistic;
 import gov.usgs.derivative.spatial.DerivativeFeatureCoverageWeightedGridStatistics;
 import org.geotools.feature.SchemaException;
 import org.opengis.referencing.FactoryException;
