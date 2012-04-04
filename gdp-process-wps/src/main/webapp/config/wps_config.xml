@@ -51,7 +51,7 @@
             <Property name="Algorithm" active="true">gov.usgs.cida.gdp.wps.algorithm.FeatureGridStatisticsAlgorithm</Property>
             <Property name="Algorithm" active="true">gov.usgs.cida.gdp.wps.algorithm.FeatureCoverageIntersectionAlgorithm</Property>
             <Property name="Algorithm" active="true">gov.usgs.cida.gdp.wps.algorithm.FeatureCoverageOPeNDAPIntersectionAlgorithm</Property>
-            <Property name="Algorithm" active="true">gov.usgs.cida.gdp.wps.algorithm.PRMSFeatureWeightedGridStatisticsAlgorithm</Property>
+            <Property name="Algorithm" active="true">gov.usgs.cida.gdp.wps.algorithm.PRMSParameterGeneratorAlgorithm</Property>
 		</Repository>
 
 	</AlgorithmRepositoryList>

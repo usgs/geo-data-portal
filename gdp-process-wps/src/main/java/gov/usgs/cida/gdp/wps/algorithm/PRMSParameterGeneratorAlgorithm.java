@@ -48,23 +48,22 @@ import ucar.nc2.dt.GridDatatype;
  */
 @Algorithm(
     version="1.0.0",
-    title="PRMS Feature Weighted Grid Statistics",
-    abstrakt="PRMS Model Parameter Generator")
-public class PRMSFeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotatedAlgorithm {
+    title="PRMS Parameter Generator",
+    abstrakt="PRMS Paramer Generator")
+public class PRMSParameterGeneratorAlgorithm extends AbstractAnnotatedAlgorithm {
 
     private FeatureCollection featureCollection;
     private String featureAttributeName;
-    private URI datasetURI;
-    private List<String> datasetId;
-    private boolean requireFullCoverage = true;
+    
+    private List<URI> inputURI;
+    private List<String> inputId;
+    private List<String> outputId;
+    private List<String> outputUnit;
+   
     private Date timeStart;
     private Date timeEnd;
-
-    final private List<Statistic> statistics = Arrays.asList( new Statistic[] { Statistic.MEAN } );
-    final private GroupBy groupBy = GroupBy.STATISTIC;
-    final private Delimiter delimiter = Delimiter.COMMA;
-    final private boolean summarizeTimeStep = false;
-    final private boolean summarizeFeatureAttribute = false;
+    
+    private boolean requireFullCoverage = true;
 
     private File output;
 
@@ -86,21 +85,35 @@ public class PRMSFeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotate
     }
 
     @LiteralDataInput(
-            identifier=GDPAlgorithmConstants.DATASET_URI_IDENTIFIER,
-            title=GDPAlgorithmConstants.DATASET_URI_TITLE,
-            abstrakt=GDPAlgorithmConstants.DATASET_URI_ABSTRACT)
-    public void setDatasetURI(URI datasetURI) {
-        this.datasetURI = datasetURI;
+            identifier="INPUT_URI",
+            maxOccurs= Integer.MAX_VALUE)
+    public void setInputURI(List<URI> inputURI) {
+        this.inputURI = inputURI;
     }
 
     @LiteralDataInput(
-            identifier=GDPAlgorithmConstants.DATASET_ID_IDENTIFIER,
-            title=GDPAlgorithmConstants.DATASET_ID_TITLE,
-            abstrakt=GDPAlgorithmConstants.DATASET_ID_ABSTRACT,
+            identifier="INPUT_ID",
             maxOccurs= Integer.MAX_VALUE)
-    public void setDatasetId(List<String> datasetId) {
-        this.datasetId = datasetId;
+    public void setInputId(List<String> inputId) {
+        this.inputId = inputId;
     }
+    
+    @LiteralDataInput(
+            identifier="OUTPUT_ID",
+            minOccurs=0,
+            maxOccurs= Integer.MAX_VALUE)
+    public void setOutputId(List<String> outputId) {
+        this.outputId = outputId;
+    }
+    
+    @LiteralDataInput(
+            identifier="OUTPUT_UNIT",
+            minOccurs=0,
+            maxOccurs= Integer.MAX_VALUE)
+    public void setOutputUnit(List<String> outputUnit) {
+        this.outputUnit = outputUnit;
+    }
+    
 
     @LiteralDataInput(
             identifier=GDPAlgorithmConstants.REQUIRE_FULL_COVERAGE_IDENTIFIER,
@@ -132,7 +145,7 @@ public class PRMSFeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotate
     @ComplexDataOutput(
             identifier="OUTPUT",
             title="Output File",
-            abstrakt="A delimited text file containing requested PRMS model input data.",
+            abstrakt="A zip file containing requested PRMS model input data.",
             binding=CSVFileBinding.class)
     public File getOutput() {
         return output;
@@ -141,8 +154,15 @@ public class PRMSFeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotate
     @Process
     public void process() {
 
+        if (inputURI.size() > 0
+            && inputURI.size() == inputId.size()
+            && inputURI.size() == outputId.size() ) {
+            throw new IllegalStateException("INPUT_URI, INPUT_ID and OUTPUT_ID must have same argument count and be greater than 0");
+        }
+        
+        final int inputCount = inputURI.size();
+        
         List<File> csvFileList = new ArrayList<File>();
-//        FeatureDataset featureDataset = null;
         BufferedWriter paramWriter = null;
         try {
             if (featureCollection.getSchema().getDescriptor(featureAttributeName) == null) {
@@ -155,10 +175,16 @@ public class PRMSFeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotate
 
             paramWriter = new BufferedWriter(new FileWriter(prmsParamFile));
 
-            for (String currentDatasetId : datasetId) {
+            
+            
+            for (int inputIndex = 0; inputIndex < inputCount; ++inputIndex) {
+                
+                URI currentInputURI = inputURI.get(inputIndex);
+                String currentInputId = inputId.get(inputIndex);
+                
                 GridDatatype gridDatatype = GDPAlgorithmUtil.generateGridDataType(
-                        datasetURI,
-                        currentDatasetId,
+                        currentInputURI,
+                        currentInputId,
                         featureCollection.getBounds(),
                         requireFullCoverage);
 
@@ -170,20 +196,20 @@ public class PRMSFeatureWeightedGridStatisticsAlgorithm extends AbstractAnnotate
                 // TODO:  all I/O instances need try/finally cleanup
                 File csvTempFile = File.createTempFile(getClass().getSimpleName(), ".temp.csv");
                 BufferedWriter csvWriter = new BufferedWriter(new FileWriter(csvTempFile));
-                csvWriter.write("# " + currentDatasetId);
+                csvWriter.write("# " + currentInputId);
                 csvWriter.newLine();
                 FeatureCoverageWeightedGridStatistics.execute(
                         featureCollection,
                         featureAttributeName,
                         gridDatatype,
                         timeRange,
-                        statistics == null || statistics.isEmpty() ? Arrays.asList(Statistic.values()) : statistics,
+                        Arrays.asList(new Statistic[] { Statistic.MEAN } ),
                         csvWriter,
-                        groupBy == null ? GroupBy.STATISTIC : groupBy,
-                        delimiter == null ? Delimiter.COMMA : delimiter,
+                        GroupBy.STATISTIC,
+                        Delimiter.COMMA,
                         requireFullCoverage,
-                        summarizeTimeStep,
-                        summarizeFeatureAttribute);
+                        false,
+                        false);
                 csvWriter.close();
                 csvFileList.add(csvTempFile);
                 
