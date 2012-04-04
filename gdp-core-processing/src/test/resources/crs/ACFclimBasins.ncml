@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="http://cida.usgs.gov/qa/thredds/dodsC/mows_gridded">
+  <dimension name="time" length="10593" />
+  <dimension name="x" length="666" />
+  <dimension name="y" length="886" />
+  <attribute name="Conventions" value="CF-1.6" />
+  <variable name="x" shape="x" type="float">
+    <attribute name="units" value="m" />
+    <attribute name="standard_name" value="projection_x_coordinate" />
+    <attribute name="_CoordinateAxisType" value="GeoX" />
+  </variable>
+  <variable name="y" shape="y" type="float">
+    <attribute name="units" value="m" />
+    <attribute name="standard_name" value="projection_y_coordinate" />
+    <attribute name="_CoordinateAxisType" value="GeoY" />
+  </variable>
+  <variable name="albers_conical_equal_area" type="int">
+    <attribute name="grid_mapping_name" value="albers_conical_equal_area" />
+    <attribute name="standard_parallel" type="float" value="29.5 45.5" />
+    <attribute name="longitude_of_central_meridian" type="double" value="-96." />
+    <attribute name="latitude_of_projection_origin" type="double" value="23." />
+    <attribute name="units" value="m" />
+    <attribute name="false_easting" type="int" value="0" />
+    <attribute name="false_northing" type="int" value="0" />
+    <attribute name="_CoordinateTransformType" value="Projection" />
+    <attribute name="_CoordinateAxes" value="y x" />
+  </variable>
+  <variable name="time" shape="time" type="int">
+    <attribute name="units" value="days since 1980-01-01" />
+  </variable>
+  <variable name="elev" shape="y x" type="float">
+    <attribute name="units" value="m" />
+  </variable>
+  <variable name="GRIDid" shape="y x" type="int" />
+  <variable name="xppt" shape="time y x" type="float">
+    <attribute name="coordinates" value="y x" />
+    <attribute name="grid_mapping" value="albers_conical_equal_area" />
+    <attribute name="coordsys" value="Albers Conical Equal Area" />
+    <attribute name="units" value="inch" />
+    <attribute name="long_name" value="Precipitation" />
+    <attribute name="standard_name" value="precipitation_amount" />
+  </variable>
+  <variable name="xtmax" shape="time y x" type="float">
+    <attribute name="coordinates" value="y x" />
+    <attribute name="grid_mapping" value="albers_conical_equal_area" />
+    <attribute name="coordsys" value="Albers Conical Equal Area" />
+    <attribute name="units" value="degF" />
+    <attribute name="long_name" value="Maximum daily temperature" />
+  </variable>
+  <variable name="xtmin" shape="time y x" type="float">
+    <attribute name="coordinates" value="y x" />
+    <attribute name="grid_mapping" value="albers_conical_equal_area" />
+    <attribute name="coordsys" value="Albers Conical Equal Area" />
+    <attribute name="units" value="degF" />
+    <attribute name="long_name" value="Minimum daily temperature" />
+  </variable>
+</netcdf>

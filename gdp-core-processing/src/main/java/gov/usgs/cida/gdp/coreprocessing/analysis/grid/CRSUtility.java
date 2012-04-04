@@ -327,17 +327,17 @@ public class CRSUtility {
 		double inverseFlattening = inverseFlatteningParameter == null ? Double.NaN : inverseFlatteningParameter.getNumericValue();
 
 		if (earthRadius == earthRadius) {
-			return DefaultEllipsoid.createEllipsoid("CF-Derived Sphere", earthRadius, earthRadius, SI.METER);
+			return DefaultEllipsoid.createEllipsoid("CF-Derived Sphere", earthRadius, earthRadius, earthRadius < 10000 ? SI.KILOMETER : SI.METER);
 		}
 		if (semiMajorAxis == semiMajorAxis && semiMinorAxis == semiMinorAxis) {
-			return DefaultEllipsoid.createEllipsoid("CF-Derived Ellipsoid", semiMajorAxis, semiMinorAxis, SI.METER);
+			return DefaultEllipsoid.createEllipsoid("CF-Derived Ellipsoid", semiMajorAxis, semiMinorAxis, semiMajorAxis < 10000 ? SI.KILOMETER : SI.METER);
 		}
 		if (semiMajorAxis == semiMajorAxis && inverseFlattening == inverseFlattening) {
-			return DefaultEllipsoid.createFlattenedSphere("CF-Derived Ellipsoid", semiMajorAxis, inverseFlattening, SI.METER);
+			return DefaultEllipsoid.createFlattenedSphere("CF-Derived Ellipsoid", semiMajorAxis, inverseFlattening, semiMajorAxis < 10000 ? SI.KILOMETER : SI.METER);
 		}
 		if (semiMinorAxis == semiMinorAxis && inverseFlattening == inverseFlattening) {
 			semiMajorAxis = semiMinorAxis / ( 1d - 1d / inverseFlattening );
-			return DefaultEllipsoid.createEllipsoid("CF-Derived Ellipsoid", semiMajorAxis, semiMinorAxis, SI.METER);
+			return DefaultEllipsoid.createEllipsoid("CF-Derived Ellipsoid", semiMajorAxis, semiMinorAxis, semiMinorAxis < 10000 ? SI.KILOMETER : SI.METER);
 		}
 		return DefaultEllipsoid.WGS84;
 	}
@@ -359,8 +359,8 @@ public class CRSUtility {
 		}
 		return new DefaultGeodeticDatum(
 				"CF-Derived Datum",
-				generateEllipsoid(parameterMap),
-				generatePrimeMeridian(parameterMap));
+				ellipsoid,
+				primeMeridian);
 	}
 
 	private static class ProjectionParameterAdapter {
