@@ -355,21 +355,32 @@ PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
         var form = Ext.getCmp('panel-wpsconfig');
         var layerName = form.getComponent(this.layerComboId).getValue();
         var attribute = form.getComponent(this.inputAttributeId).getValue();
-        var datasetUri = form.getComponent(this.inputDatasetUriId).getValue();
-        var datasetId = form.getComponent(this.datasetIdId).getValue();
+        var datasetUriAndId = function() {
+            var dsUriAndId = [];
+            var idCounter = 1;
+            var cswFieldSetIdPre = 'csw-fieldset-';
+            var cswFieldSet = form.getComponent(cswFieldSetIdPre + idCounter);
+            while (cswFieldSet) {
+                dsUriAndId.push([cswFieldSet.items.items[0].getValue(), cswFieldSet.items.items[1].getValue()]);
+                idCounter++;
+                cswFieldSet = form.getComponent(cswFieldSetIdPre + idCounter)
+            }
+            return dsUriAndId;
+        }()
         var datasetDateBegin = form.getComponent(this.compositeFieldDates).items.get(this.datasetDateBeginId).getValue();
         var datasetDateEnd = form.getComponent(this.compositeFieldDates).items.get(this.datasetDateEndId).getValue();
         var requireFullCoverage = form.getComponent(this.requireFullCoverageId).getValue(); 
         var datasetEmail = form.getComponent(this.datasetEmailId).getValue(); 
+        var uom = form.getComponent(this.uomInputId).getValue(); 
         
         var PRMSProcXml = new PRMS.PRMSWFGSProcess({
-            layerName : layerName,
             attribute : attribute.split(','),
-            datasetUri : datasetUri,
-            datasetId : datasetId,
+            datasetUriAndId : datasetUriAndId,
             datasetDateBegin : datasetDateBegin,
             datasetDateEnd : datasetDateEnd,
+            layerName : layerName,
             requireFullCoverage : requireFullCoverage,
+            uom : uom,
             wfsUrl : this['wfs-url'] + "/wfs"
         }).createWpsExecuteRequest();
         
