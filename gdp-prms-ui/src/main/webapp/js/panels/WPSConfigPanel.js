@@ -3,20 +3,68 @@ Ext.ns("PRMS");
 PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
     attributeCombo : undefined,
     compositeFieldDates : 'composite-field-dates',
-    layerCombo : undefined,
-    layerComboId : 'input-layer',
-    inputAttributeId : 'input-attribute',
-    inputDatasetUriId : 'input-dataset-uri',
-    datasetIdId : 'input-dataset-id',
+    cswEndpoints : undefined,
     datasetDateBeginId : 'input-dataset-date-begin',
     datasetDateEndId : 'input-dataset-date-end',
-    requireFullCoverageId : 'input-dataset-require-full-coverage',
     datasetEmailId : 'input-dataset-email',
+    datasetIdId : 'input-dataset-id',
+    inputAttributeId : 'input-attribute',
+    inputDatasetUriId : 'input-dataset-uri',
+    layerCombo : undefined,
+    layerComboId : 'input-layer',
+    requireFullCoverageId : 'input-dataset-require-full-coverage',
+    uomInputId : 'input-uom',
     'wfs-url' : undefined,
     'wps-processing-url' : undefined,
     constructor : function(config) {
         if (!config) config = {};
 
+        this.cswEndpoints = {
+            datasetType1 : {
+                url : [
+                ['http://type1.csw.url1.usgs.gov:8081/wherever'],
+                ['http://type1.csw.url2.usgs.gov:8081/wherever'],
+                ['http://type1.csw.url3.usgs.gov:8081/wherever'],
+                ['http://type1.csw.url4.usgs.gov:8081/wherever']
+                ],
+                id : [
+                ['id1'],
+                ['id2'],
+                ['id3'],
+                ['id4']
+                ]
+            },
+            datasetType2 : {
+                url : [
+                ['http://type2.csw.url1.usgs.gov:8081/wherever'],
+                ['http://type2.csw.url2.usgs.gov:8081/wherever'],
+                ['http://type2.csw.url3.usgs.gov:8081/wherever'],
+                ['http://type2.csw.url4.usgs.gov:8081/wherever']
+                ],
+                id : [
+                ['id1'],
+                ['id2'],
+                ['id3'],
+                ['id4']
+                ]
+            },
+            datasetType3 : {
+                url : [
+                ['http://type3.csw.url1.usgs.gov:8081/wherever'],
+                ['http://type3.csw.url2.usgs.gov:8081/wherever'],
+                ['http://type3.csw.url3.usgs.gov:8081/wherever'],
+                ['http://type3.csw.url4.usgs.gov:8081/wherever']
+                ],
+                id : [
+                ['id1'],
+                ['id2'],
+                ['id3'],
+                ['id4']
+                ]
+            }
+        }
+        
+        // This is just for visual display purposes. This gets replaced automatically
         this.attributeCombo = new Ext.form.TextField({
             id : this.inputAttributeId,
             fieldLabel : 'Attributes',
@@ -33,18 +81,120 @@ PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
         config = Ext.apply({
             id: 'panel-wpsconfig',
             layout : 'form',
+            padding : 5,
             items: [
             this.layerCombo,
             this.attributeCombo,
             {
-                xtype : 'textfield',
-                fieldLabel : 'Dataset URI',
-                id : this.inputDatasetUriId
+                xtype : 'fieldset',
+                title : 'Dataset Type 1',
+                id : 'csw-fieldset-1',
+                collapsible : false,
+                autoHeight : true,
+                items : [
+                {
+                    xtype : 'combo',
+                    id : this.inputDatasetUriId + '-1',
+                    fieldLabel : 'Dataset URI',
+                    mode : 'local',
+                    valueField : 'url',
+                    displayField : 'url',
+                    triggerAction : 'all',
+                    store : new Ext.data.ArrayStore({
+                        idIndex : 0,
+                        fields : ['url'],
+                        data : this.cswEndpoints.datasetType1.url
+                    })
+                },
+                {
+                    xtype : 'combo',
+                    id : this.datasetIdId + '-1',
+                    fieldLabel : 'Dataset ID',
+                    mode : 'local',
+                    valueField : 'id',
+                    displayField : 'id',
+                    triggerAction : 'all',
+                    store : new Ext.data.ArrayStore({
+                        idIndex : 0,
+                        fields : ['id'],
+                        data : this.cswEndpoints.datasetType1.id
+                    })
+                }
+                ]
             },
             {
-                xtype : 'textfield',
-                fieldLabel : 'Dataset ID',
-                id : this.datasetIdId
+                xtype : 'fieldset',
+                title : 'Dataset Type 2',
+                id : 'csw-fieldset-2',
+                collapsible : false,
+                autoHeight : true,
+                items : [
+                {
+                    xtype : 'combo',
+                    id : this.inputDatasetUriId + '-2',
+                    fieldLabel : 'Dataset URI',
+                    mode : 'local',
+                    valueField : 'url',
+                    displayField : 'url',
+                    triggerAction : 'all',
+                    store : new Ext.data.ArrayStore({
+                        idIndex : 0,
+                        fields : ['url'],
+                        data : this.cswEndpoints.datasetType2.url
+                    })
+                },
+                {
+                    xtype : 'combo',
+                    id : this.datasetIdId + '-2',
+                    fieldLabel : 'Dataset ID',
+                    mode : 'local',
+                    valueField : 'id',
+                    displayField : 'id',
+                    triggerAction : 'all',
+                    store : new Ext.data.ArrayStore({
+                        idIndex : 0,
+                        fields : ['id'],
+                        data : this.cswEndpoints.datasetType2.id
+                    })
+                }
+                ]
+            },
+            {
+                xtype : 'fieldset',
+                title : 'Dataset Type 3',
+                id : 'csw-fieldset-3',
+                collapsible : false,
+                autoHeight : true,
+                items : [
+                {
+                    xtype : 'combo',
+                    id : this.inputDatasetUriId + '-3',
+                    fieldLabel : 'Dataset URI',
+                    mode : 'local',
+                    valueField : 'url',
+                    displayField : 'url',
+                    triggerAction : 'all',
+                    store : new Ext.data.ArrayStore({
+                        idIndex : 0,
+                        fields : ['url'],
+                        data : this.cswEndpoints.datasetType3.url
+                    })
+                },
+                {
+                    xtype : 'combo',
+                    id : this.datasetIdId + '-3',
+                    fieldLabel : 'Dataset ID',
+                    mode : 'local',
+                    valueField : 'id',
+                    displayField : 'id',
+                    triggerAction : 'all',
+                    store : new Ext.data.ArrayStore({
+                        idIndex : 0,
+                        fields : ['id'],
+                        data : this.cswEndpoints.datasetType3.id
+                    })
+                }
+                ]
             },
             {
                 xtype : 'compositefield',
@@ -63,6 +213,20 @@ PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
                     id : this.datasetDateEndId
                 }
                 ]
+            },
+            {
+                xtype : 'combo',
+                id : this.uomInputId,
+                fieldLabel : 'UOM',
+                mode : 'local',
+                valueField : 'uom',
+                displayField : 'uom',
+                triggerAction : 'all',
+                store : new Ext.data.ArrayStore({
+                    idIndex : 0,
+                    fields : ['uom'],
+                    data : [['m'],['mi']]
+                })
             },
             {
                 xtype : 'checkbox',
@@ -105,11 +269,11 @@ PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
             success : function(response) {
                 var responseJSON = Ext.util.JSON.decode(response.responseText);
                 var attributeStore = new Ext.data.JsonStore({
-                        storeId: 'attribute-store',
-                        root: 'featureType.attributes.attribute',
-                        idProperty: 'name',
-                        fields: ['name']
-                    });
+                    storeId: 'attribute-store',
+                    root: 'featureType.attributes.attribute',
+                    idProperty: 'name',
+                    fields: ['name']
+                });
                 attributeStore.loadData(responseJSON);  
                 
                 // We automatically remove the_geom as that's included automatically later - usually at 0 index but who knows...
