@@ -116,8 +116,9 @@ PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
                 attributeStore.removeAt(attributeStore.findExact('name', 'the_geom'));
                 
                 this.remove(this.inputAttributeId);
-                this.attributeCombo = new Ext.ux.form.SuperBoxSelect({
+                this.attributeCombo = new Ext.form.ComboBox({
                     id : this.inputAttributeId,
+                    triggerAction: 'all',
                     fieldLabel : 'Attributes',
                     mode : 'local',
                     store : attributeStore,
