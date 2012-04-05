@@ -43,7 +43,7 @@ PRMS.PRMSWFGSProcess  = function(args) {
                             geometryName: "the_geom",
                             outputFormat: 'text/xml; subtype=gml/3.1.1',
                             version: '1.1.0',
-                            propertyNames : that.attribute,
+                            propertyNames : ['the_geom', that.attribute],
                             filter : null
                         })
                     }
@@ -73,20 +73,41 @@ PRMS.PRMSWFGSProcess  = function(args) {
             
             Ext.each(datasetUriAndId, function(uriAndId){
                 this.push({
-                    title : 'DATASET_URI',
-                    identifier : 'DATASET_URI',
+                    title : 'INPUT_URI',
+                    identifier : 'INPUT_URI',
                     data : {
                         literalData : {
                             value : uriAndId[0]
                         }
                     }
                 })
+                
                 this.push({
-                    title : 'DATASET_ID',
-                    identifier : 'DATASET_ID',
+                    title : 'INPUT_ID',
+                    identifier : 'INPUT_ID',
                     data : {
                         literalData : {
                             value : uriAndId[1]
+                        }
+                    }
+                })
+                
+                this.push({
+                    title : 'OUTPUT_ID',
+                    identifier : 'OUTPUT_ID',
+                    data : {
+                        literalData : {
+                            value : uriAndId[2]
+                        }
+                    }
+                })
+                
+                this.push({
+                    title : 'OUTPUT_UNIT',
+                    identifier : 'OUTPUT_UNIT',
+                    data : {
+                        literalData : {
+                            value : uriAndId[3]
                         }
                     }
                 })
@@ -115,16 +136,6 @@ PRMS.PRMSWFGSProcess  = function(args) {
                     }
                 }) 
             }
-            
-            dataInputs.push({
-                title : 'UOM',
-                identifier : 'UOM',
-                data : {
-                    literalData : {
-                        value : that.uom
-                    }
-                }
-            }) 
             
             dataInputs.push({
                 title : 'REQUIRE_FULL_COVERAGE',

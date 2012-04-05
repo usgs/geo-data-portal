@@ -12,6 +12,7 @@ PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
     inputDatasetUriId : 'input-dataset-uri',
     layerCombo : undefined,
     layerComboId : 'input-layer',
+    outputIdId : 'output-id',
     requireFullCoverageId : 'input-dataset-require-full-coverage',
     uomInputId : 'input-uom',
     'wfs-url' : undefined,
@@ -119,6 +120,25 @@ PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
                         fields : ['id'],
                         data : this.cswEndpoints.datasetType1.id
                     })
+                },
+                {
+                    xtype : 'textfield',
+                    fieldLabel : 'Output ID',
+                    id : this.outputIdId + '-1'
+                },
+                {
+                    xtype : 'combo',
+                    id : this.uomInputId + '-1',
+                    fieldLabel : 'UOM',
+                    mode : 'local',
+                    valueField : 'uom',
+                    displayField : 'uom',
+                    triggerAction : 'all',
+                    store : new Ext.data.ArrayStore({
+                        idIndex : 0,
+                        fields : ['uom'],
+                        data : [['m'],['mi']]
+                    })
                 }
                 ]
             },
@@ -155,6 +175,25 @@ PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
                         idIndex : 0,
                         fields : ['id'],
                         data : this.cswEndpoints.datasetType2.id
+                    })
+                },
+                {
+                    xtype : 'textfield',
+                    fieldLabel : 'Output ID',
+                    id : this.outputIdId + '-2'
+                },
+                {
+                    xtype : 'combo',
+                    id : this.uomInputId + '-2',
+                    fieldLabel : 'UOM',
+                    mode : 'local',
+                    valueField : 'uom',
+                    displayField : 'uom',
+                    triggerAction : 'all',
+                    store : new Ext.data.ArrayStore({
+                        idIndex : 0,
+                        fields : ['uom'],
+                        data : [['m'],['mi']]
                     })
                 }
                 ]
@@ -193,6 +232,25 @@ PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
                         fields : ['id'],
                         data : this.cswEndpoints.datasetType3.id
                     })
+                },
+                {
+                    xtype : 'textfield',
+                    fieldLabel : 'Output ID',
+                    id : this.outputIdId + '-3'
+                },
+                {
+                    xtype : 'combo',
+                    id : this.uomInputId + '-3',
+                    fieldLabel : 'UOM',
+                    mode : 'local',
+                    valueField : 'uom',
+                    displayField : 'uom',
+                    triggerAction : 'all',
+                    store : new Ext.data.ArrayStore({
+                        idIndex : 0,
+                        fields : ['uom'],
+                        data : [['m'],['mi']]
+                    })
                 }
                 ]
             },
@@ -213,20 +271,6 @@ PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
                     id : this.datasetDateEndId
                 }
                 ]
-            },
-            {
-                xtype : 'combo',
-                id : this.uomInputId,
-                fieldLabel : 'UOM',
-                mode : 'local',
-                valueField : 'uom',
-                displayField : 'uom',
-                triggerAction : 'all',
-                store : new Ext.data.ArrayStore({
-                    idIndex : 0,
-                    fields : ['uom'],
-                    data : [['m'],['mi']]
-                })
             },
             {
                 xtype : 'checkbox',
@@ -361,7 +405,7 @@ PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
             var cswFieldSetIdPre = 'csw-fieldset-';
             var cswFieldSet = form.getComponent(cswFieldSetIdPre + idCounter);
             while (cswFieldSet && cswFieldSet.items.items[0].getValue()) {
-                dsUriAndId.push([cswFieldSet.items.items[0].getValue(), cswFieldSet.items.items[1].getValue()]);
+                dsUriAndId.push([cswFieldSet.items.items[0].getValue(), cswFieldSet.items.items[1].getValue(), cswFieldSet.items.items[2].getValue(), cswFieldSet.items.items[3].getValue()]);
                 idCounter++;
                 cswFieldSet = form.getComponent(cswFieldSetIdPre + idCounter)
             }
@@ -371,7 +415,7 @@ PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
         var datasetDateEnd = form.getComponent(this.compositeFieldDates).items.get(this.datasetDateEndId).getValue();
         var requireFullCoverage = form.getComponent(this.requireFullCoverageId).getValue(); 
         var datasetEmail = form.getComponent(this.datasetEmailId).getValue(); 
-        var uom = form.getComponent(this.uomInputId).getValue(); 
+//        var uom = form.getComponent(this.uomInputId).getValue(); 
         
         var PRMSProcXml = new PRMS.PRMSWFGSProcess({
             attribute : attribute.split(','),
@@ -380,7 +424,7 @@ PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
             datasetDateEnd : datasetDateEnd,
             layerName : layerName,
             requireFullCoverage : requireFullCoverage,
-            uom : uom,
+//            uom : uom,
             wfsUrl : this['wfs-url'] + "/wfs"
         }).createWpsExecuteRequest();
         
