@@ -360,13 +360,13 @@ PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
             var idCounter = 1;
             var cswFieldSetIdPre = 'csw-fieldset-';
             var cswFieldSet = form.getComponent(cswFieldSetIdPre + idCounter);
-            while (cswFieldSet) {
+            while (cswFieldSet && cswFieldSet.items.items[0].getValue()) {
                 dsUriAndId.push([cswFieldSet.items.items[0].getValue(), cswFieldSet.items.items[1].getValue()]);
                 idCounter++;
                 cswFieldSet = form.getComponent(cswFieldSetIdPre + idCounter)
             }
             return dsUriAndId;
-        }()
+        }();
         var datasetDateBegin = form.getComponent(this.compositeFieldDates).items.get(this.datasetDateBeginId).getValue();
         var datasetDateEnd = form.getComponent(this.compositeFieldDates).items.get(this.datasetDateEndId).getValue();
         var requireFullCoverage = form.getComponent(this.requireFullCoverageId).getValue(); 

@@ -6,13 +6,13 @@ PRMS.PRMSWFGSProcess  = function(args) {
     var layerName = args.layerName;
     var storeName = args.storeName || 'upload';
     var attribute = args.attribute;
-    var datasetUri = args.datasetUri;
-    var datasetId = args.datasetId;
+    var datasetUriAndId = args.datasetUriAndId || [];
     var datasetDateBegin = args.datasetDateBegin || '';
     var datasetDateEnd = args.datasetDateEnd || '';
     var requireFullCoverage = args.requireFullCoverage; 
     var datasetEmail = args.datasetEmail; 
-    var wfsUrl = args.wfsUrl
+    var wfsUrl = args.wfsUrl;
+    var uom = args.uom || 'm';
     var that = {
         init : function(args) {
         },
@@ -20,13 +20,13 @@ PRMS.PRMSWFGSProcess  = function(args) {
         layerName : layerName,
         storeName : storeName,
         attribute : attribute,
-        datasetUri : datasetUri,
-        datasetId : datasetId,
+        datasetUriAndId : datasetUriAndId,
         datasetDateBegin : datasetDateBegin,
         datasetDateEnd : datasetDateEnd,
         requireFullCoverage : requireFullCoverage,
         datasetEmail : datasetEmail,
         wfsUrl : wfsUrl,
+        uom : uom,
         createWpsExecuteReference : function() {
                     
             var dataInputs = [];
@@ -71,25 +71,26 @@ PRMS.PRMSWFGSProcess  = function(args) {
                 }) 
             }, dataInputs)
             
-            dataInputs.push({
-                title : 'DATASET_URI',
-                identifier : 'DATASET_URI',
-                data : {
-                    literalData : {
-                        value : that.datasetUri
+            Ext.each(datasetUriAndId, function(uriAndId){
+                this.push({
+                    title : 'DATASET_URI',
+                    identifier : 'DATASET_URI',
+                    data : {
+                        literalData : {
+                            value : uriAndId[0]
+                        }
                     }
-                }
-            }) 
-            
-            dataInputs.push({
-                title : 'DATASET_ID',
-                identifier : 'DATASET_ID',
-                data : {
-                    literalData : {
-                        value : that.datasetId
+                })
+                this.push({
+                    title : 'DATASET_ID',
+                    identifier : 'DATASET_ID',
+                    data : {
+                        literalData : {
+                            value : uriAndId[1]
+                        }
                     }
-                }
-            }) 
+                })
+            }, dataInputs)
             
             if (that.datasetDateBegin) {
                 dataInputs.push({
@@ -114,6 +115,16 @@ PRMS.PRMSWFGSProcess  = function(args) {
                     }
                 }) 
             }
+            
+            dataInputs.push({
+                title : 'UOM',
+                identifier : 'UOM',
+                data : {
+                    literalData : {
+                        value : that.uom
+                    }
+                }
+            }) 
             
             dataInputs.push({
                 title : 'REQUIRE_FULL_COVERAGE',
