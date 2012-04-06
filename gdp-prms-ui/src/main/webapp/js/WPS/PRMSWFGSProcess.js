@@ -2,7 +2,7 @@ Ext.ns('PRMS');
 
 PRMS.PRMSWFGSProcess  = function(args) {
     if (!args) args = {};
-    var _identifier = 'gov.usgs.cida.gdp.wps.algorithm.PRMSFeatureWeightedGridStatisticsAlgorithm';
+    var _identifier = 'gov.usgs.cida.gdp.wps.algorithm.PRMSParameterGeneratorAlgorithm';
     var layerName = args.layerName;
     var storeName = args.storeName || 'upload';
     var attribute = args.attribute;
