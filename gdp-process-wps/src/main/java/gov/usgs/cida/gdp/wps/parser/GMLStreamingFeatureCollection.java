@@ -33,8 +33,11 @@ import org.opengis.feature.type.GeometryType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterVisitor;
 import org.opengis.filter.sort.SortBy;
+import org.opengis.geometry.BoundingBox;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.util.ProgressListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 /**
@@ -43,6 +46,8 @@ import org.xml.sax.SAXException;
  */
 public class GMLStreamingFeatureCollection implements FeatureCollection {
 
+    private final static Logger LOGGER = LoggerFactory.getLogger(GMLStreamingFeatureCollection.class);
+    
 	final private File file;
 	final private SimpleFeatureType featureType;
 	final private ReferencedEnvelope bounds;
@@ -51,6 +56,7 @@ public class GMLStreamingFeatureCollection implements FeatureCollection {
 
 	GMLStreamingFeatureCollection(File file) {
 
+        LOGGER.debug("Starting parse of file {}", file.getName());
 		this.file = file;
 		this.configuration = GMLUtil.generateGMLConfiguration(file);
 
@@ -77,7 +83,7 @@ public class GMLStreamingFeatureCollection implements FeatureCollection {
 				iterator.close();
 			}
 		}
-
+        LOGGER.debug("Finished parse of file {}, {} features found", file.getName(), size);
 	}
 
 	@Override
@@ -350,6 +356,7 @@ public class GMLStreamingFeatureCollection implements FeatureCollection {
                         CoordinateReferenceSystem featureCRS = (CoordinateReferenceSystem)crsObject;
                         if (collectionCRS == null) {
                             collectionCRS = featureCRS;
+                            LOGGER.debug("CRS for file {}: {}", collectionCRS);
                         }
                         if (collectionBounds == null) {
                             collectionBounds = new ReferencedEnvelope(collectionCRS);
@@ -403,6 +410,7 @@ public class GMLStreamingFeatureCollection implements FeatureCollection {
                             baseFeatureType.getSuper(),
                             baseFeatureType.getDescription());
                 }
+                LOGGER.debug("Processed feature index {} in file {}", size, file.getName());
                 ++size;
                 return true;
 			} else {
