@@ -154,13 +154,23 @@ public class PRMSParameterGeneratorAlgorithm extends AbstractAnnotatedAlgorithm 
     @Process
     public void process() {
 
-        if (inputURI.size() > 0
-            && inputURI.size() == inputId.size()
-            && inputURI.size() == outputId.size() ) {
-            throw new IllegalStateException("INPUT_URI, INPUT_ID and OUTPUT_ID must have same argument count and be greater than 0");
+        // validate argument count preconditions
+        final int inputURICount = inputURI == null ? 0 : inputURI.size();
+        if (inputURICount < 1) {
+            throw new IllegalStateException("INPUT_URI count must be greater than 0");
         }
-        
-        final int inputCount = inputURI.size();
+        final int inputIDCount = inputId == null ? 0 : inputId.size();
+        if (inputURICount != inputURICount) {
+            throw new IllegalStateException("INPUT_ID argument count must be equal to INPUT_URI argument count");
+        }
+        final int outputIdCount = outputId == null ? 0 : outputId.size();
+        if ( ! (outputIdCount == 0 || inputURICount == outputIdCount ) ) {
+            throw new IllegalStateException("OUTPUT_ID argument count must either be equal to 0 or INPUT_URI and INPUT_ID argument count");
+        }
+        final int outputUnitCount = outputUnit == null ? 0 : outputUnit.size();
+        if ( ! (outputUnitCount == 0 || inputURICount == outputUnitCount ) ) {
+            throw new IllegalStateException("OUTPUT_UNIT argument count must either be equal to 0 or INPUT_URI and INPUT_ID argument count");
+        }
         
         List<File> csvFileList = new ArrayList<File>();
         BufferedWriter paramWriter = null;
@@ -177,10 +187,10 @@ public class PRMSParameterGeneratorAlgorithm extends AbstractAnnotatedAlgorithm 
 
             
             
-            for (int inputIndex = 0; inputIndex < inputCount; ++inputIndex) {
+            for (int inputURIIndex = 0; inputURIIndex < inputURICount; ++inputURIIndex) {
                 
-                URI currentInputURI = inputURI.get(inputIndex);
-                String currentInputId = inputId.get(inputIndex);
+                URI currentInputURI = inputURI.get(inputURIIndex);
+                String currentInputId = inputId.get(inputURIIndex);
                 
                 GridDatatype gridDatatype = GDPAlgorithmUtil.generateGridDataType(
                         currentInputURI,
