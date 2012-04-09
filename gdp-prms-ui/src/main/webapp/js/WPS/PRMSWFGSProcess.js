@@ -49,16 +49,6 @@ PRMS.PRMSWFGSProcess  = function(args) {
                     }
                 }
             })
-            
-            dataInputs.push({
-                title : 'FEATURE_ATTRIBUTE_NAME',
-                identifier : 'FEATURE_ATTRIBUTE_NAME',
-                data : {
-                    literalData : {
-                        value : 'the_geom'
-                    }
-                }
-            }) 
             Ext.each(that.attribute, function(attribute) {
                 this.push({
                     title : 'FEATURE_ATTRIBUTE_NAME',
