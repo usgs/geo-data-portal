@@ -23,44 +23,38 @@ PRMS.WPSConfigPanel = Ext.extend(Ext.Panel, {
         this.cswEndpoints = {
             datasetType1 : {
                 url : [
-                ['http://type1.csw.url1.usgs.gov:8081/wherever'],
-                ['http://type1.csw.url2.usgs.gov:8081/wherever'],
-                ['http://type1.csw.url3.usgs.gov:8081/wherever'],
-                ['http://type1.csw.url4.usgs.gov:8081/wherever']
+                    ['dods://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/dodsC/gmo/GMO_w_meta.ncml']
                 ],
                 id : [
-                ['id1'],
-                ['id2'],
-                ['id3'],
-                ['id4']
+                    ['Prcp'],
+                    ['Tmin'],
+                    ['Tmax'],
+                    ['Tavg'],
+                    ['Wind']
                 ]
             },
             datasetType2 : {
                 url : [
-                ['http://type2.csw.url1.usgs.gov:8081/wherever'],
-                ['http://type2.csw.url2.usgs.gov:8081/wherever'],
-                ['http://type2.csw.url3.usgs.gov:8081/wherever'],
-                ['http://type2.csw.url4.usgs.gov:8081/wherever']
+                    ['dods://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/dodsC/gmo/GMO_w_meta.ncml']
                 ],
                 id : [
-                ['id1'],
-                ['id2'],
-                ['id3'],
-                ['id4']
+                    ['Prcp'],
+                    ['Tmin'],
+                    ['Tmax'],
+                    ['Tavg'],
+                    ['Wind']
                 ]
             },
             datasetType3 : {
                 url : [
-                ['http://type3.csw.url1.usgs.gov:8081/wherever'],
-                ['http://type3.csw.url2.usgs.gov:8081/wherever'],
-                ['http://type3.csw.url3.usgs.gov:8081/wherever'],
-                ['http://type3.csw.url4.usgs.gov:8081/wherever']
+                    ['dods://igsarm-cida-thredds1.er.usgs.gov:8080/thredds/dodsC/gmo/GMO_w_meta.ncml']
                 ],
                 id : [
-                ['id1'],
-                ['id2'],
-                ['id3'],
-                ['id4']
+                    ['Prcp'],
+                    ['Tmin'],
+                    ['Tmax'],
+                    ['Tavg'],
+                    ['Wind']
                 ]
             }
         }
