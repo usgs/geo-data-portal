@@ -6,14 +6,8 @@ import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCoverageWeightedGri
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.Statistics1DWriter.GroupBy;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.Statistics1DWriter.Statistic;
 import gov.usgs.cida.gdp.coreprocessing.analysis.statistics.WeightedStatistics1D;
-import gov.usgs.cida.gdp.wps.binding.CSVFileBinding;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import gov.usgs.cida.gdp.wps.binding.ZipFileBinding;
+import java.io.*;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,6 +15,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 import org.apache.commons.io.IOUtils;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.SchemaException;
@@ -146,7 +142,7 @@ public class PRMSParameterGeneratorAlgorithm extends AbstractAnnotatedAlgorithm 
             identifier="OUTPUT",
             title="Output File",
             abstrakt="A zip file containing requested PRMS model input data.",
-            binding=CSVFileBinding.class)
+            binding=ZipFileBinding.class)
     public File getOutput() {
         return output;
     }
@@ -245,9 +241,28 @@ public class PRMSParameterGeneratorAlgorithm extends AbstractAnnotatedAlgorithm 
                  csvFile.delete();
             }
 
-            // need to zip
-            output = prmsDataFile;
-//            output = prmsParamFile;
+            paramWriter.close();
+            dataWriter.close();
+            
+            File zipFile = File.createTempFile(getClass().getName(), ".zip");
+            ZipOutputStream zipOutputStream = new ZipOutputStream(
+                    new FileOutputStream(zipFile));
+            FileInputStream paramsInputStream = new FileInputStream(prmsParamFile);
+            zipOutputStream.putNextEntry(new ZipEntry("prms.param"));
+            IOUtils.copy(paramsInputStream, zipOutputStream);
+            paramsInputStream.close();
+            zipOutputStream.closeEntry();
+            FileInputStream dataInputStream = new FileInputStream(prmsDataFile);
+            zipOutputStream.putNextEntry(new ZipEntry("prms.data"));
+            IOUtils.copy(dataInputStream, zipOutputStream);
+            dataInputStream.close();
+            zipOutputStream.closeEntry();
+            zipOutputStream.close();
+            
+            prmsDataFile.delete();
+            prmsParamFile.delete();
+            
+            output = zipFile;
 
 
         } catch (InvalidRangeException e) {
@@ -310,7 +325,7 @@ public class PRMSParameterGeneratorAlgorithm extends AbstractAnnotatedAlgorithm 
         String varName = csvReader.readLine().substring(2).toLowerCase(); // assumes '# '
 
         String[] split = csvReader.readLine().split(",");
-        String[] hruLabel = Arrays.copyOfRange(split, 2, split.length);
+        String[] hruLabel = Arrays.copyOfRange(split, 1, split.length);
         
         csvReader.readLine();
 
@@ -334,7 +349,7 @@ public class PRMSParameterGeneratorAlgorithm extends AbstractAnnotatedAlgorithm 
             split = csvLine.split(",");
             DateTime currentDateTime = formatter.parseDateTime(split[0]).toDateTime(DateTimeZone.UTC);
 
-            String[] hruValues = Arrays.copyOfRange(split, 2, split.length);
+            String[] hruValues = Arrays.copyOfRange(split, 1, split.length);
 
             int m = currentDateTime.getMonthOfYear() - 1;  // returns 1 indexed, we want 0 indexed
             for (int h = 0; h < hruCount; ++h) {
@@ -392,7 +407,7 @@ public class PRMSParameterGeneratorAlgorithm extends AbstractAnnotatedAlgorithm 
 
             if (v == 0) {
                 split = csvReaderList.get(v).readLine().split(",");
-                hruLabel = Arrays.copyOfRange(split, 2, split.length);
+                hruLabel = Arrays.copyOfRange(split, 1, split.length);
                 hruCount = hruLabel.length;
             } else {
                 //swallow
@@ -417,12 +432,12 @@ public class PRMSParameterGeneratorAlgorithm extends AbstractAnnotatedAlgorithm 
             split = csvLine.split(",");
             DateTime currentDateTime = formatter.parseDateTime(split[0]).toDateTime(DateTimeZone.UTC);
 
-            String[] hruValues = Arrays.copyOfRange(split, 2, split.length);
+            String[] hruValues = Arrays.copyOfRange(split, 1, split.length);
 
             dataWriter.write(Joiner.on(' ').join(
                     currentDateTime.getYear(),
                     currentDateTime.getMonthOfYear(),
-                    currentDateTime.getDayOfMonth() - 1,
+                    currentDateTime.getDayOfMonth(),
                     currentDateTime.getHourOfDay(),
                     currentDateTime.getMinuteOfHour(),
                     currentDateTime.getSecondOfMinute()));
@@ -434,7 +449,7 @@ public class PRMSParameterGeneratorAlgorithm extends AbstractAnnotatedAlgorithm 
             for (int v = 1; v < varCount; ++v) {
                 csvLine = csvReaderList.get(v).readLine();
                 split = csvLine.split(",");
-                hruValues = Arrays.copyOfRange(split, 2, split.length);
+                hruValues = Arrays.copyOfRange(split, 1, split.length);
                 for (int h = 0; h < hruCount; ++h) {
                     dataWriter.write(" " + hruValues[hruList.get(h).inputIndex]);
                 }

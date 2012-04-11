@@ -40,6 +40,10 @@
                 <Property name="supportedFormat" active="true">application/netcdf</Property>
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
 			</Generator>
+			<Generator name="ZipGenerator" className="gov.usgs.cida.gdp.wps.generator.ZipGenerator" active="true">
+				<Property name="supportedFormat" active="true">application/zip</Property>
+				<Property name="supportedEncoding" active="true">binary</Property>
+			</Generator>
 		</GeneratorList>
 	</Datahandlers>
 
