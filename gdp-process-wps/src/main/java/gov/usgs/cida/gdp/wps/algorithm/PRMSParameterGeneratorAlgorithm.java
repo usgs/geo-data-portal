@@ -17,7 +17,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.SchemaException;
 import org.joda.time.DateTime;
@@ -31,6 +33,7 @@ import org.n52.wps.algorithm.annotation.LiteralDataInput;
 import org.n52.wps.algorithm.annotation.Process;
 import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
 import org.n52.wps.server.AbstractAnnotatedAlgorithm;
+import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
 import ucar.ma2.InvalidRangeException;
@@ -45,13 +48,13 @@ import ucar.nc2.dt.GridDatatype;
 @Algorithm(
     version="1.0.0",
     title="PRMS Parameter Generator",
-    abstrakt="PRMS Paramer Generator")
+    abstrakt="PRMS Parameter Generator")
 public class PRMSParameterGeneratorAlgorithm extends AbstractAnnotatedAlgorithm {
 
     private FeatureCollection featureCollection;
     private String featureAttributeName;
     
-    private List<URI> inputURI;
+    private List<URI> inputUri;
     private List<String> inputId;
     private List<String> outputId;
     private List<String> outputUnit;
@@ -81,14 +84,14 @@ public class PRMSParameterGeneratorAlgorithm extends AbstractAnnotatedAlgorithm 
     }
 
     @LiteralDataInput(
-            identifier="INPUT_URI",
+            identifier=GDPAlgorithmConstants.DATASET_URI_IDENTIFIER,
             maxOccurs= Integer.MAX_VALUE)
-    public void setInputURI(List<URI> inputURI) {
-        this.inputURI = inputURI;
+    public void setInputUri(List<URI> inputUri) {
+        this.inputUri = inputUri;
     }
 
     @LiteralDataInput(
-            identifier="INPUT_ID",
+            identifier=GDPAlgorithmConstants.DATASET_ID_IDENTIFIER,
             maxOccurs= Integer.MAX_VALUE)
     public void setInputId(List<String> inputId) {
         this.inputId = inputId;
@@ -151,42 +154,107 @@ public class PRMSParameterGeneratorAlgorithm extends AbstractAnnotatedAlgorithm 
     public void process() {
 
         // validate argument count preconditions
-        final int inputURICount = inputURI == null ? 0 : inputURI.size();
-        if (inputURICount < 1) {
+        int inputUriCount = inputUri == null ? 0 : inputUri.size();
+        if (inputUriCount < 1) {
             throw new IllegalStateException("INPUT_URI count must be greater than 0");
+        } else {
+            for (int inputUriIndex = 0; inputUriIndex < inputUriCount; ++inputUriIndex) {
+                URI uri = inputUri.get(inputUriIndex);
+                if (uri == null) {
+                    throw new IllegalArgumentException("INPUT_URI at index " + inputUriIndex + " is empty.");
+                }
+                String uriScheme = uri.getScheme();
+                if ( !("dods".equals(uriScheme) || "http".equalsIgnoreCase(uriScheme)) ) {
+                    throw new IllegalArgumentException("INPUT_URI protocol at index " + inputUriIndex + " of \"" + uriScheme + "\" in invalid for this process, must be \"dods\" or \"http\"");
+                }
+            }
         }
-        final int inputIDCount = inputId == null ? 0 : inputId.size();
-        if (inputURICount != inputURICount) {
-            throw new IllegalStateException("INPUT_ID argument count must be equal to INPUT_URI argument count");
-        }
-        final int outputIdCount = outputId == null ? 0 : outputId.size();
-        if ( ! (outputIdCount == 0 || inputURICount == outputIdCount ) ) {
-            throw new IllegalStateException("OUTPUT_ID argument count must either be equal to 0 or INPUT_URI and INPUT_ID argument count");
-        }
-        final int outputUnitCount = outputUnit == null ? 0 : outputUnit.size();
-        if ( ! (outputUnitCount == 0 || inputURICount == outputUnitCount ) ) {
-            throw new IllegalStateException("OUTPUT_UNIT argument count must either be equal to 0 or INPUT_URI and INPUT_ID argument count");
+        int inputIdCount = inputId == null ? 0 : inputId.size();
+        if (inputIdCount < 1) {
+            throw new IllegalStateException("INPUT_ID count must be greater than 0");
+        } else {
+            for (int inputIdIndex = 0; inputIdIndex < inputIdCount; ++inputIdIndex) {
+                String id = inputId.get(inputIdIndex);
+                if (StringUtils.isBlank(id)) {
+                    throw new IllegalArgumentException("INPUT_ID at index " + inputIdIndex + " is empty.");
+                }
+            }
         }
         
-        List<File> csvFileList = new ArrayList<File>();
-        BufferedWriter paramWriter = null;
+        int inputCount = inputIdCount;
+        if (inputUriCount != inputIdCount) {
+            if (inputUriCount != 1) {
+                throw new IllegalStateException("INPUT_URI argument count must equal INPUT_ID argument count or 1");
+            } else {
+                // Shim to use GDP UI for this process
+                URI uri = inputUri.get(0);
+                inputUri = new ArrayList<URI>(inputCount);
+                for (int inputIndex = 0; inputIndex < inputCount; ++inputIndex) {
+                    inputUri.add(uri);
+                }
+            }
+        }
+        
+        int outputIdCount = outputId == null ? 0 : outputId.size();
+        if ( ! (outputIdCount == 0 || inputCount == outputIdCount ) ) {
+            if (outputIdCount == 1 && StringUtils.isBlank(outputId.get(0))) {
+                // Bug in GDP UI where empty optional fields are passed...
+                outputId.clear();
+                outputIdCount = 0;
+            } else {
+                throw new IllegalStateException("OUTPUT_ID argument count must equal 0 or INPUT_ID argument count");
+            }
+        }
+        if (outputIdCount == 0) {
+            outputId = inputId;
+        }
+        
+        int outputUnitCount = outputUnit == null ? 0 : outputUnit.size();
+        if ( ! (outputUnitCount == 0 || inputCount == outputUnitCount ) ) {
+            if (outputUnitCount == 1 && StringUtils.isBlank(outputUnit.get(0))) {
+                // Bug in GDP UI where empty optional fields are passed...
+                outputUnit.clear();
+                outputUnitCount = 0;
+            } else {
+                throw new IllegalStateException("OUTPUT_UNIT argument count must equal 0 or INPUT_ID argument count");
+            }
+        }
+        
+        File prmsParamFile = null;
+        File prmsDataFile = null;
+        BufferedWriter prmsParamWriter = null;
+        BufferedWriter prmsDataWriter = null;
+        
+        List<File> csvFileList = new ArrayList<File>(inputCount);
+        
         try {
-            if (featureCollection.getSchema().getDescriptor(featureAttributeName) == null) {
+            
+            PropertyDescriptor propertyDesciptor = featureCollection.getSchema().getDescriptor(featureAttributeName);
+            if (propertyDesciptor == null) {
                 addError("Attribute " + featureAttributeName + " not found in feature collection");
                 return;
             }
-
-            File prmsParamFile = File.createTempFile(getClass().getSimpleName(), ".param");
-            File prmsDataFile = File.createTempFile(getClass().getSimpleName(), ".data");
-
-            paramWriter = new BufferedWriter(new FileWriter(prmsParamFile));
-
             
+            if (propertyDesciptor.getType().getBinding().isAssignableFrom(Number.class)) {
+                /* This can happen with valid HRU values where the column in the original
+                 * shapefile DBF was not defined with a numberic type.  The values *may*
+                 * still be numeric and sequential.  Because of this we pre-populate and error
+                 * message in case an exception is thrown.  It's too expensive (?) to check
+                 * actual values (I might change my mind on this...)
+                 */
+                addError("Attribute " + featureAttributeName + " is not Numeric type, unable to properly index HRU");
+            }
+
+            prmsParamFile = File.createTempFile(getClass().getSimpleName(), ".param");
+            prmsDataFile = File.createTempFile(getClass().getSimpleName(), ".data");
             
-            for (int inputURIIndex = 0; inputURIIndex < inputURICount; ++inputURIIndex) {
+            prmsParamWriter = new BufferedWriter(new FileWriter(prmsParamFile));
+            prmsDataWriter = new BufferedWriter(new FileWriter(prmsDataFile));
+            
+            for (int inputIndex = 0; inputIndex < inputCount; ++inputIndex) {
                 
-                URI currentInputURI = inputURI.get(inputURIIndex);
-                String currentInputId = inputId.get(inputURIIndex);
+                URI currentInputURI = inputUri.get(inputIndex);
+                String currentInputId = inputId.get(inputIndex);
                 
                 GridDatatype gridDatatype = GDPAlgorithmUtil.generateGridDataType(
                         currentInputURI,
@@ -200,70 +268,82 @@ public class PRMSParameterGeneratorAlgorithm extends AbstractAnnotatedAlgorithm 
                         timeEnd);
 
                 // TODO:  all I/O instances need try/finally cleanup
-                File csvTempFile = File.createTempFile(getClass().getSimpleName(), ".temp.csv");
-                BufferedWriter csvWriter = new BufferedWriter(new FileWriter(csvTempFile));
-                csvWriter.write("# " + currentInputId);
-                csvWriter.newLine();
-                FeatureCoverageWeightedGridStatistics.execute(
-                        featureCollection,
-                        featureAttributeName,
-                        gridDatatype,
-                        timeRange,
-                        Arrays.asList(new Statistic[] { Statistic.MEAN } ),
-                        csvWriter,
-                        GroupBy.STATISTIC,
-                        Delimiter.COMMA,
-                        requireFullCoverage,
-                        false,
-                        false);
-                csvWriter.close();
-                csvFileList.add(csvTempFile);
+                csvFileList.add(File.createTempFile(getClass().getSimpleName(), ".temp.csv"));
+                BufferedWriter csvWriter = null;
+                try {
+                    csvWriter = new BufferedWriter(new FileWriter(csvFileList.get(inputIndex)));
+                    FeatureCoverageWeightedGridStatistics.execute(
+                            featureCollection,
+                            featureAttributeName,
+                            gridDatatype,
+                            timeRange,
+                            Arrays.asList(new Statistic[] { Statistic.MEAN } ),
+                            csvWriter,
+                            GroupBy.STATISTIC,
+                            Delimiter.COMMA,
+                            requireFullCoverage,
+                            false,
+                            false);
+                } finally {
+                    IOUtils.closeQuietly(csvWriter);
+                }
                 
                 // PRMS .params writer
-                BufferedReader csvReader = new BufferedReader(new FileReader(csvTempFile));
-                csv2param(csvReader, paramWriter);
-                csvReader.close();
+                BufferedReader csvReader = null;
+                try {
+                    csvReader = new BufferedReader(new FileReader(csvFileList.get(inputIndex)));
+                    csv2param(csvReader, prmsParamWriter, outputId.get(inputIndex));
+                } finally {
+                    IOUtils.closeQuietly(csvReader);
+                }
 
             }
             
             // PRMS .data writer
-            BufferedWriter dataWriter = new BufferedWriter(new FileWriter(prmsDataFile));
             List<BufferedReader> csvReaderList = new ArrayList<BufferedReader>(csvFileList.size());
-            for (File csvFile : csvFileList) {
-                csvReaderList.add(new BufferedReader(new FileReader(csvFile)));
+            try {
+                for (File csvFile : csvFileList) {
+                    csvReaderList.add(new BufferedReader(new FileReader(csvFile)));
+                }
+                csv2data(csvReaderList, prmsDataWriter, outputId);
+            } finally {
+                for (BufferedReader csvReader : csvReaderList) {
+                    IOUtils.closeQuietly(csvReader);
+                }
+                for (File csvFile : csvFileList) {
+                    FileUtils.deleteQuietly(csvFile);
+                }
             }
-            csv2data(csvReaderList, dataWriter);
 
-            for (BufferedReader csvReader : csvReaderList) {
-                IOUtils.closeQuietly(csvReader);
+            prmsParamWriter.close();
+            prmsDataWriter.close();
+            
+            ZipOutputStream zipOutputStream = null;
+            FileInputStream prmsParamsInputStream = null;
+            FileInputStream prmsDataInputStream = null;
+            try {
+                output = File.createTempFile(getClass().getName(), ".zip");
+                zipOutputStream = new ZipOutputStream(
+                        new FileOutputStream(output));
+                prmsParamsInputStream = new FileInputStream(prmsParamFile);
+                zipOutputStream.putNextEntry(new ZipEntry("prms.param"));
+                IOUtils.copy(prmsParamsInputStream, zipOutputStream);
+                prmsParamsInputStream.close();
+                zipOutputStream.closeEntry();
+                prmsDataInputStream = new FileInputStream(prmsDataFile);
+                zipOutputStream.putNextEntry(new ZipEntry("prms.data"));
+                IOUtils.copy(prmsDataInputStream, zipOutputStream);
+                prmsDataInputStream.close();
+                zipOutputStream.closeEntry();
+                zipOutputStream.close();
+            } catch (IOException e) {
+                FileUtils.deleteQuietly(output);
+                throw e;
+            } finally {
+                IOUtils.closeQuietly(zipOutputStream);
+                IOUtils.closeQuietly(prmsParamsInputStream);
+                IOUtils.closeQuietly(prmsDataInputStream);
             }
-            for (File csvFile : csvFileList) {
-                 csvFile.delete();
-            }
-
-            paramWriter.close();
-            dataWriter.close();
-            
-            File zipFile = File.createTempFile(getClass().getName(), ".zip");
-            ZipOutputStream zipOutputStream = new ZipOutputStream(
-                    new FileOutputStream(zipFile));
-            FileInputStream paramsInputStream = new FileInputStream(prmsParamFile);
-            zipOutputStream.putNextEntry(new ZipEntry("prms.param"));
-            IOUtils.copy(paramsInputStream, zipOutputStream);
-            paramsInputStream.close();
-            zipOutputStream.closeEntry();
-            FileInputStream dataInputStream = new FileInputStream(prmsDataFile);
-            zipOutputStream.putNextEntry(new ZipEntry("prms.data"));
-            IOUtils.copy(dataInputStream, zipOutputStream);
-            dataInputStream.close();
-            zipOutputStream.closeEntry();
-            zipOutputStream.close();
-            
-            prmsDataFile.delete();
-            prmsParamFile.delete();
-            
-            output = zipFile;
-
 
         } catch (InvalidRangeException e) {
             addError("Error subsetting gridded data: " + e.getMessage());
@@ -279,7 +359,13 @@ public class PRMSParameterGeneratorAlgorithm extends AbstractAnnotatedAlgorithm 
             addError("General Error: " + e.getMessage());
         } finally {
 //            if (featureDataset != null) try { featureDataset.close(); } catch (IOException e) { }
-            IOUtils.closeQuietly(paramWriter);
+            IOUtils.closeQuietly(prmsParamWriter);
+            IOUtils.closeQuietly(prmsDataWriter);
+            FileUtils.deleteQuietly(prmsParamFile);
+            FileUtils.deleteQuietly(prmsDataFile);
+            for (File csvFile : csvFileList) {
+                FileUtils.deleteQuietly(csvFile);
+            }
         }
     }
 
@@ -291,7 +377,7 @@ public class PRMSParameterGeneratorAlgorithm extends AbstractAnnotatedAlgorithm 
             w = new BufferedWriter(new FileWriter(out));
             for (File in : inList) {
                 r = new BufferedReader(new FileReader(in));
-                csv2param(r, w);
+                csv2param(r, w, in.getName());
                 IOUtils.closeQuietly(r);
             }
         } finally {
@@ -301,13 +387,15 @@ public class PRMSParameterGeneratorAlgorithm extends AbstractAnnotatedAlgorithm 
 
     public static void csv2data(List<File> inList, File out) throws FileNotFoundException, IOException {
         List<BufferedReader> rList = new ArrayList<BufferedReader>(inList.size());
+        List<String> rName = new ArrayList<String>(inList.size());
         BufferedWriter w = null;
         try {
             for (File in : inList) {
                 rList.add(new BufferedReader(new FileReader(in)));
+                rName.add(in.getName());
             }
             w = new BufferedWriter(new FileWriter(out));
-            csv2data(rList, w);
+            csv2data(rList, w, rName);
         } finally {
             for (BufferedReader r : rList) {
                 IOUtils.closeQuietly(r);
@@ -320,11 +408,11 @@ public class PRMSParameterGeneratorAlgorithm extends AbstractAnnotatedAlgorithm 
         "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec",
     };
 
-    public static void csv2param(BufferedReader csvReader, BufferedWriter paramWriter) throws IOException {
+    public static void csv2param(BufferedReader csvReader, BufferedWriter paramWriter, String variableName) throws IOException {
 
-        String varName = csvReader.readLine().substring(2).toLowerCase(); // assumes '# '
-
-        String[] split = csvReader.readLine().split(",");
+        String csvLine;
+        do { csvLine = csvReader.readLine(); } while (csvLine.startsWith("#"));
+        String[] split = csvLine.split(",");
         String[] hruLabel = Arrays.copyOfRange(split, 1, split.length);
         
         csvReader.readLine();
@@ -342,8 +430,6 @@ public class PRMSParameterGeneratorAlgorithm extends AbstractAnnotatedAlgorithm 
         }
 
         DateTimeFormatter formatter = ISODateTimeFormat.dateTimeParser();
-
-        String csvLine = null;
 
         while ((csvLine = csvReader.readLine()) != null && !csvLine.startsWith("ALL")) {
             split = csvLine.split(",");
@@ -363,10 +449,10 @@ public class PRMSParameterGeneratorAlgorithm extends AbstractAnnotatedAlgorithm 
         for (int h = 0; h < hruCount; ++h) {
             hruList.add(new HRU(hruLabel[h], h));
         }
-        Collections.sort(hruList, new ComparatorHRU());
+        Collections.sort(hruList);
 
         paramWriter.write("####"); paramWriter.newLine();
-        paramWriter.write("mean_" + varName + " 0"); paramWriter.newLine();
+        paramWriter.write("mean_" + variableName + " 0"); paramWriter.newLine();
         paramWriter.write("1"); paramWriter.newLine();
         paramWriter.write("nhru"); paramWriter.newLine();
         paramWriter.write(Integer.toString(hruCount)); paramWriter.newLine();
@@ -376,7 +462,7 @@ public class PRMSParameterGeneratorAlgorithm extends AbstractAnnotatedAlgorithm 
         }
         for (int m = 0; m < 12; ++m) {
             paramWriter.write("####"); paramWriter.newLine();
-            paramWriter.write("mean_" + varName + "_" + mon[m] + " 0"); paramWriter.newLine();
+            paramWriter.write("mean_" + variableName + "_" + mon[m] + " 0"); paramWriter.newLine();
             paramWriter.write("1"); paramWriter.newLine();
             paramWriter.write("nhru"); paramWriter.newLine();
             paramWriter.write(Integer.toString(hruCount)); paramWriter.newLine();
@@ -388,45 +474,42 @@ public class PRMSParameterGeneratorAlgorithm extends AbstractAnnotatedAlgorithm 
 
     }
 
-    public static void csv2data(List<BufferedReader> csvReaderList, BufferedWriter dataWriter) throws IOException {
+    public static void csv2data(List<BufferedReader> csvReaderList, BufferedWriter dataWriter, List<String> variableNames) throws IOException {
 
-        Joiner joiner = Joiner.on(' ');
+        final Joiner joiner = Joiner.on(' ');
 
-        dataWriter.write("Created by USGS GeoDataPortal, w00t!"); dataWriter.newLine();
+        dataWriter.write("Created by USGS GeoDataPortal"); dataWriter.newLine();
         dataWriter.write("########################################"); dataWriter.newLine();
 
-
+        String csvLine;
+        
         int varCount = csvReaderList.size();
 
-        String[] varNameA = new String[varCount];
         String[] split = null;
         String[] hruLabel = null;
         int hruCount = 0;
         for (int v = 0; v < varCount; ++v) {
-            varNameA[v] = csvReaderList.get(v).readLine().substring(2).toLowerCase(); // assumes '# '
+            
+            // swallow lines with comments if they exist
+            do { csvLine = csvReaderList.get(v).readLine(); } while (csvLine.startsWith("#"));
 
             if (v == 0) {
-                split = csvReaderList.get(v).readLine().split(",");
+                split = csvLine.split(",");
                 hruLabel = Arrays.copyOfRange(split, 1, split.length);
                 hruCount = hruLabel.length;
-            } else {
-                //swallow
-                csvReaderList.get(v).readLine();
             }
             csvReaderList.get(v).readLine();
             
-            dataWriter.write(varNameA[v] + " " + hruCount); dataWriter.newLine();
+            dataWriter.write(variableNames.get(v) + " " + hruCount); dataWriter.newLine();
         }
 
         List<HRU> hruList = new ArrayList<HRU>(hruCount);
         for (int h = 0; h < hruCount; ++h) {
             hruList.add(new HRU(hruLabel[h], h));
         }
-        Collections.sort(hruList, new ComparatorHRU());
+        Collections.sort(hruList);
 
         DateTimeFormatter formatter = ISODateTimeFormat.dateTimeParser();
-
-        String csvLine;
 
         while ((csvLine = csvReaderList.get(0).readLine()) != null && !csvLine.startsWith("ALL")) {
             split = csvLine.split(",");
@@ -434,7 +517,7 @@ public class PRMSParameterGeneratorAlgorithm extends AbstractAnnotatedAlgorithm 
 
             String[] hruValues = Arrays.copyOfRange(split, 1, split.length);
 
-            dataWriter.write(Joiner.on(' ').join(
+            dataWriter.write(joiner.join(
                     currentDateTime.getYear(),
                     currentDateTime.getMonthOfYear(),
                     currentDateTime.getDayOfMonth(),
@@ -460,22 +543,19 @@ public class PRMSParameterGeneratorAlgorithm extends AbstractAnnotatedAlgorithm 
 
     }
 
-    private static class HRU {
+    static class HRU implements Comparable<HRU> {
         final String name;
         final int inputIndex;
-        final int outputIndex;
+        private final int outputIndex;
         public HRU(String name, int inputIndex) {
             this.name = name;
             this.outputIndex = Integer.parseInt(name);
             this.inputIndex = inputIndex;
         }
-    }
-
-    private static class ComparatorHRU implements Comparator<HRU> {
 
         @Override
-        public int compare(HRU hl, HRU hr) {
-            return Double.compare(hl.outputIndex, hr.outputIndex);
+        public int compareTo(HRU o) {
+            return Double.compare(outputIndex, o.outputIndex);
         }
     }
 }
