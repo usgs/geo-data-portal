@@ -192,7 +192,7 @@ function initializeMapping() {
     var baseLayerStore = new GeoExt.data.LayerStore({
         layers : [
         new OpenLayers.Layer.XYZ(
-            "Shaded Relief",
+            "Topo Map",
             "http://server.arcgisonline.com/ArcGIS/rest/services/NGS_Topo_US_2D/MapServer/tile/${z}/${y}/${x}",
             {
                 layers : "0",
