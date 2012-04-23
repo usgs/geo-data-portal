@@ -193,7 +193,7 @@ function initializeMapping() {
         layers : [
         new OpenLayers.Layer.XYZ(
             "Shaded Relief",
-            "http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_ShadedRelief_World_2D/MapServer/tile/${z}/${y}/${x}",
+            "http://server.arcgisonline.com/ArcGIS/rest/services/NGS_Topo_US_2D/MapServer/tile/${z}/${y}/${x}",
             {
                 layers : "0",
                 isBaseLayer : true,
