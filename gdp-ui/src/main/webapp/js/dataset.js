@@ -331,14 +331,14 @@ var Dataset = function() {
         };
 
         if (wpsInputs.email) {
-            WPS.sendWpsExecuteRequest(proxy(Constant.endpoint.utilitywps), _EMAIL_WHEN_FINISHED_ALGORITHM, wpsInputs, ['result'], false, emailCallback);
+            WPS.sendWpsExecuteRequest(Constant.endpoint.proxy + Constant.endpoint.utilitywps, _EMAIL_WHEN_FINISHED_ALGORITHM, wpsInputs, ['result'], false, emailCallback);
         }
 
         var statusID = (statusLocation.split('?')[1]).split('id=')[1];
 
         var intervalID = window.setInterval(function() {
             $.ajax({
-                url : proxy(Constant.endpoint.statuswps),
+                url : Constant.endpoint.proxy + Constant.endpoint.statuswps,
                 data : {
                     'id': statusID
                 },
@@ -640,7 +640,7 @@ var Dataset = function() {
                         $(_RETRIEVE_OUTPUT_BUTTON).fadeOut(Constant.ui.fadeSpeed);
                         $(_RETRIEVE_PROC_INFO_BUTTON).fadeOut(Constant.ui.fadeSpeed);
                         $(_SUBMIT_FOR_PROCESSING_LINK).fadeOut(Constant.ui.fadeSpeed);
-                        WPS.sendWpsExecuteRequest(proxy(Constant.endpoint.processwps), submitWpsAlgorithm, submitWpsStringInputs, ['OUTPUT'], true, submitForProcessingCallback, submitWpsXmlInputs);
+                        WPS.sendWpsExecuteRequest(Constant.endpoint.proxy + Constant.endpoint.processwps, submitWpsAlgorithm, submitWpsStringInputs, ['OUTPUT'], true, submitForProcessingCallback, submitWpsXmlInputs);
                     },
                     'CANCEL' : function() {
                         $(this).dialog("close");
@@ -942,7 +942,7 @@ var Dataset = function() {
         $.extend(wmsData, defaultData, data);
 
         $.ajax({
-            url: proxy(wmsUrl),
+            url: Constant.endpoint.proxy + wmsUrl,
             data: wmsData,
             success: function(data, textStatus, XMLHttpRequest) {
                 successCallback(data);
@@ -969,7 +969,7 @@ var Dataset = function() {
         // an error if this fails, because we'll be retrying using a different
         // service.
         ajaxNoErrorNotification({
-            url: proxy(wcsUrl),
+            url: Constant.endpoint.proxy + wcsUrl,
             data: wcsData,
             success: function(data, textStatus, XMLHttpRequest) {
                 // TODO: if not wcs response, errorCallback
@@ -1005,7 +1005,7 @@ var Dataset = function() {
         };
         var wpsOutput = ['result'];
 
-        WPS.sendWpsExecuteRequest(proxy(Constant.endpoint.utilitywps),
+        WPS.sendWpsExecuteRequest(Constant.endpoint.proxy + Constant.endpoint.utilitywps,
             wpsAlgorithm, wpsInputs, wpsOutput, false, populateDatasetIdSelect);
     }
 
@@ -1070,7 +1070,7 @@ var Dataset = function() {
         var getTimeRangeWpsOutput = ['result'];
 
         WPS.sendWpsExecuteRequest(
-            proxy(Constant.endpoint.utilitywps), 
+            Constant.endpoint.proxy + Constant.endpoint.utilitywps, 
             getTimeRangeWpsAlgorithm, 
             getTimeRangeWpsInputs,
             getTimeRangeWpsOutput, 
@@ -1434,7 +1434,7 @@ var Dataset = function() {
     function bindRetrieveProcInfoButton(statusID) {
         $(_RETRIEVE_PROC_INFO_BUTTON).click(function(){
             var urlAndData = _RETRIEVE_OUTPUT_URL.split('?');
-            $.download(proxy(urlAndData[0],'id=' + statusID + '&attachment=true'), 'get');
+            $.download(Constant.endpoint.proxy + urlAndData[0],'id=' + statusID + '&attachment=true', 'get');
         });
     }
     

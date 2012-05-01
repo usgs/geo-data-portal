@@ -17,7 +17,7 @@ var Algorithm = function() {
         init : function() {
             logger.debug("GDP: Getting algorithms from server.");
             this.algorithms = new Object();
-            var wpsURL = proxy(Constant.endpoint.processwps);
+            var wpsURL = Constant.endpoint.proxy + Constant.endpoint.processwps;
             var singleAlgorithm = function(){
                 var splitAlgorithm = Constant.ui.view_algorithm_list.split(',');
                 if (splitAlgorithm.length != 1) return '';

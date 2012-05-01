@@ -65,7 +65,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
 
         var wpsOutputs = ['layer-name'];
 
-        WPS.sendWpsExecuteRequest(proxy(Constant.endpoint.utilitywps), wpsAlgo, wpsInputs, wpsOutputs, false, watersCallback);
+        WPS.sendWpsExecuteRequest(Constant.endpoint.proxy + Constant.endpoint.utilitywps, wpsAlgo, wpsInputs, wpsOutputs, false, watersCallback);
     }
 });
 
@@ -116,7 +116,7 @@ function submitDrawFeature() {
 
     
 
-    WPS.sendWpsExecuteRequest(proxy(Constant.endpoint.utilitywps),
+    WPS.sendWpsExecuteRequest(Constant.endpoint.proxy + Constant.endpoint.utilitywps,
         wpsAlgo, wpsInputs, wpsOutputs, false, drawFeatureCallback);
 }
 
@@ -169,7 +169,7 @@ function updateFeatureTypeAttribute(featureType, attribute, value, callback) {
         '</wfs:Transaction>';
 
     $.ajax({
-        url: proxy(Constant.endpoint.geoserver + "/wfs"),
+        url: Constant.endpoint.proxy + Constant.endpoint.geoserver + "/wfs",
         type: 'POST',
         contentType: 'application/xml',
         data: updateTransaction,
@@ -192,7 +192,7 @@ function setGeometryOverlay(wmsLayerName) {
     // unselected features
     geometryOverlay = new OpenLayers.Layer.WMS(
         "Geometry Overlay",
-        proxy(Constant.endpoint.wms),
+        Constant.endpoint.proxy + Constant.endpoint.wms,
         {
             layers: wmsLayerName,
             transparent: 'true',
@@ -207,7 +207,7 @@ function setGeometryOverlay(wmsLayerName) {
     // selected features
     highlightGeometryOverlay = new OpenLayers.Layer.WMS(
         "Geometry Highlight Overlay",
-        proxy(Constant.endpoint.wms),
+        Constant.endpoint.proxy + Constant.endpoint.wms,
         {
             layers: wmsLayerName,
             transparent: 'true',
@@ -354,7 +354,7 @@ function initMap(options) {
         protocol: new OpenLayers.Protocol.WFS({
             version: '1.1.0',
             srsName: 'EPSG:4326',
-            url: proxy(Constant.endpoint.geoserver + '/wfs'),
+            url: Constant.endpoint.proxy + Constant.endpoint.geoserver + '/wfs',
             featureNS :  'gov.usgs.cida.gdp.draw',
             featureType : 'temp', // this gets changed before submitting geometry
             geometryName: 'the_geom'

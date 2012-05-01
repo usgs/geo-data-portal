@@ -437,10 +437,6 @@ function ajaxNoErrorNotification(options) {
     $.ajax(options);
 }
 
-function proxy(url) {
-    return Constant.endpoint.proxy + encodeURIComponent(url);
-}
-
 function handleException(err) {
     var name = (err.name) ? err.name : 'No Name';
     var message = (err.message) ? err.message : 'No Message';
