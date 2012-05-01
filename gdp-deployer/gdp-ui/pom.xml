@@ -82,11 +82,11 @@
             </properties>
         </profile>
         <profile>
-            <id>production-8080</id>
+            <id>production</id>
             <activation>
                 <property>
                     <name>env.CARGO_DEPLOY_PROFILE</name>
-                    <value>production-8080</value>
+                    <value>production</value>
                 </property>
             </activation>
             <properties>
@@ -94,21 +94,6 @@
                 <cargo.containerId>tomcat6x</cargo.containerId>
                 <!-- references server id in settings.xml -->
                 <cargo.server.settings>cargo-gdp2-8080</cargo.server.settings>
-            </properties>
-        </profile>
-        <profile>
-            <id>production-8083</id>
-            <activation>
-                <property>
-                    <name>env.CARGO_DEPLOY_PROFILE</name>
-                    <value>production-8083</value>
-                </property>
-            </activation>
-            <properties>
-                <cargo.deploy.skip>false</cargo.deploy.skip>
-                <cargo.containerId>tomcat6x</cargo.containerId>
-                <!-- references server id in settings.xml -->
-                <cargo.server.settings>cargo-gdp2-8083</cargo.server.settings>
             </properties>
         </profile>
     </profiles>
