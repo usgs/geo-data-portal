@@ -248,8 +248,8 @@ function highlightFeatures(attr, attrValues) {
         baseCqlFilter = escapedAttr + " NOT" + cqlFilter;
     }
 
-    geometryOverlay.mergeNewParams({'cql_filter': baseCqlFilter});
-    highlightGeometryOverlay.mergeNewParams({'cql_filter': hlCqlFilter});
+    geometryOverlay.mergeNewParams({'cql_filter': encodeURIComponent(baseCqlFilter)});
+    highlightGeometryOverlay.mergeNewParams({'cql_filter': encodeURIComponent(hlCqlFilter)});
 }
 
 function zoomToLayer(layerName) {
