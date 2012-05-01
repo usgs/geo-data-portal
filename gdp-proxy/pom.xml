@@ -4,7 +4,7 @@
     <parent>
         <groupId>gov.usgs.cida.gdp</groupId>
         <artifactId>gdp</artifactId>
-        <version>15</version>
+        <version>16-SNAPSHOT</version>
     </parent>
     <artifactId>gdp-proxy</artifactId>
     <name>GDP Proxy Servlet</name>
