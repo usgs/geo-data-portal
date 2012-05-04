@@ -326,18 +326,25 @@ public class CRSUtility {
 		double semiMinorAxis = semiMinorAxisParameter == null ? Double.NaN : semiMinorAxisParameter.getNumericValue();
 		double inverseFlattening = inverseFlatteningParameter == null ? Double.NaN : inverseFlatteningParameter.getNumericValue();
 
+        // Prior attempts to use this test and set Units to SI.KILOMETER did
+        // not have desired effect.  It appears that some portions of GeoTools
+        // or it's dependencies (JTS?) need to have these values in meters.
+        if (earthRadius < 10000) { earthRadius *= 1000; }
+        if (semiMajorAxis < 10000) { semiMajorAxis *= 1000; }
+        if (semiMinorAxis < 10000) { semiMinorAxis *= 1000; }
+            
 		if (earthRadius == earthRadius) {
-			return DefaultEllipsoid.createEllipsoid("CF-Derived Sphere", earthRadius, earthRadius, earthRadius < 10000 ? SI.KILOMETER : SI.METER);
+			return DefaultEllipsoid.createEllipsoid("CF-Derived Sphere", earthRadius, earthRadius, SI.METER);
 		}
 		if (semiMajorAxis == semiMajorAxis && semiMinorAxis == semiMinorAxis) {
-			return DefaultEllipsoid.createEllipsoid("CF-Derived Ellipsoid", semiMajorAxis, semiMinorAxis, semiMajorAxis < 10000 ? SI.KILOMETER : SI.METER);
+			return DefaultEllipsoid.createEllipsoid("CF-Derived Ellipsoid", semiMajorAxis, semiMinorAxis, SI.METER);
 		}
 		if (semiMajorAxis == semiMajorAxis && inverseFlattening == inverseFlattening) {
-			return DefaultEllipsoid.createFlattenedSphere("CF-Derived Ellipsoid", semiMajorAxis, inverseFlattening, semiMajorAxis < 10000 ? SI.KILOMETER : SI.METER);
+			return DefaultEllipsoid.createFlattenedSphere("CF-Derived Ellipsoid", semiMajorAxis, inverseFlattening, SI.METER);
 		}
 		if (semiMinorAxis == semiMinorAxis && inverseFlattening == inverseFlattening) {
 			semiMajorAxis = semiMinorAxis / ( 1d - 1d / inverseFlattening );
-			return DefaultEllipsoid.createEllipsoid("CF-Derived Ellipsoid", semiMajorAxis, semiMinorAxis, semiMinorAxis < 10000 ? SI.KILOMETER : SI.METER);
+			return DefaultEllipsoid.createEllipsoid("CF-Derived Ellipsoid", semiMajorAxis, semiMinorAxis, SI.METER);
 		}
 		return DefaultEllipsoid.WGS84;
 	}
