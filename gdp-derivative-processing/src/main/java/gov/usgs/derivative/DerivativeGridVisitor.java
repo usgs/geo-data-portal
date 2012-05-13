@@ -34,7 +34,7 @@ public abstract class DerivativeGridVisitor extends GridVisitor {
     
     private CoordinateAxis1DTime timeAxis;
     
-    private int cal365OffsetHACK = 0;
+    private int cal365HackOffset = 0;
     
     private int outputTimeStepCurrentIndex;
     
@@ -51,8 +51,15 @@ public abstract class DerivativeGridVisitor extends GridVisitor {
     
     protected AbstractGridKernel kernel;
     
+    private final boolean cal365Hack;
+    
     public DerivativeGridVisitor() {
+        this(false);
+    }
+    
+    public DerivativeGridVisitor(boolean cal365Hack) {
         traverseContinue = true;
+        this.cal365Hack = cal365Hack;
     }
     
     public final DerivativeValueDescriptor getValueDescriptor() {
@@ -179,10 +186,10 @@ public abstract class DerivativeGridVisitor extends GridVisitor {
     public boolean tStart(int tIndex) {
         DateTime inputTimeStepDateTime = new DateTime(timeAxis.getTimeDate(tIndex));
         // HACK START
-        if (inputTimeStepDateTime.getMonthOfYear() == 2 && inputTimeStepDateTime.getDayOfMonth() == 29) {
-            cal365OffsetHACK++;
+        if (cal365Hack && inputTimeStepDateTime.getMonthOfYear() == 2 && inputTimeStepDateTime.getDayOfMonth() == 29) {
+            cal365HackOffset++;
         }
-        inputTimeStepDateTime = inputTimeStepDateTime.plusDays(cal365OffsetHACK);
+        inputTimeStepDateTime = inputTimeStepDateTime.plusDays(cal365HackOffset);
         // HACK END
         int outputTimeStepNextIndex = getTimeStepDescriptor().getOutputTimeStepIndex(inputTimeStepDateTime);
         if (outputTimeStepNextIndex != outputTimeStepCurrentIndex) {
