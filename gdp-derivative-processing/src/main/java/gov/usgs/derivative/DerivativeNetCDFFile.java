@@ -97,21 +97,27 @@ public class DerivativeNetCDFFile {
             switch (outputDataType) {
                 case BYTE:
                     derivativeOutputVariable.addAttribute(new Attribute("missing_value", outputMissingValue.byteValue()));
+                    derivativeOutputVariable.addAttribute(new Attribute("_FillValue", outputMissingValue.byteValue()));
                     break;
                 case SHORT:
                     derivativeOutputVariable.addAttribute(new Attribute("missing_value", outputMissingValue.shortValue()));
+                    derivativeOutputVariable.addAttribute(new Attribute("_FillValue", outputMissingValue.shortValue()));
                     break;
                 case INT:
                     derivativeOutputVariable.addAttribute(new Attribute("missing_value", outputMissingValue.intValue()));
+                    derivativeOutputVariable.addAttribute(new Attribute("_FillValue", outputMissingValue.intValue()));
                     break;
                 case LONG:
                     derivativeOutputVariable.addAttribute(new Attribute("missing_value", outputMissingValue.longValue()));
+                    derivativeOutputVariable.addAttribute(new Attribute("_FillValue", outputMissingValue.longValue()));
                     break;
                 case FLOAT:
                     derivativeOutputVariable.addAttribute(new Attribute("missing_value", outputMissingValue.floatValue()));
+                    derivativeOutputVariable.addAttribute(new Attribute("_FillValue", outputMissingValue.floatValue()));
                     break;
                 case DOUBLE:
                     derivativeOutputVariable.addAttribute(new Attribute("missing_value", outputMissingValue.doubleValue()));
+                    derivativeOutputVariable.addAttribute(new Attribute("_FillValue", outputMissingValue.doubleValue()));
                     break;
             }
             netCDFFile.create();
