@@ -31,28 +31,41 @@ public abstract class GridInputTZYXKernel extends AbstractGridKernel implements 
 
     @Override
     public void preExecute() {
-        super.preExecute();
-        int tExecuteCount = tzExecuteCount / zCount;
-        // if tExecuteCount < tInputCount we didn't get a enough data to fill buffer. Set missing timesteps to NaN (missing value)
-        if (tExecuteCount < tInputCount) {
-            for (int gIndex = 0; gIndex < gInputCount; ++gIndex) {
-                for (int tIndex = tExecuteCount; tIndex < tInputCount; ++tIndex) {
-                    for (int zIndex = 0; zIndex < zCount; ++zIndex) {
-                        int gtzOffset =
-                            gIndex * tInputCount * zCount * yxCountPadded +
-                            tIndex * zCount * yxCountPadded + 
-                            zIndex * yxCountPadded;
-                        Arrays.fill(gtzyxInputValues, gtzOffset, gtzOffset + yxCountPadded, Float.NaN);
+        if (tzExecuteCount > 0) {
+            super.preExecute();
+            int tExecuteCount = tzExecuteCount / zCount;
+            // if tExecuteCount < tInputCount we didn't get a enough data to fill buffer. Set missing timesteps to NaN (missing value)
+            if (tExecuteCount < tInputCount) {
+                for (int gIndex = 0; gIndex < gInputCount; ++gIndex) {
+                    for (int tIndex = tExecuteCount; tIndex < tInputCount; ++tIndex) {
+                        for (int zIndex = 0; zIndex < zCount; ++zIndex) {
+                            int gtzOffset =
+                                gIndex * tInputCount * zCount * yxCountPadded +
+                                tIndex * zCount * yxCountPadded + 
+                                zIndex * yxCountPadded;
+                            Arrays.fill(gtzyxInputValues, gtzOffset, gtzOffset + yxCountPadded, Float.NaN);
+                        }
                     }
-               }
-           } 
+                } 
+            }
+            put(gtzyxInputValues);
         }
-        put(gtzyxInputValues);
     }
 
     @Override
+    public void execute() {
+        if (tzExecuteCount > 0) {
+            super.execute();
+        } else {
+            Arrays.fill(zyxOutputValues, Float.NaN);
+        }
+    }
+    
+    @Override
     public void postExecute() {
-        super.postExecute();
+        if (tzExecuteCount > 0) {
+            super.postExecute();
+        }
         tzExecuteCount = 0;
     }
     

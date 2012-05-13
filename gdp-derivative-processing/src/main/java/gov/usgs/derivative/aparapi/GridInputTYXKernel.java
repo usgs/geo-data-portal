@@ -38,24 +38,37 @@ public abstract class GridInputTYXKernel extends AbstractGridKernel implements G
 
     @Override
     public void preExecute() {
-        super.preExecute();
-        // if tExecuteCount < tInputCount we didn't get a enough data to fill buffer. Set missing timesteps to NaN (missing value)
-        if (tExecuteCount < tInputCount) {
-            for (int gIndex = 0; gIndex < gInputCount; ++gIndex) {
-                for (int tIndex = tExecuteCount; tIndex < tInputCount; ++tIndex) {
-                    int gtOffset =
-                        gIndex * tInputCount * yxCountPadded +
-                        tIndex * yxCountPadded;
-                    Arrays.fill(gtyxInputValues, gtOffset, gtOffset + yxCountPadded, Float.NaN);
-               }
-           } 
+        if (tExecuteCount > 0) {
+            super.preExecute();
+            // if tExecuteCount < tInputCount we didn't get a enough data to fill buffer. Set missing timesteps to NaN (missing value)
+            if (tExecuteCount < tInputCount) {
+                for (int gIndex = 0; gIndex < gInputCount; ++gIndex) {
+                    for (int tIndex = tExecuteCount; tIndex < tInputCount; ++tIndex) {
+                        int gtOffset =
+                            gIndex * tInputCount * yxCountPadded +
+                            tIndex * yxCountPadded;
+                        Arrays.fill(gtyxInputValues, gtOffset, gtOffset + yxCountPadded, Float.NaN);
+                    }
+                } 
+            }
+            put(gtyxInputValues);
         }
-        put(gtyxInputValues);
+    }
+    
+    @Override
+    public void execute() {
+        if (tExecuteCount > 0) {
+            super.execute();
+        } else {
+            Arrays.fill(zyxOutputValues, Float.NaN);
+        }
     }
     
     @Override
     public void postExecute() {
-        super.postExecute();
+        if (tExecuteCount > 0) {
+            super.postExecute();
+        }
         tExecuteCount = 0;
     }
 
