@@ -57,21 +57,26 @@ public class DerivativeNetCDFFile {
         int timeCount = timeStepDescriptor.getOutputTimeStepCount();
         netCDFFile = null;
         try {
+            
             String path = this.path.endsWith(File.separator) ? this.path : this.path.concat(File.separator);
             File pathAsFile = new File(path);
             if (!pathAsFile.exists() && !pathAsFile.mkdirs() ) {
                 throw new IOException("Unable to create directory for derivatice NetCDF file: " + path);
             }
+            
+            final String timeName = gridCoordSystem.getTimeAxis1D().getName();
+            final String timeBoundsName = timeName + "_bounds";
+            
             netCDFFile = NetcdfFileWriteable.createNew(path + name + ".nc"); // TODO: parameterize
             Dimension xDimension = netCDFFile.addDimension(gridCoordSystem.getXHorizAxis().getName(), xCount);
             Dimension yDimension = netCDFFile.addDimension(gridCoordSystem.getYHorizAxis().getName(), yCount);
-            Dimension timeDimension = netCDFFile.addDimension("time", timeStepDescriptor.getOutputTimeStepCount());
-            Dimension timeBoundsDimension = netCDFFile.addDimension("time_bounds", 2);
+            Dimension timeDimension = netCDFFile.addDimension(timeName, timeStepDescriptor.getOutputTimeStepCount());
+            Dimension timeBoundsDimension = netCDFFile.addDimension(timeBoundsName, 2);
             Dimension derivativeCoordinateDimension = netCDFFile.addDimension(valueDescriptor.getCoordinateName(), valueDescriptor.getCoordinateValues().size());
-            Variable timeVariable = netCDFFile.addVariable("time", DataType.INT, new Dimension[]{timeDimension});
+            Variable timeVariable = netCDFFile.addVariable(timeName, DataType.INT, new Dimension[]{timeDimension});
             timeVariable.addAttribute(new Attribute("units", "days since " + CalendarUtil.formatCF_UTC(timeStepDescriptor.getOutputInterval().getStart().toDate())));
             timeVariable.addAttribute(new Attribute("climatology", "time_bounds"));
-            Variable timeBoundsVariable = netCDFFile.addVariable("time_bounds", DataType.INT, new Dimension[]{timeDimension, timeBoundsDimension});
+            Variable timeBoundsVariable = netCDFFile.addVariable(timeBoundsName, DataType.INT, new Dimension[]{timeDimension, timeBoundsDimension});
             derivativeCoordinateVariable = netCDFFile.addVariable(valueDescriptor.getCoordinateName(), valueDescriptor.getCoordinateDataType(), new Dimension[]{derivativeCoordinateDimension});
             if (valueDescriptor.getCoordinateStandardName() != null) {
                 derivativeCoordinateVariable.addAttribute(new Attribute("standard_name", valueDescriptor.getCoordinateStandardName()));
