@@ -58,6 +58,10 @@ public class DerivativeNetCDFFile {
         netCDFFile = null;
         try {
             String path = this.path.endsWith(File.separator) ? this.path : this.path.concat(File.separator);
+            File pathAsFile = new File(path);
+            if (!pathAsFile.exists() && !pathAsFile.mkdirs() ) {
+                throw new IOException("Unable to create directory for derivatice NetCDF file: " + path);
+            }
             netCDFFile = NetcdfFileWriteable.createNew(path + name + ".nc"); // TODO: parameterize
             Dimension xDimension = netCDFFile.addDimension(gridCoordSystem.getXHorizAxis().getName(), xCount);
             Dimension yDimension = netCDFFile.addDimension(gridCoordSystem.getYHorizAxis().getName(), yCount);
