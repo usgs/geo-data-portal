@@ -92,7 +92,7 @@ public abstract class AnnualDerivativeVisitor extends DerivativeGridVisitor {
     protected abstract class AnnualDerivativeKernel extends GridInputTYXKernel {
         
         public AnnualDerivativeKernel(int gInputCount, int yxCount, float[] zValues) {
-            super(gInputCount, 365, yxCount, zValues);
+            super(gInputCount, 366, yxCount, zValues); // 366 since some years have leap days.
         }
         
     }

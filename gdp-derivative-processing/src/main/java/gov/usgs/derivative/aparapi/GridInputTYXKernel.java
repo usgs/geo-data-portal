@@ -1,5 +1,6 @@
 package gov.usgs.derivative.aparapi;
 
+import java.util.Arrays;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,9 +13,9 @@ public abstract class GridInputTYXKernel extends AbstractGridKernel implements G
     
     private final static Logger LOGGER = LoggerFactory.getLogger(GridInputTYXKernel.class);
     
-    protected  float[] zValues;
+    protected float[] zValues;
     
-    protected  float[] gtyxInputValues;
+    protected float[] gtyxInputValues;
     
     private int tExecuteCount;
         
@@ -38,6 +39,17 @@ public abstract class GridInputTYXKernel extends AbstractGridKernel implements G
     @Override
     public void preExecute() {
         super.preExecute();
+        // if tExecuteCount < tInputCount we didn't get a enough data to fill buffer. Set missing timesteps to NaN (missing value)
+        if (tExecuteCount < tInputCount) {
+            for (int gIndex = 0; gIndex < gInputCount; ++gIndex) {
+                for (int tIndex = tExecuteCount; tIndex < tInputCount; ++tIndex) {
+                    int gtOffset =
+                        gIndex * tInputCount * yxCountPadded +
+                        tIndex * yxCountPadded;
+                    Arrays.fill(gtyxInputValues, gtOffset, gtOffset + yxCountPadded, Float.NaN);
+               }
+           } 
+        }
         put(gtyxInputValues);
     }
     
@@ -70,18 +82,18 @@ public abstract class GridInputTYXKernel extends AbstractGridKernel implements G
         return tExecuteCount;
     }
     
-    protected  float k_getZValue() {
+    protected float k_getZValue() {
         return zValues[k_getZPassIndex()];
     }
     
-    protected  int kGetTYXInputIndex(int gridIndex) {
+    protected int k_getTYXInputIndex(int gridIndex) {
         return gridIndex * tInputCountA[0] * getGlobalSize() +  // performance on global memory read ?
                k_getTPassIndex() * getGlobalSize() +
                getGlobalId();
     }
     
-    protected  float k_getTYXInputValue(int gridIndex) {
-        return gtyxInputValues[kGetTYXInputIndex(gridIndex)];
+    protected float k_getTYXInputValue(int gridIndex) {
+        return gtyxInputValues[k_getTYXInputIndex(gridIndex)];
     }
     
 }
