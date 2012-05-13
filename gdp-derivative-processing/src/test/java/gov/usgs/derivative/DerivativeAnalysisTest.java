@@ -6,8 +6,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Formatter;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -26,15 +28,27 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
  */
 public class DerivativeAnalysisTest {
     
+    public enum VariableType {
+        PRECIP,
+        T_MIN,
+        T_MAX
+    };
+    
     @Test
     @Ignore
     public void calculateP1DDerivatives() throws IOException {
+        
+        String dsName = "/Users/tkunicki/Data/thredds/gmo/GMO.ncml";
+        Map<VariableType, String> dsVariableMap = new HashMap<VariableType,String>();
+        dsVariableMap.put(VariableType.PRECIP, "pr");
+        dsVariableMap.put(VariableType.T_MIN, "tmin");
+        dsVariableMap.put(VariableType.T_MAX, "tmax");
+        
         FeatureDataset fds = null;
         try {
             fds = FeatureDatasetFactoryManager.open(
                 FeatureType.GRID,
-//                "/Users/tkunicki/Data/thredds/dcp-nc3f/conus_grid.ncml",
-                "/Users/tkunicki/Data/thredds/dcp-reencode-dfl0/conus_grid.ncml",
+                dsName,
                 null,
                 new Formatter(System.err));
             if (fds instanceof GridDataset) {
@@ -43,7 +57,7 @@ public class DerivativeAnalysisTest {
                 for (final GridDatatype gdt : gdtl) {
                     try {
                         {
-                            if (gdt.getName().endsWith("pr")) {
+                            if (gdt.getName().endsWith(dsVariableMap.get(VariableType.PRECIP))) {
                                 System.out.println("running " + gdt.getName());
                                 GridTraverser t = new GridTraverser(gdt);
                                 t.traverse(Arrays.asList(new GridVisitor[] {
@@ -51,7 +65,7 @@ public class DerivativeAnalysisTest {
                                     new RunBelowPrecipitationThresholdVisitor()
                                 }));
                             }
-                            if (gdt.getName().endsWith("tmax")) {
+                            if (gdt.getName().endsWith(dsVariableMap.get(VariableType.T_MAX))) {
                                 System.out.println("running " + gdt.getName());
                                 GridTraverser t = new GridTraverser(gdt);
                                 t.traverse(Arrays.asList(new GridVisitor[] {
@@ -59,7 +73,7 @@ public class DerivativeAnalysisTest {
                                     new RunAboveTemperatureThresholdVisitor()
                                 }));
                             }
-                            if (gdt.getName().endsWith("tmin")) {
+                            if (gdt.getName().endsWith(dsVariableMap.get(VariableType.T_MIN))) {
                                 System.out.println("running " + gdt.getName());
                                 GridTraverser t = new GridTraverser(gdt);
                                 t.traverse(Arrays.asList(new GridVisitor[] {
@@ -76,12 +90,12 @@ public class DerivativeAnalysisTest {
                 for (GridDatatype gdt : gdtl) {
                     String gridName = gdt.getName();
                     String gsName = gridName.substring(0, gridName.lastIndexOf("_"));
-                    gsNameSet.add(gsName);
-                }
+                            gsNameSet.add(gsName);
+                        }
                 for (String gsName : gsNameSet) {
                     {
-                    GridDatatype tMin = gds.findGridDatatype(gsName + "_tmin");
-                    GridDatatype tMax = gds.findGridDatatype(gsName + "_tmax");
+                    GridDatatype tMin = gds.findGridDatatype(gsName + "_" + dsVariableMap.get(VariableType.T_MIN));
+                    GridDatatype tMax = gds.findGridDatatype(gsName + "_" + dsVariableMap.get(VariableType.T_MAX));
                     GridTraverser t = new GridTraverser(Arrays.asList(new GridDatatype[] {
                         tMin,
                         tMax
@@ -276,7 +290,7 @@ public class DerivativeAnalysisTest {
                 if (fds instanceof GridDataset) {
                     GridDataset gds = (GridDataset)fds;
                     List<GridDatatype> gdtl = gds.getGrids();
-                    for (GridDatatype gdt : gdtl) {
+                    for (GridDatatype gdt : gdtl) { 
                         System.out.println("running " + gdt.getName());
                         GridTraverser t = new GridTraverser(gdt);
                         GridVisitor v = new TimeStepDeltaVisitor();
