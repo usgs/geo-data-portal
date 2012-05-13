@@ -69,7 +69,7 @@ public class CRSUtilityTest {
             // verify prior issue resolution, that ellipsoid parameters of expected values
             assertTrue(crs instanceof ProjectedCRS);
             ProjectedCRS pcrs = (ProjectedCRS)crs;
-            assertEquals(6371229.0, pcrs.getDatum().getEllipsoid().getSemiMajorAxis(), 0);
+            assertEquals(6378137.0, pcrs.getDatum().getEllipsoid().getSemiMajorAxis(), 0);
             assertEquals(SI.METER, pcrs.getDatum().getEllipsoid().getAxisUnit());
             
         } else {
