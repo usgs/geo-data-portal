@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Formatter;
 import java.util.List;
 import org.joda.time.Period;
+import org.junit.Ignore;
 import org.junit.Test;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.GridDataset;
@@ -18,10 +19,11 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
  *
  * @author tkunicki
  */
+@Ignore
 public class TimeStepAveragingTest {
 
     @Test
-//    @Ignore
+    @Ignore
     public void calculateP1MAverage() throws IOException {
         FeatureDataset fds = null;
 

@@ -27,6 +27,7 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
  *
  * @author tkunicki
  */
+@Ignore
 public class DerivativeAnalysisTest {
     
     public enum VariableType {

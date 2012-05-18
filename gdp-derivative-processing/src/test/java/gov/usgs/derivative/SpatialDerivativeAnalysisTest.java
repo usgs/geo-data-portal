@@ -26,6 +26,7 @@ import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.feature.FeatureCollection;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -42,6 +43,7 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
  *
  * @author tkunicki
  */
+@Ignore
 public class SpatialDerivativeAnalysisTest {
     
     public final static Logger LOGGER = LoggerFactory.getLogger(SpatialDerivativeAnalysisTest.class); 
@@ -58,6 +60,7 @@ public class SpatialDerivativeAnalysisTest {
     }
 
     @Test
+    @Ignore
     public void testSomeMethod() throws FactoryException, TransformException, SchemaException {
         
         File spatialDirectory = new File("/Users/tkunicki/Downloads/derivatives/spatial");
