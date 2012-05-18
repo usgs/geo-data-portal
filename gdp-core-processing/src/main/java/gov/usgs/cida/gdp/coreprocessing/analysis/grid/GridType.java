@@ -2,6 +2,7 @@ package gov.usgs.cida.gdp.coreprocessing.analysis.grid;
 
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.GridDatatype;
 
 /**
  *
@@ -36,4 +37,9 @@ public enum GridType {
         }
 
     }
+    
+    public static GridType findGridType(GridDatatype gdt) {
+        return findGridType(gdt.getCoordinateSystem());
+    }
+    
 }
