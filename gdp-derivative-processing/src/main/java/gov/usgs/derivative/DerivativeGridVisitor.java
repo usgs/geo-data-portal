@@ -95,7 +95,7 @@ public abstract class DerivativeGridVisitor extends GridVisitor {
     public void traverseStart(List<GridDatatype> gridDatatypeList) {
         super.traverseStart(gridDatatypeList);
         
-        if (!validGridDataTypeList(gridDatatypeList)) {
+        if (!isValidGridDataTypeList(gridDatatypeList)) {
             LOGGER.error("Invalid GridDatatype(s) encountered for this instance of {}.", getClass().getName());
             traverseContinue = false;
             return;
@@ -196,14 +196,15 @@ public abstract class DerivativeGridVisitor extends GridVisitor {
             if (outputTimeStepCurrentIndex > -1) {
                 outputTimeStepEnd(outputTimeStepCurrentIndex);
                 writeTimeStepData();
-                int arrayCount = yxCount * getValueDescriptor().getCoordinateValues().size();
+                int arrayCount = yxCount * (valueDescriptor.isDerivativeCoordinateValid() ? valueDescriptor.getCoordinateValues().size() : 1);
                 for (int arrayIndex = 0; arrayIndex < arrayCount; ++arrayIndex) {
                     outputArray.setObject(arrayIndex, 0);
                 }
             } else {
-                outputArray = Array.factory(
-                        getValueDescriptor().getOutputDataType(),
-                        new int[] {1, getValueDescriptor().getCoordinateValues().size(), yCount, xCount});
+                int[] shape = valueDescriptor.isDerivativeCoordinateValid() ?
+                        new int[] { 1, valueDescriptor.getCoordinateValues().size(), yCount, xCount } :
+                        new int[] { 1, yCount, xCount };
+                outputArray =  Array.factory( valueDescriptor.getOutputDataType(), shape);
             }
             outputTimeStepCurrentIndex = outputTimeStepNextIndex;
             if (outputTimeStepCurrentIndex > -1 && outputTimeStepCurrentIndex < getTimeStepDescriptor().getOutputTimeStepCount()) {
@@ -274,19 +275,27 @@ public abstract class DerivativeGridVisitor extends GridVisitor {
         return false;
     }
     
-    protected abstract int requiredInputGridCount();
+    protected abstract int getInputGridCount();
     
-    protected abstract GridType requiredInputGridType();
+    protected abstract boolean isValidInputGridType(GridType gridType);
     
-    protected final boolean validGridDataTypeList(List<GridDatatype> gridDataTypeList) {
-        if (gridDataTypeList.size() != requiredInputGridCount()) {
-            LOGGER.error("Invalid GridDatatype count for this visitor: expected {}, found {}", requiredInputGridCount(), gridDataTypeList.size());
+    protected final boolean isValidGridDataTypeList(List<GridDatatype> gridDataTypeList) {
+        if (gridDataTypeList == null) {
+            LOGGER.error("GridDatatype list may not be null");
+            return false;
+        }
+        if (gridDataTypeList.size() != getInputGridCount()) {
+            LOGGER.error("Invalid GridDatatype count for this visitor: expected {}, found {}", getInputGridCount(), gridDataTypeList.size());
             return false;
         }
         for (GridDatatype gridDatatype : gridDataTypeList) {
+            if (gridDatatype == null) {
+                LOGGER.error("GridDatatype list entry may not be null");
+                return false;
+            }
             GridType gridType = GridType.findGridType(gridDatatype.getCoordinateSystem());
-            if (gridType != requiredInputGridType()) {
-                LOGGER.error("Invalid GridType for this visitor:  expected {}, found {} ", requiredInputGridType(), gridType);
+            if (!isValidInputGridType(gridType)) {
+                LOGGER.error("Invalid GridType for this visitor: {} ", gridType);
                 return false;
             }
         }

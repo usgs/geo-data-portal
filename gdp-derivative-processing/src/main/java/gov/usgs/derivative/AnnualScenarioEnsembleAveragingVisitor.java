@@ -13,7 +13,9 @@ import java.util.List;
 import org.joda.time.Interval;
 import org.joda.time.Years;
 import ucar.ma2.DataType;
+import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
+import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dt.GridCoordSystem;
@@ -50,7 +52,7 @@ public class AnnualScenarioEnsembleAveragingVisitor extends DerivativeGridVisito
     }
     
     @Override
-    protected int requiredInputGridCount() {
+    protected int getInputGridCount() {
         return 4;
     }
 
@@ -59,17 +61,24 @@ public class AnnualScenarioEnsembleAveragingVisitor extends DerivativeGridVisito
         GridDatatype gridDatatype = gridDatatypeList.get(0);
         
         CoordinateAxis1D thresholdAxis = gridDatatype.getCoordinateSystem().getVerticalAxis();
+        
         Variable thresholdVariable = thresholdAxis.getOriginalVariable();
+        Attribute thresholdStandardName = thresholdVariable.findAttribute(CF.STANDARD_NAME);
+        Attribute thresholdUnits = thresholdVariable.findAttribute(CF.UNITS);
+        
         Variable gridVariable = gridDatatype.getVariable();
+        Attribute gridStandardName = gridVariable.findAttribute(CF.STANDARD_NAME);
+        Attribute gridUnits = gridVariable.findAttribute(CF.UNITS);
+        
         return new DerivativeValueDescriptor(
                 thresholdVariable.getShortName(), // name
-                thresholdVariable.findAttribute("standard_name").getStringValue(), // standard_name
-                thresholdVariable.getUnitsString(),
+                thresholdStandardName == null ? null : thresholdStandardName.getStringValue(), // standard_name
+                thresholdUnits == null ? null : thresholdUnits.getStringValue(),
                 thresholdVariable.getDataType(),
                 Doubles.asList(thresholdAxis.getCoordValues()),
                 generateDerivativeOutputVariableName(gridDatatypeList), // name
-                gridVariable.findAttribute("standard_name").getStringValue(), // standard name TODO: ???
-                gridVariable.getUnitsString(), // units
+                gridStandardName == null ? null : gridStandardName.getStringValue(), // standard name
+                gridUnits == null ? null : gridUnits.getStringValue(), // units
                 gridVariable.findAttribute("missing_value").getNumericValue(),
                 DataType.FLOAT);
     }
@@ -85,7 +94,7 @@ public class AnnualScenarioEnsembleAveragingVisitor extends DerivativeGridVisito
         CoordinateAxis1DTime timeAxis = gridCoordSystem.getTimeAxis1D();
         DateRange timeRange = timeAxis.getDateRange();
         
-        Interval i = NetCDFDateUtil.convertDateRangeToInterval(timeRange);
+        Interval i = NetCDFDateUtil.toIntervalUTC(timeRange);
         i = i.withEnd(i.getEnd().plus(Years.ONE));
         return new RepeatingPeriodTimeStepDescriptor(
                 i,
@@ -104,26 +113,26 @@ public class AnnualScenarioEnsembleAveragingVisitor extends DerivativeGridVisito
     }
 
     @Override
-    protected GridType requiredInputGridType() {
-        return GridType.TZYX;
+    protected boolean isValidInputGridType(GridType gridType) {
+        return gridType == GridType.TZYX;
     }
     
     protected class AnnualScenarioEnsembleAveragingKernel extends GridInputTZYXKernel {
         
         public AnnualScenarioEnsembleAveragingKernel(int zCount, int yxCount) {
-            super(requiredInputGridCount(), 1, zCount, yxCount);
+            super(getInputGridCount(), 1, zCount, yxCount);
         }
         
         @Override
         public void run() {
-            int gInputCountI = gInputCountA[0];
-            float gInputCountF = (float)gInputCountA[0];
+            int gInputCountI = k_gInputCountA[0];
+            float gInputCountF = (float)k_gInputCountA[0];
             float average = 0;
             for (int gInputIndexI = 0; gInputIndexI < gInputCountI; ++gInputIndexI) {
                 float value = k_getTZYXInputValue(gInputIndexI) / gInputCountF;
                 average = average + value;
             }
-            zyxOutputValues[k_getZYXOutputIndex()] = average;
+            k_zyxOutputValues[k_getZYXOutputIndex()] = average;
         }
         
     }

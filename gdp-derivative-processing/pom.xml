@@ -4,7 +4,7 @@
     <parent>
         <groupId>gov.usgs.cida.gdp</groupId>
         <artifactId>gdp</artifactId>
-        <version>14-SNAPSHOT</version>
+        <version>16-SNAPSHOT</version>
     </parent>
     <artifactId>gdp-derivative-processing</artifactId>
     <name>GDP Derivative Processing</name>

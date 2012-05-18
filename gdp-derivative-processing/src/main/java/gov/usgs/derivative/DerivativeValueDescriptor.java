@@ -68,6 +68,13 @@ public class DerivativeValueDescriptor {
     public List<? extends Number> getCoordinateValues() {
         return coordinateValues;
     }
+    
+    public boolean isDerivativeCoordinateValid() {
+        return coordinateName != null 
+                && coordinateStandardName != null
+                && coordinateUnitName != null
+                && coordinateValues != null;
+    }
 
     public String getOutputName() {
         return outputName;

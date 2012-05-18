@@ -11,6 +11,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.joda.time.Interval;
 import org.junit.Ignore;
 import org.junit.Test;
 import ucar.ma2.Array;
@@ -250,7 +251,13 @@ public class DerivativeAnalysisTest {
                     for (GridDatatype gdt : gdtl) {
                         System.out.println("running " + gdt.getName());
                         GridTraverser t = new GridTraverser(gdt);
-                        GridVisitor v = new TimeStepAveragingVisitor();
+                        GridVisitor v = new IntervalTimeStepAveragingVisitor(
+                                Arrays.asList(new Interval[] {
+                                    new Interval("1961-01-01TZ/1991-01-01TZ"),
+                                    new Interval("2011-01-01TZ/2041-01-01TZ"),
+                                    new Interval("2041-01-01TZ/2071-01-01TZ"),
+                                    new Interval("2071-01-01TZ/2100-01-01TZ"),
+                                }));
                         t.traverse(v);
                     }
                 }

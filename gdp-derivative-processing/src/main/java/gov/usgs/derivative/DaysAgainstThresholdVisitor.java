@@ -12,14 +12,14 @@ public abstract class DaysAgainstThresholdVisitor extends AnnualDerivativeVisito
     private final static Logger LOGGER = LoggerFactory.getLogger(DaysAgainstThresholdVisitor.class);
 
     @Override
-    protected final int requiredInputGridCount() {
+    protected final int getInputGridCount() {
         return 1;
     }
     
     protected abstract class DaysAgainstThresholdKernel extends AnnualDerivativeKernel {
         
         public DaysAgainstThresholdKernel(int yxCount, float[] thresholds) {
-            super(requiredInputGridCount(), yxCount, thresholds);
+            super(getInputGridCount(), yxCount, thresholds);
         }
 
         @Override
@@ -28,7 +28,7 @@ public abstract class DaysAgainstThresholdVisitor extends AnnualDerivativeVisito
             int zyxOutputIndex = k_getZYXOutputIndex();
             if (value == value) {
                 if (k_includeValue(k_getZValue(), value)) {
-                    zyxOutputValues[zyxOutputIndex] = zyxOutputValues[zyxOutputIndex] + 1;
+                    k_zyxOutputValues[zyxOutputIndex] = k_zyxOutputValues[zyxOutputIndex] + 1;
                 }
             }
         }

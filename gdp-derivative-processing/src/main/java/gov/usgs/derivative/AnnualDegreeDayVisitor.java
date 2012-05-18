@@ -21,14 +21,14 @@ public abstract class AnnualDegreeDayVisitor extends AnnualDerivativeVisitor {
     }
     
     @Override
-    protected final int requiredInputGridCount() {
+    protected final int getInputGridCount() {
         return 2;
     }
     
     protected abstract class AnnualDegreeDayKernel extends AnnualDerivativeKernel {
         
         public AnnualDegreeDayKernel(int yxCount, float[] thresholds) {
-            super(requiredInputGridCount(), yxCount, thresholds);
+            super(getInputGridCount(), yxCount, thresholds);
         }
 
         @Override
@@ -40,7 +40,7 @@ public abstract class AnnualDegreeDayVisitor extends AnnualDerivativeVisitor {
             if (tempMin == tempMin && tempMax == tempMax) {
                 float zyxDegreeDays = k_degreeDays(threshold, tempMin, tempMax);
                 int zyxOutputIndex = k_getZYXOutputIndex();
-                zyxOutputValues[zyxOutputIndex] = zyxOutputValues[zyxOutputIndex] + zyxDegreeDays;
+                k_zyxOutputValues[zyxOutputIndex] = k_zyxOutputValues[zyxOutputIndex] + zyxDegreeDays;
             }
         }
         

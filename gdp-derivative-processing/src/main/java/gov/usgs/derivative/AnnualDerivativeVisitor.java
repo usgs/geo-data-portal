@@ -47,7 +47,7 @@ public abstract class AnnualDerivativeVisitor extends DerivativeGridVisitor {
         DateRange timeRange = timeAxis.getDateRange();
         
         return new RepeatingPeriodTimeStepDescriptor(
-                NetCDFDateUtil.convertDateRangeToInterval(timeRange),
+                NetCDFDateUtil.toIntervalUTC(timeRange),
                 Years.ONE);             // TODO: parameterize;
     }
     
@@ -85,8 +85,8 @@ public abstract class AnnualDerivativeVisitor extends DerivativeGridVisitor {
     @Override
     // NOTE: *final* as this protects grid structure assumptions in
     // AnnualDerivativeKernel.run() and AnnualDerivativeKernel.addXYInputValues(...)
-    protected final GridType requiredInputGridType() {
-        return GridType.TYX;
+    protected final boolean isValidInputGridType(GridType gridType) {
+        return gridType == GridType.TYX;
     }
     
     protected abstract class AnnualDerivativeKernel extends GridInputTYXKernel {

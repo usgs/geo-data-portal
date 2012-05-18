@@ -14,47 +14,66 @@ public abstract class AbstractGridKernel extends Kernel implements GridKernel {
     
     private final static Logger LOGGER = LoggerFactory.getLogger(AbstractGridKernel.class);
     
-    protected  int gInputCount;    // input grid count
-    protected  int[] gInputCountA; // to pass to kernel in explicit mode
-    protected  int tInputCount;    // t (time) dimension count (per kernel execution)
-    protected  int[] tInputCountA; // to pass to kernel in explicit mode
-    protected  int zCount;         // z (threshold) dimension count
-    protected  int[] zCountA;      // to pass to kernel in explicit mode
+    // input grid count
+    protected final int gInputCount;   
+    // to pass to kernel in explicit mode
+    protected final int[] k_gInputCountA;
     
-    protected  int yxCount;        // product of x and y dimension size
-    protected  int yxCountPadded;
-    protected  int yxPadding;
+    // maximum t (time) dimension count (per kernel execution), used for buffer allocation
+    protected final int tInputCountMaximum;
+    // to pass to kernel in explicit mode
+    protected final int[] k_tInputCountMaximumA;
     
-    protected  int zyxOutputCount;
-    protected  float[] zyxOutputValues;
+    // current t (time) dimension count (for kernel execution), used for execution accounting
+//    protected int tInputCountExecute;
+    // to pass to kernel in explicit mode
+    protected final int[] k_tInputCountExecuteA;
     
-    public AbstractGridKernel(int gInputCount, int tInputCount, int zCount, int yxCount) {
+    // z (threshold) dimension count
+    protected final int zCount;
+    // to pass to kernel in explicit mode
+    protected int[] k_zCountA;            
+    
+    // product of x and y dimension size
+    protected final int yxCount;
+    // product of x and y dimension size padded to integer multiple of 512
+    protected final int yxCountPadded;
+    protected final int yxPadding;
+    
+    
+    protected final int zyxOutputCount;
+    // output values from single kernel execution
+    protected float[] k_zyxOutputValues;
+    
+    public AbstractGridKernel(int gInputCount, int tInputCountMaximum, int zCount, int yxCount) {
         
         this.gInputCount = gInputCount;
-        this.gInputCountA = new int[] { gInputCount };
+        this.k_gInputCountA = new int[] { gInputCount };
 
-        this.tInputCount = tInputCount;
-        this.tInputCountA = new int[] { tInputCount };
+        this.tInputCountMaximum = tInputCountMaximum;
+        this.k_tInputCountMaximumA = new int[] { tInputCountMaximum };
+        
+        this.k_tInputCountExecuteA = new int[1];
         
         this.zCount = zCount;
-        this.zCountA = new int[] { zCount };
+        this.k_zCountA = new int[] { zCount };
 
         this.yxCount = yxCount;
         this.yxCountPadded = OpenCLUtil.pad(yxCount);
         this.yxPadding = yxCountPadded - yxCount;
         
         zyxOutputCount = zCount * yxCountPadded;
-        zyxOutputValues = new float[zyxOutputCount];
+        k_zyxOutputValues = new float[zyxOutputCount];
         
         setExecutionMode(EXECUTION_MODE.CPU);
         setExplicit(true);
-        put(gInputCountA);
-        put(tInputCountA);
-        put(zCountA);
+        put(k_gInputCountA);
+        put(k_tInputCountMaximumA);
+        put(k_zCountA);
                 
         LOGGER.debug("Initialized: g: {}, t: {}, z: {}, yx: {}, output storage: {} MiB", new Object[] {
             gInputCount,
-            tInputCount,
+            tInputCountMaximum,
             zCount,
             yxCount,
             (zyxOutputCount * (Float.SIZE/Byte.SIZE)) / (1 << 20)
@@ -64,20 +83,22 @@ public abstract class AbstractGridKernel extends Kernel implements GridKernel {
     @Override
     public void execute() {
         initializeZYXOutput();
-        put(zyxOutputValues);
-        int tCountForExecution = getTCountForExecution();
-        int passes = zCount * tCountForExecution;
+        put(k_zyxOutputValues);
+        int tInputCountExecute = getExecutionTimeStepCount();
+        k_tInputCountExecuteA[0] = tInputCountExecute;
+        put(k_tInputCountExecuteA);
+        int passes = zCount * tInputCountExecute;
         LOGGER.debug("Executing kernel: global size {}, passes {} [z = {}, t = {} current ({} max)]", new Object[] {
             yxCountPadded,
             passes,
             zCount,
-            tCountForExecution,
-            tInputCount,
+            tInputCountExecute,
+            tInputCountMaximum,
         });
         preExecute();
         execute(yxCountPadded, passes);
         postExecute();
-        get(zyxOutputValues);
+        get(k_zyxOutputValues);
     }
 
     @Override
@@ -97,20 +118,20 @@ public abstract class AbstractGridKernel extends Kernel implements GridKernel {
 
     @Override
     public  int getZCount() {
-        return zCountA[0];
+        return k_zCountA[0];
     }
     
     protected  int k_getTPassIndex() {
-        return getPassId() / zCountA[0]; // performace on global memory read?
+        return getPassId() / k_zCountA[0]; // performace on global memory read?
     }
     
     protected  int k_getZPassIndex() {
-        return getPassId() % zCountA[0]; // performace on global memory read?
+        return getPassId() % k_zCountA[0]; // performace on global memory read?
     }
 
     @Override
     public  float[] getZYXOutputValues() {
-        return zyxOutputValues;
+        return k_zyxOutputValues;
     }
 
     protected  int k_getZYXOutputIndex() {
@@ -118,11 +139,11 @@ public abstract class AbstractGridKernel extends Kernel implements GridKernel {
     }
     
     protected float kgetZYXOutputValue() {
-        return zyxOutputValues[k_getZYXOutputIndex()];
+        return k_zyxOutputValues[k_getZYXOutputIndex()];
     }
     
     protected void k_setZYXOutputValue(float value) {
-        this.zyxOutputValues[k_getZYXOutputIndex()] = value;
+        this.k_zyxOutputValues[k_getZYXOutputIndex()] = value;
     }
     
     @Override
@@ -134,8 +155,8 @@ public abstract class AbstractGridKernel extends Kernel implements GridKernel {
     }
     
     protected void initializeZYXOutput() {
-        Arrays.fill(zyxOutputValues, 0);
+        Arrays.fill(k_zyxOutputValues, 0);
     }
     
-    protected abstract int getTCountForExecution();
+    protected abstract int getExecutionTimeStepCount();
 }

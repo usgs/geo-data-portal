@@ -13,19 +13,19 @@ public abstract class GridInputTZYXKernel extends AbstractGridKernel implements 
     
     private final static Logger LOGGER = LoggerFactory.getLogger(GridInputTZYXKernel.class);
     
-    protected float[] gtzyxInputValues;
+    protected float[] k_gtzyxInputValues;
     
     private int tzExecuteCount;
         
-    public GridInputTZYXKernel(int gInputCount, int tInputCount, int zInputCount, int yxCount) {
-        super(gInputCount, tInputCount, zInputCount, yxCount);
+    public GridInputTZYXKernel(int gInputCount, int tInputCountMax, int zInputCount, int yxCount) {
+        super(gInputCount, tInputCountMax, zInputCount, yxCount);
         
-        this.gtzyxInputValues = new float[gInputCount * tInputCount * zInputCount * yxCountPadded];
+        this.k_gtzyxInputValues = new float[gInputCount * tInputCountMax * zInputCount * yxCountPadded];
         
         tzExecuteCount = 0;
                 
         LOGGER.debug("Initialized: input storage: {} MiB", new Object[] {
-            (gtzyxInputValues.length * (Float.SIZE/Byte.SIZE)) / (1 << 20),
+            (k_gtzyxInputValues.length * (Float.SIZE/Byte.SIZE)) / (1 << 20),
         });
     }
 
@@ -35,20 +35,20 @@ public abstract class GridInputTZYXKernel extends AbstractGridKernel implements 
             super.preExecute();
             int tExecuteCount = tzExecuteCount / zCount;
             // if tExecuteCount < tInputCount we didn't get a enough data to fill buffer. Set missing timesteps to NaN (missing value)
-            if (tExecuteCount < tInputCount) {
+            if (tExecuteCount < tInputCountMaximum) {
                 for (int gIndex = 0; gIndex < gInputCount; ++gIndex) {
-                    for (int tIndex = tExecuteCount; tIndex < tInputCount; ++tIndex) {
+                    for (int tIndex = tExecuteCount; tIndex < tInputCountMaximum; ++tIndex) {
                         for (int zIndex = 0; zIndex < zCount; ++zIndex) {
                             int gtzOffset =
-                                gIndex * tInputCount * zCount * yxCountPadded +
+                                gIndex * tInputCountMaximum * zCount * yxCountPadded +
                                 tIndex * zCount * yxCountPadded + 
                                 zIndex * yxCountPadded;
-                            Arrays.fill(gtzyxInputValues, gtzOffset, gtzOffset + yxCountPadded, Float.NaN);
+                            Arrays.fill(k_gtzyxInputValues, gtzOffset, gtzOffset + yxCountPadded, Float.NaN);
                         }
                     }
                 } 
             }
-            put(gtzyxInputValues);
+            put(k_gtzyxInputValues);
         }
     }
 
@@ -57,7 +57,7 @@ public abstract class GridInputTZYXKernel extends AbstractGridKernel implements 
         if (tzExecuteCount > 0) {
             super.execute();
         } else {
-            Arrays.fill(zyxOutputValues, Float.NaN);
+            Arrays.fill(k_zyxOutputValues, Float.NaN);
         }
     }
     
@@ -71,7 +71,7 @@ public abstract class GridInputTZYXKernel extends AbstractGridKernel implements 
     
     @Override
     public void addYXInputValues(List<float[]> yxValues) {
-        addYXInputValues(yxValues, gtzyxInputValues, true);
+        addYXInputValues(yxValues, k_gtzyxInputValues, true);
     }
    
     // HACK, horrible HACK REFACTOR
@@ -81,15 +81,15 @@ public abstract class GridInputTZYXKernel extends AbstractGridKernel implements 
         }
         int tIndex = tzExecuteCount / zCount;
         int zIndex = tzExecuteCount % zCount;
-        if (tIndex >= tInputCount) {
-            throw new IllegalStateException("tIndex >= tInputCount");
+        if (tIndex >= tInputCountMaximum) {
+            throw new IllegalStateException("tIndex >= tInputCountMaximum");
         }
         if (zIndex >= zCount) {
             throw new IllegalStateException("zIndex >= zCount");
         }
         for (int gIndex = 0; gIndex < gInputCount; ++gIndex) {
             int gtzOffset =
-                    gIndex * tInputCount * zCount * yxCountPadded +
+                    gIndex * tInputCountMaximum * zCount * yxCountPadded +
                     tIndex * zCount * yxCountPadded + 
                     zIndex * yxCountPadded;
             System.arraycopy(yxValues.get(gIndex), 0, data, gtzOffset, yxCount);
@@ -103,19 +103,19 @@ public abstract class GridInputTZYXKernel extends AbstractGridKernel implements 
     }
     
     @Override
-    protected int getTCountForExecution() {
+    protected int getExecutionTimeStepCount() {
         return tzExecuteCount / zCount;
     }
 
-    protected  int k_getTZYXInputIndex(int gridIndex) {
-        return gridIndex * tInputCountA[0] * zCountA[0] * getGlobalSize() + // performance on global memory read ?
-               k_getTPassIndex() * zCountA[0] * getGlobalSize() +
+    protected int k_getTZYXInputIndex(int gridIndex) {
+        return gridIndex * k_tInputCountMaximumA[0] * k_zCountA[0] * getGlobalSize() + // performance on global memory read ?
+               k_getTPassIndex() * k_zCountA[0] * getGlobalSize() +
                k_getZPassIndex() * getGlobalSize() +
                getGlobalId();
     }
     
-    protected  float k_getTZYXInputValue(int gridIndex) {
-        return gtzyxInputValues[k_getTZYXInputIndex(gridIndex)];
+    protected float k_getTZYXInputValue(int gridIndex) {
+        return k_gtzyxInputValues[k_getTZYXInputIndex(gridIndex)];
     }
         
 }

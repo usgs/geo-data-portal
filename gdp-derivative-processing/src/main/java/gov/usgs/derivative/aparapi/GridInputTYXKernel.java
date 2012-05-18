@@ -13,26 +13,26 @@ public abstract class GridInputTYXKernel extends AbstractGridKernel implements G
     
     private final static Logger LOGGER = LoggerFactory.getLogger(GridInputTYXKernel.class);
     
-    protected float[] zValues;
+    protected final float[] k_zValues;
     
-    protected float[] gtyxInputValues;
+    protected final float[] k_gtyxInputValues;
     
     private int tExecuteCount;
         
-    public GridInputTYXKernel(int gInputCount, int tInputCount, int yxCount, float[] zValues) {
-        super(gInputCount, tInputCount, zValues.length, yxCount);
+    public GridInputTYXKernel(int gInputCount, int tInputCountMax, int yxCount, float[] zValues) {
+        super(gInputCount, tInputCountMax, zValues.length, yxCount);
 
-        this.zValues = new float[zValues.length];
-        System.arraycopy(zValues, 0, this.zValues, 0, zValues.length); // defensive copy
+        this.k_zValues = new float[zValues.length];
+        System.arraycopy(zValues, 0, this.k_zValues, 0, zValues.length); // defensive copy
 
-        this.gtyxInputValues = new float[gInputCount * tInputCount * yxCountPadded];
+        this.k_gtyxInputValues = new float[gInputCount * tInputCountMax * yxCountPadded];
 
-        put(this.zValues);
+        put(this.k_zValues);
         
         tExecuteCount = 0;
                 
         LOGGER.debug("Initialized: input storage: {} MiB", new Object[] {
-            (gtyxInputValues.length * (Float.SIZE/Byte.SIZE)) / (1 << 20),
+            (k_gtyxInputValues.length * (Float.SIZE/Byte.SIZE)) / (1 << 20),
         });
     }
 
@@ -41,17 +41,17 @@ public abstract class GridInputTYXKernel extends AbstractGridKernel implements G
         if (tExecuteCount > 0) {
             super.preExecute();
             // if tExecuteCount < tInputCount we didn't get a enough data to fill buffer. Set missing timesteps to NaN (missing value)
-            if (tExecuteCount < tInputCount) {
+            if (tExecuteCount < tInputCountMaximum) {
                 for (int gIndex = 0; gIndex < gInputCount; ++gIndex) {
-                    for (int tIndex = tExecuteCount; tIndex < tInputCount; ++tIndex) {
+                    for (int tIndex = tExecuteCount; tIndex < tInputCountMaximum; ++tIndex) {
                         int gtOffset =
-                            gIndex * tInputCount * yxCountPadded +
+                            gIndex * tInputCountMaximum * yxCountPadded +
                             tIndex * yxCountPadded;
-                        Arrays.fill(gtyxInputValues, gtOffset, gtOffset + yxCountPadded, Float.NaN);
+                        Arrays.fill(k_gtyxInputValues, gtOffset, gtOffset + yxCountPadded, Float.NaN);
                     }
                 } 
             }
-            put(gtyxInputValues);
+            put(k_gtyxInputValues);
         }
     }
     
@@ -60,7 +60,7 @@ public abstract class GridInputTYXKernel extends AbstractGridKernel implements G
         if (tExecuteCount > 0) {
             super.execute();
         } else {
-            Arrays.fill(zyxOutputValues, Float.NaN);
+            Arrays.fill(k_zyxOutputValues, Float.NaN);
         }
     }
     
@@ -78,35 +78,35 @@ public abstract class GridInputTYXKernel extends AbstractGridKernel implements G
             throw new IllegalStateException("yxValues.size() >= gInputCount");
         }
         int tIndex = tExecuteCount;
-        if (tIndex >= tInputCount) {
-            throw new IllegalStateException("tIndex >= tInputCount");
+        if (tIndex >= tInputCountMaximum) {
+            throw new IllegalStateException("tIndex >= tInputCountMaximum");
         }
         for (int gIndex = 0; gIndex < gInputCount; ++gIndex) {
             int gtOffset =
-                    gIndex * tInputCount * yxCountPadded +
+                    gIndex * tInputCountMaximum * yxCountPadded +
                     tIndex * yxCountPadded;
-            System.arraycopy(yxValues.get(gIndex), 0, gtyxInputValues, gtOffset, yxCount);
+            System.arraycopy(yxValues.get(gIndex), 0, k_gtyxInputValues, gtOffset, yxCount);
         }
         tExecuteCount++;
     }
 
     @Override
-    protected int getTCountForExecution() {
+    protected int getExecutionTimeStepCount() {
         return tExecuteCount;
     }
     
     protected float k_getZValue() {
-        return zValues[k_getZPassIndex()];
+        return k_zValues[k_getZPassIndex()];
     }
     
     protected int k_getTYXInputIndex(int gridIndex) {
-        return gridIndex * tInputCountA[0] * getGlobalSize() +  // performance on global memory read ?
+        return gridIndex * k_tInputCountMaximumA[0] * getGlobalSize() +  // performance on global memory read ?
                k_getTPassIndex() * getGlobalSize() +
                getGlobalId();
     }
     
     protected float k_getTYXInputValue(int gridIndex) {
-        return gtyxInputValues[k_getTYXInputIndex(gridIndex)];
+        return k_gtyxInputValues[k_getTYXInputIndex(gridIndex)];
     }
     
 }

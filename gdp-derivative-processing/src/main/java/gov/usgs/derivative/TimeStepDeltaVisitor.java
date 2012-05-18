@@ -15,7 +15,9 @@ import org.joda.time.Interval;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.DataType;
+import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
+import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dt.GridCoordSystem;
@@ -49,20 +51,40 @@ public final class TimeStepDeltaVisitor extends DerivativeGridVisitor {
     protected DerivativeValueDescriptor generateDerivativeValueDescriptor(List<GridDatatype> gridDatatypeList) {
         GridDatatype gridDatatype = gridDatatypeList.get(0);
         
-        CoordinateAxis1D thresholdAxis = gridDatatype.getCoordinateSystem().getVerticalAxis();
-        Variable thresholdVariable = thresholdAxis.getOriginalVariable();
         Variable gridVariable = gridDatatype.getVariable();
-        return new DerivativeValueDescriptor(
-                thresholdVariable.getShortName(), // name
-                thresholdVariable.findAttribute("standard_name").getStringValue(), // standard_name
-                thresholdVariable.getUnitsString(),
-                thresholdVariable.getDataType(),
-                Doubles.asList(thresholdAxis.getCoordValues()),
-                gridVariable.getShortName(), // name
-                gridVariable.findAttribute("standard_name").getStringValue(), // standard name TODO: ???
-                "days", // units
-                Float.valueOf(-1f),
-                DataType.FLOAT);
+        Attribute gridStandardName = gridVariable.findAttribute(CF.STANDARD_NAME);
+        Attribute gridUnits = gridVariable.findAttribute(CF.UNITS);
+        
+        CoordinateAxis1D thresholdAxis = gridDatatype.getCoordinateSystem().getVerticalAxis();
+        
+        if (thresholdAxis == null) {
+            return new DerivativeValueDescriptor(
+                    null, // name
+                    null, // standard_name
+                    null, // units
+                    null, // DataType
+                    null, // values
+                    gridVariable.getShortName(), // name
+                    gridStandardName == null ? null : gridStandardName.getStringValue(), // standard name TODO: ???
+                    gridUnits == null ? null : gridUnits.getStringValue(), // units
+                    Float.valueOf(-1f),
+                    DataType.FLOAT);
+        } else {
+            Variable thresholdVariable = thresholdAxis.getOriginalVariable() ;
+            Attribute thresholdStandardName = thresholdVariable.findAttribute(CF.STANDARD_NAME);
+            Attribute thresholdUnits = thresholdVariable.findAttribute(CF.UNITS);
+            return new DerivativeValueDescriptor(
+                    thresholdVariable.getShortName(), // name
+                    thresholdStandardName == null ? null : thresholdStandardName.getStringValue(), // standard_name
+                    thresholdUnits == null ? null : thresholdUnits.getStringValue(),
+                    thresholdVariable.getDataType(),
+                    Doubles.asList(thresholdAxis.getCoordValues()),
+                    gridVariable.getShortName(), // name
+                    gridStandardName == null ? null : gridStandardName.getStringValue(), // standard name TODO: ???
+                    gridUnits == null ? null : gridUnits.getStringValue(), // units
+                    Float.valueOf(-1f),
+                    DataType.FLOAT);
+        }
     }
 
     @Override
@@ -71,7 +93,7 @@ public final class TimeStepDeltaVisitor extends DerivativeGridVisitor {
         CoordinateAxis1DTime timeAxis = gridCoordSystem.getTimeAxis1D();
         DateRange timeRange = timeAxis.getDateRange();
         return new IntervalTimeStepDescriptor(
-            NetCDFDateUtil.convertDateRangeToInterval(timeRange),
+            NetCDFDateUtil.toIntervalUTC(timeRange),
             // TODO: parameterize;
             Arrays.asList(new Interval[] {
 //                new Interval("1961-01-01TZ/1991-01-01TZ"),
@@ -99,7 +121,7 @@ public final class TimeStepDeltaVisitor extends DerivativeGridVisitor {
         }
         if (getOutputCurrentTimeStep() < 0) {
             // HACK, horrible HACK
-            mykernel.addYXInputValues(yxValuesList, mykernel.gtzyxBaseValues, true);
+            mykernel.addYXInputValues(yxValuesList, mykernel.k_gtzyxBaseValues, true);
         } else {
             mykernel.addYXInputValues(yxValuesList);
         }
@@ -124,30 +146,30 @@ public final class TimeStepDeltaVisitor extends DerivativeGridVisitor {
     }
 
     @Override
-    protected int requiredInputGridCount() {
+    protected int getInputGridCount() {
         return 1;
     }
 
     @Override
-    protected GridType requiredInputGridType() {
-        return GridType.TZYX;
+    protected boolean isValidInputGridType(GridType gridType) {
+        return gridType == GridType.TZYX;
     }
     
     private class DerivativeKernel extends GridInputTZYXKernel {
         
-        protected float[] gtzyxBaseValues;
+        protected float[] k_gtzyxBaseValues;
         protected boolean initialized = false;
 
         public DerivativeKernel(int zCount, int yxCount) {
             super(1, 1, zCount, yxCount);
-            gtzyxBaseValues = new float[zyxOutputCount];
+            k_gtzyxBaseValues = new float[zyxOutputCount];
         }
 
         @Override
         public void preExecute() {
             super.preExecute();
             if (!initialized) {
-                put(gtzyxBaseValues);
+                put(k_gtzyxBaseValues);
                 initialized = true;
             }
         }
@@ -156,10 +178,10 @@ public final class TimeStepDeltaVisitor extends DerivativeGridVisitor {
         public void run() {
             int tzyxInputIndex = k_getTZYXInputIndex(0);
             int zyxOutputIndex = k_getZYXOutputIndex();
-            float baseValue = gtzyxBaseValues[tzyxInputIndex];
-            float currentValue = gtzyxInputValues[tzyxInputIndex];
+            float baseValue = k_gtzyxBaseValues[tzyxInputIndex];
+            float currentValue = k_gtzyxInputValues[tzyxInputIndex];
             if (baseValue == baseValue && currentValue == currentValue) {
-                zyxOutputValues[zyxOutputIndex] = gtzyxInputValues[tzyxInputIndex] - gtzyxBaseValues[tzyxInputIndex];
+                k_zyxOutputValues[zyxOutputIndex] = k_gtzyxInputValues[tzyxInputIndex] - k_gtzyxBaseValues[tzyxInputIndex];
             }
         }
 

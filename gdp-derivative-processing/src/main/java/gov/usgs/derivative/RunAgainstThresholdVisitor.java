@@ -13,25 +13,25 @@ public abstract class RunAgainstThresholdVisitor extends AnnualDerivativeVisitor
     private final static Logger LOGGER = LoggerFactory.getLogger(RunAgainstThresholdVisitor.class);
     
     @Override
-    protected final int requiredInputGridCount() {
+    protected final int getInputGridCount() {
         return 1;
     }
         
     protected abstract class RunAgainstThresholdKernel extends AnnualDerivativeKernel {
 
-        protected final float[] zyxTempValues;
+        protected final float[] k_zyxTempValues;
         
         public RunAgainstThresholdKernel(int yxCount, float[] thresholds) {
-            super(requiredInputGridCount(), yxCount, thresholds);
+            super(getInputGridCount(), yxCount, thresholds);
             
-            zyxTempValues = new float[zyxOutputCount];
+            k_zyxTempValues = new float[zyxOutputCount];
         }
 
         @Override
         public void preExecute() {
             super.preExecute();
-            Arrays.fill(zyxTempValues, 0);
-            put(zyxTempValues);
+            Arrays.fill(k_zyxTempValues, 0);
+            put(k_zyxTempValues);
         }
 
         @Override
@@ -40,14 +40,14 @@ public abstract class RunAgainstThresholdVisitor extends AnnualDerivativeVisitor
             int zyxOutputIndex = k_getZYXOutputIndex();
             if (value == value) {
                 if (k_includeValue(k_getZValue(), value)) {
-                    float current = zyxTempValues[zyxOutputIndex] + 1;
-                    float maximum = zyxOutputValues[zyxOutputIndex];
+                    float current = k_zyxTempValues[zyxOutputIndex] + 1;
+                    float maximum = k_zyxOutputValues[zyxOutputIndex];
                     if (current > maximum) {
-                        zyxOutputValues[zyxOutputIndex] = current;
+                        k_zyxOutputValues[zyxOutputIndex] = current;
                     }
-                    zyxTempValues[zyxOutputIndex] = current;
+                    k_zyxTempValues[zyxOutputIndex] = current;
                 } else {
-                    zyxTempValues[zyxOutputIndex] = 0;
+                    k_zyxTempValues[zyxOutputIndex] = 0;
                 }
             }
         }
