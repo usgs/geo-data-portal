@@ -102,7 +102,8 @@ public class OpendapServerHelper {
 				// not time unit
 			}
 		}
-		catch (opendap.dap.parser.ParseException ex) {
+		catch (opendap.dap.parsers.ParseException ex) { // NetCDF-Java 4.3.x
+//        catch (opendap.dap.parser.ParseException ex) { // NetCDF-Java 4.2.x
 			log.error("Parser exception caught" + ex);
 		}
 		catch (DAP2Exception ex) {
@@ -214,7 +215,8 @@ public class OpendapServerHelper {
 				}
 			}
 		}
-		catch (opendap.dap.parser.ParseException ex) {
+		catch (opendap.dap.parsers.ParseException ex) { // NetCDF-Java 4.3.x
+//        catch (opendap.dap.parser.ParseException ex) { // NetCDF-Java 4.2.x
 			// do something with exceptions
 		}
 		catch (DAP2Exception ex) {
@@ -268,7 +270,8 @@ public class OpendapServerHelper {
 		Enumeration<DArrayDimension> dimensions = variable.getDimensions();
 		while (dimensions.hasMoreElements()) {
 			DArrayDimension nextDim = dimensions.nextElement();
-			String name = nextDim.getName();
+			String name = nextDim.getEncodedName();  // or getClearName(), NetCDF-Java 4.3.x
+//            String name = nextDim.getName();  // NetCDF-Java 4.2.x
 			try {
 				AttributeTable attributeTable = das.getAttributeTable(name);
 				Attribute units = attributeTable.getAttribute("units");

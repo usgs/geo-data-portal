@@ -25,8 +25,6 @@
   </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <cida.maven.url>http://internal.cida.usgs.gov/maven</cida.maven.url>
-        <cida.svn.url>https://cida-svn.er.usgs.gov/repos/dev</cida.svn.url>
         <n52-wps.version>2.0-RC6</n52-wps.version>
         <geotools.version>2.6.6</geotools.version>
         <slf4j.version>1.6.1</slf4j.version>
@@ -102,26 +100,30 @@
         <repository>
             <id>cida-gdp-releases</id>
             <name>CIDA GDP Releases</name>
-            <url>${cida.maven.url}/content/repositories/cida-gdp-releases</url>
+            <url>http://internal.cida.usgs.gov/maven/content/repositories/cida-gdp-releases</url>
         </repository>
         <snapshotRepository>
             <id>cida-gdp-snapshots</id>
             <name>CIDA GDP Snapshots</name>
-            <url>${cida.maven.url}/content/repositories/cida-gdp-snapshots</url>
+            <url>http://internal.cida.usgs.gov/maven/content/repositories/cida-gdp-snapshots</url>
         </snapshotRepository>
     </distributionManagement>
     <repositories>
         <repository>
             <id>cida-gdp-development</id>
             <name>CIDA GDP Development</name>
-            <url>${cida.maven.url}/content/groups/cida-gdp-development</url>
+            <url>http://internal.cida.usgs.gov/maven/content/groups/cida-gdp-development</url>
+        </repository>
+        <repository>
+            <id>ucar-releases</id>
+            <url>http://artifacts.unidata.ucar.edu/content/repositories/unidata-releases</url>
         </repository>
     </repositories>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.8.1</version>
+            <version>4.10</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -323,31 +325,10 @@
             <!-- NetCDF-Java and dependencies -->
             <dependency>
                 <groupId>edu.ucar</groupId>
-                <artifactId>netcdf</artifactId>
-                <version>4.2.20</version>
-            </dependency>
-            <dependency>
-                <groupId>edu.ucar</groupId>
-                <artifactId>opendap</artifactId>
-                <version>2.2.2</version>
-            </dependency>
-            <!-- needed for NcStream/CDMRemote -->
-            <dependency>
-                <groupId>com.google.protobuf</groupId>
-                <artifactId>protobuf-java</artifactId>
-                <version>2.3.0</version>
-            </dependency>
-            <!-- needed for NcML  -->
-            <dependency>
-                <groupId>org.jdom</groupId>
-                <artifactId>jdom</artifactId>
-                <version>1.1</version>
-            </dependency>
-            <!-- needed for NcML  -->
-            <dependency>
-                <artifactId>je</artifactId>
-                <groupId>com.sleepycat</groupId>
-                <version>4.0.92</version>
+                <artifactId>thredds-parent</artifactId>
+                <version>4.3.11-CIDA-1</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <!-- 52North WPS dependencies -->
             <dependency>
@@ -462,7 +443,7 @@
                     <artifactId>maven-release-plugin</artifactId>
                     <version>2.1</version>
                     <configuration>
-                        <tagBase>${cida.svn.url}/usgs/gdp/tags</tagBase>
+                        <tagBase>https://cida-svn.er.usgs.gov/repos/dev/usgs/gdp/tags</tagBase>
                     </configuration>
                 </plugin>
                 <plugin>
