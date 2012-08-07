@@ -69,7 +69,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.8.1</version>
             <scope>test</scope>
         </dependency>
         <!-- LOGGING START-->
@@ -102,6 +101,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.12</version>
                 <configuration>
                     <testFailureIgnore>true</testFailureIgnore>
                     <!-- NOTE: extra properties required for unit tests using our log4j.properties -->
