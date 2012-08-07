@@ -64,7 +64,11 @@ var CSWClient = function() {
     // http://stackoverflow.com/questions/37684/how-to-replace-plain-urls-with-links
     function replaceURLWithHTMLLinks(text) {
         var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-        return text.replace(exp,"<a href='$1' target='_blank'>$1</a>"); 
+        if (text && !text.toLowerCase().contains('noreplace')) {
+            return text.replace(exp,"<a href='$1' target='_blank'>$1</a>"); 
+        } else {
+            return text;
+        }
     }
 
 
@@ -279,7 +283,9 @@ var CSWClient = function() {
 
             if ($.browser.msie && $.browser.version=="9.0") {
                 window.XMLSerializer = function(){};
-                window.XMLSerializer.prototype.serializeToString = function(oNode){ return oNode.xml}
+                window.XMLSerializer.prototype.serializeToString = function(oNode){
+                    return oNode.xml
+                }
             }
 
             proxy = Constant.endpoint.proxy;
@@ -295,6 +301,20 @@ var CSWClient = function() {
         },
         setCSWHost : function(host) {
             cswhost = host;
+        },
+        setDatasetUrl : function(url) {
+            if (url) {
+                $('#dataset-url-input-box').val(url);
+                
+                if ($('#metadata').length) {
+                    $('#metadata').dialog('close');
+                }
+                if ($('#csw-output').length) {
+                    $('#csw-output').dialog('close');    
+                }
+                
+                $('#select-dataset-button').trigger('click');
+            }
         },
         useProxy : function(tf) {
             USE_PROXY = tf;
@@ -413,7 +433,7 @@ var CSWClient = function() {
             ];
             
             var shouldCacheSelectors = [
-                '[nodeName="csw:GetRecordByIdResponse"] > [nodeName="gmd:MD_Metadata"] > [nodeName="gmd:identificationInfo"] > \
+            '[nodeName="csw:GetRecordByIdResponse"] > [nodeName="gmd:MD_Metadata"] > [nodeName="gmd:identificationInfo"] > \
                     [nodeName="gmd:MD_DataIdentification"] > [nodeName="gmd:status"] > [nodeName="gmd:MD_ProgressCode"]'
             ];
 

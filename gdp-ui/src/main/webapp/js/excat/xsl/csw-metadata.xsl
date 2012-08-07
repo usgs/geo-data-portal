@@ -750,7 +750,7 @@
                             </tr>
                         </xsl:when>
                         <!--xsl:when test="linkage[text()]">
-                         			    <link type="url"><xsl:value-of select="linkage[text()]"/></link>
+                                                                                         			    <link type="url"><xsl:value-of select="linkage[text()]"/></link>
                   		    </xsl:when-->
                     </xsl:choose>
                 </xsl:for-each>
@@ -905,16 +905,39 @@
                         <xsl:text>: </xsl:text>
                     </td>
                     <td class="meta-value">
-                        <a>
-                            <xsl:attribute name="href">
-                                <xsl:value-of select="$cvalue"/>
-                            </xsl:attribute>
-                            <xsl:value-of select="$cvalue"/>
-                        </a>
+                        <!-- http://internal.cida.usgs.gov/jira/browse/GDP-491 -->
+                       <xsl:choose>
+                            <xsl:when test="$cname!='OPeNDAP'">
+                                <a>
+                                    <xsl:attribute name="href">
+                                        <xsl:value-of select="$cvalue"/>
+                                    </xsl:attribute>
+                                    <xsl:value-of select="$cvalue"/>
+                                </a>
+                            </xsl:when> 
+                            <xsl:otherwise>
+                                <a>
+                                    <xsl:attribute name="title">
+                                        <xsl:text>Use Dataset For Processing</xsl:text>
+                                    </xsl:attribute>
+                                    <xsl:attribute name="class">
+                                        <xsl:text>noreplace</xsl:text>
+                                    </xsl:attribute>
+                                    <xsl:attribute name="href">
+                                        <xsl:text>javascript:(CSWClient.setDatasetUrl</xsl:text>
+                                        <xsl:text>('</xsl:text>
+                                        <xsl:value-of select="$cvalue"/>
+                                        <xsl:text>'))</xsl:text>
+                                    </xsl:attribute>
+                                    <xsl:value-of select="$cvalue"/>
+                                </a>
+                            </xsl:otherwise>
+                        </xsl:choose>
                     </td>
                 </tr>
             </xsl:when>
             <xsl:otherwise>
+                <!-- Do nothing since no value was passed in -->
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
