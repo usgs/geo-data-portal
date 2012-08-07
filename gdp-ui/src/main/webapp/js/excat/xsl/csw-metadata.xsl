@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet 
-     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-     xmlns:xs="http://www.w3.org/2001/XMLSchema" 
-     xmlns:gco="http://www.isotc211.org/2005/gco"
-     xmlns:gmd="http://www.isotc211.org/2005/gmd"
-     xmlns:dc="http://purl.org/dc/elements/1.1/"
-     xmlns:dct="http://purl.org/dc/terms/"
-     xmlns:ows="http://www.opengis.net/ows"
-     xmlns:cat="http://www.esri.com/metadata/csw/"
-     xmlns:csw="http://www.opengis.net/cat/csw/2.0.2"
-     xmlns:gml="http://www.opengis.net/gml"
-     xmlns:gmd2="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
-     xmlns:gts="http://www.isotc211.org/2005/gts"
-     xmlns:gmx="http://www.isotc211.org/2005/gmx"
-     xmlns:gss="http://www.isotc211.org/2005/gss"
-     xmlns:srv="http://www.isotc211.org/2005/srv"
-     xmlns:gsr="http://www.isotc211.org/2005/gsr"
-     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-     xmlns:gmi="http://www.isotc211.org/2005/gmi"
-     xmlns:nc="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
-     xmlns:xlink="http://www.w3.org/1999/xlink"
-     xmlns:geonet="http://www.fao.org/geonetwork"
-     version="2.0">
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    xmlns:gco="http://www.isotc211.org/2005/gco"
+    xmlns:gmd="http://www.isotc211.org/2005/gmd"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:dct="http://purl.org/dc/terms/"
+    xmlns:ows="http://www.opengis.net/ows"
+    xmlns:cat="http://www.esri.com/metadata/csw/"
+    xmlns:csw="http://www.opengis.net/cat/csw/2.0.2"
+    xmlns:gml="http://www.opengis.net/gml"
+    xmlns:gmd2="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
+    xmlns:gts="http://www.isotc211.org/2005/gts"
+    xmlns:gmx="http://www.isotc211.org/2005/gmx"
+    xmlns:gss="http://www.isotc211.org/2005/gss"
+    xmlns:srv="http://www.isotc211.org/2005/srv"
+    xmlns:gsr="http://www.isotc211.org/2005/gsr"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:gmi="http://www.isotc211.org/2005/gmi"
+    xmlns:nc="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:geonet="http://www.fao.org/geonetwork"
+    version="2.0">
 
-<!--    <xsl:output method="html" encoding="ISO-8859-1"/>-->
+    <!--    <xsl:output method="html" encoding="ISO-8859-1"/>-->
 
     <xsl:template match="/">
         <div>
@@ -46,7 +46,7 @@
     </xsl:template>
 
 
-<!-- Start Metadata ISO19139 -->
+    <!-- Start Metadata ISO19139 -->
     <xsl:template match="gmd:MD_Metadata">
         
         <xsl:variable name="keywordsVocabulary">
@@ -66,7 +66,7 @@
         <xsl:apply-templates select="./gmd:contentInfo/gmd:MD_CoverageDescription"/>
         <xsl:apply-templates select="./gmd:spatialRepresentationInfo/gmd:MD_GridSpatialRepresentation"/>
 
-<!-- Metadata block -->
+        <!-- Metadata block -->
         <div class="captioneddiv">
             <h3>Metadata</h3>
             <table class="meta">
@@ -595,9 +595,9 @@
         </div>
     </xsl:template>
 
-<!-- 'Citation->Point of Contact' block -->
+    <!-- 'Citation->Point of Contact' block -->
     <xsl:template match="gmd:citation">
-<!--        /gmd:CI_Citation/gmd:citedResponsibleParty/gmd:CI_ResponsibleParty-->
+        <!--        /gmd:CI_Citation/gmd:citedResponsibleParty/gmd:CI_ResponsibleParty-->
         <div class="captioneddiv">
             <h3>Data Creator - Point of Contact</h3>
             <table class="meta">
@@ -630,7 +630,7 @@
         </div>
     </xsl:template>
 
-<!-- 'Identification->Geographic box' block -->
+    <!-- 'Identification->Geographic box' block -->
     <xsl:template match="gmd:extent">
         <xsl:if test="./gmd:EX_Extent/gmd:geographicElement">
             <div class="captioneddiv">
@@ -687,7 +687,7 @@
         
     </xsl:template>
 
-<!-- 'Distribution Info' block -->
+    <!-- 'Distribution Info' block -->
     <xsl:template match="gmd:MD_Distribution">
         <div class="captioneddiv">
             <h3>Distribution info</h3>
@@ -749,25 +749,25 @@
                                 </td>
                             </tr>
                         </xsl:when>
-  		    <!--xsl:when test="linkage[text()]">
-  			    <link type="url"><xsl:value-of select="linkage[text()]"/></link>
-  		    </xsl:when-->
+                        <!--xsl:when test="linkage[text()]">
+                         			    <link type="url"><xsl:value-of select="linkage[text()]"/></link>
+                  		    </xsl:when-->
                     </xsl:choose>
                 </xsl:for-each>
             </table>
         </div>
     </xsl:template>
 
-<!-- 'Identification->Abstract -->
+    <!-- 'Identification->Abstract -->
     <xsl:template match="gmd:abstract">
         <xsl:apply-templates select="./gco:CharacterString/text()"/>
     </xsl:template>
-<!-- End Metadata ISO19139 -->
+    <!-- End Metadata ISO19139 -->
 
 
-<!-- StartMetadata Dublin Core -->
+    <!-- StartMetadata Dublin Core -->
 
-<!-- 'Identification' block -->
+    <!-- 'Identification' block -->
     <xsl:template match="*[local-name()='Record']|*[local-name()='SummaryRecord']|*[local-name()='BriefRecord']">
         <div class="captioneddiv">
             <h3>Identification info</h3>
@@ -821,11 +821,11 @@
 
 
     <xsl:template match="dct:abstract">
-<!--xsl:value-of select="."/-->
+        <!--xsl:value-of select="."/-->
         <xsl:apply-templates select="text()"/>
     </xsl:template>
 
-<!-- 'Identification->Geographic box' block -->
+    <!-- 'Identification->Geographic box' block -->
     <xsl:template match="ows:BoundingBox|ows:WGS84BoundingBox">
         <div class="captioneddiv">
             <h3>Geographic box</h3>
@@ -842,9 +842,9 @@
             </table>
         </div>
     </xsl:template>
-<!-- End Metadata Dublin Core -->
+    <!-- End Metadata Dublin Core -->
 
-<!-- Start Utills -->
+    <!-- Start Utills -->
     <xsl:template  match="text()">
         <xsl:call-template name="to-para">
             <xsl:with-param name="from" select="'&#10;&#10;'"/>
@@ -852,15 +852,15 @@
         </xsl:call-template>
     </xsl:template> 
 
-<!-- replace all occurences of the character(s) `from'
-                   by  <p/> in the string `string'.-->
+    <!-- replace all occurences of the character(s) `from'
+    by  <p/> in the string `string'.-->
     <xsl:template name="to-para" >
         <xsl:param name="string"/>
         <xsl:param name="from"/>
         <xsl:choose>
             <xsl:when test="contains($string,$from)">
                 <xsl:value-of select="substring-before($string,$from)"/>
-      <!-- output a <p/> tag instead of `from' -->
+                <!-- output a <p/> tag instead of `from' -->
                 <p/>
                 <xsl:call-template name="to-para">
                     <xsl:with-param name="string" select="substring-after($string,$from)"/>
@@ -918,6 +918,6 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
-<!-- End Utills -->
+    <!-- End Utils -->
 
 </xsl:stylesheet>
