@@ -154,9 +154,12 @@ li { margin-bottom: 0.3em; }
     color: blue;
 }
 
-#total_records_returned {
+#total_records_returned,
+#multiple_records_returned {
     border: #2E4A6B solid 1px;
 }
+
+
 
 #prev_next {
     border: #2E4A6B solid 1px;
@@ -184,7 +187,6 @@ html>body .captioneddiv
   padding: 0em 0.5em;
   display: inline;
   font-size: 0.9em;
-  /*background: #cae1ff;*/
   background: #ffffff;
 }
 
