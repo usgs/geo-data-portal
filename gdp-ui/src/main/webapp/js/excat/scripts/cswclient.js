@@ -418,9 +418,37 @@ var CSWClient = function() {
             //return handleCSWResponse("getrecords", csw_response);
             return handleCSWResponse("getrecords", results_xml);
         },
+        
+        displayMultipleOpenDAPSelection : function(id) {
+            var csw_response = getRecordById(id);
+            
+            var stylesheet = "js/excat/xsl/multi-service-endpoint.xsl";
+
+            var xslt = loadDocument(stylesheet);
+            var processor = new XSLTProcessor();
+            processor.importStylesheet(xslt);
+            
+            var XmlDom = processor.transformToDocument(csw_response)
+            var serializer = new XMLSerializer();
+            var output = serializer.serializeToString(XmlDom.documentElement);
+            var outputDiv = document.getElementById("metadata");
+            
+            outputDiv.innerHTML = output;
+            
+            $(outputDiv).dialog({
+                'modal' : true,
+                width : '90%',
+                height : $(window).height() / 1.25,
+                resizable : true,
+                draggable: true,
+                'title' : 'Choose a data set',
+                zIndex: 9999
+            });
+        },
+        
         selectDatasetById : function(id, title) {
             var csw_response = getRecordById(id);
-
+            
             // We are doing this because we don't know which format the data might be in, if we can tell, we shouldn't iterate
             var datasetSelectors = [
             '[nodeName="csw:GetRecordByIdResponse"] > [nodeName="csw:Record"] [nodeName="dc:URI"]',

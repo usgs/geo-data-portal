@@ -3,7 +3,8 @@
                 xmlns:dc="http://purl.org/dc/elements/1.1/"
                 xmlns:dct="http://purl.org/dc/terms/"
                 xmlns:gco="http://www.isotc211.org/2005/gco"
-                xmlns:gmd="http://www.isotc211.org/2005/gmd">
+                xmlns:gmd="http://www.isotc211.org/2005/gmd"
+                xmlns:srv="http://www.isotc211.org/2005/srv">
     <!--xsl:output method="html" encoding="ISO-8859-1"/-->
 
 
@@ -180,6 +181,7 @@
 
     <xsl:template match="gmd:MD_Metadata">
         <xsl:for-each select=".">
+            <xsl:variable name="opendapServicesCount" select="count(./gmd:identificationInfo/srv:SV_ServiceIdentification/srv:serviceType/gco:LocalName[contains(.,'OPeNDAP')])" />
             <li>
                 <strong>
                     <xsl:text>Title: </xsl:text>
@@ -188,14 +190,27 @@
                     <xsl:attribute name="title">
                         <xsl:text>Select A Data Set</xsl:text>
                     </xsl:attribute>
-                    <xsl:attribute name="href">
-                        <xsl:text>javascript:(CSWClient.selectDatasetById</xsl:text>
-                        <xsl:text>('</xsl:text>
-                        <xsl:value-of select="./gmd:fileIdentifier/gco:CharacterString"/>
-                        <xsl:text>','</xsl:text>
-                        <xsl:value-of select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString"/>
-                        <xsl:text>'))</xsl:text>
-                    </xsl:attribute>
+                    
+                    <xsl:choose>
+                        <xsl:when test="$opendapServicesCount &gt; 1">
+                            <xsl:attribute name="href">
+                                <xsl:text>javascript:(CSWClient.displayMultipleOpenDAPSelection</xsl:text>
+                                <xsl:text>('</xsl:text>
+                                <xsl:value-of select="./gmd:fileIdentifier/gco:CharacterString"/>
+                                <xsl:text>'))</xsl:text>
+                            </xsl:attribute>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:attribute name="href">
+                                <xsl:text>javascript:(CSWClient.selectDatasetById</xsl:text>
+                                <xsl:text>('</xsl:text>
+                                <xsl:value-of select="./gmd:fileIdentifier/gco:CharacterString"/>
+                                <xsl:text>','</xsl:text>
+                                <xsl:value-of select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString"/>
+                                <xsl:text>'))</xsl:text>
+                            </xsl:attribute>
+                        </xsl:otherwise>
+                    </xsl:choose>
                     <xsl:choose>
                         <xsl:when test="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString">
                             <xsl:apply-templates select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString"/>
