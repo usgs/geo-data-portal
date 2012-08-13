@@ -59,6 +59,20 @@ var CSWClient = function() {
             'title' : request == "getrecordbyid" ? 'Dataset metadata' : 'Choose a data set',
             zIndex: 9999
         });
+        
+        // Some hackery needs to happen here because IE8 will have window.onunload triggered 
+        // when selecting a dataset even though it just calls javascript and doesn't try to leave the
+        // page
+        // http://stackoverflow.com/a/7651818
+        $(window).data('beforeunload', window.onbeforeunload);  
+        $('a[href^="javascript:"]').hover(
+            function(){
+                window.onbeforeunload=null;
+            },
+            function(){
+                window.onbeforeunload=$(window).data('beforeunload');
+            }
+            )
     }
 
     // http://stackoverflow.com/questions/37684/how-to-replace-plain-urls-with-links
@@ -485,7 +499,7 @@ var CSWClient = function() {
                     }
                 });
             }
-            for (var i=0; i<shouldCacheSelectors.length; i++) {
+            for (i=0; i<shouldCacheSelectors.length; i++) {
                 $(csw_response).find(shouldCacheSelectors[i]).each(function(index, elem) {
                     var codeListValue = $(elem).attr("codeListValue");
                     
