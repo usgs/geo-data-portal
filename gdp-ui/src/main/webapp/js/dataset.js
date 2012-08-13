@@ -1009,25 +1009,83 @@ var Dataset = function() {
             wpsAlgorithm, wpsInputs, wpsOutput, false, populateDatasetIdSelect);
     }
 
+    /**
+     * Takes a WCS CoverageDescription response and parses out all of the id, title and abstract
+     * elements.
+     * 
+     * Result is an array in the format of:
+     * {
+     *  id : id,
+     *  title : title,
+     *  description : description
+     * }
+     * 
+     */
+    function _parseWCS(params) {
+        var xml = params.xml;
+        var result = [];
+        var namespace = '*|';
+        
+        logger.debug('GDP: Parsing WCS response');
+        
+        // GeoServer has the wcs namespace whereas ArcGIS has the wcs namespace as default
+        
+        // First try to pick out CoverageDescription from the default namespace
+        var coverageDescription = $(xml).find(namespace + 'CoverageDescription');
+        
+        if (!coverageDescription.length) {
+            // CoverageDescription was not in the default namespace. The only other
+            // place it would be would be in the wcs: namespace which we have $.xmlns
+            // globally initialized with
+            namespace = 'wcs111|';
+            coverageDescription = $(xml).find(namespace + 'CoverageDescription');
+        }
+        
+        $.each(coverageDescription, function(index, element) {
+            var id = $(element).find('>'+namespace+'Identifier').text();
+            var title = $(element).find('>ns1|Title').text() || $(element).find('>ows|Title').text();
+            var description = $(element).find('>ns1|Abstract').text() || $(element).find('>ows|Abstract').text();
+                
+            result.push({
+                id : id,
+                title : title,
+                description : description
+            })
+            
+        });
+        
+        return result;
+    }
+
     function populateDatasetIdSelect(xml) {
         logger.debug('GDP: Populating dataset ID select box.');
         $(_DATASET_ID_SELECTBOX).empty();
 
-        // Add blank option that is initial selection
         if (gDatasetType == _datasetTypeEnum.WCS) {
-            // Using nodeName here to fix jQuery parsing bug in IE
-            $(xml).find('[nodeName="CoverageDescription"]').each(function(index, element) {
-                var id = $(element).find('>[nodeName="Identifier"]').text();
-                var title = $(element).find('>ns1|Title').text();
-                var description = $(element).find('>ns1|Abstract').text();
-
-                var displayName = title + (description != '' ? ' - ' + description : '');
-
+            // Parse the WCS to get all of the ids, titles and abstracts (descriptions)
+            var wcsResp = _parseWCS({ xml : xml });
+            
+            $.each(wcsResp, function(index, item) {
+                // Populate the dataset ID selectbox with the results from the WCS call
+                var displayName = item.title + (item.description != '' ? ' - ' + item.description : '');
                 $(_DATASET_ID_SELECTBOX).append(
                     // name attr used for matching wms
-                    $(Constant.optionString).attr('value', id).attr('name', title).html(displayName)
-                    );
-            });
+                    $(Constant.optionString).attr('value', item.id).attr('name', item.title).html(displayName)
+                );
+                
+            })
+//            $(xml).find('[nodeName="CoverageDescription"]').each(function(index, element) {
+//                var id = $(element).find('>[nodeName="Identifier"]').text();
+//                var title = $(element).find('>ns1|Title').text();
+//                var description = $(element).find('>ns1|Abstract').text();
+//
+//                var displayName = title + (description != '' ? ' - ' + description : '');
+//
+//                $(_DATASET_ID_SELECTBOX).append(
+//                    // name attr used for matching wms
+//                    $(Constant.optionString).attr('value', id).attr('name', title).html(displayName)
+//                    );
+//            });
         } else { //     == datasetTypeEnum.OPENDAP
             if (!WPS.checkWpsResponse(xml, "Error getting dataset ID's from server.")) return;
 
@@ -1446,6 +1504,7 @@ var Dataset = function() {
         datasetTypeEnum : _datasetTypeEnum,
         
         createGetFeatureXML : _createGetFeatureXML,
+        parseWCS : _parseWCS,
         
         init: function() {
             logger.info("GDP: Initializing Dataset/Submit View.");

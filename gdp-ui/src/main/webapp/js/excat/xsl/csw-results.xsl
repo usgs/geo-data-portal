@@ -120,6 +120,11 @@
                         <xsl:value-of select="./dc:title"/>
                         <xsl:text>'))</xsl:text>
                     </xsl:attribute>
+                    
+                    <xsl:attribute name="class">
+                        <xsl:text>li-dataset</xsl:text>
+                    </xsl:attribute>
+                    
                     <xsl:choose>
                         <xsl:when test="./dc:title">
                             <xsl:apply-templates select="./dc:title"/>
@@ -189,6 +194,10 @@
                 <a>
                     <xsl:attribute name="title">
                         <xsl:text>Select A Data Set</xsl:text>
+                    </xsl:attribute>
+                    
+                    <xsl:attribute name="class">
+                        <xsl:text>li-dataset</xsl:text>
                     </xsl:attribute>
                     
                     <xsl:choose>

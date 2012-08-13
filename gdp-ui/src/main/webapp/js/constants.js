@@ -23,7 +23,9 @@ var Constant = function() {
         'ows' : 'http://www.opengis.net/ows',
         'srv' : 'http://www.isotc211.org/2005/srv',
         'wfs' : 'http://www.opengis.net/wfs',
-        'xsd' : 'http://www.w3.org/2001/XMLSchema'
+        'xsd' : 'http://www.w3.org/2001/XMLSchema',
+        'wcs11' : 'http://www.opengis.net/wcs/1.1',
+        'wcs111' : 'http://www.opengis.net/wcs/1.1.1'
     };
     
     // When passed an array of keys and a value, returns the corresponding json
