@@ -15,3 +15,4 @@
 /gdp-prms-ui/target/
 !/gdp-prms-ui/src/main/webapp/META-INF/context.xml
 /geonetwork/target/
+/gdp-ui/src/main/webapp/scratch/
