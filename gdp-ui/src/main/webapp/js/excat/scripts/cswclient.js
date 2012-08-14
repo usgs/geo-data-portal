@@ -460,6 +460,43 @@ var CSWClient = function() {
             });
         },
         
+        selectFeatureById : function(id) {
+            var csw_response = getRecordById(id);
+            var selectedFeature;
+            
+            // We are doing this because we don't know which format the data might be in, if we can tell, we shouldn't iterate
+            var datasetSelectors = [
+            '[nodeName="csw:GetRecordByIdResponse"] > [nodeName="csw:Record"] [nodeName="dc:URI"]',
+            '[nodeName="csw:GetRecordByIdResponse"] > [nodeName="gmd:MD_Metadata"] > [nodeName="gmd:identificationInfo"] > \
+                [nodeName="srv:SV_ServiceIdentification"] > [nodeName="srv:containsOperations"] > [nodeName="srv:SV_OperationMetadata"] > \
+                [nodeName="srv:connectPoint"] > [nodeName="gmd:CI_OnlineResource"] > [nodeName="gmd:linkage"] > [nodeName="gmd:URL"]',
+            '[nodeName="csw:GetRecordByIdResponse"] > [nodeName="gmd:MD_Metadata"] > [nodeName="gmd:distributionInfo"] > \
+                [nodeName="gmd:MD_Distribution"] > [nodeName="gmd:transferOptions"] > [nodeName="gmd:MD_DigitalTransferOptions"] > \
+                [nodeName="gmd:onLine"] > [nodeName="gmd:CI_OnlineResource"] > [nodeName="gmd:linkage"] > [nodeName="gmd:URL"]'
+            ];
+            
+            for (var i=0; i<datasetSelectors.length; i++) {
+                $(csw_response).find(datasetSelectors[i]).each(function(index, elem) {
+                    var text = $(elem).text();
+
+                    if (text.toLowerCase().contains("wfs") ||
+                        text.toLowerCase().contains("ows")) {
+                        selectedFeature = text;
+                    }
+                });
+            }
+            
+            if (!selectedFeature) {
+                showErrorNotification("No feature found for this CSW Record");
+            }
+            else {
+                Constant.endpoint.ows = selectedFeature;
+                AOI.init();
+
+                $("#csw-output").dialog('close');
+            }
+        },
+        
         selectDatasetById : function(id, title) {
             var csw_response = getRecordById(id);
             

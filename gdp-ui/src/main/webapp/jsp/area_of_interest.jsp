@@ -57,6 +57,13 @@
                         </a>
                         <span id="drawFeatureButton" class="button aoi-services-button toggle">Draw a Polygon</span>
                     </span>
+                    <span id="sb-feature-button-container">
+                        or
+                        <a class="tooltip">
+                            <img src="images/question-mark.png" alt="informational question mark" />
+                        </a>
+                        <span id="sbFeatureButton" class="button aoi-services-button toggle">Find Feature From ScienceBase</span>
+                    </span>
                 </td>
             </tr>
             <tr>
@@ -74,6 +81,10 @@
                         </span>
                         <span id="upload-input-cell">
                             <span id="fileInputButton" ></span>
+                        </span>
+                        <span id="sb-input-cell">
+                            <input type="text" id="sbSearch" />
+                            <input type="button" id="sbSearchButton" class="button" />
                         </span>
                     </div>
                 </td>

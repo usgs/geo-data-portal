@@ -9,6 +9,7 @@ var AOI = function() {
     var _CLEAR_AOI_BUTTON = '#clear-aoi-button';
     var _CLEAR_DRAW_FEATURE_BUTTON = '#clearDrawFeatureButton';
     var _SUBMIT_DRAW_FEATURE_BUTTON = '#submitDrawFeatureButton';
+    var _SB_SEARCH_BUTTON = '#sbSearchButton';
     var _ATTRIBUTE_BOUNDS = {
         lowerCorner : '-180 -90',
         upperCorner : '180 90'
@@ -227,6 +228,20 @@ var AOI = function() {
                     deactivateDrawFeature();
                     $.jGrowl('close');
                 }
+            },
+            'sbFeatureButton' : {
+                config_key : 'view_show_service_sb_feature',
+                all_elements : '#sb-feature-button-container',
+                input_elements : '#sb-input-cell',
+                tips : '#sb-feature-tooltip-text',
+                on_depress : function() {
+                    deselectFeatureType();
+                    //activateSbFeature();
+                },
+                on_release : function() {
+                    //deactivateSbFeature();
+                    $.jGrowl('close');
+                }
             }
         };
 
@@ -296,6 +311,10 @@ var AOI = function() {
             'label' : 'Clear Polygon'
         });
         $(_CLEAR_DRAW_FEATURE_BUTTON).click(clearDrawFeatureLayer);
+        $(_SB_SEARCH_BUTTON).button({
+            'label' : 'Search' 
+        });
+        $(_SB_SEARCH_BUTTON).click(searchSB);
 
         // If we are configured for uploading shapefiles
         if (parseInt(Constant.ui[servicesMap['uploadButton'].config_key])) initUploader();
