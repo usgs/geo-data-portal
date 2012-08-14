@@ -40,7 +40,7 @@
             String key = paramNames.nextElement();
             String value = request.getParameter(key);
     %>
-        incomingEndpoints[<%=key%>] = '<%=value%>'
+        incomingEndpoints['<%=key%>'] = '<%=value%>'
     <%
         }
     %>
