@@ -14,7 +14,7 @@ WFS = function() {
         $.extend(wfsData, defaultData, data);
         logger.debug('GDP: Calling WFS Service with a '+wfsData.request+' request.');
         $.ajax({
-            url: Constant.endpoint.proxy + Constant.endpoint.geoserver + "/wfs",
+            url: Constant.endpoint.proxy + Constant.endpoint.wfs,
             async: async,
             data: wfsData,
             cache: false,

@@ -435,7 +435,7 @@ var AOI = function() {
             
         if (wfsXML) {
             $.ajax( {
-                url : Constant.endpoint.proxy + Constant.endpoint.geoserver + "/ows",
+                url : Constant.endpoint.proxy + Constant.endpoint.ows,
                 type : 'post',
                 data : WPS.createGeoserverBoundingBoxWPSRequest(wfsXML),
                 processData : false,
@@ -482,7 +482,7 @@ var AOI = function() {
         $('#download_shapefile_link_row').remove();
         if (selectedFeatureType) {
             var maxFeaturesToReturn = Constant.ui.shapefile_downloading_maxfeatures ?  '&maxFeatures=' + Constant.ui.shapefile_downloading_maxfeatures : '';
-            var rootUrl = Constant.endpoint.proxy + Constant.endpoint.geoserver + '/ows';
+            var rootUrl = Constant.endpoint.proxy + Constant.endpoint.ows;
             var kvpParams = 'service=WFS&version=1.0.0&request=GetFeature&typeName='+selectedFeatureType + maxFeaturesToReturn + '&outputFormat=SHAPE-ZIP';
             $('#aoi-table tbody').append(
                 $('<tr></tr>').append(
@@ -582,6 +582,7 @@ var AOI = function() {
         releaseToggleButton: function(button) {
             if (isDepressed(button)) $(button).click();
         },
+        
         // A hook for when a step is appearing on the page
         stepLoading: function() {
             return true;

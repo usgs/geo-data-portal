@@ -5,8 +5,4 @@
                 <connectTimeout>15000</connectTimeout>
                 <readTimeout>300000</readTimeout>
 	</forward>
-    <!--<forward>
-		<getRequestURIKey>/geoserver-proxy</getRequestURIKey>
-        <forward-url>${endpoint.wfs}</forward-url>
-	</forward>-->
 </forwards>

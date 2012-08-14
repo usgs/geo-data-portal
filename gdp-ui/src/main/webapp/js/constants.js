@@ -1,7 +1,11 @@
 var Constant = function() {
     var _algorithms;
-    var _UI = {'fadespeed' : 250};
-    var _ENDPOINT  = {'properties' : 'PropertiesServlet'};
+    var _UI = {
+        'fadespeed' : 250
+    };
+    var _ENDPOINT  = {
+        'properties' : 'PropertiesServlet'
+    };
     var _NAMESPACES = {
         'cat' : 'http://www.esri.com/metadata/csw/',
         'csw' : 'http://www.opengis.net/cat/csw/2.0.2',
@@ -40,6 +44,55 @@ var Constant = function() {
 
         return ob;
     }
+    
+    // Ripped directly from OpenLayers
+    function getUrlParameters(url) {
+        // if no url specified, take it from the location bar
+        url = (url === null || url === undefined) ? window.location.href : url;
+
+        //parse out parameters portion of url string
+        var paramsString = "";
+        if (url.indexOf('?') != -1) {
+            var start = url.indexOf('?') + 1;
+            var end = url.indexOf('#') != -1 ? url.indexOf('#') : url.length;
+            paramsString = url.substring(start, end);
+        }
+
+        var parameters = {};
+        var pairs = paramsString.split(/[&;]/);
+        for(var i=0, len=pairs.length; i<len; ++i) {
+            var keyValue = pairs[i].split('=');
+            if (keyValue[0]) {
+
+                var key = keyValue[0];
+                try {
+                    key = decodeURIComponent(key);
+                } catch (err) {
+                    key = unescape(key);
+                }
+            
+                // being liberal by replacing "+" with " "
+                var value = (keyValue[1] || '').replace(/\+/g, " ");
+
+                try {
+                    value = decodeURIComponent(value);
+                } catch (err) {
+                    value = unescape(value);
+                }
+            
+                // follow OGC convention of comma delimited values
+                value = value.split(",");
+
+                //if there's only one value, do not return as array                    
+                if (value.length == 1) {
+                    value = value[0];
+                }                
+            
+                parameters[key] = value;
+            }
+        }
+        return parameters;
+    }
 
     return {
         ui : _UI,
@@ -65,7 +118,9 @@ var Constant = function() {
             logger.debug("GDP: Getting constant values from server.");
             $.ajax( {
                 url : Constant.endpoint.properties,
-                data : {'command' : 'getprops'},
+                data : {
+                    'command' : 'getprops'
+                },
                 async: false, // Until we have all of our constants, we do not want to load the rest of the application
                 processData : true,
                 dataType : 'xml',
@@ -81,8 +136,15 @@ var Constant = function() {
                             {}, 
                             buildJsonFromProperty($(sElement).attr('key').split('.'), ($(sElement).text() == undefined) ? '' : $(sElement).text()),
                             Constant
-                        );
+                            );
                     });
+                    
+                    
+                    $.extend(
+                        true,
+                        Constant.endpoint,
+                        getUrlParameters()
+                        );
                 },
                 error : function(jqXHR, textStatus, errorThrown) {
                     throw({

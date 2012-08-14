@@ -149,7 +149,7 @@ WPS = function() {
                 '<wps:DataInputs>' + 
                 '<wps:Input>' + 
                 '<ows:Identifier>features</ows:Identifier>' + 
-                '<wps:Reference mimeType="application/wfs-collection-1.1" xlink:href="'+Constant.endpoint.geoserver + '/wfs" method="POST">' + 
+                '<wps:Reference mimeType="application/wfs-collection-1.1" xlink:href="' + Constant.endpoint.wfs + '" method="POST">' + 
                 '<wps:Body>' + 
                 wfsXML + 
                 '</wps:Body>' + 

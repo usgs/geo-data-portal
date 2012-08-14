@@ -626,7 +626,7 @@ var Dataset = function() {
             });
 
             var wfsXML = _createGetFeatureXML(featureType, attribute, features);
-            var wfsWpsXML = WPS.createWfsWpsReference(Constant.endpoint.geoserver + "/wfs", wfsXML);
+            var wfsWpsXML = WPS.createWfsWpsReference(Constant.endpoint.wfs, wfsXML);
             var submitWpsXmlInputs = {
                 'FEATURE_COLLECTION': [wfsWpsXML]
             }

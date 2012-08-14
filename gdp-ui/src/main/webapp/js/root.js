@@ -29,18 +29,18 @@ var CSWClient;
 var WFS;
 var WPS;
 
+
 $(document).ready(function() {
     try {
         initializeLogging();
 
         if (!init()) logger.error("GDP: A non-fatal error occured while loading the application.");
         else logger.debug("GDP: Application initialized successfully.");
+        
     } catch(err) {
         handleException(err);
     }
 })
-
-
 
 function init() {
     logger.info("GDP: Beginning application initialization.");

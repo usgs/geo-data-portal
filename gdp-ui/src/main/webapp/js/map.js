@@ -169,7 +169,7 @@ function updateFeatureTypeAttribute(featureType, attribute, value, callback) {
         '</wfs:Transaction>';
 
     $.ajax({
-        url: Constant.endpoint.proxy + Constant.endpoint.geoserver + "/wfs",
+        url: Constant.endpoint.proxy + Constant.endpoint.wfs,
         type: 'POST',
         contentType: 'application/xml',
         data: updateTransaction,
@@ -354,7 +354,7 @@ function initMap(options) {
         protocol: new OpenLayers.Protocol.WFS({
             version: '1.1.0',
             srsName: 'EPSG:4326',
-            url: Constant.endpoint.proxy + Constant.endpoint.geoserver + '/wfs',
+            url: Constant.endpoint.proxy + Constant.endpoint.wfs,
             featureNS :  'gov.usgs.cida.gdp.draw',
             featureType : 'temp', // this gets changed before submitting geometry
             geometryName: 'the_geom'
