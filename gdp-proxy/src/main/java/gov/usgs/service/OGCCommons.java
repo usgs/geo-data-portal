@@ -75,11 +75,15 @@ public class OGCCommons {
 			if (doc == null) {
 				return false;
 			}
-			Node firstChild = doc.getFirstChild();
-			if (firstChild == null) {
-				 return false;
+			Node node = doc.getFirstChild();
+			while (node != null && node.getNodeType() == Document.COMMENT_NODE) {
+				 node = node.getNextSibling();
 			}
-			String nodeName = doc.getFirstChild().getNodeName();
+                        if (node == null) {
+                            return false;
+                        }
+                        
+			String nodeName = node.getNodeName();
 			if (nodeName == null) {
 				return false;
 			}
