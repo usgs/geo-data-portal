@@ -4,6 +4,7 @@
     Author     : Ivan Suftin <isuftin@usgs.gov>
 --%>
 
+<%@page import="java.util.Enumeration"%>
 <script type="text/javascript" src="js/cookie/cookie.js"></script>
 <script type="text/javascript" src="js/log4javascript/log4javascript.js"></script>
 <script type="text/javascript" src="js/jquery/jquery.js"></script>
@@ -30,3 +31,16 @@
 <script type="text/javascript" src="js/excat/scripts/sarissa.js"></script>
 <script type="text/javascript" src="js/excat/scripts/sarissa_ieemu_xpath.js"></script>
 <script type="text/javascript" src="js/excat/scripts/cswclient.js"></script>
+<script type="text/javascript">
+    var incomingEndpoints = {};
+    <%
+        Enumeration<String> paramNames = (Enumeration<String>) request.getParameterNames();
+        while (paramNames.hasMoreElements()) {
+            String key = paramNames.nextElement();
+            String value = request.getParameter(key);
+    %>
+        incomingEndpoints[<%=key%>] = '<%=value%>'
+    <%
+        }
+    %>
+</script>
