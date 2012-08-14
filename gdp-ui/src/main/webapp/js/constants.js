@@ -143,7 +143,8 @@ var Constant = function() {
                     $.extend(
                         true,
                         Constant.endpoint,
-                        getUrlParameters()
+                        getUrlParameters(),
+                        incomingEndpoints
                         );
                 },
                 error : function(jqXHR, textStatus, errorThrown) {
