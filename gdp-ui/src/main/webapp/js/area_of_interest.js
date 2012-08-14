@@ -314,7 +314,7 @@ var AOI = function() {
         $(_SB_SEARCH_BUTTON).button({
             'label' : 'Search' 
         });
-        $(_SB_SEARCH_BUTTON).click(searchSB);
+        $(_SB_SEARCH_BUTTON).click(SB.searchSB);
 
         // If we are configured for uploading shapefiles
         if (parseInt(Constant.ui[servicesMap['uploadButton'].config_key])) initUploader();

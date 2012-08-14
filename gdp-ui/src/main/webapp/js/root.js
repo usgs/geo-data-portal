@@ -128,6 +128,8 @@ function initializeSteps() {
     Algorithm.init();
     CSWClient.init();
     
+    SB = new SB();
+    
     steps = [AOI, Dataset];
 
     logger.debug('GDP: Moving all steps content into respective page content sections');
