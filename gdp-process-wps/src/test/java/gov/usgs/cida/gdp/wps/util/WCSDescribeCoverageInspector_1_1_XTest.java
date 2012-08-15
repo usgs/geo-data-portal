@@ -165,8 +165,13 @@ public class WCSDescribeCoverageInspector_1_1_XTest {
             IOUtils.closeQuietly(inputStream);
         }
     }
-
+    
     private void validateGeoServerResponseParsing(String resourceName) throws SAXException, IOException {
+        validateGeoServerResponseParsing(resourceName, "sample:ned");
+        validateGeoServerResponseParsing(resourceName, "ned");
+    }
+
+    private void validateGeoServerResponseParsing(String resourceName, String identifier) throws SAXException, IOException {
         InputStream inputStream = null;
         try {
             inputStream = getClass().getResourceAsStream(resourceName);
@@ -174,7 +179,7 @@ public class WCSDescribeCoverageInspector_1_1_XTest {
 
             WCSDescribeCoverageInspector_1_1_X inspector = new WCSDescribeCoverageInspector_1_1_X(
                     DocumentUtil.createDocument(inputStream),
-                    "sample:ned");
+                    identifier);
 
             assertEquals("urn:ogc:def:crs:EPSG::4269", inspector.getGridBaseCRSAsString());
 

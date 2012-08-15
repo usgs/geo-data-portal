@@ -985,7 +985,7 @@ var Dataset = function() {
         gDatasetType = _datasetTypeEnum.WCS;
 
         callWCS({
-            'request' : 'DescribeCoverage'
+            'request' : 'GetCapabilities'
         },
         datasetURL,
         populateDatasetIdSelect,
@@ -1010,7 +1010,7 @@ var Dataset = function() {
     }
 
     /**
-     * Takes a WCS CoverageDescription response and parses out all of the id, title and abstract
+     * Takes a WCS GetCapabilities response and parses out all of the id, title and abstract
      * elements.
      * 
      * Result is an array in the format of:
@@ -1031,14 +1031,14 @@ var Dataset = function() {
         // GeoServer has the wcs namespace whereas ArcGIS has the wcs namespace as default
         
         // First try to pick out CoverageDescription from the default namespace
-        var coverageDescription = $(xml).find(namespace + 'CoverageDescription');
+        var coverageDescription = $(xml).find(namespace + 'CoverageSummary');
         
         if (!coverageDescription.length) {
             // CoverageDescription was not in the default namespace. The only other
             // place it would be would be in the wcs: namespace which we have $.xmlns
             // globally initialized with
             namespace = 'wcs111|';
-            coverageDescription = $(xml).find(namespace + 'CoverageDescription');
+            coverageDescription = $(xml).find(namespace + 'CoverageSummary');
         }
         
         $.each(coverageDescription, function(index, element) {
