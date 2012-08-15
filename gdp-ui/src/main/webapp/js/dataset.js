@@ -330,6 +330,10 @@ var Dataset = function() {
             'wps-checkpoint': [statusLocation],
             'email': [_userEmail]
         };
+        
+        if (Constant.endpoint && Constant.endpoint.redirect_url) {
+            wpsInputs['callback-base-url'] = [ Constant.endpoint.redirect_url + "?result="];
+        }
 
         if (wpsInputs.email) {
             WPS.sendWpsExecuteRequest(Constant.endpoint.proxy + Constant.endpoint.utilitywps, _EMAIL_WHEN_FINISHED_ALGORITHM, wpsInputs, ['result'], false, emailCallback);

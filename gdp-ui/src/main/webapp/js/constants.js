@@ -9,7 +9,7 @@ var Constant = function() {
     var _ENDPOINT  = {
         'properties' : 'PropertiesServlet',
         // Science Base Specific
-        'redirect_url' : 'http://http://beta.sciencebase.gov/catalog/gdp/landing/'
+        'redirect_url' : 'https://beta.sciencebase.gov/catalog/gdp/landing'
     };
     var _NAMESPACES = {
         'cat' : 'http://www.esri.com/metadata/csw/',
