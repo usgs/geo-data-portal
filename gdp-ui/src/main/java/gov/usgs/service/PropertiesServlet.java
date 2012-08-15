@@ -63,7 +63,6 @@ public class PropertiesServlet extends HttpServlet {
             defaultProperties.setProperty("config.csw.cache.getcaps", "1");
             
             // Endpoint configuration
-            defaultProperties.setProperty("endpoint.ows", "http://localhost:8081/geoserver/ows");
             defaultProperties.setProperty("endpoint.wfs", "http://localhost:8081/geoserver/wfs");
             defaultProperties.setProperty("endpoint.csw", "http://igsarm-cida-gdp2.er.usgs.gov:8081/geonetwork/srv/en/csw");
             defaultProperties.setProperty("endpoint.wms", "http://localhost:8081/geoserver/wms");

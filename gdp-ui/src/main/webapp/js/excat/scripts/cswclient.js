@@ -490,7 +490,7 @@ var CSWClient = function() {
                 showErrorNotification("No feature found for this CSW Record");
             }
             else {
-                Constant.endpoint.ows = selectedFeature;
+                Constant.endpoint.wfs = selectedFeature;
                 AOI.init();
 
                 $("#csw-output").dialog('close');

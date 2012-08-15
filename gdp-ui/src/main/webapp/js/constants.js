@@ -3,6 +3,9 @@ var Constant = function() {
     var _UI = {
         'fadespeed' : 250
     };
+    
+    var _INCOMING = {};
+    
     var _ENDPOINT  = {
         'properties' : 'PropertiesServlet'
     };
@@ -101,6 +104,7 @@ var Constant = function() {
         ui : _UI,
         isSB : _IS_SB,
         endpoint : _ENDPOINT,
+        incoming : _INCOMING,
         namespaces : _NAMESPACES,
         algorithms : _algorithms,
         selectString : '<select></select>',
@@ -114,18 +118,30 @@ var Constant = function() {
         tableDataString : '<td></td>',
         init: function() {
             logger.debug("GDP: Beginning Constants initialization.");
-            this.getConstantsFromServer();
+            
             $().xmlns(this.namespaces);
             
+            this.getConstantsFromServer();
+
             $.extend(
                 true,
-                Constant.endpoint,
+                Constant.incoming,
                 getUrlParameters(),
                 incomingEndpoints);
                
-            if (Constant.endpoint['sb-return']) {
+            if (Constant.incoming.caller && Constant.incoming.caller.toLowerCase() === 'sciencebase') {
                 Constant.isSB = true;
             }
+            
+            $.each(Constant.incoming, function(key, value) {
+                if (key === 'feature_wms') {
+                    Constant.endpoint.wms = value
+                }
+                
+                if (key === 'feature_wfs') {
+                    Constant.endpoint.wfs = value
+                }
+            })
         },
         getConstantsFromServer : function() {
             logger.debug("GDP: Getting constant values from server.");
