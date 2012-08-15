@@ -236,7 +236,7 @@ var AOI = function() {
                 tips : '#sb-feature-tooltip-text',
                 on_depress : function() {
                     deselectFeatureType();
-                    //activateSbFeature();
+                //activateSbFeature();
                 },
                 on_release : function() {
                     //deactivateSbFeature();
@@ -382,6 +382,9 @@ var AOI = function() {
                 $(NEXT_BUTTON).button('option', 'disabled', false);
             }
             
+            //TODO- Check if we are coming in from sciencebase. If so, do not 
+            // show the shapefile download link or change the link to allow to 
+            // download directly from ScienceBase
             if (parseInt(Constant.ui.shapefile_downloading_allow)) {
                 createShapefileDownloadLink(selectedFeatureType);
             }
@@ -390,14 +393,29 @@ var AOI = function() {
             
             $(WFS.cachedGetCapabilities).find('FeatureType').each(function(i, elem) {
                 if ($(elem).find('Name').text() == selectedFeatureType) {
-                    var bbox = $(elem).find('ows|WGS84BoundingBox');
-                    var lowerCorner = $(bbox).find('ows|LowerCorner').text().split(' ');
-                    var upperCorner = $(bbox).find('ows|UpperCorner').text().split(' ');
+                    var bbox, minx, miny, maxx, maxy;
+                    var lowerCorner, upperCorner;
+                    
+                    bbox = $(elem).find('ows|WGS84BoundingBox');
+                    
+                    if (bbox.length) {
+                        // This is how we're finding bounds from GeoServer
+                        lowerCorner = $(bbox).find('ows|LowerCorner').text().split(' ');
+                        upperCorner = $(bbox).find('ows|UpperCorner').text().split(' ');
 
-                    var minx = lowerCorner[0];
-                    var miny = lowerCorner[1];
-                    var maxx = upperCorner[0];
-                    var maxy = upperCorner[1];
+                        minx = lowerCorner[0];
+                        miny = lowerCorner[1];
+                        maxx = upperCorner[0];
+                        maxy = upperCorner[1];
+                    } else {
+                        // This flow was introduced when pulling WFS GetCaps from ScienceBase
+                        bbox = $(elem).find('LatLongBoundingBox');
+                        
+                        minx = $(bbox).attr('minx');
+                        miny = $(bbox).attr('miny');
+                        maxx = $(bbox).attr('maxx');
+                        maxy = $(bbox).attr('maxy');
+                    }
 
                     AOI.attributeBounds = {
                         lowerCorner : minx + ' ' + miny,
@@ -405,7 +423,11 @@ var AOI = function() {
                     }
                 }
             });  
-            logger.debug('Bounds for chosen layer are: LOWER CORNER: ' + AOI.attributeBounds.lowerCorner + ', UPPER CORNER: ' + AOI.attributeBounds.upperCorner)
+            if (AOI.attributeBounds.lowerCorner == undefined || AOI.attributeBounds.upperCorner == undefined) {
+                logger.warn('Bounds for chosen layer could not be found');
+            } else {
+                logger.debug('Bounds for chosen layer are: LOWER CORNER: ' + AOI.attributeBounds.lowerCorner + ', UPPER CORNER: ' + AOI.attributeBounds.upperCorner);
+            }
         });
     }
 
@@ -450,7 +472,9 @@ var AOI = function() {
     }
     
     function setSelectedAttributeBoundingBox() {
-        var wfsXML = '<![CDATA[' + Dataset.createGetFeatureXML(AOI.getSelectedFeatureType(), AOI.getSelectedAttribute(), AOI.getSelectedFeatures(), {srs : 'EPSG:4326'}) + ']]>';
+        var wfsXML = '<![CDATA[' + Dataset.createGetFeatureXML(AOI.getSelectedFeatureType(), AOI.getSelectedAttribute(), AOI.getSelectedFeatures(), {
+            srs : 'EPSG:4326'
+        }) + ']]>';
             
         if (wfsXML) {
             $.ajax( {

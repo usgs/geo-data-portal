@@ -183,6 +183,32 @@ function clearDrawFeatureLayer() {
     drawFeatureLayer.removeAllFeatures();
 }
 
+function setDatasetOverlay(wmsURL, wmsLayerName) {
+    logger.debug('GDP: Setting new dataset overlay for layer name :' + wmsLayerName);
+
+    if ($.inArray(datasetOverlay, map.layers) > -1) {
+        logger.debug('GDP: Removing previous dataset overlay layer.');
+        map.removeLayer(datasetOverlay);
+    }
+
+    datasetOverlay = new OpenLayers.Layer.WMS(
+        "Dataset Overlay",
+        wmsURL,
+        {
+            layers: wmsLayerName,
+            transparent: 'true',
+            isBaseLayer: false
+        },
+        {
+            opacity: 0.5
+        }
+    );
+
+    logger.debug('GDP: Adding dataset overlay layer.');
+    map.addLayer(datasetOverlay);
+    map.setLayerIndex(datasetOverlay, 1); // Dataset layer should always be below geometry layer
+}
+
 // TODO: refactor to remove duplicated code between this and setDatasetOverlay
 function setGeometryOverlay(wmsLayerName) {
     // Remove previous overlay, if one exists
@@ -197,7 +223,8 @@ function setGeometryOverlay(wmsLayerName) {
             layers: wmsLayerName,
             transparent: 'true',
             isBaseLayer: false,
-            styles: 'polygon'
+            // ScienceBase does not have 'Polygon' as a set style. 
+            styles: Constant.isSB ? 'MultiPolygon' : 'polygon'
         },
         {
             opacity: 0.7
@@ -276,32 +303,6 @@ function clearGeometryOverlay() {
     logger.debug('GDP: Removing geometry overlay from map.');
     if ($.inArray(geometryOverlay, map.layers) > -1) map.removeLayer(geometryOverlay);
     if ($.inArray(highlightGeometryOverlay, map.layers) > -1) map.removeLayer(highlightGeometryOverlay);
-}
-
-function setDatasetOverlay(wmsURL, wmsLayerName) {
-    logger.debug('GDP: Setting new dataset overlay for layer name :' + wmsLayerName);
-
-    if ($.inArray(datasetOverlay, map.layers) > -1) {
-        logger.debug('GDP: Removing previous dataset overlay layer.');
-        map.removeLayer(datasetOverlay);
-    }
-
-    datasetOverlay = new OpenLayers.Layer.WMS(
-        "Dataset Overlay",
-        wmsURL,
-        {
-            layers: wmsLayerName,
-            transparent: 'true',
-            isBaseLayer: false
-        },
-        {
-            opacity: 0.5
-        }
-    );
-
-    logger.debug('GDP: Adding dataset overlay layer.');
-    map.addLayer(datasetOverlay);
-    map.setLayerIndex(datasetOverlay, 1); // Dataset layer should always be below geometry layer
 }
 
 function clearDatasetOverlay() {

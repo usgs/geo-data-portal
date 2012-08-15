@@ -32,6 +32,9 @@ var Constant = function() {
         'wcs111' : 'http://www.opengis.net/wcs/1.1.1'
     };
     
+    // Is the incoming request from ScienceBase?
+    var _IS_SB = false;
+    
     // When passed an array of keys and a value, returns the corresponding json
     // object. E.g. buildJsonFromProperty(['map', 'layer1'], 'layer1url') ==
     // { 'map' : { 'layer1' : 'layer1url' } }.
@@ -96,6 +99,7 @@ var Constant = function() {
 
     return {
         ui : _UI,
+        isSB : _IS_SB,
         endpoint : _ENDPOINT,
         namespaces : _NAMESPACES,
         algorithms : _algorithms,
@@ -113,6 +117,15 @@ var Constant = function() {
             this.getConstantsFromServer();
             $().xmlns(this.namespaces);
             
+            $.extend(
+                true,
+                Constant.endpoint,
+                getUrlParameters(),
+                incomingEndpoints);
+               
+            if (Constant.endpoint['sb-return']) {
+                Constant.isSB = true;
+            }
         },
         getConstantsFromServer : function() {
             logger.debug("GDP: Getting constant values from server.");
@@ -138,14 +151,6 @@ var Constant = function() {
                             Constant
                             );
                     });
-                    
-                    
-                    $.extend(
-                        true,
-                        Constant.endpoint,
-                        getUrlParameters(),
-                        incomingEndpoints
-                        );
                 },
                 error : function(jqXHR, textStatus, errorThrown) {
                     throw({
