@@ -37,6 +37,7 @@ var Dataset = function() {
     var _RETRIEVE_PROC_INFO_BUTTON = '#retrieve-process-info-button';
     var _SELECT_DATASET_BUTTON = '#select-dataset-button';
     var _SUBMIT_FOR_PROCESSING_LINK = '#submit-for-processing-link';
+    var _REDIR_TO_SB_BUTTON = "#redirect-to-sb-button";
     var _WMS_LABEL = '#wms-label';
     var _WMS_LAYER_SELECTBOX = '#wms-layer-selectbox';
     var _WMS_TOOLTIP = '#wms-tooltip';
@@ -346,8 +347,8 @@ var Dataset = function() {
                     statusCallback(XMLHttpRequest.responseText, intervalID, statusID);
                 },
                 error : function() {
-                    //$(_SUBMIT_FOR_PROCESSING_LINK).fadeIn(Constant.ui.fadeSpeed);
-                    //window.clearInterval(intervalID);
+                //$(_SUBMIT_FOR_PROCESSING_LINK).fadeIn(Constant.ui.fadeSpeed);
+                //window.clearInterval(intervalID);
                 }
             });
         }, 5000);
@@ -360,7 +361,6 @@ var Dataset = function() {
     }
 
     function statusCallback(xmlText, intervalID, statusID) {
-        ////////////////////////////////////////////////////////////////////////
         // Workaround and extra logging for bug where empty xml is returned. 
         // Ignore it and keep rechecking.
         if (!xmlText || xmlText == '') {
@@ -382,10 +382,16 @@ var Dataset = function() {
             hideThrobber(true);
             logger.debug('GDP: Hiding retrieve process output link');
             $(_RETRIEVE_OUTPUT_BUTTON).fadeOut(Constant.ui.fadeSpeed);
+            
             logger.debug('GDP: Hiding retrieve process information link');
             $(_RETRIEVE_PROC_INFO_BUTTON).fadeOut(Constant.ui.fadeSpeed);
+            
             logger.debug('GDP: Showing submit for processing link');
             $(_SUBMIT_FOR_PROCESSING_LINK).fadeIn(Constant.ui.fadeSpeed);
+            
+            logger.debug('GDP: Hiding Redirect To ScienceBase Button');
+            $(_REDIR_TO_SB_BUTTON).fadeOut(Constant.ui.fadeSpeed);
+            
             return;
         }
         
@@ -394,30 +400,46 @@ var Dataset = function() {
         } else if ($(xml).find('ns|ProcessSucceeded').length > 0) {
             window.clearInterval(intervalID);
             hideThrobber(true);
+            
             logger.debug('GDP: STATUS: Process successfully completed.')
             showNotification('Your request has successfully completed.', true);
             _RETRIEVE_OUTPUT_URL = $(xml).find('ns|Output').find('ns|Reference').attr('href');
+            
             logger.debug('GDP: Showing submit for processing link');
             $(_SUBMIT_FOR_PROCESSING_LINK).fadeIn(Constant.ui.fadeSpeed);
+            
             logger.debug('GDP: Binding retrieve output link');
             bindRetrieveOutputButton();
+            
             logger.debug('GDP: Showing retrieve output link');
             $(_RETRIEVE_OUTPUT_BUTTON).fadeIn(Constant.ui.fadeSpeed);
+            
             logger.debug('GDP: Binding retrieve process info link with status ID: ' + statusID);
             bindRetrieveProcInfoButton(statusID);
+            
             logger.debug('GDP: Showing retrieve process information link');
             $(_RETRIEVE_PROC_INFO_BUTTON).fadeIn(Constant.ui.fadeSpeed);
+            
+            if (Constant.isSB) {
+                $(_REDIR_TO_SB_BUTTON).fadeIn(Constant.ui.fadeSpeed);
+            }
         } else if ($(xml).find('ns|ProcessFailed').length > 0) {
             window.clearInterval(intervalID);
             hideThrobber(true);
             logger.warn('GDP: STATUS: Process Failed: '+ $(xml).find('ns|ProcessFailed').find('ns1|ExceptionText').text())
             showErrorNotification('Process failed: ' + $(xml).find('ns|ProcessFailed').find('ns1|ExceptionText').text());
+            
             logger.debug('GDP: Hiding retrieve process output link');
             $(_RETRIEVE_OUTPUT_BUTTON).fadeOut(Constant.ui.fadeSpeed);
+            
             logger.debug('GDP: Hiding retrieve process information link');
             $(_RETRIEVE_PROC_INFO_BUTTON).fadeOut(Constant.ui.fadeSpeed);
+            
             logger.debug('GDP: Showing submit for processing link');
             $(_SUBMIT_FOR_PROCESSING_LINK).fadeIn(Constant.ui.fadeSpeed);
+            
+            logger.debug('GDP: Hiding Redirect To ScienceBase Button');
+            $(_REDIR_TO_SB_BUTTON).fadeOut(Constant.ui.fadeSpeed);
         } else {
             showErrorNotification('Unknown response received from server. This should not affect processing. Retrying.');
             logger.warning('GDP: STATUS: Unknown wps response = ' + '\'' + xmlText + '\'');
@@ -1063,7 +1085,9 @@ var Dataset = function() {
 
         if (gDatasetType == _datasetTypeEnum.WCS) {
             // Parse the WCS to get all of the ids, titles and abstracts (descriptions)
-            var wcsResp = _parseWCS({ xml : xml });
+            var wcsResp = _parseWCS({
+                xml : xml
+            });
             
             $.each(wcsResp, function(index, item) {
                 // Populate the dataset ID selectbox with the results from the WCS call
@@ -1071,21 +1095,21 @@ var Dataset = function() {
                 $(_DATASET_ID_SELECTBOX).append(
                     // name attr used for matching wms
                     $(Constant.optionString).attr('value', item.id).attr('name', item.title).html(displayName)
-                );
+                    );
                 
             })
-//            $(xml).find('[nodeName="CoverageDescription"]').each(function(index, element) {
-//                var id = $(element).find('>[nodeName="Identifier"]').text();
-//                var title = $(element).find('>ns1|Title').text();
-//                var description = $(element).find('>ns1|Abstract').text();
-//
-//                var displayName = title + (description != '' ? ' - ' + description : '');
-//
-//                $(_DATASET_ID_SELECTBOX).append(
-//                    // name attr used for matching wms
-//                    $(Constant.optionString).attr('value', id).attr('name', title).html(displayName)
-//                    );
-//            });
+        //            $(xml).find('[nodeName="CoverageDescription"]').each(function(index, element) {
+        //                var id = $(element).find('>[nodeName="Identifier"]').text();
+        //                var title = $(element).find('>ns1|Title').text();
+        //                var description = $(element).find('>ns1|Abstract').text();
+        //
+        //                var displayName = title + (description != '' ? ' - ' + description : '');
+        //
+        //                $(_DATASET_ID_SELECTBOX).append(
+        //                    // name attr used for matching wms
+        //                    $(Constant.optionString).attr('value', id).attr('name', title).html(displayName)
+        //                    );
+        //            });
         } else { //     == datasetTypeEnum.OPENDAP
             if (!WPS.checkWpsResponse(xml, "Error getting dataset ID's from server.")) return;
 
@@ -1518,20 +1542,30 @@ var Dataset = function() {
             $(_ALGORITHM_DOC_LINK).button({
                 'label' : 'Documentation'
             });
+            
             $(_ALGORITHM_CONFIG_LINK).button({
                 'label' : 'Configure'
             });
+            
             $(_SUBMIT_FOR_PROCESSING_LINK).button({
                 'label' : 'Submit For Processing'
             });
+            
             $(_RETRIEVE_OUTPUT_BUTTON).button({
                 'label' : 'Retrieve Output'
             });
+            
             $(_RETRIEVE_PROC_INFO_BUTTON).button({
                 'label' : 'Retreive Process Input'
             });
             
-            if ($(_DATASET_URL_INPUT_BOX).val()) $(_SELECT_DATASET_BUTTON).click();
+            $(_REDIR_TO_SB_BUTTON).button({
+                'label' : 'Redirect To Science Base'
+            });
+            
+            if ($(_DATASET_URL_INPUT_BOX).val()) {
+                $(_SELECT_DATASET_BUTTON).click();
+            }
         },
 
         getCSWServerURL: function() {

@@ -22,7 +22,7 @@
     <div class="step-header hidden">Configure / Submit</div>
     <div class="step-content hidden centered">
 
-        
+
         <div id="algorithm-config-div" >
             <span id="algorithm-dropdown-container">
                 <select id="algorithm-dropdown"></select>
@@ -53,9 +53,9 @@
                 <tr class="csw-dialog-tablerow">
                     <td>
                         <a class="tooltip" title="Enter a search query to limit
-                            the datasets listed. This search will query the
-                            metadata record associated with the dataset
-                            displayed.">
+                           the datasets listed. This search will query the
+                           metadata record associated with the dataset
+                           displayed.">
                             <img src="images/question-mark.png" alt="informational question mark"/>
                         </a>
                     </td>
@@ -65,13 +65,13 @@
                     <%-- Dataset URL --%>
                     <td>
                         <a class="tooltip" title="Resources in the GDP catalog
-                            are associated with a GDP compatible data transport
-                            standard for analysis and potentially a web map service
-                            (WMS) for visualization. Upon selection of a dataset,
-                            the dataset URL will be populated and the sever will be
-                            queried for available dataset IDs. Alternatively, you
-                            can enter any OPeNDAP (dods://url/servicePath) url or a
-                            WCS endpoint (http://url/servicePath?).">
+                           are associated with a GDP compatible data transport
+                           standard for analysis and potentially a web map service
+                           (WMS) for visualization. Upon selection of a dataset,
+                           the dataset URL will be populated and the sever will be
+                           queried for available dataset IDs. Alternatively, you
+                           can enter any OPeNDAP (dods://url/servicePath) url or a
+                           WCS endpoint (http://url/servicePath?).">
                             <img src="images/question-mark.png" alt="informational question mark"/>
                         </a>
                     </td>
@@ -148,10 +148,17 @@
         </div>
 
         <div>            
-            <span id="submit-button-div"><span id="submit-for-processing-link" class="hidden button"></span></span>            
+            <span id="submit-button-div">
+                <span id="submit-for-processing-link" class="hidden button"></span>
+            </span>            
+            
             <span id="process-buttons">
                 <span id="retrieve-output-button" class="hidden button"></span>
                 <span id="retrieve-process-info-button" class="hidden button"></span>
+            </span>
+            
+            <span id="redirect-to-sb">
+                <span id="redirect-to-sb-button" class="hidden button"></span>
             </span>
         </div>
     </div>

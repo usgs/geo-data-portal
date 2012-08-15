@@ -7,7 +7,9 @@ var Constant = function() {
     var _INCOMING = {};
     
     var _ENDPOINT  = {
-        'properties' : 'PropertiesServlet'
+        'properties' : 'PropertiesServlet',
+        // Science Base Specific
+        'redirect_url' : 'http://http://beta.sciencebase.gov/catalog/gdp/landing/'
     };
     var _NAMESPACES = {
         'cat' : 'http://www.esri.com/metadata/csw/',
@@ -135,11 +137,19 @@ var Constant = function() {
             
             $.each(Constant.incoming, function(key, value) {
                 if (key === 'feature_wms') {
-                    Constant.endpoint.wms = value
+                    Constant.endpoint.wms = value;
+                }
+                
+                if (key === 'coverage_wcs') {
+                    Constant.endpoint.wcs = value;
                 }
                 
                 if (key === 'feature_wfs') {
-                    Constant.endpoint.wfs = value
+                    Constant.endpoint.wfs = value;
+                }
+                
+                if (key === 'redirect_url') {
+                    Constant.endpoint['redirect_url'] = value;
                 }
             })
         },

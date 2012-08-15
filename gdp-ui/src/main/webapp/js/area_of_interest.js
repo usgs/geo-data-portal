@@ -9,6 +9,7 @@ var AOI = function() {
     var _CLEAR_AOI_BUTTON = '#clear-aoi-button';
     var _CLEAR_DRAW_FEATURE_BUTTON = '#clearDrawFeatureButton';
     var _SUBMIT_DRAW_FEATURE_BUTTON = '#submitDrawFeatureButton';
+    // This button causes the WFS/CSW search to occur 
     var _SB_SEARCH_BUTTON = '#sbSearchButton';
     var _ATTRIBUTE_BOUNDS = {
         lowerCorner : '-180 -90',
@@ -236,10 +237,8 @@ var AOI = function() {
                 tips : '#sb-feature-tooltip-text',
                 on_depress : function() {
                     deselectFeatureType();
-                //activateSbFeature();
                 },
                 on_release : function() {
-                    //deactivateSbFeature();
                     $.jGrowl('close');
                 }
             }
@@ -549,6 +548,7 @@ var AOI = function() {
     return {
         htmlID: _HTML_ID,
         attributeBounds : _ATTRIBUTE_BOUNDS,
+        sbSearchButton : _SB_SEARCH_BUTTON,
         init: function() {
             logger.info("GDP: Initializing Area of Interest.");
             

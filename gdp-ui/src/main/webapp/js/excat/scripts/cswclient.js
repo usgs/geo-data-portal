@@ -491,6 +491,7 @@ var CSWClient = function() {
             }
             else {
                 Constant.endpoint.wfs = selectedFeature;
+                Constant.isSB = true;
                 AOI.init();
 
                 $("#csw-output").dialog('close');
