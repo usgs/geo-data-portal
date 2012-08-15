@@ -331,7 +331,7 @@ var Dataset = function() {
             'email': [_userEmail]
         };
         
-        if (Constant.endpoint && Constant.endpoint.redirect_url) {
+        if (Constant.isSB && Constant.endpoint && Constant.endpoint.redirect_url) {
             wpsInputs['callback-base-url'] = [ Constant.endpoint.redirect_url + "?result="];
         }
 
