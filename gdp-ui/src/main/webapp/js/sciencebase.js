@@ -14,17 +14,9 @@ var SB = function () {
             
             CSWClient.currentSBFeatureSearch = document.theForm.query.value;
             
-            CSWClient.getRecordsFromScienceBase();
+            CSWClient.getRecords();
             document.theForm.query.value = oldVal;
-            CSWClient.setSBConstraint();
             $(_SB_FEATURE_BUTTON).trigger('click');
-            
-        },
-        searchSBCoverage: function() {
-            CSWClient.setCSWHost('http://my-beta.usgs.gov/geoportal/csw');
-            CSWClient.setSBConstraint("wcs");
-            CSWClient.getRecordsFromScienceBase();
-            CSWClient.setSBConstraint();
         }
     }
 }

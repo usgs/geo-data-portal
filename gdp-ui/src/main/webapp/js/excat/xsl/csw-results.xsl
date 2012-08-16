@@ -35,16 +35,8 @@
     </xsl:variable>
     
     <xsl:variable name="pageUrl">
-        <xsl:choose>
-            <xsl:when test="$scienceBaseFeature = 'true' or $scienceBaseCoverage = 'true'">
-                <xsl:text>javascript:(CSWClient.getRecordsFromScienceBase</xsl:text>
-                <xsl:text>('</xsl:text>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:text>javascript:(CSWClient.getRecords</xsl:text>
-                <xsl:text>('</xsl:text>
-            </xsl:otherwise>
-        </xsl:choose>
+        <xsl:text>javascript:(CSWClient.getRecords</xsl:text>
+        <xsl:text>('</xsl:text>
     </xsl:variable>
 
     <xsl:template match="*[local-name()='SearchResults']">
