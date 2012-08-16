@@ -25,6 +25,7 @@ var CSWClient = function() {
     var getrecordbyid_xsl;
     var defaults_xml;
     var defaultschema;
+    var _currentSBFeatureSearch = '';
     var _capabilitiesMap = {};
     var _DATASET_SELECTED_TITLE = '#dataset-selected-title';
     
@@ -286,6 +287,7 @@ var CSWClient = function() {
 
     return {
         capabilitiesMap : _capabilitiesMap,
+        currentSBFeatureSearch : _currentSBFeatureSearch,
         init : function(_cswhost, host) {
             logger.info("GDP: Initializing CSW client.");
             if (typeof _cswhost != "undefined") {
@@ -375,13 +377,8 @@ var CSWClient = function() {
             }
 
             var queryable = document.theForm.queryable.value;
-
-            /*because geonetwork doen not follow the specs*/
-            if(cswhost.indexOf('geonetwork') !=-1 & queryable == "anytext")
-                queryable = "any";
-
             var operator = document.theForm.operator.value;
-            var query = trim(document.theForm.query.value);
+            var query = trim(this.currentSBFeatureSearch);
             if (operator == "contains" & query != "") {
                 query = "%" + query + "%";
             }
@@ -404,16 +401,16 @@ var CSWClient = function() {
             var processor = new XSLTProcessor();
             processor.importStylesheet(getrecords_xsl);
 
+            var results_xml;
             var request_xml = processor.transformToDocument(defaults_xml);
             var request = new XMLSerializer().serializeToString(request_xml);
-
             var csw_response = sendCSWRequest(request);
-            var results = "<results fromScienceBase=\"true\"><request start=\"" + start + "\"";
-            results += " maxrecords=\"";
+            var results = "<results fromScienceBase=\"true\">";
+            results += "<request start=\"" + start + "\" maxrecords=\"";
             results += defaults_xml.selectSingleNode("/defaults/maxrecords/text()").nodeValue;
-            results += "\" /></results>";
+            results += "\" />"
+            results += "</results>";
 
-            var results_xml;
             if (window.ActiveXObject) {
                 results_xml = new ActiveXObject('Msxml2.DOMDocument.6.0');
                 results_xml.loadXML(results);

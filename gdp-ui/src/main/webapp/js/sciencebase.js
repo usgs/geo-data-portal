@@ -7,6 +7,7 @@ var SB = function () {
             var query = $(_SB_SEARCH_TEXT).val();
             CSWClient.setCSWHost('http://my-beta.usgs.gov/geoportal/csw');
             document.theForm.query.value = query;
+            CSWClient.currentSBFeatureSearch = query;
             CSWClient.getRecordsFromScienceBase();
             document.theForm.query.value = old_val;
             $(_SB_FEATURE_BUTTON).trigger('click');

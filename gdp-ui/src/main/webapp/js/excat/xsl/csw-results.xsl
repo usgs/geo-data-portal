@@ -8,17 +8,37 @@
     <!--xsl:output method="html" encoding="ISO-8859-1"/-->
 
 
-    <xsl:variable name="pageUrl">
-        <xsl:text>javascript:(CSWClient.getRecords</xsl:text>
-        <xsl:text>('</xsl:text>pt
-    </xsl:variable>
-    
     <xsl:template match="/results/*[local-name()='GetRecordsResponse']">
         <xsl:apply-templates select="./*[local-name()='SearchResults']"/>
     </xsl:template>
-
+    
+    <xsl:variable name="fromScienceBase">
+        <xsl:choose>
+            <xsl:when test="/results/@fromScienceBase">
+                <xsl:value-of select="/results/@fromScienceBase" />
+            </xsl:when>
+            <xsl:otherwise>
+                false
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:variable>
+    
+    <xsl:variable name="pageUrl">
+        <xsl:choose>
+            <xsl:when test="$fromScienceBase = 'true'">
+                <xsl:text>javascript:(CSWClient.getRecordsFromScienceBase</xsl:text>
+                <xsl:text>('</xsl:text>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:text>javascript:(CSWClient.getRecords</xsl:text>
+                <xsl:text>('</xsl:text>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:variable>
 
     <xsl:template match="*[local-name()='SearchResults']">
+        
+
         
         <xsl:variable name="start">
             <xsl:value-of select="../../request/@start"/>
@@ -109,14 +129,14 @@
                     <xsl:text>Title: </xsl:text>
                 </strong>
                 <a>
-                            <xsl:attribute name="href">
-                                <xsl:text>javascript:(CSWClient.selectDatasetById</xsl:text>
-                                <xsl:text>('</xsl:text>
-                                <xsl:value-of select="./dc:identifier"/>
-                                <xsl:text>','</xsl:text>
-                                <xsl:value-of select="./dc:title"/>
-                                <xsl:text>'))</xsl:text>
-                            </xsl:attribute>
+                    <xsl:attribute name="href">
+                        <xsl:text>javascript:(CSWClient.selectDatasetById</xsl:text>
+                        <xsl:text>('</xsl:text>
+                        <xsl:value-of select="./dc:identifier"/>
+                        <xsl:text>','</xsl:text>
+                        <xsl:value-of select="./dc:title"/>
+                        <xsl:text>'))</xsl:text>
+                    </xsl:attribute>
                     
                     <xsl:attribute name="class">
                         <xsl:text>li-dataset</xsl:text>
@@ -182,17 +202,6 @@
     </xsl:template>
 
     <xsl:template match="gmd:MD_Metadata">
-        
-        <xsl:variable name="fromScienceBase">
-            <xsl:choose>
-                <xsl:when test="ancestor::results[1]/@fromScienceBase">
-                    <xsl:value-of select="ancestor::results[1]/@fromScienceBase" />
-                </xsl:when>
-                <xsl:otherwise>
-                    false
-                </xsl:otherwise>
-            </xsl:choose>
-        </xsl:variable>
         
         <xsl:for-each select=".">
             <xsl:variable name="opendapServicesCount" select="count(./gmd:identificationInfo/srv:SV_ServiceIdentification/srv:serviceType/gco:LocalName[contains(.,'OPeNDAP')])" />
