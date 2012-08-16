@@ -365,6 +365,66 @@ var CSWClient = function() {
                 }
             });
         },
+        getRecordsFromScienceBase : function(start) {
+            if (typeof start == "undefined") {
+                start = 1;
+            }
+
+            if (typeof  document.theForm.cswhosts != "undefined") {
+                this.setCSWHost(document.theForm.cswhosts.value);
+            }
+
+            var queryable = document.theForm.queryable.value;
+
+            /*because geonetwork doen not follow the specs*/
+            if(cswhost.indexOf('geonetwork') !=-1 & queryable == "anytext")
+                queryable = "any";
+
+            var operator = document.theForm.operator.value;
+            var query = trim(document.theForm.query.value);
+            if (operator == "contains" & query != "") {
+                query = "%" + query + "%";
+            }
+
+            // force outputSchema  always  to csw:Record for GetRecords requests
+            // xsl for this only handles dublin core, others are in GetRecordById xsl
+            // fixed this
+            //var schema = "http://www.opengis.net/cat/csw/2.0.2";
+            var schema = document.theForm.schema.value;
+            var sortby = document.theForm.sortby.value;
+            setXpathValue(defaults_xml, "/defaults/outputschema", schema + '');
+            setXpathValue(defaults_xml, "/defaults/propertyname", queryable + '');
+            setXpathValue(defaults_xml, "/defaults/literal", query + '');
+            setXpathValue(defaults_xml, "/defaults/bboxlc", AOI.attributeBounds.lowerCorner + '');
+            setXpathValue(defaults_xml, "/defaults/bboxuc", AOI.attributeBounds.upperCorner + '');
+            setXpathValue(defaults_xml, "/defaults/startposition", start + '');
+            setXpathValue(defaults_xml, "/defaults/sortby", sortby + '');
+            setXpathValue(defaults_xml, "/defaults/scienceBase", 'true');
+
+            var processor = new XSLTProcessor();
+            processor.importStylesheet(getrecords_xsl);
+
+            var request_xml = processor.transformToDocument(defaults_xml);
+            var request = new XMLSerializer().serializeToString(request_xml);
+
+            var csw_response = sendCSWRequest(request);
+            var results = "<results fromScienceBase=\"true\"><request start=\"" + start + "\"";
+            results += " maxrecords=\"";
+            results += defaults_xml.selectSingleNode("/defaults/maxrecords/text()").nodeValue;
+            results += "\" /></results>";
+
+            var results_xml;
+            if (window.ActiveXObject) {
+                results_xml = new ActiveXObject('Msxml2.DOMDocument.6.0');
+                results_xml.loadXML(results);
+            } else {
+                results_xml = (new DOMParser()).parseFromString(results, "text/xml");
+            }
+
+            var importNode = results_xml.importNode(csw_response.documentElement, true);
+            results_xml.documentElement.appendChild(importNode);
+            return handleCSWResponse("getrecords", results_xml);
+        },
         getRecords : function(start) {
 
             if (typeof start == "undefined") {

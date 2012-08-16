@@ -54,17 +54,25 @@
                 </xsl:if>
                 <csw:Constraint version="1.1.0">
                     <ogc:Filter xmlns:ogc="http://www.opengis.net/ogc" xmlns="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
-                        <ogc:BBOX>
-                            <ogc:PropertyName>ows:BoundingBox</ogc:PropertyName>
-                            <gml:Envelope>
-                                <gml:lowerCorner>
-                                    <xsl:value-of select="./bboxlc"/>
-                                </gml:lowerCorner>
-                                <gml:upperCorner>
-                                    <xsl:value-of select="./bboxuc"/>
-                                </gml:upperCorner>
-                            </gml:Envelope>
-                        </ogc:BBOX>
+                        <ogc:And>
+                            <ogc:BBOX>
+                                <ogc:PropertyName>ows:BoundingBox</ogc:PropertyName>
+                                <gml:Envelope>
+                                    <gml:lowerCorner>
+                                        <xsl:value-of select="./bboxlc"/>
+                                    </gml:lowerCorner>
+                                    <gml:upperCorner>
+                                        <xsl:value-of select="./bboxuc"/>
+                                    </gml:upperCorner>
+                                </gml:Envelope>
+                            </ogc:BBOX>
+                            <xsl:if test="./scienceBase !=''">
+                                <ogc:PropertyIsLike escape="\" singleChar="_" wildCard="%">
+                                    <ogc:PropertyName>apiso:resource.serviceId</ogc:PropertyName>
+                                    <ogc:Literal>%OGC-WFS%</ogc:Literal>
+                                </ogc:PropertyIsLike>
+                            </xsl:if>
+                        </ogc:And>
                     </ogc:Filter>
                 </csw:Constraint>
                 <ogc:SortBy xmlns:ogc="http://www.opengis.net/ogc">
