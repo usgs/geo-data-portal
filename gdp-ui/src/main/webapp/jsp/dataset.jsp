@@ -48,6 +48,7 @@
                     <td>
                         <input type="text" id="csw-url-input-box" size="62" />
                         <span id="csw-host-set-button" class="button" value="Set"></span>
+                        <span id="csw-host-pick-button" class="button" value="Pick"></span>
                     </td>
                 </tr>
                 <tr class="csw-dialog-tablerow">

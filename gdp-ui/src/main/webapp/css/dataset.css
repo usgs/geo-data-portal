@@ -62,3 +62,10 @@
 .ui-datepicker-calendar th, .ui-datepicker-calendar td {
     font-size: .9em;
 }
+
+.server-picker-li:hover {
+    cursor: pointer;
+    color: #0000FF;
+}
+    
+}

@@ -15,7 +15,7 @@ var SB = function () {
             CSWClient.currentSBFeatureSearch = document.theForm.query.value;
             
             CSWClient.getRecordsFromScienceBase();
-            document.theForm.query.value = old_val;
+            document.theForm.query.value = oldVal;
             CSWClient.setSBConstraint();
             $(_SB_FEATURE_BUTTON).trigger('click');
             

@@ -17,6 +17,7 @@ var Dataset = function() {
     var _ALGORITHM_DYNAMIC_CONTAINER_CONTENT = '#algorithm-dynamic-container-content';
     var _CSW_CLIENT = '#csw-client-div';
     var _CSW_HOST_SET_BUTTON = '#csw-host-set-button';
+    var _CSW_HOST_PICK_BUTTON = '#csw-host-pick-button';
     var _CSW_URL_INPUT_BOX = '#csw-url-input-box';
     var _DATASET_ID = '#datasetId';
     var _DATASET_ID_LABEL = '#dataset-id-label';
@@ -1474,6 +1475,44 @@ var Dataset = function() {
                 showErrorNotification('A CSW endpoint must be defined.');
             }
         });
+        $(_CSW_HOST_PICK_BUTTON).click(function() {
+            var serverHTML = $('<ul />');
+            
+            $(serverHTML).append($('<li />', { 'class' : 'server-picker-li'}).html('http://igsarm-cida-gdp2.er.usgs.gov:8081/geonetwork/srv/en/csw'));
+            $(serverHTML).append($('<li />', { 'class' : 'server-picker-li'}).html('http://my-beta.usgs.gov/geoportal/csw'));
+            
+            $('body')
+            .append($('<div />', {
+                id : 'host-pick-modal-window'
+            }).html(serverHTML));
+            
+            var dialog = $('#host-pick-modal-window').dialog({
+                title: 'Choose a CSW server',
+                height: 'auto',
+                width: '70%',
+                modal: true,
+                resizable: false,
+                draggable: false,
+                zIndex: 9999
+            });
+            
+            $('.server-picker-li').click(function(){
+                var serverURL = this.innerHTML;
+                Dataset.setCSWServerURL(serverURL);
+                $(_CSW_HOST_SET_BUTTON).click();
+                
+                if (this.innerHTML === 'http://my-beta.usgs.gov/geoportal/csw') {
+                    CSWClient.setSBConstraint("wcs");
+                } else {
+                    CSWClient.setSBConstraint();
+                }
+                
+                $(dialog).dialog('close');
+            })
+            
+            
+            
+        });
         
         $(_SELECT_DATASET_BUTTON).click(function() {
             logger.debug('GDP: User has selected a dataset. ');
@@ -1529,6 +1568,9 @@ var Dataset = function() {
         
         $(_CSW_HOST_SET_BUTTON).button({
             'label' : 'Set'
+        });
+        $(_CSW_HOST_PICK_BUTTON).button({
+            'label' : 'Pick'
         });
         $(searchSubmitButton).button();
         $(_SELECT_DATASET_BUTTON).button({
@@ -1600,6 +1642,9 @@ var Dataset = function() {
 
         getCSWServerURL: function() {
             return $(_CSW_URL_INPUT_BOX).val();
+        },
+        setCSWServerURL: function(val) {
+            return $(_CSW_URL_INPUT_BOX).val(val);
         },
 
         getSelectedDatasetURL: function() {
