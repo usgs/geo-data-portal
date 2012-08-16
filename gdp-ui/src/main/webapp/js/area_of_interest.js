@@ -234,13 +234,7 @@ var AOI = function() {
                 config_key : 'view_show_service_sb_feature',
                 all_elements : '#sb-feature-button-container',
                 input_elements : '#sb-input-cell',
-                tips : '#sb-feature-tooltip-text',
-                on_depress : function() {
-                    deselectFeatureType();
-                },
-                on_release : function() {
-                    $.jGrowl('close');
-                }
+                tips : '#sb-feature-tooltip-text'
             }
         };
 

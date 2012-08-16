@@ -36,7 +36,7 @@
                 <xsl:value-of select="./resulttype"/>
             </xsl:attribute>
             <csw:Query typeNames="csw:Record">
-                <csw:ElementSetName>summary</csw:ElementSetName>
+                <csw:ElementSetName>full</csw:ElementSetName>
                 <!-- Don't add Constraint if  search term is empty; this keeps Geonetwork happy -->
                 <csw:Constraint version="1.1.0">
                     <ogc:Filter xmlns:ogc="http://www.opengis.net/ogc" xmlns="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
@@ -62,7 +62,7 @@
                                     </gml:upperCorner>
                                 </gml:Envelope>
                             </ogc:BBOX>
-                            <xsl:if test="./scienceBase !=''">
+                            <xsl:if test="./scienceBase = 'true'">
                                 <ogc:PropertyIsLike wildCard="*" singleChar="." escapeChar="!">
                                     <ogc:PropertyName>apiso:resource.serviceId</ogc:PropertyName>
                                     <ogc:Literal>*OGC-WFS*</ogc:Literal>

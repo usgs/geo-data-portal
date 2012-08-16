@@ -3,14 +3,22 @@ var SB = function () {
     var _SB_FEATURE_BUTTON = '#sbFeatureButton';
     return {
         searchSB: function() {
-            var old_val = document.theForm.query.value;
+            var oldVal = document.theForm.query.value;
+            var oldCSWServer = CSWClient.getCSWHost();
             var query = $(_SB_SEARCH_TEXT).val();
-            CSWClient.setCSWHost('http://my-beta.usgs.gov/geoportal/csw');
+            
             document.theForm.query.value = query;
-            CSWClient.currentSBFeatureSearch = query;
+            
+            CSWClient.setCSWHost('http://my-beta.usgs.gov/geoportal/csw');
+            
+            CSWClient.currentSBFeatureSearch = document.theForm.query.value;
+            
             CSWClient.getRecordsFromScienceBase();
-            document.theForm.query.value = old_val;
+            
             $(_SB_FEATURE_BUTTON).trigger('click');
+            
+            document.theForm.cswhosts.value = oldCSWServer;
+            document.theForm.query.value = oldVal;
         }
     }
 }

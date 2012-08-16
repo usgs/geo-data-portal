@@ -318,6 +318,9 @@ var CSWClient = function() {
         setCSWHost : function(host) {
             cswhost = host;
         },
+        getCSWHost : function() {
+            return cswhost;
+        },
         setDatasetUrl : function(url) {
             if (url) {
                 $('#dataset-url-input-box').val(url);
@@ -459,6 +462,7 @@ var CSWClient = function() {
             setXpathValue(defaults_xml, "/defaults/startposition", start + '');
             var sortby = document.theForm.sortby.value;
             setXpathValue(defaults_xml, "/defaults/sortby", sortby + '');
+            setXpathValue(defaults_xml, "/defaults/scienceBase", 'false');
             //    this.setXpathValue(this.defaults_xml, "/defaults/displaymode", displaymode + '');
 
             var processor = new XSLTProcessor();
