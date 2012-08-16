@@ -387,73 +387,8 @@ var CSWClient = function() {
                 _sbConstraintCoverage = false;
             }
         },
-        getRecordsFromScienceBase : function(start) {
-            if (typeof start == "undefined") {
-                start = 1;
-            }
-
-            if (typeof  document.theForm.cswhosts != "undefined") {
-                this.setCSWHost(document.theForm.cswhosts.value);
-            }
-
-            var queryable = document.theForm.queryable.value;
-            var operator = document.theForm.operator.value;
-            var query = trim(this.currentSBFeatureSearch);
-            if (operator == "contains" & query != "") {
-                query = "%" + query + "%";
-            }
-
-            // force outputSchema  always  to csw:Record for GetRecords requests
-            // xsl for this only handles dublin core, others are in GetRecordById xsl
-            // fixed this
-            //var schema = "http://www.opengis.net/cat/csw/2.0.2";
-            var schema = document.theForm.schema.value;
-            var sortby = document.theForm.sortby.value;
-            setXpathValue(defaults_xml, "/defaults/outputschema", schema + '');
-            setXpathValue(defaults_xml, "/defaults/propertyname", queryable + '');
-            setXpathValue(defaults_xml, "/defaults/literal", query + '');
-            setXpathValue(defaults_xml, "/defaults/bboxlc", AOI.attributeBounds.lowerCorner + '');
-            setXpathValue(defaults_xml, "/defaults/bboxuc", AOI.attributeBounds.upperCorner + '');
-            setXpathValue(defaults_xml, "/defaults/startposition", start + '');
-            setXpathValue(defaults_xml, "/defaults/sortby", sortby + '');
-            if (_sbConstraintFeature) {
-                setXpathValue(defaults_xml, "/defaults/scienceBaseFeature", 'true');
-            }
-            if (_sbConstraintCoverage) {
-                setXpathValue(defaults_xml, "/defaults/scienceBaseCoverage", 'true');
-            }
-            var processor = new XSLTProcessor();
-            processor.importStylesheet(getrecords_xsl);
-
-            var results_xml;
-            var request_xml = processor.transformToDocument(defaults_xml);
-            var request = new XMLSerializer().serializeToString(request_xml);
-            var csw_response = sendCSWRequest(request);
-            var results = "";
-            if (_sbConstraintFeature) {
-                results += "<results scienceBaseFeature=\"true\">";
-            }
-            else {
-                results += "<results scienceBaseCoverage=\"true\">";
-            }
-            results += "<request start=\"" + start + "\" maxrecords=\"";
-            results += defaults_xml.selectSingleNode("/defaults/maxrecords/text()").nodeValue;
-            results += "\" />"
-            results += "</results>";
-
-            if (window.ActiveXObject) {
-                results_xml = new ActiveXObject('Msxml2.DOMDocument.6.0');
-                results_xml.loadXML(results);
-            } else {
-                results_xml = (new DOMParser()).parseFromString(results, "text/xml");
-            }
-
-            var importNode = results_xml.importNode(csw_response.documentElement, true);
-            results_xml.documentElement.appendChild(importNode);
-            return handleCSWResponse("getrecords", results_xml);
-        },
         getRecords : function(start) {
-
+            
             if (typeof start == "undefined") {
                 start = 1;
             }
@@ -489,17 +424,34 @@ var CSWClient = function() {
             setXpathValue(defaults_xml, "/defaults/startposition", start + '');
             var sortby = document.theForm.sortby.value;
             setXpathValue(defaults_xml, "/defaults/sortby", sortby + '');
-            setXpathValue(defaults_xml, "/defaults/scienceBaseFeature", 'false');
-            setXpathValue(defaults_xml, "/defaults/scienceBaseCoverage", 'false');
-
+            if (_sbConstraintFeature) {
+                setXpathValue(defaults_xml, "/defaults/scienceBaseFeature", 'true');
+            } else {
+                setXpathValue(defaults_xml, "/defaults/scienceBaseFeature", 'false');
+            }
+            
+            if (_sbConstraintCoverage) {
+                setXpathValue(defaults_xml, "/defaults/scienceBaseCoverage", 'true');
+            } else {
+                setXpathValue(defaults_xml, "/defaults/scienceBaseCoverage", 'false');
+            }
+            
             var processor = new XSLTProcessor();
             processor.importStylesheet(getrecords_xsl);
 
             var request_xml = processor.transformToDocument(defaults_xml);
             var request = new XMLSerializer().serializeToString(request_xml);
-
             var csw_response = sendCSWRequest(request);
-            var results = "<results><request start=\"" + start + "\"";
+
+            var results = "<results>";
+            if (_sbConstraintFeature) {
+                results = "<results scienceBaseFeature=\"true\">";
+            }
+            else if (_sbConstraintCoverage){
+                results = "<results scienceBaseCoverage=\"true\">";
+            }
+
+            results += "<request start=\"" + start + "\"";
             results += " maxrecords=\"";
             results += defaults_xml.selectSingleNode("/defaults/maxrecords/text()").nodeValue;
             results += "\"/></results>";
@@ -515,9 +467,6 @@ var CSWClient = function() {
 
             var importNode = results_xml.importNode(csw_response.documentElement, true);
             results_xml.documentElement.appendChild(importNode);
-            //alert(new XMLSerializer().serializeToString(results_xml));
-
-            //return handleCSWResponse("getrecords", csw_response);
             return handleCSWResponse("getrecords", results_xml);
         },
         
@@ -582,6 +531,7 @@ var CSWClient = function() {
                 Constant.endpoint.wfs = selectedFeature;
                 Constant.endpoint.wms = selectedFeature;
                 Constant.isSB = true;
+                CSWClient.setSBConstraint();
                 AOI.init();
 
                 $("#csw-output").dialog('close');
@@ -594,14 +544,16 @@ var CSWClient = function() {
             // We are doing this because we don't know which format the data might be in, if we can tell, we shouldn't iterate
             var datasetSelectors = [
             '[nodeName="csw:GetRecordByIdResponse"] > [nodeName="csw:Record"] [nodeName="dc:URI"]',
+            
             '[nodeName="csw:GetRecordByIdResponse"] > [nodeName="gmd:MD_Metadata"] > [nodeName="gmd:identificationInfo"] > \
                 [nodeName="srv:SV_ServiceIdentification"] > [nodeName="srv:containsOperations"] > [nodeName="srv:SV_OperationMetadata"] > \
                 [nodeName="srv:connectPoint"] > [nodeName="gmd:CI_OnlineResource"] > [nodeName="gmd:linkage"] > [nodeName="gmd:URL"]',
+            
             '[nodeName="csw:GetRecordByIdResponse"] > [nodeName="gmd:MD_Metadata"] > [nodeName="gmd:distributionInfo"] > \
                 [nodeName="gmd:MD_Distribution"] > [nodeName="gmd:transferOptions"] > [nodeName="gmd:MD_DigitalTransferOptions"] > \
-                [nodeName="gmd:onLine"] > [nodeName="gmd:CI_OnlineResource"] > [nodeName="gmd:linkage"] > [nodeName="gmd:URL"]'
+                [nodeName="gmd:onLine"] > [nodeName="gmd:CI_OnlineResource"] > [nodeName="gmd:linkage"] > [nodeName="gmd:URL"]',
+                
             ];
-            
             var shouldCacheSelectors = [
             '[nodeName="csw:GetRecordByIdResponse"] > [nodeName="gmd:MD_Metadata"] > [nodeName="gmd:identificationInfo"] > \
                     [nodeName="gmd:MD_DataIdentification"] > [nodeName="gmd:status"] > [nodeName="gmd:MD_ProgressCode"]'
@@ -613,18 +565,18 @@ var CSWClient = function() {
             for (var i=0; i<datasetSelectors.length; i++) {
                 $(csw_response).find(datasetSelectors[i]).each(function(index, elem) {
                     var text = $(elem).text();
-                    text = text.indexOf('?') != -1 ? text.substring(0, text.indexOf('?')) : text;
+                    
 
                     if (text.toLowerCase().contains("dods")) {
                         Dataset.setDatasetType(Dataset.datasetTypeEnum.OPENDAP);
-                        selectedDataset = text;
+                        selectedDataset = text.indexOf('?') != -1 ? text.substring(0, text.indexOf('?')) : text;
                     }
                     else if (text.toLowerCase().contains("wcs") && !selectedDataset) {
                         Dataset.setDatasetType(Dataset.datasetTypeEnum.WCS);
-                        selectedDataset = text;
+                        selectedDataset = text.indexOf('?') != -1 ? text.substring(0, text.indexOf('?')) : text;
                     }
                     else if (text.toLowerCase().contains("wms")) {
-                        wmsURL = text;
+                        wmsURL = text.indexOf('?') != -1 ? text.substring(0, text.indexOf('?')) : text;
                     }
                 });
             }
