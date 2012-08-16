@@ -1,14 +1,14 @@
 package gov.usgs.cida.gdp.wps.algorithm;
 
-import org.n52.wps.server.AbstractAnnotatedAlgorithm;
 import gov.usgs.cida.gdp.coreprocessing.Delimiter;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCategoricalGridCoverage;
-import org.n52.wps.algorithm.annotation.Algorithm;
-import org.n52.wps.algorithm.annotation.ComplexDataInput;
-import org.n52.wps.algorithm.annotation.ComplexDataOutput;
-import org.n52.wps.algorithm.annotation.LiteralDataInput;
-import org.n52.wps.algorithm.annotation.Process;
 import gov.usgs.cida.gdp.wps.binding.CSVFileBinding;
+import gov.usgs.cida.n52.wps.algorithm.AbstractAnnotatedAlgorithm;
+import gov.usgs.cida.n52.wps.algorithm.annotation.Algorithm;
+import gov.usgs.cida.n52.wps.algorithm.annotation.ComplexDataInput;
+import gov.usgs.cida.n52.wps.algorithm.annotation.ComplexDataOutput;
+import gov.usgs.cida.n52.wps.algorithm.annotation.LiteralDataInput;
+import gov.usgs.cida.n52.wps.algorithm.annotation.Process;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -23,7 +23,6 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.ft.FeatureDataset;
 
 /**
  *

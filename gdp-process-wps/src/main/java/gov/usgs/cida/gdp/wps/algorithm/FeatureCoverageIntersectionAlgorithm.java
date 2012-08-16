@@ -1,13 +1,13 @@
 package gov.usgs.cida.gdp.wps.algorithm;
 
-import org.n52.wps.server.AbstractAnnotatedAlgorithm;
-import org.n52.wps.algorithm.annotation.Algorithm;
-import org.n52.wps.algorithm.annotation.ComplexDataInput;
-import org.n52.wps.algorithm.annotation.ComplexDataOutput;
-import org.n52.wps.algorithm.annotation.LiteralDataInput;
-import org.n52.wps.algorithm.annotation.Process;
 import gov.usgs.cida.gdp.wps.binding.GeoTIFFFileBinding;
 import gov.usgs.cida.gdp.wps.util.WCSUtil;
+import gov.usgs.cida.n52.wps.algorithm.AbstractAnnotatedAlgorithm;
+import gov.usgs.cida.n52.wps.algorithm.annotation.Algorithm;
+import gov.usgs.cida.n52.wps.algorithm.annotation.ComplexDataInput;
+import gov.usgs.cida.n52.wps.algorithm.annotation.ComplexDataOutput;
+import gov.usgs.cida.n52.wps.algorithm.annotation.LiteralDataInput;
+import gov.usgs.cida.n52.wps.algorithm.annotation.Process;
 import java.io.File;
 import java.net.URI;
 import org.geotools.feature.FeatureCollection;

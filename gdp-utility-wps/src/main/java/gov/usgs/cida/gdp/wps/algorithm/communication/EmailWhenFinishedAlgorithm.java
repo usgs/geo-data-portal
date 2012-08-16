@@ -1,11 +1,11 @@
 package gov.usgs.cida.gdp.wps.algorithm.communication;
 
 import gov.usgs.cida.gdp.wps.completion.CheckProcessCompletion;
-import org.n52.wps.algorithm.annotation.Algorithm;
-import org.n52.wps.algorithm.annotation.LiteralDataInput;
-import org.n52.wps.algorithm.annotation.LiteralDataOutput;
-import org.n52.wps.algorithm.annotation.Process;
-import org.n52.wps.server.AbstractAnnotatedAlgorithm;
+import gov.usgs.cida.n52.wps.algorithm.AbstractAnnotatedAlgorithm;
+import gov.usgs.cida.n52.wps.algorithm.annotation.Algorithm;
+import gov.usgs.cida.n52.wps.algorithm.annotation.LiteralDataInput;
+import gov.usgs.cida.n52.wps.algorithm.annotation.LiteralDataOutput;
+import gov.usgs.cida.n52.wps.algorithm.annotation.Process;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

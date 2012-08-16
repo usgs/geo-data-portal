@@ -59,6 +59,13 @@
             <groupId>gov.usgs.cida.gdp</groupId>
             <artifactId>gdp-52n-wps-patches</artifactId>
             <version>${project.version}</version>
+            <!-- we will unpack jar contents to WEB-INF/classes -->
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>gov.usgs.cida.gdp</groupId>
+            <artifactId>gdp-52n-wps-extensions</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <!-- version numbers set in parent pom -->
         <dependency>

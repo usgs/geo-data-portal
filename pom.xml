@@ -14,6 +14,7 @@
 <!--        <module>gdp-derivative-processing</module>-->
         <module>gdp-geotiff</module>
         <module>gdp-proxy</module>
+        <module>gdp-52n-wps-extensions</module>
         <module>gdp-52n-wps-patches</module>
         <module>gdp-utility-wps</module>
         <module>gdp-process-wps</module>
@@ -21,8 +22,8 @@
         <module>gdp-ui</module>
         <module>gdp-derivative-ui</module>
         <module>gdp-deployer</module>
-    <module>gdp-prms-ui</module>
-  </modules>
+        <module>gdp-prms-ui</module>
+    </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <n52-wps.version>2.0-RC6</n52-wps.version>
