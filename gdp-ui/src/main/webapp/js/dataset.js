@@ -448,7 +448,9 @@ var Dataset = function() {
                     }, 5000)
                     
                     // Do the redirect
-//                    window.location = Constant.redirect_url?result=...
+                    var urlAndData = _RETRIEVE_OUTPUT_URL.split('?');
+                    var resultUrl = encodeURIComponent(urlAndData[0] + '?id=' + statusID);
+                    window.location = Constant.endpoint.redirect_url + "?result=" + resultUrl;
                 })
             }
         } else if ($(xml).find('ns|ProcessFailed').length > 0) {
