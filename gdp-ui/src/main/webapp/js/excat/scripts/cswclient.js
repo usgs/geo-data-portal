@@ -26,6 +26,8 @@ var CSWClient = function() {
     var defaults_xml;
     var defaultschema;
     var _currentSBFeatureSearch = '';
+    var _sbConstraintFeature = false;
+    var _sbConstraintCoverage = false;
     var _capabilitiesMap = {};
     var _DATASET_SELECTED_TITLE = '#dataset-selected-title';
     
@@ -370,6 +372,20 @@ var CSWClient = function() {
                 }
             });
         },
+        setSBConstraint : function(type) {
+            if (type === "wfs") {
+                _sbConstraintFeature = true;
+                _sbConstraintCoverage = false;
+            }
+            else if (type === "wcs") {
+                _sbConstraintFeature = false;
+                _sbConstraintCoverage = true;
+            }
+            else {
+                _sbConstraintFeature = false;
+                _sbConstraintCoverage = false;
+            }
+        },
         getRecordsFromScienceBase : function(start) {
             if (typeof start == "undefined") {
                 start = 1;
@@ -399,8 +415,12 @@ var CSWClient = function() {
             setXpathValue(defaults_xml, "/defaults/bboxuc", AOI.attributeBounds.upperCorner + '');
             setXpathValue(defaults_xml, "/defaults/startposition", start + '');
             setXpathValue(defaults_xml, "/defaults/sortby", sortby + '');
-            setXpathValue(defaults_xml, "/defaults/scienceBase", 'true');
-
+            if (_sbConstraintFeature) {
+                setXpathValue(defaults_xml, "/defaults/scienceBaseFeature", 'true');
+            }
+            if (_sbConstraintCoverage) {
+                setXpathValue(defaults_xml, "/defaults/scienceBaseCoverage", 'true');
+            }
             var processor = new XSLTProcessor();
             processor.importStylesheet(getrecords_xsl);
 
@@ -408,7 +428,13 @@ var CSWClient = function() {
             var request_xml = processor.transformToDocument(defaults_xml);
             var request = new XMLSerializer().serializeToString(request_xml);
             var csw_response = sendCSWRequest(request);
-            var results = "<results fromScienceBase=\"true\">";
+            var results = "";
+            if (_sbConstraintFeature) {
+                results += "<results scienceBaseFeature=\"true\">";
+            }
+            else {
+                results += "<results scienceBaseCoverage=\"true\">";
+            }
             results += "<request start=\"" + start + "\" maxrecords=\"";
             results += defaults_xml.selectSingleNode("/defaults/maxrecords/text()").nodeValue;
             results += "\" />"
@@ -586,6 +612,7 @@ var CSWClient = function() {
             for (var i=0; i<datasetSelectors.length; i++) {
                 $(csw_response).find(datasetSelectors[i]).each(function(index, elem) {
                     var text = $(elem).text();
+                    text = text.substring(0, text.indexOf('?'))
 
                     if (text.toLowerCase().contains("dods")) {
                         Dataset.setDatasetType(Dataset.datasetTypeEnum.OPENDAP);

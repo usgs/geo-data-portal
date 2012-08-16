@@ -12,10 +12,21 @@
         <xsl:apply-templates select="./*[local-name()='SearchResults']"/>
     </xsl:template>
     
-    <xsl:variable name="fromScienceBase">
+    <xsl:variable name="scienceBaseFeature">
         <xsl:choose>
-            <xsl:when test="/results/@fromScienceBase">
-                <xsl:value-of select="/results/@fromScienceBase" />
+            <xsl:when test="/results/@scienceBaseFeature">
+                <xsl:value-of select="/results/@scienceBaseFeature" />
+            </xsl:when>
+            <xsl:otherwise>
+                false
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:variable>
+    
+    <xsl:variable name="scienceBaseCoverage">
+        <xsl:choose>
+            <xsl:when test="/results/@scienceBaseCoverage">
+                <xsl:value-of select="/results/@scienceBaseCoverage" />
             </xsl:when>
             <xsl:otherwise>
                 false
@@ -25,7 +36,7 @@
     
     <xsl:variable name="pageUrl">
         <xsl:choose>
-            <xsl:when test="$fromScienceBase = 'true'">
+            <xsl:when test="$scienceBaseFeature = 'true' or $scienceBaseCoverage = 'true'">
                 <xsl:text>javascript:(CSWClient.getRecordsFromScienceBase</xsl:text>
                 <xsl:text>('</xsl:text>
             </xsl:when>
@@ -219,7 +230,7 @@
                     </xsl:attribute>
                     
                     <xsl:choose>
-                        <xsl:when test="$fromScienceBase = 'true'">
+                        <xsl:when test="$scienceBaseFeature = 'true'">
                             <xsl:attribute name="href">
                                 <xsl:text>javascript:(CSWClient.selectFeatureById</xsl:text>
                                 <xsl:text>('</xsl:text>

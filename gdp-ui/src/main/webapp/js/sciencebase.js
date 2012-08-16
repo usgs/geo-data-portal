@@ -6,7 +6,8 @@ var SB = function () {
             var oldVal = document.theForm.query.value;
             var oldCSWServer = CSWClient.getCSWHost();
             var query = $(_SB_SEARCH_TEXT).val();
-            
+            CSWClient.setCSWHost('http://my-beta.usgs.gov/geoportal/csw');
+            CSWClient.setSBConstraint("wfs");
             document.theForm.query.value = query;
             
             CSWClient.setCSWHost('http://my-beta.usgs.gov/geoportal/csw');
@@ -14,11 +15,15 @@ var SB = function () {
             CSWClient.currentSBFeatureSearch = document.theForm.query.value;
             
             CSWClient.getRecordsFromScienceBase();
-            
+            document.theForm.query.value = old_val;
+            CSWClient.setSBConstraint();
             $(_SB_FEATURE_BUTTON).trigger('click');
-            
-            CSWClient.setCSWHost(oldCSWServer);
-            document.theForm.query.value = oldVal;
+        },
+        searchSBCoverage: function() {
+            CSWClient.setCSWHost('http://my-beta.usgs.gov/geoportal/csw');
+            CSWClient.setSBConstraint("wcs");
+            CSWClient.getRecordsFromScienceBase();
+            CSWClient.setSBConstraint();
         }
     }
 }

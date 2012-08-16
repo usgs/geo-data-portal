@@ -62,10 +62,16 @@
                                     </gml:upperCorner>
                                 </gml:Envelope>
                             </ogc:BBOX>
-                            <xsl:if test="./scienceBase = 'true'">
+                            <xsl:if test="./scienceBaseFeature = 'true'">
                                 <ogc:PropertyIsLike wildCard="*" singleChar="." escapeChar="!">
                                     <ogc:PropertyName>apiso:resource.serviceId</ogc:PropertyName>
                                     <ogc:Literal>*OGC-WFS*</ogc:Literal>
+                                </ogc:PropertyIsLike>
+                            </xsl:if>
+                            <xsl:if test="./scienceBaseCoverage = 'true'">
+                                <ogc:PropertyIsLike wildCard="*" singleChar="." escapeChar="!">
+                                    <ogc:PropertyName>apiso:resource.serviceId</ogc:PropertyName>
+                                    <ogc:Literal>*OGC-WCS*</ogc:Literal>
                                 </ogc:PropertyIsLike>
                             </xsl:if>
                         </ogc:And>

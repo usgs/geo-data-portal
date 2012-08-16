@@ -14,5 +14,6 @@
 <bboxlc>-180 -90</bboxlc>
 <bboxuc>180 90</bboxuc>
 <id></id>
-<scienceBase>false</scienceBase>
+<scienceBaseFeature>false</scienceBaseFeature>
+<scienceBaseCoverage>false</scienceBaseCoverage>
 </defaults>
