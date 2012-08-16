@@ -433,25 +433,26 @@ var Dataset = function() {
                     window.onbeforeunload = null;
                     
                     // Open a modal dialog warning about redirection for 5 seconds
-                    setTimeout(function(){
-                        $('<div />', {
-                            id : 'redirect_window'
-                        })
-                        .html('You are being redirected to Science Base')
-                        .append(document)
+                    $('<div />', {
+                        id : 'redirect_window'
+                    })
+                    .html('You are being redirected to Science Base')
+                    .append(document)
                         
-                        $('#redirect_window').dialog({
-                            modal: true,
-                            title: 'Redirection Warning',
-                            zIndex: 9999
-                        });
-                        alert('You are being redirected to Science Base')
+                    $('#redirect_window').dialog({
+                        modal: true,
+                        title: 'Redirection Warning',
+                        zIndex: 9999
+                    });
+                    alert('You are being redirected to Science Base')
+                    setTimeout(function(){
+                        // Do the redirect
+                        var urlAndData = _RETRIEVE_OUTPUT_URL.split('?');
+                        var resultUrl = encodeURIComponent(urlAndData[0] + '?id=' + statusID);
+                        window.location = Constant.endpoint.redirect_url + "?result=" + resultUrl;
                     }, 5000)
                     
-                    // Do the redirect
-                    var urlAndData = _RETRIEVE_OUTPUT_URL.split('?');
-                    var resultUrl = encodeURIComponent(urlAndData[0] + '?id=' + statusID);
-                    window.location = Constant.endpoint.redirect_url + "?result=" + resultUrl;
+                    
                 })
             }
         } else if ($(xml).find('ns|ProcessFailed').length > 0) {
@@ -1478,8 +1479,12 @@ var Dataset = function() {
         $(_CSW_HOST_PICK_BUTTON).click(function() {
             var serverHTML = $('<ul />');
             
-            $(serverHTML).append($('<li />', { 'class' : 'server-picker-li'}).html('http://igsarm-cida-gdp2.er.usgs.gov:8081/geonetwork/srv/en/csw'));
-            $(serverHTML).append($('<li />', { 'class' : 'server-picker-li'}).html('http://my-beta.usgs.gov/geoportal/csw'));
+            $(serverHTML).append($('<li />', {
+                'class' : 'server-picker-li'
+            }).html('http://igsarm-cida-gdp2.er.usgs.gov:8081/geonetwork/srv/en/csw'));
+            $(serverHTML).append($('<li />', {
+                'class' : 'server-picker-li'
+            }).html('http://my-beta.usgs.gov/geoportal/csw'));
             
             $('body')
             .append($('<div />', {
