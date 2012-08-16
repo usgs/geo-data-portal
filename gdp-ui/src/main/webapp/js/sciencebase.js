@@ -4,10 +4,10 @@ var SB = function () {
     return {
         searchSB: function() {
             var oldVal = document.theForm.query.value;
-            var oldCSWServer = CSWClient.getCSWHost();
             var query = $(_SB_SEARCH_TEXT).val();
             CSWClient.setCSWHost('http://my-beta.usgs.gov/geoportal/csw');
             CSWClient.setSBConstraint("wfs");
+            CSWClient.setStoredCSWServer(CSWClient.getCSWHost());
             document.theForm.query.value = query;
             
             CSWClient.setCSWHost('http://my-beta.usgs.gov/geoportal/csw');
@@ -18,6 +18,7 @@ var SB = function () {
             document.theForm.query.value = old_val;
             CSWClient.setSBConstraint();
             $(_SB_FEATURE_BUTTON).trigger('click');
+            
         },
         searchSBCoverage: function() {
             CSWClient.setCSWHost('http://my-beta.usgs.gov/geoportal/csw');

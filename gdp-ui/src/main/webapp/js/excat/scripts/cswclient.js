@@ -28,6 +28,7 @@ var CSWClient = function() {
     var _currentSBFeatureSearch = '';
     var _sbConstraintFeature = false;
     var _sbConstraintCoverage = false;
+    var storedCSWServer = '';
     var _capabilitiesMap = {};
     var _DATASET_SELECTED_TITLE = '#dataset-selected-title';
     
@@ -488,8 +489,8 @@ var CSWClient = function() {
             setXpathValue(defaults_xml, "/defaults/startposition", start + '');
             var sortby = document.theForm.sortby.value;
             setXpathValue(defaults_xml, "/defaults/sortby", sortby + '');
-            setXpathValue(defaults_xml, "/defaults/scienceBase", 'false');
-            //    this.setXpathValue(this.defaults_xml, "/defaults/displaymode", displaymode + '');
+            setXpathValue(defaults_xml, "/defaults/scienceBaseFeature", 'false');
+            setXpathValue(defaults_xml, "/defaults/scienceBaseCoverage", 'false');
 
             var processor = new XSLTProcessor();
             processor.importStylesheet(getrecords_xsl);
@@ -565,7 +566,7 @@ var CSWClient = function() {
             for (var i=0; i<datasetSelectors.length; i++) {
                 $(csw_response).find(datasetSelectors[i]).each(function(index, elem) {
                     var text = $(elem).text();
-                    text = text.substring(0, text.indexOf('?'))
+                    text = text.indexOf('?') != -1 ? text.substring(0, text.indexOf('?')) : text;
                     
                     if (text.toLowerCase().contains("wfs") ||
                         text.toLowerCase().contains("ows")) {
@@ -612,7 +613,7 @@ var CSWClient = function() {
             for (var i=0; i<datasetSelectors.length; i++) {
                 $(csw_response).find(datasetSelectors[i]).each(function(index, elem) {
                     var text = $(elem).text();
-                    text = text.substring(0, text.indexOf('?'))
+                    text = text.indexOf('?') != -1 ? text.substring(0, text.indexOf('?')) : text;
 
                     if (text.toLowerCase().contains("dods")) {
                         Dataset.setDatasetType(Dataset.datasetTypeEnum.OPENDAP);
@@ -657,6 +658,12 @@ var CSWClient = function() {
             var csw_response = getRecordById(id);
             
             return handleCSWResponse("getrecordbyid", csw_response);
+        },
+        getStoredCSWServer : function() {
+            return storedCSWServer;
+        },
+        setStoredCSWServer : function(server) {
+            this.storedCSWServer = server;
         }
     };
 };

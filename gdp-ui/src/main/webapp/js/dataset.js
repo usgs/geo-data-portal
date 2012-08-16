@@ -448,7 +448,7 @@ var Dataset = function() {
                     }, 5000)
                     
                     // Do the redirect
-//                    window.location = Constant.redirect_url
+//                    window.location = Constant.redirect_url?result=...
                 })
             }
         } else if ($(xml).find('ns|ProcessFailed').length > 0) {
