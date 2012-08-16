@@ -17,7 +17,7 @@ var SB = function () {
             
             $(_SB_FEATURE_BUTTON).trigger('click');
             
-            document.theForm.cswhosts.value = oldCSWServer;
+            CSWClient.setCSWHost(oldCSWServer);
             document.theForm.query.value = oldVal;
         }
     }

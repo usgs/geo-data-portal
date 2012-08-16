@@ -247,9 +247,9 @@
                         </xsl:otherwise>
                     </xsl:choose>
                     <xsl:choose>
-<!--                        <xsl:when test="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString">
-                            <xsl:apply-templates select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString"/>
-                        </xsl:when>-->
+                        <xsl:when test="./gmd:identificationInfo/srv:SV_ServiceIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString">
+                            <xsl:apply-templates select="./gmd:identificationInfo/srv:SV_ServiceIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString"/>
+                        </xsl:when>
                         <xsl:when test="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString">
                             <xsl:apply-templates select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString"/>
                         </xsl:when>
@@ -258,8 +258,15 @@
                         </xsl:otherwise>
                     </xsl:choose>
                 </a>
-                <br/>
-                <xsl:apply-templates select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gco:CharacterString"/>
+                <br />
+                <xsl:choose>
+                    <xsl:when test="./gmd:identificationInfo/srv:SV_ServiceIdentification[@id='OGC-WFS']/gmd:abstract/gco:CharacterString">
+                        <xsl:apply-templates select="./gmd:identificationInfo/srv:SV_ServiceIdentification[@id='OGC-WFS']/gmd:abstract/gco:CharacterString" />
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:apply-templates select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gco:CharacterString" />
+                    </xsl:otherwise>
+                </xsl:choose>
                 <hr/>
             </li>
         </xsl:for-each>
@@ -277,6 +284,26 @@
     </xsl:template>
 
     <xsl:template match="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gco:CharacterString">
+        <strong>
+            <xsl:text>Abstract: </xsl:text>
+        </strong>
+        <xsl:value-of select="substring(.,1,500)"/>
+        <xsl:if test="string-length(.) &gt; 500">
+            <xsl:text> ...</xsl:text>
+        </xsl:if>
+        <br/>
+        <a>
+            <xsl:attribute name="href">
+                <xsl:text>javascript:(CSWClient.popupMetadataById</xsl:text>
+                <xsl:text>('</xsl:text>
+                <xsl:value-of select="../../../../gmd:fileIdentifier/gco:CharacterString"/>
+                <xsl:text>'))</xsl:text>
+            </xsl:attribute>
+            <xsl:text>Full Record</xsl:text>
+        </a>
+    </xsl:template>
+    
+    <xsl:template match="gmd:identificationInfo/srv:SV_ServiceIdentification[@id='OGC-WFS']/gmd:abstract/gco:CharacterString">
         <strong>
             <xsl:text>Abstract: </xsl:text>
         </strong>
