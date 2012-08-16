@@ -426,6 +426,30 @@ var Dataset = function() {
             
             if (Constant.isSB) {
                 $(_REDIR_TO_SB_BUTTON).fadeIn(Constant.ui.fadeSpeed);
+                $(_REDIR_TO_SB_BUTTON).click(function() {
+                    
+                    // Remove the "Do you want to leave this page OK/CANCEL"
+                    window.onbeforeunload = null;
+                    
+                    // Open a modal dialog warning about redirection for 5 seconds
+                    setTimeout(function(){
+                        $('<div />', {
+                            id : 'redirect_window'
+                        })
+                        .html('You are being redirected to Science Base')
+                        .append(document)
+                        
+                        $('#redirect_window').dialog({
+                            modal: true,
+                            title: 'Redirection Warning',
+                            zIndex: 9999
+                        });
+                        alert('You are being redirected to Science Base')
+                    }, 5000)
+                    
+                    // Do the redirect
+//                    window.location = Constant.redirect_url
+                })
             }
         } else if ($(xml).find('ns|ProcessFailed').length > 0) {
             window.clearInterval(intervalID);
