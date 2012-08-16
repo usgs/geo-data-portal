@@ -38,23 +38,19 @@
             <csw:Query typeNames="csw:Record">
                 <csw:ElementSetName>summary</csw:ElementSetName>
                 <!-- Don't add Constraint if  search term is empty; this keeps Geonetwork happy -->
-                <xsl:if test="./literal !=''">
-                    <csw:Constraint version="1.1.0">
-                        <ogc:Filter xmlns:ogc="http://www.opengis.net/ogc" xmlns="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
-                            <ogc:PropertyIsLike escape="\" singleChar="_" wildCard="%">
-                                <ogc:PropertyName>
-                                    <xsl:value-of select="./propertyname"/>
-                                </ogc:PropertyName>
-                                <ogc:Literal>
-                                    <xsl:value-of select="./literal"/>
-                                </ogc:Literal>
-                            </ogc:PropertyIsLike>
-                        </ogc:Filter>
-                    </csw:Constraint>
-                </xsl:if>
                 <csw:Constraint version="1.1.0">
                     <ogc:Filter xmlns:ogc="http://www.opengis.net/ogc" xmlns="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
                         <ogc:And>
+                            <xsl:if test="./literal !=''">
+                                <ogc:PropertyIsLike escape="\" singleChar="_" wildCard="%">
+                                    <ogc:PropertyName>
+                                        <xsl:value-of select="./propertyname"/>
+                                    </ogc:PropertyName>
+                                    <ogc:Literal>
+                                        <xsl:value-of select="./literal"/>
+                                    </ogc:Literal>
+                                </ogc:PropertyIsLike>
+                            </xsl:if>
                             <ogc:BBOX>
                                 <ogc:PropertyName>ows:BoundingBox</ogc:PropertyName>
                                 <gml:Envelope>
@@ -67,9 +63,9 @@
                                 </gml:Envelope>
                             </ogc:BBOX>
                             <xsl:if test="./scienceBase !=''">
-                                <ogc:PropertyIsLike escape="\" singleChar="_" wildCard="%">
+                                <ogc:PropertyIsLike wildCard="*" singleChar="." escapeChar="!">
                                     <ogc:PropertyName>apiso:resource.serviceId</ogc:PropertyName>
-                                    <ogc:Literal>%OGC-WFS%</ogc:Literal>
+                                    <ogc:Literal>*OGC-WFS*</ogc:Literal>
                                 </ogc:PropertyIsLike>
                             </xsl:if>
                         </ogc:And>

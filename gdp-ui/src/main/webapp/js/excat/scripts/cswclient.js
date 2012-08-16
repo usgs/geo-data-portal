@@ -535,7 +535,8 @@ var CSWClient = function() {
             for (var i=0; i<datasetSelectors.length; i++) {
                 $(csw_response).find(datasetSelectors[i]).each(function(index, elem) {
                     var text = $(elem).text();
-
+                    text = text.substring(0, text.indexOf('?'))
+                    
                     if (text.toLowerCase().contains("wfs") ||
                         text.toLowerCase().contains("ows")) {
                         selectedFeature = text;
@@ -548,6 +549,7 @@ var CSWClient = function() {
             }
             else {
                 Constant.endpoint.wfs = selectedFeature;
+                Constant.endpoint.wms = selectedFeature;
                 Constant.isSB = true;
                 AOI.init();
 
