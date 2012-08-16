@@ -439,20 +439,23 @@ var Dataset = function() {
                     .html('You are being redirected to Science Base')
                     .append(document)
                         
+                    var doRedirect = function() {
+                        var urlAndData = _RETRIEVE_OUTPUT_URL.split('?');
+                        var resultUrl = encodeURIComponent(urlAndData[0] + '?id=' + statusID);
+                        window.location = Constant.endpoint.redirect_url + "?result=" + resultUrl;
+                    }
+                        
                     $('#redirect_window').dialog({
                         modal: true,
                         title: 'Redirection Warning',
                         zIndex: 9999
+                    }).bind( "dialogclose", function(event, ui) {
+                        doRedirect();
                     });
-                    alert('You are being redirected to Science Base')
+                    
                     setTimeout(function(){
-                        // Do the redirect
-                        var urlAndData = _RETRIEVE_OUTPUT_URL.split('?');
-                        var resultUrl = encodeURIComponent(urlAndData[0] + '?id=' + statusID);
-                        window.location = Constant.endpoint.redirect_url + "?result=" + resultUrl;
+                        doRedirect();
                     }, 5000)
-                    
-                    
                 })
             }
         } else if ($(xml).find('ns|ProcessFailed').length > 0) {
