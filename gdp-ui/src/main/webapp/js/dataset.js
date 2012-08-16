@@ -1705,7 +1705,7 @@ var Dataset = function() {
 
             // TODO: need a cleaner way of testing service type and failing over
             // to a different service
-            if (uri.protocol == 'http') {
+            if (uri.protocol == 'http' || uri.protocol == 'https') {
                 // Try wcs first. If it doesn't succeed, try opendap.
                 wcsDatasetSelected(datasetURL, function() {
                     datasetURL = datasetURL.replace(/^http:\/\//, 'dods://');

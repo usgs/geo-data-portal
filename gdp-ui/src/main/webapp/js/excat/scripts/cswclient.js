@@ -515,11 +515,11 @@ var CSWClient = function() {
             for (var i=0; i<datasetSelectors.length; i++) {
                 $(csw_response).find(datasetSelectors[i]).each(function(index, elem) {
                     var text = $(elem).text();
-                    text = text.indexOf('?') != -1 ? text.substring(0, text.indexOf('?')) : text;
+//                    text = text.indexOf('?') != -1 ? text.substring(0, text.indexOf('?')) : text;
                     
                     if (text.toLowerCase().contains("wfs") ||
                         text.toLowerCase().contains("ows")) {
-                        selectedFeature = text;
+                        selectedFeature = text.indexOf('?') != -1 ? text.substring(0, text.indexOf('?')) : text;
                     }
                 });
             }
