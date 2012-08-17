@@ -95,6 +95,7 @@ public class PropertiesServlet extends HttpServlet {
             defaultProperties.setProperty("ui.view_max_polygons_shown", "1000");
             defaultProperties.setProperty("ui.view_popup_info", "0");
             defaultProperties.setProperty("ui.view_popup_info_txt", "<h1>Info Popup</h1><br /><h3>Some Text Here</h3>");
+            defaultProperties.setProperty("ui.view_pop_unload_warning", "1");
             defaultProperties.setProperty("ui.view_show_beyond_max_polygons", "0");
             defaultProperties.setProperty("ui.view_show_csw_chosen_dataset_title", "1");
             defaultProperties.setProperty("ui.view_show_csw_dataset_url", "1");
