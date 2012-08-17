@@ -25,8 +25,8 @@
 }
 
 .centered {
+    /* width is calculated programatically @ root.resizeCenterDiv() */
     margin:0 auto;
-    width:768px;
     text-align: left;
 }
 

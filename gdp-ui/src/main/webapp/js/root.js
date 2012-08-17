@@ -51,16 +51,6 @@ function init() {
         removeOverlay();
     })
     
-    // If we wish to modify when this gets called based on the event (reload? link click?),
-    // check http://geekswithblogs.net/renso/archive/2009/09/21/how-to-stop-browser-closing.aspx
-    // Ref: http://internal.cida.usgs.gov/jira/browse/GDP-358
-    // Turn this off for IE7 as it has way too many spots where it thinks we're leaving and we're not
-    if (!($.browser.msie  && parseInt($.browser.version) == 7)) {
-        window.onbeforeunload = function() {
-            return "Leaving the Geo Data Portal will cause any unsaved configuration to be lost.";
-        }
-    }
-    
     // Add htmlDecode function to the JS String object
     String.prototype.htmlDecode = function() {
         var e = document.createElement('div');
@@ -177,6 +167,17 @@ function initializeView() {
     initializePrevNextButtons();
         
     $('#show-info-link').click(function() {createPopupView(Constant.ui.view_popup_info_txt, true)})
+    
+    // If we wish to modify when this gets called based on the event (reload? link click?),
+    // check http://geekswithblogs.net/renso/archive/2009/09/21/how-to-stop-browser-closing.aspx
+    // Ref: http://internal.cida.usgs.gov/jira/browse/GDP-358
+    // Turn this off for IE7 as it has way too many spots where it thinks we're leaving and we're not
+    if (!($.browser.msie  && parseInt($.browser.version) == 7) && Constant.ui.view_pop_unload_warning == 1) {
+        window.onbeforeunload = function() {
+            return "Leaving the Geo Data Portal will cause any unsaved configuration to be lost.";
+        }
+    }
+    
     return true;
 }
 
@@ -325,7 +326,27 @@ function showIntro() {
 }
 function resizeElements() {
     logger.trace("The application window is resizing. Resizing all elements to fit.");
-    resizeMapDiv()
+    resizeCenterDiv();
+    resizeMapDiv();
+}
+
+function resizeCenterDiv() {
+    logger.trace("The application center div is resizing.");
+    // Resize the "centered" div based on the amount of service buttons available
+    var calculatedCenterWidth;
+    var minButtonSize = 200;
+    var minimumCenterWidth = 600;
+    var buttonCount = 0;
+    
+    $.each(Constant.ui, function(key, val) {
+        if (key.contains('view_show_service') && val === '1') {
+            buttonCount++;
+        }
+    })
+    
+    calculatedCenterWidth = buttonCount * minButtonSize;
+    calculatedCenterWidth = calculatedCenterWidth < minimumCenterWidth ? minimumCenterWidth : calculatedCenterWidth;
+    $('.centered').width(calculatedCenterWidth);
 }
 
 function resizeMapDiv() {
