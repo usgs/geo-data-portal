@@ -2,6 +2,19 @@
 <% response.setHeader("Pragma", "no-cache");%>
 <% response.setHeader("Cache-Control", "no-store");%>
 <% response.setDateHeader("Expires", -1);%> 
+
+<%--
+    TODO:
+    -- WebKit browsers are showing errors for AJAX requests:
+        - Refused to set unsafe header "Content-length"
+        - Refused to set unsafe header "Connection"
+        - Look @ http://www.w3.org/TR/XMLHttpRequest/#the-setrequestheader-method
+    
+    -- ScienceBase now includes multiple features in their descrivefeature WFS call.
+       This breaks our functionality to auto-select a feature. Figure out a way around 
+       this.
+--%>
+
 <!DOCTYPE html>
 <html>
     <jsp:include page="template/head.jsp" />

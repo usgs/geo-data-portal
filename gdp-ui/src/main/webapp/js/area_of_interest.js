@@ -318,7 +318,7 @@ var AOI = function() {
         return button == $(_AOI_SERVICES_BUTTON + '[depressed="true"]')[0];
     }
 
-    function updateFeatureTypesList(callback) {
+    function _updateFeatureTypesList(callback) {
         WFS.callWFS({
             'request' : 'GetCapabilities'
         },
@@ -552,7 +552,7 @@ var AOI = function() {
             bindAvailableAttributesSelectbox();
             bindAvailableAttributeValuesSelectbox();
             
-            updateFeatureTypesList();
+            _updateFeatureTypesList();
             
             $(_AOI_SERVICES_BUTTON).button();
             
@@ -568,10 +568,10 @@ var AOI = function() {
             true, 
             callback);
         },
-
+        updateFeatureTypesList : _updateFeatureTypesList,
         updateFeatureTypesListAndSelect: function(featureType) {
             // Need to select the feature type only after the list has been updated
-            updateFeatureTypesList(function() {
+            _updateFeatureTypesList(function() {
                 selectFeatureType(featureType);
             });
         },

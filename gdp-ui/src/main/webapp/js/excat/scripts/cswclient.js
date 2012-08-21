@@ -504,9 +504,11 @@ var CSWClient = function() {
             // We are doing this because we don't know which format the data might be in, if we can tell, we shouldn't iterate
             var datasetSelectors = [
             '[nodeName="csw:GetRecordByIdResponse"] > [nodeName="csw:Record"] [nodeName="dc:URI"]',
+            
             '[nodeName="csw:GetRecordByIdResponse"] > [nodeName="gmd:MD_Metadata"] > [nodeName="gmd:identificationInfo"] > \
                 [nodeName="srv:SV_ServiceIdentification"] > [nodeName="srv:containsOperations"] > [nodeName="srv:SV_OperationMetadata"] > \
                 [nodeName="srv:connectPoint"] > [nodeName="gmd:CI_OnlineResource"] > [nodeName="gmd:linkage"] > [nodeName="gmd:URL"]',
+                
             '[nodeName="csw:GetRecordByIdResponse"] > [nodeName="gmd:MD_Metadata"] > [nodeName="gmd:distributionInfo"] > \
                 [nodeName="gmd:MD_Distribution"] > [nodeName="gmd:transferOptions"] > [nodeName="gmd:MD_DigitalTransferOptions"] > \
                 [nodeName="gmd:onLine"] > [nodeName="gmd:CI_OnlineResource"] > [nodeName="gmd:linkage"] > [nodeName="gmd:URL"]'
@@ -515,24 +517,22 @@ var CSWClient = function() {
             for (var i=0; i<datasetSelectors.length; i++) {
                 $(csw_response).find(datasetSelectors[i]).each(function(index, elem) {
                     var text = $(elem).text();
-//                    text = text.indexOf('?') != -1 ? text.substring(0, text.indexOf('?')) : text;
                     
-                    if (text.toLowerCase().contains("wfs") ||
-                        text.toLowerCase().contains("ows")) {
+                    if (text.toLowerCase().contains("wfs") || text.toLowerCase().contains("ows")) {
                         selectedFeature = text.indexOf('?') != -1 ? text.substring(0, text.indexOf('?')) : text;
                     }
+                    
                 });
             }
             
             if (!selectedFeature) {
                 showErrorNotification("No feature found for this CSW Record");
-            }
-            else {
+            } else {
                 Constant.endpoint.wfs = selectedFeature;
                 Constant.endpoint.wms = selectedFeature;
                 Constant.isSB = true;
                 CSWClient.setSBConstraint();
-                AOI.init();
+                AOI.updateFeatureTypesList();
 
                 $("#csw-output").dialog('close');
             }
