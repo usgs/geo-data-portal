@@ -35,9 +35,6 @@
 
 #sb-input-cell {
     visibility: hidden;
-    position: absolute; 
-    left: 0;
-    top: 0;
 }
 
 .instructions {
