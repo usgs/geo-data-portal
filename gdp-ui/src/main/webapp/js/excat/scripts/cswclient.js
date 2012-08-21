@@ -537,7 +537,19 @@ var CSWClient = function() {
                 $("#csw-output").dialog('close');
             }
         },
-        
+        selectSubdataset : function(selectedDataset, wmsURL, title, useCache) {
+            
+            Dataset.datasetSelected(selectedDataset, wmsURL, useCache);
+            $('#dataset-url-input-box').val(selectedDataset);
+            if (parseInt(Constant.ui.view_show_csw_chosen_dataset_title) && title) {
+                $(_DATASET_SELECTED_TITLE).fadeOut(Constant.fadeSpeed, function(){
+                    $(_DATASET_SELECTED_TITLE).html('Selected Dataset: ' + title);
+                    $(_DATASET_SELECTED_TITLE).fadeIn(Constant.fadeSpeed);
+                });
+            }
+            $('#metadata').dialog('close')
+            $("#csw-output").dialog('close');
+        },
         selectDatasetById : function(id, title) {
             var csw_response = getRecordById(id);
             
