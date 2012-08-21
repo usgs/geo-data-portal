@@ -5,7 +5,7 @@
                 xmlns:gco="http://www.isotc211.org/2005/gco"
                 xmlns:gmd="http://www.isotc211.org/2005/gmd"
                 xmlns:srv="http://www.isotc211.org/2005/srv">
-    <!--xsl:output method="html" encoding="ISO-8859-1"/-->
+    <xsl:output method="html" encoding="ISO-8859-1"/>
 
 
     <xsl:template match="/results/*[local-name()='GetRecordsResponse']">
@@ -147,7 +147,7 @@
                     
                     <xsl:choose>
                         <xsl:when test="./dc:title">
-                            <xsl:apply-templates select="./dc:title"/>
+                            <xsl:apply-templates select="./dc:title[1]"/>
                         </xsl:when>
                         <xsl:otherwise>
                             <xsl:text> ...</xsl:text>
@@ -251,10 +251,10 @@
                     </xsl:choose>
                     <xsl:choose>
                         <xsl:when test="./gmd:identificationInfo/srv:SV_ServiceIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString">
-                            <xsl:apply-templates select="./gmd:identificationInfo/srv:SV_ServiceIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString"/>
+                            <xsl:apply-templates select="(./gmd:identificationInfo/srv:SV_ServiceIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString)[1]"/>
                         </xsl:when>
                         <xsl:when test="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString">
-                            <xsl:apply-templates select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString"/>
+                            <xsl:apply-templates select="(./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString)[1]"/>
                         </xsl:when>
                         <xsl:otherwise>
                             <xsl:text> ...</xsl:text>
@@ -286,6 +286,18 @@
         </xsl:choose>
     </xsl:template>
 
+
+    <xsl:template match="gmd:identificationInfo/srv:SV_ServiceIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString">
+        <xsl:choose>
+            <xsl:when test=".!=''">
+                <xsl:value-of select="."/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:text> ...</xsl:text>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+    
     <xsl:template match="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gco:CharacterString">
         <strong>
             <xsl:text>Abstract: </xsl:text>
