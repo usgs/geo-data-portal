@@ -334,7 +334,7 @@ function resizeCenterDiv() {
     logger.trace("The application center div is resizing.");
     // Resize the "centered" div based on the amount of service buttons available
     var calculatedCenterWidth;
-    var minButtonSize = 200;
+    var minButtonSize = 220;
     var minimumCenterWidth = 600;
     var buttonCount = 0;
     
