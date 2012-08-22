@@ -138,17 +138,19 @@ var Constant = function() {
                     Constant.endpoint.wms = value;
                 }
                 
-                if (key === 'coverage_wcs') {
-                    Constant.endpoint.wcs = value;
-                }
-                
                 if (key === 'feature_wfs') {
                     Constant.endpoint.wfs = value;
+                }
+                
+                if (key === 'coverage_wcs') {
+                    Constant.endpoint.wcs = value;
                 }
                 
                 if (key === 'redirect_url') {
                     Constant.endpoint['redirect_url'] = value;
                 }
+                
+                
             })
         },
         getConstantsFromServer : function() {

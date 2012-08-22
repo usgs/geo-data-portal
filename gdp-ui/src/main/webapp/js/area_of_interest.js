@@ -465,36 +465,45 @@ var AOI = function() {
     }
     
     function setSelectedAttributeBoundingBox() {
-        var wfsXML = '<![CDATA[' + Dataset.createGetFeatureXML(AOI.getSelectedFeatureType(), AOI.getSelectedAttribute(), AOI.getSelectedFeatures(), {
-            srs : 'EPSG:4326'
-        }) + ']]>';
-            
-        if (wfsXML) {
-            $.ajax( {
-                url : Constant.endpoint.proxy + Constant.endpoint.wfs,
-                type : 'post',
-                data : WPS.createGeoserverBoundingBoxWPSRequest(wfsXML),
-                processData : false,
-                dataType : 'xml',
-                contentType : 'text/xml',
-                context : this,
-                success : function(data, textStatus, XMLHttpRequest) {
-                    if ($(data).find('ExceptionReport ').length > 0) {
-                        AOI.attributeBounds.lowerCorner = '-180 -90';
-                        AOI.attributeBounds.upperCorner = '180 90';
-                        logger.warn('Unable to retrieve bounds for chosen attribute. Resetting to default bounds: LOWER CORNER: ' + AOI.attributeBounds.lowerCorner + ', UPPER CORNER: ' + AOI.attributeBounds.upperCorner);
-                        return;
+        logger.debug('AOI.setSelectedAttributeBoundingBox()');
+        
+        AOI.attributeBounds.lowerCorner = '-180 -90';
+        AOI.attributeBounds.upperCorner = '180 90';
+
+        if (ScienceBase.useSB) {
+            logger.info('AOI.setSelectedAttributeBoundingBox(): LC/UC = ' + AOI.attributeBounds.lowerCorner + " / " + AOI.attributeBounds.upperCorner);
+        } else {
+            var wfsXML = '<![CDATA[' + Dataset.createGetFeatureXML(AOI.getSelectedFeatureType(), AOI.getSelectedAttribute(), AOI.getSelectedFeatures(), {
+                srs : 'EPSG:4326'
+            }) + ']]>';
+        
+            if (wfsXML) {
+                $.ajax( {
+                    url : Constant.endpoint.proxy + Constant.endpoint.wfs,
+                    type : 'post',
+                    data : WPS.createGeoserverBoundingBoxWPSRequest(wfsXML),
+                    processData : false,
+                    dataType : 'xml',
+                    contentType : 'text/xml',
+                    context : this,
+                    success : function(data, textStatus, XMLHttpRequest) {
+                        if ($(data).find('ExceptionReport ').length > 0) {
+                            //TODO-  Do we want to just keep the bounds of the layer instead of expanding it out to the world?
+                            logger.warn('Unable to retrieve bounds for chosen attribute. Resetting to default bounds.');
+                        } else {
+                            AOI.attributeBounds.lowerCorner = $(data).find('LowerCorner')[0].textContent
+                            AOI.attributeBounds.upperCorner = $(data).find('UpperCorner')[0].textContent
+                        }
+                        logger.info('AOI.setSelectedAttributeBoundingBox(): LC/UC = ' + AOI.attributeBounds.lowerCorner + " / " + AOI.attributeBounds.upperCorner);
+                    }, 
+                    error : function(jqXHR, textStatus, errorThrown) {
+                        //TODO-  Do we want to just keep the bounds of the layer instead of expanding it out to the world?
+                        showErrorNotification(errorThrown);
+                        logger.warn('Unable to retrieve bounds for chosen attribute. Resetting to default bounds.');
+                        logger.info('AOI.setSelectedAttributeBoundingBox(): LC/UC = ' + AOI.attributeBounds.lowerCorner + " / " + AOI.attributeBounds.upperCorner);
                     }
-                    AOI.attributeBounds.lowerCorner = $(data).find('LowerCorner')[0].textContent
-                    AOI.attributeBounds.upperCorner = $(data).find('UpperCorner')[0].textContent
-                    logger.debug('Bounds for chosen layer attribtue(s) are: LOWER CORNER: ' + AOI.attributeBounds.lowerCorner + ', UPPER CORNER: ' + AOI.attributeBounds.upperCorner)
-                }, 
-                error : function(jqXHR, textStatus, errorThrown) {
-                    AOI.attributeBounds.lowerCorner = '-180 -90';
-                    AOI.attributeBounds.upperCorner = '180 90';
-                    logger.warn('Unable to retrieve bounds for chosen attribute. Resetting to default bounds: LOWER CORNER: ' + AOI.attributeBounds.lowerCorner + ', UPPER CORNER: ' + AOI.attributeBounds.upperCorner);
-                }
-            });  
+                });  
+            }
         }
     }
     

@@ -9,7 +9,7 @@ var ScienceBase = function () {
         init : function() {
             this.endpoints = incomingEndpoints;
             if (!$.isEmptyObject(incomingEndpoints)) {
-                _USE_SB = true;
+                this.useSB = true;
             }
         },
         searchSB: function() {
