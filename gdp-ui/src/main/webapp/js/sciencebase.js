@@ -2,10 +2,15 @@ var ScienceBase = function () {
     var _SB_SEARCH_TEXT = '#sbSearch';
     var _SB_FEATURE_BUTTON = '#sbFeatureButton';
     var _SB_ENDPOINTS = {};
+    var _USE_SB = false;
     return {
         endpoints : _SB_ENDPOINTS,
+        useSB : _USE_SB,
         init : function() {
             this.endpoints = incomingEndpoints;
+            if (!$.isEmptyObject(incomingEndpoints)) {
+                _USE_SB = true;
+            }
         },
         searchSB: function() {
             var oldVal = document.theForm.query.value;

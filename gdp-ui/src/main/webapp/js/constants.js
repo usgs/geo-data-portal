@@ -104,7 +104,6 @@ var Constant = function() {
 
     return {
         ui : _UI,
-        isSB : _IS_SB,
         endpoint : _ENDPOINT,
         incoming : _INCOMING,
         namespaces : _NAMESPACES,
@@ -130,10 +129,6 @@ var Constant = function() {
                 Constant.incoming,
                 getUrlParameters()
             );
-               
-//            if (Constant.incoming.caller && Constant.incoming.caller.toLowerCase() === 'sciencebase') {
-//                Constant.isSB = true;
-//            }
             
             // By this point, the ScienceBase object has initialized and 
             // may have incoming parameters. Use those to set our params 

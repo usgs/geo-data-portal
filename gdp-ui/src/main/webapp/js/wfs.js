@@ -19,8 +19,12 @@ WFS = function() {
             data: wfsData,
             cache: false,
             success: function(data, textStatus, jqXHR) {
-                if ('GetCapabilities' == wfsData.request) {
-                    WFS.cachedGetCapabilities = data;
+                if (!$(data).find('ExceptionReport').length) {
+                    if ('GetCapabilities' == wfsData.request) {
+                        WFS.cachedGetCapabilities = data;
+                    }
+                } else {
+                    showErrorNotification('WFS endpoint did not provide a proper response.');
                 }
                 successCallback(data);
             }

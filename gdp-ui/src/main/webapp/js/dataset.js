@@ -332,7 +332,7 @@ var Dataset = function() {
             'email': [_userEmail]
         };
         
-        if (Constant.isSB && Constant.endpoint && Constant.endpoint.redirect_url) {
+        if (ScienceBase.useSB && Constant.endpoint && Constant.endpoint.redirect_url) {
             wpsInputs['callback-base-url'] = [ Constant.endpoint.redirect_url + "?result="];
         }
 
@@ -425,7 +425,7 @@ var Dataset = function() {
             logger.debug('GDP: Showing retrieve process information link');
             $(_RETRIEVE_PROC_INFO_BUTTON).fadeIn(Constant.ui.fadeSpeed);
             
-            if (Constant.isSB) {
+            if (ScienceBase.useSB) {
                 $(_REDIR_TO_SB_BUTTON).fadeIn(Constant.ui.fadeSpeed);
                 $(_REDIR_TO_SB_BUTTON).click(function() {
                     

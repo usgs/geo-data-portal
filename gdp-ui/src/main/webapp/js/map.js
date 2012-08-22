@@ -224,7 +224,7 @@ function setGeometryOverlay(wmsLayerName) {
             transparent: 'true',
             isBaseLayer: false,
             // ScienceBase does not have 'Polygon' as a set style. 
-            styles: Constant.isSB ? 'MultiPolygon' : 'polygon'
+            styles: ScienceBase.useSB ? 'MultiPolygon' : 'polygon'
         },
         {
             opacity: 0.7

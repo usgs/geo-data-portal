@@ -530,7 +530,7 @@ var CSWClient = function() {
             } else {
                 Constant.endpoint.wfs = selectedFeature;
                 Constant.endpoint.wms = selectedFeature;
-                Constant.isSB = true;
+                ScienceBase.useSB = true;
                 CSWClient.setSBConstraint();
                 AOI.updateFeatureTypesList();
 
