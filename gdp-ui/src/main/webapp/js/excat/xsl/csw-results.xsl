@@ -256,9 +256,6 @@
                         <xsl:when test="./gmd:identificationInfo/srv:SV_ServiceIdentification/gmd:citation/gmd:CI_Citation/gmd:title[not(@gco:nilReason='missing')]/gco:CharacterString">
                             <xsl:apply-templates select="(./gmd:identificationInfo/srv:SV_ServiceIdentification/gmd:citation/gmd:CI_Citation/gmd:title[not(@gco:nilReason='missing')]/gco:CharacterString)[1]"/>
                         </xsl:when>
-                        <xsl:when test="./gmd:identificationInfo/srv:SV_ServiceIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString">
-                            <xsl:apply-templates select="(./gmd:identificationInfo/srv:SV_ServiceIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString)[1]"/>
-                        </xsl:when>
                         <xsl:otherwise>
                             <xsl:text> ...</xsl:text>
                         </xsl:otherwise>
