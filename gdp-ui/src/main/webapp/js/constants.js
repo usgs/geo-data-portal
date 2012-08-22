@@ -128,14 +128,17 @@ var Constant = function() {
             $.extend(
                 true,
                 Constant.incoming,
-                getUrlParameters(),
-                incomingEndpoints);
+                getUrlParameters()
+            );
                
-            if (Constant.incoming.caller && Constant.incoming.caller.toLowerCase() === 'sciencebase') {
-                Constant.isSB = true;
-            }
+//            if (Constant.incoming.caller && Constant.incoming.caller.toLowerCase() === 'sciencebase') {
+//                Constant.isSB = true;
+//            }
             
-            $.each(Constant.incoming, function(key, value) {
+            // By this point, the ScienceBase object has initialized and 
+            // may have incoming parameters. Use those to set our params 
+            // here.
+            $.each(ScienceBase.endpoints, function(key, value) {
                 if (key === 'feature_wms') {
                     Constant.endpoint.wms = value;
                 }

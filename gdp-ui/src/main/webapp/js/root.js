@@ -113,12 +113,12 @@ function initializeSteps() {
     CSWClient = new CSWClient();
     AOI = new AOI();
     Dataset = new Dataset();
+    ScienceBase = new ScienceBase();
     
+    ScienceBase.init();
     Constant.init();
     Algorithm.init();
     CSWClient.init();
-    
-    SB = new SB();
     
     steps = [AOI, Dataset];
 

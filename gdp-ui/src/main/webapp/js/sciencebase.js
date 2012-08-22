@@ -1,7 +1,12 @@
-var SB = function () {
+var ScienceBase = function () {
     var _SB_SEARCH_TEXT = '#sbSearch';
     var _SB_FEATURE_BUTTON = '#sbFeatureButton';
+    var _SB_ENDPOINTS = {};
     return {
+        endpoints : _SB_ENDPOINTS,
+        init : function() {
+            this.endpoints = incomingEndpoints;
+        },
         searchSB: function() {
             var oldVal = document.theForm.query.value;
             var query = $(_SB_SEARCH_TEXT).val();

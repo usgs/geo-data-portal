@@ -1,5 +1,4 @@
 var logger;
-var incomingEndpoints = {};
 $(document).ready(function() {
     // Set up the logger
     logger = log4javascript.getLogger();

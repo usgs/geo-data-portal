@@ -1,5 +1,4 @@
 var logger;
-var incomingEndpoints = {};
 $(document).ready(function() {
 	$.ajax({
 		url : 'blacklist',
