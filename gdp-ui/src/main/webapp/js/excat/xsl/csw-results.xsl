@@ -250,9 +250,6 @@
                         </xsl:otherwise>
                     </xsl:choose>
                     <xsl:choose>
-                        <xsl:when test="./gmd:identificationInfo/srv:SV_ServiceIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString">
-                            <xsl:apply-templates select="(./gmd:identificationInfo/srv:SV_ServiceIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString)[1]"/>
-                        </xsl:when>
                         <xsl:when test="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString">
                             <xsl:apply-templates select="(./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString)[1]"/>
                         </xsl:when>
