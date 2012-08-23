@@ -59,9 +59,9 @@ function init() {
     }
     
     return initializeOverlay() && 
-        initializeAjax() &&
-        initializeSteps() &&
-        initializeView();
+    initializeAjax() &&
+    initializeSteps() &&
+    initializeView();
 }
 
 function initializeLogging() {
@@ -86,7 +86,7 @@ function initializeOverlay() {
     $(OVERLAY_CONTENT).append(
         "Loading...&nbsp;&nbsp;&nbsp;&nbsp;",
         $('<img></img>').attr('src','images/ajax-loader.gif')
-    );
+        );
         
     return true;
 }
@@ -115,10 +115,10 @@ function initializeSteps() {
     Dataset = new Dataset();
     ScienceBase = new ScienceBase();
     
-    ScienceBase.init();
     Constant.init();
+    ScienceBase.init();
     Algorithm.init();
-    CSWClient.init();
+    CSWClient.init(ScienceBase.useSB ? Constant.endpoint['sciencebase-csw'] : 'undefined');
     
     steps = [AOI, Dataset];
 
@@ -132,6 +132,12 @@ function initializeSteps() {
         steps[stepsCounter].init();
     }
     
+    if (ScienceBase.useSB) {
+        Constant.endpoint.csw = Constant.endpoint['sciencebase-csw'];
+        Dataset.setCSWServerURL(Constant.endpoint.csw);
+        $(Dataset.cswHostSetButton).click();
+    }
+    
     return true;
 }
 
@@ -141,18 +147,24 @@ function initializeSteps() {
  */
 function initializeView() {
     logger.info('GDP: Initializing view.');
-    $(window).resize(function() {resizeElements()});
+    $(window).resize(function() {
+        resizeElements()
+        });
     
     loadStep(0);
     
     // Hide all elements with class 'hidden'. Do this here instead of in css
     // so that each element's display attribute is correctly restored to what
     // it was before being hidden (handled by jQuery's hide and show methods).
-    $('.hidden').each(function(index, element) {$(element).hide()});
+    $('.hidden').each(function(index, element) {
+        $(element).hide()
+        });
 
     // This sets all 'button' elements to JQuery UI Buttons
     $('.directionArrow').button();
-    $(PREV_BUTTON).button({'label' : 'Back'});
+    $(PREV_BUTTON).button({
+        'label' : 'Back'
+    });
     $(NEXT_BUTTON).button({
         'label' : 'Next',
         'disabled' : true
@@ -166,7 +178,9 @@ function initializeView() {
 
     initializePrevNextButtons();
         
-    $('#show-info-link').click(function() {createPopupView(Constant.ui.view_popup_info_txt, true)})
+    $('#show-info-link').click(function() {
+        createPopupView(Constant.ui.view_popup_info_txt, true)
+        })
     
     // If we wish to modify when this gets called based on the event (reload? link click?),
     // check http://geekswithblogs.net/renso/archive/2009/09/21/how-to-stop-browser-closing.aspx
@@ -263,9 +277,13 @@ function initializeThrobbers() {
 function initializeTips() {
     logger.info("GDP: Initializing Tips.");
     $(".tooltip img").hover(
-        function() {$(this).attr('src', 'images/question-mark-hover.png')},
-        function() {$(this).attr('src', 'images/question-mark.png')}
-    );
+        function() {
+            $(this).attr('src', 'images/question-mark-hover.png')
+            },
+        function() {
+            $(this).attr('src', 'images/question-mark.png')
+            }
+        );
     $(".tooltip").tipTip({
         'maxWidth': '50%',
         'delay': 100,
@@ -357,8 +375,8 @@ function resizeMapDiv() {
     
     logger.trace('GDP: Calculating map height.');
     var mapDivHeight = (windowHeight - (bottomDivHeight + headerHeight + footerHeight) - 2 < MINIMUM_MAP_HEIGHT) ? 
-        MINIMUM_MAP_HEIGHT : 
-        windowHeight - (bottomDivHeight + headerHeight + footerHeight) - 2;
+    MINIMUM_MAP_HEIGHT : 
+    windowHeight - (bottomDivHeight + headerHeight + footerHeight) - 2;
     logger.trace('GDP: Setting map height to ' + mapDivHeight + 'px');
     $(MAP_DIV).height(mapDivHeight);
 }
@@ -416,8 +434,8 @@ function createPopupView(popupText, overrideCookie) {
                     'type': 'checkbox',
                     'id' : 'dont-show-again-check'
                 })
+                )
             )
-        )
         $('#dont-show-again-check').live('change', function(action) {
             if (action.target.checked) {
                 cookie.set('gdp-hide-popup', 'true', '');
@@ -446,7 +464,9 @@ function createPopupView(popupText, overrideCookie) {
         draggable: false,
         zIndex: 9999,
         // GDP-383
-        open: function(event, ui) {$(".ui-dialog-titlebar-close").hide();} 
+        open: function(event, ui) {
+            $(".ui-dialog-titlebar-close").hide();
+        } 
     });
     return true;
 }
@@ -466,15 +486,15 @@ function handleException(err) {
     logger.fatal("An error ("+name+")was occured during application run. Presenting error dialog to user. Error follows: " + message);
     $('body').append(
         $('<div></div>').
-            attr('id', 'fatal_error_window').
-            html('An application error has occured: <br/>' + message + '\
+        attr('id', 'fatal_error_window').
+        html('An application error has occured: <br/>' + message + '\
                    <br /><br/>You may try reloading the application, continue using the application or \
                    <a href="mailto:gdp@usgs.gov?subject=Geo Data Portal Error Encountered Feedback&body=Error Encountered: %0A'+message+'%0A%0A"> \
                         contact the system administrator \
                    </a>. \
                    <br /><br />Warning: Continuing to use the application without reloading may cause instability and unexpected results.').
-            addClass('hidden')
-    );
+        addClass('hidden')
+        );
         
     $('#fatal_error_window').dialog({
         buttons: {

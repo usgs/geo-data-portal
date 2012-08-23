@@ -62,6 +62,7 @@ var Dataset = function() {
                 $(Constant.optionString).attr('value', 'No Algorithms Found - Reload application')
                 );
             $(_ALGORITHM_DROPDOWN).attr('disabled', 'disabled');
+            logger.warn('GDP: Algorithm dropdown creation failed.');
             return false;
         }
         
@@ -79,6 +80,7 @@ var Dataset = function() {
             configureDocumentationLink(Algorithm.algorithms[_algorithmList[0]].title, Algorithm.algorithms[_algorithmList[0]].abstrakt);
             bindAlgorithmDropDown();
             bindSubmitForProcessingButton()
+            logger.debug('GDP: Algorithm dropdown successfully created.');
             return true;
         } 
         
@@ -1487,7 +1489,7 @@ var Dataset = function() {
             }).html('http://igsarm-cida-gdp2.er.usgs.gov:8081/geonetwork/srv/en/csw'));
             $(serverHTML).append($('<li />', {
                 'class' : 'server-picker-li'
-            }).html('http://my-beta.usgs.gov/geoportal/csw'));
+            }).html(Constant.endpoint['sciencebase-csw']));
             
             $('body')
             .append($('<div />', {
@@ -1509,7 +1511,7 @@ var Dataset = function() {
                 Dataset.setCSWServerURL(serverURL);
                 $(_CSW_HOST_SET_BUTTON).click();
                 
-                if (this.innerHTML === 'http://my-beta.usgs.gov/geoportal/csw') {
+                if (this.innerHTML === Constant.endpoint['sciencebase-csw']) {
                     CSWClient.setSBConstraint("wcs");
                 } else {
                     CSWClient.setSBConstraint();
@@ -1602,22 +1604,18 @@ var Dataset = function() {
     
     return {
         htmlID: _HTML_ID,
-        
         hasTimeRange : _hasTimeRange,
-
         datasetTypeEnum : _datasetTypeEnum,
-        
         createGetFeatureXML : _createGetFeatureXML,
         parseWCS : _parseWCS,
-        
+        cswHostSetButton : _CSW_HOST_SET_BUTTON,
         init: function() {
             logger.info("GDP: Initializing Dataset/Submit View.");
             
             _algorithmList = (Constant.ui.view_algorithm_list.length > 0) ? Constant.ui.view_algorithm_list.split(',') : new Array();
             logger.debug('GDP: We are working with ' + ((_algorithmList.length == 0) ? 'all' : _algorithmList.length) + ' algorithm(s).');
             
-            if (createAlgorithmDropdown()) logger.debug('GDP: Algorithm dropdown successfully created.');
-            else logger.warn('GDP: Algorithm dropdown creation failed.');
+            createAlgorithmDropdown();
             
             $(_ALGORITHM_DOC_LINK).button({
                 'label' : 'Documentation'

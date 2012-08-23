@@ -498,6 +498,8 @@ var CSWClient = function() {
         },
         
         selectFeatureById : function(id) {
+            logger.info('cswclient:selectFeatureById():: User has selected a feature from ScienceBase')
+            
             var csw_response = getRecordById(id);
             var selectedFeature;
             
@@ -526,12 +528,18 @@ var CSWClient = function() {
             }
             
             if (!selectedFeature) {
+                logger.error('cswclient:selectFeatureById():: A feature couldnt be found in this CSW Record')
                 showErrorNotification("No feature found for this CSW Record");
             } else {
                 Constant.endpoint.wfs = selectedFeature;
                 Constant.endpoint.wms = selectedFeature;
+                
+                logger.info('cswclient:selectFeatureById():: Selected feature: ' + selectedFeature)
+                
                 ScienceBase.useSB = true;
+                
                 CSWClient.setSBConstraint();
+                
                 AOI.updateFeatureTypesList(function() {
                     var options = $(AOI.areasOfInterestSelectbox)[0].options;
                     
@@ -539,6 +547,7 @@ var CSWClient = function() {
                         // The return only came back with one item. Pick it
                         $(AOI.areasOfInterestSelectbox).val(options[0].label)
                         $(AOI.areasOfInterestSelectbox).trigger('change');
+                        logger.info('cswclient:selectFeatureById():: Feature selected: ' + options[0].label);
                     } else if (options.length == 2) {
                         // If the return only has two items, pick the one that isn't
                         // footprint. Footprint feature seems to be included in all 
@@ -547,6 +556,7 @@ var CSWClient = function() {
                             if (item.label.toLowerCase() !== 'sb:footprint') {
                                 $(AOI.areasOfInterestSelectbox).val(item.label);
                                 $(AOI.areasOfInterestSelectbox).trigger('change');
+                                logger.info('cswclient:selectFeatureById():: Feature selected: ' + item.label);
                             }
                         })
                     } else if (options.length > 2) {
@@ -554,9 +564,11 @@ var CSWClient = function() {
                         // there's no way of knowing which one they picked from the 
                         // feature list returned from ScienceBase. Just get rid of 
                         // the available attributes and attribute values selectboxes
-                        // and wipe the last geometry from the map, if it's there'
+                        // and wipe the last geometry from the map, if it's there
                         var overlay = map.getLayersByName('Geometry Overlay')[0];
                         var hlOverlay = map.getLayersByName('Geometry Highlight Overlay')[0];
+                        
+                        logger.info('cswclient:selectFeatureById():: Multiple features found, none selected');
                         
                         $(AOI.availableAttributesSelectbox).fadeOut(Constant.ui.fadeSpeed);
                         $(AOI.availableAttributeValsSelectbox).fadeOut(Constant.ui.fadeSpeed);

@@ -129,29 +129,6 @@ var Constant = function() {
                 Constant.incoming,
                 getUrlParameters()
             );
-            
-            // By this point, the ScienceBase object has initialized and 
-            // may have incoming parameters. Use those to set our params 
-            // here.
-            $.each(ScienceBase.endpoints, function(key, value) {
-                if (key === 'feature_wms') {
-                    Constant.endpoint.wms = value;
-                }
-                
-                if (key === 'feature_wfs') {
-                    Constant.endpoint.wfs = value;
-                }
-                
-                if (key === 'coverage_wcs') {
-                    Constant.endpoint.wcs = value;
-                }
-                
-                if (key === 'redirect_url') {
-                    Constant.endpoint['redirect_url'] = value;
-                }
-                
-                
-            })
         },
         getConstantsFromServer : function() {
             logger.debug("GDP: Getting constant values from server.");
