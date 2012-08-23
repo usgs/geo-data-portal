@@ -8,21 +8,21 @@
     <body>
         <form action="/GDP_WEB/index.jsp" method="POST">
             
-            <input type="hidden" name="feature_wfs" value="http://my-beta.usgs.gov/catalogMaps/mapping/ows/4f4e4a49e4b07f02db623cbe" />
-            <input type="hidden" name="feature_wms" value="https://my-beta.usgs.gov/catalogMaps/mapping/ows/4f4e4a49e4b07f02db623cbe" />
+            feature_wfs: <input type="text" name="feature_wfs" size="90" value="https://my-beta.usgs.gov/catalogMaps/mapping/ows/4f4e4a49e4b07f02db623cbe" /><br />
+            feature_wms: <input type="text" name="feature_wms" size="90" value="https://my-beta.usgs.gov/catalogMaps/mapping/ows/4f4e4a49e4b07f02db623cbe" /><br />
             
             <!-- feature_ows is not currently being used but can be to set feature_wfs and feature_wms --> 
-            <input type="hidden" name="feature_ows" value="https://my-beta.usgs.gov/catalogMaps/mapping/ows/4f4e4a49e4b07f02db623cbe" />
+            feature_ows: <input type="text" name="feature_ows" size="90" value="https://my-beta.usgs.gov/catalogMaps/mapping/ows/4f4e4a49e4b07f02db623cbe" /><br />
             
-            <input type="hidden" name="coverage_wms" value="https://my-beta.usgs.gov/catalogMaps/mapping/ows/4f4e4a49e4b07f02db623cbe" />
-            <input type="hidden" name="coverage_opendap" value="https://my-beta.usgs.gov/catalogMaps/mapping/ows/4f4e4a49e4b07f02db623cbe" />
-            <input type="hidden" name="coverage_wcs" value="https://my-beta.usgs.gov/catalogMaps/mapping/ows/4f4e4a49e4b07f02db623cbe" />
+            coverage_wms: <input type="text" name="coverage_wms" size="90" value="https://my-beta.usgs.gov/catalogMaps/mapping/ows/4f4e4a49e4b07f02db623cbe" /><br />
+            coverage_opendap: <input type="text" name="coverage_opendap" size="90" value="https://my-beta.usgs.gov/catalogMaps/mapping/ows/4f4e4a49e4b07f02db623cbe" /><br />
+            coverage_wcs: <input type="text" name="coverage_wcs" size="90" value="https://my-beta.usgs.gov/catalogMaps/mapping/ows/4f4e4a49e4b07f02db623cbe" /><br />
             
-            <input type="hidden" name="item_id" value="https://my-beta.usgs.gov/catalogMaps/mapping/ows/4f4e4a49e4b07f02db623cbe" />
+            item_id: <input type="text" name="item_id" size="90" value="https://my-beta.usgs.gov/catalogMaps/mapping/ows/4f4e4a49e4b07f02db623cbe" /><br />
             
-            <input type="hidden" name="redirect_url" value="https://my-beta.usgs.gov/catalogMaps/mapping/ows/4f4e4a49e4b07f02db623cbe" />
+            redirect_url: <input type="text" name="redirect_url" size="90" value="https://my-beta.usgs.gov/catalogMaps/mapping/ows/4f4e4a49e4b07f02db623cbe" /><br />
             
-            <input type="hidden" name="caller" value="sciencebase" />
+            caller: <input type="text" name="caller" size="90" value="sciencebase" /><br />
             
             <input type="submit" name="submit" value="Go!">
         </form>
