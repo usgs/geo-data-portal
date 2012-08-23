@@ -532,7 +532,44 @@ var CSWClient = function() {
                 Constant.endpoint.wms = selectedFeature;
                 ScienceBase.useSB = true;
                 CSWClient.setSBConstraint();
-                AOI.updateFeatureTypesList();
+                AOI.updateFeatureTypesList(function() {
+                    var options = $(AOI.areasOfInterestSelectbox)[0].options;
+                    
+                    if (options.length == 1) {
+                        // The return only came back with one item. Pick it
+                        $(AOI.areasOfInterestSelectbox).val(options[0].label)
+                        $(AOI.areasOfInterestSelectbox).trigger('change');
+                    } else if (options.length == 2) {
+                        // If the return only has two items, pick the one that isn't
+                        // footprint. Footprint feature seems to be included in all 
+                        // sciencebase features
+                        $.each(options, function(index, item) {
+                            if (item.label.toLowerCase() !== 'sb:footprint') {
+                                $(AOI.areasOfInterestSelectbox).val(item.label);
+                                $(AOI.areasOfInterestSelectbox).trigger('change');
+                            }
+                        })
+                    } else if (options.length > 2) {
+                        // If we have more thwn 2 options, don't pick any because
+                        // there's no way of knowing which one they picked from the 
+                        // feature list returned from ScienceBase. Just get rid of 
+                        // the available attributes and attribute values selectboxes
+                        // and wipe the last geometry from the map, if it's there'
+                        var overlay = map.getLayersByName('Geometry Overlay')[0];
+                        var hlOverlay = map.getLayersByName('Geometry Highlight Overlay')[0];
+                        
+                        $(AOI.availableAttributesSelectbox).fadeOut(Constant.ui.fadeSpeed);
+                        $(AOI.availableAttributeValsSelectbox).fadeOut(Constant.ui.fadeSpeed);
+                        
+                        if (overlay) {
+                            map.removeLayer(overlay);
+                        }
+                        if (hlOverlay) {
+                            map.removeLayer(hlOverlay);
+                        }
+                    }
+                    
+                });
 
                 $("#csw-output").dialog('close');
             }

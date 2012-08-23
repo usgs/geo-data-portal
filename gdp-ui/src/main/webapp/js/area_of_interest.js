@@ -314,7 +314,7 @@ var AOI = function() {
     }
 
     function isDepressed(button) {
-        // Whether user is toggling up the currently depressed button
+        // Whether user is toggling up the currently depressed button :(
         return button == $(_AOI_SERVICES_BUTTON + '[depressed="true"]')[0];
     }
 
@@ -552,6 +552,9 @@ var AOI = function() {
         htmlID: _HTML_ID,
         attributeBounds : _ATTRIBUTE_BOUNDS,
         sbSearchButton : _SB_SEARCH_BUTTON,
+        areasOfInterestSelectbox : _AOI_SELECTBOX,
+        availableAttributesSelectbox : _AVAILABLE_ATTRIBUTES,
+        availableAttributeValsSelectbox : _AVAILABLE_ATTRIBUTE_VALUES,
         init: function() {
             logger.info("GDP: Initializing Area of Interest.");
             

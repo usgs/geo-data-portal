@@ -8,7 +8,7 @@ var ScienceBase = function () {
         useSB : _USE_SB,
         init : function() {
             this.endpoints = incomingEndpoints;
-            if (!$.isEmptyObject(incomingEndpoints)) {
+            if (!$.isEmptyObject(this.endpoints)) {
                 this.useSB = true;
             }
         },
