@@ -439,25 +439,11 @@ var Dataset = function() {
                         id : 'redirect_window'
                     })
                     .html('You are being redirected to Science Base')
-                    .append(document)
+                    .append('body')
                         
-                    var doRedirect = function() {
-                        var urlAndData = _RETRIEVE_OUTPUT_URL.split('?');
-                        var resultUrl = encodeURIComponent(urlAndData[0] + '?id=' + statusID);
-                        window.location = Constant.endpoint.redirect_url + "?result=" + resultUrl;
-                    }
-                        
-                    $('#redirect_window').dialog({
-                        modal: true,
-                        title: 'Redirection Warning',
-                        zIndex: 9999
-                    }).bind( "dialogclose", function(event, ui) {
-                        doRedirect();
-                    });
-                    
-                    setTimeout(function(){
-                        doRedirect();
-                    }, 5000)
+                    var urlAndData = _RETRIEVE_OUTPUT_URL.split('?');
+                    var resultUrl = encodeURIComponent(urlAndData[0] + '?id=' + statusID);
+                    window.location = Constant.endpoint.redirect_url + "?result=" + resultUrl;
                 })
             }
         } else if ($(xml).find('ns|ProcessFailed').length > 0) {
@@ -1135,18 +1121,6 @@ var Dataset = function() {
                     );
                 
             })
-        //            $(xml).find('[nodeName="CoverageDescription"]').each(function(index, element) {
-        //                var id = $(element).find('>[nodeName="Identifier"]').text();
-        //                var title = $(element).find('>ns1|Title').text();
-        //                var description = $(element).find('>ns1|Abstract').text();
-        //
-        //                var displayName = title + (description != '' ? ' - ' + description : '');
-        //
-        //                $(_DATASET_ID_SELECTBOX).append(
-        //                    // name attr used for matching wms
-        //                    $(Constant.optionString).attr('value', id).attr('name', title).html(displayName)
-        //                    );
-        //            });
         } else { //     == datasetTypeEnum.OPENDAP
             if (!WPS.checkWpsResponse(xml, "Error getting dataset ID's from server.")) return;
 
@@ -1294,7 +1268,7 @@ var Dataset = function() {
         $(xml).find('[nodeName="Layer"]:has(> [nodeName="Name"])').each(function(index, element) {
             var option = $(Constant.optionString);
             option.val($(element).find('> [nodeName="Name"]').text());
-            option.text($(element).find('> [nodeName="Abstract"]').text());
+            option.text($(element).find('> [nodeName="Abstract"]').text() || $(element).find('> [nodeName="Title"]').text() );
 
             $(_WMS_LAYER_SELECTBOX).append(option);
         });
@@ -1421,7 +1395,6 @@ var Dataset = function() {
         var searchSubmitButton = $('#dataset_search_submit_button');
         var CSWSearchInput = $('#csw_search_input');
         var datasetURLInputRow = $('#dataset-url-input-row');
-        var datasetURLInputBox = $('#dataset-url-input-box');
         var cswUrlInputRow = $('#csw-url-input-row');
         
         if (!parseInt(Constant.ui.view_show_csw_dialog)) {
@@ -1520,18 +1493,17 @@ var Dataset = function() {
                 $(dialog).dialog('close');
             })
             
-            
-            
         });
         
         $(_SELECT_DATASET_BUTTON).click(function() {
             logger.debug('GDP: User has selected a dataset. ');
-            Dataset.datasetSelected($(datasetURLInputBox).val());
+            Dataset.datasetSelected($(_DATASET_URL_INPUT_BOX).val());
         });
 
         if (Constant.ui.default_dataset_url.length > 0) {
             logger.trace('GDP: Adding default dataset URL "'+Constant.ui.default_dataset_url+'" to the CSW dataset URL inputbox.');
             $(_DATASET_URL_INPUT_BOX).val(Constant.ui.default_dataset_url);
+            $(_SELECT_DATASET_BUTTON).click();
         }
         
         // Ref: http://internal.cida.usgs.gov/jira/browse/GDP-344
@@ -1712,12 +1684,15 @@ var Dataset = function() {
             // TODO: need a cleaner way of testing service type and failing over
             // to a different service
             if (uri.protocol == 'http' || uri.protocol == 'https') {
+
                 // Try wcs first. If it doesn't succeed, try opendap.
                 wcsDatasetSelected(datasetURL, function() {
+                    // This will be used as the error callback inside of wcsDatasetSelected
                     datasetURL = datasetURL.replace(/^http:\/\//, 'dods://');
                     _datasetURL = datasetURL;
-                    opendapDatasetSelected(datasetURL, useCache)
+                    opendapDatasetSelected(datasetURL, useCache);
                 });
+                
             } else if (uri.protocol == 'dods') {
                 opendapDatasetSelected(datasetURL, useCache);
             } else {

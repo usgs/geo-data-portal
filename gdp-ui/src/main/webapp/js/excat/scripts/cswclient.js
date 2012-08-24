@@ -388,16 +388,28 @@ var CSWClient = function() {
             }
         },
         getRecords : function(start) {
+            // force outputSchema  always  to csw:Record for GetRecords requests xsl for 
+            // this only handles dublin core, others are in GetRecordById xsl fixed this
+            var schema = document.theForm.schema.value;
+            var sortby = document.theForm.sortby.value;
+            var queryable = document.theForm.queryable.value;
+            var processor = new XSLTProcessor();
             
             if (typeof start == "undefined") {
                 start = 1;
+            }
+            
+            // If the URL in the CSW server is our known ScienceBase CSW server,
+            // set our constraint to that, otherwise remove any SB constraints
+            if (Dataset.getCSWServerURL() === Constant.endpoint['sciencebase-csw']) {
+                CSWClient.setSBConstraint('wcs');
+            } else {
+                CSWClient.setSBConstraint();
             }
 
             if (typeof  document.theForm.cswhosts != "undefined") {
                 this.setCSWHost(document.theForm.cswhosts.value);
             }
-
-            var queryable = document.theForm.queryable.value;
 
             /*because geonetwork doen not follow the specs*/
             if(cswhost.indexOf('geonetwork') !=-1 & queryable == "anytext")
@@ -408,27 +420,21 @@ var CSWClient = function() {
             if (operator == "contains" & query != "") {
                 query = "%" + query + "%";
             }
-            //    var displaymode = document.theForm.displaymode.value;
 
-            // force outputSchema  always  to csw:Record for GetRecords requests
-            // xsl for this only handles dublin core, others are in GetRecordById xsl
-            // fixed this
-            //var schema = "http://www.opengis.net/cat/csw/2.0.2";
-            var schema = document.theForm.schema.value;
             setXpathValue(defaults_xml, "/defaults/outputschema", schema + '');
             setXpathValue(defaults_xml, "/defaults/propertyname", queryable + '');
             setXpathValue(defaults_xml, "/defaults/literal", query + '');
             setXpathValue(defaults_xml, "/defaults/bboxlc", AOI.attributeBounds.lowerCorner + '');
             setXpathValue(defaults_xml, "/defaults/bboxuc", AOI.attributeBounds.upperCorner + '');
-            //this.setXpathValue(defaults_xml, "/this.defaults/literal", query + '');
             setXpathValue(defaults_xml, "/defaults/startposition", start + '');
-            var sortby = document.theForm.sortby.value;
             setXpathValue(defaults_xml, "/defaults/sortby", sortby + '');
+
+            //TODO- Figure out a better way of doing this
             if (_sbConstraintFeature) {
                 setXpathValue(defaults_xml, "/defaults/scienceBaseFeature", 'true');
             } else {
                 setXpathValue(defaults_xml, "/defaults/scienceBaseFeature", 'false');
-            }
+            } 
             
             if (_sbConstraintCoverage) {
                 setXpathValue(defaults_xml, "/defaults/scienceBaseCoverage", 'true');
@@ -436,13 +442,11 @@ var CSWClient = function() {
                 setXpathValue(defaults_xml, "/defaults/scienceBaseCoverage", 'false');
             }
             
-            var processor = new XSLTProcessor();
             processor.importStylesheet(getrecords_xsl);
 
             var request_xml = processor.transformToDocument(defaults_xml);
             var request = new XMLSerializer().serializeToString(request_xml);
             var csw_response = sendCSWRequest(request);
-
             var results = "<results>";
             if (_sbConstraintFeature) {
                 results = "<results scienceBaseFeature=\"true\">";
@@ -601,6 +605,9 @@ var CSWClient = function() {
         },
         selectDatasetById : function(id, title) {
             var csw_response = getRecordById(id);
+            var selectedDataset;
+            var shouldUseCache = false;
+            var wmsURL;
             
             // We are doing this because we don't know which format the data might be in, if we can tell, we shouldn't iterate
             var datasetSelectors = [
@@ -619,10 +626,7 @@ var CSWClient = function() {
             '[nodeName="csw:GetRecordByIdResponse"] > [nodeName="gmd:MD_Metadata"] > [nodeName="gmd:identificationInfo"] > \
                     [nodeName="gmd:MD_DataIdentification"] > [nodeName="gmd:status"] > [nodeName="gmd:MD_ProgressCode"]'
             ];
-
-            var selectedDataset;
-            var shouldUseCache = false;
-            var wmsURL;
+            
             for (var i=0; i<datasetSelectors.length; i++) {
                 $(csw_response).find(datasetSelectors[i]).each(function(index, elem) {
                     var text = $(elem).text();
@@ -641,6 +645,7 @@ var CSWClient = function() {
                     }
                 });
             }
+            
             for (i=0; i<shouldCacheSelectors.length; i++) {
                 $(csw_response).find(shouldCacheSelectors[i]).each(function(index, elem) {
                     var codeListValue = $(elem).attr("codeListValue");

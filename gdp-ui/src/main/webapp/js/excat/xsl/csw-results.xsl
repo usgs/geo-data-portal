@@ -211,6 +211,7 @@
             <li>
                 <strong>
                     <xsl:text>Title: </xsl:text>
+                    <xsl:value-of select="$scienceBaseCoverage"/>
                 </strong>
                 <a>
                     <xsl:attribute name="title">
@@ -235,6 +236,16 @@
                                 <xsl:text>javascript:(CSWClient.displayMultipleOpenDAPSelection</xsl:text>
                                 <xsl:text>('</xsl:text>
                                 <xsl:value-of select="./gmd:fileIdentifier/gco:CharacterString"/>
+                                <xsl:text>'))</xsl:text>
+                            </xsl:attribute>
+                        </xsl:when>
+                        <xsl:when test="$scienceBaseCoverage = 'true'">
+                            <xsl:attribute name="href">
+                                <xsl:text>javascript:(CSWClient.selectDatasetById</xsl:text>
+                                <xsl:text>('</xsl:text>
+                                <xsl:value-of select="./gmd:fileIdentifier/gco:CharacterString"/>
+                                <xsl:text>','</xsl:text>
+                                <xsl:value-of select="./gmd:identificationInfo/srv:SV_ServiceIdentification[@id='OGC-WCS']/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString"/>
                                 <xsl:text>'))</xsl:text>
                             </xsl:attribute>
                         </xsl:when>

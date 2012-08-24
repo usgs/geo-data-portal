@@ -23,10 +23,10 @@ var ScienceBase = function () {
                 if (key === 'feature_wfs') {
                     Constant.endpoint.wfs = value;
                 }
-                
-                if (key === 'coverage_wcs') {
-                    Constant.endpoint.wcs = value;
-                }
+//                
+//                if (key === 'coverage_wcs') {
+//                    Constant.endpoint.wcs = value;
+//                }
                 
                 if (key === 'redirect_url') {
                     Constant.endpoint['redirect_url'] = value;
