@@ -390,10 +390,11 @@ var CSWClient = function() {
         getRecords : function(start) {
             // force outputSchema  always  to csw:Record for GetRecords requests xsl for 
             // this only handles dublin core, others are in GetRecordById xsl fixed this
-            var schema = document.theForm.schema.value;
+            var schema = document.theForm.schema.value;            
             var sortby = document.theForm.sortby.value;
             var queryable = document.theForm.queryable.value;
-            var processor = new XSLTProcessor();
+            var operator = document.theForm.operator.value;
+            var query = trim(document.theForm.query.value);
             
             if (typeof start == "undefined") {
                 start = 1;
@@ -415,8 +416,6 @@ var CSWClient = function() {
             if(cswhost.indexOf('geonetwork') !=-1 & queryable == "anytext")
                 queryable = "any";
 
-            var operator = document.theForm.operator.value;
-            var query = trim(document.theForm.query.value);
             if (operator == "contains" & query != "") {
                 query = "%" + query + "%";
             }
@@ -442,6 +441,7 @@ var CSWClient = function() {
                 setXpathValue(defaults_xml, "/defaults/scienceBaseCoverage", 'false');
             }
             
+            var processor = new XSLTProcessor();
             processor.importStylesheet(getrecords_xsl);
 
             var request_xml = processor.transformToDocument(defaults_xml);

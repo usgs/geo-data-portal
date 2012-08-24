@@ -5,7 +5,7 @@
                 xmlns:gco="http://www.isotc211.org/2005/gco"
                 xmlns:gmd="http://www.isotc211.org/2005/gmd"
                 xmlns:srv="http://www.isotc211.org/2005/srv">
-    <xsl:output method="html" encoding="ISO-8859-1"/>
+    <!--xsl:output method="html" encoding="ISO-8859-1"/-->
 
 
     <xsl:template match="/results/*[local-name()='GetRecordsResponse']">
@@ -178,7 +178,7 @@
                     </xsl:attribute>
                     <xsl:text>Full Record</xsl:text>
                 </a>
-                <hr/>
+                <hr />
             </li>
         </xsl:for-each>
     </xsl:template>
@@ -205,13 +205,11 @@
     </xsl:template>
 
     <xsl:template match="gmd:MD_Metadata">
-        
         <xsl:for-each select=".">
             <xsl:variable name="opendapServicesCount" select="count(./gmd:identificationInfo/srv:SV_ServiceIdentification/srv:serviceType/gco:LocalName[contains(.,'OPeNDAP')])" />
             <li>
                 <strong>
                     <xsl:text>Title: </xsl:text>
-                    <xsl:value-of select="$scienceBaseCoverage"/>
                 </strong>
                 <a>
                     <xsl:attribute name="title">
@@ -281,7 +279,7 @@
                         <xsl:apply-templates select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gco:CharacterString" />
                     </xsl:otherwise>
                 </xsl:choose>
-                <hr/>
+                <hr />
             </li>
         </xsl:for-each>
     </xsl:template>
