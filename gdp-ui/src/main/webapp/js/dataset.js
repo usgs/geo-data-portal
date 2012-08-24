@@ -177,6 +177,9 @@ var Dataset = function() {
                 logger.debug('GDP: Clearing the configuration summary');
                 $(_ALGORITHM_CONFIGURATION_SUMMARY).fadeOut(Constant.ui.fadespeed);
                 
+                logger.debug('GDP: Hiding Redirect To ScienceBase Button');
+                $(_REDIR_TO_SB_BUTTON).fadeOut(Constant.ui.fadeSpeed);
+                
                 logger.debug('GDP: Hiding CSW Client');
                 $(_CSW_CLIENT).fadeOut(Constant.ui.fadespeed);
                 
@@ -224,6 +227,10 @@ var Dataset = function() {
 
                     logger.debug('GDP: Erasing contents in configuration summary');
                     $(_ALGORITHM_CONFIGURATION_SUMMARY).fadeOut(Constant.ui.fadeSpeed);
+                    
+                    logger.debug('GDP: Hiding Redirect To ScienceBase Button');
+                    $(_REDIR_TO_SB_BUTTON).fadeOut(Constant.ui.fadeSpeed);
+                    
                 }
                 
                 if (Algorithm.algorithms[selectedAlgorithm].inputs['DATASET_URI'] != undefined) {
@@ -450,7 +457,7 @@ var Dataset = function() {
             window.clearInterval(intervalID);
             hideThrobber(true);
             logger.warn('GDP: STATUS: Process Failed: '+ $(xml).find('ns|ProcessFailed').find('ns1|ExceptionText').text())
-            showErrorNotification('Process failed: ' + $(xml).find('ns|ProcessFailed').find('ns1|ExceptionText').text());
+            showErrorNotification('Process failed: ' + $(xml).find('ns|ProcessFailed').find('ns1|ExceptionText').text(), true);
             
             logger.debug('GDP: Hiding retrieve process output link');
             $(_RETRIEVE_OUTPUT_BUTTON).fadeOut(Constant.ui.fadeSpeed);
@@ -579,6 +586,7 @@ var Dataset = function() {
                 $(_RETRIEVE_OUTPUT_BUTTON).fadeOut(Constant.ui.fadeSpeed);
                 $(_RETRIEVE_PROC_INFO_BUTTON).fadeOut(Constant.ui.fadeSpeed);
                 $(_SUBMIT_FOR_PROCESSING_LINK).fadeOut(Constant.ui.fadeSpeed);
+                $(_REDIR_TO_SB_BUTTON).fadeOut(Constant.ui.fadeSpeed);
                 return;
             }
 
@@ -685,6 +693,7 @@ var Dataset = function() {
                         $(_RETRIEVE_OUTPUT_BUTTON).fadeOut(Constant.ui.fadeSpeed);
                         $(_RETRIEVE_PROC_INFO_BUTTON).fadeOut(Constant.ui.fadeSpeed);
                         $(_SUBMIT_FOR_PROCESSING_LINK).fadeOut(Constant.ui.fadeSpeed);
+                        $(_REDIR_TO_SB_BUTTON).fadeOut(Constant.ui.fadeSpeed);
                         WPS.sendWpsExecuteRequest(Constant.endpoint.proxy + Constant.endpoint.processwps, submitWpsAlgorithm, submitWpsStringInputs, ['OUTPUT'], true, submitForProcessingCallback, submitWpsXmlInputs);
                     },
                     'CANCEL' : function() {
