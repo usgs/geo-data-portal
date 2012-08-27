@@ -30,8 +30,10 @@ var ScienceBase = function () {
                 
                 if (key === 'coverage_wcs' && value) {
                     Constant.ui.default_dataset_url = value
+                    Constant.ui.default_wms_url = ScienceBase.endpoints['coverage_wms'];
                 } else if (key === 'coverage_opendap' && value) {
                     Constant.ui.default_dataset_url = value
+                    Constant.ui.default_wms_url = ScienceBase.endpoints['coverage_wms'];
                 }
             })
         },

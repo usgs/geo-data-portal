@@ -1708,8 +1708,8 @@ var Dataset = function() {
                 showErrorNotification("Unknown dataset protocol: " + uri.protocol);
             }
 
-            gWmsURL = wmsURL;
-            if (wmsURL) getWmsLayers(wmsURL);
+            gWmsURL = wmsURL || Constant.ui.default_wms_url;
+            if (gWmsURL) getWmsLayers(gWmsURL);
         },
         stepLoading: function() {
             if (_algorithmList.length == 1 

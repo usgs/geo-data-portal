@@ -89,6 +89,7 @@ public class PropertiesServlet extends HttpServlet {
             // GUI configuration
             defaultProperties.setProperty("ui.default_csw_search", "");
             defaultProperties.setProperty("ui.default_dataset_url", "");
+            defaultProperties.setProperty("ui.default_wms_url", "");
             defaultProperties.setProperty("ui.max_upload_size", "16777216");
             defaultProperties.setProperty("ui.shapefile_downloading_allow", "1");
             defaultProperties.setProperty("ui.shapefile_downloading_maxfeatures", "");
