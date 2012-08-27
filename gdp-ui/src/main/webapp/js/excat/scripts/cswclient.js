@@ -31,6 +31,7 @@ var CSWClient = function() {
     var _sbConstraintCoverage = false;
     var _capabilitiesMap = {};
     var _DATASET_SELECTED_TITLE = '#dataset-selected-title';
+    var _DATASET_URL_INPUT_BOX = '#dataset-url-input-box';
     
     function handleCSWResponse(request, xml) {
 
@@ -332,7 +333,7 @@ var CSWClient = function() {
         },
         setDatasetUrl : function(url) {
             if (url) {
-                $('#dataset-url-input-box').val(url);
+                $(_DATASET_URL_INPUT_BOX).val(url);
                 
                 if ($('#metadata').length) {
                     $('#metadata').dialog('close');
@@ -596,7 +597,7 @@ var CSWClient = function() {
         selectSubdataset : function(selectedDataset, wmsURL, title, useCache) {
             
             Dataset.datasetSelected(selectedDataset, wmsURL, useCache);
-            $('#dataset-url-input-box').val(selectedDataset);
+            $(_DATASET_URL_INPUT_BOX).val(selectedDataset);
             if (parseInt(Constant.ui.view_show_csw_chosen_dataset_title) && title) {
                 $(_DATASET_SELECTED_TITLE).fadeOut(Constant.fadeSpeed, function(){
                     $(_DATASET_SELECTED_TITLE).html('Selected Dataset: ' + title);
@@ -664,7 +665,7 @@ var CSWClient = function() {
             }
             else {
                 Dataset.datasetSelected(selectedDataset, wmsURL, shouldUseCache);
-                $('#dataset-url-input-box').val(selectedDataset);
+                $(_DATASET_URL_INPUT_BOX).val(selectedDataset);
                 if (parseInt(Constant.ui.view_show_csw_chosen_dataset_title)) {
                     $(_DATASET_SELECTED_TITLE).fadeOut(Constant.fadeSpeed, function(){
                         $(_DATASET_SELECTED_TITLE).html('Selected Dataset: ' + title);

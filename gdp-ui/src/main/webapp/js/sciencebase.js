@@ -16,16 +16,22 @@ var ScienceBase = function () {
             // may have incoming parameters. Use those to set our params 
             // here.
             $.each(ScienceBase.endpoints, function(key, value) {
-                if (key === 'feature_wms') {
+                if (key === 'wmsurl') {
                     Constant.endpoint.wms = value;
                 }
                 
-                if (key === 'feature_wfs') {
+                if (key === 'wfsurl') {
                     Constant.endpoint.wfs = value;
                 }
                 
                 if (key === 'redirect_url') {
                     Constant.endpoint['redirect_url'] = value;
+                }
+                
+                if (key === 'coverage_wcs' && value) {
+                    Constant.ui.default_dataset_url = value
+                } else if (key === 'coverage_opendap' && value) {
+                    Constant.ui.default_dataset_url = value
                 }
             })
         },

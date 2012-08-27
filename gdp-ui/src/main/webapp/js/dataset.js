@@ -1512,14 +1512,14 @@ var Dataset = function() {
         if (Constant.ui.default_dataset_url.length > 0) {
             logger.trace('GDP: Adding default dataset URL "'+Constant.ui.default_dataset_url+'" to the CSW dataset URL inputbox.');
             $(_DATASET_URL_INPUT_BOX).val(Constant.ui.default_dataset_url);
-            $(_SELECT_DATASET_BUTTON).click();
+            CSWClient.setDatasetUrl($(_DATASET_URL_INPUT_BOX).val());
         }
         
         // Ref: http://internal.cida.usgs.gov/jira/browse/GDP-344
         if (dsUrl) {  //Incoming dataset URL should override a default dataset URL if one exists
             logger.trace('GDP: Adding dataset URL "'+ decodeURIComponent(dsUrl) +'" parsed from incoming URL.');
             $(_DATASET_URL_INPUT_BOX).val(decodeURIComponent(dsUrl));
-            $(_SELECT_DATASET_BUTTON).click();
+            CSWClient.setDatasetUrl($(_DATASET_URL_INPUT_BOX).val());
         }
 
         $(_DATASET_ID_SELECTBOX).change(function() {
