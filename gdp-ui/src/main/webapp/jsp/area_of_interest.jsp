@@ -83,7 +83,7 @@
                             <span id="fileInputButton" ></span>
                         </span>
                         <span id="sb-input-cell">
-                            <input type="text" id="sbSearch" />
+                            <input type="text" id="sbSearch" size="15" />
                             <input type="button" id="sbSearchButton" class="button" />
                         </span>
                     </div>

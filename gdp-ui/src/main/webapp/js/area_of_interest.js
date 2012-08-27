@@ -158,9 +158,14 @@ var AOI = function() {
                 if (response[0].nodeName == "wpsResponse") {
                     // Convert raw text into XML DOM object
                     var wpsResponse = $.xmlDOM($(response).text());
-                    if (!WPS.checkWpsResponse(wpsResponse, 'Error uploading file.')) return;
                     var resultText;
                     var featureType;
+                    
+                    if (!WPS.checkWpsResponse(wpsResponse, 'Error uploading file.')) return;
+                    
+                    Constant.endpoint.wfs = Constant.endpoint.geoserver + '/wfs'
+                    Constant.endpoint.wms = Constant.endpoint.geoserver + '/wms'
+                    
                     if ($.browser.msie) {
                         featureType = $(wpsResponse).find('ns1|Identifier:contains("featuretype")').siblings().find('ns|Data').find('ns|LiteralData').text();
                         resultText = $(wpsResponse).find('ns1|Identifier:contains("result")').siblings().find('ns|Data').find('ns|LiteralData').text();

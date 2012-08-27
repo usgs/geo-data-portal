@@ -1,3 +1,8 @@
+
+input[type=text] {
+    height: 29px;
+    font-size: 1.2em;
+}
 #bottom-div {
     position: relative;
     width: 100%;

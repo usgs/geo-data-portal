@@ -28,16 +28,16 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
 
     initialize: function(options) {
         this.handlerOptions = OpenLayers.Util.extend(
-            {}, this.defaultHandlerOptions
-        );
+        {}, this.defaultHandlerOptions
+            );
         OpenLayers.Control.prototype.initialize.apply(
             this, arguments
-        );
+            );
         this.handler = new OpenLayers.Handler.Click(
             this, {
-               'click': this.trigger
+                'click': this.trigger
             }, this.handlerOptions
-        );
+            );
     },
 
     trigger: function(e) {
@@ -111,10 +111,13 @@ function submitDrawFeature() {
     drawFeatureLayer.protocol.format.featureType = name;
 
     var wpsAlgo = 'gov.usgs.cida.gdp.wps.algorithm.filemanagement.CreateNewShapefileDataStore';
-    var wpsInputs = {'name' : [name]}
+    var wpsInputs = {
+        'name' : [name]
+        }
     var wpsOutputs = ['layer-name'];
 
-    
+    Constant.endpoint.wfs = Constant.endpoint.geoserver + '/wfs'
+    Constant.endpoint.wms = Constant.endpoint.geoserver + '/wms'
 
     WPS.sendWpsExecuteRequest(Constant.endpoint.proxy + Constant.endpoint.utilitywps,
         wpsAlgo, wpsInputs, wpsOutputs, false, drawFeatureCallback);
@@ -153,20 +156,20 @@ function drawFeatureCallback(data) {
 function updateFeatureTypeAttribute(featureType, attribute, value, callback) {
 
     var updateTransaction =
-        '<?xml version="1.0"?>' +
-        '<wfs:Transaction xmlns:ogc="http://www.opengis.net/ogc" ' +
-                         'xmlns:wfs="http://www.opengis.net/wfs" ' +
-                         'xmlns:gml="http://www.opengis.net/gml" ' +
-                         'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' +
-                         'version="1.1.0" service="WFS" '+
-                         'xsi:schemaLocation="http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd">' +
-          '<wfs:Update typeName="' + featureType + '">' +
-            '<wfs:Property>' +
-              '<wfs:Name>' + attribute + '</wfs:Name>' +
-              '<wfs:Value>' + value + '</wfs:Value>'+
-            '</wfs:Property>'+
-          '</wfs:Update>'+
-        '</wfs:Transaction>';
+    '<?xml version="1.0"?>' +
+    '<wfs:Transaction xmlns:ogc="http://www.opengis.net/ogc" ' +
+    'xmlns:wfs="http://www.opengis.net/wfs" ' +
+    'xmlns:gml="http://www.opengis.net/gml" ' +
+    'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' +
+    'version="1.1.0" service="WFS" '+
+    'xsi:schemaLocation="http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd">' +
+    '<wfs:Update typeName="' + featureType + '">' +
+    '<wfs:Property>' +
+    '<wfs:Name>' + attribute + '</wfs:Name>' +
+    '<wfs:Value>' + value + '</wfs:Value>'+
+    '</wfs:Property>'+
+    '</wfs:Update>'+
+    '</wfs:Transaction>';
 
     $.ajax({
         url: Constant.endpoint.proxy + Constant.endpoint.wfs,
@@ -202,7 +205,7 @@ function setDatasetOverlay(wmsURL, wmsLayerName) {
         {
             opacity: 0.5
         }
-    );
+        );
 
     logger.debug('GDP: Adding dataset overlay layer.');
     map.addLayer(datasetOverlay);
@@ -229,7 +232,7 @@ function setGeometryOverlay(wmsLayerName) {
         {
             opacity: 0.7
         }
-    );
+        );
 
     // selected features
     highlightGeometryOverlay = new OpenLayers.Layer.WMS(
@@ -244,7 +247,7 @@ function setGeometryOverlay(wmsLayerName) {
         {
             opacity: 0.8
         }
-    );
+        );
 
     highlightFeatures(null, '*'); // highlight all features
 
@@ -275,28 +278,33 @@ function highlightFeatures(attr, attrValues) {
         baseCqlFilter = escapedAttr + " NOT" + cqlFilter;
     }
 
-    geometryOverlay.mergeNewParams({'cql_filter': encodeURIComponent(baseCqlFilter)});
-    highlightGeometryOverlay.mergeNewParams({'cql_filter': encodeURIComponent(hlCqlFilter)});
+    geometryOverlay.mergeNewParams({
+        'cql_filter': encodeURIComponent(baseCqlFilter)
+        });
+        
+    highlightGeometryOverlay.mergeNewParams({
+        'cql_filter': encodeURIComponent(hlCqlFilter)
+        });
 }
 
 function zoomToLayer(layerName) {
-            // Unfortunately there's no jQuery selector that matches inner text exactly.
-            // There's :contains('str'), but that only tests that 'str' is a substring.
-            logger.debug('GDP: Zooming to layer. Using cached getCapabilities document from WFS server.');
-            $(WFS.cachedGetCapabilities).find('FeatureType').each(function(i, elem) {
-                if ($(elem).find('Name').text() == layerName) {
-                    var bbox = $(elem).find('ows|WGS84BoundingBox');
-                    var lowerCorner = $(bbox).find('ows|LowerCorner').text().split(' ');
-                    var upperCorner = $(bbox).find('ows|UpperCorner').text().split(' ');
+    // Unfortunately there's no jQuery selector that matches inner text exactly.
+    // There's :contains('str'), but that only tests that 'str' is a substring.
+    logger.debug('GDP: Zooming to layer. Using cached getCapabilities document from WFS server.');
+    $(WFS.cachedGetCapabilities).find('FeatureType').each(function(i, elem) {
+        if ($(elem).find('Name').text() == layerName) {
+            var bbox = $(elem).find('ows|WGS84BoundingBox');
+            var lowerCorner = $(bbox).find('ows|LowerCorner').text().split(' ');
+            var upperCorner = $(bbox).find('ows|UpperCorner').text().split(' ');
 
-                    var minx = lowerCorner[0];
-                    var miny = lowerCorner[1];
-                    var maxx = upperCorner[0];
-                    var maxy = upperCorner[1];
+            var minx = lowerCorner[0];
+            var miny = lowerCorner[1];
+            var maxx = upperCorner[0];
+            var maxy = upperCorner[1];
 
-                    map.zoomToExtent(new OpenLayers.Bounds(minx, miny, maxx, maxy));
-                }
-            });
+            map.zoomToExtent(new OpenLayers.Bounds(minx, miny, maxx, maxy));
+        }
+    });
 }
 
 function clearGeometryOverlay() {
@@ -333,13 +341,13 @@ function initMap(options) {
     map = new OpenLayers.Map('map-div', {
         numZoomLevels: _NUM_ZOOM_LEVELS,
         controls: [
-            new OpenLayers.Control.Navigation(),
-            new OpenLayers.Control.ArgParser(),
-            new OpenLayers.Control.Attribution(),
-            new OpenLayers.Control.LayerSwitcher(),
-            new OpenLayers.Control.PanZoomBar(),
-            new OpenLayers.Control.MousePosition(),
-            new OpenLayers.Control.ScaleLine()
+        new OpenLayers.Control.Navigation(),
+        new OpenLayers.Control.ArgParser(),
+        new OpenLayers.Control.Attribution(),
+        new OpenLayers.Control.LayerSwitcher(),
+        new OpenLayers.Control.PanZoomBar(),
+        new OpenLayers.Control.MousePosition(),
+        new OpenLayers.Control.ScaleLine()
         ],
         // Got this number from Hollister, and he's not sure where it came from.
         // Without this line, the esri road and relief layers will not display
@@ -355,7 +363,7 @@ function initMap(options) {
         protocol: new OpenLayers.Protocol.WFS({
             version: '1.1.0',
             srsName: 'EPSG:4326',
-            url: Constant.endpoint.proxy + Constant.endpoint.wfs,
+            url: Constant.endpoint.proxy + Constant.endpoint.geoserver + '/wfs',
             featureNS :  'gov.usgs.cida.gdp.draw',
             featureType : 'temp', // this gets changed before submitting geometry
             geometryName: 'the_geom'
@@ -366,8 +374,10 @@ function initMap(options) {
     drawFeatureControl = new OpenLayers.Control.DrawFeature(
         drawFeatureLayer,
         OpenLayers.Handler.Polygon,
-        {multi : true}
-    );
+        {
+            multi : true
+        }
+        );
     map.addControl(drawFeatureControl);
 
     watersControl = new OpenLayers.Control.Click();
@@ -387,8 +397,8 @@ function initMap(options) {
 
     map.setCenter(new OpenLayers.LonLat(-96, 38), 4);
     logger.info('GDP: Map initialized.');
-    // Change layer based on zoom level.
-    //map.events.register("zoomend", null, onMapZoom);
+// Change layer based on zoom level.
+//map.events.register("zoomend", null, onMapZoom);
 }
 
 function parseLayerDefinition(layersDefOb) {
@@ -449,14 +459,14 @@ function setupLayer(layerOb, type, defaultLayer) {
             layerOb.url,
             layerOb.params,
             layerOb.OLparams
-        );
+            );
     } else {
         layer = new OpenLayers.Layer.WMS(
             layerOb.name,
             layerOb.url,
             layerOb.params,
             layerOb.OLparams
-        );
+            );
     }
 
     // Default to the overlay not being shown.
