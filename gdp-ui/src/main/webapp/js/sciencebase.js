@@ -16,11 +16,11 @@ var ScienceBase = function () {
             // may have incoming parameters. Use those to set our params 
             // here.
             $.each(ScienceBase.endpoints, function(key, value) {
-                if (key === 'wmsurl') {
+                if (key === 'feature_wms') {
                     Constant.endpoint.wms = value;
                 }
                 
-                if (key === 'wfsurl') {
+                if (key === 'feature_wfs') {
                     Constant.endpoint.wfs = value;
                 }
                 
