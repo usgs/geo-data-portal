@@ -3,14 +3,18 @@ var ScienceBase = function () {
     var _SB_FEATURE_BUTTON = '#sbFeatureButton';
     var _SB_ENDPOINTS = {};
     var _USE_SB = false;
+    var _ITEM_ID;
     return {
         endpoints : _SB_ENDPOINTS,
         useSB : _USE_SB,
+        itemId : _ITEM_ID,
         init : function() {
-            this.endpoints = incomingEndpoints;
+            this.endpoints = incomingParams;
             if (!$.isEmptyObject(this.endpoints)) {
                 this.useSB = true;
             }
+            
+            this.itemId = incomingParams['item_id'] || '';
             
             // By this point, the ScienceBase object has initialized and 
             // may have incoming parameters. Use those to set our params 

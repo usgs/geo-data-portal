@@ -165,6 +165,7 @@ var AOI = function() {
                     
                     Constant.endpoint.wfs = Constant.endpoint.geoserver + '/wfs'
                     Constant.endpoint.wms = Constant.endpoint.geoserver + '/wms'
+                    ScienceBase.useSB = false;
                     
                     if ($.browser.msie) {
                         featureType = $(wpsResponse).find('ns1|Identifier:contains("featuretype")').siblings().find('ns|Data').find('ns|LiteralData').text();
@@ -380,9 +381,6 @@ var AOI = function() {
                 $(NEXT_BUTTON).button('option', 'disabled', false);
             }
             
-            //TODO- Check if we are coming in from sciencebase. If so, do not 
-            // show the shapefile download link or change the link to allow to 
-            // download directly from ScienceBase
             if (parseInt(Constant.ui.shapefile_downloading_allow)) {
                 createShapefileDownloadLink(selectedFeatureType);
             }
@@ -543,7 +541,11 @@ var AOI = function() {
                         addClass('hidden bold-link').
                         html('Download Shapefile').
                         click(function() {
+                            if (ScienceBase.useSB) {
+                            $.download(Constant.endpoint.sciencebase + '/catalog/file/get/' + ScienceBase.itemId,'get')
+                            } else {
                             $.download(rootUrl,kvpParams,'get')
+                            }
                         })
                         )
                     ).attr('id','download_shapefile_link_row')

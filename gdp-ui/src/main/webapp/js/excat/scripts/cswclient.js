@@ -539,11 +539,11 @@ var CSWClient = function() {
                 logger.error('cswclient:selectFeatureById():: A feature couldnt be found in this CSW Record')
                 showErrorNotification("No feature found for this CSW Record");
             } else {
-                Constant.endpoint.wfs = selectedFeature;
-                Constant.endpoint.wms = selectedFeature;
-                
                 logger.info('cswclient:selectFeatureById():: Selected feature: ' + selectedFeature)
                 
+                Constant.endpoint.wfs = selectedFeature;
+                Constant.endpoint.wms = selectedFeature;
+                ScienceBase.itemId = id;
                 ScienceBase.useSB = true;
                 
                 CSWClient.setSBConstraint();
@@ -558,7 +558,7 @@ var CSWClient = function() {
                         logger.info('cswclient:selectFeatureById():: Feature selected: ' + options[0].label);
                     } else if (options.length == 2) {
                         // If the return only has two items, pick the one that isn't
-                        // footprint. Footprint feature seems to be included in all 
+                        // footprint. Footprint feature seems to selectFeaturebe included in all 
                         // sciencebase features
                         $.each(options, function(index, item) {
                             if (item.label.toLowerCase() !== 'sb:footprint') {
@@ -567,7 +567,7 @@ var CSWClient = function() {
                                 logger.info('cswclient:selectFeatureById():: Feature selected: ' + item.label);
                             }
                         })
-                    } else if (options.length > 2) {
+                    } else if (options.length > 2) {selectFeature
                         // If we have more thwn 2 options, don't pick any because
                         // there's no way of knowing which one they picked from the 
                         // feature list returned from ScienceBase. Just get rid of 

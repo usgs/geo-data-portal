@@ -33,14 +33,14 @@
 <script type="text/javascript" src="js/excat/scripts/sarissa_ieemu_xpath.js"></script>
 <script type="text/javascript" src="js/excat/scripts/cswclient.js"></script>
 <script type="text/javascript">
-    var incomingEndpoints = {};
+    var incomingParams = {};
     <%
         Enumeration<String> paramNames = (Enumeration<String>) request.getParameterNames();
         while (paramNames.hasMoreElements()) {
             String key = paramNames.nextElement();
             String value = request.getParameter(key);
     %>
-        incomingEndpoints['<%=key%>'] = '<%=value%>'
+        incomingParams['<%=key%>'] = '<%=value%>'
     <%
         }
     %>

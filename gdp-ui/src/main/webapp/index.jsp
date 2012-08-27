@@ -10,7 +10,7 @@
         - Refused to set unsafe header "Connection"
         - Look @ http://www.w3.org/TR/XMLHttpRequest/#the-setrequestheader-method
     
-    -- ScienceBase now includes multiple features in their descrivefeature WFS call.
+    -- ScienceBase now includes multiple features in their describefeature WFS call.
        This breaks our functionality to auto-select a feature. Figure out a way around 
        this.
 --%>

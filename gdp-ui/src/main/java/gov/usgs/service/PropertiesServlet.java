@@ -64,6 +64,7 @@ public class PropertiesServlet extends HttpServlet {
             
             // Endpoint configuration
             // This is the default sciencebase csw server
+            defaultProperties.setProperty("endpoint.sciencebase", "http://my-beta.usgs.gov");
             defaultProperties.setProperty("endpoint.sciencebase-csw", "http://my-beta.usgs.gov/geoportal/csw");
             defaultProperties.setProperty("endpoint.wfs", "http://localhost:8081/geoserver/wfs");
             defaultProperties.setProperty("endpoint.csw", "http://igsarm-cida-gdp2.er.usgs.gov:8081/geonetwork/srv/en/csw");

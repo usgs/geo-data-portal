@@ -118,6 +118,7 @@ function submitDrawFeature() {
 
     Constant.endpoint.wfs = Constant.endpoint.geoserver + '/wfs'
     Constant.endpoint.wms = Constant.endpoint.geoserver + '/wms'
+    ScienceBase.useSB = false;
 
     WPS.sendWpsExecuteRequest(Constant.endpoint.proxy + Constant.endpoint.utilitywps,
         wpsAlgo, wpsInputs, wpsOutputs, false, drawFeatureCallback);
