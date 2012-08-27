@@ -221,6 +221,9 @@
                     </xsl:attribute>
                     
                     <xsl:choose>
+                        <!-- If we are in the context of searching for ScienceBase features, the 
+                            function we execute on click is not going to be the same as when we 
+                            are seatching for ScienceBase coverages -->
                         <xsl:when test="$scienceBaseFeature = 'true'">
                             <xsl:attribute name="href">
                                 <xsl:text>javascript:(CSWClient.selectFeatureById</xsl:text>
@@ -229,6 +232,8 @@
                                 <xsl:text>'))</xsl:text>
                             </xsl:attribute>
                         </xsl:when>
+                        <!-- Multiple OpenDAP services found. A secondary window to select from those
+                            is going to be necessary -->
                         <xsl:when test="$opendapServicesCount &gt; 1">
                             <xsl:attribute name="href">
                                 <xsl:text>javascript:(CSWClient.displayMultipleOpenDAPSelection</xsl:text>

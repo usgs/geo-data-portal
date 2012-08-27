@@ -62,6 +62,10 @@
                                     </gml:upperCorner>
                                 </gml:Envelope>
                             </ogc:BBOX>
+                            <!-- ScienceBase integration: If we are in the context of searching for 
+                                SB features, we need to query the server to only return features
+                                and if we're searching for covrages, only return services with 
+                                OGC-WCS in them -->
                             <xsl:if test="./scienceBaseFeature = 'true'">
                                 <ogc:PropertyIsLike wildCard="*" singleChar="." escapeChar="!">
                                     <ogc:PropertyName>apiso:resource.serviceId</ogc:PropertyName>

@@ -1,13 +1,13 @@
 /*
-* File : CSWClient.js
-* Author : Rob van Swol
-* Organisation: National Aerospace Laboratory NLR
-* Country : The Netherlands
-* email : vanswol@nlr.nl
-* Description: Simple AJAX based CSW client 
-* Tested on : FireFox 3, Safari, IE 7
-* Last Change : 2008-10-22
-*/
+ * File : CSWClient.js
+ * Author : Rob van Swol
+ * Organisation: National Aerospace Laboratory NLR
+ * Country : The Netherlands
+ * email : vanswol@nlr.nl
+ * Description: Simple AJAX based CSW client 
+ * Tested on : FireFox 3, Safari, IE 7
+ * Last Change : 2008-10-22
+ */
 var CSWClient = function() {
     var USE_PROXY = true;
     var NAMESPACES = {
@@ -19,6 +19,7 @@ var CSWClient = function() {
         'cat' : 'http://www.esri.com/metadata/csw/',
         'csw' : 'http://www.opengis.net/cat/csw/2.0.2'
     }
+    var _context;
     var cswhost;
     var proxy;
     var getrecords_xsl;
@@ -28,7 +29,6 @@ var CSWClient = function() {
     var _currentSBFeatureSearch = '';
     var _sbConstraintFeature = false;
     var _sbConstraintCoverage = false;
-    var storedCSWServer = '';
     var _capabilitiesMap = {};
     var _DATASET_SELECTED_TITLE = '#dataset-selected-title';
     
@@ -291,6 +291,12 @@ var CSWClient = function() {
     return {
         capabilitiesMap : _capabilitiesMap,
         currentSBFeatureSearch : _currentSBFeatureSearch,
+        getContext : function() {
+            return _context
+        },
+        setContext : function(context) {
+            _context = context;
+        },
         init : function(_cswhost, host) {
             logger.info("GDP: Initializing CSW client.");
             if (typeof _cswhost != "undefined") {
@@ -395,26 +401,31 @@ var CSWClient = function() {
             var queryable = document.theForm.queryable.value;
             var operator = document.theForm.operator.value;
             var query = trim(document.theForm.query.value);
+            var results = "<results>";
+            var processor = new XSLTProcessor();
             
             if (typeof start == "undefined") {
                 start = 1;
             }
             
-            // If the URL in the CSW server is our known ScienceBase CSW server,
-            // set our constraint to that, otherwise remove any SB constraints
-            if (Dataset.getCSWServerURL() === Constant.endpoint['sciencebase-csw']) {
-                CSWClient.setSBConstraint('wcs');
+            if (CSWClient.getCSWHost() === Constant.endpoint['sciencebase-csw']) {
+                if (_context === 'wfs') {
+                    CSWClient.setSBConstraint('wfs');
+                } else {
+                   CSWClient.setSBConstraint('wcs'); 
+                }
             } else {
                 CSWClient.setSBConstraint();
             }
-
+            
             if (typeof  document.theForm.cswhosts != "undefined") {
                 this.setCSWHost(document.theForm.cswhosts.value);
             }
 
             /*because geonetwork doen not follow the specs*/
-            if(cswhost.indexOf('geonetwork') !=-1 & queryable == "anytext")
+            if(cswhost.indexOf('geonetwork') !=-1 & queryable == "anytext") {
                 queryable = "any";
+            }
 
             if (operator == "contains" & query != "") {
                 query = "%" + query + "%";
@@ -428,32 +439,24 @@ var CSWClient = function() {
             setXpathValue(defaults_xml, "/defaults/startposition", start + '');
             setXpathValue(defaults_xml, "/defaults/sortby", sortby + '');
 
-            //TODO- Figure out a better way of doing this
             if (_sbConstraintFeature) {
                 setXpathValue(defaults_xml, "/defaults/scienceBaseFeature", 'true');
-            } else {
-                setXpathValue(defaults_xml, "/defaults/scienceBaseFeature", 'false');
-            } 
-            
-            if (_sbConstraintCoverage) {
+                setXpathValue(defaults_xml, "/defaults/scienceBaseCoverage", 'false');
+                results = "<results scienceBaseFeature=\"true\">";
+            } else if (_sbConstraintCoverage) {
                 setXpathValue(defaults_xml, "/defaults/scienceBaseCoverage", 'true');
+                setXpathValue(defaults_xml, "/defaults/scienceBaseFeature", 'false');
+                results = "<results scienceBaseCoverage=\"true\">";
             } else {
                 setXpathValue(defaults_xml, "/defaults/scienceBaseCoverage", 'false');
-            }
+                setXpathValue(defaults_xml, "/defaults/scienceBaseFeature", 'false');
+            }      
             
-            var processor = new XSLTProcessor();
             processor.importStylesheet(getrecords_xsl);
 
             var request_xml = processor.transformToDocument(defaults_xml);
             var request = new XMLSerializer().serializeToString(request_xml);
             var csw_response = sendCSWRequest(request);
-            var results = "<results>";
-            if (_sbConstraintFeature) {
-                results = "<results scienceBaseFeature=\"true\">";
-            }
-            else if (_sbConstraintCoverage){
-                results = "<results scienceBaseCoverage=\"true\">";
-            }
 
             results += "<request start=\"" + start + "\"";
             results += " maxrecords=\"";
@@ -676,12 +679,6 @@ var CSWClient = function() {
             var csw_response = getRecordById(id);
             
             return handleCSWResponse("getrecordbyid", csw_response);
-        },
-        getStoredCSWServer : function() {
-            return storedCSWServer;
-        },
-        setStoredCSWServer : function(server) {
-            this.storedCSWServer = server;
         }
     };
 };

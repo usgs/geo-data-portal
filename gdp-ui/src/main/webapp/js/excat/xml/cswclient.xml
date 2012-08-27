@@ -1,7 +1,7 @@
 
 <div id="cswclient">
     <div>
-        <form name="theForm" method="POST" action="javascript:void(CSWClient.getRecords())">
+        <form name="theForm" method="POST" action="javascript:CSWClient.setContext('wcs');CSWClient.getRecords();">
             <span>Search:</span>
             <select id="queryable" name="queryable">
                 <option value="anytext">AnyText</option>
@@ -18,19 +18,12 @@
                 <option value="http://www.opengis.net/cat/csw/2.0.2">csw:Record</option>
                 <option value="http://www.isotc211.org/2005/gmd" selected="selected">ISO19139</option>
             </select>
-		<!--select id="dislaymode" name="displaymode">
-				 <option value="html">HTML</option>
-				 <option value="xml">XML</option>
-               </select-->
             <select id="sortby" name="sortby">
                 <option value="">No Sort</option>
                 <option value="title">Title</option>
             </select>
-			<!--<input type="hidden" name="schema" value="http://www.opengis.net/cat/csw/2.0.2"/>-->
-            <!--input type="hidden" name="schema" value="http://www.isotc211.org/2005/gmd"/-->
             <input type="hidden" name="displaymode" value="html"/>
-<!--			<input type="button" id="CSWClientClearButton" value="Clear" class="button" onClick="javascript:void(CSWClient.clearPage())"/>-->
-            <input id="dataset_search_submit_button" type="button" value="Search" class="button" onClick="javascript:void(CSWClient.getRecords())"/>
+            <input id="dataset_search_submit_button" type="button" value="Search" class="button" onClick="javascript:CSWClient.setContext('wcs');CSWClient.getRecords();"/>
         </form>
     </div>
 		   

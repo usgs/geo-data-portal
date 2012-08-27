@@ -23,10 +23,6 @@ var ScienceBase = function () {
                 if (key === 'feature_wfs') {
                     Constant.endpoint.wfs = value;
                 }
-//                
-//                if (key === 'coverage_wcs') {
-//                    Constant.endpoint.wcs = value;
-//                }
                 
                 if (key === 'redirect_url') {
                     Constant.endpoint['redirect_url'] = value;
@@ -36,17 +32,19 @@ var ScienceBase = function () {
         searchSB: function() {
             var oldVal = document.theForm.query.value;
             var query = $(_SB_SEARCH_TEXT).val();
-            CSWClient.setCSWHost(Constant.endpoint['sciencebase-csw']);
-            CSWClient.setSBConstraint("wfs");
-            CSWClient.setStoredCSWServer(CSWClient.getCSWHost());
-            document.theForm.query.value = query;
+            var sbEndpoint = Constant.endpoint['sciencebase-csw'];
             
-            CSWClient.setCSWHost(Constant.endpoint['sciencebase-csw']);
+            
+            document.theForm.query.value = query;
             
             CSWClient.currentSBFeatureSearch = document.theForm.query.value;
             
+            CSWClient.setCSWHost(sbEndpoint);
+            CSWClient.setContext('wfs');
             CSWClient.getRecords();
+            
             document.theForm.query.value = oldVal;
+            
             $(_SB_FEATURE_BUTTON).trigger('click');
         }
     }
