@@ -1470,13 +1470,15 @@ var Dataset = function() {
             // GDP CSW
             $(serverHTML).append(
                 $('<li />', {
-                    'class' : 'server-picker-li'
+                    'class' : 'server-picker-li',
+                    'title' : 'CIDA CSW Server (Default)'
                 }).html(Constant.endpoint.csw));
                 
             // ScienceBase CSW    
             $(serverHTML).append(
                 $('<li />', {
-                    'class' : 'server-picker-li'
+                    'class' : 'server-picker-li',
+                    'title' : 'ScienceBase CSW Server'
                 }).html(Constant.endpoint['sciencebase-csw']));
             
             $('body')
@@ -1487,7 +1489,7 @@ var Dataset = function() {
             var dialog = $('#host-pick-modal-window').dialog({
                 title: 'Choose a CSW server',
                 height: 'auto',
-                width: '40%',
+                width: 'auto',
                 modal: true,
                 resizable: false,
                 draggable: false,
