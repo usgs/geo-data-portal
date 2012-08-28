@@ -1,6 +1,22 @@
 <%@page import="org.apache.commons.lang.StringUtils"%>
 <%@page import="gov.usgs.cida.config.DynamicReadOnlyProperties"%>
 
+<%-- Google Analytics --%>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-34377468-1']);
+  _gaq.push(['_gat._anonymizeIp']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
 <%-- Base EXT modules & Extensions --%>
 <script type="text/javascript" src="js/ext/adapter/ext/ext-base.js"></script>
 <script type="text/javascript" src="js/ext/ext-all.js"></script>
