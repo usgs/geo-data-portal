@@ -32,6 +32,10 @@
                 finish the polygon. Give it a name and click the submit button
                 to save the geometry and select it for processing.
             </div>
+            <div id="sb-feature-tooltip-text">
+                Through collaboration with ScienceBase, the Geo Data Portal is able 
+                to access features exposed on the Science Base server.
+            </div>
         </div>
         <div class="centered">
         <table id="services-table">

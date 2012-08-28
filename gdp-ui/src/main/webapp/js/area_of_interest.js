@@ -240,7 +240,19 @@ var AOI = function() {
                 config_key : 'view_show_service_sb_feature',
                 all_elements : '#sb-feature-button-container',
                 input_elements : '#sb-input-cell',
-                tips : '#sb-feature-tooltip-text'
+                tips : '#sb-feature-tooltip-text',
+                on_depress : function() {
+                    deselectFeatureType();
+                    activateDrawFeature();
+                    showInformationalNotification(
+                        "<center><h4>Searching ScienceBase</h4></center>Enter a search term to begin searching.<br /><br />Not entering a search term will return all available ScienceBase features.", 
+                        true
+                        );
+                },
+                on_release : function() {
+                    deactivateDrawFeature();
+                    $.jGrowl('close');
+                }
             }
         };
 
@@ -542,9 +554,9 @@ var AOI = function() {
                         html('Download Shapefile').
                         click(function() {
                             if (ScienceBase.useSB) {
-                            $.download(Constant.endpoint.sciencebase + '/catalog/file/get/' + ScienceBase.itemId,'get')
+                                $.download(Constant.endpoint.sciencebase + '/catalog/file/get/' + ScienceBase.itemId,'get')
                             } else {
-                            $.download(rootUrl,kvpParams,'get')
+                                $.download(rootUrl,kvpParams,'get')
                             }
                         })
                         )
