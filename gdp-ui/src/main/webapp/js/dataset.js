@@ -345,7 +345,8 @@ var Dataset = function() {
             wpsInputs['callback-base-url'] = [ Constant.endpoint.redirect_url + "?result="];
         }
 
-        if (wpsInputs.email) {
+        if (_userEmail) {
+            logger.info('GDP:dataset.js::submitForProcessingCallback:User entered an email address '+_userEmail+' during process submittal. Email when finished algorithm will be dispatched to check for process completion.');
             WPS.sendWpsExecuteRequest(Constant.endpoint.proxy + Constant.endpoint.utilitywps, _EMAIL_WHEN_FINISHED_ALGORITHM, wpsInputs, ['result'], false, emailCallback);
         }
 
@@ -1466,12 +1467,17 @@ var Dataset = function() {
         $(_CSW_HOST_PICK_BUTTON).click(function() {
             var serverHTML = $('<ul />');
             
-            $(serverHTML).append($('<li />', {
-                'class' : 'server-picker-li'
-            }).html('http://igsarm-cida-gdp2.er.usgs.gov:8081/geonetwork/srv/en/csw'));
-            $(serverHTML).append($('<li />', {
-                'class' : 'server-picker-li'
-            }).html(Constant.endpoint['sciencebase-csw']));
+            // GDP CSW
+            $(serverHTML).append(
+                $('<li />', {
+                    'class' : 'server-picker-li'
+                }).html(Constant.endpoint.csw));
+                
+            // ScienceBase CSW    
+            $(serverHTML).append(
+                $('<li />', {
+                    'class' : 'server-picker-li'
+                }).html(Constant.endpoint['sciencebase-csw']));
             
             $('body')
             .append($('<div />', {
@@ -1481,7 +1487,7 @@ var Dataset = function() {
             var dialog = $('#host-pick-modal-window').dialog({
                 title: 'Choose a CSW server',
                 height: 'auto',
-                width: '70%',
+                width: '40%',
                 modal: true,
                 resizable: false,
                 draggable: false,
