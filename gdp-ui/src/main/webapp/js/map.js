@@ -336,7 +336,7 @@ function onMapZoom() {
  * Create the map layer. 
  */
 function initMap(options) {
-    logger.info('GDP: Initializing map.');
+    logger.info('GDP:map.js::initMap(): Initializing map.');
     OpenLayers.IMAGE_RELOAD_ATTEMPTS = 3;
 
     map = new OpenLayers.Map('map-div', {

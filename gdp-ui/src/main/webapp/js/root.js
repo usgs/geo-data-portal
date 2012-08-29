@@ -34,8 +34,12 @@ $(document).ready(function() {
     try {
         initializeLogging();
 
-        if (!init()) logger.error("GDP: A non-fatal error occured while loading the application.");
-        else logger.debug("GDP: Application initialized successfully.");
+        if (init()) {
+            logger.debug("GDP: Application initialized successfully.");
+            removeOverlay();
+        } else {
+            logger.error("GDP: A non-fatal error occured while loading the application.");
+        }
         
     } catch(err) {
         handleException(err);
@@ -43,12 +47,11 @@ $(document).ready(function() {
 })
 
 function init() {
-    logger.info("GDP: Beginning application initialization.");
+    logger.info("GDP:root.js::init(): Beginning application initialization.");
     
     $(window).load(function() {
         // initMap() has to be done here instead of in $(document).ready due to IE8 bug
         initMap();
-        removeOverlay();
     })
     
     // Add htmlDecode function to the JS String object
@@ -58,10 +61,10 @@ function init() {
         return e.childNodes[0].nodeValue;
     }
     
-    return initializeOverlay() && 
-    initializeAjax() &&
-    initializeSteps() &&
-    initializeView();
+    return initializeOverlay() 
+        && initializeAjax() 
+        && initializeSteps() 
+        && initializeView();
 }
 
 function initializeLogging() {
@@ -93,11 +96,10 @@ function initializeOverlay() {
 
 function removeOverlay() {
     $(OVERLAY).fadeOut(Constant.ui.fadespeed, function() {
-        logger.info('GDP: Application initialization has completed. Removing overlay.');
+        logger.info('GDP:root.js::removeOverlay(): Application initialization has completed. Removing overlay.');
         $(OVERLAY).remove();
         
         if (parseInt(Constant.ui.view_popup_info) && Constant.ui.view_popup_info_txt.length > 0) {
-            logger.trace('GDP: Showing popup to user');
             createPopupView(Constant.ui.view_popup_info_txt);
         }
     });
@@ -105,7 +107,8 @@ function removeOverlay() {
 }
 
 function initializeSteps() {
-    logger.info('GDP: Initializing steps (creating global JS objects)');
+    logger.info('GDP:root.js:initializeSteps():Initializing steps (creating global JS objects)');
+    
     Constant = new Constant(); // important that this gets initialized first
     WPS = WPS();
     WFS = WFS();
@@ -146,7 +149,7 @@ function initializeSteps() {
  * steps
  */
 function initializeView() {
-    logger.info('GDP: Initializing view.');
+    logger.info('GDP:root.js::initializeView(): Initializing view.');
     $(window).resize(function() {
         resizeElements()
         });
@@ -212,7 +215,7 @@ function sortListbox(listbox) {
 }
 
 function initializeAjax() {
-    logger.info("GDP: Initializing AJAX timeout functionality. Setting to: " + AJAX_TIMEOUT + "ms");
+    logger.info("GDP:root.js():initializeAjax():: Initializing AJAX timeout functionality. Setting to: " + AJAX_TIMEOUT + "ms");
     $.ajaxSetup({
         timeout: AJAX_TIMEOUT,
         error: function(jqXHR, textStatus, errorThrown) {
@@ -275,7 +278,7 @@ function initializeThrobbers() {
  * Set up the tooltip functionality throughout the UI
  */
 function initializeTips() {
-    logger.info("GDP: Initializing Tips.");
+    logger.info("GDP:root.js::initializeTips(): Initializing Tips.");
     $(".tooltip img").hover(
         function() {
             $(this).attr('src', 'images/question-mark-hover.png')
@@ -308,7 +311,7 @@ function loadStep(stepNum) {
     // Initialize the step's loading procedure if there is any. 
     // If we get into an issue, we stop here
     if (!steps[stepNum].stepLoading()) return false;
-    logger.debug('GDP: Loading step ' + stepNum);
+    logger.debug('GDP:root.js::loadStep(): Loading step ' + stepNum);
     // Hide current step
     $(STEPS_HEADER + ' ' + STEP_HEADER_CLASS).eq(CURRENT_STEP).fadeOut(Constant.ui.fadespeed);
     $(STEPS_CONTENT + ' ' + STEP_CONTENT_CLASS).eq(CURRENT_STEP).fadeOut(Constant.ui.fadespeed);
@@ -343,17 +346,17 @@ function showIntro() {
     });
 }
 function resizeElements() {
-    logger.trace("The application window is resizing. Resizing all elements to fit.");
+    logger.trace("GDP:root.js::resizeElements(): The application window is resizing. Resizing all elements to fit.");
     resizeCenterDiv();
     resizeMapDiv();
 }
 
 function resizeCenterDiv() {
-    logger.trace("The application center div is resizing.");
+    logger.trace("GDP:root.js::resizeCenterDiv(): The application center div is resizing.");
     // Resize the "centered" div based on the amount of service buttons available
     var calculatedCenterWidth;
     var minButtonSize = 220;
-    var minimumCenterWidth = 600;
+    var minimumCenterWidth = 900;
     var buttonCount = 0;
     
     $.each(Constant.ui, function(key, val) {
@@ -373,11 +376,11 @@ function resizeMapDiv() {
     var headerHeight = $(HEADER).outerHeight(true);
     var footerHeight = $(FOOTER).outerHeight(true);
     
-    logger.trace('GDP: Calculating map height.');
+    logger.trace('GDP:root.js::resizeMapDiv(): Calculating map height.');
     var mapDivHeight = (windowHeight - (bottomDivHeight + headerHeight + footerHeight) - 2 < MINIMUM_MAP_HEIGHT) ? 
     MINIMUM_MAP_HEIGHT : 
     windowHeight - (bottomDivHeight + headerHeight + footerHeight) - 2;
-    logger.trace('GDP: Setting map height to ' + mapDivHeight + 'px');
+    logger.trace('GDP:root.js::resizeMapDiv(): Setting map height to ' + mapDivHeight + 'px');
     $(MAP_DIV).height(mapDivHeight);
 }
 
@@ -422,6 +425,7 @@ function showInformationalNotification(message, sticky)  {
  * @See http://internal.cida.usgs.gov/jira/browse/GDP-188
  */
 function createPopupView(popupText, overrideCookie) {
+    logger.trace('GDP:root.js::createPopupView(): Showing popup to user');
     // Create the div
     var popupDiv = $(Constant.divString).attr('id', 'info_popup_modal_window').append(popupText);
     
