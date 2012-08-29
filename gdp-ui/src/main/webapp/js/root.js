@@ -356,7 +356,7 @@ function resizeCenterDiv() {
     // Resize the "centered" div based on the amount of service buttons available
     var calculatedCenterWidth;
     var minButtonSize = 220;
-    var minimumCenterWidth = 900;
+    var minimumCenterWidth = 850;
     var buttonCount = 0;
     
     $.each(Constant.ui, function(key, val) {

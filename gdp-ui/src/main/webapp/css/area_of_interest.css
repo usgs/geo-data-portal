@@ -3,8 +3,8 @@
 }
 
 #area-of-interest {
-	text-align: center;
-	min-width: 768px;
+    text-align: center;
+    min-width: 768px;
 }
 
 #available-featuretypes-cell, #available-attributes-cell, #available-attribute-values {
@@ -45,17 +45,17 @@
     margin-right: 15px;
     border-right: 1px solid black;
 }
-    
+
 #intro {
     padding: 10px;
 }    
- 
+
 #clear-input-cell {
     visibility: hidden;
 }
 
 #services-input-cells {
-     position: relative;   
+    position: relative;   
 }    
 
 #submit-input-cell {
@@ -70,32 +70,35 @@
     top: 0;
 }
 
-#services-table {
-    padding: 3px;
+#aoi-table {
+    padding: 3px 3px 3px 10%;
 }
 
-    #services-table tbody {
-        height: 72px;
-    }
+#services-table {
+    padding: 3px 3px 3px 15%;
+}
 
-    #services-table td {
-        vertical-align: top;
-    }
+#services-table tbody {
+    height: 72px;
+}
 
-    #services-table tr {
-        height: 36px;
-    }
+#services-table td {
+    vertical-align: top;
+}
 
-    #services-table #upload-button-cell {
-        padding-left: 25px;
-    }
+#services-table tr {
+    height: 36px;
+}
 
-    #services-table #waters-input-cell {
-        padding-left: 25px;
-    }
-    
-    #services-table #waters-input-cell label {
-/*        vertical-align: top;*/
-    }
+#services-table #upload-button-cell {
+    padding-left: 25px;
+}
 
-    
+#services-table #waters-input-cell {
+    padding-left: 25px;
+}
+
+#services-table #waters-input-cell label {
+    /*        vertical-align: top;*/
+}
+
