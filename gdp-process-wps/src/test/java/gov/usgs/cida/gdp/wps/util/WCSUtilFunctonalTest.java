@@ -15,7 +15,7 @@ import org.junit.Test;
  *
  * @author tkunicki
  */
-@Ignore
+//@Ignore
 public class WCSUtilFunctonalTest {
 
     public ReferencedEnvelope testEnvelope = new ReferencedEnvelope(-90.05, -89.95, 44.95, 45.05, DefaultGeographicCRS.WGS84);
@@ -80,5 +80,16 @@ public class WCSUtilFunctonalTest {
                 testEnvelope,
                 true);
         f.renameTo(new File("target/testArcServer_CIDA_NLCD2001.tif"));
+    }
+    
+    @Test
+    public void testArcServer_ScienceBase_TIFF() throws URISyntaxException {
+
+        File f = WCSUtil.generateTIFFFile(
+                new URI("http://my-beta.usgs.gov/catalogMaps/mapping/ows/4f4e4799e4b07f02db48f9dd"),
+                "ucrb_nlcd1992_all5states_utmzone12.tif",
+                new ReferencedEnvelope(-109.51, -109.49, 38.49, 38.51, DefaultGeographicCRS.WGS84),
+                true);
+        f.renameTo(new File("target/ucrb_nlcd1992_all5states_utmzone12.tif"));
     }
 }

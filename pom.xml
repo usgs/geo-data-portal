@@ -327,7 +327,7 @@
             <dependency>
                 <groupId>edu.ucar</groupId>
                 <artifactId>thredds-parent</artifactId>
-                <version>4.3.11-CIDA-2-SNAPSHOT</version>
+                <version>4.3.11-CIDA-1</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
