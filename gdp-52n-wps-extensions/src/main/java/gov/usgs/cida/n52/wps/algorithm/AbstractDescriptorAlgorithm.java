@@ -25,8 +25,10 @@ import net.opengis.wps.x100.ProcessDescriptionsDocument;
 import net.opengis.wps.x100.ProcessDescriptionsDocument.ProcessDescriptions;
 import net.opengis.wps.x100.SupportedComplexDataInputType;
 import net.opengis.wps.x100.SupportedComplexDataType;
+import org.apache.commons.lang.StringUtils;
 import org.apache.xmlbeans.XmlOptions;
 import org.apache.xmlbeans.XmlValidationError;
+import org.n52.wps.FormatDocument.Format;
 import org.n52.wps.io.GeneratorFactory;
 import org.n52.wps.io.IGenerator;
 import org.n52.wps.io.IOHandler;
@@ -169,7 +171,8 @@ public abstract class AbstractDescriptorAlgorithm implements IAlgorithm, ISubjec
         List<IParser> parsers = ParserFactory.getInstance().getAllParsers();
         List<IParser> foundParsers = new ArrayList<IParser>();
         for (IParser parser : parsers) {
-            Class[] supportedClasses = parser.getSupportedInternalOutputDataType();
+// /*2.0*/    Class[] supportedClasses = parser.getSupportedInternalOutputDataType();
+ /*3.0*/    Class[] supportedClasses = parser.getSupportedDataBindings();
             for (Class clazz : supportedClasses) {
                 if (dataTypeClass.isAssignableFrom(clazz)) {
                     foundParsers.add(parser);
@@ -184,7 +187,8 @@ public abstract class AbstractDescriptorAlgorithm implements IAlgorithm, ISubjec
         List<IGenerator> generators = GeneratorFactory.getInstance().getAllGenerators();
         List<IGenerator> foundGenerators = new ArrayList<IGenerator>();
         for (IGenerator generator : generators) {
-            Class[] supportedClasses = generator.getSupportedInternalInputDataType();
+// /*2.0*/    Class[] supportedClasses = generator.getSupportedInternalInputDataType(); // appears to have been removed in 52n WPS 3.0
+ /*3.0*/    Class[] supportedClasses = generator.getSupportedDataBindings();
             for (Class clazz : supportedClasses) {
                 if (clazz.isAssignableFrom(dataTypeClass)) {
                     foundGenerators.add(generator);
@@ -201,57 +205,80 @@ public abstract class AbstractDescriptorAlgorithm implements IAlgorithm, ISubjec
         ComplexDataCombinationType defaultFormatType = complexData.addNewDefault();
         ComplexDataCombinationsType supportedFormatType = complexData.addNewSupported();
 
-        int formatCount = 0;
         for (IOHandler generator : handlers) {
-
-            String[] formats = generator.getSupportedFormats();
-            String[] encodings = generator.getSupportedEncodings();
-            String[] schemas = generator.getSupportedSchemas();
-
-            // if formats, encodings or schemas arrays are 'null' or empty, create
-            // new array with single 'null' element.  We do this so we can utilize
-            // a single set of nested loops to process all permutations.  'null'
-            // values will not be output...
-            if (formats == null || formats.length == 0) {
-                formats = new String[] { null }; 
-            }
-            if (encodings == null || encodings.length == 0) {
-                encodings = new String[] { null };
-            }
-            if (schemas == null || schemas.length == 0) {
-                schemas = new String[] { null };
-            }
             
-            for (String format : formats) {
-                for (String encoding : encodings) {
-                    for (String schema : schemas) {
-                        if(formatCount++ == 0) {
+            Format[] fullFormats = generator.getSupportedFullFormats();
+            if (fullFormats != null && fullFormats.length > 0) {
+                describeComplexDataFormat(
+                        defaultFormatType.addNewFormat(),
+                        fullFormats[0]);
+                for (int formatIndex = 0, formatCount = fullFormats.length; formatIndex < formatCount; ++formatIndex) {
+                    describeComplexDataFormat(
+                            supportedFormatType.addNewFormat(),
+                            fullFormats[formatIndex]);
+                }
+            } else {
+
+                String[] formats = generator.getSupportedFormats();
+                String[] encodings = generator.getSupportedEncodings();
+                String[] schemas = generator.getSupportedSchemas();
+
+                // if formats, encodings or schemas arrays are 'null' or empty, create
+                // new array with single 'null' element.  We do this so we can utilize
+                // a single set of nested loops to process all permutations.  'null'
+                // values will not be output...
+                if (formats == null || formats.length == 0) {
+                    formats = new String[] { null }; 
+                }
+                if (encodings == null || encodings.length == 0) {
+                    encodings = new String[] { null };
+                }
+                if (schemas == null || schemas.length == 0) {
+                    schemas = new String[] { null };
+                }
+
+                int formatCount = 0;
+                for (String format : formats) {
+                    for (String encoding : encodings) {
+                        for (String schema : schemas) {
+                            if(formatCount++ == 0) {
+                                describeComplexDataFormat(
+                                        defaultFormatType.addNewFormat(),
+                                        format, encoding, schema);
+                            }
                             describeComplexDataFormat(
-                                    defaultFormatType.addNewFormat(),
+                                    supportedFormatType.addNewFormat(),
                                     format, encoding, schema);
                         }
-                        describeComplexDataFormat(
-                                supportedFormatType.addNewFormat(),
-                                format, encoding, schema);
                     }
                 }
             }
         }
     }
+
+    private void describeComplexDataFormat(
+            ComplexDataDescriptionType description,
+            Format format)
+    {
+        describeComplexDataFormat(description,
+                format.getMimetype(),
+                format.getEncoding(),
+                format.getSchema());
+    }
     
-    public void describeComplexDataFormat(
+    private void describeComplexDataFormat(
             ComplexDataDescriptionType description,
             String format,
             String encoding,
             String schema)
     {
-        if (format != null) {
+        if (StringUtils.isNotBlank(format)) {
             description.setMimeType(format);
         }
-        if (encoding != null) {
+        if (StringUtils.isNotBlank(encoding)) {
             description.setEncoding(encoding);
         }
-        if (schema != null) {
+        if (StringUtils.isNotBlank(schema)) {
             description.setSchema(schema);
         }
     }

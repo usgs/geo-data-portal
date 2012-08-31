@@ -15,22 +15,21 @@ import java.nio.channels.FileChannel;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.n52.wps.io.datahandler.binary.AbstractBinaryParser;
+import org.n52.wps.io.datahandler.parser.AbstractParser;
 
-public class GeoTIFFParser extends AbstractBinaryParser {
+public class GeoTIFFParser extends AbstractParser {
 
 	public final static short TIFF_MAGIC_LE = 0x4949; // "II"
 	public final static short TIFF_MAGIC_BE = 0x4D4D; // "MM"
 	public final static short TIFF_MAGIC_42 = 42;
 	public final static short MIME_MAGIC = 0x2D2D;	  // "--"
 
-	@Override
-	public Class[] getSupportedInternalOutputDataType() {
-		return new Class[] { GeoTIFFFileBinding.class };
-	}
+    public GeoTIFFParser() {
+        supportedIDataTypes.add(GeoTIFFFileBinding.class);
+    }
 
 	@Override
-	public GeoTIFFFileBinding parse(InputStream inputStream, String mimeType) {
+	public GeoTIFFFileBinding parse(InputStream inputStream, String mimeType, String schema) {
 		File tempFile = null;
 		FileChannel tempChannel = null;
 
@@ -144,4 +143,5 @@ public class GeoTIFFParser extends AbstractBinaryParser {
 		}
 		return extractedFile;
 	}
+    
 }

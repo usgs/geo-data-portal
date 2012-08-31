@@ -1,12 +1,12 @@
 /***************************************************************
  This implementation provides a framework to publish processes to the
-web through the  OGC Web Processing Service interface. The framework
-is extensible in terms of processes and data handlers. It is compliant
-to the WPS version 0.4.0 (OGC 05-007r4).
+web through the  OGC Web Processing Service interface. The framework 
+is extensible in terms of processes and data handlers. It is compliant 
+to the WPS version 0.4.0 (OGC 05-007r4). 
 
  Copyright (C) 2006 by con terra GmbH
 
- Authors:
+ Authors: 
 	Theodor Foerster, ITC, Enschede, the Netherlands
 	Carsten Priess, Institute for geoinformatics, University of
 Muenster, Germany
@@ -80,18 +80,18 @@ public class WebProcessingService extends HttpServlet {
 	public static String PROPERTY_NAME_WEBAPP_PATH = "webappPath";
 	public static String BASE_DIR = null;
 	public static String WEBAPP_PATH = null;
-	public static String SERVLET_PATH = "WebProcessingService";
+	public static String SERVLET_PATH = "WebProcessingService"; 
 	public static String WPS_NAMESPACE = "http://www.opengis.net/wps/1.0.0";
 	public static String DEFAULT_LANGUAGE = "en-US";
 	private static Logger LOGGER = Logger.getLogger(WebProcessingService.class);
-
+	
 	/**
-	 *
+	 * 
 	 * Returns a preconfigured OutputStream
-	 * It takes care of:
+	 * It takes care of: 
 	 * - caching
 	 * - content-Encoding
-	 *
+	 * 
 	 * @param hsRequest the HttpServletRequest
 	 * @param hsResponse the HttpServlerResponse
 	 * @return the preconfigured OutputStream
@@ -117,7 +117,7 @@ public class WebProcessingService extends HttpServlet {
 			return hsResponse.getOutputStream();
 		//}
 	}
-
+	
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
 		JAI.getDefaultInstance().getTileCache().setMemoryCapacity(256*1024*1024L);
@@ -125,7 +125,7 @@ public class WebProcessingService extends HttpServlet {
 		//TODO: Might be changed to an additional configuration parameter.
 		System.setProperty("org.geotools.referencing.forceXY", "true");
 
-		//BasicConfigurator.configure();
+//		BasicConfigurator.configure();
 		LOGGER.info("WebProcessingService initializing...");
 
 		try{
@@ -138,20 +138,20 @@ public class WebProcessingService extends HttpServlet {
 			return;
 		}
 		LOGGER.info("Initialization of wps properties successful!");
-
-
+			
+		
 		Parser[] parsers = WPSConfig.getInstance().getActiveRegisteredParser();
 		ParserFactory.initialize(parsers);
-
+				
 		Generator[] generators = WPSConfig.getInstance().getActiveRegisteredGenerator();
 		GeneratorFactory.initialize(generators);
-
+			
 		//call RepositoyManager to initialize
 		RepositoryManager.getInstance();
 		LOGGER.info("Algorithms initialized");
+		
 
-
-
+		
 		//String customWebappPath = WPSConfiguration.getInstance().getProperty(PROPERTY_NAME_WEBAPP_PATH);
 		String customWebappPath = WPSConfig.getInstance().getWPSConfig().getServer().getWebappPath();
 		if(customWebappPath != null) {
@@ -162,7 +162,7 @@ public class WebProcessingService extends HttpServlet {
 			LOGGER.warn("No custom webapp path found, use default wps");
 		}
 		LOGGER.info("webappPath is set to: " + customWebappPath);
-
+		
 		BASE_DIR = this.getServletContext().getRealPath("");
 		try {
 			CapabilitiesConfiguration.getInstance(
@@ -176,12 +176,12 @@ public class WebProcessingService extends HttpServlet {
 		catch(XmlException e) {
 			LOGGER.error("error while initializing capabilitiesConfiguration", e);
 		}
-
+		
 		// Get an instance of the database for initialization of the database
 		DatabaseFactory.getDatabase();
-
+		
 		LOGGER.info("WPS up and running!");
-
+        
         // FvK: added Property Change Listener support
         // creates listener and register it to the wpsConfig instance.
         // it will listen to changes of the wpsCapabilities
@@ -223,14 +223,14 @@ public class WebProcessingService extends HttpServlet {
 	}
 
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-	//	OutputStream out = getConfiguredOutputStream(req, res);
+	//	OutputStream out = getConfiguredOutputStream(req, res);	
 		OutputStream out = res.getOutputStream();
 		try {
 			RequestHandler handler = new RequestHandler((Map<String, String[]>)req.getParameterMap(), out);
 			String mimeType = handler.getResponseMimeType();
 			res.setContentType(mimeType);
 			handler.handle();
-
+						
 			res.setStatus(HttpServletResponse.SC_OK);
 		} catch(ExceptionReport e) {
 			handleException(e, res, out);
@@ -248,7 +248,7 @@ public class WebProcessingService extends HttpServlet {
 //				is = new ByteArrayInputStream(req.getParameter("request").getBytes("UTF-8"));
 //			}
 
-//			 WORKAROUND	cut the parameter name "request" of the stream
+//			 WORKAROUND	cut the parameter name "request" of the stream		
 			BufferedReader br=new BufferedReader(new InputStreamReader(is,"UTF-8"));
     	    StringWriter sw=new StringWriter();
     	    int k;
@@ -270,28 +270,28 @@ public class WebProcessingService extends HttpServlet {
     	    	s = sw.toString();
     	    }
 
-
+    	    
     	    is = new ByteArrayInputStream(s.getBytes("UTF-8"));
 			if(is != null) {
-
+				
 				RequestHandler handler = new RequestHandler(is, out);
 				String mimeType = handler.getResponseMimeType();
 				res.setContentType(mimeType);
 				handler.handle();
-
+							
 				res.setStatus(HttpServletResponse.SC_OK);
 			}
 			else{
 				handleException(new ExceptionReport("POST Message is null", ExceptionReport.MISSING_PARAMETER_VALUE), res, out);
 			}
-		}
+		} 
 		catch(ExceptionReport e) {
 			handleException(e, res, out);
 		}
 		out.flush();
 		out.close();
 	}
-
+	
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		if(SERVLET_PATH == null) {

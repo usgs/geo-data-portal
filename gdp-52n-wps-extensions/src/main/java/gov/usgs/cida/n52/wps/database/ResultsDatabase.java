@@ -11,7 +11,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
@@ -26,7 +25,6 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import org.apache.commons.io.IOUtils;
 import org.n52.wps.commons.WPSConfig;
-import org.n52.wps.io.datahandler.binary.LargeBufferStream;
 import org.n52.wps.server.ExceptionReport;
 import org.n52.wps.server.RetrieveResultServlet;
 import org.n52.wps.server.database.IDatabase;
@@ -110,15 +108,17 @@ public final class ResultsDatabase implements IDatabase {
         return baseResultURL + id;
     }
 
-    @Override
-    public Connection getConnection() {
-        return null;
-    }
+// appears to have been removed in 52n WPS 3.0
+//    @Override
+//    public Connection getConnection() {
+//        return null;
+//    }
 
-    @Override
-    public String getConnectionURL() {
-        return null;
-    }
+// appears to have been removed in 52n WPS 3.0
+//    @Override
+//    public String getConnectionURL() {
+//        return null;
+//    }
 
     @Override
     public String getDatabaseName() {
@@ -180,8 +180,12 @@ public final class ResultsDatabase implements IDatabase {
         wipeTimer.cancel();
     }
 
+
+// appears to have been modified in 52n WPS 3.0    
+//    @Override
+//    public String storeComplexValue(String id, LargeBufferStream resultInputStream, String type, String mimeType) {
     @Override
-    public String storeComplexValue(String id, LargeBufferStream stream, String type, String mimeType) {
+    public String storeComplexValue(String id, InputStream resultInputStream, String type, String mimeType) {
 
         String resultId = JOINER.join(id, UUID.randomUUID().toString());
         try {
@@ -198,11 +202,13 @@ public final class ResultsDatabase implements IDatabase {
                 resultOutputStream = gzipComplexValues ?
                     new GZIPOutputStream(new FileOutputStream(resultFile)):
                     new BufferedOutputStream(new FileOutputStream(resultFile));
-                stream.close();
-                contentLength = stream.length();
-                stream.writeTo(resultOutputStream);
+// /*2.0*/        resultInputStream.close();
+// /*2.0*/        contentLength = resultInputStream.length();
+// /*2.0*/        resultInputStream.writeTo(resultOutputStream);
+ /*3.0*/        contentLength = IOUtils.copyLarge(resultInputStream, resultOutputStream);               
             } finally {
-                if (stream != null) { stream.destroy(); }
+// /*2.0*/        if (stream != null) { stream.destroy(); }
+ /*3.0*/        IOUtils.closeQuietly(resultInputStream);               
                 IOUtils.closeQuietly(resultOutputStream);
             }
 
@@ -233,7 +239,8 @@ public final class ResultsDatabase implements IDatabase {
     @Override
     public String storeResponse(Response response) {
 
-        String reponseId = Long.toString(response.getUniqueId());
+// /*2.0*/String reponseId = Long.toString(response.getUniqueId());
+ /*3.0*/String reponseId = response.getUniqueId().toString();
         
         // Detect reentrant calls.
         if (storeResponseReentrantCheckSet.add(Thread.currentThread()) == false) {
@@ -244,8 +251,8 @@ public final class ResultsDatabase implements IDatabase {
 
         try {
 
-            File responseTempFile = null;
-            File responseFile = null;
+            File responseTempFile;
+            File responseFile;
             synchronized (storeResponseSerialNumberLock) {
                 File responseDirectory = generateResponseDirectory(reponseId);
                 boolean created = responseDirectory.mkdir();
@@ -262,14 +269,18 @@ public final class ResultsDatabase implements IDatabase {
                 }
                 LOGGER.info("Creating temp file for {} as {}", reponseId, responseTempFile.getPath());
             }
+            InputStream responseInputStream = null;
             OutputStream responseOutputStream = null;
             try {
+ /*3.0*/        responseInputStream = response.getAsStream();
                 responseOutputStream = new BufferedOutputStream(new FileOutputStream(responseTempFile));
                 // In order to allow the prior response to be available we write
                 // to a temp file and rename these when completed.  Large responses
                 // can cause the call below to take a significant amount of time.
-                response.save(responseOutputStream);
+// /*2.0*/        response.save(responseOutputStream);
+                IOUtils.copyLarge(responseInputStream, responseOutputStream);
             } finally {
+                IOUtils.closeQuietly(responseInputStream);
                 IOUtils.closeQuietly(responseOutputStream);
             }
 

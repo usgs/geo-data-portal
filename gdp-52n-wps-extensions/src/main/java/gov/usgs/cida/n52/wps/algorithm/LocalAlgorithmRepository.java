@@ -167,22 +167,12 @@ public class LocalAlgorithmRepository implements ITransactionalAlgorithmReposito
 		return false;
 	}
 
-//	@Override
-//	public ProcessDescriptionType getProcessDescription(String processID) {
-//		if(!processDescriptionMap.containsKey(processID)){
-//			processDescriptionMap.put(processID, getAlgorithm(processID, null).getDescription());
-//		}
-//		return processDescriptionMap.get(processID);
-//	}
-
-	
-	
-
-	
-
-	
-
-
-	
+	@Override
+	public ProcessDescriptionType getProcessDescription(String processID) {
+		if(!processDescriptionMap.containsKey(processID)){
+			processDescriptionMap.put(processID, getAlgorithm(processID, null).getDescription());
+		}
+		return processDescriptionMap.get(processID);
+	}
 
 }

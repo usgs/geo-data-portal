@@ -26,8 +26,8 @@
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <n52-wps.version>2.0-RC6</n52-wps.version>
-        <geotools.version>2.6.6</geotools.version>
+        <n52-wps.version>3.0</n52-wps.version>
+        <geotools.version>2.7.5</geotools.version>
         <slf4j.version>1.6.1</slf4j.version>
         <logback.version>0.9.26</logback.version>
     </properties>

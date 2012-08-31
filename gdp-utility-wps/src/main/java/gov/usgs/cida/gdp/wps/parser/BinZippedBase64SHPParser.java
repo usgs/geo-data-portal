@@ -5,25 +5,20 @@ import gov.usgs.cida.gdp.io.data.ZippedGenericFileDataBinding;
 import java.io.InputStream;
 import org.apache.commons.codec.binary.Base64InputStream;
 import org.n52.wps.io.data.IData;
+import org.n52.wps.io.datahandler.parser.AbstractParser;
 
 /**
  *
  * @author isuftin
  */
-public class BinZippedBase64SHPParser extends AbstractBinZippedSHPParser {
+public class BinZippedBase64SHPParser extends AbstractParser {
 
     public BinZippedBase64SHPParser() {
-        super();
+        supportedIDataTypes.add(ZippedGenericFileDataBinding.class);
     }
 
-    /**
-     * @param input 
-     * @param mimeType 
-     * @return 
-     * @see org.n52.wps.io.IParser#parse(java.io.InputStream)
-     */
     @Override
-    public IData parse(InputStream input, String mimeType) {
-        return new ZippedGenericFileDataBinding(new ZippedGenericFileData(new Base64InputStream(input), mimeType));
+    public IData parse(InputStream input, String mimeType, String encoding) {
+        return new ZippedGenericFileDataBinding(new ZippedGenericFileData(input, mimeType));
     }
 }
