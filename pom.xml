@@ -14,8 +14,9 @@
 <!--        <module>gdp-derivative-processing</module>-->
         <module>gdp-geotiff</module>
         <module>gdp-proxy</module>
-        <module>gdp-52n-wps-extensions</module>
         <module>gdp-52n-wps-patches</module>
+        <module>gdp-52n-wps-extensions</module>
+        <module>gdp-52n-wps-tests</module>
         <module>gdp-utility-wps</module>
         <module>gdp-process-wps</module>
         <module>geoserver</module>

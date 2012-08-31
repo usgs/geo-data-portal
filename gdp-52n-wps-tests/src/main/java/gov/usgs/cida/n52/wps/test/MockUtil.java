@@ -1,4 +1,4 @@
-package gov.usgs.cida.gdp.wps.algorithm;
+package gov.usgs.cida.n52.wps.test;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;

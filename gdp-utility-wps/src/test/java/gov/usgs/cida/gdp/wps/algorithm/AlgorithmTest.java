@@ -1,14 +1,20 @@
 package gov.usgs.cida.gdp.wps.algorithm;
 
+import gov.usgs.cida.gdp.wps.algorithm.communication.EmailWhenFinishedAlgorithm;
+import gov.usgs.cida.gdp.wps.algorithm.communication.GeoserverManagementAlgorithm;
+import gov.usgs.cida.gdp.wps.algorithm.discovery.CalculateWCSCoverageInfo;
+import gov.usgs.cida.gdp.wps.algorithm.discovery.GetGridTimeRange;
+import gov.usgs.cida.gdp.wps.algorithm.discovery.GetWcsCoverages;
+import gov.usgs.cida.gdp.wps.algorithm.discovery.ListOpendapGrids;
+import gov.usgs.cida.gdp.wps.algorithm.filemanagement.CreateNewShapefileDataStore;
+import gov.usgs.cida.gdp.wps.algorithm.filemanagement.GetWatersGeom;
+import gov.usgs.cida.gdp.wps.algorithm.filemanagement.ReceiveFiles;
 import gov.usgs.cida.n52.wps.test.AlgorithmUtil;
 import gov.usgs.cida.n52.wps.test.MockUtil;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.opengis.wps.x100.ProcessDescriptionType;
 import org.apache.xmlbeans.XmlException;
-import org.apache.xmlbeans.XmlOptions;
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -33,12 +39,15 @@ public class AlgorithmTest {
     
     @Test
     public void testAlgorithmDescriptions() {
-        validateAlgorithmDescription(new FeatureCategoricalGridCoverageAlgorithm());
-        validateAlgorithmDescription(new FeatureCoverageIntersectionAlgorithm());
-        validateAlgorithmDescription(new FeatureCoverageOPeNDAPIntersectionAlgorithm());
-        validateAlgorithmDescription(new FeatureGridStatisticsAlgorithm());
-        validateAlgorithmDescription(new FeatureWeightedGridStatisticsAlgorithm());
-        validateAlgorithmDescription(new PRMSParameterGeneratorAlgorithm());
+        validateAlgorithmDescription(new ReceiveFiles());
+        validateAlgorithmDescription(new GetWatersGeom());
+        validateAlgorithmDescription(new CreateNewShapefileDataStore());
+        validateAlgorithmDescription(new EmailWhenFinishedAlgorithm());
+        validateAlgorithmDescription(new GeoserverManagementAlgorithm());
+        validateAlgorithmDescription(new ListOpendapGrids());
+        validateAlgorithmDescription(new CalculateWCSCoverageInfo());
+        validateAlgorithmDescription(new GetWcsCoverages());
+        validateAlgorithmDescription(new GetGridTimeRange());
     }
     
     private void validateAlgorithmDescription(IAlgorithm algorithm) {

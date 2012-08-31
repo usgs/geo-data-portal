@@ -62,6 +62,12 @@
             <artifactId>gdp-52n-wps-extensions</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>gov.usgs.cida.gdp</groupId>
+            <artifactId>gdp-52n-wps-tests</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
         <!-- version numbers set in parent pom -->
         <dependency>
             <groupId>gov.usgs.cida.jmx</groupId>

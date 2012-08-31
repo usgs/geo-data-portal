@@ -1,4 +1,4 @@
-package gov.usgs.cida.gdp.wps.algorithm.filemanagement;
+ package gov.usgs.cida.gdp.wps.algorithm.filemanagement;
 
 import gov.usgs.cida.gdp.constants.AppConstant;
 import gov.usgs.cida.gdp.dataaccess.GeoserverManager;
@@ -20,7 +20,6 @@ import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.n52.wps.io.data.GenericFileData;
 import org.n52.wps.io.data.IData;
-import org.n52.wps.io.data.binding.complex.GenericFileDataBinding;
 import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
 import org.n52.wps.server.AbstractSelfDescribingAlgorithm;
 import org.opengis.referencing.FactoryException;
@@ -237,7 +236,7 @@ public class ReceiveFiles extends AbstractSelfDescribingAlgorithm {
             return LiteralStringBinding.class;
         }
         if (PARAM_FILE.equals(id)) {
-            return GenericFileDataBinding.class;
+            return ZippedGenericFileDataBinding.class;
         }
         return null;
     }

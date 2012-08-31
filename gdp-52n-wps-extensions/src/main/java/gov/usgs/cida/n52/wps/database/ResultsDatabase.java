@@ -28,6 +28,8 @@ import org.n52.wps.commons.WPSConfig;
 import org.n52.wps.server.ExceptionReport;
 import org.n52.wps.server.RetrieveResultServlet;
 import org.n52.wps.server.database.IDatabase;
+import org.n52.wps.server.response.ExecuteResponse;
+import org.n52.wps.server.response.ExecuteResponseBuilder;
 import org.n52.wps.server.response.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -246,6 +248,7 @@ public final class ResultsDatabase implements IDatabase {
         if (storeResponseReentrantCheckSet.add(Thread.currentThread()) == false) {
             // If the call above returns false, this set was not modified meaning
             // this thread has already called storeResponse.
+            LOGGER.warn("Reentrant call on response storage for {}", reponseId);
             return generateRetrieveResultURL(reponseId);
         }
 
@@ -272,7 +275,14 @@ public final class ResultsDatabase implements IDatabase {
             InputStream responseInputStream = null;
             OutputStream responseOutputStream = null;
             try {
- /*3.0*/        responseInputStream = response.getAsStream();
+ /*3.0*/        responseInputStream = null;
+ /*3.0*/        if (response instanceof ExecuteResponse) {
+ /*3.0*/            ExecuteResponseBuilder builder = ((ExecuteResponse)response).getExecuteResponseBuilder();
+ /*3.0*/            builder.update();
+ /*3.0*/            responseInputStream = builder.getAsStream();
+ /*3.0*/        } else {
+ /*3.0*/            responseInputStream = response.getAsStream();
+ /*3.0*/        }
                 responseOutputStream = new BufferedOutputStream(new FileOutputStream(responseTempFile));
                 // In order to allow the prior response to be available we write
                 // to a temp file and rename these when completed.  Large responses

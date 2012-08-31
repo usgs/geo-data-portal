@@ -3,7 +3,6 @@ package gov.usgs.cida.gdp.wps.parser;
 import gov.usgs.cida.gdp.io.data.ZippedGenericFileData;
 import gov.usgs.cida.gdp.io.data.ZippedGenericFileDataBinding;
 import java.io.InputStream;
-import org.apache.commons.codec.binary.Base64InputStream;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.datahandler.parser.AbstractParser;
 

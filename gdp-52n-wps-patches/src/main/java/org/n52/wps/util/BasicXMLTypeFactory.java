@@ -105,32 +105,32 @@ public class BasicXMLTypeFactory {
 		obj = obj.replace('\n', ' ').replace('\t', ' ').trim();
 		if (xmlDataTypeURI == null) {
 			return new LiteralStringBinding(obj);
-		} else if (xmlDataTypeURI.equals(FLOAT_URI)) {
+		} else if (xmlDataTypeURI.equalsIgnoreCase(FLOAT_URI)) {
 			return new LiteralFloatBinding(Float.parseFloat(obj));
-		} else if (xmlDataTypeURI.equals(DOUBLE_URI)) {
+		} else if (xmlDataTypeURI.equalsIgnoreCase(DOUBLE_URI)) {
 			return new LiteralDoubleBinding(Double.parseDouble(obj));
-		} else if (xmlDataTypeURI.equals(LONG_URI)) {
+		} else if (xmlDataTypeURI.equalsIgnoreCase(LONG_URI)) {
 			return new LiteralLongBinding(Long.parseLong(obj));
-		} else if (xmlDataTypeURI.equals(INT_URI) || xmlDataTypeURI.equals(INTEGER_URI)) {
+		} else if (xmlDataTypeURI.equalsIgnoreCase(INT_URI) || xmlDataTypeURI.equalsIgnoreCase(INTEGER_URI)) {
 			return new LiteralIntBinding(Integer.parseInt(obj));
-		} else if (xmlDataTypeURI.equals(SHORT_URI)) {
+		} else if (xmlDataTypeURI.equalsIgnoreCase(SHORT_URI)) {
 			return new LiteralShortBinding(Short.parseShort(obj));
-		} else if (xmlDataTypeURI.equals(BYTE_URI)) {
+		} else if (xmlDataTypeURI.equalsIgnoreCase(BYTE_URI)) {
 			return new LiteralByteBinding(Byte.parseByte(obj));
-		} else if (xmlDataTypeURI.equals(BOOLEAN_URI)) {
+		} else if (xmlDataTypeURI.equalsIgnoreCase(BOOLEAN_URI)) {
 			return new LiteralBooleanBinding(Boolean.parseBoolean(obj));
-		} else if (xmlDataTypeURI.equals(STRING_URI)) {
+		} else if (xmlDataTypeURI.equalsIgnoreCase(STRING_URI)) {
 			return new LiteralStringBinding(obj);
-		} else if (xmlDataTypeURI.equals(DATETIME_URI) || xmlDataTypeURI.equals(DATE_URI)) {
+		} else if (xmlDataTypeURI.equalsIgnoreCase(DATETIME_URI) || xmlDataTypeURI.equalsIgnoreCase(DATE_URI)) {
             try {
                 return new LiteralDateTimeBinding(DATATYPE_FACTORY.newXMLGregorianCalendar(obj).toGregorianCalendar().getTime());
             } catch (Exception e) {
 				LOGGER.error("Could not parse xs:dateTime or xs:date data", e);
 				return null;
             }
-		} else if (xmlDataTypeURI.equals(BASE64BINARY_URI)) {
+		} else if (xmlDataTypeURI.equalsIgnoreCase(BASE64BINARY_URI)) {
 			return new LiteralBase64BinaryBinding(Base64.decode(obj.getBytes()));
-		} else if (xmlDataTypeURI.equals(ANYURI_URI)) {
+		} else if (xmlDataTypeURI.equalsIgnoreCase(ANYURI_URI)) {
             try {
                 return new LiteralAnyURIBinding(new URI(obj));
             } catch (URISyntaxException e) {
