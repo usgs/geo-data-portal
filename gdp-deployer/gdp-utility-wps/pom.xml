@@ -93,7 +93,7 @@
                 <cargo.deploy.skip>false</cargo.deploy.skip>
                 <cargo.containerId>tomcat6x</cargo.containerId>
                 <!-- references server id in settings.xml -->
-                <cargo.server.settings>cargo-gdp2-8080</cargo.server.settings>
+                <cargo.server.settings>cargo-eros-gdp2-8080</cargo.server.settings>
             </properties>
         </profile>
     </profiles>
