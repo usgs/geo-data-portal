@@ -275,14 +275,7 @@ public final class ResultsDatabase implements IDatabase {
             InputStream responseInputStream = null;
             OutputStream responseOutputStream = null;
             try {
- /*3.0*/        responseInputStream = null;
- /*3.0*/        if (response instanceof ExecuteResponse) {
- /*3.0*/            ExecuteResponseBuilder builder = ((ExecuteResponse)response).getExecuteResponseBuilder();
- /*3.0*/            builder.update();
- /*3.0*/            responseInputStream = builder.getAsStream();
- /*3.0*/        } else {
- /*3.0*/            responseInputStream = response.getAsStream();
- /*3.0*/        }
+ /*3.0*/        responseInputStream = response.getAsStream();
                 responseOutputStream = new BufferedOutputStream(new FileOutputStream(responseTempFile));
                 // In order to allow the prior response to be available we write
                 // to a temp file and rename these when completed.  Large responses
