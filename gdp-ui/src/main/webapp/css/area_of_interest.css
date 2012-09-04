@@ -37,6 +37,18 @@
     visibility: hidden;
 }
 
+#sbSearch {
+    top: 0px;
+    right: 100px;
+    position: absolute;
+}
+
+#sbSearchButton {
+    top: 0px;
+    right: 0px;
+    position: absolute;
+}
+
 .instructions {
     float: left;
     height: 100%;
