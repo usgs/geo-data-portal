@@ -7,7 +7,9 @@
 <%@page import="java.util.Enumeration"%>
 <script type="text/javascript" src="js/cookie/cookie.js"></script>
 
-<script type="text/javascript" src="js/log4javascript/log4javascript.js"></script>
+<jsp:include page="../js/log4javascript/log4javascript.jsp">
+    <jsp:param name="relPath" value=""/>
+</jsp:include>
 
 <jsp:include page="../js/jquery/jquery.jsp">
     <jsp:param name="debug-qualifier" value="false"/>

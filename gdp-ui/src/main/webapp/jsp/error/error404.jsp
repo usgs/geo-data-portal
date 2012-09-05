@@ -12,7 +12,9 @@
         <link rel="stylesheet" href="css/usgs/usgs_style_main.css" type="text/css" />
         <link rel="stylesheet" href="css/common.css" type="text/css" />
 
-        <script src="js/log4javascript/log4javascript.js" type="text/javascript"></script>
+        <jsp:include page="../../js/log4javascript/log4javascript.jsp">
+            <jsp:param name="relPath" value=""/>
+        </jsp:include>
         <jsp:include page="../../js/jquery/jquery.jsp">
             <jsp:param name="debug-qualifier" value="false"/>
         </jsp:include>
