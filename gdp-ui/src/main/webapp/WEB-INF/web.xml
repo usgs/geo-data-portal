@@ -23,7 +23,6 @@
         <location>/jsp/error/error404.jsp</location>
     </error-page>
     <error-page>
-        <exception-type>java.lang.Exception</exception-type>
         <error-code>500</error-code>
         <location>/jsp/error/error500.jsp</location>
     </error-page>
