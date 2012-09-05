@@ -1,6 +1,6 @@
-<% response.setHeader("Pragma","no-cache");%>
-<% response.setHeader("Cache-Control","no-store");%>
-<% response.setDateHeader("Expires",-1);%> 
+<% response.setHeader("Pragma", "no-cache");%>
+<% response.setHeader("Cache-Control", "no-store");%>
+<% response.setDateHeader("Expires", -1);%> 
 <html>
     <head>
         <title>The Geo Data Portal - Error Encountered</title>
@@ -10,9 +10,11 @@
         <link rel="stylesheet" href="css/usgs/common.css" type="text/css" />
         <link rel="stylesheet" href="css/usgs/usgs_style_main.css" type="text/css" />
         <link rel="stylesheet" href="css/common.css" type="text/css" />
-        
+
         <script src="js/log4javascript/log4javascript.js" type="text/javascript"></script>
-        <script src="js/jquery/jquery-1.6.1.js" type="text/javascript"></script>
+        <jsp:include page="../js/jquery/jquery.jsp">
+            <jsp:param name="debug-qualifier" value="false"/>
+        </jsp:include>
         <script src="js/constants.js" type="text/javascript"></script>
     </head>
     <body>

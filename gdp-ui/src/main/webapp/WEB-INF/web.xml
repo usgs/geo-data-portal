@@ -17,6 +17,7 @@
             <role-name>manager</role-name>
         </auth-constraint>
     </security-constraint>
+    
     <error-page>
         <error-code>404</error-code>
         <location>/jsp/error/404.jsp</location>
@@ -25,6 +26,7 @@
         <error-code>500</error-code>
         <location>/jsp/error/500.jsp</location>
     </error-page>
+    
     <filter>
         <description>Returns the XClientIP Header on getRemoteAddr()</description>
         <filter-name>XClientIPFilter</filter-name>
@@ -50,8 +52,8 @@
     
     <!-- Feedback services -->
     <servlet>
-    	<servlet-name>ContactService</servlet-name>
-    	<servlet-class>gov.usgs.service.ContactService</servlet-class>
+        <servlet-name>ContactService</servlet-name>
+        <servlet-class>gov.usgs.service.ContactService</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>SecurityImageGenerator</servlet-name>
@@ -62,8 +64,8 @@
         <url-pattern>/securityimage/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-    	<servlet-name>ContactService</servlet-name>
-    	<url-pattern>/service/contact/*</url-pattern>
+        <servlet-name>ContactService</servlet-name>
+        <url-pattern>/service/contact/*</url-pattern>
     </servlet-mapping>
     
     
@@ -82,7 +84,7 @@
     </servlet-mapping>
     <servlet>
         <description>
-           Used for uploading shapefiles to our WPS server
+            Used for uploading shapefiles to our WPS server
         </description>
         <servlet-name>PropertiesServlet</servlet-name>
         <servlet-class>gov.usgs.service.PropertiesServlet</servlet-class>
@@ -104,7 +106,7 @@
     </servlet-mapping>
     <servlet>
         <description>
-			Handles blacklist management
+            Handles blacklist management
         </description>
         <servlet-name>BlacklistServlet</servlet-name>
         <servlet-class>gov.usgs.cida.blacklist.BlacklistServlet</servlet-class>

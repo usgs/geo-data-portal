@@ -13,6 +13,12 @@
     -- ScienceBase now includes multiple features in their describefeature WFS call.
        This breaks our functionality to auto-select a feature. Figure out a way around 
        this.
+
+    -- WebKit issue - not a real problem but shows the warning 
+       "Resource interpreted as Image but transferred with MIME type image/jpg" 
+       in console. This is touched on @ 
+       http://forums.arcgis.com/threads/47494-Invalid-MIME-type-when-using-ArcGIS-Online-Basemaps-in-JavaScript-API
+       Nothing we can do about it. Looks like a server-side issue with ArcGIS
 --%>
 
 <!DOCTYPE html>
