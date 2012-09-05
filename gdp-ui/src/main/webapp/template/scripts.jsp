@@ -19,7 +19,10 @@
 <script type="text/javascript" src="js/xmlns/jquery.xmlns.js"></script>
 <script type="text/javascript" src="js/objects/algorithm.js"></script>
 <script type="text/javascript" src="js/constants.js"></script>
-<script type="text/javascript" src="openlayers/OpenLayers.js"></script>
+<jsp:include page="../js/openlayers/openlayers.jsp">
+    <jsp:param name="debug-qualifier" value="false"/>
+    <jsp:param name="include-deprecated" value="true"/>
+</jsp:include>
 <script type="text/javascript" src="js/jquery-ui/jquery-ui-1.8.23.custom.min.js"></script>
 <script type="text/javascript" src="js/jgrowl/jquery.jgrowl_compressed.js"></script> <%-- http://plugins.jquery.com/project/jGrowl --%>
 <script type="text/javascript" src="js/colorbox/jquery.colorbox-min.js"></script>
