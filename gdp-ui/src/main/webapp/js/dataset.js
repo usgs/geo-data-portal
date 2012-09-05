@@ -1467,19 +1467,15 @@ var Dataset = function() {
         $(_CSW_HOST_PICK_BUTTON).click(function() {
             var serverHTML = $('<ul />');
             
-            // GDP CSW
-            $(serverHTML).append(
+            var picklist = Constant.ui.csw_picklist.split('|');
+            
+            for (var pickListIndex = 0;pickListIndex < picklist.length;pickListIndex = pickListIndex + 2) {
+                $(serverHTML).append(
                 $('<li />', {
                     'class' : 'server-picker-li',
-                    'title' : 'CIDA CSW Server (Default)'
-                }).html(Constant.endpoint.csw));
-                
-            // ScienceBase CSW    
-            $(serverHTML).append(
-                $('<li />', {
-                    'class' : 'server-picker-li',
-                    'title' : 'ScienceBase CSW Server'
-                }).html(Constant.endpoint['sciencebase-csw']));
+                    'title' : picklist[pickListIndex]
+                }).html(picklist[pickListIndex + 1]));
+            }
             
             $('body')
             .append($('<div />', {
