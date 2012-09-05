@@ -20,11 +20,12 @@
     
     <error-page>
         <error-code>404</error-code>
-        <location>/jsp/error/404.jsp</location>
+        <location>/jsp/error/error404.jsp</location>
     </error-page>
     <error-page>
+        <exception-type>java.lang.Exception</exception-type>
         <error-code>500</error-code>
-        <location>/jsp/error/500.jsp</location>
+        <location>/jsp/error/error500.jsp</location>
     </error-page>
     
     <filter>
