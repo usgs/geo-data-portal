@@ -12,7 +12,7 @@
         <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
         <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
         <script src="js/log4javascript/log4javascript.js" type="text/javascript"></script>
-        <jsp:include page="../js/jquery/jquery.jsp">
+        <jsp:include page="js/jquery/jquery.jsp">
             <jsp:param name="debug-qualifier" value="false"/>
         </jsp:include>
         <script src="js/xmlns/jquery.xmlns.js" type="text/javascript"></script>
