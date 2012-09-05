@@ -1466,7 +1466,6 @@ var Dataset = function() {
         });
         $(_CSW_HOST_PICK_BUTTON).click(function() {
             var serverHTML = $('<ul />');
-            
             var picklist = Constant.ui.csw_picklist.split('|');
             
             for (var pickListIndex = 0;pickListIndex < picklist.length;pickListIndex = pickListIndex + 2) {
@@ -1571,6 +1570,10 @@ var Dataset = function() {
         $(_SELECT_DATASET_BUTTON).button({
             'label' : 'Select'
         });
+        
+        if (!Constant.ui.csw_picklist) {
+            $(_CSW_HOST_PICK_BUTTON).hide();
+        }
     }
     
     function bindRetrieveOutputButton() {
