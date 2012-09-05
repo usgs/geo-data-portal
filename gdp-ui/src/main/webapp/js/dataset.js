@@ -342,7 +342,7 @@ var Dataset = function() {
         };
         
         if (ScienceBase.useSB && Constant.endpoint && Constant.endpoint.redirect_url) {
-            wpsInputs['callback-base-url'] = [ Constant.endpoint.redirect_url + "?result="];
+            wpsInputs['callback-base-url'] = [Constant.endpoint.redirect_url + "?result="];
         }
 
         if (_userEmail) {
