@@ -82,13 +82,13 @@
                             not complain -->
                         <systemProperty>
                             <name>catalina.base</name>
-                            <value>${basedir}</value>
+                            <value>${project.build.directory}</value>
                         </systemProperty>
                     </systemProperties>
                     <scanIntervalSeconds>10</scanIntervalSeconds>
                     <stopPort>9966</stopPort>
                     <stopKey>STOP</stopKey>
-                    <contextPath>/gdp-process-wps</contextPath>
+                    <contextPath>/${project.artifactId}</contextPath>
                 </configuration>
                 <executions>
                     <execution>
