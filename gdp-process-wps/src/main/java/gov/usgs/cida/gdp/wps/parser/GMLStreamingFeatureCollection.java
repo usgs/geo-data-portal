@@ -71,6 +71,9 @@ public class GMLStreamingFeatureCollection implements FeatureCollection {
 			this.featureType = metaDataFilter.wrappedFeatureType;
 			this.size = metaDataFilter.size;
 
+            if (size < 1) {
+                throw new RuntimeException("Empty Feature Collection");
+            }
 
 		} catch (IOException e) {
 			throw new RuntimeException(e);
