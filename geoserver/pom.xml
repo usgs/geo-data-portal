@@ -10,7 +10,6 @@
     <name>GDP GeoServer</name>
     <properties>
         <cida.gs.version>2.1.1-1</cida.gs.version>
-        <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
     </properties>
     <dependencies>
         <dependency>

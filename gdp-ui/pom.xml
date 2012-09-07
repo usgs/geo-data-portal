@@ -167,8 +167,5 @@
         </plugins>
         <finalName>GDP_WEB</finalName>
     </build>
-    <properties>
-        <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
-    </properties>
 </project>
 
