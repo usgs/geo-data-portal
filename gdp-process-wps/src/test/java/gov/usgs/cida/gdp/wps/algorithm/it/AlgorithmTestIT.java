@@ -1,13 +1,11 @@
 package gov.usgs.cida.gdp.wps.algorithm.it;
 
-import gov.usgs.cida.n52.wps.test.AlgorithmUtil;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import net.opengis.wps.x100.ProcessDescriptionType;
-import org.apache.commons.io.IOUtils;
+import net.opengis.wps.x100.ProcessDescriptionsDocument;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -62,12 +60,12 @@ public class AlgorithmTestIT {
         if (entity != null) {
             InputStream instream = entity.getContent();
             List<XmlValidationError> xmlValidationErrorList = new ArrayList<XmlValidationError>();
-            ProcessDescriptionType pdt = null;
+            ProcessDescriptionsDocument pdt = null;
             XmlOptions xmlOptions = new XmlOptions();
             xmlOptions.setErrorListener(xmlValidationErrorList);
             
             try {
-                pdt = ProcessDescriptionType.Factory.parse(instream);
+                pdt = ProcessDescriptionsDocument.Factory.parse(instream);
             } finally {
                 instream.close();
             }
@@ -79,7 +77,7 @@ public class AlgorithmTestIT {
                 System.out.println(err.getMessage());
             }
 
-//            assertThat(validated, is(true));
+            assertThat(validated, is(true));
 //          assertThat(AlgorithmUtil.processDescriptionIsValid(pdt), is(true));
         }
 
