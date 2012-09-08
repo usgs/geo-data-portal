@@ -1,17 +1,16 @@
 package gov.usgs.cida.gdp.wps.algorithm.filemanagement;
 
+import com.google.common.base.Preconditions;
 import gov.usgs.cida.gdp.constants.AppConstant;
 import gov.usgs.cida.gdp.dataaccess.GeoserverManager;
 import gov.usgs.cida.gdp.dataaccess.WatersService;
+import gov.usgs.cida.n52.wps.algorithm.AbstractAnnotatedAlgorithm;
+import gov.usgs.cida.n52.wps.algorithm.annotation.Algorithm;
+import gov.usgs.cida.n52.wps.algorithm.annotation.LiteralDataInput;
+import gov.usgs.cida.n52.wps.algorithm.annotation.LiteralDataOutput;
+import gov.usgs.cida.n52.wps.algorithm.annotation.Process;
 import java.io.File;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.n52.wps.io.data.IData;
-import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
-import org.n52.wps.server.AbstractSelfDescribingAlgorithm;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,42 +19,58 @@ import org.slf4j.LoggerFactory;
  *
  * @author razoerb
  */
-public class GetWatersGeom extends AbstractSelfDescribingAlgorithm {
-    private static final Logger log = LoggerFactory.getLogger(GetWatersGeom.class);
+@Algorithm(version="1.0.0")
+public class GetWatersGeom extends AbstractAnnotatedAlgorithm {
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetWatersGeom.class);
 
-    @Override
-    public Map<String, IData> run(Map<String, List<IData>> inputData) {
-
-        if (inputData == null) {
-            throw new RuntimeException("Error while allocating input parameters.");
-        }
-
-        if (!inputData.containsKey("lat")) {
-            throw new RuntimeException("Error: Missing input parameter 'lat'");
-        }
-        if (!inputData.containsKey("lon")) {
-            throw new RuntimeException("Error: Missing input parameter 'lon'");
-        }
-        if (!inputData.containsKey("name")) {
-            throw new RuntimeException("Error: Missing input parameter 'name'");
-        }
-
-        String lat = ((LiteralStringBinding) inputData.get("lat").get(0)).getPayload();
-        String lon = ((LiteralStringBinding) inputData.get("lon").get(0)).getPayload();
-        String name = ((LiteralStringBinding) inputData.get("name").get(0)).getPayload();
-
-        Map<String, IData> result = new HashMap<String, IData>();
+    private final static String INPUT_LAT = "lat";
+    private final static String INPUT_LON = "lon";
+    private final static String INPUT_NAME = "name";
+    private final static String OUTPUT_LAYER_NAME = "layer-name";
+    
+    private String lat;
+    private String lon;
+    private String name;
+    private String layerName;
+    
+    @LiteralDataInput(identifier=INPUT_LAT)
+    public void setLat(String lat) {
+        this.lat = lat;
+    }
+    
+    @LiteralDataInput(identifier=INPUT_LON)
+    public void setLong(String lon) {
+        this.lon = lon;
+    }
+    
+    @LiteralDataInput(identifier=INPUT_NAME)
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    @LiteralDataOutput(identifier=OUTPUT_LAYER_NAME)
+    public String getLayerName() {
+        return layerName;
+    }
+    
+    @Process
+    public void process() {
+        Preconditions.checkArgument(StringUtils.isNotBlank(lat), "Invalid " + INPUT_LAT);
+        Preconditions.checkArgument(StringUtils.isNotBlank(lon), "Invalid " + INPUT_LON);
+        Preconditions.checkArgument(StringUtils.isNotBlank(lat), "Invalid " + INPUT_NAME);
 
         File shapefile;
         try {
             shapefile = WatersService.getGeometry(lon, lat, name);
         } catch (Exception ex) {
-            log.error("Error getting geometry from WATERS", ex);
+            LOGGER.error("Error getting geometry from WATERS", ex);
+            addError(ex.getMessage());
             throw new RuntimeException("Error getting geometry from WATERS", ex);
         }
 
         String shapefilePath = shapefile.getAbsolutePath();
-        log.debug("WATERS shapefile path: '" + shapefilePath + "'");
+        LOGGER.debug("WATERS shapefile path: '" + shapefilePath + "'");
 
         String geoServerURL = AppConstant.WFS_ENDPOINT.getValue();
         String geoServerWorkspace = "waters";
@@ -67,77 +82,11 @@ public class GetWatersGeom extends AbstractSelfDescribingAlgorithm {
             String declaredCRS = "EPSG:4269";
             mws.createDataStore(shapefilePath, geoServerLayer, geoServerWorkspace, declaredCRS, declaredCRS);
         } catch (Exception ex) {
-            log.error("Error creating datastore in GeoServer for WATERS geometry", ex);
+            LOGGER.error("Error creating datastore in GeoServer for WATERS geometry", ex);
+            addError(ex.getMessage());
             throw new RuntimeException("Error creating datastore in GeoServer for WATERS geometry", ex);
         }
         
-        result.put("layer-name", new LiteralStringBinding(geoServerWorkspace + ":" + geoServerLayer));
-        return result;
-    }
-
-    @Override
-    public BigInteger getMaxOccurs(String identifier) {
-        if ("lat".equals(identifier)) {
-            return BigInteger.valueOf(1);
-        }
-        if ("lon".equals(identifier)) {
-            return BigInteger.valueOf(1);
-        }
-        if ("name".equals(identifier)) {
-            return BigInteger.valueOf(1);
-        }
-        return super.getMaxOccurs(identifier);
-    }
-
-    @Override
-    public BigInteger getMinOccurs(String identifier) {
-        if ("lat".equals(identifier)) {
-            return BigInteger.valueOf(1);
-        }
-        if ("lon".equals(identifier)) {
-            return BigInteger.valueOf(1);
-        }
-        if ("name".equals(identifier)) {
-            return BigInteger.valueOf(1);
-        }
-        return super.getMinOccurs(identifier);
-    }
-
-    @Override
-    public List<String> getInputIdentifiers() {
-        List<String> result = new ArrayList<String>(3);
-        result.add("lat");
-        result.add("lon");
-        result.add("name");
-        return result;
-    }
-
-    @Override
-    public List<String> getOutputIdentifiers() {
-        List<String> result = new ArrayList<String>(1);
-        result.add("layer-name");
-        return result;
-    }
-
-    @Override
-    public Class getInputDataType(String id) {
-        if ("lat".equals(id)) {
-            return LiteralStringBinding.class;
-        }
-        if ("lon".equals(id)) {
-            return LiteralStringBinding.class;
-        }
-        if ("name".equals(id)) {
-            return LiteralStringBinding.class;
-        }
-        return null;
-    }
-
-    @Override
-    public Class getOutputDataType(String id) {
-        if (id.equals("layer-name")) {
-            return LiteralStringBinding.class;
-        }
-        return null;
+        layerName = geoServerWorkspace + ":" + geoServerLayer;
     }
 }

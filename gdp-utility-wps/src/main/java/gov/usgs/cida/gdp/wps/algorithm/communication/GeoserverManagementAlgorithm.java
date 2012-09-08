@@ -1,15 +1,13 @@
 package gov.usgs.cida.gdp.wps.algorithm.communication;
 
+import com.google.common.base.Preconditions;
 import gov.usgs.cida.gdp.dataaccess.GeoserverManager;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import gov.usgs.cida.n52.wps.algorithm.AbstractAnnotatedAlgorithm;
+import gov.usgs.cida.n52.wps.algorithm.annotation.Algorithm;
+import gov.usgs.cida.n52.wps.algorithm.annotation.LiteralDataInput;
+import gov.usgs.cida.n52.wps.algorithm.annotation.LiteralDataOutput;
+import gov.usgs.cida.n52.wps.algorithm.annotation.Process;
 import org.apache.commons.lang.StringUtils;
-import org.n52.wps.io.data.IData;
-import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
-import org.n52.wps.server.AbstractSelfDescribingAlgorithm;
 
 /**
  * Sends commands to our running geoserver instance.
@@ -17,7 +15,13 @@ import org.n52.wps.server.AbstractSelfDescribingAlgorithm;
  *
  * @author isuftin
  */
-public class GeoserverManagementAlgorithm extends AbstractSelfDescribingAlgorithm  {
+@Algorithm(version="1.0.0")
+public class GeoserverManagementAlgorithm extends AbstractAnnotatedAlgorithm  {
+    
+    public enum COMMAND {
+        delete;
+    }
+    
     private final static String PARAM_COMMAND = "command";
     private final static String PARAM_USERNAME = "username";
     private final static String PARAM_PASSWORD = "password";
@@ -26,203 +30,74 @@ public class GeoserverManagementAlgorithm extends AbstractSelfDescribingAlgorith
     private final static String PARAM_WORKSPACE = "workspace";
     private final static String PARAM_DATASTORE = "datastore";
     private final static String PARAM_RESULT = "result";
-    private final static String PARAM_DELETE = "delete";
     
-    @Override
-    public Map<String, IData> run(Map<String, List<IData>> inputData) {
-        if (inputData == null) {
-            throw new RuntimeException("Error while allocating input parameters.");
-        }
-        if (!inputData.containsKey(PARAM_COMMAND)) {
-            throw new RuntimeException("Error: Missing input parameter '"+PARAM_COMMAND+"'");
-        }
-        if (!inputData.containsKey(PARAM_USERNAME)) {
-            throw new RuntimeException("Error: Missing input parameter '"+PARAM_USERNAME+"'");
-        }
-        if (!inputData.containsKey(PARAM_PASSWORD)) {
-            throw new RuntimeException("Error: Missing input parameter '"+PARAM_PASSWORD+"'");
-        }
-        if (!inputData.containsKey(PARAM_WFS_HOST)) {
-            throw new RuntimeException("Error: Missing input parameter '"+PARAM_WFS_HOST+"'");
-        }
-        if (!inputData.containsKey(PARAM_WFS_PORT)) {
-            throw new RuntimeException("Error: Missing input parameter '"+PARAM_WFS_PORT+"'");
-        }
-
-        String command, username, password, workspace, wfsHost, wfsPort = null;
-        
-        // Pull in our command
-        List<IData> dataList = inputData.get(PARAM_COMMAND);
-        command = ((LiteralStringBinding)dataList.get(0)).getPayload();
-        if (StringUtils.isBlank(command)) {
-            throw new RuntimeException("Error: Missing input parameter '"+PARAM_COMMAND+"'");
-        }
-
-        // Pull in our host
-        dataList = inputData.get(PARAM_WFS_HOST);
-        wfsHost = ((LiteralStringBinding)dataList.get(0)).getPayload();
-        if (StringUtils.isBlank(wfsHost)) {
-            throw new RuntimeException("Error: Missing input parameter '"+PARAM_WFS_HOST+"'");
-        }
-
-        // Pull in our host
-        dataList = inputData.get(PARAM_WFS_PORT);
-        wfsPort = ((LiteralStringBinding)dataList.get(0)).getPayload();
-        if (StringUtils.isBlank(wfsPort)) {
-            throw new RuntimeException("Error: Missing input parameter '"+PARAM_WFS_PORT+"'");
-        }
-
-        // Pull in our username
-        dataList = inputData.get(PARAM_USERNAME);
-        username = ((LiteralStringBinding)dataList.get(0)).getPayload();
-        if (StringUtils.isBlank(username)) {
-            throw new RuntimeException("Error: Missing input parameter '"+PARAM_USERNAME+"'");
-        }
-
-        // Pull in our password
-        dataList = inputData.get(PARAM_PASSWORD);
-        password = ((LiteralStringBinding)dataList.get(0)).getPayload();
-        if (StringUtils.isBlank(password)) {
-            throw new RuntimeException("Error: Missing input parameter '"+PARAM_PASSWORD+"'");
-        }
-
-        // Pull in our workspace, if any
-        dataList = inputData.get(PARAM_WORKSPACE);
-        workspace = ((LiteralStringBinding)dataList.get(0)).getPayload();
-
-        // Pull in the datastores, if any
-        dataList = inputData.get(PARAM_DATASTORE);
-        List<String> datastoreList = new ArrayList<String>(dataList.size());
-        for (IData iData : dataList) {
-            datastoreList.add(((LiteralStringBinding)iData).getPayload());
-        }
-
-        if (PARAM_DELETE.equalsIgnoreCase(command)) {
-            if (datastoreList.isEmpty()) {
-                throw new RuntimeException("Error: '"+PARAM_DELETE+"' called but no datastore was provided");
-            }
-            if (StringUtils.isBlank(workspace)) {
-                throw new RuntimeException("Error: '"+PARAM_DELETE+"' called but no workspace was provided");
-            }
-            
-            GeoserverManager gm = new GeoserverManager(
-                    "http://" + wfsHost + ":" + wfsPort + "/geoserver", username, password);
-            
-            for (String datastore : datastoreList) {
-                try { gm.deleteAndWipeDataStore(workspace, datastore); }
-                catch (Exception ex) { getErrors().add("Error: Unable to delete datastore '"+datastore+"'. Error follows.\n" + ex.getMessage()); }
-            }
-        } else {
-            throw new RuntimeException("Error: Unrecognized command: " + command);
-        }
-
-        Map<String, IData> result = new HashMap<String, IData>(1);
-        if (getErrors().isEmpty()) {
-            result.put(PARAM_RESULT, new LiteralStringBinding("Your request has completed successfully."));
-        }
-        else {
-            result.put(PARAM_RESULT, new LiteralStringBinding("Your request has completed with errors."));
-        }
-
+    private COMMAND command;
+    private String username;
+    private String password;
+    private String wfsHost;
+    private String wfsPort;
+    private String workspace;
+    private String datastore;
+    private String result;
+    
+    @LiteralDataInput(identifier=PARAM_COMMAND)
+    public void setCommand(COMMAND command) {
+        this.command = command;
+    }
+    
+    @LiteralDataInput(identifier=PARAM_USERNAME)
+    public void setUsername(String username) {
+        this.username = username;
+    }
+    
+    @LiteralDataInput(identifier=PARAM_WFS_HOST)
+    public void setWfsHost(String wfsHost) {
+        this.wfsHost = wfsHost;
+    }
+    
+    @LiteralDataInput(identifier=PARAM_WFS_PORT)
+    public void setWfsPort(String wfsPort) {
+        this.wfsPort = wfsPort;
+    }
+    
+    @LiteralDataInput(identifier=PARAM_WORKSPACE, minOccurs=0)
+    public void setWorkspace(String workspace) {
+        this.workspace = workspace;
+    }
+    
+    @LiteralDataInput(identifier=PARAM_DATASTORE, minOccurs=0)
+    public void setDatastore(String datastore) {
+        this.datastore = datastore;
+    }
+    
+    @LiteralDataOutput(identifier=PARAM_RESULT)
+    public String getResult() {
         return result;
     }
+    
+    @Process
+    public void process() {
+        // required arguments, must not be empty (null, "", or all whitespace);
+        Preconditions.checkArgument(command != null, "Invalid " + PARAM_COMMAND);
+        Preconditions.checkArgument(!StringUtils.isBlank(username), "Invalid " + PARAM_USERNAME);
+        Preconditions.checkArgument(!StringUtils.isBlank(password), "Invalid " + PARAM_PASSWORD);
+        Preconditions.checkArgument(!StringUtils.isBlank(wfsHost), "Invalid " + PARAM_WFS_HOST);
+        Preconditions.checkArgument(!StringUtils.isBlank(wfsPort), "Invalid " + PARAM_WFS_PORT);
+        // optional arguments, may be null OR not empty ("", or all whitespace)
+        Preconditions.checkArgument(workspace == null || !StringUtils.isBlank(workspace), "Invalid " + PARAM_WORKSPACE);
+        Preconditions.checkArgument(datastore == null || !StringUtils.isBlank(datastore), "Invalid " + PARAM_DATASTORE);
+        // argument interdependencies
+        Preconditions.checkArgument(command == COMMAND.delete && !StringUtils.isBlank(workspace), "\"" + command + "\" requires " + PARAM_WORKSPACE + " to be set");
+        Preconditions.checkArgument(command == COMMAND.delete && !StringUtils.isBlank(datastore), "\"" + command + "\" requires " + PARAM_DATASTORE + " to be set");
+    
+        GeoserverManager gm = new GeoserverManager("http://" + wfsHost + ":" + wfsPort + "/geoserver", username, password);
 
-    @Override
-    public List<String> getInputIdentifiers() {
-        List<String> result = new ArrayList<String>(7);
-        result.add(PARAM_COMMAND);
-        result.add(PARAM_WFS_HOST);
-        result.add(PARAM_WFS_PORT);
-        result.add(PARAM_USERNAME);
-        result.add(PARAM_PASSWORD);
-        result.add(PARAM_WORKSPACE);
-        result.add(PARAM_DATASTORE);
-        return result;
+        try {
+             gm.deleteAndWipeDataStore(workspace, datastore);
+             result = "Your request has completed successfully.";
+         }catch (Exception ex) {
+             result = "Your request has completed with errors.";
+             getErrors().add("Error: Unable to delete datastore '" + datastore + "'. Error follows.\n" + ex.getMessage());
+         }
     }
-
-    @Override
-    public BigInteger getMaxOccurs(String identifier) {
-        if (PARAM_COMMAND.equals(identifier)) { return BigInteger.valueOf(1); }
-        if (PARAM_WFS_HOST.equals(identifier)) { return BigInteger.valueOf(1); }
-        if (PARAM_WFS_PORT.equals(identifier)) { return BigInteger.valueOf(1); }
-        if (PARAM_USERNAME.equals(identifier)) { return BigInteger.valueOf(1); }
-        if (PARAM_PASSWORD.equals(identifier)) { return BigInteger.valueOf(1); }
-        if (PARAM_WORKSPACE.equals(identifier)) { return BigInteger.valueOf(1); }
-        if (PARAM_DATASTORE.equals(identifier)) { return BigInteger.valueOf(1); }
-        return super.getMaxOccurs(identifier);
-    }
-
-    @Override
-    public BigInteger getMinOccurs(String identifier) {
-        if (PARAM_COMMAND.equals(identifier)) {
-            return BigInteger.valueOf(1);
-        }
-        if (PARAM_WFS_HOST.equals(identifier)) {
-            return BigInteger.valueOf(1);
-        }
-        if (PARAM_WFS_PORT.equals(identifier)) {
-            return BigInteger.valueOf(1);
-        }
-        if (PARAM_USERNAME.equals(identifier)) {
-            return BigInteger.valueOf(1);
-        }
-        if (PARAM_PASSWORD.equals(identifier)) {
-            return BigInteger.valueOf(1);
-        }
-        if (PARAM_WORKSPACE.equals(identifier)) {
-            return BigInteger.valueOf(0);
-        }
-        if (PARAM_DATASTORE.equals(identifier)) {
-            return BigInteger.valueOf(0);
-        }
-        return super.getMaxOccurs(identifier);
-    }
-
-    @Override
-    public List<String> getOutputIdentifiers() {
-        List<String> result = new ArrayList<String>(1);
-        result.add(PARAM_RESULT);
-        return result;
-    }
-
-    /**
-     * 
-     * @param id
-     * @return
-     */
-    @Override
-    public Class getInputDataType(String id) {
-        if (PARAM_COMMAND.equals(id)) {
-            return LiteralStringBinding.class;
-        }
-        if (PARAM_WFS_HOST.equals(id)) {
-            return LiteralStringBinding.class;
-        }
-        if (PARAM_WFS_PORT.equals(id)) {
-            return LiteralStringBinding.class;
-        }
-        if (PARAM_USERNAME.equals(id)) {
-            return LiteralStringBinding.class;
-        }
-        if (PARAM_PASSWORD.equals(id)) {
-            return LiteralStringBinding.class;
-        }
-        if (PARAM_WORKSPACE.equals(id)) {
-            return LiteralStringBinding.class;
-        }
-        if (PARAM_DATASTORE.equals(id)) {
-            return LiteralStringBinding.class;
-        }
-        return null;
-    }
-
-    @Override
-    public Class getOutputDataType(String id) {
-        if (PARAM_RESULT.equals(id)) {
-            return LiteralStringBinding.class;
-        }
-        return null;
-    }
-
 }
-
