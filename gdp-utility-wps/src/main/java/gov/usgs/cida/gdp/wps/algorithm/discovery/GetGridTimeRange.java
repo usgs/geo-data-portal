@@ -38,7 +38,7 @@ public class GetGridTimeRange extends AbstractAnnotatedAlgorithm {
         this.catalogURL = catalogURL;
     }
     
-    @LiteralDataInput(identifier=PARAM_GRID, maxOccurs=Integer.MAX_VALUE)
+    @LiteralDataInput(identifier=PARAM_GRID)
     public void setGrids(String grid) {
         this.grid = grid;
     }

@@ -1,5 +1,6 @@
 package gov.usgs.cida.gdp.io.data;
 
+import org.n52.wps.io.data.GenericFileData;
 import org.n52.wps.io.data.IComplexData;
 import org.n52.wps.io.data.binding.complex.GenericFileDataBinding;
 
@@ -11,5 +12,11 @@ public class ZippedGenericFileDataBinding extends GenericFileDataBinding impleme
     public ZippedGenericFileDataBinding(ZippedGenericFileData fileData) {
         super(fileData);
     }
+
+    @Override
+    public ZippedGenericFileData getPayload() {
+        return (ZippedGenericFileData)super.getPayload();
+    }
+    
     
 }
