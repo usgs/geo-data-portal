@@ -98,7 +98,7 @@ WPS = function() {
         },
 
         sendWPSGetRequest: function(url, data, async, callback) {
-            logger.debug("GDP: Sending WPS GET request to: " + url);
+            logger.debug("GDP:wps.js::Sending WPS GET request to: " + url);
             $.ajax({
                 url : url,
                 type : 'get',

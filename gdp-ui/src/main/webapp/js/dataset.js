@@ -901,9 +901,11 @@ var Dataset = function() {
         var tooltip;
         
         // We ignore inputs with these titles since they're already plugged in by the user in previous steps
-        if ($.inArray(identifierText, Algorithm.userConfigurables) > -1) return '';
+        if ($.inArray(identifierText, Algorithm.userConfigurables) > -1) {
+            return '';
+        }
 
-        logger.debug('GDP: Creating a dynamic input field for input: ' + identifierText);
+        logger.debug('GDP:dataset.js::createHTMLInputField():Creating a dynamic input field for input: ' + identifierText);
         
         // Outer wrapper per input
         var containerDiv = $(Constant.divString).attr('id', 'di_element_wrapper_' + index).addClass('di_element_wrapper');
@@ -922,13 +924,16 @@ var Dataset = function() {
         }
         
         $(containerDiv).append($(Constant.spanString).addClass('di_algorithm_input_title').html(titleText).prepend(tooltip));
-        if (!minOccurs) $(containerDiv).append($(Constant.divString).html(' (Optional)'));
+        if (!minOccurs) {
+            $(containerDiv).append($(Constant.divString).html(' (Optional)'));
+        }
 
         // Create the input element
         var inputContainer = $(Constant.divString).addClass('di_field'); // wrapper
         var defaultValue = null;
+        
         if ($(xml).find('ComplexData').length) { 
-            logger.trace('GDP: ' + identifierText + ' is a complex type.');
+            logger.trace('GDP:dataset.js::createHTMLInputField():' + identifierText + ' is a complex type.');
             var complexMimeType = $(Constant.inputString).attr('type', 'hidden').attr('name', 'di_field_mimetype').attr('value', $(xml).find('Default>Format>MimeType').text());
             var complexData = $(Constant.inputString).attr('type', 'hidden').attr('name', 'di_field_datatype').attr('value', 'complex');
             var complexSchema = $(Constant.inputString).attr('type', 'hidden').attr('name', 'di_field_schema').attr('value', $(xml).find('Default>Format>Schema').text());
@@ -939,9 +944,11 @@ var Dataset = function() {
             $(inputContainer).append(complexMimeType);
             $(inputContainer).append(complexSchema);
             $(inputContainer).append(complexInputBox);
+            
         } else if ($(xml).find('LiteralData').length) { // We have a literal datatype.
-            logger.trace('GDP: ' + identifierText + ' is a literal type.');
-            var dataType = $(xml).find('ns1|DataType').first().attr('ns1:reference').split(':')[1];
+            logger.trace('GDP:dataset.js::createHTMLInputField():' + identifierText + ' is a literal type.');
+            var prefix = $(xml).find('ns1|DataType').first()[0].prefix;
+            var dataType = $(xml).find('ns1|DataType').first().attr(prefix + ':reference').split(':')[1];
             defaultValue = $(xml).find('DefaultValue').text();
             
             if (dataType == 'boolean') {
@@ -951,12 +958,17 @@ var Dataset = function() {
                     'name' : identifierText
                 }).
                 addClass('di_field_input');
+                
                 $(inputContainer).append(literalCheckbox);
-                if (defaultValue.toLowerCase() == 'true') $(literalCheckbox).attr('checked','checked');
-                else $(literalCheckbox).removeAttr('checked');
+                
+                if (defaultValue.toLowerCase() == 'true') {
+                    $(literalCheckbox).attr('checked','checked');
+                } else {
+                    $(literalCheckbox).removeAttr('checked');
+                }
             } else if ($(xml).find('LiteralData').find('ns1|AnyValue').length) { 
-                logger.trace('GDP: Building a textbox');
-                var literalDatatype = $(xml).find('ns1|DataType').first().attr('ns1:reference').split(':')[1];
+                logger.trace('GDP:dataset.js::createHTMLInputField():Building a textbox');
+                var literalDatatype = $(xml).find('ns1|DataType').first().attr(prefix + ':reference').split(':')[1];
                 var literalInputBox = $(Constant.inputString).attr({
                     'type' : 'text',
                     'size' : '40'
@@ -964,7 +976,7 @@ var Dataset = function() {
                 $(literalInputBox).val(defaultValue);
                 $(inputContainer).append(literalInputBox);
             } else  if ($(xml).find('LiteralData').find('ns1|AllowedValues').length) { 
-                logger.trace('GDP: Building a listbox');
+                logger.trace('GDP:dataset.js::createHTMLInputField():Building a listbox');
                 var literalListbox = $(Constant.selectString).addClass('di_field_input');
                 $(xml).find('LiteralData').find('ns1|AllowedValues').find('ns1|Value').each(function(i,e){
                     $(literalListbox).append($(Constant.optionString).attr('value', $(e).text()).html($(e).text()));
@@ -974,7 +986,7 @@ var Dataset = function() {
                 $(inputContainer).append(literalListbox);
             }
         } else if ($(xml).find('BoundingBoxData').length) {
-            logger.trace('GDP: ' + identifierText + ' is a boundingbox type.');
+            logger.trace('GDP:dataset.js::createHTMLInputField():' + identifierText + ' is a boundingbox type.');
         //TODO- We've got nothing yet - Will complete once [if] we have BoundingBox inputs
         }
 
@@ -1470,10 +1482,10 @@ var Dataset = function() {
             
             for (var pickListIndex = 0;pickListIndex < picklist.length;pickListIndex = pickListIndex + 2) {
                 $(serverHTML).append(
-                $('<li />', {
-                    'class' : 'server-picker-li',
-                    'title' : picklist[pickListIndex]
-                }).html(picklist[pickListIndex + 1]));
+                    $('<li />', {
+                        'class' : 'server-picker-li',
+                        'title' : picklist[pickListIndex]
+                    }).html(picklist[pickListIndex + 1]));
             }
             
             $('body')

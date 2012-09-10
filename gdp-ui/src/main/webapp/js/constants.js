@@ -123,7 +123,7 @@ var Constant = function() {
                 true,
                 Constant.incoming,
                 getUrlParameters()
-            );
+                );
         },
         getConstantsFromServer : function() {
             logger.debug("GDP:sonatants.js::getConstantsFromServer(): Getting constant values from server.");
