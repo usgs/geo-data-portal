@@ -25,7 +25,7 @@ import ucar.nc2.dt.GridDataset;
  */
 @Algorithm(
     version = "1.0.0",
-    title = "Feature Coverage OPeNDAP Intersection",
+    title = "OPeNDAP Subset",
     abstrakt="This service returns the subset of data that intersects a set of vector polygon features and time range, if specified. A NetCDF file will be returned.")
 public class FeatureCoverageOPeNDAPIntersectionAlgorithm extends AbstractAnnotatedAlgorithm {
 

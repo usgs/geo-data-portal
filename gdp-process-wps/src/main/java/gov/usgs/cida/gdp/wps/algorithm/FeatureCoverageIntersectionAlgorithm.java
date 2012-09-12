@@ -19,7 +19,7 @@ import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
  */
 @Algorithm(
     version = "1.0.0",
-    title = "Feature Coverage WCS Intersection",
+    title = "WCS Subset",
     abstrakt="This service returns the subset of data that intersects a set of vector polygon features and a Web Coverage Service (WCS) data source. A GeoTIFF file will be returned.")
 public class FeatureCoverageIntersectionAlgorithm extends AbstractAnnotatedAlgorithm {
 

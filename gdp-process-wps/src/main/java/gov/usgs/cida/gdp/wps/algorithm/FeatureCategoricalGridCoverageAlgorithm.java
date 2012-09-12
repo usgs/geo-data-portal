@@ -30,7 +30,7 @@ import ucar.nc2.dt.GridDatatype;
  */
 @Algorithm(
     version="1.0.0",
-    title="Feature Categorical Grid Coverage",
+    title="Categorical Coverage Fraction",
     abstrakt="This processing service is used with categorical gridded data to assess the percent coverage of each category for a set of features. This service does not process gridded time series. Using the feature dataset bounding-box, a subset of the gridded dataset is requested from the remote gridded data server. The location of each grid-cell center is then projected to the feature dataset coordinate reference system. For each grid-cell in the subsetted grid, the grid-cell center is tested for inclusion in each feature in the feature dataset. If the grid-cell center is in a given feature, the count for that cell's category is incremented for that feature. After all the grid-cell centers are processed the coverage fraction for each category is calculated for each feature.")
 public class FeatureCategoricalGridCoverageAlgorithm extends AbstractAnnotatedAlgorithm {
 
