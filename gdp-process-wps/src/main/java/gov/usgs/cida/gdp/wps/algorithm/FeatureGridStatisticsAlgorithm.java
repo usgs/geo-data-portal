@@ -36,7 +36,7 @@ import ucar.nc2.dt.GridDatatype;
  */
 @Algorithm(
     version="1.0.0",
-    title="Area Grid Statstics (unweighted)",
+    title="Area Grid Statistics (unweighted)",
     abstrakt="This algorithm generates unweighted statistics of a gridded dataset for a set of vector polygon features. Using the bounding-box that encloses the feature data and the time range, if provided, a subset of the gridded dataset is requested from the remote gridded data server. Polygon representations are generated for cells in the retrieved grid. The polygon grid-cell representations are then projected to the feature data coordinate reference system. The grid-cells are used to calculate per grid-cell feature coverage fractions. Area-weighted statistics are then calculated for each feature using the grid values and fractions as weights. If the gridded dataset has a time range the last step is repeated for each time step within the time range or all time steps if a time range was not supplied.")
 public class FeatureGridStatisticsAlgorithm extends AbstractAnnotatedAlgorithm {
 
