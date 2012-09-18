@@ -552,6 +552,7 @@ public class ExecuteRequest extends Request implements IObserver {
 	 * @throws ExceptionReport
 	 */
 	public Response call() throws ExceptionReport {
+        IAlgorithm algorithm = null;
 		try{
 			ExecutionContext context = new ExecutionContext();
 	
@@ -581,7 +582,7 @@ public class ExecuteRequest extends Request implements IObserver {
 			 * returnResults = algorithm.run((Map)parser.getParsedInputLayers(),
 			 * (Map)parser.getParsedInputParameters());
 			 */
-			IAlgorithm algorithm = RepositoryManager.getInstance().getAlgorithm(getAlgorithmIdentifier(), this);
+			algorithm = RepositoryManager.getInstance().getAlgorithm(getAlgorithmIdentifier(), this);
 			
 			if(algorithm instanceof ISubject){
 				ISubject subject = (ISubject) algorithm;
@@ -589,70 +590,48 @@ public class ExecuteRequest extends Request implements IObserver {
 				
 			}
 			
-			
-			
 			if(algorithm instanceof AbstractTransactionalAlgorithm){
 				returnResults = ((AbstractTransactionalAlgorithm)algorithm).run(execDom);
-			}
-			
-//			if (algorithm instanceof IDistributedAlgorithm)
-//			{
-//				try
-//				{
-//					returnResults = ((IDistributedAlgorithm) algorithm).run(execDom).getOutputData();
-//				}
-//				catch (Exception e)
-//				{
-//					LOGGER.error(e.getMessage());
-//					throw new ExceptionReport("Error while executing the embedded process for: " + getAlgorithmIdentifier(), ExceptionReport.NO_APPLICABLE_CODE, e);
-//				}
-//			}
-			if(returnResults==null)
-			{
+			} else {
 				returnResults = algorithm.run(parser.getParsedInputData());
 			} 
 
-            LOGGER.info("Handled ExecuteRequest successfully for Process: " + getAlgorithmIdentifier());
-            StatusType status = StatusType.Factory.newInstance();
-            status.setProcessSucceeded("Process successful");
-            getExecuteResponseBuilder().setStatus(status);
-            getExecuteResponseBuilder().update();
-            ExecuteResponse response = new ExecuteResponse(this);
-            if (isStoreResponse()) {
-                DatabaseFactory.getDatabase().storeResponse(response);
-            }
-            return response;
-            
-		} catch(Exception e) {
-
-			LOGGER.debug("Exception:" + e.getMessage());
-
-			StatusType status = StatusType.Factory.newInstance();
-            
-            if (e instanceof ExceptionReport) {
-                ProcessFailedType statusFailed = ProcessFailedType.Factory.newInstance();
-                statusFailed.setExceptionReport(((ExceptionReport)e).getExceptionDocument().getExceptionReport());
-				status.setProcessFailed(statusFailed);
+            List<String> errorList = algorithm.getErrors();
+            if (errorList != null && !errorList.isEmpty()) {
+                String errorMessage = errorList.get(0);
+                LOGGER.error("Error reported while handling ExecuteRequest for " + getAlgorithmIdentifier() + ": " + errorMessage);
+                updateStatusError(errorMessage);
             } else {
-                status.addNewProcessFailed();
+                updateStatusSuccess();
             }
-			getExecuteResponseBuilder().setStatus(status);
-            
-            if (isStoreResponse()) {
-                DatabaseFactory.getDatabase().storeResponse(new ExecuteResponse(this));
+		} catch(Exception e) {
+            String errorMessage = null;
+            if (algorithm != null && algorithm.getErrors() != null && !algorithm.getErrors().isEmpty()) {
+                errorMessage = algorithm.getErrors().get(0);
             }
-
+            if (errorMessage == null) {
+                errorMessage = e.getMessage();
+            }
+            if (errorMessage == null) {
+                errorMessage = "UNKNOWN ERROR";
+            }
+			LOGGER.error("Exception while executing ExecuteRequest for " + getAlgorithmIdentifier() + ": " + errorMessage);
+            updateStatusError(errorMessage);
             if (e instanceof ExceptionReport) {
-                throw (ExceptionReport) e;
+                throw (ExceptionReport)e;
             } else {
                 throw new ExceptionReport("Error while executing the embedded process for: " + getAlgorithmIdentifier(), ExceptionReport.NO_APPLICABLE_CODE, e);
             }
         } finally {
 			//  you ***MUST*** call this or else you will have a PermGen ClassLoader memory leak due to ThreadLocal use
 			ExecutionContextFactory.unregisterContext();
+            if (algorithm instanceof ISubject) {
+                ((ISubject)algorithm).removeObserver(this);
+            }
 		}
-
+        return new ExecuteResponse(this);
 	}
+    
 
 	/**
 	 * Gets the identifier of the algorithm the client requested
@@ -727,19 +706,48 @@ public class ExecuteRequest extends Request implements IObserver {
 			status.addNewProcessStarted().setStringValue((String)state);
 		}
 		
-		execRespType.setStatus(status);
+		getExecuteResponseBuilder().setStatus(status);
 		try {
 			if(this.isStoreResponse()) {
-				execRespType.update();
+				getExecuteResponseBuilder().update();
 				DatabaseFactory.getDatabase().storeResponse(new ExecuteResponse(this));
 			}
 			
 		} catch (ExceptionReport e) {
-			e.printStackTrace();
-			LOGGER.debug("Update of process status failed. Reason : " + e.getMessage());
+            LOGGER.error("Update of process status failed.", e);
 		}
 		
 	}
-
-
+    
+    public void updateStatusSuccess() {
+        StatusType status = StatusType.Factory.newInstance();
+        status.setProcessSucceeded("Process successful");
+        getExecuteResponseBuilder().setStatus(status);
+        try {
+            getExecuteResponseBuilder().update();
+            if (isStoreResponse()) {
+                DatabaseFactory.getDatabase().storeResponse(new ExecuteResponse(this));
+            }
+        } catch (ExceptionReport e) {
+            LOGGER.error("Update of process status failed.", e);
+        }
+    }
+    
+    public void updateStatusError(String errorMessage) {
+        StatusType status = StatusType.Factory.newInstance();
+        status.addNewProcessFailed().
+                addNewExceptionReport().
+                addNewException().
+                addNewExceptionText().
+                setStringValue(errorMessage);
+        getExecuteResponseBuilder().setStatus(status);
+        try {
+            getExecuteResponseBuilder().update();
+            if (isStoreResponse()) {
+                DatabaseFactory.getDatabase().storeResponse(new ExecuteResponse(this));
+            }
+        } catch (ExceptionReport e) {
+            LOGGER.error("Update of process status failed.", e);
+        }
+    }
 }
