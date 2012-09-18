@@ -21,7 +21,7 @@ public class NetCDFGenerator extends AbstractGenerator {
     
     @Override
     public InputStream generateStream(IData data, String mimeType, String schema) throws IOException {
-        if (data instanceof GeoTIFFFileBinding) {
+        if (data instanceof NetCDFFileBinding) {
             Object payload = data.getPayload();
             if (payload instanceof File) {
                 File payloadFile = (File) payload;
