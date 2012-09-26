@@ -614,6 +614,7 @@ public class ExecuteRequest extends Request implements IObserver {
             }
             if (errorMessage == null) {
                 errorMessage = "UNKNOWN ERROR";
+                e.printStackTrace();
             }
 			LOGGER.error("Exception while executing ExecuteRequest for " + getAlgorithmIdentifier() + ": " + errorMessage);
             updateStatusError(errorMessage);

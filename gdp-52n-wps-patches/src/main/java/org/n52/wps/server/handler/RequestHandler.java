@@ -265,13 +265,11 @@ public class RequestHandler {
 			WPSTask<Response> task = new WPSTask<Response>(req);
 
 			//add process status before execution to enables clients to see the status
-			//status.addNewProcessStarted();
+			status.addNewProcessStarted();
 			task.getRequest().getExecuteResponseBuilder().setStatus(status);
 			
 			ExceptionReport exceptionReport = null;
 			try {
-                // set status to accepted
-				status.setProcessAccepted("Request is queued for execution.");
 				if (((ExecuteRequest) req).isStoreResponse()) {
 					resp = new ExecuteResponse(execReq);
 					InputStream is = resp.getAsStream();
@@ -288,7 +286,7 @@ public class RequestHandler {
 						resp = task.get();
 						//Thread.sleep(this.sleepingTime);
 						status.setProcessSucceeded("Process has succeeded");
-						status.unsetProcessAccepted();
+						status.unsetProcessStarted();
 						task.getRequest().getExecuteResponseBuilder().setStatus(status);
 					}
 					catch (ExecutionException ee) {
