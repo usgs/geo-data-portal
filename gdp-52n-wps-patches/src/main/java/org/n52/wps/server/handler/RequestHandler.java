@@ -56,6 +56,7 @@ import org.apache.log4j.Logger;
 import org.n52.wps.commons.WPSConfig;
 import org.n52.wps.server.ExceptionReport;
 import org.n52.wps.server.WebProcessingService;
+import org.n52.wps.server.database.DatabaseFactory;
 import org.n52.wps.server.request.CapabilitiesRequest;
 import org.n52.wps.server.request.DescribeProcessRequest;
 import org.n52.wps.server.request.ExecuteRequest;
@@ -272,6 +273,7 @@ public class RequestHandler {
 			try {
 				if (((ExecuteRequest) req).isStoreResponse()) {
 					resp = new ExecuteResponse(execReq);
+					DatabaseFactory.getDatabase().storeResponse(resp);
 					InputStream is = resp.getAsStream();
 					IOUtils.copy(is, os);
 					is.close();
