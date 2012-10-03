@@ -327,6 +327,9 @@ public class RequestHandler {
 						throw new ExceptionReport("Problem with handling threads in RequestHandler", ExceptionReport.NO_APPLICABLE_CODE);
 					}
 					if(!((ExecuteRequest) req).isStoreResponse()) {
+                        if (resp instanceof ExecuteResponse) {
+                            ((ExecuteResponse)resp).getExecuteResponseBuilder().update();
+                        }
 						InputStream is = resp.getAsStream();
 						IOUtils.copy(is, os);
 						is.close();
