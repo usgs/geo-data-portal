@@ -195,21 +195,21 @@ function setDatasetOverlay(wmsURL, wmsLayerName) {
         map.removeLayer(datasetOverlay);
     }
 
-    datasetOverlay = new OpenLayers.Layer.WMS(
-        "Dataset Overlay",
-        wmsURL,
-        {
+    datasetOverlay = setupLayer({
+        name : "Dataset Overlay",
+        url : wmsURL,
+        params : {
             layers: wmsLayerName,
             transparent: 'true',
             isBaseLayer: false
         },
-        {
-            opacity: 0.5
+        OLparams : {
+            opacity: 0.5,
+            singleTile : true
         }
-        );
+    }, 'wms', null)
 
     logger.debug('GDP: Adding dataset overlay layer.');
-    map.addLayer(datasetOverlay);
     map.setLayerIndex(datasetOverlay, 1); // Dataset layer should always be below geometry layer
 }
 
@@ -220,40 +220,39 @@ function setGeometryOverlay(wmsLayerName) {
     if ($.inArray(highlightGeometryOverlay, map.layers) > -1) map.removeLayer(highlightGeometryOverlay);
 
     // unselected features
-    geometryOverlay = new OpenLayers.Layer.WMS(
-        "Geometry Overlay",
-        Constant.endpoint.proxy + Constant.endpoint.wms,
-        {
+    geometryOverlay = setupLayer({
+        name : "Geometry Overlay",
+        url : Constant.endpoint.proxy + Constant.endpoint.wms,
+        params : {
             layers: wmsLayerName,
             transparent: 'true',
             isBaseLayer: false,
             // ScienceBase does not have 'Polygon' as a set style. 
             styles: ScienceBase.useSB ? 'MultiPolygon' : 'polygon'
         },
-        {
-            opacity: 0.7
+        OLparams : {
+            opacity: 0.7,
+            singleTile : true
         }
-        );
+    }, 'wms', null)
 
     // selected features
-    highlightGeometryOverlay = new OpenLayers.Layer.WMS(
-        "Geometry Highlight Overlay",
-        Constant.endpoint.proxy + Constant.endpoint.wms,
-        {
+    highlightGeometryOverlay = setupLayer({
+        name : "Geometry Highlight Overlay",
+        url : Constant.endpoint.proxy + Constant.endpoint.wms,
+        params : {
             layers: wmsLayerName,
             transparent: 'true',
             isBaseLayer: false,
             styles: 'highlight'
         },
-        {
-            opacity: 0.8
+        OLparams : {
+            opacity: 0.8,
+            singleTile : true
         }
-        );
+    }, 'wms', null)
 
     highlightFeatures(null, '*'); // highlight all features
-
-    map.addLayer(geometryOverlay);
-    map.addLayer(highlightGeometryOverlay);
 
     zoomToLayer(wmsLayerName);
 }
@@ -444,6 +443,7 @@ function setupLayer(layerOb, type, defaultLayer) {
     // drawn on top of a base layer), transparent needs to be true.
     if (layerOb.params['isBaseLayer'] == 'false') {
         layerOb.params['transparent'] = 'true';
+        layerOb.OLparams['singleTile'] = 'true';
         layerOb.OLparams['opacity'] = .7;
     }
 
@@ -480,6 +480,8 @@ function setupLayer(layerOb, type, defaultLayer) {
     if (layerOb.id == defaultLayer && layerOb.params['isBaseLayer'] == 'true') {
         map.setBaseLayer(layer);
     }
+    
+    return layer;
 }
 
 function deactivateWatersControl() {
