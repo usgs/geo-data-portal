@@ -254,6 +254,7 @@ var Dataset = function() {
         logger.trace('GDP: Removing all information from the algorithm dynamic input container and beginning rebuild.');
         $(_ALGORITHM_DYNAMIC_CONTAINER_CONTENT).html('');
         
+        var isIE7 = $.browser.msie  && parseInt($.browser.version, 10) === 7;
         var algorithm = $(xml).find('ns1|Identifier').first().text();
         
         // If we find that this algorithm doesn't take TIME_START and we HAVE a TIME_START,
@@ -293,6 +294,7 @@ var Dataset = function() {
         bindDynamicInputElements();
 
         logger.debug('GDP: Algorithm requires further configuration. Displaying configuration modal window.');
+        
         $(_ALGORITHM_DYNAMIC_CONTAINER_CONTENT).dialog({
             buttons: {
                 'OK' : function() {
@@ -316,9 +318,9 @@ var Dataset = function() {
                 }
             },
             title: 'Configure ' + Algorithm.algorithms[algorithm].title,
-            width: 'auto',
-            height: 'auto',
-            resizable: false,
+            width: isIE7 ? $(window).width() * .75 : 'auto',
+            height: isIE7 ? $(window).height() * .75 : 'auto',
+            resizable: true,
             draggable: false,
             modal: true,
             zIndex: 9999
@@ -556,7 +558,6 @@ var Dataset = function() {
         $(_MISSING_INPUT_SUMMARY).dialog({
             modal: true,
             title: 'Some inputs are missing.',
-            model: true,
             buttons: {
                 Ok: function() {
                     $( this ).dialog( "close" );
