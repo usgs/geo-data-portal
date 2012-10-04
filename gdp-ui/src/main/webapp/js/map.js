@@ -204,8 +204,7 @@ function setDatasetOverlay(wmsURL, wmsLayerName) {
             isBaseLayer: false
         },
         OLparams : {
-            opacity: 0.5,
-            singleTile : true
+            opacity: 0.5
         }
     }, 'wms', null)
 
@@ -231,8 +230,7 @@ function setGeometryOverlay(wmsLayerName) {
             styles: ScienceBase.useSB ? 'MultiPolygon' : 'polygon'
         },
         OLparams : {
-            opacity: 0.7,
-            singleTile : true
+            opacity: 0.7
         }
     }, 'wms', null)
 
@@ -247,8 +245,7 @@ function setGeometryOverlay(wmsLayerName) {
             styles: 'highlight'
         },
         OLparams : {
-            opacity: 0.8,
-            singleTile : true
+            opacity: 0.8
         }
     }, 'wms', null)
 
@@ -443,7 +440,6 @@ function setupLayer(layerOb, type, defaultLayer) {
     // drawn on top of a base layer), transparent needs to be true.
     if (layerOb.params['isBaseLayer'] == 'false') {
         layerOb.params['transparent'] = 'true';
-        layerOb.OLparams['singleTile'] = 'true';
         layerOb.OLparams['opacity'] = .7;
     }
 
