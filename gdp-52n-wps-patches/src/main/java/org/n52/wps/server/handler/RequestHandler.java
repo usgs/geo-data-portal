@@ -292,6 +292,7 @@ public class RequestHandler {
 						task.getRequest().getExecuteResponseBuilder().setStatus(status);
 					}
 					catch (ExecutionException ee) {
+						LOGGER.warn("exception while handling ExecuteRequest.");
 						// the computation threw an error
 						// probably the client input is not valid
 						if (ee.getCause() instanceof ExceptionReport) {
@@ -304,6 +305,7 @@ public class RequestHandler {
 									ExceptionReport.NO_APPLICABLE_CODE);
 						}
 					} catch (InterruptedException ie) {
+						LOGGER.warn("interrupted while handling ExecuteRequest.");
 						// interrupted while waiting in the queue
 						exceptionReport = new ExceptionReport(
 								"The computation in the process was interrupted.",
@@ -323,13 +325,10 @@ public class RequestHandler {
 						resp = new ExecuteResponse(execReq);
 					}*/
 					else if(resp == null) {
-						LOGGER.debug("repsonse object is null");
+						LOGGER.warn("null response handling ExecuteRequest.");
 						throw new ExceptionReport("Problem with handling threads in RequestHandler", ExceptionReport.NO_APPLICABLE_CODE);
 					}
 					if(!((ExecuteRequest) req).isStoreResponse()) {
-                        if (resp instanceof ExecuteResponse) {
-                            ((ExecuteResponse)resp).getExecuteResponseBuilder().update();
-                        }
 						InputStream is = resp.getAsStream();
 						IOUtils.copy(is, os);
 						is.close();
@@ -337,12 +336,17 @@ public class RequestHandler {
 					}
 				}
 			} catch (RejectedExecutionException ree) {
+                LOGGER.warn("exception handling ExecuteRequest.", ree);
 				// server too busy?
 				throw new ExceptionReport(
 						"The requested process was rejected. Maybe the server is flooded with requests.",
 						ExceptionReport.SERVER_BUSY);
-			} catch (IOException e) {
-				throw new ExceptionReport("Could not read from response stream.", ExceptionReport.NO_APPLICABLE_CODE);
+			} catch (Exception e) {
+                LOGGER.error("exception handling ExecuteRequest.", e);
+                if (e instanceof ExceptionReport) {
+                    throw (ExceptionReport)e;
+                }
+                throw new ExceptionReport("Could not read from response stream.", ExceptionReport.NO_APPLICABLE_CODE);
 			}
 		} else {
 			// for GetCapabilities and DescribeProcess:
