@@ -442,7 +442,10 @@ var Dataset = function() {
                 $(_REDIR_TO_SB_BUTTON).click(function() {
                     
                     // Remove the "Do you want to leave this page OK/CANCEL"
-                    window.onbeforeunload = null;
+                    // Only if not IE7 -- http://internal.cida.usgs.gov/jira/browse/GDP-505
+                    if (!($.browser.msie  && parseInt($.browser.version) == 7) && Constant.ui.view_pop_unload_warning == 1) {
+                        window.onbeforeunload = null;
+                    }
                     
                     // Open a modal dialog warning about redirection for 5 seconds
                     $('<div />', {

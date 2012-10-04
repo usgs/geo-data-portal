@@ -21,7 +21,16 @@ jQuery.download = function(url, data, method){
         var pair = this.split('=');
         inputs+='<input type="hidden" name="'+ pair[0] +'" value="'+ pair[1] +'" />'; 
     });
-    window.onbeforeunload = undefined; // http://internal.cida.usgs.gov/jira/browse/GDP-378
+    
+    // http://internal.cida.usgs.gov/jira/browse/GDP-505
+    var toggleUnload =  !($.browser.msie  && parseInt($.browser.version) == 7) && Constant.ui.view_pop_unload_warning == 1;
+    
+    if (toggleUnload) {
+        window.onbeforeunload = undefined; // http://internal.cida.usgs.gov/jira/browse/GDP-378
+    }
     jQuery('<form action="'+ url +'" method="'+ (method||'post') +'">'+inputs+'</form>').appendTo('body').submit().remove();
-    window.onbeforeunload = function() { return "Leaving the Geo Data Portal will cause any unsaved configuration to be lost."; }
+    
+    if (toggleUnload) {
+        window.onbeforeunload = function() { return "Leaving the Geo Data Portal will cause any unsaved configuration to be lost."; }
+    }
 };
