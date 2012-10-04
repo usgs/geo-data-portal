@@ -397,12 +397,12 @@ var CSWClient = function() {
         getRecords : function(start) {
             // force outputSchema  always  to csw:Record for GetRecords requests xsl for 
             // this only handles dublin core, others are in GetRecordById xsl fixed this
+            var results = "<results>";
             var schema = document.theForm.schema.value;            
             var sortby = document.theForm.sortby.value;
             var queryable = document.theForm.queryable.value;
             var operator = document.theForm.operator.value;
             var query = trim(document.theForm.query.value);
-            var results = "<results>";
             var processor = new XSLTProcessor();
             
             if (typeof start == "undefined") {
@@ -435,8 +435,15 @@ var CSWClient = function() {
             setXpathValue(defaults_xml, "/defaults/outputschema", schema + '');
             setXpathValue(defaults_xml, "/defaults/propertyname", queryable + '');
             setXpathValue(defaults_xml, "/defaults/literal", query + '');
-            setXpathValue(defaults_xml, "/defaults/bboxlc", AOI.attributeBounds.lowerCorner + '');
-            setXpathValue(defaults_xml, "/defaults/bboxuc", AOI.attributeBounds.upperCorner + '');
+            
+            // http://internal.cida.usgs.gov/jira/browse/GDP-507
+            // If we're doing a ScienceBase search for Area of Interest, the search was throwing in some constrained bounding box.
+            // Instead, we will not set the bounding box. The CSW Client will set -180, -90, 180, 90 as the bounding box.
+            if (!(CSWClient.getCSWHost() === Constant.endpoint['sciencebase-csw']) && CSWClient.getSBConstraint !== 'wfs') {
+                setXpathValue(defaults_xml, "/defaults/bboxlc", AOI.attributeBounds.lowerCorner + '');
+                setXpathValue(defaults_xml, "/defaults/bboxuc", AOI.attributeBounds.upperCorner + '');
+            }
+            
             setXpathValue(defaults_xml, "/defaults/startposition", start + '');
             setXpathValue(defaults_xml, "/defaults/sortby", sortby + '');
 
