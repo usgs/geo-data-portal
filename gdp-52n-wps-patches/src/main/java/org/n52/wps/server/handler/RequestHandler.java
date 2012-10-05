@@ -41,8 +41,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -262,12 +267,10 @@ public class RequestHandler {
 			// get the statustype of this request
 			StatusType status = StatusType.Factory.newInstance();
 			execReq.getExecuteResponseBuilder().setStatus(status);
-			// create a task for this request
-			WPSTask<Response> task = new WPSTask<Response>(req);
 
 			//add process status before execution to enables clients to see the status
 			status.addNewProcessStarted();
-			task.getRequest().getExecuteResponseBuilder().setStatus(status);
+			execReq.getExecuteResponseBuilder().setStatus(status);
 			
 			ExceptionReport exceptionReport = null;
 			try {
@@ -277,19 +280,17 @@ public class RequestHandler {
 					InputStream is = resp.getAsStream();
 					IOUtils.copy(is, os);
 					is.close();
-                    pool.execute(task);
+                    pool.submit(execReq);
 					return;
-				} else {
-                    pool.execute(task);
-                }
+				}
 				try {
 					// retrieve status with timeout enabled
 					try {
-						resp = task.get();
+						resp = pool.submit(execReq).get();
 						//Thread.sleep(this.sleepingTime);
 						status.setProcessSucceeded("Process has succeeded");
 						status.unsetProcessStarted();
-						task.getRequest().getExecuteResponseBuilder().setStatus(status);
+						execReq.getExecuteResponseBuilder().setStatus(status);
 					}
 					catch (ExecutionException ee) {
 						LOGGER.warn("exception while handling ExecuteRequest.");
