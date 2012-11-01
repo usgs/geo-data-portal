@@ -3,11 +3,14 @@ package gov.usgs.cida.n52.wps.database;
 import com.google.common.base.Joiner;
 import gov.usgs.cida.gdp.constants.AppConstant;
 import gov.usgs.cida.n52.wps.util.MIMEUtil;
+import gov.usgs.cida.n52.wps.util.XMLUtil;
 import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -23,16 +26,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+import javax.xml.transform.dom.DOMSource;
+import org.apache.commons.collections.map.CaseInsensitiveMap;
 import org.apache.commons.io.IOUtils;
 import org.n52.wps.commons.WPSConfig;
 import org.n52.wps.server.ExceptionReport;
 import org.n52.wps.server.RetrieveResultServlet;
 import org.n52.wps.server.database.IDatabase;
-import org.n52.wps.server.response.ExecuteResponse;
-import org.n52.wps.server.response.ExecuteResponseBuilder;
+import org.n52.wps.server.request.Request;
 import org.n52.wps.server.response.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 
 /*
  * @author tkunicki
@@ -47,6 +52,7 @@ public final class ResultsDatabase implements IDatabase {
     private final static String SUFFIX_XML = "xml";
     private final static String SUFFIX_TEMP = "tmp";
     private final static String SUFFIX_GZIP = "gz";
+    private final static String SUFFIX_PROPERTIES = "properties";
 
     // If the delimiter changes, examine Patterns below.
     private final static Joiner JOINER = Joiner.on(".");
@@ -73,7 +79,9 @@ public final class ResultsDatabase implements IDatabase {
 
     protected final Object storeResponseSerialNumberLock;
     protected final Set<Thread> storeResponseReentrantCheckSet;
-
+    
+    protected final boolean indentXML = true;
+    
     protected final Timer wipeTimer;
 
     protected ResultsDatabase() {
@@ -142,7 +150,7 @@ public final class ResultsDatabase implements IDatabase {
                     new GZIPInputStream(new FileInputStream(responseFile)) :
                     new FileInputStream(responseFile);
             } catch (FileNotFoundException ex) {
-                // should never get here do to checks above...
+                // should never get here due to checks above...
                 LOGGER.warn("Response not found for id {}", id);
             } catch (IOException ex) {
                 LOGGER.warn("Error processing response for id {}", id);
@@ -253,13 +261,18 @@ public final class ResultsDatabase implements IDatabase {
         }
 
         try {
-
             File responseTempFile;
             File responseFile;
             synchronized (storeResponseSerialNumberLock) {
                 File responseDirectory = generateResponseDirectory(reponseId);
                 boolean created = responseDirectory.mkdir();
-                int responseIndex = created ? 0 : (findLatestResponseIndex(responseDirectory, true) + 1);
+                int responseIndex;
+                if (created) {
+                    responseIndex = 0;
+                    storeRequest(reponseId, responseDirectory, response.getRequest());
+                } else {
+                    responseIndex = findLatestResponseIndex(responseDirectory, true) + 1;
+                }
                 responseFile = generateResponseFile(responseDirectory, responseIndex);
                 responseTempFile = generateResponseTempFile(responseDirectory, responseIndex);
                 try {
@@ -281,6 +294,13 @@ public final class ResultsDatabase implements IDatabase {
                 // to a temp file and rename these when completed.  Large responses
                 // can cause the call below to take a significant amount of time.
 // /*2.0*/        response.save(responseOutputStream);
+                XMLUtil.copyXML(responseInputStream, responseOutputStream, indentXML);
+            } catch (IOException e) {
+                LOGGER.error("Error storing response, attemtping alternate method", e);
+                IOUtils.closeQuietly(responseInputStream);
+                IOUtils.closeQuietly(responseOutputStream);
+                responseInputStream = response.getAsStream();
+                responseOutputStream = new BufferedOutputStream(new FileOutputStream(responseTempFile, false));
                 IOUtils.copyLarge(responseInputStream, responseOutputStream);
             } finally {
                 IOUtils.closeQuietly(responseInputStream);
@@ -415,6 +435,49 @@ public final class ResultsDatabase implements IDatabase {
         return new File(baseDirectory, JOINER.join(id, SUFFIX_CONTENT_LENGTH));
     }
 
+    private void storeRequest(String requestId, File requestDirectory, Request request) {
+        Document requestDocument = request.getDocument();
+        if (requestDocument != null) {
+            storeRequest(requestId, new File(requestDirectory, JOINER.join("request", SUFFIX_XML)), requestDocument);
+            return;
+        }
+        CaseInsensitiveMap requestMap = request.getMap();
+        if (requestMap != null) {
+            storeRequest(requestId, new File(requestDirectory,  JOINER.join("request", SUFFIX_PROPERTIES)), requestMap);
+            return;
+        }
+        LOGGER.error("Unable to store request for {}, unknown request representation", requestId);
+    }
+    
+    private void storeRequest(String requestId, File requestFile, Document requestDocument) {
+        BufferedOutputStream outputStream = null;
+        try {
+            outputStream = new BufferedOutputStream(new FileOutputStream(requestFile, false));
+            XMLUtil.copyXML(new DOMSource(requestDocument), outputStream, indentXML);
+        } catch (Exception e) {
+            LOGGER.error("Exception storing request for id {}: {}", requestId, e);
+        } finally {
+            IOUtils.closeQuietly(outputStream);
+        }
+    }
+    
+    private void storeRequest(String requestId, File requestFile, CaseInsensitiveMap requestMap) {
+        // use java.util.Properties?
+        BufferedWriter writer = null;
+        try {
+            writer = new BufferedWriter(new FileWriter(requestFile));
+            for (Object key : requestMap.keySet()) {
+                Object value = requestMap.get(key);
+                writer.append(key.toString()).append('=').append(value.toString());
+                writer.newLine();
+            }
+        } catch (Exception e) {
+            LOGGER.error("Exception storing request for id {}: {}", requestId, e);
+        } finally {
+            IOUtils.closeQuietly(writer);
+        }
+    }
+    
     private class WipeTimerTask extends TimerTask {
 
         public final long thresholdMillis;

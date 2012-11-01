@@ -1,27 +1,17 @@
 package gov.usgs.cida.n52.wps.servlet;
 
-import com.ctc.wstx.stax.WstxInputFactory;
-import com.ctc.wstx.stax.WstxOutputFactory;
 import gov.usgs.cida.n52.wps.database.ResultsDatabase;
 import gov.usgs.cida.n52.wps.util.MIMEUtil;
+import gov.usgs.cida.n52.wps.util.XMLUtil;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import javanet.staxutils.IndentingXMLStreamWriter;
-import javanet.staxutils.XMLStreamUtils;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-import javax.xml.stream.util.StreamReaderDelegate;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.n52.wps.server.database.DatabaseFactory;
@@ -37,16 +27,12 @@ public class RetrieveResultServlet extends HttpServlet {
     
     // This is required for URL generation for response documents.
     public final static String SERVLET_PATH = "RetrieveResultServlet";
-
-    private XMLOutputFactory xmlOutputFactory;
-    private XMLInputFactory xmlInputFactory;
+    
+    private final boolean indentXML = false;
     
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        
-        xmlInputFactory = new WstxInputFactory();
-        xmlOutputFactory = new WstxOutputFactory();
     }
 
     @Override
@@ -103,7 +89,7 @@ public class RetrieveResultServlet extends HttpServlet {
                         } catch (IOException e) {
                             throw new IOException("Error obtaining output stream for response", e);
                         }
-                        copyResponseAsXML(inputStream, outputStream, id, useAttachment);
+                        copyResponseAsXML(inputStream, outputStream, useAttachment || indentXML, id);
                     } else {
                         
                         if (contentLength > -1) {
@@ -148,7 +134,7 @@ public class RetrieveResultServlet extends HttpServlet {
         long contentWritten = 0;
         try {
             byte[] buffer = new byte[8192];
-            int bufferRead = 0;
+            int bufferRead;
             while ((bufferRead = inputStream.read(buffer)) != -1) {
                 outputStream.write(buffer, 0, bufferRead);
                 contentWritten += bufferRead;
@@ -165,27 +151,13 @@ public class RetrieveResultServlet extends HttpServlet {
     protected void copyResponseAsXML(
             InputStream inputStream,
             OutputStream outputStream,
-            String id,
-            boolean indent) throws IOException
+            boolean indent,
+            String id) throws IOException
     {
-        XMLStreamReader xmlStreamReader = null;
-        XMLStreamWriter xmlStreamWriter = null;
         try {
-            xmlStreamReader = new WhiteSpaceRemovingDelegate(xmlInputFactory.createXMLStreamReader(inputStream, "UTF-8"));
-            xmlStreamWriter = xmlOutputFactory.createXMLStreamWriter(outputStream, "UTF-8");
-            if (indent) {
-                xmlStreamWriter = new IndentingXMLStreamWriter(xmlStreamWriter);
-            }
-            XMLStreamUtils.copy(xmlStreamReader, xmlStreamWriter);
-        } catch (XMLStreamException e) {
+            XMLUtil.copyXML(inputStream, outputStream, indent);
+        } catch (IOException e) {
             throw new IOException("Error writing XML response for id " + id, e);
-        } finally {
-            if (xmlStreamReader != null ) {
-                try { xmlStreamReader.close(); } catch (XMLStreamException e) { /* ignore */ }
-            }
-            if (xmlStreamWriter != null ) {
-                try { xmlStreamWriter.close(); } catch (XMLStreamException e) { /* ignore */ }
-            }
         }
     }
     
@@ -200,20 +172,5 @@ public class RetrieveResultServlet extends HttpServlet {
     
     public static Throwable getRootCause(Throwable t) {
         return t.getCause() == null ? t : getRootCause(t.getCause());
-    }
-    
-    public class WhiteSpaceRemovingDelegate extends StreamReaderDelegate {
-        WhiteSpaceRemovingDelegate(XMLStreamReader reader) {
-            super(reader);
-        }
-        @Override public int next() throws XMLStreamException {
-            int eventType;
-            do {
-                eventType = super.next();
-            } while ( (eventType == XMLStreamConstants.CHARACTERS && isWhiteSpace())
-                || (eventType == XMLStreamConstants.CDATA && isWhiteSpace())
-                || eventType == XMLStreamConstants.SPACE);
-            return eventType;
-        }
     }
 }
