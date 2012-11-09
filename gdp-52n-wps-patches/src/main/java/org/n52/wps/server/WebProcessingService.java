@@ -139,6 +139,7 @@ public class WebProcessingService extends HttpServlet {
 		}
 		LOGGER.info("Initialization of wps properties successful!");
 			
+		BASE_DIR = this.getServletContext().getRealPath("");
 		
 		Parser[] parsers = WPSConfig.getInstance().getActiveRegisteredParser();
 		ParserFactory.initialize(parsers);
@@ -163,7 +164,7 @@ public class WebProcessingService extends HttpServlet {
 		}
 		LOGGER.info("webappPath is set to: " + customWebappPath);
 		
-		BASE_DIR = this.getServletContext().getRealPath("");
+
 		try {
 			CapabilitiesConfiguration.getInstance(
 					BASE_DIR + System.getProperty("file.separator") +
@@ -244,9 +245,9 @@ public class WebProcessingService extends HttpServlet {
 		OutputStream out = res.getOutputStream();
 		try {
 			InputStream is = req.getInputStream();
-//			if (req.getParameterMap().containsKey("request")){
-//				is = new ByteArrayInputStream(req.getParameter("request").getBytes("UTF-8"));
-//			}
+			if (req.getParameterMap().containsKey("request")){
+				is = new ByteArrayInputStream(req.getParameter("request").getBytes("UTF-8"));
+			}
 
 //			 WORKAROUND	cut the parameter name "request" of the stream		
 			BufferedReader br=new BufferedReader(new InputStreamReader(is,"UTF-8"));
@@ -272,6 +273,8 @@ public class WebProcessingService extends HttpServlet {
 
     	    
     	    is = new ByteArrayInputStream(s.getBytes("UTF-8"));
+    	     
+			
 			if(is != null) {
 				
 				RequestHandler handler = new RequestHandler(is, out);
