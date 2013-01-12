@@ -1,4 +1,4 @@
- package gov.usgs.cida.gdp.wps.algorithm.filemanagement;
+package gov.usgs.cida.gdp.wps.algorithm.filemanagement;
 
 import com.google.common.base.Preconditions;
 import gov.usgs.cida.gdp.constants.AppConstant;
@@ -31,71 +31,68 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This algorithm allows a client to upload a file to the server via WPS.
- * More info: http://privusgs2.er.usgs.gov/display/GDP/Adding+a+Shapefile+as+a+GeoServer+WFS+EndPoint
+ * This algorithm allows a client to upload a file to the server via WPS. More
+ * info:
+ * http://privusgs2.er.usgs.gov/display/GDP/Adding+a+Shapefile+as+a+GeoServer+WFS+EndPoint
  *
  * @author isuftin
  */
-@Algorithm(version="1.0.0")
+@Algorithm(version = "1.0.0")
 public class ReceiveFiles extends AbstractAnnotatedAlgorithm {
-     
+
     private Logger LOGGER = LoggerFactory.getLogger(ReceiveFiles.class);
-    
     private static final String SUFFIX_SHP = ".shp";
     private static final String SUFFIX_SHX = ".shx";
     private static final String SUFFIX_PRJ = ".prj";
     private static final String SUFFIX_DBF = ".dbf";
     private static final String UPLOAD_WORKSPACE = "upload";
-    
     private static final String PARAM_FILE = "file";
     private static final String PARAM_FILENAME = "filename";
     private static final String PARAM_WFS_URL = "wfs-url";
     private static final String PARAM_RESULT = "result";
     private static final String PARAM_FEATURETYPE = "featuretype";
-    
     private ZippedGenericFileData file;
     private String fileName;
     private String wfsURL;
     private String featureType;
     private String result;
 
-    @ComplexDataInput(identifier=PARAM_FILE, binding=ZippedGenericFileDataBinding.class)
+    @ComplexDataInput(identifier = PARAM_FILE, binding = ZippedGenericFileDataBinding.class)
     public void setFile(ZippedGenericFileData file) {
         this.file = file;
     }
-    
-    @LiteralDataInput(identifier=PARAM_FILENAME)
+
+    @LiteralDataInput(identifier = PARAM_FILENAME)
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
-    
-    @LiteralDataInput(identifier=PARAM_WFS_URL)
+
+    @LiteralDataInput(identifier = PARAM_WFS_URL)
     public void setWfsURL(String wfsURL) {
         this.wfsURL = wfsURL;
     }
-    
-    @LiteralDataOutput(identifier=PARAM_WFS_URL)
+
+    @LiteralDataOutput(identifier = PARAM_WFS_URL)
     public String getWfsURL() {
         return wfsURL;
     }
-    
-    @LiteralDataOutput(identifier=PARAM_FEATURETYPE)
+
+    @LiteralDataOutput(identifier = PARAM_FEATURETYPE)
     public String getFeatureType() {
         return featureType;
     }
-    
-    @LiteralDataOutput(identifier=PARAM_RESULT)
+
+    @LiteralDataOutput(identifier = PARAM_RESULT)
     public String getResult() {
         return result;
     }
-    
-    
+
     @Process
     public void process() {
         Preconditions.checkArgument(file != null, "Error while processing file: Could not get file from server");
         Preconditions.checkArgument(StringUtils.isNotBlank(wfsURL), "Invalid " + PARAM_WFS_URL);
         Preconditions.checkArgument(StringUtils.isNotBlank(fileName), "Invalid " + PARAM_FILENAME);
-        
+
         // "gdp.shapefile.temp.path" should be set in the tomcat startup script or setenv.sh as JAVA_OPTS="-Dgdp.shapefile.temp.path=/wherever/you/want/this/file/placed"
         String fileDump = AppConstant.SHAPEFILE_LOCATION.getValue() + File.separator + UUID.randomUUID();
 
@@ -115,27 +112,20 @@ public class ReceiveFiles extends AbstractAnnotatedAlgorithm {
 
         File shapefileFile = new File(shapefilePath);
         File shapefileDir = shapefileFile.getParentFile();
-        
+
+        if (!FileHelper.validateShapeFile(shapefileFile)) {
+            String errorMessage = "Error while processing file: Invalid shapefile encountered. Shapefile collections can only contain one shapefile";
+            LOGGER.error(errorMessage);
+            addError(errorMessage);
+            throw new RuntimeException(errorMessage);
+        }
+
         String shapefileName = shapefileFile.getName();
         String shapefileNamePrefix = shapefileName.substring(0, shapefileName.lastIndexOf("."));
 
         // Find all files with filename with any extension
         String pattern = shapefileNamePrefix + "\\..*";
         FileFilter filter = new RegexFileFilter(pattern);
-
-        String[] filenames = shapefileDir.list((FilenameFilter) filter);
-        List<String> filenamesList = Arrays.asList(filenames);
-
-        // Make sure required files are present
-        String[] requiredFiles = { SUFFIX_SHP, SUFFIX_SHX, SUFFIX_PRJ, SUFFIX_DBF };
-        for (String requiredFile : requiredFiles) {
-            if (!filenamesList.contains(shapefileNamePrefix + requiredFile)) {
-                String errorMessage = "Zip file missing " + requiredFile + " file.";
-                LOGGER.error(errorMessage);
-                addError(errorMessage);
-                throw new RuntimeException(errorMessage);
-            }
-        }
 
         // Rename the files to the desired filenames
         File[] files = shapefileDir.listFiles(filter);
@@ -177,14 +167,14 @@ public class ReceiveFiles extends AbstractAnnotatedAlgorithm {
             String errorMessage = "Error while getting EPSG information from PRJ file. Function halted.";
             LOGGER.error(errorMessage, ex);
             addError(errorMessage);
-            throw new RuntimeException(errorMessage ,ex);
+            throw new RuntimeException(errorMessage, ex);
         }
 
         String workspace = UPLOAD_WORKSPACE;
         try {
             GeoserverManager mws = new GeoserverManager(wfsURL,
                     AppConstant.WFS_USER.getValue(), AppConstant.WFS_PASS.getValue());
-            
+
             mws.createDataStore(renamedShpPath, fileName, workspace, nativeCRS, declaredCRS);
         } catch (IOException ex) {
             String errorMessage = "Error while communicating with WFS server. Please try again or contact system administrator.";
@@ -192,7 +182,7 @@ public class ReceiveFiles extends AbstractAnnotatedAlgorithm {
             addError(errorMessage);
             throw new RuntimeException(errorMessage, ex);
         }
-        
+
         // GeoServer has accepted the shapefile. Send the success response to the client.
         if (StringUtils.isBlank(warning)) {
             result = "OK: " + fileName + " successfully uploaded to workspace '" + workspace + "'!";
