@@ -154,6 +154,9 @@ public class GridCellTraverser {
     }
     
     protected void doTraverseXY(GridCellVisitor visitor, Array array) {
+        CellValueAccessor accessor = gridDataType.hasMissingData() && !gridDataType.getVariable().getUseNaNs() ?
+                new ReplaceMissingValueWithNaNAccessor(array) :
+                new NoOpAccessor(array);
         Index arrayIndex = array.getIndex();
         visitor.yxStart();
         for (int yCellIndex = 0; yCellIndex < yCellCount; ++yCellIndex) {
@@ -161,10 +164,37 @@ public class GridCellTraverser {
                 visitor.processGridCell(
                         xCellIndex,
                         yCellIndex,
-                        array.getDouble(arrayIndex.set(yCellIndex, xCellIndex)));
+                        accessor.getDouble(arrayIndex.set(yCellIndex, xCellIndex)));
             }
         }
         visitor.yxEnd();
     }
-
+    
+    abstract class CellValueAccessor {
+        protected final Array array;
+        private CellValueAccessor(Array array) {
+            this.array = array;
+        }
+        abstract double getDouble(Index index);
+    }
+    
+    class NoOpAccessor extends CellValueAccessor {
+        NoOpAccessor(Array array) {
+            super(array);
+        }
+        @Override double getDouble(Index index) {
+            return array.getDouble(index);
+        }
+    }
+    
+    class ReplaceMissingValueWithNaNAccessor extends CellValueAccessor {
+        ReplaceMissingValueWithNaNAccessor(Array array) {
+            super(array);
+        }
+        @Override double getDouble(Index index) {
+            double value = array.getDouble(index);
+            return gridDataType.isMissingData(value) ?
+                    Double.NaN : value;
+        }
+    }
 }
