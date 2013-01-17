@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+  
+  <dimension name="lat" length="3" />
+  <dimension name="lon" length="4" />
+  
+  <attribute name="title" value="sample data with missing values" />
+  
+  <attribute name="Conventions" value="CF-1.4" />
+  
+  <variable name="lat" shape="lat" type="float">
+    <attribute name="units" value="degrees_north" />
+    <values start="45" increment="1" />
+  </variable>
+  <variable name="lon" shape="lon" type="float">
+    <attribute name="units" value="degrees_east" />
+    <values start="-90" increment="1" />
+  </variable>
+  
+  <variable name="missingValueWithInteger" shape="lat lon" type="int">
+    <attribute name="long_name" value="test with missing values" />
+    <attribute name="units" value="percent" />
+    <attribute name="coordinates" value="lat lon" />
+	<attribute name="missing_value" value="1" type="int" />
+    <values>1 1 1   1 1 0   1 0 0   0 0 1</values>
+  </variable>
+  
+  <variable name="missingValueWithFloat" shape="lat lon" type="float">
+    <attribute name="long_name" value="test with missing values" />
+    <attribute name="units" value="percent" />
+    <attribute name="coordinates" value="lat lon" />
+	<attribute name="missing_value" value="1" type="float" />
+    <values>1 1 1   1 1 0   1 0 0   0 0 1</values>
+  </variable>
+  
+  <variable name="missingValueSetButNoMissingValues" shape="lat lon" type="float">
+    <attribute name="long_name" value="test without missing values" />
+    <attribute name="units" value="percent" />
+    <attribute name="coordinates" value="lat lon" />
+	<attribute name="missing_value" value="-1" type="float" />
+    <values>1 1 1   1 1 0   1 0 0   0 0 1</values>
+  </variable>
+  
+  <variable name="missingValueNotSet" shape="lat lon" type="float">
+    <attribute name="long_name" value="test without missing values" />
+    <attribute name="units" value="percent" />
+    <attribute name="coordinates" value="lat lon" />
+    <values>1 1 1   1 1 0   1 0 0   0 0 1</values>
+  </variable>
+  
+</netcdf>
