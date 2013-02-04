@@ -4,13 +4,13 @@
     <parent>
         <artifactId>gdp</artifactId>
         <groupId>gov.usgs.cida.gdp</groupId>
-        <version>20</version>
+        <version>21-SNAPSHOT</version>
     </parent>
 
     <groupId>gov.usgs.cida.gdp</groupId>
     <artifactId>gdp-prms-ui</artifactId>
     <packaging>war</packaging>
-    <version>20</version>
+    <version>21-SNAPSHOT</version>
 
     <name>GDP PRMS UI</name>
     <url>http://maven.apache.org</url>
