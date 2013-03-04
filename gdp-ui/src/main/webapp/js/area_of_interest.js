@@ -140,9 +140,11 @@ var AOI = function() {
             button: $('#fileInputButton')[0],
             allowedExtensions: ['zip'],
             params : {
-                'utilitywps' : Constant.endpoint.utilitywps,
-                'wfs-url' : Constant.endpoint.geoserver,
-                'maxfilesize' : Constant.ui.max_upload_size
+                'maxfilesize' : Constant.ui.max_upload_size,
+                'response.encoding': 'xml',
+                'filename.param': 'qqfile',
+                'use.crs.failover': 'true',
+                'projection.policy': 'reproject'
             },
             debug: true,
             action: 'uploadhandler',

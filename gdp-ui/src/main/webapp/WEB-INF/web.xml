@@ -93,15 +93,8 @@
         <servlet-name>PropertiesServlet</servlet-name>
         <url-pattern>/PropertiesServlet</url-pattern>
     </servlet-mapping>
-    <servlet>
-        <description>
-            Handles Base64 encoding and sending WPS call to upload x-zipped-shp
-        </description>
-        <servlet-name>UploadHandlerServlet</servlet-name>
-        <servlet-class>gov.usgs.service.UploadHandlerServlet</servlet-class>
-    </servlet>
     <servlet-mapping>
-        <servlet-name>UploadHandlerServlet</servlet-name>
+        <servlet-name>shapefile-upload-servlet</servlet-name>
         <url-pattern>/uploadhandler</url-pattern>
     </servlet-mapping>
     <servlet>
@@ -115,4 +108,106 @@
         <servlet-name>BlacklistServlet</servlet-name>
         <url-pattern>/blacklist</url-pattern>
     </servlet-mapping>
+    
+    <!-- Upload Servlet -->
+     <servlet>
+        <servlet-name>shapefile-upload-servlet</servlet-name>
+        <servlet-class>gov.usgs.cida.geoutils.geoutils.geoserver.servlet.ShapefileUploadServlet</servlet-class>
+        <!-- 
+        Used for reading JNDI variables. All JNDI variables used for this application 
+        will be prefixed with this parameter. Example: 
+        <Environment name="coastal-hazards.max.upload.file.size" type="java.lang.String" value="20000" />
+        -->
+        <init-param>
+            <param-name>application.name</param-name>
+            <param-value>gdp</param-value>
+        </init-param>
+        <!--
+        Used to limit the size of incoming files measured in bytes. [Optional]
+        0 = Integer.MAX_VALUE
+        -->
+        <init-param>
+            <param-name>max.upload.file.size</param-name>
+            <param-value>0</param-value>
+        </init-param>
+        <!--
+        The URL of the geoserver that will be used for uploading.
+        -->
+        <init-param>
+            <param-name>geoserver.endpoint</param-name>
+            <param-value>http://localhost:8081/geoserver/</param-value>
+        </init-param>
+        <!--
+        The username used to authenticate against when writing against GeoServer.
+        -->
+        <init-param>
+            <param-name>geoserver.username</param-name>
+            <param-value>admin</param-value>
+        </init-param>
+        <!--
+        Workspace name that files will be uploaded to by default. [Optional. If this 
+        parameter is not provided here, in JNDI and during the request, upload will fail]
+        -->
+        <init-param>
+            <param-name>default.upload.workspace</param-name>
+            <param-value>upload</param-value>
+        </init-param>
+        <!--
+        Store name that files will be uploaded to by default. [Optional. If this 
+        parameter is not provided here, in JNDI and during the request, upload will fail]
+        -->
+        <init-param>
+            <param-name>default.upload.storename</param-name>
+            <param-value></param-value>
+        </init-param>
+        <!--
+        Default SRS is not defined. If a SRS name is not passed to during the 
+        request, the request will fail [Optional. If this parameter is not provided 
+        here, in JNDI and during the request, upload will fail]
+        -->
+        <init-param>
+            <param-name>default.srs</param-name>
+            <param-value>EPSG:4326</param-value>
+        </init-param>
+        <!--
+        The key to search for in the upload form post to find the file 
+        [Optional. If this parameter is not provided "qqfile" will be used]
+        -->
+        <init-param>
+            <param-name>filename.param</param-name>
+            <param-value></param-value>
+        </init-param>
+        <!--
+        Should the existing layer, if one exists, be overwritten?
+        [Optional. If this parameter is not provided "false" will be used]
+        **WARNING** Setting this to true may be dangerous since the previous layer
+        will be removed prior to a new layer being imported. If the import fails,
+        there is no ay to recover the previous layer.
+        -->
+        <init-param>
+            <param-name>overwrite.existing.layer</param-name>
+            <param-value></param-value>
+        </init-param>
+        <!--
+        Whether or not to use base CRS if native could not be found. Default true
+        [Optional. If this parameter is not provided "true" will be used]
+        -->
+        <init-param>
+            <param-name>use.crs.failover</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <!--
+        Reprojection policy for a published layer. One of:
+        - reproject - Reproject from native to declared CRS
+        - force - Use the declared CRS (ignore native)
+        - none - No reprojection (use native CRS)
+        [Optional. If this parameter is not provided "reproject" will be used]
+        -->
+        <init-param>
+            <param-name>projection.policy</param-name>
+            <param-value>reproject</param-value>
+        </init-param>
+    </servlet>
+    
+    
 </web-app>

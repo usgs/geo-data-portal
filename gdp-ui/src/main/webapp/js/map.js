@@ -330,6 +330,7 @@ function onMapZoom() {
 
 /**
  * Create the map layer. 
+ * @param options
  */
 function initMap(options) {
     logger.info('GDP:map.js::initMap(): Initializing map.');
@@ -444,9 +445,9 @@ function setupLayer(layerOb, type, defaultLayer) {
     }
 
     var layer;
-    if (type == 'tile') {
+    if (type === 'tile') {
         // Make sure url has trailing /
-        if (layerOb.url.search(/\/$/) == -1) layerOb.url = layerOb.url + '/';
+        if (layerOb.url.search(/\/$/) === -1) layerOb.url = layerOb.url + '/';
 
         // Add tile cache specific url parameters
         layerOb.url = layerOb.url + _XYZ_URL_POSTFIX;
@@ -467,13 +468,13 @@ function setupLayer(layerOb, type, defaultLayer) {
     }
 
     // Default to the overlay not being shown.
-    if (layerOb.params['isBaseLayer'] == 'false') {
+    if (layerOb.params['isBaseLayer'] === 'false') {
         layer.setVisibility(false);
     }
 
     map.addLayer(layer);
 
-    if (layerOb.id == defaultLayer && layerOb.params['isBaseLayer'] == 'true') {
+    if (layerOb.id == defaultLayer && layerOb.params['isBaseLayer'] === 'true') {
         map.setBaseLayer(layer);
     }
     

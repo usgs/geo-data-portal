@@ -3,7 +3,7 @@ var AJAX_TIMEOUT = 5 * 60 * 1000;
 var CURRENT_STEP = 0;
 var MINIMUM_MAP_HEIGHT = 400; //px
 
-var BOTTOM_DIV = '#bottom-div'
+var BOTTOM_DIV = '#bottom-div';
 var FOOTER = '#footer';
 var HEADER = '#header';
 var MAP_DIV = '#map-div';
@@ -44,7 +44,7 @@ $(document).ready(function() {
     } catch(err) {
         handleException(err);
     }
-})
+});
 
 function init() {
     logger.info("GDP:root.js::init(): Beginning application initialization.");
@@ -52,14 +52,14 @@ function init() {
     $(window).load(function() {
         // initMap() has to be done here instead of in $(document).ready due to IE8 bug
         initMap();
-    })
+    });
     
     // Add htmlDecode function to the JS String object
     String.prototype.htmlDecode = function() {
         var e = document.createElement('div');
         e.innerHTML = this;
         return e.childNodes[0].nodeValue;
-    }
+    };
     
     return initializeOverlay() 
         && initializeAjax() 
@@ -160,7 +160,7 @@ function initializeView() {
     // so that each element's display attribute is correctly restored to what
     // it was before being hidden (handled by jQuery's hide and show methods).
     $('.hidden').each(function(index, element) {
-        $(element).hide()
+        $(element).hide();
         });
 
     // This sets all 'button' elements to JQuery UI Buttons
@@ -182,17 +182,17 @@ function initializeView() {
     initializePrevNextButtons();
         
     $('#show-info-link').click(function() {
-        createPopupView(Constant.ui.view_popup_info_txt, true)
-        })
+        createPopupView(Constant.ui.view_popup_info_txt, true);
+        });
     
     // If we wish to modify when this gets called based on the event (reload? link click?),
     // check http://geekswithblogs.net/renso/archive/2009/09/21/how-to-stop-browser-closing.aspx
     // Ref: http://internal.cida.usgs.gov/jira/browse/GDP-358
     // Turn this off for IE7 as it has way too many spots where it thinks we're leaving and we're not
-    if (!($.browser.msie  && parseInt($.browser.version) == 7) && Constant.ui.view_pop_unload_warning == 1) {
+    if (!($.browser.msie  && parseInt($.browser.version) === 7) && Constant.ui.view_pop_unload_warning === 1) {
         window.onbeforeunload = function() {
             return "Leaving the Geo Data Portal will cause any unsaved configuration to be lost.";
-        }
+        };
     }
     
     return true;
