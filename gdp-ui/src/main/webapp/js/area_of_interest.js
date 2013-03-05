@@ -151,44 +151,58 @@ var AOI = function() {
             sizeLimit: Constant.ui.max_upload_size, // Doesn't work in IE
             onComplete: function(id, fileName, data) {
                 hideThrobber();
-
+                var success = $(data).find('success').first().text();
                 AOI.releaseToggleButton($('#uploadButton')[0]);
-
-                // Get root of XML doc
-                var response = $(data).children().first();
                 
-                if (response[0].nodeName == "wpsResponse") {
-                    // Convert raw text into XML DOM object
-                    var wpsResponse = $.xmlDOM($(response).text());
-                    var resultText;
-                    var featureType;
-                    
-                    if (!WPS.checkWpsResponse(wpsResponse, 'Error uploading file.')) return;
-                    
+                if (success === 'true') {
                     Constant.endpoint.wfs = Constant.endpoint.geoserver + '/wfs'
                     Constant.endpoint.wms = Constant.endpoint.geoserver + '/wms'
                     ScienceBase.useSB = false;
                     
-                    if ($.browser.msie) {
-                        featureType = $(wpsResponse).find('ns1|Identifier:contains("featuretype")').siblings().find('ns|Data').find('ns|LiteralData').text();
-                        resultText = $(wpsResponse).find('ns1|Identifier:contains("result")').siblings().find('ns|Data').find('ns|LiteralData').text();
+                    var warning = $(data).find('warning').first().text();
+                    var workspace = $(data).find('workspace').first().text();
+                    var layer = $(data).find('name').first().text();
+                    if (warning) {
+                        showWarningNotification(warning);
                     }
-                    else {
-                        featureType = $(wpsResponse).find('ns1|Identifier:contains("featuretype") ~ ns|Data > ns|LiteralData').text();
-                        resultText = $(wpsResponse).find('ns1|Identifier:contains("result") ~ ns|Data > ns|LiteralData').text();
-                    }
-                    
-                    AOI.updateFeatureTypesListAndSelect(featureType);
-
-                    if (resultText.toLowerCase().contains('warning')) {
-                        showWarningNotification(resultText);
-                    }
-                    showNotification('File successfully uploaded');
-                } else if (response[0].nodeName == "error") {
-                    showErrorNotification("Error uploading file: " + $(response).text());
+                    AOI.updateFeatureTypesListAndSelect(workspace + ':' + layer);
                 } else {
-                    showErrorNotification("Error uploading file: unknown response from server");
+                   showErrorNotification($(data).find('error').first().text() + ':' + $(data).find('exception').first().text());
                 }
+//
+//                // Get root of XML doc
+//                var response = $(data).children().first();
+//                
+//                if (response[0].nodeName == "wpsResponse") {
+//                    // Convert raw text into XML DOM object
+//                    var wpsResponse = $.xmlDOM($(response).text());
+//                    var resultText;
+//                    var featureType;
+//                    
+//                    if (!WPS.checkWpsResponse(wpsResponse, 'Error uploading file.')) return;
+//                    
+//                    
+//                    
+//                    if ($.browser.msie) {
+//                        featureType = $(wpsResponse).find('ns1|Identifier:contains("featuretype")').siblings().find('ns|Data').find('ns|LiteralData').text();
+//                        resultText = $(wpsResponse).find('ns1|Identifier:contains("result")').siblings().find('ns|Data').find('ns|LiteralData').text();
+//                    }
+//                    else {
+//                        featureType = $(wpsResponse).find('ns1|Identifier:contains("featuretype") ~ ns|Data > ns|LiteralData').text();
+//                        resultText = $(wpsResponse).find('ns1|Identifier:contains("result") ~ ns|Data > ns|LiteralData').text();
+//                    }
+//                    
+//                    AOI.updateFeatureTypesListAndSelect(featureType);
+//
+//                    if (resultText.toLowerCase().contains('warning')) {
+//                        showWarningNotification(resultText);
+//                    }
+//                    showNotification('File successfully uploaded');
+//                } else if (response[0].nodeName == "error") {
+//                    showErrorNotification("Error uploading file: " + $(response).text());
+//                } else {
+//                    showErrorNotification("Error uploading file: unknown response from server");
+//                }
             },
             onSubmit: function() {
                 showThrobber();
