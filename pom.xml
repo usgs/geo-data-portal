@@ -12,7 +12,6 @@
         <module>gdp-core-processing</module>
         <!-- can't add in until netcdf-jna, netcdf-dsg and aparapi projects as added to jenkins/maven -->
 <!--        <module>gdp-derivative-processing</module>-->
-        <module>gdp-geotiff</module>
         <module>gdp-proxy</module>
         <module>gdp-52n-wps-patches</module>
         <module>gdp-52n-wps-extensions</module>
@@ -211,6 +210,11 @@
                 <groupId>edu.ucar</groupId>
                 <artifactId>netcdf</artifactId>
                 <version>${netcdf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>gov.usgs.cida.netcdf.iosp</groupId>
+                <artifactId>geotiff-iosp</artifactId>
+                <version>1.0</version>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>

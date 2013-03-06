@@ -12,11 +12,6 @@
         <!-- sibling module dependencies -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>gdp-geotiff</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>gdp-common-utilities</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -49,6 +44,10 @@
         <dependency>
             <groupId>edu.ucar</groupId>
             <artifactId>opendap</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>gov.usgs.cida.netcdf.iosp</groupId>
+            <artifactId>geotiff-iosp</artifactId>
         </dependency>
         <!-- needed for NCStream/CDMRemote -->
         <dependency>
