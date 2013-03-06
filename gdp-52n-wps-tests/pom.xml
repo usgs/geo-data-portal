@@ -14,7 +14,7 @@
             <artifactId>gdp-common-utilities</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>gdp-52n-wps-patches</artifactId>
             <version>${project.version}</version>
@@ -23,7 +23,7 @@
 	            <groupId>${project.groupId}</groupId>
 	            <artifactId>gdp-52n-wps-extensions</artifactId>
 	            <version>${project.version}</version>
-	        </dependency>
+	        </dependency>-->
         <!-- 52n WPS dependencies START -->
         <dependency>
             <groupId>org.n52.wps</groupId>
@@ -36,10 +36,6 @@
         <dependency>
             <groupId>org.n52.wps</groupId>
             <artifactId>52n-wps-server</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.n52.wps</groupId>
-            <artifactId>52n-wps-transactional</artifactId>
         </dependency>
         <!-- 52n WPS dependencies END -->
         <!-- LOGGING START-->

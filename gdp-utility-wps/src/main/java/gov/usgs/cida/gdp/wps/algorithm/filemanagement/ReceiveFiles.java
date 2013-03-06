@@ -7,26 +7,18 @@ import gov.usgs.cida.gdp.dataaccess.helper.ShapeFileEPSGHelper;
 import gov.usgs.cida.gdp.io.data.ZippedGenericFileData;
 import gov.usgs.cida.gdp.io.data.ZippedGenericFileDataBinding;
 import gov.usgs.cida.gdp.utilities.FileHelper;
-import gov.usgs.cida.n52.wps.algorithm.AbstractAnnotatedAlgorithm;
-import gov.usgs.cida.n52.wps.algorithm.annotation.Algorithm;
-import gov.usgs.cida.n52.wps.algorithm.annotation.ComplexDataInput;
-import gov.usgs.cida.n52.wps.algorithm.annotation.LiteralDataInput;
-import gov.usgs.cida.n52.wps.algorithm.annotation.LiteralDataOutput;
-import gov.usgs.cida.n52.wps.algorithm.annotation.Process;
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.commons.lang.StringUtils;
-import org.n52.wps.io.data.IData;
-import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
-import org.opengis.referencing.FactoryException;
+import org.n52.wps.algorithm.annotation.Algorithm;
+import org.n52.wps.algorithm.annotation.ComplexDataInput;
+import org.n52.wps.algorithm.annotation.Execute;
+import org.n52.wps.algorithm.annotation.LiteralDataInput;
+import org.n52.wps.algorithm.annotation.LiteralDataOutput;
+import org.n52.wps.server.AbstractAnnotatedAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,7 +79,7 @@ public class ReceiveFiles extends AbstractAnnotatedAlgorithm {
         return result;
     }
 
-    @Process
+    @Execute
     public void process() {
         Preconditions.checkArgument(file != null, "Error while processing file: Could not get file from server");
         Preconditions.checkArgument(StringUtils.isNotBlank(wfsURL), "Invalid " + PARAM_WFS_URL);

@@ -4,13 +4,13 @@ import com.google.common.base.Preconditions;
 import gov.usgs.cida.gdp.constants.AppConstant;
 import gov.usgs.cida.gdp.dataaccess.GeoserverManager;
 import gov.usgs.cida.gdp.dataaccess.WatersService;
-import gov.usgs.cida.n52.wps.algorithm.AbstractAnnotatedAlgorithm;
-import gov.usgs.cida.n52.wps.algorithm.annotation.Algorithm;
-import gov.usgs.cida.n52.wps.algorithm.annotation.LiteralDataInput;
-import gov.usgs.cida.n52.wps.algorithm.annotation.LiteralDataOutput;
-import gov.usgs.cida.n52.wps.algorithm.annotation.Process;
 import java.io.File;
 import org.apache.commons.lang.StringUtils;
+import org.n52.wps.algorithm.annotation.Algorithm;
+import org.n52.wps.algorithm.annotation.Execute;
+import org.n52.wps.algorithm.annotation.LiteralDataInput;
+import org.n52.wps.algorithm.annotation.LiteralDataOutput;
+import org.n52.wps.server.AbstractAnnotatedAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +54,7 @@ public class GetWatersGeom extends AbstractAnnotatedAlgorithm {
         return layerName;
     }
     
-    @Process
+    @Execute
     public void process() {
         Preconditions.checkArgument(StringUtils.isNotBlank(lat), "Invalid " + INPUT_LAT);
         Preconditions.checkArgument(StringUtils.isNotBlank(lon), "Invalid " + INPUT_LON);

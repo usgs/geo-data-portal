@@ -3,12 +3,12 @@ package gov.usgs.cida.gdp.wps.algorithm.discovery;
 import com.google.common.base.Preconditions;
 import gov.usgs.cida.gdp.dataaccess.WCSCoverageInfoHelper;
 import gov.usgs.cida.gdp.dataaccess.bean.WCSCoverageInfo;
-import gov.usgs.cida.n52.wps.algorithm.AbstractAnnotatedAlgorithm;
-import gov.usgs.cida.n52.wps.algorithm.annotation.Algorithm;
-import gov.usgs.cida.n52.wps.algorithm.annotation.LiteralDataInput;
-import gov.usgs.cida.n52.wps.algorithm.annotation.LiteralDataOutput;
-import gov.usgs.cida.n52.wps.algorithm.annotation.Process;
 import org.apache.commons.lang.StringUtils;
+import org.n52.wps.algorithm.annotation.Algorithm;
+import org.n52.wps.algorithm.annotation.Execute;
+import org.n52.wps.algorithm.annotation.LiteralDataInput;
+import org.n52.wps.algorithm.annotation.LiteralDataOutput;
+import org.n52.wps.server.AbstractAnnotatedAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,7 +79,7 @@ public class CalculateWCSCoverageInfo extends AbstractAnnotatedAlgorithm {
         return result;
     }
     
-    @Process
+    @Execute
     public void process() {
         Preconditions.checkArgument(StringUtils.isNotBlank(crs), "Invalid " + PARAM_CRS);
         Preconditions.checkArgument(StringUtils.isNotBlank(lowerCorner), "Invalid " + PARAM_LOWER_CORNER);

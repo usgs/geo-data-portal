@@ -7,12 +7,6 @@ import gov.usgs.cida.gdp.coreprocessing.analysis.grid.Statistics1DWriter.GroupBy
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.Statistics1DWriter.Statistic;
 import gov.usgs.cida.gdp.coreprocessing.analysis.statistics.WeightedStatistics1D;
 import gov.usgs.cida.gdp.wps.binding.ZipFileBinding;
-import gov.usgs.cida.n52.wps.algorithm.AbstractAnnotatedAlgorithm;
-import gov.usgs.cida.n52.wps.algorithm.annotation.Algorithm;
-import gov.usgs.cida.n52.wps.algorithm.annotation.ComplexDataInput;
-import gov.usgs.cida.n52.wps.algorithm.annotation.ComplexDataOutput;
-import gov.usgs.cida.n52.wps.algorithm.annotation.LiteralDataInput;
-import gov.usgs.cida.n52.wps.algorithm.annotation.Process;
 import java.io.*;
 import java.net.URI;
 import java.util.ArrayList;
@@ -31,7 +25,13 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import org.n52.wps.algorithm.annotation.Algorithm;
+import org.n52.wps.algorithm.annotation.ComplexDataInput;
+import org.n52.wps.algorithm.annotation.ComplexDataOutput;
+import org.n52.wps.algorithm.annotation.Execute;
+import org.n52.wps.algorithm.annotation.LiteralDataInput;
 import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
+import org.n52.wps.server.AbstractAnnotatedAlgorithm;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
@@ -149,7 +149,7 @@ public class PRMSParameterGeneratorAlgorithm extends AbstractAnnotatedAlgorithm 
         return output;
     }
 
-    @Process
+    @Execute
     public void process() {
 
         // validate argument count preconditions

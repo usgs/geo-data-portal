@@ -60,8 +60,7 @@
     <!-- @hostname@, @hostport@ and @webappPath@ are filtered and replaced by values derived from
          HttpServelRequest instance of getRequestURL() in response using a Filter -->
 	<Server hostname="@hostname@" hostport="@hostport@" webappPath="@webappPath@" includeDataInputsInResponse="true" computationTimeoutMilliSeconds="5" cacheCapabilites="false">
-        <Database>
-            <Property name="databaseClass" active="true">gov.usgs.cida.n52.wps.database.ResultsDatabase</Property>
-        </Database>
+        <Property active="true" name="responseURLFilterEnabled">true</Property>
+        <Database/>
     </Server>
 </WPSConfiguration>

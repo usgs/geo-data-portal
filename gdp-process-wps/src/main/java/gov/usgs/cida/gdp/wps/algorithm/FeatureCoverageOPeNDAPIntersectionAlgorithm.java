@@ -1,19 +1,19 @@
 package gov.usgs.cida.gdp.wps.algorithm;
 
 import gov.usgs.cida.gdp.wps.binding.NetCDFFileBinding;
-import gov.usgs.cida.n52.wps.algorithm.AbstractAnnotatedAlgorithm;
-import gov.usgs.cida.n52.wps.algorithm.annotation.Algorithm;
-import gov.usgs.cida.n52.wps.algorithm.annotation.ComplexDataInput;
-import gov.usgs.cida.n52.wps.algorithm.annotation.ComplexDataOutput;
-import gov.usgs.cida.n52.wps.algorithm.annotation.LiteralDataInput;
-import gov.usgs.cida.n52.wps.algorithm.annotation.Process;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Date;
 import java.util.List;
 import org.geotools.feature.FeatureCollection;
+import org.n52.wps.algorithm.annotation.Algorithm;
+import org.n52.wps.algorithm.annotation.ComplexDataInput;
+import org.n52.wps.algorithm.annotation.ComplexDataOutput;
+import org.n52.wps.algorithm.annotation.Execute;
+import org.n52.wps.algorithm.annotation.LiteralDataInput;
 import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
+import org.n52.wps.server.AbstractAnnotatedAlgorithm;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
 import ucar.ma2.InvalidRangeException;
@@ -99,7 +99,7 @@ public class FeatureCoverageOPeNDAPIntersectionAlgorithm extends AbstractAnnotat
         return output;
     }
 
-    @Process
+    @Execute
     public void process() {
         GridDataset gridDataSet = null;
         try { 

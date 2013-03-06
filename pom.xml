@@ -27,10 +27,11 @@
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <n52-wps.version>3.0</n52-wps.version>
+        <n52-wps.version>3.1.0</n52-wps.version>
         <geotools.version>2.7.5</geotools.version>
         <slf4j.version>1.6.1</slf4j.version>
         <logback.version>0.9.26</logback.version>
+        <netcdf.version>4.3.15</netcdf.version>
     </properties>
     <description>
         Owner: NB
@@ -137,6 +138,80 @@
     </dependencies>
     <dependencyManagement>
         <dependencies>
+            <!-- 52North BOM -->
+            <dependency>
+                <groupId>org.n52.wps</groupId>
+                <artifactId>52n-wps-parent</artifactId>
+                <version>${n52-wps.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- 52North WPS dependencies -->
+            <dependency>
+                <groupId>org.n52.wps</groupId>
+                <artifactId>52n-wps-commons</artifactId>
+                <version>${n52-wps.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>stax-api</artifactId>
+                        <groupId>stax</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>jsr173_api</artifactId>
+                        <groupId>javax.xml.bind</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.n52.wps</groupId>
+                <artifactId>52n-wps-io</artifactId>
+                <version>${n52-wps.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>jsr173_api</artifactId>
+                        <groupId>javax.xml.bind</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.n52.wps</groupId>
+                <artifactId>52n-wps-server</artifactId>
+                <version>${n52-wps.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>stax-api</artifactId>
+                        <groupId>stax</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>geronimo-javamail_1.4_spec</artifactId>
+                        <groupId>org.apache.geronimo.specs</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.n52.wps</groupId>
+                <artifactId>52n-wps-transactional</artifactId>
+                <version>${n52-wps.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>jsr173_api</artifactId>
+                        <groupId>javax.xml.bind</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <!-- NetCDF-Java BOM -->
+            <dependency>
+                <groupId>edu.ucar</groupId>
+                <artifactId>thredds-parent</artifactId>
+                <version>${netcdf.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>edu.ucar</groupId>
+                <artifactId>netcdf</artifactId>
+                <version>${netcdf.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
@@ -170,12 +245,12 @@
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
-                <version>4.1.1</version>
+                <version>4.2.3</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient-cache</artifactId>
-                <version>4.1.1</version>
+                <version>4.2.3</version>
             </dependency>
             <dependency>
                 <groupId>commons-io</groupId>
@@ -323,67 +398,6 @@
                 <groupId>org.apache.santuario</groupId>
                 <artifactId>xmlsec</artifactId>
                 <version>1.4.6</version>
-            </dependency>
-            <!-- NetCDF-Java and dependencies -->
-            <dependency>
-                <groupId>edu.ucar</groupId>
-                <artifactId>thredds-parent</artifactId>
-                <version>4.3.11-CIDA-1</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <!-- 52North WPS dependencies -->
-            <dependency>
-                <groupId>org.n52.wps</groupId>
-                <artifactId>52n-wps-commons</artifactId>
-                <version>${n52-wps.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>stax-api</artifactId>
-                        <groupId>stax</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>jsr173_api</artifactId>
-                        <groupId>javax.xml.bind</groupId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.n52.wps</groupId>
-                <artifactId>52n-wps-io</artifactId>
-                <version>${n52-wps.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>jsr173_api</artifactId>
-                        <groupId>javax.xml.bind</groupId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.n52.wps</groupId>
-                <artifactId>52n-wps-server</artifactId>
-                <version>${n52-wps.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>stax-api</artifactId>
-                        <groupId>stax</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>geronimo-javamail_1.4_spec</artifactId>
-                        <groupId>org.apache.geronimo.specs</groupId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.n52.wps</groupId>
-                <artifactId>52n-wps-transactional</artifactId>
-                <version>${n52-wps.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>jsr173_api</artifactId>
-                        <groupId>javax.xml.bind</groupId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <!-- GeoTools Dependencies -->
             <dependency>

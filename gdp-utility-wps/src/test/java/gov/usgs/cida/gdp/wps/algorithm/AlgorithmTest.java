@@ -55,6 +55,6 @@ public class AlgorithmTest {
         System.out.println(" ### DescribeProcess for " + algorithm.getClass().getName() + " ###");
         System.out.println(AlgorithmUtil.convertProcessDescriptionToXMLString(algorithm));
         System.out.println();
-        assertTrue(AlgorithmUtil.processDescriptionIsValid(algorithm)); 
+        assertTrue(AlgorithmUtil.processDescriptionIsValid(algorithm));
     }
 }

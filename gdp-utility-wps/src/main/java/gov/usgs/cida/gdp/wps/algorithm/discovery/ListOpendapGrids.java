@@ -7,13 +7,13 @@ import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
 import gov.usgs.cida.gdp.wps.cache.ResponseCache;
 import gov.usgs.cida.gdp.wps.cache.ResponseCache.CacheIdentifier;
 import static gov.usgs.cida.gdp.wps.cache.ResponseCache.CacheIdentifier.CacheType.*;
-import gov.usgs.cida.n52.wps.algorithm.AbstractAnnotatedAlgorithm;
-import gov.usgs.cida.n52.wps.algorithm.annotation.Algorithm;
-import gov.usgs.cida.n52.wps.algorithm.annotation.LiteralDataInput;
-import gov.usgs.cida.n52.wps.algorithm.annotation.LiteralDataOutput;
-import gov.usgs.cida.n52.wps.algorithm.annotation.Process;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
+import org.n52.wps.algorithm.annotation.Algorithm;
+import org.n52.wps.algorithm.annotation.Execute;
+import org.n52.wps.algorithm.annotation.LiteralDataInput;
+import org.n52.wps.algorithm.annotation.LiteralDataOutput;
+import org.n52.wps.server.AbstractAnnotatedAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +49,7 @@ public class ListOpendapGrids extends AbstractAnnotatedAlgorithm {
         return result;
     }
 
-    @Process
+    @Execute
     public void process() {
         Preconditions.checkArgument(StringUtils.isNotBlank(catalogURL), "Invalid " + PARAM_CATALOG_URL);
         

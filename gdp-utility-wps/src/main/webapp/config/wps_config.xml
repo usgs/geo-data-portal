@@ -23,6 +23,7 @@
         </Repository>
     </AlgorithmRepositoryList>
     <Server hostname="@hostname@" hostport="@hostport@" webappPath="@webappPath@" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false">
+        <Property active="true" name="responseURLFilterEnabled">true</Property>
         <Database/>
     </Server>
 </WPSConfiguration>
