@@ -9,7 +9,7 @@
     <packaging>war</packaging>
     <name>GDP GeoServer</name>
     <properties>
-        <cida.gs.version>2.1.1-1</cida.gs.version>
+        <cida.gs.version>2.2.5-1</cida.gs.version>
     </properties>
     <dependencies>
         <dependency>
