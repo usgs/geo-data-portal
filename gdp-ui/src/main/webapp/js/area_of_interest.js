@@ -162,46 +162,14 @@ var AOI = function() {
                     var warning = $(data).find('warning').first().text();
                     var layer = $(data).find('name').first().text();
                     if (warning) {
-                        showWarningNotification(warning);
+                        showWarningNotification(warning + "<br />" + exception);
                     }
                     AOI.updateFeatureTypesListAndSelect(layer);
                 } else {
-                   showErrorNotification($(data).find('error').first().text());
+					var error = $(data).find('error').first().text();
+					var exception = $(data).find('exception').first().text()
+                   showErrorNotification('<u><b>File Upload Error</b></u><br />' + error + '<br />' + exception);
                 }
-//
-//                // Get root of XML doc
-//                var response = $(data).children().first();
-//                
-//                if (response[0].nodeName == "wpsResponse") {
-//                    // Convert raw text into XML DOM object
-//                    var wpsResponse = $.xmlDOM($(response).text());
-//                    var resultText;
-//                    var featureType;
-//                    
-//                    if (!WPS.checkWpsResponse(wpsResponse, 'Error uploading file.')) return;
-//                    
-//                    
-//                    
-//                    if ($.browser.msie) {
-//                        featureType = $(wpsResponse).find('ns1|Identifier:contains("featuretype")').siblings().find('ns|Data').find('ns|LiteralData').text();
-//                        resultText = $(wpsResponse).find('ns1|Identifier:contains("result")').siblings().find('ns|Data').find('ns|LiteralData').text();
-//                    }
-//                    else {
-//                        featureType = $(wpsResponse).find('ns1|Identifier:contains("featuretype") ~ ns|Data > ns|LiteralData').text();
-//                        resultText = $(wpsResponse).find('ns1|Identifier:contains("result") ~ ns|Data > ns|LiteralData').text();
-//                    }
-//                    
-//                    AOI.updateFeatureTypesListAndSelect(featureType);
-//
-//                    if (resultText.toLowerCase().contains('warning')) {
-//                        showWarningNotification(resultText);
-//                    }
-//                    showNotification('File successfully uploaded');
-//                } else if (response[0].nodeName == "error") {
-//                    showErrorNotification("Error uploading file: " + $(response).text());
-//                } else {
-//                    showErrorNotification("Error uploading file: unknown response from server");
-//                }
             },
             onSubmit: function() {
                 showThrobber();
