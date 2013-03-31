@@ -160,14 +160,13 @@ var AOI = function() {
                     ScienceBase.useSB = false;
                     
                     var warning = $(data).find('warning').first().text();
-                    var workspace = $(data).find('workspace').first().text();
                     var layer = $(data).find('name').first().text();
                     if (warning) {
                         showWarningNotification(warning);
                     }
-                    AOI.updateFeatureTypesListAndSelect(workspace + ':' + layer);
+                    AOI.updateFeatureTypesListAndSelect(layer);
                 } else {
-                   showErrorNotification($(data).find('error').first().text() + ':' + $(data).find('exception').first().text());
+                   showErrorNotification($(data).find('error').first().text());
                 }
 //
 //                // Get root of XML doc
