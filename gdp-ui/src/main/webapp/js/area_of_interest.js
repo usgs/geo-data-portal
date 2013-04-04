@@ -164,6 +164,7 @@ var AOI = function() {
                     if (warning) {
                         showWarningNotification(warning + "<br />" + exception);
                     }
+					showNotification('File successfully uploaded');
                     AOI.updateFeatureTypesListAndSelect(layer);
                 } else {
 					var error = $(data).find('error').first().text();
