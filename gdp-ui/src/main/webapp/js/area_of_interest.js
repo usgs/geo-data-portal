@@ -60,7 +60,7 @@ var AOI = function() {
 
             // GeoServer returns 'the_geom' and the data store name in addition
             // to the other attributes. Do not put these in the select box.
-            if (text != 'the_geom' && text != featureTypeWithoutNamespace) {
+            if (text !== 'the_geom' && text !== featureTypeWithoutNamespace) {
                 $(_AVAILABLE_ATTRIBUTES_SELECTBOX).append(
                     $(Constant.optionString).attr('value', text).html(text)
                     );
@@ -85,7 +85,7 @@ var AOI = function() {
             var value = $(e).text();
 
             var index = $.inArray(value, valueToIDsMap.values);
-            if (index != -1) {
+            if (index !== -1) {
                 valueToIDsMap.IDs[index].push(ID);
             } else {
                 valueToIDsMap.IDs.push([ID]);
@@ -155,20 +155,20 @@ var AOI = function() {
                 AOI.releaseToggleButton($('#uploadButton')[0]);
                 
                 if (success === 'true') {
-                    Constant.endpoint.wfs = Constant.endpoint.geoserver + '/wfs'
-                    Constant.endpoint.wms = Constant.endpoint.geoserver + '/wms'
+                    Constant.endpoint.wfs = Constant.endpoint.geoserver + '/wfs';
+                    Constant.endpoint.wms = Constant.endpoint.geoserver + '/wms';
                     ScienceBase.useSB = false;
                     
                     var warning = $(data).find('warning').first().text();
                     var layer = $(data).find('name').first().text();
                     if (warning) {
-                        showWarningNotification(warning + "<br />" + exception);
+                        showWarningNotification(warning);
                     }
 					showNotification('File successfully uploaded');
                     AOI.updateFeatureTypesListAndSelect(layer);
                 } else {
 					var error = $(data).find('error').first().text();
-					var exception = $(data).find('exception').first().text()
+					var exception = $(data).find('exception').first().text();
                    showErrorNotification('<u><b>File Upload Error</b></u><br />' + error + '<br />' + exception);
                 }
             },
@@ -261,7 +261,7 @@ var AOI = function() {
 
                 $(elem).attr('depressed', 'true');
                 $(elem).css('background-color', '#aaa');
-                $(elem).addClass('ui-button-disabled ui-state-disabled')
+                $(elem).addClass('ui-button-disabled ui-state-disabled');
 
                 var service = servicesMap[$(elem).attr('id')];
 
@@ -278,7 +278,7 @@ var AOI = function() {
 
                 $(elem).attr('depressed', 'false');
                 $(elem).css('background-color', '');
-                $(elem).removeClass('ui-button-disabled ui-state-disabled')
+                $(elem).removeClass('ui-button-disabled ui-state-disabled');
 
                 var service = servicesMap[$(elem).attr('id')];
 
@@ -317,7 +317,7 @@ var AOI = function() {
 
     function isDepressed(button) {
         // Whether user is toggling up the currently depressed button :(
-        return button == $(_AOI_SERVICES_BUTTON + '[depressed="true"]')[0];
+        return button === $(_AOI_SERVICES_BUTTON + '[depressed="true"]')[0];
     }
 
     function _updateFeatureTypesList(callback) {
@@ -384,7 +384,7 @@ var AOI = function() {
             $(_CLEAR_AOI_BUTTON).fadeIn(Constant.ui.fadeSpeed);
             
             $(WFS.cachedGetCapabilities).find('FeatureType').each(function(i, elem) {
-                if ($(elem).find('Name').text() == selectedFeatureType) {
+                if ($(elem).find('Name').text() === selectedFeatureType) {
                     var bbox, minx, miny, maxx, maxy;
                     var lowerCorner, upperCorner;
                     
@@ -412,10 +412,10 @@ var AOI = function() {
                     AOI.attributeBounds = {
                         lowerCorner : minx + ' ' + miny,
                         upperCorner : maxx + ' ' + maxy
-                    }
+                    };
                 }
             });  
-            if (AOI.attributeBounds.lowerCorner == undefined || AOI.attributeBounds.upperCorner == undefined) {
+            if (AOI.attributeBounds.lowerCorner === undefined || AOI.attributeBounds.upperCorner === undefined) {
                 logger.warn('Bounds for chosen layer could not be found');
             } else {
                 logger.debug('Bounds for chosen layer are: LOWER CORNER: ' + AOI.attributeBounds.lowerCorner + ', UPPER CORNER: ' + AOI.attributeBounds.upperCorner);
@@ -450,11 +450,11 @@ var AOI = function() {
                 attrValues.push($(elem).text());
             });
 
-            if (attrValues.length == $(_AVAILABLE_ATTRIBUTE_VALUES_SELECTBOX + ' option').length) {
+            if (attrValues.length === $(_AVAILABLE_ATTRIBUTE_VALUES_SELECTBOX + ' option').length) {
                 attrValues = '*';
             }
 
-            if (attrValues.length == 0) $(NEXT_BUTTON).button('option', 'disabled', true);
+            if (attrValues.length === 0) $(NEXT_BUTTON).button('option', 'disabled', true);
             else $(NEXT_BUTTON).button('option', 'disabled', false);
 
             var attr = $(_AVAILABLE_ATTRIBUTES_SELECTBOX).val();
@@ -490,8 +490,8 @@ var AOI = function() {
                             //TODO-  Do we want to just keep the bounds of the layer instead of expanding it out to the world?
                             logger.warn('Unable to retrieve bounds for chosen attribute. Resetting to default bounds.');
                         } else {
-                            AOI.attributeBounds.lowerCorner = $(data).find('LowerCorner')[0].textContent
-                            AOI.attributeBounds.upperCorner = $(data).find('UpperCorner')[0].textContent
+                            AOI.attributeBounds.lowerCorner = $(data).find('LowerCorner')[0].textContent;
+                            AOI.attributeBounds.upperCorner = $(data).find('UpperCorner')[0].textContent;
                         }
                         logger.info('AOI.setSelectedAttributeBoundingBox(): LC/UC = ' + AOI.attributeBounds.lowerCorner + " / " + AOI.attributeBounds.upperCorner);
                     }, 
@@ -538,14 +538,14 @@ var AOI = function() {
                         html('Download Shapefile').
                         click(function() {
                             if (ScienceBase.useSB) {
-                                $.download(Constant.endpoint.sciencebase + '/catalog/file/get/' + ScienceBase.itemId,'get')
+                                $.download(Constant.endpoint.sciencebase + '/catalog/file/get/' + ScienceBase.itemId,'get');
                             } else {
-                                $.download(rootUrl,kvpParams,'get')
+                                $.download(rootUrl,kvpParams,'get');
                             }
                         })
                         )
                     ).attr('id','download_shapefile_link_row')
-                )
+                );
             $('#download_shapefile_link').fadeIn(Constant.ui.fadeSpeed);
         }
     }
