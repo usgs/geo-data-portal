@@ -114,11 +114,11 @@
         <repository>
             <id>cida-gdp-development</id>
             <name>CIDA GDP Development</name>
-            <url>http://internal.cida.usgs.gov/maven/content/groups/cida-gdp-development</url>
+            <url>https://internal.cida.usgs.gov/maven/content/groups/cida-gdp-development</url>
         </repository>
         <repository>
             <id>ucar-releases</id>
-            <url>http://artifacts.unidata.ucar.edu/content/repositories/unidata-releases</url>
+            <url>https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases</url>
         </repository>
     </repositories>
     <dependencies>
