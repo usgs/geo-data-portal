@@ -3,9 +3,17 @@
     <display-name>52n WPS 1.0.0</display-name>
     <description>52n prototype implementation of the WPS 1.0.0 spec.</description>
     <filter>
+        <filter-name>RequestFilter</filter-name>
+        <filter-class>gov.usgs.cida.tomcatfilters.RequestFilter</filter-class>
+    </filter>
+    <filter>
         <filter-name>ResponseURLFilter</filter-name>
         <filter-class>org.n52.wps.server.ResponseURLFilter</filter-class>
     </filter>
+    <filter-mapping>
+        <filter-name>RequestFilter</filter-name>
+        <url-pattern>*</url-pattern>
+    </filter-mapping>
     <filter-mapping>
         <filter-name>ResponseURLFilter</filter-name>
         <url-pattern>*</url-pattern>

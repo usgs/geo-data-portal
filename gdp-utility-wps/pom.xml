@@ -148,5 +148,10 @@
             <artifactId>servlet-api</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>gov.usgs.cida</groupId>
+            <artifactId>tomcat-filters</artifactId>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 </project>
