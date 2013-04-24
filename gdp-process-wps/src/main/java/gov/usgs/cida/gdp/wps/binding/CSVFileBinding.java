@@ -1,6 +1,7 @@
 package gov.usgs.cida.gdp.wps.binding;
 
 import java.io.File;
+import org.apache.commons.io.FileUtils;
 import org.n52.wps.io.data.IComplexData;
 
 public class CSVFileBinding implements IComplexData {
@@ -21,4 +22,8 @@ public class CSVFileBinding implements IComplexData {
         return File.class;
     }
 
+    @Override
+    public void dispose() {
+        FileUtils.deleteQuietly(file);
+    }
 }

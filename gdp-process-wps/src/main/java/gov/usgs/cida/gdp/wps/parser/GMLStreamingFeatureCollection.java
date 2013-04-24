@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import javax.xml.parsers.ParserConfigurationException;
+import org.apache.commons.io.FileUtils;
 import org.geotools.feature.CollectionListener;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
@@ -33,7 +34,6 @@ import org.opengis.feature.type.GeometryType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterVisitor;
 import org.opengis.filter.sort.SortBy;
-import org.opengis.geometry.BoundingBox;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.util.ProgressListener;
 import org.slf4j.Logger;
@@ -88,6 +88,11 @@ public class GMLStreamingFeatureCollection implements FeatureCollection {
 		}
         LOGGER.debug("Finished parse of file {}, {} features found", file.getName(), size);
 	}
+    
+    public void dispose() {
+        FileUtils.deleteQuietly(file);
+        configuration.getXSD().dispose();
+    }
 
 	@Override
 	public FeatureIterator features() {
