@@ -41,7 +41,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-//import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -918,83 +917,83 @@ public class InputHandler {
             }
             ComplexDataDescriptionType format = null;
 
-            if(mimeType!=null){
-                   String defaultMimeType = inputPD.getComplexData().getDefault().getFormat().getMimeType();
+            if(mimeType != null){
+                String defaultMimeType = inputPD.getComplexData().getDefault().getFormat().getMimeType();
 
-                   boolean canUseDefault = false;
-                   if(defaultMimeType.equalsIgnoreCase(mimeType)){
-                       ComplexDataDescriptionType potentialFormat = inputPD.getComplexData().getDefault().getFormat();
-                       if(referenceData.getSchema() != null && referenceData.getEncoding() == null){
-                           if(referenceData.getSchema().equalsIgnoreCase(potentialFormat.getSchema())){
-                               canUseDefault = true;
-                               format = potentialFormat;
-                           }
-                       }
-                       if(referenceData.getSchema() == null && referenceData.getEncoding() != null){
-                           if(referenceData.getEncoding().equalsIgnoreCase(potentialFormat.getEncoding())){
-                               canUseDefault = true;
-                               format = potentialFormat;
-                           }
-
-                       }
-                       if(referenceData.getSchema() != null && referenceData.getEncoding() != null){
-                           if(referenceData.getSchema().equalsIgnoreCase(potentialFormat.getSchema()) && referenceData.getEncoding().equalsIgnoreCase(potentialFormat.getEncoding())){
-                               canUseDefault = true;
-                               format = potentialFormat;
-                           }
-
-                       }
-                       if(referenceData.getSchema() == null && referenceData.getEncoding() == null){
-                           canUseDefault = true;
-                           format = potentialFormat;
-                       }
-
-                   }
-                   if(!canUseDefault){
-                        ComplexDataDescriptionType[] formats = inputPD.getComplexData().getSupported().getFormatArray();
-                        for(ComplexDataDescriptionType potentialFormat : formats){
-                            if(!StringUtils.isBlank(potentialFormat.getMimeType()) && potentialFormat.getMimeType().equalsIgnoreCase(mimeType)){
-                                if(referenceData.getSchema() != null && referenceData.getEncoding() == null){
-                                       if(referenceData.getSchema().equalsIgnoreCase(potentialFormat.getSchema())){
-                                           format = potentialFormat;
-                                       }
-                                   }
-                                   if(referenceData.getSchema() == null && referenceData.getEncoding() != null){
-                                       if(referenceData.getEncoding().equalsIgnoreCase(potentialFormat.getEncoding())){
-                                           format = potentialFormat;
-                                       }
-
-                                   }
-                                   if(referenceData.getSchema() != null && referenceData.getEncoding() != null){
-                                       if(referenceData.getSchema().equalsIgnoreCase(potentialFormat.getSchema()) && referenceData.getEncoding().equalsIgnoreCase(potentialFormat.getEncoding())){
-                                           format = potentialFormat;
-                                       }
-
-                                   }
-                                   if(referenceData.getSchema() == null && referenceData.getEncoding() == null){
-                                       format = potentialFormat;
-                                   }
-                            }
+                boolean canUseDefault = false;
+                if(defaultMimeType.equalsIgnoreCase(mimeType)){
+                    ComplexDataDescriptionType potentialFormat = inputPD.getComplexData().getDefault().getFormat();
+                    if(referenceData.getSchema() != null && referenceData.getEncoding() == null){
+                        if(referenceData.getSchema().equalsIgnoreCase(potentialFormat.getSchema())){
+                            canUseDefault = true;
+                            format = potentialFormat;
                         }
-                   }
-                   if(format == null){
-                       //throw new ExceptionReport("Could not determine intput format. Possibly multiple or none matching generators found. MimeType Set?", ExceptionReport.INVALID_PARAMETER_VALUE);
-                       // TODO Review error message
-                       throw new ExceptionReport("Could not determine input format because none of the supported formats match the given schema (\"" + referenceData.getSchema() + "\") and encoding (\"" + referenceData.getEncoding() + "\"). (A mimetype was not specified)", ExceptionReport.INVALID_PARAMETER_VALUE);
+                    }
+                    if(referenceData.getSchema() == null && referenceData.getEncoding() != null){
+                        if(referenceData.getEncoding().equalsIgnoreCase(potentialFormat.getEncoding())){
+                            canUseDefault = true;
+                            format = potentialFormat;
+                        }
 
-                   }
+                    }
+                    if(referenceData.getSchema() != null && referenceData.getEncoding() != null){
+                        if(referenceData.getSchema().equalsIgnoreCase(potentialFormat.getSchema()) && referenceData.getEncoding().equalsIgnoreCase(potentialFormat.getEncoding())){
+                            canUseDefault = true;
+                            format = potentialFormat;
+                        }
 
-                   mimeType = format.getMimeType();
+                    }
+                    if(referenceData.getSchema() == null && referenceData.getEncoding() == null){
+                        canUseDefault = true;
+                        format = potentialFormat;
+                    }
 
-                   if(format.isSetEncoding()){
-                       //no encoding provided--> select default one for mimeType
-                       encoding = format.getEncoding();
-                   }
+                }
+                if(!canUseDefault){
+                     ComplexDataDescriptionType[] formats = inputPD.getComplexData().getSupported().getFormatArray();
+                     for(ComplexDataDescriptionType potentialFormat : formats){
+                         if(!StringUtils.isBlank(potentialFormat.getMimeType()) && potentialFormat.getMimeType().equalsIgnoreCase(mimeType)){
+                             if(referenceData.getSchema() != null && referenceData.getEncoding() == null){
+                                    if(referenceData.getSchema().equalsIgnoreCase(potentialFormat.getSchema())){
+                                        format = potentialFormat;
+                                    }
+                                }
+                                if(referenceData.getSchema() == null && referenceData.getEncoding() != null){
+                                    if(referenceData.getEncoding().equalsIgnoreCase(potentialFormat.getEncoding())){
+                                        format = potentialFormat;
+                                    }
 
-                   if(format.isSetSchema()){
-                       //no encoding provided--> select default one for mimeType
-                       schema = format.getSchema();
-                   }
+                                }
+                                if(referenceData.getSchema() != null && referenceData.getEncoding() != null){
+                                    if(referenceData.getSchema().equalsIgnoreCase(potentialFormat.getSchema()) && referenceData.getEncoding().equalsIgnoreCase(potentialFormat.getEncoding())){
+                                        format = potentialFormat;
+                                    }
+
+                                }
+                                if(referenceData.getSchema() == null && referenceData.getEncoding() == null){
+                                    format = potentialFormat;
+                                }
+                         }
+                     }
+                }
+                if(format == null){
+                    //throw new ExceptionReport("Could not determine intput format. Possibly multiple or none matching generators found. MimeType Set?", ExceptionReport.INVALID_PARAMETER_VALUE);
+                    // TODO Review error message
+                    throw new ExceptionReport("Could not determine input format because none of the supported formats match the given schema (\"" + referenceData.getSchema() + "\") and encoding (\"" + referenceData.getEncoding() + "\"). (A mimetype was not specified)", ExceptionReport.INVALID_PARAMETER_VALUE);
+
+                }
+
+                mimeType = format.getMimeType();
+
+                if(format.isSetEncoding()){
+                    //no encoding provided--> select default one for mimeType
+                    encoding = format.getEncoding();
+                }
+
+                if(format.isSetSchema()){
+                    //no encoding provided--> select default one for mimeType
+                    schema = format.getSchema();
+                }
             }
 			
 			if(mimeType==null && !referenceData.isSetEncoding() && !referenceData.isSetSchema()){
