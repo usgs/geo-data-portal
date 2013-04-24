@@ -1,10 +1,10 @@
 /***************************************************************
-Copyright © 2009 52°North Initiative for Geospatial Open Source Software GmbH
+Copyright ï¿½ 2009 52ï¿½North Initiative for Geospatial Open Source Software GmbH
 
  Author: Matthias Mueller, TU Dresden
 
  Contact: Andreas Wytzisk, 
- 52°North Initiative for Geospatial Open Source SoftwareGmbH, 
+ 52ï¿½North Initiative for Geospatial Open Source SoftwareGmbH, 
  Martin-Luther-King-Weg 24,
  48155 Muenster, Germany, 
  info@52north.org
@@ -22,7 +22,7 @@ Copyright © 2009 52°North Initiative for Geospatial Open Source Software GmbH
  along with this program (see gnu-gpl v2.txt). If not, write to
  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  Boston, MA 02111-1307, USA or visit the Free
- Software Foundation’s web page, http://www.fsf.org.
+ Software Foundationï¿½s web page, http://www.fsf.org.
 
  ***************************************************************/
 
