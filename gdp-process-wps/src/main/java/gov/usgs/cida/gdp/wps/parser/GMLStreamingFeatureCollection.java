@@ -91,7 +91,8 @@ public class GMLStreamingFeatureCollection implements FeatureCollection {
     
     public void dispose() {
         FileUtils.deleteQuietly(file);
-        configuration.getXSD().dispose();
+        // Need to wait for GeoTools 8.x
+        //configuration.getXSD().dispose();
     }
 
 	@Override
