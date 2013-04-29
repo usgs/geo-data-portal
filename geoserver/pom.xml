@@ -9,13 +9,13 @@
     <packaging>war</packaging>
     <name>GDP GeoServer</name>
     <properties>
-        <cida.gs.version>2.2.5-2-SNAPSHOT</cida.gs.version>
+        <gs.version>2.2.5</gs.version>
     </properties>
     <dependencies>
         <dependency>
-            <groupId>gov.usgs.cida.geoserver</groupId>
+            <groupId>org.geoserver</groupId>
             <artifactId>geoserver</artifactId>
-            <version>${cida.gs.version}</version>
+            <version>${gs.version}</version>
             <type>war</type>
         </dependency>
     </dependencies>
@@ -28,7 +28,7 @@
                 <configuration>
                     <overlays>
                         <overlay>
-                            <groupId>gov.usgs.cida.geoserver</groupId>
+                            <groupId>org.geoserver</groupId>
                             <artifactId>geoserver</artifactId>
                             <excludes>
                                 <exclude>data/coverages/**</exclude>

@@ -117,6 +117,10 @@
             <url>https://internal.cida.usgs.gov/maven/content/groups/cida-gdp-development</url>
         </repository>
         <repository>
+            <id>cida-thirdparty</id>
+            <url>https://internal.cida.usgs.gov/maven/content/repositories/cida-thirdparty</url>
+        </repository>
+        <repository>
             <id>ucar-releases</id>
             <url>https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases</url>
         </repository>
