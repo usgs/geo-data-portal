@@ -88,12 +88,12 @@ function watersCallback(data) {
 function submitDrawFeature() {
     var name = $(_FEATURE_TYPE_NAME).val();
 
-    if (drawFeatureLayer.features.length == 0) {
+    if (drawFeatureLayer.features.length === 0) {
         showErrorNotification('Please draw a polygon on the map.');
         return;
     }
     
-    if (name == '') {
+    if (name === '') {
         showErrorNotification('Please specify name for feature type.');
         $(_FEATURE_TYPE_NAME).focus();
         return;
@@ -113,11 +113,11 @@ function submitDrawFeature() {
     var wpsAlgo = 'gov.usgs.cida.gdp.wps.algorithm.filemanagement.CreateNewShapefileDataStore';
     var wpsInputs = {
         'name' : [name]
-        }
+        };
     var wpsOutputs = ['layer-name'];
 
-    Constant.endpoint.wfs = Constant.endpoint.geoserver + '/wfs'
-    Constant.endpoint.wms = Constant.endpoint.geoserver + '/wms'
+    Constant.endpoint.wfs = Constant.endpoint.geoserver + '/wfs';
+    Constant.endpoint.wms = Constant.endpoint.geoserver + '/wms';
     ScienceBase.useSB = false;
 
     WPS.sendWpsExecuteRequest(Constant.endpoint.proxy + Constant.endpoint.utilitywps,
@@ -363,7 +363,7 @@ function initMap(options) {
             srsName: 'EPSG:4326',
             url: Constant.endpoint.proxy + Constant.endpoint.geoserver + '/wfs',
             featureNS :  'gov.usgs.cida.gdp.draw',
-            featureType : 'temp', // this gets changed before submitting geometry
+            featureType : new Date().getTime() + '', // this gets changed before submitting geometry
             geometryName: 'the_geom'
         })
     });
@@ -439,7 +439,7 @@ function parseLayerDefinition(layersDefOb) {
 function setupLayer(layerOb, type, defaultLayer) {
     // In order for OpenLayers to make the layer a true overlay (that can be
     // drawn on top of a base layer), transparent needs to be true.
-    if (layerOb.params['isBaseLayer'] == 'false') {
+    if (layerOb.params['isBaseLayer'] === 'false') {
         layerOb.params['transparent'] = 'true';
         layerOb.OLparams['opacity'] = .7;
     }
