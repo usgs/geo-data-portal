@@ -135,8 +135,6 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>gdp-52n-wps-patches</artifactId>
             <version>${project.version}</version>
-            <!-- we will unpack jar contents to WEB-INF/classes -->
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>gov.usgs.cida.gdp</groupId>
