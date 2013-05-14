@@ -13,9 +13,9 @@
     </properties>
     <dependencies>
         <dependency>
-            <groupId>org.geoserver</groupId>
+            <groupId>gov.usgs.cida.geoserver</groupId>
             <artifactId>geoserver</artifactId>
-            <version>${gs.version}</version>
+            <version>${gs.version}-2-SNAPSHOT</version>
             <type>war</type>
         </dependency>
     </dependencies>
@@ -28,7 +28,7 @@
                 <configuration>
                     <overlays>
                         <overlay>
-                            <groupId>org.geoserver</groupId>
+                            <groupId>gov.usgs.cida.geoserver</groupId>
                             <artifactId>geoserver</artifactId>
                             <excludes>
                                 <exclude>data/coverages/**</exclude>
