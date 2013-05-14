@@ -132,9 +132,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>gov.usgs.cida.gdp</groupId>
             <artifactId>gdp-52n-wps-patches</artifactId>
             <version>${project.version}</version>
+            <!-- extracted to WEB-INF/classes -->
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>gov.usgs.cida.gdp</groupId>
@@ -179,10 +181,6 @@
         <dependency>
             <groupId>org.n52.wps</groupId>
             <artifactId>52n-wps-server</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.n52.wps</groupId>
-            <artifactId>52n-wps-transactional</artifactId>
         </dependency>
         <dependency>
             <groupId>joda-time</groupId>

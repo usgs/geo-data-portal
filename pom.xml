@@ -26,7 +26,7 @@
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <n52-wps.version>3.1.0</n52-wps.version>
+        <n52-wps.version>3.1.1</n52-wps.version>
         <geotools.version>8.7</geotools.version>
         <slf4j.version>1.7.5</slf4j.version>
         <logback.version>0.9.26</logback.version>
@@ -161,6 +161,26 @@
                         <artifactId>jsr173_api</artifactId>
                         <groupId>javax.xml.bind</groupId>
                     </exclusion>
+                    <exclusion>
+                        <artifactId>guava-annotations</artifactId>
+                        <groupId>com.google.guava</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>guava-base</artifactId>
+                        <groupId>com.google.guava</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>guava-collections</artifactId>
+                        <groupId>com.google.guava</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>mc-runtime</artifactId>
+                        <groupId>org.n52.mc</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>mc-schema</artifactId>
+                        <groupId>org.n52.mc</groupId>
+                    </exclusion>
                 </exclusions>
             </dependency>
             <dependency>
@@ -171,6 +191,14 @@
                     <exclusion>
                         <artifactId>jsr173_api</artifactId>
                         <groupId>javax.xml.bind</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>mc-runtime</artifactId>
+                        <groupId>org.n52.mc</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>mc-schema</artifactId>
+                        <groupId>org.n52.mc</groupId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -186,6 +214,14 @@
                     <exclusion>
                         <artifactId>geronimo-javamail_1.4_spec</artifactId>
                         <groupId>org.apache.geronimo.specs</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>mc-runtime</artifactId>
+                        <groupId>org.n52.mc</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>mc-schema</artifactId>
+                        <groupId>org.n52.mc</groupId>
                     </exclusion>
                 </exclusions>
             </dependency>

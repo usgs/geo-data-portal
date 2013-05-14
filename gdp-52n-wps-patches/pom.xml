@@ -9,28 +9,7 @@
     <artifactId>gdp-52n-wps-patches</artifactId>
     <name>GDP 52n WPS Patches</name>
     <dependencies>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>gdp-common-utilities</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <!-- 52n WPS dependencies START -->
-        <dependency>
-            <groupId>org.n52.wps</groupId>
-            <artifactId>52n-wps-commons</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.n52.wps</groupId>
-            <artifactId>52n-wps-io</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.n52.wps</groupId>
-            <artifactId>52n-wps-server</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.n52.wps</groupId>
-            <artifactId>52n-wps-transactional</artifactId>
-        </dependency>
         <!-- 52n WPS dependencies END -->
         <!-- LOGGING START-->
         <!-- needed for patch 52n code -->
@@ -62,30 +41,6 @@
             <scope>provided</scope>
         </dependency>
         <!-- LOGGING END-->
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.java.dev.stax-utils</groupId>
-            <artifactId>stax-utils</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient-cache</artifactId>
-        </dependency>
     </dependencies>
 </project>
 
