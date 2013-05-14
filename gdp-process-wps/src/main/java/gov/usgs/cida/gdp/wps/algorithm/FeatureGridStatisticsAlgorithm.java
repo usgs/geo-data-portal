@@ -5,6 +5,7 @@ import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCoverageGridStatist
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.Statistics1DWriter.GroupBy;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.Statistics1DWriter.Statistic;
 import gov.usgs.cida.gdp.wps.binding.CSVFileBinding;
+import gov.usgs.cida.gdp.wps.binding.GMLStreamingFeatureCollectionBinding;
 import static org.n52.wps.algorithm.annotation.LiteralDataInput.ENUM_COUNT;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -22,7 +23,6 @@ import org.n52.wps.algorithm.annotation.ComplexDataInput;
 import org.n52.wps.algorithm.annotation.ComplexDataOutput;
 import org.n52.wps.algorithm.annotation.Execute;
 import org.n52.wps.algorithm.annotation.LiteralDataInput;
-import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
 import org.n52.wps.server.AbstractAnnotatedAlgorithm;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
@@ -59,7 +59,7 @@ public class FeatureGridStatisticsAlgorithm extends AbstractAnnotatedAlgorithm {
             identifier=GDPAlgorithmConstants.FEATURE_COLLECTION_IDENTIFIER,
             title=GDPAlgorithmConstants.FEATURE_COLLECTION_TITLE,
             abstrakt=GDPAlgorithmConstants.FEATURE_COLLECTION_ABSTRACT,
-            binding=GTVectorDataBinding.class)
+            binding=GMLStreamingFeatureCollectionBinding.class)
     public void setFeatureCollection(FeatureCollection featureCollection) {
         this.featureCollection = featureCollection;
     }

@@ -1,5 +1,6 @@
 package gov.usgs.cida.gdp.wps.algorithm;
 
+import gov.usgs.cida.gdp.wps.binding.GMLStreamingFeatureCollectionBinding;
 import gov.usgs.cida.gdp.wps.binding.GeoTIFFFileBinding;
 import gov.usgs.cida.gdp.wps.util.WCSUtil;
 import java.io.File;
@@ -10,7 +11,6 @@ import org.n52.wps.algorithm.annotation.ComplexDataInput;
 import org.n52.wps.algorithm.annotation.ComplexDataOutput;
 import org.n52.wps.algorithm.annotation.Execute;
 import org.n52.wps.algorithm.annotation.LiteralDataInput;
-import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
 import org.n52.wps.server.AbstractAnnotatedAlgorithm;
 
 /**
@@ -34,7 +34,7 @@ public class FeatureCoverageIntersectionAlgorithm extends AbstractAnnotatedAlgor
             identifier=GDPAlgorithmConstants.FEATURE_COLLECTION_IDENTIFIER,
             title=GDPAlgorithmConstants.FEATURE_COLLECTION_TITLE,
             abstrakt=GDPAlgorithmConstants.FEATURE_COLLECTION_ABSTRACT,
-            binding=GTVectorDataBinding.class)
+            binding=GMLStreamingFeatureCollectionBinding.class)
     public void setFeatureCollection(FeatureCollection featureCollection) {
         this.featureCollection = featureCollection;
     }

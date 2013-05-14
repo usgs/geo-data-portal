@@ -3,6 +3,7 @@ package gov.usgs.cida.gdp.wps.algorithm;
 import gov.usgs.cida.gdp.coreprocessing.Delimiter;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCategoricalGridCoverage;
 import gov.usgs.cida.gdp.wps.binding.CSVFileBinding;
+import gov.usgs.cida.gdp.wps.binding.GMLStreamingFeatureCollectionBinding;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -17,7 +18,6 @@ import org.n52.wps.algorithm.annotation.ComplexDataInput;
 import org.n52.wps.algorithm.annotation.ComplexDataOutput;
 import org.n52.wps.algorithm.annotation.Execute;
 import org.n52.wps.algorithm.annotation.LiteralDataInput;
-import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
 import org.n52.wps.server.AbstractAnnotatedAlgorithm;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
@@ -47,7 +47,7 @@ public class FeatureCategoricalGridCoverageAlgorithm extends AbstractAnnotatedAl
             identifier=GDPAlgorithmConstants.FEATURE_COLLECTION_IDENTIFIER,
             title=GDPAlgorithmConstants.FEATURE_COLLECTION_TITLE,
             abstrakt=GDPAlgorithmConstants.FEATURE_COLLECTION_ABSTRACT,
-            binding=GTVectorDataBinding.class)
+            binding=GMLStreamingFeatureCollectionBinding.class)
     public void setFeatureCollection(FeatureCollection featureCollection) {
         this.featureCollection = featureCollection;
     }

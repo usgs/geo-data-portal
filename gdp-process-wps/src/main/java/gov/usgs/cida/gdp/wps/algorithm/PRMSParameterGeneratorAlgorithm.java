@@ -6,6 +6,7 @@ import gov.usgs.cida.gdp.coreprocessing.analysis.grid.FeatureCoverageWeightedGri
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.Statistics1DWriter.GroupBy;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.Statistics1DWriter.Statistic;
 import gov.usgs.cida.gdp.coreprocessing.analysis.statistics.WeightedStatistics1D;
+import gov.usgs.cida.gdp.wps.binding.GMLStreamingFeatureCollectionBinding;
 import gov.usgs.cida.gdp.wps.binding.ZipFileBinding;
 import java.io.*;
 import java.net.URI;
@@ -30,7 +31,6 @@ import org.n52.wps.algorithm.annotation.ComplexDataInput;
 import org.n52.wps.algorithm.annotation.ComplexDataOutput;
 import org.n52.wps.algorithm.annotation.Execute;
 import org.n52.wps.algorithm.annotation.LiteralDataInput;
-import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
 import org.n52.wps.server.AbstractAnnotatedAlgorithm;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.referencing.FactoryException;
@@ -69,7 +69,7 @@ public class PRMSParameterGeneratorAlgorithm extends AbstractAnnotatedAlgorithm 
             identifier=GDPAlgorithmConstants.FEATURE_COLLECTION_IDENTIFIER,
             title=GDPAlgorithmConstants.FEATURE_COLLECTION_TITLE,
             abstrakt=GDPAlgorithmConstants.FEATURE_COLLECTION_ABSTRACT,
-            binding=GTVectorDataBinding.class)
+            binding=GMLStreamingFeatureCollectionBinding.class)
     public void setFeatureCollection(FeatureCollection featureCollection) {
         this.featureCollection = featureCollection;
     }
