@@ -28,7 +28,7 @@ import static org.junit.Assert.assertThat;
  */
 public class AlgorithmTestIT {
 
-    private String describeProcessPrepend = "http://localhost:9090/gdp-process-wps/WebProcessingService?Service=WPS&Request=DescribeProcess&Identifier=";
+    private String describeProcessPrepend = "http://localhost:9090/gdp-process-wps/WebProcessingService?Service=WPS&Version=1.0.0&Request=DescribeProcess&Identifier=";
 
     public AlgorithmTestIT() {
     }
