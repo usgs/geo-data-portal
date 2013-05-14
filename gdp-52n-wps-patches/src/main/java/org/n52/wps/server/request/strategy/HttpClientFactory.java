@@ -68,41 +68,47 @@ public class HttpClientFactory {
     }
     
     
-    private ClientConnectionManager clientConnectionManager;
-    private HttpCacheStorage cacheStorage;
-    private CacheConfig cacheConfig;
-    private HttpClient client;
+    private final ClientConnectionManager clientConnectionManager;
+    private final HttpClient client;
     
-    private HttpClientFactory(ClientConnectionManager connectionManager) {
+    private HttpClientFactory(ClientConnectionManager clientConnectionManager) {
+        this.clientConnectionManager = clientConnectionManager;
+        
+        HttpParams httpParams = new BasicHttpParams();
+        HttpConnectionParams.setSoTimeout(httpParams, CLIENT_SOCKET_TIMEOUT);
+        HttpConnectionParams.setConnectionTimeout(httpParams, CLIENT_CONNECTION_TIMEOUT);
+        HttpClient httpClient = new DefaultHttpClient(clientConnectionManager, httpParams);
         
         // If enabled setup a memory/heap cache for server responses.  If we
         // want we could setup a layered L1/L2/... cache scheme by wrapping
         // CachingHttpClient instances with appropriate storage (i.e. small cache
         // in heap storage, larger with file storage, etc..) 
         if (CACHING_ENABLED) {
-            cacheConfig = new CacheConfig();  
+            try {
+            CacheConfig cacheConfig = new CacheConfig();  
             cacheConfig.setMaxCacheEntries(CACHING_MAX_ENTRIES);
             cacheConfig.setMaxObjectSize(CACHING_MAX_RESPONSE_SIZE);
             cacheConfig.setHeuristicCachingEnabled(CACHING_HEURISTIC_ENABLED);
             cacheConfig.setHeuristicDefaultLifetime(CACHIN_HEURITIC_DEFAULT_LIFETIME_SECONDS);
             cacheConfig.setSharedCache(true);  // won't cache authorized responses
-            cacheStorage = new BasicHttpCacheStorage(cacheConfig);
-            LOGGER.info("HTTP Response caching enabled: maximum cache entries = {}, maximum response size = {} bytes, heuristic caching enabled = {}, heuristic default lifetime = {} s",
+            HttpCacheStorage cacheStorage = new BasicHttpCacheStorage(cacheConfig);
+            httpClient = new CachingHttpClient(httpClient, cacheStorage, cacheConfig);
+            LOGGER.info("HTTP response caching enabled: maximum cache entries = {}, maximum response size = {} bytes, heuristic caching enabled = {}, heuristic default lifetime = {} s",
                     new Object[] {
                         cacheConfig.getMaxCacheEntries(),
-                        cacheConfig.getMaxObjectSizeBytes(),
+                        cacheConfig.getMaxObjectSize(),
                         cacheConfig.isHeuristicCachingEnabled(),
                         cacheConfig.getHeuristicDefaultLifetime(),
                     });
+            
+            } catch (Exception e) {
+               LOGGER.error("Error, creating caching HTTP client, HTTP response caching disabled");
+            }
         } else {
-            LOGGER.info("HTTP Response caching disabled");
+            LOGGER.info("HTTP response caching disabled");
+            
         }
-        
-        HttpParams httpParams = new BasicHttpParams();
-        HttpConnectionParams.setSoTimeout(httpParams, CLIENT_SOCKET_TIMEOUT);
-        HttpConnectionParams.setConnectionTimeout(httpParams, CLIENT_CONNECTION_TIMEOUT);
-        DefaultHttpClient defaultClient = new DefaultHttpClient(clientConnectionManager, httpParams);
-        this.client = CACHING_ENABLED ? new CachingHttpClient(defaultClient, cacheStorage, cacheConfig) : defaultClient;
+        this.client = httpClient;
     }
     
     public HttpClient getClient() {
