@@ -63,8 +63,6 @@ WPS = function() {
         getCapabilitiesParams: {
             'Request' : 'GetCapabilities', 
             'Service' : 'WPS', 
-            'AcceptVersions' : '1.0.0', 
-            'Language' : 'en-CA', 
             'Version' : '1.0.0'
         },
         describeProcessParams: function(processID) {
@@ -72,8 +70,6 @@ WPS = function() {
                 'Request' : 'DescribeProcess', 
                 'Service' : 'WPS', 
                 'Identifier' : processID ,
-                'AcceptVersions' : '1.0.0', 
-                'Language' : 'en-CA', 
                 'Version' : '1.0.0'
             };
         },
