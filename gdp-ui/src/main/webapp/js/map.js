@@ -363,7 +363,7 @@ function initMap(options) {
             srsName: 'EPSG:4326',
             url: Constant.endpoint.proxy + Constant.endpoint.geoserver + '/wfs',
             featureNS :  'gov.usgs.cida.gdp.draw',
-            featureType : new Date().getTime() + '', // this gets changed before submitting geometry
+            featureType : "dummy-" + new Date().getTime() + '', // this gets changed before submitting geometry
             geometryName: 'the_geom'
         })
     });
