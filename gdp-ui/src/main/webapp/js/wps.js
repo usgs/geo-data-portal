@@ -145,7 +145,9 @@ WPS = function() {
                 '<wps:DataInputs>' + 
                 '<wps:Input>' + 
                 '<ows:Identifier>features</ows:Identifier>' + 
-                '<wps:Reference mimeType="application/wfs-collection-1.1" xlink:href="' + Constant.endpoint.wfs + '" method="POST">' + 
+                // NOTE: need to use special 'geoserver internal' href to avoid schema lock noticed with GeoServer 2.2.5
+                //  '<wps:Reference mimeType="application/wfs-collection-1.1" xlink:href="' + Constant.endpoint.wfs + '" method="POST">' +
+                '<wps:Reference mimeType="application/wfs-collection-1.1" xlink:href="http://geoserver/wfs" method="POST">' + 
                 '<wps:Body>' + 
                 wfsXML + 
                 '</wps:Body>' + 
