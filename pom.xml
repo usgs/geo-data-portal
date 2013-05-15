@@ -254,6 +254,11 @@
                 <artifactId>geotiff-iosp</artifactId>
                 <version>1.1</version>
             </dependency>
+			<dependency>
+				<groupId>gov.usgs.cida.owsutils</groupId>
+				<artifactId>cida-owsutils-geoserver</artifactId>
+				<version>1.0.0</version>
+			</dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
