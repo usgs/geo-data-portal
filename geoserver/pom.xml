@@ -9,13 +9,13 @@
     <packaging>war</packaging>
     <name>GDP GeoServer</name>
     <properties>
-        <gs.version>2.2.5</gs.version>
+        <cida.gs.version>2.3.2-1</cida.gs.version>
     </properties>
     <dependencies>
         <dependency>
             <groupId>gov.usgs.cida.geoserver</groupId>
             <artifactId>geoserver</artifactId>
-            <version>${gs.version}-2</version>
+            <version>${cida.gs.version}</version>
             <type>war</type>
         </dependency>
     </dependencies>
