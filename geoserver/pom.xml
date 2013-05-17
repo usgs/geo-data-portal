@@ -15,7 +15,7 @@
         <dependency>
             <groupId>gov.usgs.cida.geoserver</groupId>
             <artifactId>geoserver</artifactId>
-            <version>${gs.version}-2-SNAPSHOT</version>
+            <version>${gs.version}-2</version>
             <type>war</type>
         </dependency>
     </dependencies>
