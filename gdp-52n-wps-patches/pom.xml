@@ -4,7 +4,7 @@
     <parent>
         <groupId>gov.usgs.cida.gdp</groupId>
         <artifactId>gdp</artifactId>
-        <version>21-SNAPSHOT</version>
+        <version>21</version>
     </parent>
     <artifactId>gdp-52n-wps-patches</artifactId>
     <name>GDP 52n WPS Patches</name>
