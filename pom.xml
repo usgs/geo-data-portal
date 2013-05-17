@@ -4,7 +4,7 @@
     <groupId>gov.usgs.cida.gdp</groupId>
     <artifactId>gdp</artifactId>
     <packaging>pom</packaging>
-    <version>21</version>
+    <version>22-SNAPSHOT</version>
     <name>GDP</name>
     <modules>
         <module>gdp-common-utilities</module>
@@ -92,7 +92,7 @@
         <url>http://igsarm-cida-hudson1.er.usgs.gov:8080/hudson/job/GeoDataPortal/</url>
     </ciManagement>
     <scm>
-        <developerConnection>scm:svn:https://cida-svn.er.usgs.gov/repos/dev/usgs/gdp/tags/gdp-21</developerConnection>
+        <developerConnection>scm:svn:https://cida-svn.er.usgs.gov/repos/dev/usgs/gdp/trunk</developerConnection>
     </scm>
     <issueManagement>
         <system>JIRA</system>
