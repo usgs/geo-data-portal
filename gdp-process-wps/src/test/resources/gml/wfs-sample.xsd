@@ -1,0 +1,14 @@
+<xsd:schema xmlns:derivative="gov.usgs.cida.gdp.derivative" xmlns:gml="http://www.opengis.net/gml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="gov.usgs.cida.gdp.derivative">
+    <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://cida-wiwsc-gdp2qa.er.usgs.gov:8082/geoserver/schemas/gml/3.1.1/base/gml.xsd"/>
+    <xsd:complexType name="CONUS_StatesType">
+        <xsd:complexContent>
+            <xsd:extension base="gml:AbstractFeatureType">
+                <xsd:sequence>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="the_geom" nillable="true" type="gml:MultiSurfacePropertyType"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="STATE" nillable="true" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="CONUS_States" substitutionGroup="gml:_Feature" type="derivative:CONUS_StatesType"/>
+</xsd:schema>
