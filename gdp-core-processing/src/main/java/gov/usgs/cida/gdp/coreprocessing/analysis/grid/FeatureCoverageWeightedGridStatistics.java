@@ -9,7 +9,6 @@ import gov.usgs.cida.gdp.coreprocessing.analysis.statistics.WeightedStatistics1D
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.GridCellCoverageFactory.GridCellCoverageByIndex;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.GridCellCoverageFactory.GridCellIndexCoverage;
 
-import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -119,20 +118,7 @@ public class FeatureCoverageWeightedGridStatistics {
                     summarizeFeatures,
                     writer);
 
-        WeightedGridStatisticsVisitor v = null;
-        switch (gt) {
-            case YX:
-            case ZYX:
-                v = new WeightedGridStatisticsVisitor_YX(coverageByIndex, writerX);
-            break;
-            case TYX:
-            case TZYX:
-                v = new WeightedGridStatisticsVisitor_TYX(coverageByIndex, writerX);
-            break;
-            default:
-                throw new IllegalStateException("Currently require y-x or t-y-x grid for this operation");
-        }
-
+        WeightedGridStatisticsVisitor v = new WeightedGridStatisticsVisitor(coverageByIndex, writerX);
         GridCellTraverser gct = new GridCellTraverser(gridDatatype);
 
         gct.traverse(v);
@@ -170,20 +156,34 @@ public class FeatureCoverageWeightedGridStatistics {
     }
 
 
-    protected static abstract class WeightedGridStatisticsVisitor extends FeatureCoverageGridCellVisitor {
+    protected static class WeightedGridStatisticsVisitor extends FeatureCoverageGridCellVisitor {
 
+        public final static String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+        public final static String TIMEZONE = "UTC";
+        
+        protected final SimpleDateFormat dateFormat;
+        
         protected final Statistics1DWriter writer;
         
         protected Map<Object, WeightedStatistics1D> perAttributeStatistics;
         protected WeightedStatistics1D allAttributeStatistics;
-
+        
+        protected Map<Object, WeightedStatistics1D> allTimestepPerAttributeStatistics;
+        protected WeightedStatistics1D allTimestepAllAttributeStatistics;
+        
         protected CoordinateAxis1D zAxis;
-        protected int zIndex;
-        protected double zValue;
+        protected String zLabel;
+        
+        protected CoordinateAxis1DTime tAxis;
+        protected String tLabel;
+        
         
         public WeightedGridStatisticsVisitor(GridCellCoverageByIndex coverageByIndex, Statistics1DWriter writer) {
             super(coverageByIndex);
             this.writer = writer;
+            
+            dateFormat = new SimpleDateFormat(DATE_FORMAT);
+            dateFormat.setTimeZone(TimeZone.getTimeZone(TIMEZONE));
         }
 
         protected Map<Object, WeightedStatistics1D> createPerAttributeStatisticsMap() {
@@ -197,14 +197,32 @@ public class FeatureCoverageWeightedGridStatistics {
         @Override
         public void traverseStart(GridDatatype gridDataType) {
             super.traverseStart(gridDataType);
+            tAxis = gridDataType.getCoordinateSystem().getTimeAxis1D();
             zAxis = gridDataType.getCoordinateSystem().getVerticalAxis();
+
+            allTimestepPerAttributeStatistics = createPerAttributeStatisticsMap();
+            allTimestepAllAttributeStatistics = new WeightedStatistics1D();
+            
+            try {
+                writer.writerHeader(buildRowLabel(
+                        tAxis == null ? "" : Statistics1DWriter.TIMESTEPS_LABEL,
+                        zAxis == null ? null : String.format("%s(%s)", zAxis.getShortName(), zAxis.getUnitsString())));
+            } catch (IOException e) {
+                
+            }
+        }
+        
+        @Override
+        public boolean tStart(int tIndex) {
+            super.tStart(tIndex);
+            tLabel = dateFormat.format(tAxis.getCalendarDate(tIndex).toDate());
+            return true;
         }
         
         @Override
         public boolean zStart(int zIndex) {
             super.zStart(zIndex);
-            this.zIndex = zIndex;
-            zValue = zAxis.getCoordValue(zIndex);
+            zLabel = Double.toString(zAxis.getCoordValue(zIndex));
             return true;
         }
         
@@ -218,186 +236,35 @@ public class FeatureCoverageWeightedGridStatistics {
         @Override
         public void processPerAttributeGridCellCoverage(double value, double coverage, Object attribute) {
             perAttributeStatistics.get(attribute).accumulate(value, coverage);
-        }
-
-        @Override
-        public void processAllAttributeGridCellCoverage(double value, double coverage) {
-            allAttributeStatistics.accumulate(value, coverage);
-        }
-    }
-
-    protected static class WeightedGridStatisticsVisitor_YX extends WeightedGridStatisticsVisitor {
-
-        WeightedGridStatisticsVisitor_YX(
-                GridCellCoverageByIndex coverageByIndex,
-                Statistics1DWriter writer) {
-            super(coverageByIndex, writer);
-        }
-
-        @Override
-        public void traverseStart(GridDatatype gridDatatype) {
-            super.traverseStart(gridDatatype);
-            try {
-                List<String> rowLabelList = new ArrayList<String>();
-                rowLabelList.add("");
-                if (zAxis != null) {
-                    rowLabelList.add(zAxis.getOriginalName() + "(" + zAxis.getUnitsString() + ")");
-                }
-                writer.writerHeader(rowLabelList);
-            } catch (IOException ex) {
-                // TODO
-            }
-        }
-        
-        @Override
-        public void zEnd(int zIndex) {
-            super.zEnd(zIndex);
-            try {
-                List<String> rowLabelList = new ArrayList<String>();
-                rowLabelList.add("");
-                if (zAxis != null) {
-                    rowLabelList.add("");
-                }
-                writer.writeRow(
-                        rowLabelList,
-                        perAttributeStatistics.values(),
-                        allAttributeStatistics);
-            } catch (IOException ex) {
-                // TODO
-            }
-        }
-        
-        @Override
-        public void traverseEnd() {
-            super.traverseEnd();
-            if (zAxis == null) {
-                try {
-                    List<String> rowLabelList = new ArrayList<String>();
-                    rowLabelList.add("");
-                    if (zAxis != null) {
-                        rowLabelList.add("");
-                    }
-                    writer.writeRow(
-                            rowLabelList,
-                            perAttributeStatistics.values(),
-                            allAttributeStatistics);
-                } catch (IOException ex) {
-                    // TODO
-                }
-            }
-        }
-
-    }
-
-    protected static class WeightedGridStatisticsVisitor_TYX extends WeightedGridStatisticsVisitor {
-        
-        public final static String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
-        public final static String TIMEZONE = "UTC";
-
-        protected Map<Object, WeightedStatistics1D> allTimestepPerAttributeStatistics;
-        protected WeightedStatistics1D allTimestepAllAttributeStatistics;
-        
-        protected CoordinateAxis1DTime tAxis;
-        protected int tIndex;
-        
-        protected SimpleDateFormat dateFormat;
-
-        public WeightedGridStatisticsVisitor_TYX(
-                GridCellCoverageByIndex coverageByIndex,
-                Statistics1DWriter writer) {
-            super(coverageByIndex, writer);
-            
-            dateFormat = new SimpleDateFormat(DATE_FORMAT);
-            dateFormat.setTimeZone(TimeZone.getTimeZone(TIMEZONE));
-        }
-
-        @Override
-        public void traverseStart(GridDatatype gridDatatype) {
-            super.traverseStart(gridDatatype);
-            try {
-                List<String> rowLabelList = new ArrayList<String>();
-                rowLabelList.add(Statistics1DWriter.TIMESTEPS_LABEL);
-                if (zAxis != null) {
-                    String zAxisName = zAxis.getName();
-                    rowLabelList.add(zAxisName + "(" + zAxis.getUnitsString() + ")");
-                }
-                writer.writerHeader(rowLabelList);
-            } catch (IOException ex) {
-                // TODO
-            }
-
-            allTimestepPerAttributeStatistics = createPerAttributeStatisticsMap();
-            allTimestepAllAttributeStatistics = new WeightedStatistics1D();
-            
-            tAxis = gridDatatype.getCoordinateSystem().getTimeAxis1D();
-        }
-
-        @Override
-        public boolean tStart(int tIndex) {
-            super.tStart(tIndex);
-            this.tIndex = tIndex;
-            return true;
-        }
-        
-        @Override
-        public void processPerAttributeGridCellCoverage(double value, double coverage, Object attribute) {
-            super.processPerAttributeGridCellCoverage(value, coverage, attribute);
             allTimestepPerAttributeStatistics.get(attribute).accumulate(value, coverage);
         }
 
         @Override
         public void processAllAttributeGridCellCoverage(double value, double coverage) {
-            super.processAllAttributeGridCellCoverage(value, coverage);
+            allAttributeStatistics.accumulate(value, coverage);
             allTimestepAllAttributeStatistics.accumulate(value, coverage);
         }
-
+        
         @Override
-        public void zEnd(int zIndex) {
-            super.zEnd(zIndex);
+        public void yxEnd() {
+            super.yxEnd();
             try {
-                Date date = tAxis.getTimeDate(tIndex);
-                List<String> rowLabelList = new ArrayList<String>();
-                rowLabelList.add(dateFormat.format(date));
-                rowLabelList.add(Double.toString(zValue));
                 writer.writeRow(
-                        rowLabelList,
-                        perAttributeStatistics.values(),
-                        allAttributeStatistics);
+                            buildRowLabel(),
+                            perAttributeStatistics.values(),
+                            allAttributeStatistics);
             } catch (IOException e) {
-                // TODO
+                
             }
         }
         
         @Override
-        public void tEnd(int tIndex) {
-            super.tEnd(tIndex);
-            if (zAxis == null) {
-                try {
-                    Date date = tAxis.getTimeDate(tIndex);
-                    List<String> rowLabelList = new ArrayList<String>();
-                    rowLabelList.add(dateFormat.format(date));
-                    writer.writeRow(
-                            rowLabelList,
-                            perAttributeStatistics.values(),
-                            allAttributeStatistics);
-                } catch (IOException e) {
-                    // TODO
-                }
-            }
-        }
-
-        @Override
         public void traverseEnd() {
             super.traverseEnd();
             try {
-                if (writer.isSummarizeFeatureAttribute()) {
-                    List<String> rowLabelList = new ArrayList<String>();
-                    rowLabelList.add(Statistics1DWriter.ALL_TIMESTEPS_LABEL);
-                    if (zAxis != null) {
-                        rowLabelList.add("");
-                    }
+                if (writer.isSummarizeFeatureAttribute() && tAxis != null) {
                     writer.writeRow(
-                            rowLabelList,
+                            buildRowLabel(Statistics1DWriter.ALL_TIMESTEPS_LABEL, zLabel == null ? null : ""),
                             allTimestepPerAttributeStatistics.values(),
                             allTimestepAllAttributeStatistics);
                 }
@@ -405,6 +272,18 @@ public class FeatureCoverageWeightedGridStatistics {
                 // TODO
             }
         }
+        
+        private List<String> buildRowLabel() {
+            return buildRowLabel(tLabel, zLabel);
+        }
+        
+        private List<String> buildRowLabel(String tLabel, String zLabel) {
+            List<String> rowLabelList = new ArrayList<String>(2);
+            rowLabelList.add(tLabel == null ? "" : tLabel);
+            if (zLabel != null) {
+                rowLabelList.add(zLabel);
+            }
+            return rowLabelList;
+        }
     }
-
 }
