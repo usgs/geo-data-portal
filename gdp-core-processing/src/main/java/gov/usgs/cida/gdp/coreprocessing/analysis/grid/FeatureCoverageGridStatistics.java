@@ -12,7 +12,6 @@ import gov.usgs.cida.gdp.coreprocessing.analysis.grid.GridUtility.IndexToCoordin
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +37,7 @@ import ucar.nc2.dt.GridDatatype;
 import static com.google.common.base.Preconditions.checkNotNull;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.Statistics1DWriter.GroupBy;
 import java.io.Writer;
+import org.geotools.feature.FeatureIterator;
 
 /**
  *
@@ -125,7 +125,7 @@ public class FeatureCoverageGridStatistics {
                 : // use order from FeatureCollection.iterator();
                 new LinkedHashMap<Object, Statistics1D>();
 
-        Iterator<SimpleFeature> featureIterator = featureCollection.iterator();
+        FeatureIterator<SimpleFeature> featureIterator = featureCollection.features();
 
         try {
             while (featureIterator.hasNext()) {
@@ -160,14 +160,13 @@ public class FeatureCoverageGridStatistics {
                                 gridToFeatureTransform,
                                 attributeStatistics));
 
-//                        categorySet.addAll(attributeStatistics.keySet());
                     } catch (InvalidRangeException e) {
-                        /* this may happen if the feature doesn't intersect the grid */
+                        /* this may happen if the feature doesn't intersect the grid, this is OK */
                     }
                 }
             }
         } finally {
-            featureCollection.close(featureIterator);
+            featureIterator.close();
         }
 
 
