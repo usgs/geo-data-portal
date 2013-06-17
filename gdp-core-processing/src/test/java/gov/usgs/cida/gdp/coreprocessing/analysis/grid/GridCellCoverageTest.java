@@ -32,6 +32,7 @@ import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 
 import static gov.usgs.cida.gdp.coreprocessing.GridCellHelper.*;
+import org.apache.commons.io.IOUtils;
 
 public class GridCellCoverageTest {
 
@@ -68,6 +69,9 @@ public class GridCellCoverageTest {
 
     @After
     public void tearDown() throws IOException {
+        if (writer != null) {
+            IOUtils.closeQuietly(writer);
+        }
         if (dataset != null) {
             dataset.close();
         }
