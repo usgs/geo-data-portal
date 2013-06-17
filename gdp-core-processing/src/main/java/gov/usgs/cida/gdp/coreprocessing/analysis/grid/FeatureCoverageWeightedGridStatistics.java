@@ -11,7 +11,6 @@ import gov.usgs.cida.gdp.coreprocessing.analysis.grid.GridCellCoverageFactory.Gr
 
 import java.util.Date;
 import java.text.SimpleDateFormat;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -34,6 +33,7 @@ import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import java.io.Writer;
 
 public class FeatureCoverageWeightedGridStatistics {
     
@@ -46,7 +46,7 @@ public class FeatureCoverageWeightedGridStatistics {
             String variableName,
             Range timeRange,
             List<Statistic> statisticList,
-            BufferedWriter writer,
+            Writer writer,
             GroupBy groupBy,
             Delimiter delimiter)
             throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException
@@ -75,7 +75,7 @@ public class FeatureCoverageWeightedGridStatistics {
             GridDatatype gridDatatype,
             Range timeRange,
             List<Statistic> statisticList,
-            BufferedWriter writer,
+            Writer writer,
             GroupBy groupBy,
             Delimiter delimiter,
             boolean requireFullCoverage,
@@ -114,6 +114,7 @@ public class FeatureCoverageWeightedGridStatistics {
                     statisticList,
                     groupBy != GroupBy.FEATURE_ATTRIBUTE,  // != in case value equals null, default to GroupBy.STATISTIC
                     delimiter.delimiter,
+                    null, // default block separator used
                     summarizeTimeStep,
                     summarizeFeatures,
                     writer);

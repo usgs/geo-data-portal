@@ -9,7 +9,6 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.prep.PreparedGeometry;
 import com.vividsolutions.jts.geom.prep.PreparedGeometryFactory;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.GridUtility.IndexToCoordinateBuilder;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,6 +37,7 @@ import ucar.nc2.dt.GridDatatype;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.Statistics1DWriter.GroupBy;
+import java.io.Writer;
 
 /**
  *
@@ -52,7 +52,7 @@ public class FeatureCoverageGridStatistics {
             String variableName,
             Range timeRange,
             List<Statistic> statisticList,
-            BufferedWriter writer,
+            Writer writer,
             GroupBy groupBy,
             Delimiter delimiter)
             throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException
@@ -81,7 +81,7 @@ public class FeatureCoverageGridStatistics {
             GridDatatype gridDatatype,
             Range timeRange,
             List<Statistic> statisticList,
-            BufferedWriter writer,
+            Writer writer,
             GroupBy groupBy,
             Delimiter delimiter,
             boolean requireFullCoverage,
@@ -182,6 +182,7 @@ public class FeatureCoverageGridStatistics {
                     statisticList,
                     groupBy != GroupBy.FEATURE_ATTRIBUTE,  // != in case value equals null, default to GroupBy.STATISTIC
                     delimiter.delimiter,
+                    null, // default block separator used
                     summarizeTimeStep,
                     summarizeFeatures,
                     writer);

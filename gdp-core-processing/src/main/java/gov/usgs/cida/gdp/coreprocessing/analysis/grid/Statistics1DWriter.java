@@ -1,19 +1,34 @@
 package gov.usgs.cida.gdp.coreprocessing.analysis.grid;
 
 import gov.usgs.cida.gdp.coreprocessing.analysis.statistics.IStatistics1D;
-import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.Writer;
+import java.security.AccessController;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import sun.security.action.GetPropertyAction;
 
 public class Statistics1DWriter {
+    
+    
+    public final static String DEFAULT_BLOCK_SEPARATOR;
     
     public final static String ALL_ATTRIBUTES_LABEL = "ALL ATTRIBUTES";
     public final static String ALL_TIMESTEPS_LABEL = "ALL TIMESTEPS";
     public final static String TIMESTEPS_LABEL = "TIMESTEP";
 
+    static {
+        String blockSeparator;
+        try {
+            blockSeparator = AccessController.doPrivileged(new GetPropertyAction("line.separator"));
+        } catch (Exception e) {
+            blockSeparator = "\n";
+        }
+        DEFAULT_BLOCK_SEPARATOR = blockSeparator;
+    } 
+    
     public enum GroupBy {
         STATISTIC,
         FEATURE_ATTRIBUTE;
@@ -55,10 +70,11 @@ public class Statistics1DWriter {
     private final String variableUnits;
     private final List<Statistic> statisticList;
     private final boolean groupByStatistic;
-    private final String delimiter;
+    private final String tokenSeparator;
+    private final String blockSeparator;
     private final boolean summarizeTimeStep;
     private final boolean summarizeFeatureAttribute;
-    private final BufferedWriter writer;
+    private final Writer writer;
 
     private final StringBuilder lineSB;
 
@@ -68,9 +84,10 @@ public class Statistics1DWriter {
             String variableUnits,
             List<Statistic> statisticList,
             boolean groupByStatistic,
-            String delimiter,
-            BufferedWriter writer) {
-        this(attributeList,variableName,variableUnits,statisticList,groupByStatistic,delimiter, false, false, writer);
+            String tokenSeparator,
+            String blockSeparator,
+            Writer writer) {
+        this(attributeList,variableName,variableUnits,statisticList,groupByStatistic,tokenSeparator,blockSeparator,false,false,writer);
     }
     
     public Statistics1DWriter(
@@ -79,17 +96,19 @@ public class Statistics1DWriter {
             String variableUnits,
             List<Statistic> statisticList,
             boolean groupByStatistic,
-            String delimiter,
+            String tokenSeparator,
+            String blockSeparator,
             boolean summarizeTimeStep,
             boolean summarizeFeatureAttribute,
-            BufferedWriter writer) {
+            Writer writer) {
 
         this.attributeList = Collections.unmodifiableList(attributeList);
         this.variableName = variableName;
         this.variableUnits = variableUnits;
         this.statisticList = Collections.unmodifiableList(statisticList);
         this.groupByStatistic = groupByStatistic;
-        this.delimiter = delimiter;
+        this.tokenSeparator = tokenSeparator;
+        this.blockSeparator = blockSeparator == null ? DEFAULT_BLOCK_SEPARATOR : blockSeparator;
         this.summarizeTimeStep = summarizeTimeStep;
         this.summarizeFeatureAttribute = summarizeFeatureAttribute;
         this.writer = writer;
@@ -134,39 +153,39 @@ public class Statistics1DWriter {
             // pad with delimieters to align headers.
             int rowLabelCount = rowLabels.size();
             for (int rowLabelIndex = 1; rowLabelIndex < rowLabelCount; ++rowLabelIndex ) {
-                lineSB.append(delimiter);
+                lineSB.append(tokenSeparator);
             }
         }
         if (groupByStatistic) {
             for (int sIndex = 0; sIndex < sCount; ++sIndex) {
                 for (int aIndex = 0; aIndex < aCount; ++aIndex ) {
-                    lineSB.append(delimiter).append(attributeLabel[aIndex]);
+                    lineSB.append(tokenSeparator).append(attributeLabel[aIndex]);
                 }
                 if (summarizeTimeStep) { 
-                    lineSB.append(delimiter).append(ALL_ATTRIBUTES_LABEL);
+                    lineSB.append(tokenSeparator).append(ALL_ATTRIBUTES_LABEL);
                 }
             }
         } else {
             for (int aIndex = 0; aIndex < aCount; ++aIndex )
                 for (int sIndex = 0; sIndex < sCount; ++sIndex) {{
-                    lineSB.append(delimiter).append(attributeLabel[aIndex]);
+                    lineSB.append(tokenSeparator).append(attributeLabel[aIndex]);
                 }
             }
             if (summarizeTimeStep) {
                 for (int sIndex = 0; sIndex < statisticLabel.length; ++sIndex) {
-                    lineSB.append(delimiter).append(ALL_ATTRIBUTES_LABEL);
+                    lineSB.append(tokenSeparator).append(ALL_ATTRIBUTES_LABEL);
                 }
             }
         }
         writer.write(lineSB.toString());
-        writer.newLine();
+        writer.write(blockSeparator);
 
         lineSB.setLength(0);
         if (rowLabels != null && rowLabels.size() > 0) {
             Iterator<String> rowLabelIterator = rowLabels.iterator();
             lineSB.append(rowLabelIterator.next());
             while (rowLabelIterator.hasNext()) {
-                lineSB.append(delimiter).append(rowLabelIterator.next());
+                lineSB.append(tokenSeparator).append(rowLabelIterator.next());
             }
         }
         
@@ -174,19 +193,19 @@ public class Statistics1DWriter {
             for (int sIndex = 0; sIndex < sCount; ++sIndex) {
                 int aCountX = summarizeTimeStep ? aCount + 1 : aCount; 
                 for (int aIndex = 0; aIndex < aCountX; ++ aIndex) {
-                    lineSB.append(delimiter).append(statisticLabel[sIndex]);
+                    lineSB.append(tokenSeparator).append(statisticLabel[sIndex]);
                 }
             }
         } else {
             int aCountX = summarizeTimeStep ? aCount + 1 : aCount;
             for (int aIndex = 0; aIndex < aCountX; ++ aIndex) {
                 for (int sIndex = 0; sIndex < sCount; ++sIndex) {
-                    lineSB.append(delimiter).append(statisticLabel[sIndex]);
+                    lineSB.append(tokenSeparator).append(statisticLabel[sIndex]);
                 }
             }
         }
         writer.write(lineSB.toString());
-        writer.newLine();
+        writer.write(blockSeparator);
     }
 
     public void writeRow(
@@ -200,36 +219,36 @@ public class Statistics1DWriter {
             Iterator<String> rowLabelIterator = rowLabels.iterator();
             lineSB.append(rowLabelIterator.next());
             while (rowLabelIterator.hasNext()) {
-                lineSB.append(delimiter).append(rowLabelIterator.next());
+                lineSB.append(tokenSeparator).append(rowLabelIterator.next());
             }
         }
 
         if (groupByStatistic) {
             for (Statistic field : statisticList) {
                 for (IStatistics1D rowValue : rowValues) {
-                    lineSB.append(delimiter).append(field.getValue(rowValue));
+                    lineSB.append(tokenSeparator).append(field.getValue(rowValue));
                 }
                 if (summarizeTimeStep) {
                     // value for ALL features across timestep
-                    lineSB.append(delimiter).append(field.getValue(rowSummary));
+                    lineSB.append(tokenSeparator).append(field.getValue(rowSummary));
                 }
             }
         } else {
             for (IStatistics1D rowValue : rowValues) {
                 for (Statistic field : statisticList) {
-                    lineSB.append(delimiter).append(field.getValue(rowValue));
+                    lineSB.append(tokenSeparator).append(field.getValue(rowValue));
                 }
             }
             if (summarizeTimeStep) {
                 // value for ALL features across timestep
                 for (Statistic field : statisticList) {
-                    lineSB.append(delimiter).append(field.getValue(rowSummary));
+                    lineSB.append(tokenSeparator).append(field.getValue(rowSummary));
                 }
             }
         }
         
         writer.write(lineSB.toString());
-        writer.newLine();
+        writer.write(blockSeparator);
     }
 
 }
