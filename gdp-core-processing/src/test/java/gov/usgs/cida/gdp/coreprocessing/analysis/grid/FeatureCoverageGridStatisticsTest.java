@@ -23,6 +23,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
+import org.junit.Ignore;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
 import ucar.ma2.InvalidRangeException;
@@ -37,7 +38,7 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
  *
  * @author tkunicki
  */
-public class FeatureCoverageWeightedGridStatisticsTest {
+public class FeatureCoverageGridStatisticsTest {
     
     static GridDataset GRID_DATASET;
     static FileDataStore FEATURE_DATASTORE;
@@ -46,7 +47,7 @@ public class FeatureCoverageWeightedGridStatisticsTest {
     SimpleFeatureCollection featureCollection;
     StringBuilderWriter writer;
     
-    public FeatureCoverageWeightedGridStatisticsTest() {
+    public FeatureCoverageGridStatisticsTest() {
     }
     
     @BeforeClass
@@ -98,16 +99,19 @@ public class FeatureCoverageWeightedGridStatisticsTest {
     }
     
     @Test
+    @Ignore
     public void testTYX() throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException, URISyntaxException {
         executeAndCharacterize("tyx");
     }
     
     @Test
+    @Ignore
     public void testZYX() throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException, URISyntaxException {
         executeAndCharacterize("zyx");
     }
     
     @Test
+    @Ignore
     public void testTZYX() throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException, URISyntaxException {
         executeAndCharacterize("tzyx");
     }
@@ -123,7 +127,7 @@ public class FeatureCoverageWeightedGridStatisticsTest {
     }
     
     private String execute(String gridName) throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException {
-        FeatureCoverageWeightedGridStatistics.execute(
+        FeatureCoverageGridStatistics.execute(
                 featureCollection,
                 "GRIDCODE",
                 getGrid(gridName),
@@ -153,7 +157,7 @@ public class FeatureCoverageWeightedGridStatisticsTest {
     }
     
     private static URL getResourceURL(String fileName) {
-        return FeatureCoverageWeightedGridStatisticsTest.class.getClassLoader().getResource(fileName);
+        return FeatureCoverageGridStatisticsTest.class.getClassLoader().getResource(fileName);
     }
 
 }
