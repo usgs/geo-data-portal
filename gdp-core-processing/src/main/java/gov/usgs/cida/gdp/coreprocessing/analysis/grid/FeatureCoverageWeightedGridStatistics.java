@@ -204,7 +204,7 @@ public class FeatureCoverageWeightedGridStatistics {
             allTimestepAllAttributeStatistics = new WeightedStatistics1D();
             
             try {
-                writer.writerHeader(buildRowLabel(
+                writer.writeHeader(buildRowLabel(
                         tAxis == null ? "" : Statistics1DWriter.TIMESTEPS_LABEL,
                         zAxis == null ? null : String.format("%s(%s)", zAxis.getShortName(), zAxis.getUnitsString())));
             } catch (IOException e) {

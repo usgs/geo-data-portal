@@ -125,7 +125,7 @@ public class Statistics1DWriter {
         return summarizeFeatureAttribute;
     }
 
-    public void writerHeader(Collection<String> rowLabels) throws IOException {
+    public void writeHeader(Collection<String> rowLabels) throws IOException {
 
         int sCount = statisticList.size();
         String[] statisticLabel = new String[sCount];

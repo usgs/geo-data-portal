@@ -192,7 +192,7 @@ public class FeatureCoverageGridStatistics {
                     summarizeFeatures,
                     writer);
 
-        writerX.writerHeader(null); // TODO! change if we add support for T or Z
+        writerX.writeHeader(null); // TODO! change if we add support for T or Z
         writerX.writeRow(null, perTimestepPerAttributeStatisticsMap.values(), perTimestepAllAttributeStatistics);
         if (summarizeFeatures) {
             // not yet...
