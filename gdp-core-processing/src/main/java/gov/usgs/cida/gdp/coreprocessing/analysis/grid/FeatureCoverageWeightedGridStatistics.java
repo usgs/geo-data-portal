@@ -165,10 +165,10 @@ public class FeatureCoverageWeightedGridStatistics {
         
         protected final Statistics1DWriter writer;
         
-        protected Map<Object, WeightedStatistics1D> perAttributeStatistics;
-        protected WeightedStatistics1D allAttributeStatistics;
+        protected Map<Object, WeightedStatistics1D> perTimestepPerAttributeStatisticsMap;
+        protected WeightedStatistics1D perTimestepAllAttributeStatistics;
         
-        protected Map<Object, WeightedStatistics1D> allTimestepPerAttributeStatistics;
+        protected Map<Object, WeightedStatistics1D> allTimestepPerAttributeStatisticsMap;
         protected WeightedStatistics1D allTimestepAllAttributeStatistics;
         
         protected CoordinateAxis1D zAxis;
@@ -200,7 +200,7 @@ public class FeatureCoverageWeightedGridStatistics {
             tAxis = gridDataType.getCoordinateSystem().getTimeAxis1D();
             zAxis = gridDataType.getCoordinateSystem().getVerticalAxis();
 
-            allTimestepPerAttributeStatistics = createPerAttributeStatisticsMap();
+            allTimestepPerAttributeStatisticsMap = createPerAttributeStatisticsMap();
             allTimestepAllAttributeStatistics = new WeightedStatistics1D();
             
             try {
@@ -229,19 +229,19 @@ public class FeatureCoverageWeightedGridStatistics {
         @Override
         public void yxStart() {
             super.yxStart();
-            perAttributeStatistics = createPerAttributeStatisticsMap();
-            allAttributeStatistics = new WeightedStatistics1D();
+            perTimestepPerAttributeStatisticsMap = createPerAttributeStatisticsMap();
+            perTimestepAllAttributeStatistics = new WeightedStatistics1D();
         }
 
         @Override
         public void processPerAttributeGridCellCoverage(double value, double coverage, Object attribute) {
-            perAttributeStatistics.get(attribute).accumulate(value, coverage);
-            allTimestepPerAttributeStatistics.get(attribute).accumulate(value, coverage);
+            perTimestepPerAttributeStatisticsMap.get(attribute).accumulate(value, coverage);
+            allTimestepPerAttributeStatisticsMap.get(attribute).accumulate(value, coverage);
         }
 
         @Override
         public void processAllAttributeGridCellCoverage(double value, double coverage) {
-            allAttributeStatistics.accumulate(value, coverage);
+            perTimestepAllAttributeStatistics.accumulate(value, coverage);
             allTimestepAllAttributeStatistics.accumulate(value, coverage);
         }
         
@@ -251,8 +251,8 @@ public class FeatureCoverageWeightedGridStatistics {
             try {
                 writer.writeRow(
                             buildRowLabel(),
-                            perAttributeStatistics.values(),
-                            allAttributeStatistics);
+                            perTimestepPerAttributeStatisticsMap.values(),
+                            perTimestepAllAttributeStatistics);
             } catch (IOException e) {
                 
             }
@@ -265,7 +265,7 @@ public class FeatureCoverageWeightedGridStatistics {
                 if (writer.isSummarizeFeatureAttribute() && tAxis != null) {
                     writer.writeRow(
                             buildRowLabel(Statistics1DWriter.ALL_TIMESTEPS_LABEL, zLabel == null ? null : ""),
-                            allTimestepPerAttributeStatistics.values(),
+                            allTimestepPerAttributeStatisticsMap.values(),
                             allTimestepAllAttributeStatistics);
                 }
             } catch (IOException ex) {
