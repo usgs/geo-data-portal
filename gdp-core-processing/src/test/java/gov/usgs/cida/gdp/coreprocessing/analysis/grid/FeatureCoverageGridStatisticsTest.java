@@ -123,7 +123,12 @@ public class FeatureCoverageGridStatisticsTest {
     }
     
     private void executeAndCharacterize(String gridName) throws URISyntaxException, IOException, InvalidRangeException, FactoryException, TransformException, SchemaException {
-        characterize(gridName, execute(gridName));
+        CharacterizationUtil.characterize(
+                RESPONSES_DIRECTORY,
+                getClass(),
+                gridName,
+                execute(gridName),
+                "csv");
     }
     
     private String execute(String gridName) throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException {
@@ -132,9 +137,9 @@ public class FeatureCoverageGridStatisticsTest {
                 "GRIDCODE",
                 getGrid(gridName),
                 (Range)null,
-                Arrays.asList(Statistic.MINIMUM, Statistic.MAXIMUM),
+                Arrays.asList(Statistic.values()),
                 writer,
-                GroupBy.FEATURE_ATTRIBUTE,
+                GroupBy.STATISTIC,
                 Delimiter.COMMA,
                 true,
                 true,
@@ -142,19 +147,7 @@ public class FeatureCoverageGridStatisticsTest {
         return writer.toString();
     }
     
-    private void characterize(String name, String response) throws URISyntaxException, IOException {
-
-        File responseFile = new File(RESPONSES_DIRECTORY, getClass().getSimpleName() + "." + name + ".expected");
-
-        if (responseFile.canRead()) {
-            String expected = FileUtils.readFileToString(responseFile);
-            assertThat(response, is(equalTo(expected)));
-        } else {
-            FileUtils.writeStringToFile(responseFile, response);
-            // to harsh?  Maybe not, somebody forgot to commit test data...
-            fail("characterization test failed, unable to find previous result to compare in " + responseFile.getAbsolutePath());
-        }
-    }
+    
     
     private static URL getResourceURL(String fileName) {
         return FeatureCoverageGridStatisticsTest.class.getClassLoader().getResource(fileName);
