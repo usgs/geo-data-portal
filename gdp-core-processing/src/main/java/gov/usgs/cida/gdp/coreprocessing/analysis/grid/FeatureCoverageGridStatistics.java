@@ -166,14 +166,13 @@ public class FeatureCoverageGridStatistics {
                         /* this may happen if the feature doesn't intersect the grid, this is OK */
                     }
                 }
-                if (summarizeTimeStep) {
-                    allAttributesStatistics1D = new Statistics1D();
-                    for (Statistics1D statistics : attributeToStatisticsMap.values()) {
-                        allAttributesStatistics1D.accumulate(statistics);
-                    }
+            }
+            if (summarizeTimeStep) {
+                allAttributesStatistics1D = new Statistics1D();
+                for (Statistics1D statistics : attributeToStatisticsMap.values()) {
+                    allAttributesStatistics1D.accumulate(statistics);
                 }
             }
-            
         } finally {
             featureIterator.close();
         }

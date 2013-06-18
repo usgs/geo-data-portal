@@ -127,6 +127,7 @@ public class Statistics1D implements IStatistics1D {
                 }
                 
                 sum += sa.sum;
+                count += sa.count;
             } else {
             	count = sa.count;
             	mean = sa.mean;
