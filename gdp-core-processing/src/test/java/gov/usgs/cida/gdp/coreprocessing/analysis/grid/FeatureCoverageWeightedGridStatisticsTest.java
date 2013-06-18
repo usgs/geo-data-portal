@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gov.usgs.cida.gdp.coreprocessing.analysis.grid;
 
 import gov.usgs.cida.gdp.coreprocessing.Delimiter;
@@ -41,7 +37,7 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
  *
  * @author tkunicki
  */
-public class FeatureCoverageGridStatisticsTest {
+public class FeatureCoverageWeightedGridStatisticsTest {
     
     static GridDataset GRID_DATASET;
     static FileDataStore FEATURE_DATASTORE;
@@ -50,7 +46,7 @@ public class FeatureCoverageGridStatisticsTest {
     SimpleFeatureCollection featureCollection;
     StringBuilderWriter writer;
     
-    public FeatureCoverageGridStatisticsTest() {
+    public FeatureCoverageWeightedGridStatisticsTest() {
     }
     
     @BeforeClass
@@ -189,7 +185,7 @@ public class FeatureCoverageGridStatisticsTest {
     }
     
     private static URL getResourceURL(String fileName) {
-        return FeatureCoverageGridStatisticsTest.class.getClassLoader().getResource(fileName);
+        return FeatureCoverageWeightedGridStatisticsTest.class.getClassLoader().getResource(fileName);
     }
 
 }
