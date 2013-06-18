@@ -94,80 +94,48 @@ public class FeatureCoverageWeightedGridStatisticsTest {
     
     @Test
     public void testYX() throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException, URISyntaxException {
-        FeatureCoverageWeightedGridStatistics.execute(
-                featureCollection,
-                "GRIDCODE",
-                getGrid("yx"),
-                (Range)null,
-                Arrays.asList(Statistic.MINIMUM, Statistic.MAXIMUM),
-                writer,
-                GroupBy.FEATURE_ATTRIBUTE,
-                Delimiter.COMMA,
-                true,
-                true,
-                true);
-                
-        characterize("yx", writer.toString());
+        executeAndCharacterize("yx");
     }
     
     @Test
     public void testTYX() throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException, URISyntaxException {
-        FeatureCoverageWeightedGridStatistics.execute(
-                featureCollection,
-                "GRIDCODE",
-                getGrid("tyx"),
-                (Range)null,
-                Arrays.asList(Statistic.MINIMUM, Statistic.MAXIMUM),
-                writer,
-                GroupBy.FEATURE_ATTRIBUTE,
-                Delimiter.COMMA,
-                true,
-                true,
-                true);
-                
-        characterize("tyx", writer.toString());
+        executeAndCharacterize("tyx");
     }
     
     @Test
     public void testZYX() throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException, URISyntaxException {
-        FeatureCoverageWeightedGridStatistics.execute(
-                featureCollection,
-                "GRIDCODE",
-                getGrid("zyx"),
-                (Range)null,
-                Arrays.asList(Statistic.MINIMUM, Statistic.MAXIMUM),
-                writer,
-                GroupBy.FEATURE_ATTRIBUTE,
-                Delimiter.COMMA,
-                true,
-                true,
-                true);
-                
-        characterize("zyx", writer.toString());
+        executeAndCharacterize("zyx");
     }
     
     @Test
     public void testTZYX() throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException, URISyntaxException {
-        FeatureCoverageWeightedGridStatistics.execute(
-                featureCollection,
-                "GRIDCODE",
-                getGrid("tzyx"),
-                (Range)null,
-                Arrays.asList(Statistic.MINIMUM, Statistic.MAXIMUM),
-                writer,
-                GroupBy.FEATURE_ATTRIBUTE,
-                Delimiter.COMMA,
-                true,
-                true,
-                true);
-                
-        characterize("tzyx", writer.toString());
+        executeAndCharacterize("tzyx");
     }
     
     private GridDatatype getGrid(String gridName) {
         GridDatatype gdt = GRID_DATASET.findGridDatatype(gridName);
         assertThat(gdt, is(notNullValue()));
         return gdt;
+    }
+    
+    private void executeAndCharacterize(String gridName) throws URISyntaxException, IOException, InvalidRangeException, FactoryException, TransformException, SchemaException {
+        characterize(gridName, execute(gridName));
+    }
+    
+    private String execute(String gridName) throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException {
+        FeatureCoverageWeightedGridStatistics.execute(
+                featureCollection,
+                "GRIDCODE",
+                getGrid(gridName),
+                (Range)null,
+                Arrays.asList(Statistic.MINIMUM, Statistic.MAXIMUM),
+                writer,
+                GroupBy.FEATURE_ATTRIBUTE,
+                Delimiter.COMMA,
+                true,
+                true,
+                true);
+        return writer.toString();
     }
     
     private void characterize(String name, String response) throws URISyntaxException, IOException {
