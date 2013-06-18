@@ -1,5 +1,6 @@
 package gov.usgs.cida.gdp.coreprocessing.analysis.grid;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import gov.usgs.cida.gdp.coreprocessing.Delimiter;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.Statistics1DWriter.Statistic;
 import gov.usgs.cida.gdp.coreprocessing.analysis.statistics.Statistics1D;
@@ -34,7 +35,6 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.Statistics1DWriter.GroupBy;
 import java.io.Writer;
 import org.geotools.feature.FeatureIterator;
@@ -127,6 +127,8 @@ public class FeatureCoverageGridStatistics {
 
         FeatureIterator<SimpleFeature> featureIterator = featureCollection.features();
 
+        
+        Statistics1D allAttributesStatistics1D = null;
         try {
             while (featureIterator.hasNext()) {
 
@@ -155,7 +157,7 @@ public class FeatureCoverageGridStatistics {
                         PreparedGeometry preparedGeometry = PreparedGeometryFactory.prepare(featureGeometry);
 
                         GridCellTraverser traverser = new GridCellTraverser(featureGridDataType);
-                        traverser.traverse(new FeatureGridCellVisitor(
+                        traverser.traverse(new FeatureCoverageGridStatistics.FeatureGridCellVisitor(
                                 preparedGeometry,
                                 gridToFeatureTransform,
                                 attributeStatistics));
@@ -164,7 +166,14 @@ public class FeatureCoverageGridStatistics {
                         /* this may happen if the feature doesn't intersect the grid, this is OK */
                     }
                 }
+                if (summarizeTimeStep) {
+                    allAttributesStatistics1D = new Statistics1D();
+                    for (Statistics1D statistics : attributeToStatisticsMap.values()) {
+                        allAttributesStatistics1D.accumulate(statistics);
+                    }
+                }
             }
+            
         } finally {
             featureIterator.close();
         }
@@ -188,7 +197,7 @@ public class FeatureCoverageGridStatistics {
 
         Collection<Statistics1D> featureStatistics = attributeToStatisticsMap.values();
         writerX.writerHeader(null); // TODO! change if we add support for T or Z
-        writerX.writeRow(null, featureStatistics, null);
+        writerX.writeRow(null, featureStatistics, allAttributesStatistics1D);
         
     }
 
