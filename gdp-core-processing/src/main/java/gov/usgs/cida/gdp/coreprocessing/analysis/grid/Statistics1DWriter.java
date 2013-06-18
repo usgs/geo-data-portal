@@ -228,7 +228,7 @@ public class Statistics1DWriter {
                 for (IStatistics1D rowValue : rowValues) {
                     lineSB.append(tokenSeparator).append(field.getValue(rowValue));
                 }
-                if (summarizeTimeStep) {
+                if (summarizeTimeStep && rowSummary != null) {
                     // value for ALL features across timestep
                     lineSB.append(tokenSeparator).append(field.getValue(rowSummary));
                 }
@@ -239,7 +239,7 @@ public class Statistics1DWriter {
                     lineSB.append(tokenSeparator).append(field.getValue(rowValue));
                 }
             }
-            if (summarizeTimeStep) {
+            if (summarizeTimeStep && rowSummary != null) {
                 // value for ALL features across timestep
                 for (Statistic field : statisticList) {
                     lineSB.append(tokenSeparator).append(field.getValue(rowSummary));
