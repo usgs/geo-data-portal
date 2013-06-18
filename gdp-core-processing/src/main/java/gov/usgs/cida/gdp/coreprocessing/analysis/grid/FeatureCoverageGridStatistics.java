@@ -119,30 +119,28 @@ public class FeatureCoverageGridStatistics {
         boolean attributeComparable = Comparable.class.isAssignableFrom(
                 attributeDescriptor.getType().getBinding());
 
-        Map<Object, Statistics1D> attributeToStatisticsMap = attributeComparable
-                ? // rely on Comparable to sort
-                new TreeMap<Object, Statistics1D>()
-                : // use order from FeatureCollection.iterator();
-                new LinkedHashMap<Object, Statistics1D>();
-
+        Map<Object, Statistics1D> perTimestepPerAttributeStatisticsMap;
+        Statistics1D perTimestepAllAttributeStatistics;
+        
+        Map<Object, Statistics1D> allTimestepPerAttributeStatisticsMap;
+        Statistics1D allTimestepAllAttributeStatistics;
+        
         FeatureIterator<SimpleFeature> featureIterator = featureCollection.features();
 
+        allTimestepPerAttributeStatisticsMap = create(attributeComparable);
+        allTimestepAllAttributeStatistics = new Statistics1D();
         
-        Statistics1D allAttributesStatistics1D = null;
         try {
+            
+            perTimestepPerAttributeStatisticsMap = create(attributeComparable);
+            perTimestepAllAttributeStatistics = new Statistics1D();
+            
             while (featureIterator.hasNext()) {
 
                 SimpleFeature feature = featureIterator.next();
                 Object attribute = feature.getAttribute(attributeName);
-
+                
                 if (attribute != null) {
-
-                    Statistics1D attributeStatistics =
-                            attributeToStatisticsMap.get(attribute);
-                    if (attributeStatistics == null) {
-                        attributeStatistics = new Statistics1D();
-                        attributeToStatisticsMap.put(attribute, attributeStatistics);
-                    }
 
                     BoundingBox featureBoundingBox = feature.getBounds();
 
@@ -156,21 +154,21 @@ public class FeatureCoverageGridStatistics {
 
                         PreparedGeometry preparedGeometry = PreparedGeometryFactory.prepare(featureGeometry);
 
+                        Statistics1D perTimestepPerFeatureStatistics = new Statistics1D();
                         GridCellTraverser traverser = new GridCellTraverser(featureGridDataType);
                         traverser.traverse(new FeatureCoverageGridStatistics.FeatureGridCellVisitor(
                                 preparedGeometry,
                                 gridToFeatureTransform,
-                                attributeStatistics));
+                                perTimestepPerFeatureStatistics));
+                        
+                        extract(perTimestepPerAttributeStatisticsMap, attribute).accumulate(perTimestepPerFeatureStatistics);
+                        extract(allTimestepPerAttributeStatisticsMap, attribute).accumulate(perTimestepPerFeatureStatistics);                        
+                        perTimestepAllAttributeStatistics.accumulate(perTimestepPerFeatureStatistics);
+                        allTimestepAllAttributeStatistics.accumulate(perTimestepPerFeatureStatistics);
 
                     } catch (InvalidRangeException e) {
                         /* this may happen if the feature doesn't intersect the grid, this is OK */
                     }
-                }
-            }
-            if (summarizeTimeStep) {
-                allAttributesStatistics1D = new Statistics1D();
-                for (Statistics1D statistics : attributeToStatisticsMap.values()) {
-                    allAttributesStatistics1D.accumulate(statistics);
                 }
             }
         } finally {
@@ -179,7 +177,7 @@ public class FeatureCoverageGridStatistics {
 
 
         String variableUnits = gridDatatype.getVariable().getUnitsString();
-        List<Object> attributeList = new ArrayList<Object>(attributeToStatisticsMap.keySet());
+        List<Object> attributeList = new ArrayList<Object>(perTimestepPerAttributeStatisticsMap.keySet());
 
         Statistics1DWriter writerX =
                 new Statistics1DWriter(
@@ -194,10 +192,11 @@ public class FeatureCoverageGridStatistics {
                     summarizeFeatures,
                     writer);
 
-        Collection<Statistics1D> featureStatistics = attributeToStatisticsMap.values();
         writerX.writerHeader(null); // TODO! change if we add support for T or Z
-        writerX.writeRow(null, featureStatistics, allAttributesStatistics1D);
-        
+        writerX.writeRow(null, perTimestepPerAttributeStatisticsMap.values(), perTimestepAllAttributeStatistics);
+        if (summarizeFeatures) {
+            // not yet...
+        }
     }
 
     protected static class FeatureGridCellVisitor extends GridCellVisitor {
@@ -233,9 +232,24 @@ public class FeatureCoverageGridStatistics {
                 }
             } catch (TransformException e) {
             }
-
-
         }
+    }
+    
+    private static Map<Object, Statistics1D> create(boolean attributeComparable) {
+        return attributeComparable ?
+                // rely on Comparable to sort
+                new TreeMap<Object, Statistics1D>() :
+                // use order from FeatureCollection.iterator();
+                new LinkedHashMap<Object, Statistics1D>();
+    }
+    
+    private static Statistics1D extract(Map<Object, Statistics1D> map, Object attribute) {
+        Statistics1D statistics = map.get(attribute);
+        if (statistics == null) {
+            statistics = new Statistics1D();
+            map.put(attribute, statistics);
+        }
+        return statistics;
     }
 
 }
