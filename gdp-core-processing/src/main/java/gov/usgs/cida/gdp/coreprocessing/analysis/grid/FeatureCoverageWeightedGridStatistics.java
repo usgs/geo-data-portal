@@ -52,7 +52,7 @@ public class FeatureCoverageWeightedGridStatistics {
     {
         GridDatatype gridDatatype = checkNotNull(
                     gridDataset.findGridDatatype(variableName),
-                    "Variable named %s not found in girdded dataset %s",
+                    "Variable named %s not found in gridded dataset %s",
                     variableName);
 
         execute(featureCollection,
