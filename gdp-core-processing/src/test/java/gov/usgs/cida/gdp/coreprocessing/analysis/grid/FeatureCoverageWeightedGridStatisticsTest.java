@@ -9,7 +9,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Formatter;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.geotools.data.FileDataStore;
@@ -132,7 +131,6 @@ public class FeatureCoverageWeightedGridStatisticsTest {
                 featureCollection,
                 "GRIDCODE",
                 getGrid(gridName),
-                (Range)null,
                 Arrays.asList(Statistic.values()),
                 writer,
                 GroupBy.STATISTIC,

@@ -202,8 +202,7 @@ public class FeatureGridStatisticsAlgorithm extends AbstractAnnotatedAlgorithm {
                 FeatureCoverageGridStatistics.execute(
                         featureCollection,
                         featureAttributeName,
-                        gridDatatype,
-                        timeRange,
+                        gridDatatype.makeSubset(null, null, timeRange, null, null, null),
                         statistics == null || statistics.isEmpty() ? Arrays.asList(Statistic.values()) : statistics,
                         writer,
                         groupBy == null ? GroupBy.STATISTIC : groupBy,

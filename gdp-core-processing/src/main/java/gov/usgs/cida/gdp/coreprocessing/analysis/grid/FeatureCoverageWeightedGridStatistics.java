@@ -11,7 +11,6 @@ import gov.usgs.cida.gdp.coreprocessing.analysis.grid.GridCellCoverageFactory.Gr
 
 import java.text.SimpleDateFormat;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,8 +56,7 @@ public class FeatureCoverageWeightedGridStatistics {
 
         execute(featureCollection,
                 attributeName,
-                gridDatatype,
-                timeRange,
+                gridDatatype.makeSubset(null, null, timeRange, null, null, null),
                 statisticList,
                 writer,
                 groupBy,
@@ -72,7 +70,6 @@ public class FeatureCoverageWeightedGridStatistics {
             FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection,
             String attributeName,
             GridDatatype gridDatatype,
-            Range timeRange,
             List<Statistic> statisticList,
             Writer writer,
             GroupBy groupBy,
@@ -86,14 +83,14 @@ public class FeatureCoverageWeightedGridStatistics {
         GridType gt = GridType.findGridType(gridDatatype.getCoordinateSystem());
         
         if( !(gt == GridType.ZYX || gt == GridType.TZYX || gt == GridType.YX || gt == GridType.TYX) ) {
-            throw new IllegalStateException("Currently require y-x or t-y-x grid with this operation");
+            throw new IllegalStateException("incompatible grid dimensions");
         }
 
         Range[] ranges = GridUtility.getXYRangesFromBoundingBox(
                 featureCollection.getBounds(),
                 gridDatatype.getCoordinateSystem(),
                 requireFullCoverage);
-        gridDatatype = gridDatatype.makeSubset(null, null, timeRange, null, ranges[1], ranges[0]);
+        gridDatatype = gridDatatype.makeSubset(null, null, null, null, ranges[1], ranges[0]);
 
         GridCellCoverageByIndex coverageByIndex =
 				GridCellCoverageFactory.generateFeatureAttributeCoverageByIndex(
@@ -204,7 +201,7 @@ public class FeatureCoverageWeightedGridStatistics {
             allTimestepAllAttributeStatistics = new WeightedStatistics1D();
             
             try {
-                writer.writeHeader(buildRowLabel(
+                writer.writeHeader(Statistics1DWriter.buildRowLabel(
                         tAxis == null ? "" : Statistics1DWriter.TIMESTEPS_LABEL,
                         zAxis == null ? null : String.format("%s(%s)", zAxis.getShortName(), zAxis.getUnitsString())));
             } catch (IOException e) {
@@ -250,7 +247,7 @@ public class FeatureCoverageWeightedGridStatistics {
             super.yxEnd();
             try {
                 writer.writeRow(
-                            buildRowLabel(),
+                            Statistics1DWriter.buildRowLabel(tLabel, zLabel),
                             perTimestepPerAttributeStatisticsMap.values(),
                             perTimestepAllAttributeStatistics);
             } catch (IOException e) {
@@ -264,26 +261,13 @@ public class FeatureCoverageWeightedGridStatistics {
             try {
                 if (writer.isSummarizeFeatureAttribute() && tAxis != null) {
                     writer.writeRow(
-                            buildRowLabel(Statistics1DWriter.ALL_TIMESTEPS_LABEL, zLabel == null ? null : ""),
+                            Statistics1DWriter.buildRowLabel(Statistics1DWriter.ALL_TIMESTEPS_LABEL, zLabel == null ? null : ""),
                             allTimestepPerAttributeStatisticsMap.values(),
                             allTimestepAllAttributeStatistics);
                 }
             } catch (IOException ex) {
                 // TODO
             }
-        }
-        
-        private List<String> buildRowLabel() {
-            return buildRowLabel(tLabel, zLabel);
-        }
-        
-        private List<String> buildRowLabel(String tLabel, String zLabel) {
-            List<String> rowLabelList = new ArrayList<String>(2);
-            rowLabelList.add(tLabel == null ? "" : tLabel);
-            if (zLabel != null) {
-                rowLabelList.add(zLabel);
-            }
-            return rowLabelList;
         }
     }
 }

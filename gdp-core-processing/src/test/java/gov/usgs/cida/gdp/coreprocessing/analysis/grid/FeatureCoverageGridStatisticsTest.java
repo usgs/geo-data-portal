@@ -9,7 +9,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Formatter;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.geotools.data.FileDataStore;
@@ -23,11 +22,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
-import org.junit.Ignore;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
 import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
@@ -99,19 +96,16 @@ public class FeatureCoverageGridStatisticsTest {
     }
     
     @Test
-    @Ignore
     public void testTYX() throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException, URISyntaxException {
         executeAndCharacterize("tyx");
     }
     
     @Test
-    @Ignore
     public void testZYX() throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException, URISyntaxException {
         executeAndCharacterize("zyx");
     }
     
     @Test
-    @Ignore
     public void testTZYX() throws IOException, InvalidRangeException, FactoryException, TransformException, SchemaException, URISyntaxException {
         executeAndCharacterize("tzyx");
     }
@@ -136,7 +130,6 @@ public class FeatureCoverageGridStatisticsTest {
                 featureCollection,
                 "GRIDCODE",
                 getGrid(gridName),
-                (Range)null,
                 Arrays.asList(Statistic.values()),
                 writer,
                 GroupBy.STATISTIC,

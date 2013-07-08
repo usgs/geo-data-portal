@@ -12,7 +12,6 @@ import com.vividsolutions.jts.geom.prep.PreparedGeometryFactory;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.GridUtility.IndexToCoordinateBuilder;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,16 +33,24 @@ import ucar.ma2.Range;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
-
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.Statistics1DWriter.GroupBy;
 import java.io.Writer;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.TimeZone;
 import org.geotools.feature.FeatureIterator;
+import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
 
 /**
  *
  * @author tkunicki
  */
 public class FeatureCoverageGridStatistics {
+    
+    public final static String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+    public final static String TIMEZONE = "UTC";
 
     public static void execute(
             FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection,
@@ -64,8 +71,7 @@ public class FeatureCoverageGridStatistics {
 
         execute(featureCollection,
                 attributeName,
-                gridDatatype,
-                timeRange,
+                gridDatatype.makeSubset(null, null, timeRange, null, null, null),
                 statisticList,
                 writer,
                 groupBy,
@@ -79,7 +85,6 @@ public class FeatureCoverageGridStatistics {
             FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection,
             String attributeName,
             GridDatatype gridDatatype,
-            Range timeRange,
             List<Statistic> statisticList,
             Writer writer,
             GroupBy groupBy,
@@ -91,8 +96,8 @@ public class FeatureCoverageGridStatistics {
 
         GridCoordSystem gcs = gridDatatype.getCoordinateSystem();
         GridType gt = GridType.findGridType(gcs);
-        if (gt != GridType.YX) {
-            throw new IllegalStateException("Currently require y-x grid for this operation");
+        if (gt != GridType.YX && gt != GridType.ZYX && gt != GridType.TZYX && gt != GridType.TYX) {
+            throw new IllegalStateException("incompatible grid dimensions");
         }
 
         // these two calls are used to test for coverage/intersection based on 'requireFullCoverage',
@@ -125,77 +130,97 @@ public class FeatureCoverageGridStatistics {
         Map<Object, Statistics1D> allTimestepPerAttributeStatisticsMap;
         Statistics1D allTimestepAllAttributeStatistics;
         
-        FeatureIterator<SimpleFeature> featureIterator = featureCollection.features();
 
         allTimestepPerAttributeStatisticsMap = create(attributeComparable);
         allTimestepAllAttributeStatistics = new Statistics1D();
         
-        try {
-            
-            perTimestepPerAttributeStatisticsMap = create(attributeComparable);
-            perTimestepAllAttributeStatistics = new Statistics1D();
-            
-            while (featureIterator.hasNext()) {
-
-                SimpleFeature feature = featureIterator.next();
-                Object attribute = feature.getAttribute(attributeName);
+        Statistics1DWriter writerX = null;
+        
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+        dateFormat.setTimeZone(TimeZone.getTimeZone(TIMEZONE));
+        
+        CoordinateAxis1D zAxis = gcs.getVerticalAxis();
+        CoordinateAxis1DTime tAxis = gcs.getTimeAxis1D();
+        
+        for (Range tRange : decompose(tAxis)) {
+            String tLabel = tRange == null ? null : dateFormat.format(gcs.getTimeAxis1D().getCalendarDate(tRange.first()).toDate());
+            for (Range zRange : decompose(zAxis)) {
+                String zLabel = zRange == null ? null : Double.toString(gcs.getVerticalAxis().getCoordValue(zRange.first()));
                 
-                if (attribute != null) {
+                FeatureIterator<SimpleFeature> featureIterator = featureCollection.features();
+                try {
 
-                    BoundingBox featureBoundingBox = feature.getBounds();
+                    perTimestepPerAttributeStatisticsMap = create(attributeComparable);
+                    perTimestepAllAttributeStatistics = new Statistics1D();
+                    
+                    featureIterator = featureCollection.features();
+                    
+                    while (featureIterator.hasNext()) {
 
-                    Geometry featureGeometry = (Geometry) feature.getDefaultGeometry();
+                        SimpleFeature feature = featureIterator.next();
+                        Object attribute = feature.getAttribute(attributeName);
 
-                    try {
-                        Range[] featureRanges = GridUtility.getXYRangesFromBoundingBox(
-                                featureBoundingBox, gridDatatype.getCoordinateSystem(), requireFullCoverage);
+                        if (attribute != null) {
 
-                        GridDatatype featureGridDataType = gridDatatype.makeSubset(null, null, null, null, featureRanges[1], featureRanges[0]);
+                            BoundingBox featureBoundingBox = feature.getBounds();
 
-                        PreparedGeometry preparedGeometry = PreparedGeometryFactory.prepare(featureGeometry);
+                            Geometry featureGeometry = (Geometry) feature.getDefaultGeometry();
 
-                        Statistics1D perTimestepPerFeatureStatistics = new Statistics1D();
-                        GridCellTraverser traverser = new GridCellTraverser(featureGridDataType);
-                        traverser.traverse(new FeatureCoverageGridStatistics.FeatureGridCellVisitor(
-                                preparedGeometry,
-                                gridToFeatureTransform,
-                                perTimestepPerFeatureStatistics));
-                        
-                        extract(perTimestepPerAttributeStatisticsMap, attribute).accumulate(perTimestepPerFeatureStatistics);
-                        extract(allTimestepPerAttributeStatisticsMap, attribute).accumulate(perTimestepPerFeatureStatistics);                        
-                        perTimestepAllAttributeStatistics.accumulate(perTimestepPerFeatureStatistics);
-                        allTimestepAllAttributeStatistics.accumulate(perTimestepPerFeatureStatistics);
+                            try {
+                                Range[] featureRanges = GridUtility.getXYRangesFromBoundingBox(
+                                        featureBoundingBox, gridDatatype.getCoordinateSystem(), requireFullCoverage);
 
-                    } catch (InvalidRangeException e) {
-                        /* this may happen if the feature doesn't intersect the grid, this is OK */
+                                GridDatatype featureGridDataType = gridDatatype.makeSubset(null, null, tRange, zRange, featureRanges[1], featureRanges[0]);
+
+                                PreparedGeometry preparedGeometry = PreparedGeometryFactory.prepare(featureGeometry);
+
+                                Statistics1D perTimestepPerFeatureStatistics = new Statistics1D();
+                                GridCellTraverser traverser = new GridCellTraverser(featureGridDataType);
+                                traverser.traverse(new FeatureCoverageGridStatistics.FeatureGridCellVisitor(
+                                        preparedGeometry,
+                                        gridToFeatureTransform,
+                                        perTimestepPerFeatureStatistics));
+
+                                extract(perTimestepPerAttributeStatisticsMap, attribute).accumulate(perTimestepPerFeatureStatistics);
+                                extract(allTimestepPerAttributeStatisticsMap, attribute).accumulate(perTimestepPerFeatureStatistics);                        
+                                perTimestepAllAttributeStatistics.accumulate(perTimestepPerFeatureStatistics);
+                                allTimestepAllAttributeStatistics.accumulate(perTimestepPerFeatureStatistics);
+
+                            } catch (InvalidRangeException e) {
+                                /* this may happen if the feature doesn't intersect the grid, this is OK */
+                            }
+                        }
                     }
+                    if (writerX == null) {
+                         writerX = new Statistics1DWriter(
+                            new ArrayList<Object>(perTimestepPerAttributeStatisticsMap.keySet()),
+                            gridDatatype.getName(),
+                            gridDatatype.getVariable().getUnitsString(),
+                            statisticList,
+                            groupBy != GroupBy.FEATURE_ATTRIBUTE,  // != in case value equals null, default to GroupBy.STATISTIC
+                            delimiter.delimiter,
+                            null, // default block separator used
+                            summarizeTimeStep,
+                            summarizeFeatures,
+                            writer);
+                            writerX.writeHeader(Statistics1DWriter.buildRowLabel(
+                                    tAxis == null ? "" : Statistics1DWriter.TIMESTEPS_LABEL,
+                                    zAxis == null ? null : String.format("%s(%s)", zAxis.getShortName(), zAxis.getUnitsString())));
+                    }
+                    writerX.writeRow(
+                            Statistics1DWriter.buildRowLabel(tLabel, zLabel),
+                            perTimestepPerAttributeStatisticsMap.values(),
+                            perTimestepAllAttributeStatistics);
+                } finally {
+                    featureIterator.close();
                 }
             }
-        } finally {
-            featureIterator.close();
         }
-
-
-        String variableUnits = gridDatatype.getVariable().getUnitsString();
-        List<Object> attributeList = new ArrayList<Object>(perTimestepPerAttributeStatisticsMap.keySet());
-
-        Statistics1DWriter writerX =
-                new Statistics1DWriter(
-                    attributeList,
-                    gridDatatype.getName(),
-                    variableUnits,
-                    statisticList,
-                    groupBy != GroupBy.FEATURE_ATTRIBUTE,  // != in case value equals null, default to GroupBy.STATISTIC
-                    delimiter.delimiter,
-                    null, // default block separator used
-                    summarizeTimeStep,
-                    summarizeFeatures,
-                    writer);
-
-        writerX.writeHeader(null); // TODO! change if we add support for T or Z
-        writerX.writeRow(null, perTimestepPerAttributeStatisticsMap.values(), perTimestepAllAttributeStatistics);
-        if (summarizeFeatures) {
-            // not yet...
+        if (summarizeFeatures && writerX != null) {
+            writerX.writeRow(
+                Statistics1DWriter.buildRowLabel(Statistics1DWriter.ALL_TIMESTEPS_LABEL, zAxis == null ? null : ""),
+                allTimestepPerAttributeStatisticsMap.values(),
+                allTimestepAllAttributeStatistics);
         }
     }
 
@@ -252,4 +277,65 @@ public class FeatureCoverageGridStatistics {
         return statistics;
     }
 
+    public static Iterable<Range> decompose(CoordinateAxis1D axis) {
+        Range range = null;
+        if (axis != null) {
+            List<Range> rangeList = axis.getRanges();
+            if (rangeList != null) {
+                if (rangeList.size() == 1) {
+                    range = rangeList.get(0);
+                } else {
+                    // decomposing along a single range for axes with more than
+                    // one is something we don't want to do.  This should only
+                    // happen with X and Y axes (and this method shouldn't be
+                    // called for those)
+                    throw new IllegalArgumentException(
+                            "Axis \"" + axis.getFullName() + "\" has coordinates with more that 1 dimension");
+                }
+            }
+        }
+        return decompose(range);
+    }
+    
+    public static Iterable<Range> decompose(Range range) {
+        return new SingleElementRangeDecomposer(range);
+    }
+    
+    public static class SingleElementRangeDecomposer implements Iterable<Range> {
+        public final Range range;
+        public SingleElementRangeDecomposer(Range range) {
+            this.range = range;
+        }
+        @Override
+        public Iterator<Range>iterator() {
+            return range == null ?
+                Arrays.asList((Range)null).iterator() :
+                new SingleElementRangeIterator(range);
+        }
+        public class SingleElementRangeIterator implements Iterator<Range> {
+            private final Range range;
+            private int next = 0;
+            public SingleElementRangeIterator(Range range) {
+                this.range = range;
+            }
+            @Override
+            public boolean hasNext() {
+                return next < range.length();
+            }
+            @Override
+            public Range next() {
+                Range r = null;
+                try {
+                    int e = range.element(next++);
+                    // yes!  upper-bound is inclusive!  Yes I agree it's wierd!
+                    r = new Range(e, e, 1);
+                } catch (InvalidRangeException ignore) { /* why is this a checked exception? */ }
+                return r;
+            }
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }   
+        }
+    }
 }

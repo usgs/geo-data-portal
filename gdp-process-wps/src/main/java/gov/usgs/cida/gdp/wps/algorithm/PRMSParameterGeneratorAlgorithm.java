@@ -274,8 +274,7 @@ public class PRMSParameterGeneratorAlgorithm extends AbstractAnnotatedAlgorithm 
                     FeatureCoverageWeightedGridStatistics.execute(
                             featureCollection,
                             featureAttributeName,
-                            gridDatatype,
-                            timeRange,
+                            gridDatatype.makeSubset(null, null, timeRange, null, null, null),
                             Arrays.asList(new Statistic[] { Statistic.MEAN } ),
                             csvWriter,
                             GroupBy.STATISTIC,

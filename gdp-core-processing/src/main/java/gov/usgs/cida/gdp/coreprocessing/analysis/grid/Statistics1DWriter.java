@@ -4,6 +4,7 @@ import gov.usgs.cida.gdp.coreprocessing.analysis.statistics.IStatistics1D;
 import java.io.IOException;
 import java.io.Writer;
 import java.security.AccessController;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -250,5 +251,13 @@ public class Statistics1DWriter {
         writer.write(lineSB.toString());
         writer.write(blockSeparator);
     }
-
+    
+    public static List<String> buildRowLabel(String tLabel, String zLabel) {
+        List<String> rowLabelList = new ArrayList<String>(2);
+        rowLabelList.add(tLabel == null ? "" : tLabel);
+        if (zLabel != null) {
+            rowLabelList.add(zLabel);
+        }
+        return rowLabelList;
+    }
 }
