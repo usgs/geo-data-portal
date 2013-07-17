@@ -14,6 +14,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriteable;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CF;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dt.GridCoordSystem;
 
 /**
@@ -79,7 +80,7 @@ public class DerivativeNetCDFFile {
             Dimension timeBoundsDimension = netCDFFile.addDimension(timeBoundsName, 2);
             
             Variable timeVariable = netCDFFile.addVariable(timeName, DataType.INT, new Dimension[]{timeDimension});
-            timeVariable.addAttribute(new Attribute(CF.UNITS, "days since " + CalendarUtil.formatCF_UTC(timeStepDescriptor.getOutputInterval().getStart().toDate())));
+            timeVariable.addAttribute(new Attribute(CDM.UNITS, "days since " + CalendarUtil.formatCF_UTC(timeStepDescriptor.getOutputInterval().getStart().toDate())));
             timeVariable.addAttribute(new Attribute("climatology", "time_bounds"));
             Variable timeBoundsVariable = netCDFFile.addVariable(timeBoundsName, DataType.INT, new Dimension[]{timeDimension, timeBoundsDimension});
             
@@ -92,7 +93,7 @@ public class DerivativeNetCDFFile {
                     derivativeCoordinateVariable.addAttribute(new Attribute(CF.STANDARD_NAME, valueDescriptor.getCoordinateStandardName()));
                 }
                 if (valueDescriptor.getCoordinateUnitName() != null) {
-                    derivativeCoordinateVariable.addAttribute(new Attribute(CF.UNITS, valueDescriptor.getCoordinateUnitName()));
+                    derivativeCoordinateVariable.addAttribute(new Attribute(CDM.UNITS, valueDescriptor.getCoordinateUnitName()));
                 }
                 derivativeCoordinateVariable.addAttribute(new Attribute("positive", CF.POSITIVE_UP));
             }
@@ -104,33 +105,33 @@ public class DerivativeNetCDFFile {
                 derivativeOutputVariable.addAttribute(new Attribute(CF.STANDARD_NAME, valueDescriptor.getOutputStandardName()));
             }
             if (valueDescriptor.getOutputUnitName() != null) {
-                derivativeOutputVariable.addAttribute(new Attribute(CF.UNITS, valueDescriptor.getOutputUnitName()));
+                derivativeOutputVariable.addAttribute(new Attribute(CDM.UNITS, valueDescriptor.getOutputUnitName()));
             }
             DataType outputDataType = valueDescriptor.getOutputDataType();
             Number outputMissingValue = valueDescriptor.getOutputMissingValue();
             switch (outputDataType) {
                 case BYTE:
-                    derivativeOutputVariable.addAttribute(new Attribute(CF.MISSING_VALUE, outputMissingValue.byteValue()));
+                    derivativeOutputVariable.addAttribute(new Attribute(CDM.MISSING_VALUE, outputMissingValue.byteValue()));
                     derivativeOutputVariable.addAttribute(new Attribute("_FillValue", outputMissingValue.byteValue()));
                     break;
                 case SHORT:
-                    derivativeOutputVariable.addAttribute(new Attribute(CF.MISSING_VALUE, outputMissingValue.shortValue()));
+                    derivativeOutputVariable.addAttribute(new Attribute(CDM.MISSING_VALUE, outputMissingValue.shortValue()));
                     derivativeOutputVariable.addAttribute(new Attribute("_FillValue", outputMissingValue.shortValue()));
                     break;
                 case INT:
-                    derivativeOutputVariable.addAttribute(new Attribute(CF.MISSING_VALUE, outputMissingValue.intValue()));
+                    derivativeOutputVariable.addAttribute(new Attribute(CDM.MISSING_VALUE, outputMissingValue.intValue()));
                     derivativeOutputVariable.addAttribute(new Attribute("_FillValue", outputMissingValue.intValue()));
                     break;
                 case LONG:
-                    derivativeOutputVariable.addAttribute(new Attribute(CF.MISSING_VALUE, outputMissingValue.longValue()));
+                    derivativeOutputVariable.addAttribute(new Attribute(CDM.MISSING_VALUE, outputMissingValue.longValue()));
                     derivativeOutputVariable.addAttribute(new Attribute("_FillValue", outputMissingValue.longValue()));
                     break;
                 case FLOAT:
-                    derivativeOutputVariable.addAttribute(new Attribute(CF.MISSING_VALUE, outputMissingValue.floatValue()));
+                    derivativeOutputVariable.addAttribute(new Attribute(CDM.MISSING_VALUE, outputMissingValue.floatValue()));
                     derivativeOutputVariable.addAttribute(new Attribute("_FillValue", outputMissingValue.floatValue()));
                     break;
                 case DOUBLE:
-                    derivativeOutputVariable.addAttribute(new Attribute(CF.MISSING_VALUE, outputMissingValue.doubleValue()));
+                    derivativeOutputVariable.addAttribute(new Attribute(CDM.MISSING_VALUE, outputMissingValue.doubleValue()));
                     derivativeOutputVariable.addAttribute(new Attribute("_FillValue", outputMissingValue.doubleValue()));
                     break;
             }

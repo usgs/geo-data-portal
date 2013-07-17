@@ -15,6 +15,7 @@ import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CF;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dt.GridCoordSystem;
@@ -47,7 +48,7 @@ public abstract class AbstractTimeStepAveragingVisitor extends DerivativeGridVis
         
         Variable gridVariable = gridDatatype.getVariable();
         Attribute gridStandardName = gridVariable.findAttribute(CF.STANDARD_NAME);
-        Attribute gridUnits = gridVariable.findAttribute(CF.UNITS);
+        Attribute gridUnits = gridVariable.findAttribute(CDM.UNITS);
         
         CoordinateAxis1D thresholdAxis = gridDatatype.getCoordinateSystem().getVerticalAxis();
         
@@ -66,7 +67,7 @@ public abstract class AbstractTimeStepAveragingVisitor extends DerivativeGridVis
         } else {
             Variable thresholdVariable = thresholdAxis.getOriginalVariable() ;
             Attribute thresholdStandardName = thresholdVariable.findAttribute(CF.STANDARD_NAME);
-            Attribute thresholdUnits = thresholdVariable.findAttribute(CF.UNITS);
+            Attribute thresholdUnits = thresholdVariable.findAttribute(CDM.UNITS);
             return new DerivativeValueDescriptor(
                     thresholdVariable.getShortName(), // name
                     thresholdStandardName == null ? null : thresholdStandardName.getStringValue(), // standard_name
