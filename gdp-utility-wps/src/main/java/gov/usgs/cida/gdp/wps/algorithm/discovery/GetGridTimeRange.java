@@ -3,6 +3,7 @@ package gov.usgs.cida.gdp.wps.algorithm.discovery;
 import com.google.common.base.Preconditions;
 import gov.usgs.cida.gdp.dataaccess.helper.OpendapServerHelper;
 import gov.usgs.cida.gdp.utilities.bean.Response;
+import gov.usgs.cida.gdp.utilities.bean.Time;
 import gov.usgs.cida.gdp.wps.cache.ResponseCache;
 import gov.usgs.cida.gdp.wps.cache.ResponseCache.CacheIdentifier;
 import org.apache.commons.lang.StringUtils;
@@ -29,10 +30,10 @@ public class GetGridTimeRange extends AbstractAnnotatedAlgorithm {
 	private static final String PARAM_CATALOG_URL = "catalog-url";
 	private static final String PARAM_GRID = "grid";
 	private static final String PARAM_USE_CACHE = "allow-cached-response";
-	private static final String PARAM_RESULT_DEFAULT = "output";
-	private static final String PARAM_RESULT_STRING = "output_as_string";
-	private static final String PARAM_RESULT_JSON = "output_as_json";
-	private static final String PARAM_RESULT_XML = "output_as_xml";
+	private static final String PARAM_RESULT_DEFAULT = "result";
+	private static final String PARAM_RESULT_STRING = "result_as_string";
+	private static final String PARAM_RESULT_JSON = "result_as_json";
+	private static final String PARAM_RESULT_XML = "result_as_xml";
 	private String catalogURL;
 	private String grid;
 	private boolean useCache = false;  // optional arguemnt, set default value
@@ -59,12 +60,20 @@ public class GetGridTimeRange extends AbstractAnnotatedAlgorithm {
 	public String getResult() {
 		return response.toXMLFragment();
 	}
-	
+
 	@LiteralDataOutput(
 			identifier = PARAM_RESULT_STRING,
 			abstrakt = "Returns the time range as a string in the format of 'start-time|end-time'")
 	public String getResultAsString() {
 		return response.toString();
+	}
+
+	@ComplexDataOutput(
+			identifier = PARAM_RESULT_XML,
+			binding = gov.usgs.cida.gdp.wps.binding.XMLTimeBinding.class,
+			abstrakt = "Returns XML")
+	public String getResultAsXML() {
+		return ((Time) response).toXML();
 	}
 
 	@ComplexDataOutput(
@@ -74,12 +83,6 @@ public class GetGridTimeRange extends AbstractAnnotatedAlgorithm {
 	public String getResultAsJSON() {
 		return response.toJSON();
 	}
-//	
-//    @ComplexDataOutput(identifier=PARAM_RESULT_XML,
-//			binding= )
-//    public String getResultAsJSON() {
-//        return response.toJSON();
-//    }
 
 	@Execute
 	public void process() {

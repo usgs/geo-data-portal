@@ -1,9 +1,12 @@
 package gov.usgs.cida.gdp.wps.generator;
 
-import gov.usgs.cida.gdp.wps.binding.JSONBinding;
+import gov.usgs.cida.gdp.wps.binding.XMLTimeBinding;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+import org.n52.wps.ServerDocument;
+import org.n52.wps.commons.WPSConfig;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.datahandler.generator.AbstractGenerator;
 
@@ -11,21 +14,22 @@ import org.n52.wps.io.datahandler.generator.AbstractGenerator;
  *
  * @author isuftin
  */
-public class JSONGenerator extends AbstractGenerator {
+public class XMLTimeGenerator extends AbstractGenerator {
 
-	public JSONGenerator() {
+	public XMLTimeGenerator() {
 		super();
-		supportedIDataTypes.add(JSONBinding.class);
+		ServerDocument.Server server = WPSConfig.getInstance().getWPSConfig().getServer();
+		supportedIDataTypes.add(XMLTimeBinding.class);
 	}
 
 	@Override
 	public InputStream generateStream(IData idata, String mimeType, String schema) throws IOException {
-		String json = null;
+		String xml = null;
 		try {
-			json = (String)idata.getPayload();
+			xml = (String) idata.getPayload();
 		} catch (Exception ex) {
 			throw new IOException("The data passed from the algorithm to the generator is not a String");
 		}
-		return new ByteArrayInputStream(json.getBytes("UTF-8"));
+		return new ByteArrayInputStream(xml.getBytes("UTF-8"));
 	}
 }

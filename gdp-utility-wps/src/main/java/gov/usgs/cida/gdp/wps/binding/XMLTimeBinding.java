@@ -6,13 +6,13 @@ import org.n52.wps.io.data.IComplexData;
  *
  * @author isuftin
  */
-public class JSONBinding implements IComplexData {
-	protected String json;
+public class XMLTimeBinding implements IComplexData {
+	protected String xml;
 	protected String mimeType;
 		
-	public JSONBinding(String json) {
-		this.json = json;
-		this.mimeType = "application/json";
+	public XMLTimeBinding(String xml) {
+		this.xml = xml;
+		this.mimeType = "text/xml";
 	}
 
 	public String getMimeType() {
@@ -21,7 +21,7 @@ public class JSONBinding implements IComplexData {
 	
 	@Override
 	public String getPayload() {
-		return json;
+		return xml;
 	}
 
 	@Override

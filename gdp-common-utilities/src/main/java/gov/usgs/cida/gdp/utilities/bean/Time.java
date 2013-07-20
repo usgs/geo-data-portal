@@ -3,10 +3,8 @@ package gov.usgs.cida.gdp.utilities.bean;
 import com.thoughtworks.xstream.XStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import com.thoughtworks.xstream.io.xml.QNameMap;
@@ -67,7 +65,7 @@ public class Time extends Response {
 	public String toXML() {
 		String result;
 		QNameMap qmap = new QNameMap();
-		qmap.setDefaultNamespace("gdptime-1.0.xsd");
+		qmap.setDefaultNamespace("xsd/gdptime-1.0.xsd");
 		qmap.setDefaultPrefix("gdp");
 		StaxDriver sd = new StaxDriver(qmap);
 		XStream xstream = new XStream(sd);

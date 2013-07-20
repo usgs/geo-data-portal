@@ -69,6 +69,14 @@
             <groupId>edu.ucar</groupId>
             <artifactId>opendap</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.thoughtworks.xstream</groupId>
+            <artifactId>xstream</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <finalName>gdp-data-access</finalName>
