@@ -139,6 +139,15 @@
     </dependencies>
     <dependencyManagement>
         <dependencies>
+			<!-- Used for JSON serialization in Utility WPS 
+				with XStream. XStream documentation says that
+				jettison 1.3.x is not compatible but testing
+				shows that it works fine -->
+			<dependency>
+				<groupId>org.codehaus.jettison</groupId>
+				<artifactId>jettison</artifactId>
+				<version>1.3.4</version>
+			</dependency>
             <!-- 52North BOM -->
             <dependency>
                 <groupId>org.n52.wps</groupId>

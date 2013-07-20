@@ -318,7 +318,7 @@ public abstract class NetCDFUtility {
                 dateRange.add("2100-12-31 00:00:00Z");
             }
         }
-        Time result = new Time(dateRange);
+        Time result = new Time(dateRange.toArray(new String[0]));
         return result;
     }
 

@@ -49,7 +49,7 @@ public class OpendapServerHelper {
 			}
 		}
 
-		Time timeBean = new Time(dateRange);
+		Time timeBean = new Time(dateRange.toArray(new String[0]));
 
 		return timeBean;
 	}

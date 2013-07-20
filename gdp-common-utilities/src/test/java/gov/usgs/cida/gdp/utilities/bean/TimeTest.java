@@ -40,9 +40,7 @@ public class TimeTest {
 
 	@Test
 	public void testCreateTimeWithDateRangeStringList() {
-		List<String> input = new ArrayList<String>();
-		input.add("2001-07-01T01:01:01Z");
-		input.add("2002-07-15T01:01:01Z");
+		String[] input = new String[] {"2001-07-01T01:01:01Z", "2002-07-15T01:01:01Z"};
 		Time result = null;
 		try {
 			result = new Time(input);
@@ -56,9 +54,7 @@ public class TimeTest {
 
 	@Test
 	public void testCreateTimeJSON() {
-		List<String> input = new ArrayList<String>();
-		input.add("2001-07-01T01:01:01Z");
-		input.add("2002-07-15T01:01:01Z");
+		String[] input = new String[] {"2001-07-01T01:01:01Z", "2002-07-15T01:01:01Z"};
 		Time bean = null;
 		try {
 			bean = new Time(input);
@@ -68,15 +64,12 @@ public class TimeTest {
 		
 		String result = bean.toJSON();
 		assertNotNull(result);
-		assertTrue(result.contains("\"time\": \"2001-07-01T01:01:01Z\""));
-		assertTrue(result.contains("\"time\": \"2002-07-15T01:01:01Z\""));
+		assertTrue(result.contains("\"time\":[\"2001-07-01T01:01:01Z\",\"2002-07-15T01:01:01Z\"]"));
 	}
 	
 	@Test
 	public void testCreateTimeXML() {
-		List<String> input = new ArrayList<String>();
-		input.add("2001-07-01T01:01:01Z");
-		input.add("2002-07-15T01:01:01Z");
+		String[] input = new String[] {"2001-07-01T01:01:01Z", "2002-07-15T01:01:01Z"};
 		Time bean = null;
 		try {
 			bean = new Time(input);
@@ -90,9 +83,7 @@ public class TimeTest {
 	
 		@Test
 	public void testCreateTimeString() {
-		List<String> input = new ArrayList<String>();
-		input.add("2001-07-01T01:01:01Z");
-		input.add("2002-07-15T01:01:01Z");
+		String[] input = new String[] {"2001-07-01T01:01:01Z", "2002-07-15T01:01:01Z"};
 		Time bean = null;
 		try {
 			bean = new Time(input);
@@ -107,7 +98,7 @@ public class TimeTest {
 
 	@Test
 	public void testCreateTimeWithEmptyRangeStringList() {
-		List<String> input = new ArrayList<String>();
+		String[] input = new String[]{};
 		Time result = null;
 		try {
 			result = new Time(input);
@@ -133,13 +124,6 @@ public class TimeTest {
 		} catch (Exception ex) {
 			assertEquals(ex.getClass(), ParseException.class);
 		}
-	}
-
-	@Test
-	public void testTimeSetGetTime() {
-		Time target = new Time();
-		target.setTime(Arrays.asList("1", "2"));
-		assertEquals(target.getTime().size(), 2);
 	}
 
 	@Test

@@ -10,6 +10,10 @@
     <name>GDP Common Utilities</name>
     <dependencies>
         <!-- version numbers set in parent pom -->
+		<dependency>
+			<groupId>org.codehaus.jettison</groupId>
+			<artifactId>jettison</artifactId>
+		</dependency>
         <dependency>
             <artifactId>slf4j-api</artifactId>
             <groupId>org.slf4j</groupId>

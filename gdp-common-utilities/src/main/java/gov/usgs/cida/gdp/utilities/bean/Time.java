@@ -17,33 +17,33 @@ public class Time extends Response {
 
     @XStreamAlias("times")
     @XStreamImplicit(itemFieldName = "time")
-    private List<String> time;
+    private String[] time;
     private TimeBreakdown starttime;
     private TimeBreakdown endtime;
 
     public Time() {
-        this.time = new ArrayList<String>();
+        this.time = new String[2];
         this.starttime = new TimeBreakdown();
         this.endtime = new TimeBreakdown();
     }
 
-    public Time(List<String> dateRange) throws ParseException {
+    public Time(String[] dateRange) throws ParseException {
         this.time = dateRange;
 
-        if (this.time.isEmpty()) {
+        if (this.time.length == 0) {
             this.starttime = new TimeBreakdown();
             this.endtime = new TimeBreakdown();
         } else {
-            this.starttime = new TimeBreakdown(dateRange.get(0));
-            this.endtime = new TimeBreakdown(dateRange.get(1));
+            this.starttime = new TimeBreakdown(dateRange[0]);
+            this.endtime = new TimeBreakdown(dateRange[1]);
         }
     }
 
-    public void setTime(List<String> time) {
+    public void setTime(String[] time) {
         this.time = time;
     }
 
-    public List<String> getTime() {
+    public String[] getTime() {
         return time;
     }
 
@@ -78,7 +78,7 @@ public class Time extends Response {
 	
 	@Override
 	public String toString() {
-		return this.time.get(0) + "|" + this.time.get(1);
+		return this.time[0] + "|" + this.time[1];
 	}
 
     static class TimeBreakdown extends Response {
