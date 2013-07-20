@@ -1,29 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <WPSConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://n52.org/wps schema_v1.xsd" xmlns="http://n52.org/wps">
-    <Datahandlers>
-        <ParserList>
-            <Parser active="true" name="Base64ZippedShapefileParser" className="gov.usgs.cida.gdp.wps.parser.BinZippedBase64SHPParser">
-                <Format mimetype="application/x-zipped-shp" encoding="base64"/>
-            </Parser>
-        </ParserList>
-        <GeneratorList>
-        </GeneratorList>
-    </Datahandlers>
-    <AlgorithmRepositoryList>
-        <Repository active="true" name="LocalAlgorithmRepository" className="org.n52.wps.server.LocalAlgorithmRepository">
-            <Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.filemanagement.ReceiveFiles</Property>
-            <Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.filemanagement.GetWatersGeom</Property>
-            <Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.filemanagement.CreateNewShapefileDataStore</Property>
-            <Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.communication.EmailWhenFinishedAlgorithm</Property>
-            <Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.communication.GeoserverManagementAlgorithm</Property>
-            <Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.discovery.ListOpendapGrids</Property>
-            <Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.discovery.CalculateWCSCoverageInfo</Property>
-            <Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.discovery.GetWcsCoverages</Property>
-            <Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.discovery.GetGridTimeRange</Property>
-        </Repository>
-    </AlgorithmRepositoryList>
-    <Server hostname="@hostname@" hostport="@hostport@" webappPath="@webappPath@" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false">
-        <Property active="true" name="responseURLFilterEnabled">true</Property>
-        <Database/>
-    </Server>
+	<Datahandlers>
+		<ParserList>
+			<Parser active="true" name="Base64ZippedShapefileParser" className="gov.usgs.cida.gdp.wps.parser.BinZippedBase64SHPParser">
+				<Format mimetype="application/x-zipped-shp" encoding="base64"/>
+			</Parser>
+		</ParserList>
+		<GeneratorList>
+			<Generator name="JSONGenerator" className="gov.usgs.cida.gdp.wps.generator.JSONGenerator" active="true">
+				<Format mimetype="application/json"/>
+			</Generator>
+		</GeneratorList>
+	</Datahandlers>
+	<AlgorithmRepositoryList>
+		<Repository active="true" name="LocalAlgorithmRepository" className="org.n52.wps.server.LocalAlgorithmRepository">
+			<Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.filemanagement.ReceiveFiles</Property>
+			<Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.filemanagement.GetWatersGeom</Property>
+			<Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.filemanagement.CreateNewShapefileDataStore</Property>
+			<Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.communication.EmailWhenFinishedAlgorithm</Property>
+			<Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.communication.GeoserverManagementAlgorithm</Property>
+			<Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.discovery.ListOpendapGrids</Property>
+			<Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.discovery.CalculateWCSCoverageInfo</Property>
+			<Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.discovery.GetWcsCoverages</Property>
+			<Property active="true" name="Algorithm">gov.usgs.cida.gdp.wps.algorithm.discovery.GetGridTimeRange</Property>
+		</Repository>
+	</AlgorithmRepositoryList>
+	<Server hostname="@hostname@" hostport="@hostport@" webappPath="@webappPath@" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false">
+		<Property active="true" name="responseURLFilterEnabled">true</Property>
+		<Database/>
+	</Server>
 </WPSConfiguration>
