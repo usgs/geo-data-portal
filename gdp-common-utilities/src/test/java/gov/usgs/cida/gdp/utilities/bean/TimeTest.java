@@ -68,6 +68,8 @@ public class TimeTest {
 		
 		String result = bean.toJSON();
 		assertNotNull(result);
+		assertTrue(result.contains("\"time\": \"2001-07-01T01:01:01Z\""));
+		assertTrue(result.contains("\"time\": \"2002-07-15T01:01:01Z\""));
 	}
 	
 	@Test
@@ -100,6 +102,7 @@ public class TimeTest {
 		
 		String result = bean.toString();
 		assertNotNull(result);
+		assertEquals(result, "2001-07-01T01:01:01Z|2002-07-15T01:01:01Z");
 	}
 
 	@Test

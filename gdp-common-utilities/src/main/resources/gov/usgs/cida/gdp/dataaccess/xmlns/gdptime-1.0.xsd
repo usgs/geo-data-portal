@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+	
+	<xs:group name="timebreakdown">
+		<xs:sequence>
+			<xs:element name="month" type="xs:integer" minOccurs="1" maxOccurs="1" />
+			<xs:element name="day" type="xs:integer" minOccurs="1" maxOccurs="1" />
+			<xs:element name="year" type="xs:gYear" minOccurs="1" maxOccurs="1" />
+			<xs:element name="timezone" type="xs:integer" minOccurs="1" maxOccurs="1" />
+			<xs:element name="hour" type="xs:integer" minOccurs="1" maxOccurs="1" />
+			<xs:element name="minute" type="xs:integer" minOccurs="1" maxOccurs="1" />
+			<xs:element name="second" type="xs:integer" minOccurs="1" maxOccurs="1" />
+		</xs:sequence>
+	</xs:group>
+	
+	<xs:element name="availabletimes">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="time" type="xs:dateTime" minOccurs="2" maxOccurs="2" />
+				<xs:complexType name="starttime" minOccurs="1" maxOccurs="1">
+					<xs:group ref="timebreakdown" />
+				</xs:complexType>
+				<xs:complexType name="endtime" minOccurs="1" maxOccurs="1">
+					<xs:group ref="timebreakdown" />
+				</xs:complexType>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

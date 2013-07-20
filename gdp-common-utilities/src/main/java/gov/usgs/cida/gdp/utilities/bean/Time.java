@@ -1,5 +1,6 @@
 package gov.usgs.cida.gdp.utilities.bean;
 
+import com.thoughtworks.xstream.XStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -8,6 +9,8 @@ import java.util.Date;
 import java.util.List;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
+import com.thoughtworks.xstream.io.xml.QNameMap;
+import com.thoughtworks.xstream.io.xml.StaxDriver;
 
 @XStreamAlias("availabletimes")
 public class Time extends Response {
@@ -59,6 +62,19 @@ public class Time extends Response {
     public TimeBreakdown getEndtime() {
         return endtime;
     }
+	
+	@Override 
+	public String toXML() {
+		String result;
+		QNameMap qmap = new QNameMap();
+		qmap.setDefaultNamespace("gdptime-1.0.xsd");
+		qmap.setDefaultPrefix("gdp");
+		StaxDriver sd = new StaxDriver(qmap);
+		XStream xstream = new XStream(sd);
+		xstream.autodetectAnnotations(true);
+		result = xstream.toXML(this);
+		return result;
+	}
 	
 	@Override
 	public String toString() {
