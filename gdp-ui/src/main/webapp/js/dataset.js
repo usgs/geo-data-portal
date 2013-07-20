@@ -1186,7 +1186,7 @@ var Dataset = function() {
             'grid': [selectedGrid],
             'allow-cached-response': [useCache]
         }
-        var getTimeRangeWpsOutput = ['result'];
+        var getTimeRangeWpsOutput = ['result_as_json'];
 
         WPS.sendWpsExecuteRequest(
             Constant.endpoint.proxy + Constant.endpoint.utilitywps, 
@@ -1194,12 +1194,16 @@ var Dataset = function() {
             getTimeRangeWpsInputs,
             getTimeRangeWpsOutput, 
             false, 
-            initDatePickers
+            initDatePickers,
+			null,
+			true, 
+			'json', 
+			'application/json'
             );
     }
 
-    function initDatePickers(xml) {
-        if (!WPS.checkWpsResponse(xml, "Error getting time range from server.")) {
+    function initDatePickers(json) {
+        if (!json || !json.availabletimes || !json.availabletimes.time || json.availabletimes.time.length === 0) {
             $(_DATASET_ID_TOOLTIP).hide();
             $(_DATASET_ID_LABEL).hide();
             $(_DATASET_ID).hide();
@@ -1212,10 +1216,10 @@ var Dataset = function() {
         }
         logger.debug('GDP: Initiating date pickers for grid timerange.');
         
-        var dates = $(xml).find('LiteralData').text() || '';
-		var startTime = dates.split('|')[0];
-		var endTime = dates.split('|')[1];
-        if (!dates || !startTime || !endTime) {
+        var dates = json.availabletimes.time || [];
+		var startTime = json.availabletimes.time[0];
+		var endTime = json.availabletimes.time[1];
+        if (!startTime || !endTime) {
             logger.debug('GDP: This grid does not contain a time range.');
             _hasTimeRange = false;
             return true;

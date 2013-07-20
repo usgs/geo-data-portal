@@ -1,6 +1,6 @@
 WPS = function() {
     
-    function createWpsExecuteXML(wpsAlgorithm, stringInputs, xmlInputs, outputs, async) {
+    function createWpsExecuteXML(wpsAlgorithm, stringInputs, xmlInputs, outputs, async, rawOutput, mimeType) {
         var xml =
         '<?xml version="1.0" encoding="UTF-8"?> \
              <wps:Execute service="WPS" version="1.0.0" \
@@ -39,22 +39,25 @@ WPS = function() {
 
         xml +=
         '</wps:DataInputs> \
-               <wps:ResponseForm> \
-                 <wps:ResponseDocument' + (async ? ' storeExecuteResponse="true" status="true"' : '') + '>';
-
-        for (var k = 0; k < outputs.length; k++) {
+               <wps:ResponseForm>';
+		if (rawOutput) {
+			xml += '<wps:RawDataOutput mimeType="'+mimeType+'">';
+            xml += '<ows:Identifier>'+outputs[0]+'</ows:Identifier>';
+			xml += '</wps:RawDataOutput>';
+		} else {
+            xml +=     '<wps:ResponseDocument' + (async ? ' storeExecuteResponse="true" status="true"' : '') + '>';
+			for (var k = 0; k < outputs.length; k++) {
             xml +=
             '<wps:Output' + (async ? ' asReference="true"' : '') + '> \
                      <ows:Identifier>' + outputs[k] + '</ows:Identifier> \
                    </wps:Output>';
 
-        }
-
-        xml +=
-        '</wps:ResponseDocument> \
-               </wps:ResponseForm> \
-             </wps:Execute>';
-
+			}
+			xml += '</wps:ResponseDocument>';
+		}
+		
+        xml += '</wps:ResponseForm></wps:Execute>';
+               
         return xml;
     }
 
@@ -78,19 +81,22 @@ WPS = function() {
         // Inputs should be an object with the key equaling the input identifier, and
         // the value equaling an array of data. Each value is required to be an array
         // so that all properties can be handled identically when creating the xml.
-        sendWpsExecuteRequest: function(wpsEndpoint, wpsAlgorithm, stringInputs, outputs, async, callback, xmlInputs) {
-            logger.debug('GDP: Sending WPS Execute request for algorithm: ' + wpsAlgorithm)
-            $.ajax( {
+        sendWpsExecuteRequest: function(wpsEndpoint, wpsAlgorithm, stringInputs, outputs, async, callback, xmlInputs, rawOutput, dataType, mimeType) {
+			
+			var ajaxInputs = {
                 url : wpsEndpoint,
                 type : 'post',
-                data : createWpsExecuteXML(wpsAlgorithm, stringInputs, xmlInputs, outputs, async),
+                data : createWpsExecuteXML(wpsAlgorithm, stringInputs, xmlInputs, outputs, async, rawOutput, mimeType),
                 processData : false,
-                dataType : 'xml',
-                contentType : 'text/xml',
+                dataType : dataType || 'xml',
+                contentType : mimeType || 'text/xml',
                 success : function(data, textStatus, XMLHttpRequest) {
                     callback(data);
                 }
-            });
+            };
+			
+            logger.debug('GDP: Sending WPS Execute request for algorithm: ' + wpsAlgorithm);
+            $.ajax(ajaxInputs);
         },
 
         sendWPSGetRequest: function(url, data, async, callback) {
