@@ -10,7 +10,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 @XStreamAlias("availabletimes")
-public class Time extends XmlResponse {
+public class Time extends Response {
 
     @XStreamAlias("times")
     @XStreamImplicit(itemFieldName = "time")
@@ -23,15 +23,6 @@ public class Time extends XmlResponse {
         this.starttime = new TimeBreakdown();
         this.endtime = new TimeBreakdown();
     }
-//
-//    public Time(GridDataset geoGrid, String gridSelection) {
-//        List<String> result = new ArrayList<String>();
-//        GeoGrid grid = geoGrid.findGridByName(gridSelection);
-//        for (NamedObject Obj : grid.getTimes()) {
-//            result.add(Obj.getName());
-//            this.time = result;
-//        }
-//    }
 
     public Time(List<String> dateRange) throws ParseException {
         this.time = dateRange;
@@ -68,8 +59,13 @@ public class Time extends XmlResponse {
     public TimeBreakdown getEndtime() {
         return endtime;
     }
+	
+	@Override
+	public String toString() {
+		return this.time.get(0) + "|" + this.time.get(1);
+	}
 
-    static class TimeBreakdown extends XmlResponse {
+    static class TimeBreakdown extends Response {
 
         private int month;
         private int day;

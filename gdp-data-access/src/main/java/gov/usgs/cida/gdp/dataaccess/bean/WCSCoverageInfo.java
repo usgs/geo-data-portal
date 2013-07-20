@@ -1,10 +1,10 @@
 package gov.usgs.cida.gdp.dataaccess.bean;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
+import gov.usgs.cida.gdp.utilities.bean.Response;
 
 @XStreamAlias("WCSCoverageInfo")
-public class WCSCoverageInfo extends XmlResponse {
+public class WCSCoverageInfo extends Response {
 
     private static long serialVersionUID = 1L;
 

@@ -3,7 +3,7 @@ package gov.usgs.cida.gdp.wps.algorithm.discovery;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import gov.usgs.cida.gdp.dataaccess.helper.OpendapServerHelper;
-import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
+import gov.usgs.cida.gdp.utilities.bean.Response;
 import gov.usgs.cida.gdp.wps.cache.ResponseCache;
 import gov.usgs.cida.gdp.wps.cache.ResponseCache.CacheIdentifier;
 import static gov.usgs.cida.gdp.wps.cache.ResponseCache.CacheIdentifier.CacheType.*;
@@ -57,11 +57,11 @@ public class ListOpendapGrids extends AbstractAnnotatedAlgorithm {
                 catalogURL, DATA_TYPE, null);
 
         StringBuilder response = new StringBuilder();
-        List<XmlResponse> xmlResponseList;
+        List<Response> xmlResponseList;
         try {
             if (useCache && ResponseCache.hasCachedResponse(cacheIdentifier)) {
                 xmlResponseList = Lists.newLinkedList();
-                XmlResponse readXmlFromCache = ResponseCache.readXmlFromCache(cacheIdentifier);
+                Response readXmlFromCache = ResponseCache.readXmlFromCache(cacheIdentifier);
                 xmlResponseList.add(readXmlFromCache);
             }
             else {
@@ -70,7 +70,7 @@ public class ListOpendapGrids extends AbstractAnnotatedAlgorithm {
                     ResponseCache.writeXmlToCache(cacheIdentifier, xmlResponseList.get(0));
                 }
             }
-            for (XmlResponse xmlResponse : xmlResponseList) {
+            for (Response xmlResponse : xmlResponseList) {
                 response.append(xmlResponse.toXML()).append("\n");
             }
             result = response.toString();

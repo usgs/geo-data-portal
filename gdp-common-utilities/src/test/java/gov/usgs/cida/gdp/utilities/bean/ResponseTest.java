@@ -15,9 +15,9 @@ import static org.hamcrest.Matchers.*;
  *
  * @author isuftin
  */
-public class XmlResponseTest {
+public class ResponseTest {
 
-    public XmlResponseTest() {
+    public ResponseTest() {
     }
 
     @BeforeClass
@@ -30,7 +30,7 @@ public class XmlResponseTest {
 
     @Test
     public void testSomeMethod() {
-        XmlResponse item = new XmlResponse();
+        Response item = new Response();
         String test = item.toXML();
         assertThat(test, is(notNullValue()));
     }

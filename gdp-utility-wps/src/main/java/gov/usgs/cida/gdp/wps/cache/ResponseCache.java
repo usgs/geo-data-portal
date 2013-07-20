@@ -1,7 +1,7 @@
 package gov.usgs.cida.gdp.wps.cache;
 
 import gov.usgs.cida.gdp.constants.AppConstant;
-import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
+import gov.usgs.cida.gdp.utilities.bean.Response;
 import gov.usgs.cida.gdp.wps.cache.ResponseCache.CacheIdentifier.CacheType;
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +18,7 @@ public class ResponseCache {
     private static final Logger log = LoggerFactory.getLogger(
             ResponseCache.class);
 
-    public static synchronized XmlResponse readXmlFromCache(CacheIdentifier ci) {
+    public static synchronized Response readXmlFromCache(CacheIdentifier ci) {
         File cacheFile = ci.getFile();
         log.debug("Reading from {} cache for {} at file location {}",
                   new Object[] { ci.cacheType.getType(), ci.datasetUri, cacheFile });
@@ -32,7 +32,7 @@ public class ResponseCache {
     }
 
     public static synchronized void writeXmlToCache(CacheIdentifier ci,
-                                                    XmlResponse xml) throws
+                                                    Response xml) throws
             IOException {
         File cacheFile = ci.getFile();
         log.debug("Writing to {} cache for {} at file location {}",

@@ -1212,18 +1212,18 @@ var Dataset = function() {
         }
         logger.debug('GDP: Initiating date pickers for grid timerange.');
         
-        var datesXML = $(xml).find('availabletimes');
-        
-        var beginYear = $(datesXML).find('starttime year');
-        if (beginYear.text() == 0) {
+        var dates = $(xml).find('LiteralData').text() || '';
+		var startTime = dates.split('|')[0];
+		var endTime = dates.split('|')[1];
+        if (!dates || !startTime || !endTime) {
             logger.debug('GDP: This grid does not contain a time range.');
             _hasTimeRange = false;
             return true;
         }
         _hasTimeRange = true;
 
-        var fromDate = $.datepicker.parseDate('yy-mm-dd', $(datesXML).find('time:eq(0)').text().split('T')[0]);
-        var toDate = $.datepicker.parseDate('yy-mm-dd', $(datesXML).find('time:eq(1)').text().split('T')[0]);
+        var fromDate = $.datepicker.parseDate('yy-mm-dd',startTime.split('T')[0]);
+        var toDate = $.datepicker.parseDate('yy-mm-dd', endTime.split('T')[0]);
         logger.debug('GDP: Grid time range is from ' + fromDate + ' to ' + toDate);
         
         $(_DATE_RANGE_FROM_INPUT_BOX).datepicker("destroy");

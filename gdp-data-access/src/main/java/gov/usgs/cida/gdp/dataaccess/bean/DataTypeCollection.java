@@ -8,10 +8,10 @@ import ucar.nc2.VariableSimpleIF;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
+import gov.usgs.cida.gdp.utilities.bean.Response;
 
 @XStreamAlias("datatypecollection")
-public class DataTypeCollection extends XmlResponse {
+public class DataTypeCollection extends Response {
 
     @XStreamAlias("datatype")
 	@XStreamAsAttribute
@@ -66,7 +66,7 @@ public class DataTypeCollection extends XmlResponse {
     }
 	
     @XStreamAlias("type")
-	static public class DataTypeBean extends XmlResponse {
+	static public class DataTypeBean extends Response {
 
 		private String description;
 		private String name;

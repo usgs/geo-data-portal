@@ -2,7 +2,7 @@ package gov.usgs.cida.gdp.wps.algorithm.discovery;
 
 import com.google.common.base.Preconditions;
 import gov.usgs.cida.gdp.dataaccess.helper.OpendapServerHelper;
-import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
+import gov.usgs.cida.gdp.utilities.bean.Response;
 import gov.usgs.cida.gdp.wps.cache.ResponseCache;
 import gov.usgs.cida.gdp.wps.cache.ResponseCache.CacheIdentifier;
 import org.apache.commons.lang.StringUtils;
@@ -18,7 +18,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author isuftin
  */
-@Algorithm(version="1.0.0")
+@Algorithm(
+		version="1.0.0",
+		title = "Get Grid Time Range",
+		abstrakt = ""
+		)
 public class GetGridTimeRange extends AbstractAnnotatedAlgorithm {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(GetGridTimeRange.class);
@@ -58,19 +62,19 @@ public class GetGridTimeRange extends AbstractAnnotatedAlgorithm {
         Preconditions.checkArgument(StringUtils.isNotBlank(catalogURL), "Invalid " + PARAM_CATALOG_URL);
         Preconditions.checkArgument(StringUtils.isNotBlank(grid), "Invalid " + PARAM_GRID);
         
-        XmlResponse xmlResponse = null;
+        Response response = null;
         CacheIdentifier cacheIdentifier = new CacheIdentifier(
                 catalogURL,
                 CacheIdentifier.CacheType.TIME_RANGE,
                 grid);
         try {
             if (useCache && ResponseCache.hasCachedResponse(cacheIdentifier)) {
-                xmlResponse = ResponseCache.readXmlFromCache(cacheIdentifier);
+                response = ResponseCache.readXmlFromCache(cacheIdentifier);
             }
             else {
-                xmlResponse = OpendapServerHelper.getTimeBean(catalogURL, grid);
+                response = OpendapServerHelper.getTimeBean(catalogURL, grid);
                 if (useCache) {
-                    ResponseCache.writeXmlToCache(cacheIdentifier, xmlResponse);
+                    ResponseCache.writeXmlToCache(cacheIdentifier, response);
                 }
             }
         } catch (Exception ex) {
@@ -78,6 +82,6 @@ public class GetGridTimeRange extends AbstractAnnotatedAlgorithm {
             addError(ex.getMessage());
             throw new RuntimeException("Error occured while getting time range.  Function halted.",ex);
         }
-        result = xmlResponse.toXML();
+        result = response.toString();
     }
 }

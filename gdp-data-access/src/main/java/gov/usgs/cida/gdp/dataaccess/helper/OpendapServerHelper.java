@@ -3,7 +3,7 @@ package gov.usgs.cida.gdp.dataaccess.helper;
 import gov.usgs.cida.gdp.dataaccess.bean.DataTypeCollection;
 import gov.usgs.cida.gdp.dataaccess.bean.DataTypeCollection.DataTypeBean;
 import gov.usgs.cida.gdp.utilities.bean.Time;
-import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
+import gov.usgs.cida.gdp.utilities.bean.Response;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -150,10 +150,10 @@ public class OpendapServerHelper {
 		return dateList;
 	}
 
-	public static List<XmlResponse> getGridBeanListFromServer(String datasetUrl)
+	public static List<Response> getGridBeanListFromServer(String datasetUrl)
 			throws IllegalArgumentException, IOException {
 
-		List<XmlResponse> result = new ArrayList<XmlResponse>();
+		List<Response> result = new ArrayList<Response>();
 
 		//DataTypeCollection dtcb = NetCDFUtility.getDataTypeCollection(datasetUrl);
 		DataTypeCollection dtcb = callDDSandDAS(datasetUrl);

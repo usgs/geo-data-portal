@@ -1,6 +1,6 @@
 package gov.usgs.cida.gdp.wps.cache;
 
-import gov.usgs.cida.gdp.utilities.bean.XmlResponse;
+import gov.usgs.cida.gdp.utilities.bean.Response;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-public class RawXmlResponse extends XmlResponse {
+public class RawXmlResponse extends Response {
 
     private static final Logger log = LoggerFactory.getLogger(ResponseCache.class);
     private File file = null;
