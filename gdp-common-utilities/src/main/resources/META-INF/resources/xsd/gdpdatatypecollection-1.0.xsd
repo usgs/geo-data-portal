@@ -3,7 +3,7 @@
 	<xs:element name="datatypecollection">
 		<xs:complexType mixed="true">
 			<xs:sequence>
-				<xs:element name="types" minOccurs="1" maxOccurs="1">
+				<xs:element name="types" minOccurs="1" maxOccurs="unbounded">
 					<xs:complexType>
 						<xs:group ref="types" />
 					</xs:complexType>
