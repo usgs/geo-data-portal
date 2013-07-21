@@ -1074,10 +1074,19 @@ var Dataset = function() {
             'catalog-url': [datasetURL],
             'allow-cached-response': [useCache]
         };
-        var wpsOutput = ['result'];
+        var wpsOutput = ['result_as_json'];
 
-        WPS.sendWpsExecuteRequest(Constant.endpoint.proxy + Constant.endpoint.utilitywps,
-            wpsAlgorithm, wpsInputs, wpsOutput, false, populateDatasetIdSelect);
+        WPS.sendWpsExecuteRequest(
+				Constant.endpoint.proxy + Constant.endpoint.utilitywps,
+				wpsAlgorithm,
+				wpsInputs,
+				wpsOutput,
+				false,
+				populateDatasetIdSelect,
+				null,
+				true,
+				'json',
+				'application/json');
     }
 
     /**
@@ -1128,55 +1137,62 @@ var Dataset = function() {
         return result;
     }
 
-    function populateDatasetIdSelect(xml) {
-        logger.debug('GDP: Populating dataset ID select box.');
-        $(_DATASET_ID_SELECTBOX).empty();
+	function populateDatasetIdSelect(data) {
+		logger.debug('GDP: Populating dataset ID select box.');
+		$(_DATASET_ID_SELECTBOX).empty();
 
-        if (gDatasetType == _datasetTypeEnum.WCS) {
-            // Parse the WCS to get all of the ids, titles and abstracts (descriptions)
-            var wcsResp = _parseWCS({
-                xml : xml
-            });
-            
-            $.each(wcsResp, function(index, item) {
-                // Populate the dataset ID selectbox with the results from the WCS call
-                var displayName = item.title + (item.description != '' ? ' - ' + item.description : '');
-                $(_DATASET_ID_SELECTBOX).append(
-                    // name attr used for matching wms
-                    $(Constant.optionString).attr('value', item.id).attr('name', item.title).html(displayName)
-                    );
-                
-            })
-        } else { //     == datasetTypeEnum.OPENDAP
-            if (!WPS.checkWpsResponse(xml, "Error getting dataset ID's from server.")) return;
+		if (gDatasetType === _datasetTypeEnum.WCS) {
+			// Parse the WCS to get all of the ids, titles and abstracts (descriptions)
+			var wcsResp = _parseWCS({
+				xml: data
+			});
 
-            $(xml).find('types type').each(function(index, element) {
-                var description = $(element).find('description').text();
-                var shortName = $(element).find('shortname').text();
-                var units = $(element).find('unitsstring').text();
-                
-                // display description if one exists and it doesn't match the shortName
-                var descriptionString = (description != '' && description != shortName) ? ' - ' + description : '';
-                var unitsString = units != '' ? ' (' + units + ')' : '';
+			$.each(wcsResp, function(index, item) {
+				// Populate the dataset ID selectbox with the results from the WCS call
+				var displayName = item.title + (item.description !== '' ? ' - ' + item.description : '');
+				$(_DATASET_ID_SELECTBOX).append(
+						// name attr used for matching wms
+						$(Constant.optionString).attr('value', item.id).attr('name', item.title).html(displayName)
+						);
 
-                var displayName = shortName + descriptionString + unitsString;
+			});
+		} else { //     == datasetTypeEnum.OPENDAP
+			if (!data
+					|| !data.datatypecollection
+					|| !data.datatypecollection.types
+					|| !data.datatypecollection.types.length) {
+				showErrorNotification(message);
+				hideThrobber();
+				logger.error("GDP: A WPS error was encountered: Error getting dataset ID's from server.");
+				return;
+			} else {
+				$(data.datatypecollection.types).each(function(index, type) {
+					var description = type.description;
+					var shortName = type.shortname;
+					var units = type.unitsstring;
 
-                $(_DATASET_ID_SELECTBOX).append(
-                    // name attr used for matching wms
-                    $(Constant.optionString).attr('value', shortName).attr('name', shortName).html(displayName)
-                    );
-            });
-            
-            var firstOption = $(_DATASET_ID_SELECTBOX).find('option').first();
-            firstOption.prop('selected', true); //GDP-321
-            getTimeRange(_datasetURL, firstOption.val(), _usingCache);
-        }
-        
-        $(_DATASET_ID_TOOLTIP).fadeIn(Constant.ui.fadespeed);
-        $(_DATASET_ID).fadeIn(Constant.ui.fadespeed);
-        $(_DATASET_ID_LABEL).fadeIn(Constant.ui.fadespeed);
-        
-    }
+					// display description if one exists and it doesn't match the shortName
+					var descriptionString = (description !== '' && description !== shortName) ? ' - ' + description : '';
+					var unitsString = units !== '' ? ' (' + units + ')' : '';
+					var displayName = shortName + descriptionString + unitsString;
+
+					$(_DATASET_ID_SELECTBOX).append(
+							// name attr used for matching wms
+							$(Constant.optionString).attr('value', shortName).attr('name', shortName).html(displayName)
+							);
+				});
+
+				var firstOption = $(_DATASET_ID_SELECTBOX).find('option').first();
+				firstOption.prop('selected', true); //GDP-321
+				getTimeRange(_datasetURL, firstOption.val(), _usingCache);
+			}
+		}
+
+		$(_DATASET_ID_TOOLTIP).fadeIn(Constant.ui.fadespeed);
+		$(_DATASET_ID).fadeIn(Constant.ui.fadespeed);
+		$(_DATASET_ID_LABEL).fadeIn(Constant.ui.fadespeed);
+
+	}
 
     function getTimeRange(datasetURL, selectedGrid, useCache) {
         logger.debug('GDP: Attaining grid time range for dataset: ' + datasetURL + ' and selected grid: ' + selectedGrid);
