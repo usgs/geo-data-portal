@@ -13,6 +13,9 @@
 			<Generator name="XMLTimeGenerator" className="gov.usgs.cida.gdp.wps.generator.XMLTimeGenerator" active="true">
 				<Format mimetype="text/xml" schema="xsd/gdptime-1.0.xsd" encoding="utf-8" />
 			</Generator>
+			<Generator name="XMLDataTypeCollectionGenerator" className="gov.usgs.cida.gdp.wps.generator.XMLDataTypeCollectionGenerator" active="true">
+				<Format mimetype="text/xml" schema="xsd/gdpdatatypecollection-1.0.xsd" encoding="utf-8" />
+			</Generator>
 		</GeneratorList>
 	</Datahandlers>
 	<AlgorithmRepositoryList>

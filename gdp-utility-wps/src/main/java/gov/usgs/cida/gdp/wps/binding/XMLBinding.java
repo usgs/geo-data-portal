@@ -6,11 +6,11 @@ import org.n52.wps.io.data.IComplexData;
  *
  * @author isuftin
  */
-public class XMLTimeBinding implements IComplexData {
+public class XMLBinding implements IComplexData {
 	protected String xml;
 	protected String mimeType;
 		
-	public XMLTimeBinding(String xml) {
+	public XMLBinding(String xml) {
 		this.xml = xml;
 		this.mimeType = "text/xml";
 	}

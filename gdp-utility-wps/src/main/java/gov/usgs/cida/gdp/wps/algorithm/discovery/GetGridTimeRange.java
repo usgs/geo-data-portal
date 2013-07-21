@@ -3,7 +3,7 @@ package gov.usgs.cida.gdp.wps.algorithm.discovery;
 import com.google.common.base.Preconditions;
 import gov.usgs.cida.gdp.dataaccess.helper.OpendapServerHelper;
 import gov.usgs.cida.gdp.utilities.bean.Response;
-import gov.usgs.cida.gdp.utilities.bean.Time;
+import gov.usgs.cida.gdp.dataaccess.bean.Time;
 import gov.usgs.cida.gdp.wps.cache.ResponseCache;
 import gov.usgs.cida.gdp.wps.cache.ResponseCache.CacheIdentifier;
 import org.apache.commons.lang.StringUtils;
@@ -70,7 +70,7 @@ public class GetGridTimeRange extends AbstractAnnotatedAlgorithm {
 
 	@ComplexDataOutput(
 			identifier = PARAM_RESULT_XML,
-			binding = gov.usgs.cida.gdp.wps.binding.XMLTimeBinding.class,
+			binding = gov.usgs.cida.gdp.wps.binding.XMLBinding.class,
 			abstrakt = "Returns XML")
 	public String getResultAsXML() {
 		return ((Time) response).toXML();

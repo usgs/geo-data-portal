@@ -1,4 +1,4 @@
-package gov.usgs.cida.gdp.utilities.bean;
+package gov.usgs.cida.gdp.dataaccess.bean;
 
 import com.thoughtworks.xstream.XStream;
 import java.text.ParseException;
@@ -9,6 +9,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import com.thoughtworks.xstream.io.xml.QNameMap;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
+import gov.usgs.cida.gdp.utilities.bean.Response;
 
 @XStreamAlias("availabletimes")
 public class Time extends Response {

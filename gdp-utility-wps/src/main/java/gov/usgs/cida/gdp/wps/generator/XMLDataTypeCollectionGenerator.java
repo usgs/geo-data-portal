@@ -11,9 +11,9 @@ import org.n52.wps.io.datahandler.generator.AbstractGenerator;
  *
  * @author isuftin
  */
-public class XMLTimeGenerator extends AbstractGenerator {
+public class XMLDataTypeCollectionGenerator extends AbstractGenerator {
 
-	public XMLTimeGenerator() {
+	public XMLDataTypeCollectionGenerator() {
 		super();
 		supportedIDataTypes.add(XMLBinding.class);
 	}

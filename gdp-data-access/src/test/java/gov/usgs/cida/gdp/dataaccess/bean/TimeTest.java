@@ -1,6 +1,7 @@
-package gov.usgs.cida.gdp.utilities.bean;
+package gov.usgs.cida.gdp.dataaccess.bean;
 
-import gov.usgs.cida.gdp.utilities.bean.Time.TimeBreakdown;
+import gov.usgs.cida.gdp.dataaccess.bean.Time;
+import gov.usgs.cida.gdp.dataaccess.bean.Time.TimeBreakdown;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;

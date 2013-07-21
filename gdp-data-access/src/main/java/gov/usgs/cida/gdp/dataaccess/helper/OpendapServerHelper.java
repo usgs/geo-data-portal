@@ -2,7 +2,7 @@ package gov.usgs.cida.gdp.dataaccess.helper;
 
 import gov.usgs.cida.gdp.dataaccess.bean.DataTypeCollection;
 import gov.usgs.cida.gdp.dataaccess.bean.DataTypeCollection.DataTypeBean;
-import gov.usgs.cida.gdp.utilities.bean.Time;
+import gov.usgs.cida.gdp.dataaccess.bean.Time;
 import gov.usgs.cida.gdp.utilities.bean.Response;
 import java.io.IOException;
 import java.text.ParseException;
