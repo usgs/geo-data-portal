@@ -17,12 +17,16 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="time" type="xs:dateTime" minOccurs="2" maxOccurs="2" />
-				<xs:complexType name="starttime" minOccurs="1" maxOccurs="1">
-					<xs:group ref="timebreakdown" />
-				</xs:complexType>
-				<xs:complexType name="endtime" minOccurs="1" maxOccurs="1">
-					<xs:group ref="timebreakdown" />
-				</xs:complexType>
+				<xs:element  name="starttime" minOccurs="1" maxOccurs="1">
+					<xs:complexType>
+						<xs:group ref="timebreakdown" />
+					</xs:complexType>
+				</xs:element>
+				<xs:element  name="endtime" minOccurs="1" maxOccurs="1">
+					<xs:complexType>
+						<xs:group ref="timebreakdown" />
+					</xs:complexType>
+				</xs:element>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
