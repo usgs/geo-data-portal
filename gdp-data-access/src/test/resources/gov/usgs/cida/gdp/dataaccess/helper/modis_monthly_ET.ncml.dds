@@ -1,0 +1,7 @@
+Dataset {
+    Float64 lon[x = 6612];
+    Float64 lat[y = 2835];
+    Int32 crs;
+    String time[time = 144];
+    Int16 et[time = 144][y = 2835][x = 6612];
+} temp/monthlyETa/modis_monthly_ET.ncml;

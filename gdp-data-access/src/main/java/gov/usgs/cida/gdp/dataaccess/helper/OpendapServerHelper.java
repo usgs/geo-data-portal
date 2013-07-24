@@ -11,9 +11,12 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import opendap.dap.Attribute;
 import opendap.dap.AttributeTable;
 import opendap.dap.BaseType;
+import opendap.dap.BaseTypePrimitiveVector;
 import opendap.dap.DAP2Exception;
 import opendap.dap.DAS;
 import opendap.dap.DArray;
@@ -21,6 +24,7 @@ import opendap.dap.DArrayDimension;
 import opendap.dap.DConnect2;
 import opendap.dap.DDS;
 import opendap.dap.DGrid;
+import opendap.dap.DString;
 import opendap.dap.DataDDS;
 import opendap.dap.Float32PrimitiveVector;
 import opendap.dap.Float64PrimitiveVector;
@@ -29,6 +33,8 @@ import opendap.dap.Int32PrimitiveVector;
 import opendap.dap.NoSuchAttributeException;
 import opendap.dap.PrimitiveVector;
 import org.slf4j.LoggerFactory;
+import ucar.nc2.time.Calendar;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.units.DateUnit;
 
 public class OpendapServerHelper {
@@ -60,14 +66,10 @@ public class OpendapServerHelper {
 			String finalUrl = "";
 			if (datasetUrl.startsWith("dods:")) {
 				finalUrl = "http:" + datasetUrl.substring(5);
-			}
-			else {
-				if (datasetUrl.startsWith("http:")) {
+			} else if (datasetUrl.startsWith("http:") || datasetUrl.startsWith("file:")) {
 					finalUrl = datasetUrl;
-				}
-				else {
-					throw new java.net.MalformedURLException(datasetUrl + " must start with dods: or http:");
-				}
+			} else {
+					throw new java.net.MalformedURLException(datasetUrl + " must start with dods: or http: or file:");
 			}
 			DConnect2 dodsConnection = new DConnect2(finalUrl, false);
 			DDS dds = dodsConnection.getDDS(gridSelection);
@@ -91,11 +93,9 @@ public class OpendapServerHelper {
 			String timeDim = getTimeDim(das, array);
 			try {
 				AttributeTable attributeTable = das.getAttributeTable(timeDim);
-				Attribute units = attributeTable.getAttribute("units");
-				DateUnit dateUnit = new DateUnit(units.getValueAt(0));
 				DataDDS datadds = dodsConnection.getData("?" + timeDim); // time dimension
 				DArray variable = (DArray) datadds.getVariable(timeDim);
-				return getDatesFromTimeVariable(variable, dateUnit);
+				return getDatesFromTimeVariable(variable,  attributeTable);
 			}
 			catch (Exception e) {
 				e.getMessage();
@@ -115,7 +115,7 @@ public class OpendapServerHelper {
 		return Collections.EMPTY_LIST;  // Could not get time, fall through
 	}
 
-	private static List<String> getDatesFromTimeVariable(DArray variable, DateUnit dateUnit) {
+	private static List<String> getDatesFromTimeVariable(DArray variable, AttributeTable attributeTable) throws NoSuchAttributeException {
 		// TODO make utility to cast this stuff for me
 		List<String> dateList = new ArrayList<String>();
 		PrimitiveVector pVector = variable.getPrimitiveVector();
@@ -141,13 +141,58 @@ public class OpendapServerHelper {
 			first = f64Vector.getValue(0);
 			last = f64Vector.getValue(f64Vector.getLength() - 1);
 		}
+		else if (pVector instanceof BaseTypePrimitiveVector) {
+			BaseTypePrimitiveVector btVector = (BaseTypePrimitiveVector) pVector;
+			BaseType firstBt = btVector.getValue(0);
+			BaseType lastBt = btVector.getValue(pVector.getLength() - 1);
+			String firstString = ((DString) firstBt).getValue();
+			String lastString = ((DString) lastBt).getValue();
+			dateList.add(firstString);
+			dateList.add(lastString);
+			return dateList;
+		}
 		else {
 			throw new UnsupportedOperationException("This primitive type for time is not yet supported");
 		}
+		
+		Attribute units = attributeTable.getAttribute("units");
+		if (null == units) {
+			units = attributeTable.getAttribute("_CoordinateAxisType");
+		}
+		String dateValue = units.getValueAt(0);
+		
+		try {
+			DateUnit unit = new DateUnit(dateValue);
+			dateList.add(unit.makeStandardDateString(first));
+			dateList.add(unit.makeStandardDateString(last));
+			return dateList;
+		} catch (Exception e) {
+			// Unit is not a date unit
+		}
 
-		dateList.add(dateUnit.makeStandardDateString(first));
-		dateList.add(dateUnit.makeStandardDateString(last));
+		try {
+			CalendarDateUnit unit = CalendarDateUnit.withCalendar(getCalendarFromAttributeTable(attributeTable), dateValue);
+			dateList.add(unit.makeCalendarDate(first).toString());
+			dateList.add(unit.makeCalendarDate(last).toString());
+			return dateList;
+		} catch (IllegalArgumentException iae) {
+			// Unit is not a calendar date unit
+		}
+
 		return dateList;
+	}
+	
+	public static Calendar getCalendarFromAttributeTable(AttributeTable at) {
+		Attribute calendarType = at.getAttribute("calendar");
+		Calendar calendar = Calendar.getDefault();
+		if (calendarType != null) {
+			try {
+				Calendar.get(calendarType.getValueAt(0));
+			} catch (NoSuchAttributeException ex) {
+				// Default calendar will be returned
+			}
+		}
+		return calendar;
 	}
 
 	public static List<Response> getGridBeanListFromServer(String datasetUrl)
@@ -201,7 +246,6 @@ public class OpendapServerHelper {
 					if (!attributeTable.hasAttribute("coordinates")) {
 						continue;
 					}
-					int rank = array.numDimensions();
 					timeDim = getTimeDim(das, array);
 					dtb = createDataTypeBean(array, longName, das);
 				}
@@ -274,13 +318,35 @@ public class OpendapServerHelper {
 //            String name = nextDim.getName();  // NetCDF-Java 4.2.x
 			try {
 				AttributeTable attributeTable = das.getAttributeTable(name);
-				Attribute units = attributeTable.getAttribute("units");
-				if (units != null) {
-					DateUnit dateUnit = new DateUnit(units.getValueAt(0));
+				if (null != attributeTable) {
+					Attribute units = attributeTable.getAttribute("units");
+					if (units != null) {
+						Object unit = null;
+						try {
+							unit = new DateUnit(units.getValueAt(0));
+						} catch (Exception e) {
+							// Unit is not a date unit
+						}
+
+						try {
+							unit = CalendarDateUnit.withCalendar(getCalendarFromAttributeTable(attributeTable), units.getValueAt(0));
+						} catch (IllegalArgumentException iae) {
+							// Unit is not a calendar date unit
+						}
+
+						if (null != unit) {
+							timeVarName = name; 
+						}
+					} else {
+						units = attributeTable.getAttribute("_CoordinateAxisType");
+						if (null != units) {
+							if (null != units.getValueAt(0)) {
+								timeVarName = name; 
+							}
+						}
+					}
 				}
-				timeVarName = name;
-			}
-			catch (Exception ioe) {
+			} catch (NoSuchAttributeException nse) {
 				// dimension not a date, keep trying
 			}
 		}
