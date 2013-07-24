@@ -89,7 +89,7 @@ public class PropertiesServlet extends HttpServlet {
                     "NAIP,http://isse.cr.usgs.gov/ArcGIS/services/Combined/SDDS_Imagery/MapServer/WMSServer?layers=0&isBaseLayer=true");
 
             // GUI configuration
-            defaultProperties.setProperty("ui.csw_picklist", "CIDA CSW Server (Default)|http://cida-wiwsc-gdp2qa.er.usgs.gov:8081/geonetwork/srv/csw|ScienceBase CSW Server|http://my-beta.usgs.gov/geoportal/csw");
+            defaultProperties.setProperty("ui.csw_picklist", "CIDA CSW Server (Default)|http://cida.usgs.gov/gdp/geonetwork/srv/en/csw|ScienceBase CSW Server|http://my-beta.usgs.gov/geoportal/csw");
             defaultProperties.setProperty("ui.default_csw_search", "");
             defaultProperties.setProperty("ui.default_dataset_url", "");
             defaultProperties.setProperty("ui.default_wms_url", "");
