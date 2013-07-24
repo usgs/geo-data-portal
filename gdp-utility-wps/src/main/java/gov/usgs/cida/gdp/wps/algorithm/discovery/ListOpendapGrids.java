@@ -1,16 +1,12 @@
 package gov.usgs.cida.gdp.wps.algorithm.discovery;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import gov.usgs.cida.gdp.dataaccess.bean.DataTypeCollection;
-import gov.usgs.cida.gdp.dataaccess.bean.Time;
 import gov.usgs.cida.gdp.dataaccess.helper.OpendapServerHelper;
-import static gov.usgs.cida.gdp.dataaccess.helper.OpendapServerHelper.callDDSandDAS;
 import gov.usgs.cida.gdp.utilities.bean.Response;
 import gov.usgs.cida.gdp.wps.cache.ResponseCache;
 import gov.usgs.cida.gdp.wps.cache.ResponseCache.CacheIdentifier;
 import static gov.usgs.cida.gdp.wps.cache.ResponseCache.CacheIdentifier.CacheType.*;
-import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.n52.wps.algorithm.annotation.Algorithm;
 import org.n52.wps.algorithm.annotation.ComplexDataOutput;
@@ -35,7 +31,6 @@ public class ListOpendapGrids extends AbstractAnnotatedAlgorithm {
 	private static final String PARAM_CATALOG_URL = "catalog-url";
 	private static final String PARAM_USE_CACHE = "allow-cached-response";
 	private static final String PARAM_RESULT = "result";
-	private static final String PARAM_RESULT_STRING = "result_as_string";
 	private static final String PARAM_RESULT_JSON = "result_as_json";
 	private static final String PARAM_RESULT_XML = "result_as_xml";
 	

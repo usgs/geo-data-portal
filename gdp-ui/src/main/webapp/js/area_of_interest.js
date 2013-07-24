@@ -1,4 +1,4 @@
-var AOI = function() {
+var AOI = function () {
     var _HTML_ID = 'area-of-interest';
     var _AOI_SERVICES_BUTTON = '.aoi-services-button';
     var _AVAILABLE_ATTRIBUTES = '#available-attributes';
@@ -40,9 +40,9 @@ var AOI = function() {
             var name = $(element).text();
             $(_AOI_SELECTBOX).append(
                 $(Constant.optionString).attr('value', name).html(name)
-                );
+			);
         });
-        
+      
     }
 
     function populateAttributesSelectbox(data) {
@@ -53,7 +53,7 @@ var AOI = function() {
         // If selection got changed while the ajax request was happening
         if (!selectedFeatureType) return;
 
-        $(data).find('xsd|element').each(function(i,e) {
+        $(data).find('xsd|element').each(function (i, e) {
             var text = $(e).attr('name');
 
             var featureTypeWithoutNamespace = selectedFeatureType.substring(selectedFeatureType.indexOf(':') + 1);

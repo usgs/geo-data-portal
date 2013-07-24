@@ -25,8 +25,7 @@ public class HTTPUtils {
     public static InputStream sendPacket(URL url, String requestMethod)
             throws IOException {
 
-        HttpURLConnection httpConnection = openHttpConnection(url,
-                requestMethod);
+        HttpURLConnection httpConnection = openHttpConnection(url, requestMethod);
 
         return getHttpConnectionInputStream(httpConnection);
     }

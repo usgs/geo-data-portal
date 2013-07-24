@@ -50,7 +50,6 @@ public class CheckProcessCompletion {
     final static String URLENCODE_CHARSET = "UTF-8";
     
 	private static CheckProcessCompletion singleton = null;
-
 	private Timer timer;
 	private long recheckTime;
 
@@ -66,8 +65,8 @@ public class CheckProcessCompletion {
 		return singleton;
 	}
 
-	public void addProcessToCheck(String wpsCheckPoint, String emailAddr, String callbackBaseURL) {
-		timer.scheduleAtFixedRate(new EmailCheckTask(wpsCheckPoint, emailAddr, callbackBaseURL), 0l, recheckTime);
+	public void addProcessToCheck(String wpsCheckPoint, String emailAddr, String callbackBaseURL, Boolean breakOnSyserr, Boolean emailOnSyserr) {
+		timer.scheduleAtFixedRate(new EmailCheckTask(wpsCheckPoint, emailAddr, callbackBaseURL, breakOnSyserr, emailOnSyserr), 0l, recheckTime);
 		cleanupTimer();
 	}
 
@@ -96,12 +95,16 @@ class EmailCheckTask extends TimerTask {
 	private String wpsCheckPoint;
 	private String addr;
     private String callbackBaseURL;
+	private Boolean breakOnSyserr;
+	private Boolean emailOnSyserr;
 	private final String taskStarted;
 
-	public EmailCheckTask(String wpsCheckPoint, String emailAddr, String callbackBaseURL) {
+	public EmailCheckTask(String wpsCheckPoint, String emailAddr, String callbackBaseURL, Boolean breakOnSyserr, Boolean emailOnSyserr) {
 		this.wpsCheckPoint = wpsCheckPoint;
 		this.addr = emailAddr;
         this.callbackBaseURL = callbackBaseURL;
+		this.breakOnSyserr = breakOnSyserr;
+		this.emailOnSyserr = emailOnSyserr;
 		Date now = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 		this.taskStarted = sdf.format(now);
@@ -109,27 +112,29 @@ class EmailCheckTask extends TimerTask {
 
 	@Override
 	public void run() {
-        InputStream is = null;
+		InputStream is = null;
 		try {
 			is = HTTPUtils.sendPacket(new URL(wpsCheckPoint), "GET");
 			Document document = CheckProcessCompletion.parseDocument(is);
 			checkAndSend(document);
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			String error = "Error in process checking/sending email: " + ex.getMessage();
 			log.error(error);
-			//throw new RuntimeException(error);
-			try {
-				sendFailedEmail(error);
+			
+			if (this.breakOnSyserr) {
+				if (this.emailOnSyserr) {
+					try {
+						sendFailedEmail(error);
+					} catch (Exception ex2) {
+						log.error("Also, email was bad, cannot send " + ex2.getMessage());
+					}
+				}
+				this.cancel();
 			}
-			catch (Exception ex2) {
-				log.error("Also, email was bad, cannot send " + ex2.getMessage());
-			}
-			this.cancel();
+
+		} finally {
+			IOUtils.closeQuietly(is);
 		}
-        finally {
-            IOUtils.closeQuietly(is);
-        }
 
 	}
 
@@ -172,7 +177,7 @@ class EmailCheckTask extends TimerTask {
                 log.warn(ex.getMessage());
             }
             
-            String processInfo = null;
+            String processInfo;
             if (xslFile != null && xslFile.exists()) {
                 // Do the transformation
                 TransformerFactory tFact = TransformerFactory.newInstance();
