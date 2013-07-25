@@ -17,7 +17,8 @@ public class EmailWhenFinishedAlgorithm extends AbstractAnnotatedAlgorithm {
     public final static String INPUT_CALLBACK_BASE_URL = "callback-base-url";
     public final static String OUTPUT_RESULT = "result";
 	public final static Boolean BREAK_ON_SYSERR = Boolean.parseBoolean(AppConstant.BREAK_ON_SYSERR.getValue());
-	public final static Boolean EMAIL_ON_SYSERR = Boolean.parseBoolean(AppConstant.EMAIL_ON_SYSERR.getValue());;
+	public final static Boolean EMAIL_ON_SYSERR = Boolean.parseBoolean(AppConstant.EMAIL_ON_SYSERR.getValue());
+	public final static Integer CHECK_PROC_ERR_LIMIT = Integer.parseInt(AppConstant.CHECK_PROC_ERR_LIMIT.getValue());
     private String email;
     private String wpsStatusURL;
     private String callbackBaseURL;
@@ -46,7 +47,7 @@ public class EmailWhenFinishedAlgorithm extends AbstractAnnotatedAlgorithm {
     @Execute
     public void runEmailChecker() {
         try {
-            CheckProcessCompletion.getInstance().addProcessToCheck(wpsStatusURL, email, callbackBaseURL, BREAK_ON_SYSERR, EMAIL_ON_SYSERR);
+            CheckProcessCompletion.getInstance().addProcessToCheck(wpsStatusURL, email, callbackBaseURL, BREAK_ON_SYSERR, EMAIL_ON_SYSERR, CHECK_PROC_ERR_LIMIT);
             result = "OK: when " + wpsStatusURL + " is complete, an email will be sent to  '" + email + "'";
         } catch (Exception e) {
 			throw new RuntimeException("Error: Unable to add process check timer");

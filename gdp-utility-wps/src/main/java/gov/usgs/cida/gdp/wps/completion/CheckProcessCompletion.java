@@ -65,8 +65,8 @@ public class CheckProcessCompletion {
 		return singleton;
 	}
 
-	public void addProcessToCheck(String wpsCheckPoint, String emailAddr, String callbackBaseURL, Boolean breakOnSyserr, Boolean emailOnSyserr) {
-		timer.scheduleAtFixedRate(new EmailCheckTask(wpsCheckPoint, emailAddr, callbackBaseURL, breakOnSyserr, emailOnSyserr), 0l, recheckTime);
+	public void addProcessToCheck(String wpsCheckPoint, String emailAddr, String callbackBaseURL, Boolean breakOnSyserr, Boolean emailOnSyserr, Integer checkProcErrLimit) {
+		timer.scheduleAtFixedRate(new EmailCheckTask(wpsCheckPoint, emailAddr, callbackBaseURL, breakOnSyserr, emailOnSyserr, checkProcErrLimit), 0l, recheckTime);
 		cleanupTimer();
 	}
 
@@ -97,17 +97,22 @@ class EmailCheckTask extends TimerTask {
     private String callbackBaseURL;
 	private Boolean breakOnSyserr;
 	private Boolean emailOnSyserr;
+	private Boolean isCancelled;
+	private Integer errorCount;
+	private Integer checkProcErrLimit;
 	private final String taskStarted;
 
-	public EmailCheckTask(String wpsCheckPoint, String emailAddr, String callbackBaseURL, Boolean breakOnSyserr, Boolean emailOnSyserr) {
+	public EmailCheckTask(String wpsCheckPoint, String emailAddr, String callbackBaseURL, Boolean breakOnSyserr, Boolean emailOnSyserr, Integer checkProcErrLimit) {
 		this.wpsCheckPoint = wpsCheckPoint;
 		this.addr = emailAddr;
         this.callbackBaseURL = callbackBaseURL;
 		this.breakOnSyserr = breakOnSyserr;
 		this.emailOnSyserr = emailOnSyserr;
-		Date now = new Date();
+		this.checkProcErrLimit = checkProcErrLimit;
+		this.errorCount = 0;
+		this.isCancelled = false;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-		this.taskStarted = sdf.format(now);
+		this.taskStarted = sdf.format(new Date());
 	}
 
 	@Override
@@ -120,22 +125,32 @@ class EmailCheckTask extends TimerTask {
 		} catch (Exception ex) {
 			String error = "Error in process checking/sending email: " + ex.getMessage();
 			log.error(error);
-			
-			if (this.breakOnSyserr) {
-				if (this.emailOnSyserr) {
-					try {
-						sendFailedEmail(error);
-					} catch (Exception ex2) {
-						log.error("Also, email was bad, cannot send " + ex2.getMessage());
+
+			if (checkProcErrLimit != -1 && ++this.errorCount >= this.checkProcErrLimit) {
+				if (this.breakOnSyserr) {
+					if (this.emailOnSyserr) {
+						try {
+							sendFailedEmail(error);
+						} catch (Exception ex2) {
+							log.error("Also, email was bad, cannot send " + ex2.getMessage());
+						}
 					}
+					this.cancel();
+					this.isCancelled = true;
 				}
-				this.cancel();
 			}
 
 		} finally {
 			IOUtils.closeQuietly(is);
 		}
-
+	}
+	
+	public Boolean isCancelled() {
+		return this.isCancelled;
+	}
+	
+	public Integer getErrorCount() {
+		return this.errorCount;
 	}
 
 	public void checkAndSend(Document document) throws URISyntaxException, XPathExpressionException, AddressException, MessagingException, IOException, TransformerConfigurationException, TransformerException {

@@ -537,6 +537,13 @@
 				<artifactId>dynamicProperties</artifactId>
 				<version>1.0.1</version>
 			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-server</artifactId>
+				<version>7.6.11.v20130520</version>
+				<scope>test</scope>
+				<type>jar</type>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<build>
