@@ -104,7 +104,4 @@ public class XMLUtilsTest {
         result = XMLUtils.createBooleanUsingXPathExpression("/parentNode/childNode[6]", testXml);
         assertThat(result, equalTo(Boolean.FALSE));
     }
-
-
-
 }

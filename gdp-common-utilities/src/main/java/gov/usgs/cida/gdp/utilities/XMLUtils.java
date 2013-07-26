@@ -47,7 +47,7 @@ public class XMLUtils {
     }
     
     public static String createPrettyXML(Document document) throws IOException {
-            String rawXML = null;
+            String rawXML;
             OutputFormat format = new OutputFormat(document);
             format.setLineWidth(65);
             format.setIndenting(true);

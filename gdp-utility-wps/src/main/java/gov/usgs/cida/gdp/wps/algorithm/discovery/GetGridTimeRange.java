@@ -89,18 +89,18 @@ public class GetGridTimeRange extends AbstractAnnotatedAlgorithm {
 		Preconditions.checkArgument(StringUtils.isNotBlank(catalogURL), "Invalid " + PARAM_CATALOG_URL);
 		Preconditions.checkArgument(StringUtils.isNotBlank(grid), "Invalid " + PARAM_GRID);
 
-		Response response = null;
+		Response processResponse;
 		CacheIdentifier cacheIdentifier = new CacheIdentifier(
 				catalogURL,
 				CacheIdentifier.CacheType.TIME_RANGE,
 				grid);
 		try {
 			if (useCache && ResponseCache.hasCachedResponse(cacheIdentifier)) {
-				response = ResponseCache.readXmlFromCache(cacheIdentifier);
+				processResponse = ResponseCache.readXmlFromCache(cacheIdentifier);
 			} else {
-				response = OpendapServerHelper.getTimeBean(catalogURL, grid);
+				processResponse = OpendapServerHelper.getTimeBean(catalogURL, grid);
 				if (useCache) {
-					ResponseCache.writeXmlToCache(cacheIdentifier, response);
+					ResponseCache.writeXmlToCache(cacheIdentifier, processResponse);
 				}
 			}
 		} catch (Exception ex) {
@@ -108,6 +108,6 @@ public class GetGridTimeRange extends AbstractAnnotatedAlgorithm {
 			addError(ex.getMessage());
 			throw new RuntimeException("Error occured while getting time range.  Function halted.", ex);
 		}
-		this.response = response;
+		this.response = processResponse;
 	}
 }
