@@ -119,9 +119,10 @@ class EmailCheckTask extends TimerTask {
 	public void run() {
 		InputStream is = null;
 		try {
-			is = HTTPUtils.sendPacket(new URL(wpsCheckPoint), "GET");
+			is = HTTPUtils.sendPacket(new URL(this.wpsCheckPoint), "GET");
 			Document document = CheckProcessCompletion.parseDocument(is);
 			checkAndSend(document);
+			this.errorCount = 0; // Reset the error counter
 		} catch (Exception ex) {
 			String error = "Error in process checking/sending email: " + ex.getMessage();
 			log.error(error);
@@ -130,7 +131,12 @@ class EmailCheckTask extends TimerTask {
 				if (this.breakOnSyserr) {
 					if (this.emailOnSyserr) {
 						try {
-							sendFailedEmail(error);
+							sendFailedEmail("The status document failed to return. "
+									+ "Status checking has aborted. There has been "
+									+ "a network or server issue preventing the status "
+									+ "document from being retrieved. However, the request may "
+									+ "still be running. For more information, check the "
+									+ "status url" + this.wpsCheckPoint);
 						} catch (Exception ex2) {
 							log.error("Also, email was bad, cannot send " + ex2.getMessage());
 						}
