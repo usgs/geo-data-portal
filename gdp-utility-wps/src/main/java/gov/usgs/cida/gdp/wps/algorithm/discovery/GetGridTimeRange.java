@@ -100,7 +100,7 @@ public class GetGridTimeRange extends AbstractAnnotatedAlgorithm {
 			
 			if (this.response == null) {
 				this.response = OpendapServerHelper.getTimeBean(catalogURL, grid);
-				if (useCache) {
+				if (this.response != null && useCache) {
 					this.response.writeToCache(cacheIdentifier);
 				}
 			}
