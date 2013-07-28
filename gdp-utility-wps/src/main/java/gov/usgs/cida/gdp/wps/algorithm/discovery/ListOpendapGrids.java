@@ -3,10 +3,11 @@ package gov.usgs.cida.gdp.wps.algorithm.discovery;
 import com.google.common.base.Preconditions;
 import gov.usgs.cida.gdp.dataaccess.bean.DataTypeCollection;
 import gov.usgs.cida.gdp.dataaccess.helper.OpendapServerHelper;
-import gov.usgs.cida.gdp.utilities.bean.Response;
-import gov.usgs.cida.gdp.wps.cache.ResponseCache;
-import gov.usgs.cida.gdp.wps.cache.ResponseCache.CacheIdentifier;
-import static gov.usgs.cida.gdp.wps.cache.ResponseCache.CacheIdentifier.CacheType.*;
+import gov.usgs.cida.gdp.dataaccess.bean.Response;
+import gov.usgs.cida.gdp.dataaccess.cache.RawXmlResponse;
+import gov.usgs.cida.gdp.dataaccess.cache.ResponseCache;
+import gov.usgs.cida.gdp.dataaccess.cache.ResponseCache.CacheIdentifier;
+import static gov.usgs.cida.gdp.dataaccess.cache.ResponseCache.CacheIdentifier.CacheType.*;
 import org.apache.commons.lang.StringUtils;
 import org.n52.wps.algorithm.annotation.Algorithm;
 import org.n52.wps.algorithm.annotation.ComplexDataOutput;
@@ -33,13 +34,12 @@ public class ListOpendapGrids extends AbstractAnnotatedAlgorithm {
 	private static final String PARAM_RESULT = "result";
 	private static final String PARAM_RESULT_JSON = "result_as_json";
 	private static final String PARAM_RESULT_XML = "result_as_xml";
-	
 	private String catalogURL;
 	private boolean useCache = false; // optional parameter, set default...
-	private Response response;
+	private Response response = null;
 
 	@LiteralDataInput(
-			identifier = PARAM_CATALOG_URL, 
+			identifier = PARAM_CATALOG_URL,
 			minOccurs = 1,
 			maxOccurs = 1)
 	public void setCatalogURL(String catalogURL) {
@@ -47,8 +47,8 @@ public class ListOpendapGrids extends AbstractAnnotatedAlgorithm {
 	}
 
 	@LiteralDataInput(
-			identifier = PARAM_USE_CACHE, 
-			minOccurs = 0, 
+			identifier = PARAM_USE_CACHE,
+			minOccurs = 0,
 			defaultValue = "false")
 	public void setUseCache(boolean useCache) {
 		this.useCache = useCache;
@@ -66,8 +66,8 @@ public class ListOpendapGrids extends AbstractAnnotatedAlgorithm {
 	public String getResultAsXML() {
 		return ((DataTypeCollection) response).toXML();
 	}
-	
-		@ComplexDataOutput(
+
+	@ComplexDataOutput(
 			identifier = PARAM_RESULT_JSON,
 			binding = gov.usgs.cida.gdp.wps.binding.JSONBinding.class,
 			abstrakt = "Returns JSON")
@@ -84,11 +84,13 @@ public class ListOpendapGrids extends AbstractAnnotatedAlgorithm {
 
 		try {
 			if (useCache && ResponseCache.hasCachedResponse(cacheIdentifier)) {
-				this.response = ResponseCache.readXmlFromCache(cacheIdentifier);
-			} else {
+				this.response = DataTypeCollection.buildFromCache(cacheIdentifier);
+			}
+
+			if (this.response == null) {
 				this.response = OpendapServerHelper.callDDSandDAS(catalogURL);
 				if (useCache) {
-					ResponseCache.writeXmlToCache(cacheIdentifier, this.response);
+					this.response.writeToCache(cacheIdentifier);
 				}
 			}
 		} catch (Exception ex) {

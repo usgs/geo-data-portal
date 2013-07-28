@@ -9,60 +9,73 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import com.thoughtworks.xstream.io.xml.QNameMap;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
-import gov.usgs.cida.gdp.utilities.bean.Response;
+import gov.usgs.cida.gdp.dataaccess.cache.ResponseCache;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.LoggerFactory;
 
 @XStreamAlias("availabletimes")
 public class Time extends Response {
 
-    @XStreamAlias("times")
-    @XStreamImplicit(itemFieldName = "time")
-    private String[] time;
-    private TimeBreakdown starttime;
-    private TimeBreakdown endtime;
+	private static final long serialVersionUID = 82376486L;
+	private static final transient org.slf4j.Logger log = LoggerFactory.getLogger(Time.class);
+	@XStreamAlias("times")
+	@XStreamImplicit(itemFieldName = "time")
+	private String[] time;
+	private TimeBreakdown starttime;
+	private TimeBreakdown endtime;
 
-    public Time() {
-        this.time = new String[2];
-        this.starttime = new TimeBreakdown();
-        this.endtime = new TimeBreakdown();
-    }
+	public Time() {
+		this.time = new String[2];
+		this.starttime = new TimeBreakdown();
+		this.endtime = new TimeBreakdown();
+	}
 
-    public Time(String[] dateRange) throws ParseException {
-        this.time = dateRange;
+	public Time(String[] dateRange) throws ParseException {
+		this.time = dateRange;
 
-        if (this.time.length == 0) {
-            this.starttime = new TimeBreakdown();
-            this.endtime = new TimeBreakdown();
-        } else {
-            this.starttime = new TimeBreakdown(dateRange[0]);
-            this.endtime = new TimeBreakdown(dateRange[1]);
-        }
-    }
+		if (this.time.length == 0) {
+			this.starttime = new TimeBreakdown();
+			this.endtime = new TimeBreakdown();
+		} else {
+			this.starttime = new TimeBreakdown(dateRange[0]);
+			this.endtime = new TimeBreakdown(dateRange[1]);
+		}
+	}
 
-    public void setTime(String[] time) {
-        this.time = time;
-    }
+	public void setTime(String[] time) {
+		this.time = time;
+	}
 
-    public String[] getTime() {
-        return time;
-    }
+	public String[] getTime() {
+		return time;
+	}
 
-    public void setStarttime(TimeBreakdown starttime) {
-        this.starttime = starttime;
-    }
+	public void setStarttime(TimeBreakdown starttime) {
+		this.starttime = starttime;
+	}
 
-    public TimeBreakdown getStarttime() {
-        return starttime;
-    }
+	public TimeBreakdown getStarttime() {
+		return starttime;
+	}
 
-    public void setEndtime(TimeBreakdown endtime) {
-        this.endtime = endtime;
-    }
+	public void setEndtime(TimeBreakdown endtime) {
+		this.endtime = endtime;
+	}
 
-    public TimeBreakdown getEndtime() {
-        return endtime;
-    }
-	
-	@Override 
+	public TimeBreakdown getEndtime() {
+		return endtime;
+	}
+
+	@Override
 	public String toXML() {
 		String result;
 		QNameMap qmap = new QNameMap();
@@ -74,108 +87,290 @@ public class Time extends Response {
 		result = xstream.toXML(this);
 		return result;
 	}
-	
+
 	@Override
 	public String toString() {
 		return this.time[0] + "|" + this.time[1];
 	}
 
-    static class TimeBreakdown extends Response {
+	public static Time buildFromCache(ResponseCache.CacheIdentifier ci) {
+		Time result;
+		FileInputStream fileIn = null;
+		ObjectInputStream in = null;
+		File cacheFile;
+		try {
+			cacheFile = ci.getFile();
+		} catch (IOException ex) {
+			log.warn("Could not create new cache file", ex);
+			return null;
+		}
 
-        private int month;
-        private int day;
-        private int year;
-        private int timezone;
-        private int hour;
-        private int minute;
-        private int second;
+		try {
+			try {
+				fileIn = new FileInputStream(cacheFile);
+			} catch (FileNotFoundException ex) {
+				log.warn("Could not find cache file {}", cacheFile.getPath(), ex);
+				return null;
+			}
 
-        public TimeBreakdown() {
-        }
+			try {
+				in = new ObjectInputStream(fileIn);
+			} catch (IOException ex) {
+				log.warn("Could not read cache file {}", cacheFile.getPath(), ex);
+				return null;
+			}
 
-        public TimeBreakdown(String dateInstance) throws ParseException {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"); // HACK can we use JODA?
-            Date dateInstanceDate = null;
-            try {
-                dateInstanceDate = sdf.parse(dateInstance);
-            } catch (ParseException pe) {
-                throw pe;
-            }
+			try {
+				result = (Time) in.readObject();
+			} catch (IOException ex) {
+				log.warn("Could not inflate cache file {}", cacheFile.getPath(), ex);
+				return null;
+			} catch (ClassNotFoundException ex) {
+				log.warn("Could not inflate cache file {}", cacheFile.getPath(), ex);
+				return null;
+			}
+		} finally {
+			IOUtils.closeQuietly(in);
+			IOUtils.closeQuietly(fileIn);
+		}
+		return result;
+	}
 
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(dateInstanceDate);
-            this.month = cal.get(Calendar.MONTH) + 1;
-            this.day = cal.get(Calendar.DAY_OF_MONTH);
-            this.year = cal.get(Calendar.YEAR);
-            this.hour = cal.get(Calendar.HOUR_OF_DAY);
-            this.minute = cal.get(Calendar.MINUTE);
-            this.second = cal.get(Calendar.SECOND);
+	/**
+	 *
+	 * @param ci
+	 * @return
+	 */
+	@Override
+	public boolean writeToCache(ResponseCache.CacheIdentifier ci) {
+		FileOutputStream filOutputStream = null;
+		ObjectOutputStream objOutputStream = null;
+		File cacheFile;
+		try {
+			cacheFile = ci.getFile();
+		} catch (IOException ex) {
+			log.warn("Could not create new cache file", ex);
+			return false;
+		}
+		try {
+			try {
+				cacheFile.createNewFile();
+				filOutputStream = new FileOutputStream(cacheFile);
+			} catch (FileNotFoundException ex) {
+				log.warn("Could not open output stream to file {}", cacheFile.getPath(), ex);
+				return false;
+			} catch (IOException ex) {
+				log.warn("Could notcreate new cache file {}", cacheFile.getPath(), ex);
+				return false;
+			}
 
-        }
+			try {
+				objOutputStream = new ObjectOutputStream(filOutputStream);
+			} catch (IOException ex) {
+				log.warn("Could not open object output stream to file {}", cacheFile.getPath(), ex);
+				return false;
+			}
+			try {
+				objOutputStream.writeObject(this);
+			} catch (IOException ex) {
+				log.warn("Could not write object output to output stream", ex);
+				return false;
+			}
+			return true;
+		} finally {
+			IOUtils.closeQuietly(filOutputStream);
+			IOUtils.closeQuietly(objOutputStream);
+		}
+	}
 
-        public TimeBreakdown(Calendar cal) {
-            this.month = cal.get(Calendar.MONTH) + 1;
-            this.day = cal.get(Calendar.DAY_OF_MONTH);
-            this.year = cal.get(Calendar.YEAR);
-            this.hour = cal.get(Calendar.HOUR_OF_DAY);
-            this.minute = cal.get(Calendar.MINUTE);
-            this.second = cal.get(Calendar.SECOND);
-        }
+	static class TimeBreakdown extends Response {
 
-        public int getMonth() {
-            return month;
-        }
+		private static final long serialVersionUID = 2423423L;
+		private static final transient org.slf4j.Logger tbLog = LoggerFactory.getLogger(TimeBreakdown.class);
+		private int month;
+		private int day;
+		private int year;
+		private int timezone;
+		private int hour;
+		private int minute;
+		private int second;
 
-        public void setMonth(int month) {
-            this.month = month;
-        }
+		public TimeBreakdown() {
+		}
 
-        public int getDay() {
-            return day;
-        }
+		public TimeBreakdown(String dateInstance) throws ParseException {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"); // HACK can we use JODA?
+			Date dateInstanceDate = null;
+			try {
+				dateInstanceDate = sdf.parse(dateInstance);
+			} catch (ParseException pe) {
+				throw pe;
+			}
 
-        public void setDay(int day) {
-            this.day = day;
-        }
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(dateInstanceDate);
+			this.month = cal.get(Calendar.MONTH) + 1;
+			this.day = cal.get(Calendar.DAY_OF_MONTH);
+			this.year = cal.get(Calendar.YEAR);
+			this.hour = cal.get(Calendar.HOUR_OF_DAY);
+			this.minute = cal.get(Calendar.MINUTE);
+			this.second = cal.get(Calendar.SECOND);
 
-        public int getYear() {
-            return year;
-        }
+		}
 
-        public void setYear(int year) {
-            this.year = year;
-        }
+		public TimeBreakdown(Calendar cal) {
+			this.month = cal.get(Calendar.MONTH) + 1;
+			this.day = cal.get(Calendar.DAY_OF_MONTH);
+			this.year = cal.get(Calendar.YEAR);
+			this.hour = cal.get(Calendar.HOUR_OF_DAY);
+			this.minute = cal.get(Calendar.MINUTE);
+			this.second = cal.get(Calendar.SECOND);
+		}
 
-        public int getTimezone() {
-            return timezone;
-        }
+		public int getMonth() {
+			return month;
+		}
 
-        public void setTimezone(int timezone) {
-            this.timezone = timezone;
-        }
+		public void setMonth(int month) {
+			this.month = month;
+		}
 
-        public int getHour() {
-            return hour;
-        }
+		public int getDay() {
+			return day;
+		}
 
-        public void setHour(int hour) {
-            this.hour = hour;
-        }
+		public void setDay(int day) {
+			this.day = day;
+		}
 
-        public int getMinute() {
-            return minute;
-        }
+		public int getYear() {
+			return year;
+		}
 
-        public void setMinute(int minute) {
-            this.minute = minute;
-        }
+		public void setYear(int year) {
+			this.year = year;
+		}
 
-        public int getSecond() {
-            return second;
-        }
+		public int getTimezone() {
+			return timezone;
+		}
 
-        public void setSecond(int second) {
-            this.second = second;
-        }
-    }
+		public void setTimezone(int timezone) {
+			this.timezone = timezone;
+		}
+
+		public int getHour() {
+			return hour;
+		}
+
+		public void setHour(int hour) {
+			this.hour = hour;
+		}
+
+		public int getMinute() {
+			return minute;
+		}
+
+		public void setMinute(int minute) {
+			this.minute = minute;
+		}
+
+		public int getSecond() {
+			return second;
+		}
+
+		public void setSecond(int second) {
+			this.second = second;
+		}
+
+		public static TimeBreakdown buildFromCache(ResponseCache.CacheIdentifier ci) {
+			TimeBreakdown result;
+			FileInputStream fileIn = null;
+			ObjectInputStream in = null;
+			File cacheFile;
+			try {
+				cacheFile = ci.getFile();
+			} catch (IOException ex) {
+				log.warn("Could not create new cache file", ex);
+				return null;
+			}
+			
+			try {
+				try {
+					fileIn = new FileInputStream(cacheFile);
+				} catch (FileNotFoundException ex) {
+					tbLog.warn("Could not find cache file {}", cacheFile.getPath(), ex);
+					return null;
+				}
+
+				try {
+					in = new ObjectInputStream(fileIn);
+				} catch (IOException ex) {
+					tbLog.warn("Could not read cache file {}", cacheFile.getPath(), ex);
+					return null;
+				}
+
+				try {
+					result = (TimeBreakdown) in.readObject();
+				} catch (IOException ex) {
+					tbLog.warn("Could not inflate cache file {}", cacheFile.getPath(), ex);
+					return null;
+				} catch (ClassNotFoundException ex) {
+					tbLog.warn("Could not inflate cache file {}", cacheFile.getPath(), ex);
+					return null;
+				}
+			} finally {
+				IOUtils.closeQuietly(in);
+				IOUtils.closeQuietly(fileIn);
+			}
+			return result;
+		}
+
+		/**
+		 *
+		 * @param ci
+		 * @return
+		 */
+		@Override
+		public boolean writeToCache(ResponseCache.CacheIdentifier ci) {
+			FileOutputStream filOutputStream = null;
+			ObjectOutputStream objOutputStream = null;
+			File cacheFile;
+			try {
+				cacheFile = ci.getFile();
+			} catch (IOException ex) {
+				log.warn("Could not create new cache file", ex);
+				return false;
+			}
+			try {
+				try {
+					cacheFile.createNewFile();
+					filOutputStream = new FileOutputStream(cacheFile);
+				} catch (FileNotFoundException ex) {
+					log.warn("Could not open output stream to file {}", cacheFile.getPath(), ex);
+					return false;
+				} catch (IOException ex) {
+					log.warn("Could notcreate new cache file {}", cacheFile.getPath(), ex);
+					return false;
+				}
+
+				try {
+					objOutputStream = new ObjectOutputStream(filOutputStream);
+				} catch (IOException ex) {
+					log.warn("Could not open object output stream to file {}", cacheFile.getPath(), ex);
+					return false;
+				}
+				try {
+					objOutputStream.writeObject(this);
+				} catch (IOException ex) {
+					log.warn("Could not write object output to output stream", ex);
+					return false;
+				}
+				return true;
+			} finally {
+				IOUtils.closeQuietly(filOutputStream);
+				IOUtils.closeQuietly(objOutputStream);
+			}
+		}
+	}
 }

@@ -1,13 +1,9 @@
 package gov.usgs.cida.gdp.dataaccess.bean;
 
-import gov.usgs.cida.gdp.dataaccess.bean.Time;
 import gov.usgs.cida.gdp.dataaccess.bean.Time.TimeBreakdown;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static org.junit.Assert.*;

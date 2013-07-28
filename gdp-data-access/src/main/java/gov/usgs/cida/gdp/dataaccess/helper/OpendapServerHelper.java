@@ -3,7 +3,7 @@ package gov.usgs.cida.gdp.dataaccess.helper;
 import gov.usgs.cida.gdp.dataaccess.bean.DataTypeCollection;
 import gov.usgs.cida.gdp.dataaccess.bean.DataTypeCollection.DataTypeBean;
 import gov.usgs.cida.gdp.dataaccess.bean.Time;
-import gov.usgs.cida.gdp.utilities.bean.Response;
+import gov.usgs.cida.gdp.dataaccess.bean.Response;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -37,11 +37,10 @@ import ucar.nc2.units.DateUnit;
 
 public class OpendapServerHelper {
 
-	static org.slf4j.Logger log = LoggerFactory.getLogger(OpendapServerHelper.class);
+	private final static org.slf4j.Logger log = LoggerFactory.getLogger(OpendapServerHelper.class);
 
 	public static Time getTimeBean(String datasetUrl, String gridSelection) throws IOException, ParseException {
 
-		//List<String> dateRangeOld = NetCDFUtility.getDateRange(datasetUrl, gridSelection);
 		List<String> dateRange = getOPeNDAPTimeRange(datasetUrl, gridSelection);
 		if (dateRange.isEmpty()) {
 			boolean hasTimeCoord = NetCDFUtility.hasTimeCoordinate(datasetUrl);
