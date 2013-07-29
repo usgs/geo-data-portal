@@ -31,11 +31,6 @@ var AOI = function () {
         // Clear the selectbox of any options
         $(_AOI_SELECTBOX).empty();
 
-        // Fix IE not properly parsing the returned XML
-        if (data.xml) {
-            data = $.xmlDOM(data.xml);
-        }
-
         $(data).find('FeatureType > Name').each(function(index, element) {
             var name = $(element).text();
             $(_AOI_SELECTBOX).append(
