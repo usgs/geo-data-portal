@@ -117,11 +117,6 @@
 			<url>https://cida.usgs.gov/maven/cida-public</url>
 		</repository>
 		<repository>
-			<id>cida-public</id>
-			<name>CIDA Public Nexus</name>
-			<url>http://cida.usgs.gov/maven/cida-public/</url>
-		</repository>
-		<repository>
 			<id>cida-gdp-development</id>
 			<name>CIDA GDP Development</name>
 			<url>https://internal.cida.usgs.gov/maven/content/groups/cida-gdp-development</url>
