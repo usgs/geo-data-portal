@@ -15,6 +15,10 @@ public class RunBelowPrecipitationThresholdVisitor extends RunBelowThresholdVisi
 
     private final static Logger LOGGER = LoggerFactory.getLogger(RunBelowPrecipitationThresholdVisitor.class);
 
+    public RunBelowPrecipitationThresholdVisitor(String outputDir) {
+        super(outputDir);
+    }
+    
     @Override
     protected DerivativeValueDescriptor generateDerivativeValueDescriptor(List<GridDatatype> gridDatatypeList) {
         return new DerivativeValueDescriptor(

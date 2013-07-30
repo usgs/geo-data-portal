@@ -12,6 +12,10 @@ public abstract class RunAgainstThresholdVisitor extends AnnualDerivativeVisitor
     
     private final static Logger LOGGER = LoggerFactory.getLogger(RunAgainstThresholdVisitor.class);
     
+    public RunAgainstThresholdVisitor(String outputDir) {
+        super(outputDir);
+    }
+    
     @Override
     protected final int getInputGridCount() {
         return 1;

@@ -27,10 +27,15 @@ import ucar.units.Converter;
 public abstract class AnnualDerivativeVisitor extends DerivativeGridVisitor {
     
     private final static Logger LOGGER = LoggerFactory.getLogger(AnnualDerivativeVisitor.class);
+    protected final String outputDir;
+    
+    public AnnualDerivativeVisitor(String outputDir) {
+        this.outputDir = outputDir;
+    }
 
     @Override
     protected String getOutputFilePath() {
-        return DerivativeUtil.DEFAULT_P1Y_PATH;
+        return this.outputDir;
     }
     
     @Override

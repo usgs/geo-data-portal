@@ -1,8 +1,6 @@
 package gov.usgs.derivative.run;
 
 import java.io.File;
-import java.util.Arrays;
-import org.apache.commons.codec.binary.StringUtils;
 import org.kohsuke.args4j.Option;
 
 
@@ -30,13 +28,13 @@ public class DerivativeOptions {
     @Option(name = "-d", usage = "input dataset to process derivatives on")
     public String datasetLocation = null;
     
-    @Option(name = "-o", usage = "directory to write output files to")
+    @Option(name = "-o", metaVar = "DIR", usage = "directory to write output files to")
     public File outputDir = new File(".");
     
     @Option(name = "-s", usage = "shapefile to do spatial analysis with")
     public File shapefile = null;
     
-    @Option(name = "-p", usage = "which derivative process to run at this step\nat this time the options are:\n\tP1D\n\tP1Y\n\tP1Y30D\n\tP30Y\n\tP1M\n\tSPATIAL")
+    @Option(name = "-p", required = true, usage = "which derivative process to run at this step")
     public Process process = null;
     
     @Option(name = "-pr", usage = "name of the precipitation variable")

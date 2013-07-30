@@ -10,6 +10,10 @@ import ucar.nc2.dt.GridDatatype;
  * @author tkunicki
  */
 public class GrowingDegreeDayVisitor extends AnnualDegreeDayVisitor {
+    
+    public GrowingDegreeDayVisitor(String outputDir) {
+        super(outputDir);
+    }
 
     @Override
     protected AnnualDerivativeKernel createKernel(int yxCount, float[] thresholds) {

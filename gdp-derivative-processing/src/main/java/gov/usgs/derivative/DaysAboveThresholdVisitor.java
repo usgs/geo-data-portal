@@ -5,6 +5,10 @@ package gov.usgs.derivative;
  * @author tkunicki
  */
 public abstract class DaysAboveThresholdVisitor extends DaysAgainstThresholdVisitor {
+    
+    public DaysAboveThresholdVisitor(String outputDir) {
+        super(outputDir);
+    }
 
     @Override
     protected DaysAboveThresholdKernel createKernel(int yxCount, float[] thresholds) {

@@ -15,6 +15,10 @@ public class GrowingSeasonLengthVisitor extends RunAboveThresholdVisitor {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(GrowingSeasonLengthVisitor.class);
     
+    public GrowingSeasonLengthVisitor(String outputDir) {
+        super(outputDir);
+    }
+    
     @Override
     protected DerivativeValueDescriptor generateDerivativeValueDescriptor(List<GridDatatype> gridDatatypeList) {
         return new DerivativeValueDescriptor(

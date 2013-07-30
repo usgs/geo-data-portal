@@ -11,6 +11,10 @@ import ucar.nc2.dt.GridDatatype;
  */
 public class CoolingDegreeDayVisitor extends AnnualDegreeDayVisitor {
 
+    public CoolingDegreeDayVisitor(String outputDir) {
+        super(outputDir);
+    }
+    
     @Override
     protected AnnualDerivativeKernel createKernel(int yxCount, float[] thresholds) {
         return new CoolingDegreeDayKernel(yxCount, thresholds);

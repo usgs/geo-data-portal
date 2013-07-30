@@ -15,6 +15,10 @@ public class RunAboveTemperatureThresholdVisitor extends RunAboveThresholdVisito
 
     private final static Logger LOGGER = LoggerFactory.getLogger(RunAboveTemperatureThresholdVisitor.class);
     
+    public RunAboveTemperatureThresholdVisitor(String outputDir) {
+        super(outputDir);
+    }
+    
     @Override
     protected DerivativeValueDescriptor generateDerivativeValueDescriptor(List<GridDatatype> gridDatatypeList) {
         return new DerivativeValueDescriptor(

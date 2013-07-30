@@ -9,6 +9,10 @@ import ucar.nc2.dt.GridDatatype;
  * @author tkunicki
  */
 public abstract class AnnualDegreeDayVisitor extends AnnualDerivativeVisitor {
+    
+    public AnnualDegreeDayVisitor(String outputDir) {
+        super(outputDir);
+    }
 
     @Override
     protected String generateDerivativeOutputVariableName(List<GridDatatype> gridDatatypeList, String derivative) {

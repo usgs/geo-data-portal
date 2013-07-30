@@ -6,6 +6,10 @@ package gov.usgs.derivative;
  */
 public abstract class DaysBelowThresholdVisitor extends DaysAgainstThresholdVisitor {
 
+    public DaysBelowThresholdVisitor(String outputDir) {
+        super(outputDir);
+    }
+    
     @Override
     protected DaysBelowThresholdKernel createKernel(int yxCount, float[] thresholds) {
         return new DaysBelowThresholdKernel(yxCount, thresholds);

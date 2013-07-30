@@ -6,6 +6,10 @@ package gov.usgs.derivative;
  */
 public abstract class RunAboveThresholdVisitor extends RunAgainstThresholdVisitor {
 
+    public RunAboveThresholdVisitor(String outputDir) {
+        super(outputDir);
+    }
+    
     @Override
     protected RunAboveThresholdKernel createKernel(int yxCount, float[] thresholds) {
         return new RunAboveThresholdKernel(yxCount, thresholds);

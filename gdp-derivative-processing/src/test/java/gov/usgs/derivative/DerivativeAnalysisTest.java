@@ -63,24 +63,24 @@ public class DerivativeAnalysisTest {
                                 System.out.println("running " + gdt.getName());
                                 GridTraverser t = new GridTraverser(gdt);
                                 t.traverse(Arrays.asList(new GridVisitor[] {
-                                    new DaysAbovePrecipitationThresholdVisitor(),
-                                    new RunBelowPrecipitationThresholdVisitor()
+                                    new DaysAbovePrecipitationThresholdVisitor(DerivativeUtil.DEFAULT_P1Y_PATH),
+                                    new RunBelowPrecipitationThresholdVisitor(DerivativeUtil.DEFAULT_P1Y_PATH)
                                 }));
                             }
                             if (gdt.getName().endsWith(dsVariableMap.get(VariableType.T_MAX))) {
                                 System.out.println("running " + gdt.getName());
                                 GridTraverser t = new GridTraverser(gdt);
                                 t.traverse(Arrays.asList(new GridVisitor[] {
-                                    new DaysAboveTemperatureThresholdVisitor(),
-                                    new RunAboveTemperatureThresholdVisitor()
+                                    new DaysAboveTemperatureThresholdVisitor(DerivativeUtil.DEFAULT_P1Y_PATH),
+                                    new RunAboveTemperatureThresholdVisitor(DerivativeUtil.DEFAULT_P1Y_PATH)
                                 }));
                             }
                             if (gdt.getName().endsWith(dsVariableMap.get(VariableType.T_MIN))) {
                                 System.out.println("running " + gdt.getName());
                                 GridTraverser t = new GridTraverser(gdt);
                                 t.traverse(Arrays.asList(new GridVisitor[] {
-                                    new DaysBelowTemperatureThresholdVisitor(),
-                                    new GrowingSeasonLengthVisitor(),
+                                    new DaysBelowTemperatureThresholdVisitor(DerivativeUtil.DEFAULT_P1Y_PATH),
+                                    new GrowingSeasonLengthVisitor(DerivativeUtil.DEFAULT_P1Y_PATH),
                                 }));
                             }
                         }
@@ -123,9 +123,9 @@ public class DerivativeAnalysisTest {
                         System.out.println("GCM/Scenario " + gsName + " P1Y CDD");
                         System.out.println("GCM/Scenario " + gsName + " P1Y GDD");
                         t.traverse(Arrays.asList(new GridVisitor[] {
-                                new HeatingDegreeDayVisitor(),
-                                new CoolingDegreeDayVisitor(),
-                                new GrowingDegreeDayVisitor(),
+                                new HeatingDegreeDayVisitor(DerivativeUtil.DEFAULT_P1Y_PATH),
+                                new CoolingDegreeDayVisitor(DerivativeUtil.DEFAULT_P1Y_PATH),
+                                new GrowingDegreeDayVisitor(DerivativeUtil.DEFAULT_P1Y_PATH),
                             }));
             }
                     }

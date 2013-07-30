@@ -68,6 +68,9 @@ public class RunDerivatives {
         CmdLineParser parser = new CmdLineParser(options);
         try {
             parser.parseArgument(args);
+            if (options.help) {
+                parser.printUsage(System.out);
+            }
             if (options.process != null) {
                 switch (options.process) {
                     case P1D:
@@ -79,20 +82,21 @@ public class RunDerivatives {
                         calculateP1DDerivatives(options);
                         break;
                     case P1M:
-                        calculateP1MAverage(options);
-                        break;
+                        //calculateP1MAverage(options);
+                        //break;
                     case P1Y:
-                        calculateP1YDerivativeEnsembleAverage(options);
-                        break;
+                        //calculateP1YDerivativeEnsembleAverage(options);
+                        //break;
                     case P1Y30D:
-                        calculateP1YAverageOverP30Y(options);
-                        break;
+                        //calculateP1YAverageOverP30Y(options);
+                        //break;
                     case P30Y:
-                        calculateP30YDerivatives(options);
-                        break;
+                        //calculateP30YDerivatives(options);
+                        //break;
                     case SPATIAL:
-                        calculateDerivativeFeatureWeightedGridStatistics(options);
-                        break;
+                        throw new UnsupportedOperationException("not yet implemented");
+                        //calculateDerivativeFeatureWeightedGridStatistics(options);
+                        //break;
                     default:
                         throw new CmdLineException(parser, "Unable to determine process type");
                 }
@@ -134,24 +138,25 @@ public class RunDerivatives {
                                 LOGGER.debug("running " + gdt.getName());
                                 GridTraverser t = new GridTraverser(gdt);
                                 t.traverse(Arrays.asList(new GridVisitor[]{
-                                    new DaysAbovePrecipitationThresholdVisitor(),
-                                    new RunBelowPrecipitationThresholdVisitor()
+                                    new DaysAbovePrecipitationThresholdVisitor(options.datasetLocation),
+                                    new RunBelowPrecipitationThresholdVisitor(options.datasetLocation)
                                 }));
                             }
                             if (gdt.getName().endsWith(dsVariableMap.get(VariableType.T_MAX))) {
                                 LOGGER.debug("running " + gdt.getName());
                                 GridTraverser t = new GridTraverser(gdt);
                                 t.traverse(Arrays.asList(new GridVisitor[]{
-                                    new DaysAboveTemperatureThresholdVisitor(),
-                                    new RunAboveTemperatureThresholdVisitor()
+                                    new DaysAboveTemperatureThresholdVisitor(options.datasetLocation),
+                                    new RunAboveTemperatureThresholdVisitor(options.datasetLocation)
                                 }));
                             }
                             if (gdt.getName().endsWith(dsVariableMap.get(VariableType.T_MIN))) {
                                 LOGGER.debug("running " + gdt.getName());
                                 GridTraverser t = new GridTraverser(gdt);
                                 t.traverse(Arrays.asList(new GridVisitor[]{
-                                    new DaysBelowTemperatureThresholdVisitor(),
-                                    new GrowingSeasonLengthVisitor(),}));
+                                    new DaysBelowTemperatureThresholdVisitor(options.datasetLocation),
+                                    new GrowingSeasonLengthVisitor(options.datasetLocation)
+                                }));
                             }
                         }
                     } catch (Exception e) {
@@ -175,21 +180,25 @@ public class RunDerivatives {
                     if (options.lowMemory) {
                         System.out.println("GCM/Scenario " + gsName + " P1Y HDD");
                         t.traverse(Arrays.asList(new GridVisitor[]{
-                            new HeatingDegreeDayVisitor(),}));
+                            new HeatingDegreeDayVisitor(options.datasetLocation)
+                        }));
                         System.out.println("GCM/Scenario " + gsName + " P1Y CDD");
                         t.traverse(Arrays.asList(new GridVisitor[]{
-                            new CoolingDegreeDayVisitor(),}));
+                            new CoolingDegreeDayVisitor(options.datasetLocation)
+                        }));
                         System.out.println("GCM/Scenario " + gsName + " P1Y GDD");
                         t.traverse(Arrays.asList(new GridVisitor[]{
-                            new GrowingDegreeDayVisitor(),}));
+                            new GrowingDegreeDayVisitor(options.datasetLocation)
+                        }));
                     } else {
                         LOGGER.debug("GCM/Scenario " + gsName + " P1Y HDD");
                         LOGGER.debug("GCM/Scenario " + gsName + " P1Y CDD");
                         LOGGER.debug("GCM/Scenario " + gsName + " P1Y GDD");
                         t.traverse(Arrays.asList(new GridVisitor[]{
-                            new HeatingDegreeDayVisitor(),
-                            new CoolingDegreeDayVisitor(),
-                            new GrowingDegreeDayVisitor(),}));
+                            new HeatingDegreeDayVisitor(options.datasetLocation),
+                            new CoolingDegreeDayVisitor(options.datasetLocation),
+                            new GrowingDegreeDayVisitor(options.datasetLocation)
+                        }));
                     }
                 }
             }

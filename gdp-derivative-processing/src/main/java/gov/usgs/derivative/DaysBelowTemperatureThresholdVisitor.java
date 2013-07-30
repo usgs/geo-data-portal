@@ -14,6 +14,10 @@ import ucar.nc2.dt.GridDatatype;
 public class DaysBelowTemperatureThresholdVisitor extends DaysBelowThresholdVisitor {
     
     private final static Logger LOGGER = LoggerFactory.getLogger(DaysBelowTemperatureThresholdVisitor.class);
+    
+    public DaysBelowTemperatureThresholdVisitor(String outputDir) {
+        super(outputDir);
+    }
 
     @Override
     protected DerivativeValueDescriptor generateDerivativeValueDescriptor(List<GridDatatype> gridDatatypeList) {
