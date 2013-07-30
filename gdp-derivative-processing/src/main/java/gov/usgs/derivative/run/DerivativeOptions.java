@@ -29,7 +29,7 @@ public class DerivativeOptions {
     public String datasetLocation = null;
     
     @Option(name = "-o", metaVar = "DIR", usage = "directory to write output files to")
-    public File outputDir = new File(".");
+    public String outputDir = ".";
     
     @Option(name = "-s", usage = "shapefile to do spatial analysis with")
     public File shapefile = null;

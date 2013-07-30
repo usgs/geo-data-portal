@@ -138,24 +138,24 @@ public class RunDerivatives {
                                 LOGGER.debug("running " + gdt.getName());
                                 GridTraverser t = new GridTraverser(gdt);
                                 t.traverse(Arrays.asList(new GridVisitor[]{
-                                    new DaysAbovePrecipitationThresholdVisitor(options.datasetLocation),
-                                    new RunBelowPrecipitationThresholdVisitor(options.datasetLocation)
+                                    new DaysAbovePrecipitationThresholdVisitor(options.outputDir),
+                                    new RunBelowPrecipitationThresholdVisitor(options.outputDir)
                                 }));
                             }
                             if (gdt.getName().endsWith(dsVariableMap.get(VariableType.T_MAX))) {
                                 LOGGER.debug("running " + gdt.getName());
                                 GridTraverser t = new GridTraverser(gdt);
                                 t.traverse(Arrays.asList(new GridVisitor[]{
-                                    new DaysAboveTemperatureThresholdVisitor(options.datasetLocation),
-                                    new RunAboveTemperatureThresholdVisitor(options.datasetLocation)
+                                    new DaysAboveTemperatureThresholdVisitor(options.outputDir),
+                                    new RunAboveTemperatureThresholdVisitor(options.outputDir)
                                 }));
                             }
                             if (gdt.getName().endsWith(dsVariableMap.get(VariableType.T_MIN))) {
                                 LOGGER.debug("running " + gdt.getName());
                                 GridTraverser t = new GridTraverser(gdt);
                                 t.traverse(Arrays.asList(new GridVisitor[]{
-                                    new DaysBelowTemperatureThresholdVisitor(options.datasetLocation),
-                                    new GrowingSeasonLengthVisitor(options.datasetLocation)
+                                    new DaysBelowTemperatureThresholdVisitor(options.outputDir),
+                                    new GrowingSeasonLengthVisitor(options.outputDir)
                                 }));
                             }
                         }
@@ -180,24 +180,24 @@ public class RunDerivatives {
                     if (options.lowMemory) {
                         System.out.println("GCM/Scenario " + gsName + " P1Y HDD");
                         t.traverse(Arrays.asList(new GridVisitor[]{
-                            new HeatingDegreeDayVisitor(options.datasetLocation)
+                            new HeatingDegreeDayVisitor(options.outputDir)
                         }));
                         System.out.println("GCM/Scenario " + gsName + " P1Y CDD");
                         t.traverse(Arrays.asList(new GridVisitor[]{
-                            new CoolingDegreeDayVisitor(options.datasetLocation)
+                            new CoolingDegreeDayVisitor(options.outputDir)
                         }));
                         System.out.println("GCM/Scenario " + gsName + " P1Y GDD");
                         t.traverse(Arrays.asList(new GridVisitor[]{
-                            new GrowingDegreeDayVisitor(options.datasetLocation)
+                            new GrowingDegreeDayVisitor(options.outputDir)
                         }));
                     } else {
                         LOGGER.debug("GCM/Scenario " + gsName + " P1Y HDD");
                         LOGGER.debug("GCM/Scenario " + gsName + " P1Y CDD");
                         LOGGER.debug("GCM/Scenario " + gsName + " P1Y GDD");
                         t.traverse(Arrays.asList(new GridVisitor[]{
-                            new HeatingDegreeDayVisitor(options.datasetLocation),
-                            new CoolingDegreeDayVisitor(options.datasetLocation),
-                            new GrowingDegreeDayVisitor(options.datasetLocation)
+                            new HeatingDegreeDayVisitor(options.outputDir),
+                            new CoolingDegreeDayVisitor(options.outputDir),
+                            new GrowingDegreeDayVisitor(options.outputDir)
                         }));
                     }
                 }
