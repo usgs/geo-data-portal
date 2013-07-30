@@ -13,9 +13,9 @@ import java.util.List;
 public class DerivativeUtil {
     
     // bah, parameterize this as part of visitor later...
-    public final static String DEFAULT_P1Y_PATH = "/Users/tkunicki/Downloads/derivatives/P1Y/";
-    public final static String DEFAULT_P30Y_PATH = "/Users/tkunicki/Downloads/derivatives/P30Y/";
-    public final static String DEFAULT_P30Y_DELTA_PATH = "/Users/tkunicki/Downloads/derivatives/P30Y-delta/";
+    public final static String DEFAULT_P1Y_PATH = "/Volumes/Striped/derivatives/P1Y/";
+    public final static String DEFAULT_P30Y_PATH = "/Volumes/Striped/derivatives/P30Y/";
+    public final static String DEFAULT_P30Y_DELTA_PATH = "/Volumes/Striped/derivatives/P30Y-delta/";
     
     public static boolean[] generateMissingValuesMask(List<float[]> yxValuesList, List<Number> missingValueList) {
         int yxCount = yxValuesList.get(0).length;

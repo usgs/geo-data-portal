@@ -27,7 +27,6 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
  *
  * @author tkunicki
  */
-@Ignore
 public class DerivativeAnalysisTest {
     
     public enum VariableType {
@@ -37,10 +36,9 @@ public class DerivativeAnalysisTest {
     };
     
     @Test
-    @Ignore
     public void calculateP1DDerivatives() throws IOException {
         
-        String dsName = "/Users/tkunicki/Data/thredds/gmo/GMO.ncml";
+        String dsName = "dods://igsarmewmactck2.gs.doi.net:8080/thredds/dodsC/dcp/gridded_downscaling/pcm.b1.tmin.NAm.grid.1960.2099.nc.gz";
         Map<VariableType, String> dsVariableMap = new HashMap<VariableType,String>();
         dsVariableMap.put(VariableType.PRECIP, "pr");
         dsVariableMap.put(VariableType.T_MIN, "tmin");
@@ -127,7 +125,7 @@ public class DerivativeAnalysisTest {
                                 new CoolingDegreeDayVisitor(),
                                 new GrowingDegreeDayVisitor(),
                             }));
-                        }
+            }
                     }
                 } 
             }
@@ -141,7 +139,6 @@ public class DerivativeAnalysisTest {
     }
     
     @Test
-    @Ignore
     public void calculateP1YDerivativeEnsembleAverage() throws IOException {
         FeatureDataset fds = null;
         
@@ -221,7 +218,6 @@ public class DerivativeAnalysisTest {
     }
     
     @Test
-    @Ignore
     public void calculateP1YAverageOverP30Y() throws IOException {
         FeatureDataset fds = null;
         
@@ -270,7 +266,6 @@ public class DerivativeAnalysisTest {
     }
     
     @Test
-    @Ignore
     public void calculateP30Derivatives() throws IOException {
         FeatureDataset fds = null;
         
@@ -314,7 +309,6 @@ public class DerivativeAnalysisTest {
     
     
     @Test
-    @Ignore
     public void testIOSpeed() throws IOException, InvalidRangeException {
         FeatureDataset fds = null;
         try {

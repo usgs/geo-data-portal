@@ -43,24 +43,11 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
  *
  * @author tkunicki
  */
-@Ignore
 public class SpatialDerivativeAnalysisTest {
     
     public final static Logger LOGGER = LoggerFactory.getLogger(SpatialDerivativeAnalysisTest.class); 
     
-    public SpatialDerivativeAnalysisTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-
     @Test
-    @Ignore
     public void testSomeMethod() throws FactoryException, TransformException, SchemaException {
         
         File spatialDirectory = new File("/Users/tkunicki/Downloads/derivatives/spatial");
