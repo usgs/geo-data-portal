@@ -19,9 +19,11 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
  *
  * @author tkunicki
  */
+@Ignore
 public class TimeStepAveragingTest {
 
     @Test
+    @Ignore
     public void calculateP1MAverage() throws IOException {
         FeatureDataset fds = null;
 
