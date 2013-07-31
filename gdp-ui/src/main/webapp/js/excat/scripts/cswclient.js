@@ -8,39 +8,37 @@
  * Tested on : FireFox 3, Safari, IE 7
  * Last Change : 2008-10-22
  */
-var CSWClient = function() {
-    var USE_PROXY = true;
-    var NAMESPACES = {
-        'dc'  : 'http://purl.org/dc/elements/1.1/',
-        'dct' : 'http://purl.org/dc/terms/',
-        'gco' : 'http://www.isotc211.org/2005/gco',
-        'gmd' : 'http://www.isotc211.org/2005/gmd',
-        'ows' : 'http://www.opengis.net/ows',
-        'cat' : 'http://www.esri.com/metadata/csw/',
-        'csw' : 'http://www.opengis.net/cat/csw/2.0.2'
-    }
-    var _context;
-    var cswhost;
-    var proxy;
-    var getrecords_xsl;
-    var getrecordbyid_xsl;
-    var defaults_xml;
-    var defaultschema;
-    var _currentSBFeatureSearch = '';
-    var _sbConstraintFeature = false;
-    var _sbConstraintCoverage = false;
-    var _capabilitiesMap = {};
-    var _DATASET_SELECTED_TITLE = '#dataset-selected-title';
-    var _DATASET_URL_INPUT_BOX = '#dataset-url-input-box';
-    
+var CSWClient = function () {
+    var USE_PROXY = true,
+			NAMESPACES = {
+		'dc': 'http://purl.org/dc/elements/1.1/',
+		'dct': 'http://purl.org/dc/terms/',
+		'gco': 'http://www.isotc211.org/2005/gco',
+		'gmd': 'http://www.isotc211.org/2005/gmd',
+		'ows': 'http://www.opengis.net/ows',
+		'cat': 'http://www.esri.com/metadata/csw/',
+		'csw': 'http://www.opengis.net/cat/csw/2.0.2'
+	},
+	_context,
+			proxy,
+			getrecords_xsl,
+			getrecordbyid_xsl,
+			defaults_xml,
+			cswhost,
+			defaultschema,
+			_currentSBFeatureSearch = '',
+			_sbConstraintFeature = false,
+			_sbConstraintCoverage = false,
+			_capabilitiesMap = {},
+			_DATASET_SELECTED_TITLE = '#dataset-selected-title',
+			_DATASET_URL_INPUT_BOX = '#dataset-url-input-box';
+ 
     function handleCSWResponse(request, xml) {
 
         var stylesheet = "js/excat/xsl/prettyxml.xsl";
-        if (request == "getrecords" &
-            document.theForm.displaymode.value != "xml") {
+        if (request === "getrecords" & document.theForm.displaymode.value !== "xml") {
             stylesheet = "js/excat/xsl/csw-results.xsl";
-        } else if (request == "getrecordbyid" &
-            document.theForm.displaymode.value != "xml") {
+        } else if (request === "getrecordbyid" & document.theForm.displaymode.value !== "xml") {
             stylesheet = "js/excat/xsl/csw-metadata.xsl";
         }
 
@@ -48,43 +46,49 @@ var CSWClient = function() {
         var processor = new XSLTProcessor();
         processor.importStylesheet(xslt);
 
-        var XmlDom = processor.transformToDocument(xml)
+        var XmlDom = processor.transformToDocument(xml);
         var serializer = new XMLSerializer();
         var output = serializer.serializeToString(XmlDom.documentElement);
 
         var outputDiv = document.getElementById("csw-output");
-        if (request == "getrecordbyid") outputDiv = document.getElementById("metadata");
+        if (request === "getrecordbyid") {
+			outputDiv = document.getElementById("metadata");
+		}
         outputDiv.innerHTML = replaceURLWithHTMLLinks(output);
         $(outputDiv).dialog({
             'modal' : true,
             width : '90%',
-            height : request == "getrecordbyid" ? $(window).height() / 1.25 : 'auto',
+            height : request === "getrecordbyid" ? $(window).height() / 1.25 : 'auto',
             resizable : true,
             draggable: true,
-            'title' : request == "getrecordbyid" ? 'Dataset metadata' : 'Choose a data set',
+            'title' : request === "getrecordbyid" ? 'Dataset metadata' : 'Choose a data set',
             zIndex: 9999
         });
-        
+
+		// If a user has previously viewed metadata and has scrolled down,
+		// the new window opens up scrolled down to the location they were 
+		// at previously. This fixes that issue.
+        $(outputDiv).scrollTop(0);
+
         // Some hackery needs to happen here because IE8 will have window.onunload triggered 
         // when selecting a dataset even though it just calls javascript and doesn't try to leave the
         // page
         // http://stackoverflow.com/a/7651818
-        $(window).data('beforeunload', window.onbeforeunload);  
+        $(window).data('beforeunload', window.onbeforeunload);
         $('a[href^="javascript:"]').hover(
-            function(){
-                window.onbeforeunload=null;
+            function () {
+                window.onbeforeunload = null;
             },
-            function(){
-                window.onbeforeunload=$(window).data('beforeunload');
-            }
-            )
+            function () {
+                window.onbeforeunload = $(window).data('beforeunload');
+		});
     }
 
     // http://stackoverflow.com/questions/37684/how-to-replace-plain-urls-with-links
     function replaceURLWithHTMLLinks(text) {
         var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
         if (text && !text.toLowerCase().contains('noreplace')) {
-            return text.replace(exp,"<a href='$1' target='_blank'>$1</a>"); 
+            return text.replace(exp, "<a href='$1' target='_blank'>$1</a>");
         } else {
             return text;
         }
@@ -94,12 +98,12 @@ var CSWClient = function() {
     function getRecordById(id) {
 
         var schema = defaultschema;
-        if (document.theForm.schema != null) {
+        if (document.theForm.schema !== null) {
             schema = document.theForm.schema.value;
         }
 
-        setXpathValue(defaults_xml, "/defaults/outputschema", schema + '');
-        setXpathValue(defaults_xml, "/defaults/id", id + '');
+        setXpathValue(defaults_xml, "/defaults/outputschema", schema + "");
+        setXpathValue(defaults_xml, "/defaults/id", id + "");
 
         var processor = new XSLTProcessor();
         processor.importStylesheet(getrecordbyid_xsl);
@@ -164,7 +168,7 @@ var CSWClient = function() {
     function writeClient(divId) {
         var client_xml = loadDocument("js/excat/xml/cswclient.xml");
         /* if no default cswhost has been defined we provide the user with optional csw hosts */
-        if (cswhost == null) {
+        if (cswhost === null) {
             var cswhosts_xml = loadDocument("js/excat/xml/csw-hosts.xml");
             var span = client_xml.selectSingleNode("//span[@id='csw-hosts']");
             importNode = client_xml.importNode(cswhosts_xml.documentElement, true);
@@ -184,35 +188,35 @@ var CSWClient = function() {
     }
 
     function overlayDiv(div) {
-        while (div.tagName !="DIV") {
-            div = div.parentNode
+        while (div.tagName !== "DIV") {
+            div = div.parentNode;
         }
 
-        _width = div.offsetWidth
-        _height = div.offsetHeight
+        _width = div.offsetWidth;
+        _height = div.offsetHeight;
         _top = findPosY(div);
         _left = findPosX(div);
 
         //overlay = document.createElement("div")
         //overlay.setAttribute("id", "overlay")
         var overlay = document.getElementById('overlay');
-        overlay.style.width = _width + "px"
-        overlay.style.height = _height + "px"
-        overlay.style.position = "absolute"
-        overlay.style.background = "#555555"
-        overlay.style.top = _top + "px"
-        overlay.style.left = _left + "px"
+        overlay.style.width = _width + "px";
+        overlay.style.height = _height + "px";
+        overlay.style.position = "absolute";
+        overlay.style.background = "#555555";
+        overlay.style.top = _top + "px";
+        overlay.style.left = _left + "px";
 
-        overlay.style.filter = "alpha(opacity=70)"
-        overlay.style.opacity = "0.7"
-        overlay.style.mozOpacity = "0.7"
+        overlay.style.filter = "alpha(opacity=70)";
+        overlay.style.opacity = "0.7";
+        overlay.style.mozOpacity = "0.7";
         overlay.style.visibility="visible";
 
-        document.getElementsByTagName("body")[0].appendChild(overlay)
+        document.getElementsByTagName("body")[0].appendChild(overlay);
     }
 
     function removeDiv(div)	{
-        document.getElementsByTagName("body")[0].removeChild(div)
+        document.getElementsByTagName("body")[0].removeChild(div);
     }
 
 
@@ -224,20 +228,20 @@ var CSWClient = function() {
     }
 
     function positionDiv(div1, div2) {
-        var width = div2.offsetWidth-100
-        var height = div2.offsetHeight-100
-        var top = findPosY(div2)+50;
-        var left = findPosX(div2)+50;
-        div1.style.width = width + "px"
-        div1.style.position = "absolute"
-        div1.style.background = "#ffffff"
-        div1.style.top = top + "px"
-        div1.style.left = left + "px"
+        var width = div2.offsetWidth - 100;
+        var height = div2.offsetHeight - 100;
+        var top = findPosY(div2) + 50;
+        var left = findPosX(div2) + 50;
+        div1.style.width = width + "px";
+        div1.style.position = "absolute";
+        div1.style.background = "#ffffff";
+        div1.style.top = top + "px";
+        div1.style.left = left + "px";
     }
 
     function positionPopUp(div1, div2) {
         var top = findPosY(div2)+50+getScrollY();
-        div1.style.top = top + "px"
+        div1.style.top = top + "px";
     }
 
     function findPosX(obj) {
@@ -270,7 +274,7 @@ var CSWClient = function() {
 
     function getScrollY() {
         var scrollY = 0;
-        if (typeof window.pageYOffset == "number") scrollY = window.pageYOffset;
+        if (typeof window.pageYOffset === "number") scrollY = window.pageYOffset;
         else if (document.documentElement && document.documentElement.scrollTop)
             scrollY = document.documentElement.scrollTop;
         else if (document.body && document.body.scrollTop)
@@ -293,29 +297,29 @@ var CSWClient = function() {
         capabilitiesMap : _capabilitiesMap,
         currentSBFeatureSearch : _currentSBFeatureSearch,
         getContext : function() {
-            return _context
+            return _context;
         },
         setContext : function(context) {
             _context = context;
         },
         init : function(_cswhost, host) {
             logger.info("GDP: Initializing CSW client.");
-            if (typeof _cswhost != "undefined") {
+            if (typeof _cswhost !== "undefined") {
                 cswhost = _cswhost;
             }
             else {
                 cswhost = Constant.endpoint.csw;
             }
 
-            if ($.browser.msie && $.browser.version=="9.0") {
+            if ($.browser.msie && $.browser.version === "9.0") {
                 window.XMLSerializer = function(){};
                 window.XMLSerializer.prototype.serializeToString = function(oNode){
-                    return oNode.xml
-                }
+                    return oNode.xml;
+                };
             }
 
             proxy = Constant.endpoint.proxy;
-            if (typeof host != "undefined") {
+            if (typeof host !== "undefined") {
                 proxy = host + Constant.endpoint.proxy;
             }
 
@@ -405,7 +409,7 @@ var CSWClient = function() {
             var query = trim(document.theForm.query.value);
             var processor = new XSLTProcessor();
             
-            if (typeof start == "undefined") {
+            if (typeof start === "undefined") {
                 start = 1;
             }
             
@@ -419,16 +423,16 @@ var CSWClient = function() {
                 CSWClient.setSBConstraint();
             }
             
-            if (typeof  document.theForm.cswhosts != "undefined") {
+            if (typeof document.theForm.cswhosts !== "undefined") {
                 this.setCSWHost(document.theForm.cswhosts.value);
             }
 
-            /*because geonetwork doen not follow the specs*/
-            if(cswhost.indexOf('geonetwork') !=-1 & queryable == "anytext") {
+            /*because geonetwork does not follow the specs*/
+            if(cswhost.indexOf('geonetwork') !== -1 & queryable === "anytext") {
                 queryable = "any";
             }
 
-            if (operator == "contains" & query != "") {
+            if (operator === "contains" & query !== "") {
                 query = "%" + query + "%";
             }
 
@@ -494,7 +498,7 @@ var CSWClient = function() {
             var processor = new XSLTProcessor();
             processor.importStylesheet(xslt);
             
-            var XmlDom = processor.transformToDocument(csw_response)
+            var XmlDom = processor.transformToDocument(csw_response);
             var serializer = new XMLSerializer();
             var output = serializer.serializeToString(XmlDom.documentElement);
             var outputDiv = document.getElementById("metadata");
@@ -510,10 +514,11 @@ var CSWClient = function() {
                 'title' : 'Choose a data set',
                 zIndex: 9999
             });
+			$(outputDiv).scrollTop(0);
         },
         
         selectFeatureById : function(id) {
-            logger.info('cswclient:selectFeatureById():: User has selected a feature from ScienceBase')
+            logger.info('cswclient:selectFeatureById():: User has selected a feature from ScienceBase');
             
             var csw_response = getRecordById(id);
             var selectedFeature;
@@ -536,17 +541,17 @@ var CSWClient = function() {
                     var text = $(elem).text();
                     
                     if (text.toLowerCase().contains("wfs") || text.toLowerCase().contains("ows")) {
-                        selectedFeature = text.indexOf('?') != -1 ? text.substring(0, text.indexOf('?')) : text;
+                        selectedFeature = text.indexOf('?') !== -1 ? text.substring(0, text.indexOf('?')) : text;
                     }
                     
                 });
             }
             
             if (!selectedFeature) {
-                logger.error('cswclient:selectFeatureById():: A feature couldnt be found in this CSW Record')
+                logger.error('cswclient:selectFeatureById():: A feature couldnt be found in this CSW Record');
                 showErrorNotification("No feature found for this CSW Record");
             } else {
-                logger.info('cswclient:selectFeatureById():: Selected feature: ' + selectedFeature)
+                logger.info('cswclient:selectFeatureById():: Selected feature: ' + selectedFeature);
                 
                 Constant.endpoint.wfs = selectedFeature;
                 Constant.endpoint.wms = selectedFeature;
@@ -558,12 +563,12 @@ var CSWClient = function() {
                 AOI.updateFeatureTypesList(function() {
                     var options = $(AOI.areasOfInterestSelectbox)[0].options;
                     
-                    if (options.length == 1) {
+                    if (options.length === 1) {
                         // The return only came back with one item. Pick it
-                        $(AOI.areasOfInterestSelectbox).val(options[0].label)
+                        $(AOI.areasOfInterestSelectbox).val(options[0].label);
                         $(AOI.areasOfInterestSelectbox).trigger('change');
                         logger.info('cswclient:selectFeatureById():: Feature selected: ' + options[0].label);
-                    } else if (options.length == 2) {
+                    } else if (options.length === 2) {
                         // If the return only has two items, pick the one that isn't
                         // footprint. Footprint feature seems to selectFeaturebe included in all 
                         // sciencebase features
@@ -573,8 +578,8 @@ var CSWClient = function() {
                                 $(AOI.areasOfInterestSelectbox).trigger('change');
                                 logger.info('cswclient:selectFeatureById():: Feature selected: ' + item.label);
                             }
-                        })
-                    } else if (options.length > 2) {selectFeature
+                        });
+                    } else if (options.length > 2) {
                         // If we have more thwn 2 options, don't pick any because
                         // there's no way of knowing which one they picked from the 
                         // feature list returned from ScienceBase. Just get rid of 
@@ -611,7 +616,7 @@ var CSWClient = function() {
                     $(_DATASET_SELECTED_TITLE).fadeIn(Constant.fadeSpeed);
                 });
             }
-            $('#metadata').dialog('close')
+            $('#metadata').dialog('close');
             $("#csw-output").dialog('close');
         },
         selectDatasetById : function(id, title) {
@@ -630,7 +635,7 @@ var CSWClient = function() {
             
             '[nodeName="csw:GetRecordByIdResponse"] > [nodeName="gmd:MD_Metadata"] > [nodeName="gmd:distributionInfo"] > \
                 [nodeName="gmd:MD_Distribution"] > [nodeName="gmd:transferOptions"] > [nodeName="gmd:MD_DigitalTransferOptions"] > \
-                [nodeName="gmd:onLine"] > [nodeName="gmd:CI_OnlineResource"] > [nodeName="gmd:linkage"] > [nodeName="gmd:URL"]',
+                [nodeName="gmd:onLine"] > [nodeName="gmd:CI_OnlineResource"] > [nodeName="gmd:linkage"] > [nodeName="gmd:URL"]'
                 
             ];
             var shouldCacheSelectors = [
@@ -645,14 +650,14 @@ var CSWClient = function() {
 
                     if (text.toLowerCase().contains("dods")) {
                         Dataset.setDatasetType(Dataset.datasetTypeEnum.OPENDAP);
-                        selectedDataset = text.indexOf('?') != -1 ? text.substring(0, text.indexOf('?')) : text;
+                        selectedDataset = text.indexOf('?') !== -1 ? text.substring(0, text.indexOf('?')) : text;
                     }
                     else if (text.toLowerCase().contains("wcs") && !selectedDataset) {
                         Dataset.setDatasetType(Dataset.datasetTypeEnum.WCS);
-                        selectedDataset = text.indexOf('?') != -1 ? text.substring(0, text.indexOf('?')) : text;
+                        selectedDataset = text.indexOf('?') !== -1 ? text.substring(0, text.indexOf('?')) : text;
                     }
                     else if (text.toLowerCase().contains("wms")) {
-                        wmsURL = text.indexOf('?') != -1 ? text.substring(0, text.indexOf('?')) : text;
+                        wmsURL = text.indexOf('?') !== -1 ? text.substring(0, text.indexOf('?')) : text;
                     }
                 });
             }
@@ -661,7 +666,7 @@ var CSWClient = function() {
                 $(csw_response).find(shouldCacheSelectors[i]).each(function(index, elem) {
                     var codeListValue = $(elem).attr("codeListValue");
                     
-                    if (codeListValue.toLowerCase() == "completed") {
+                    if (codeListValue.toLowerCase() === "completed") {
                         shouldUseCache = true;
                     }
                 });
