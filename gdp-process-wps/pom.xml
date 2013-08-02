@@ -9,7 +9,19 @@
     <artifactId>gdp-process-wps</artifactId>
     <packaging>war</packaging>
     <name>GDP Process WPS</name>
-    
+        
+	<licenses>
+		<license>
+			<name>Public Domain</name>
+			<url>http://en.wikipedia.org/wiki/Public_domain_software</url>
+			<comments>
+				All work of the US Government enter into the Public Domain within
+				the United States.  Whether that work is public domain outside of
+				the United States depends on various factors.
+			</comments>
+		</license>
+	</licenses>
+	
     <properties>
         <version.maven.failsafe.plugin>2.12.2</version.maven.failsafe.plugin>
         <version.maven.jetty.plugin>6.1.26</version.maven.jetty.plugin>
