@@ -28,7 +28,6 @@
 		<slf4j.version>1.7.5</slf4j.version>
 		<logback.version>0.9.26</logback.version>
 		<netcdf.version>4.3.17</netcdf.version>
-		<cida.maven.url>https://internal.cida.usgs.gov/maven</cida.maven.url>
 	</properties>
 	<description>
 		Owner: NB
@@ -103,28 +102,28 @@
 		<repository>
 			<id>cida-gdp-releases</id>
 			<name>CIDA GDP Releases</name>
-			<url>${cida.maven.url}/content/repositories/cida-gdp-releases</url>
+			<url>https://internal.cida.usgs.gov/maven/content/repositories/cida-gdp-releases</url>
 		</repository>
 		<snapshotRepository>
 			<id>cida-gdp-snapshots</id>
 			<name>CIDA GDP Snapshots</name>
-			<url>${cida.maven.url}/content/repositories/cida-gdp-snapshots</url>
+			<url>https://internal.cida.usgs.gov/maven/content/repositories/cida-gdp-snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 	<repositories>
         <repository>
 			<id>cida-public</id>
 			<name>CIDA Public</name>
-			<url>${cida.maven.url}/cida-public</url>
+			<url>https://cida.usgs.gov/maven/cida-public</url>
 		</repository>
-		<repository>
-			<id>cida-gdp-development</id>
-			<name>CIDA GDP Development</name>
-			<url>${cida.maven.url}/content/groups/cida-gdp-development</url>
-		</repository>
-		<repository>
-			<id>cida-thirdparty</id>
-			<url>${cida.maven.url}/content/repositories/cida-thirdparty</url>
+        <repository>
+            <id>n52-releases</id>
+            <name>52 North Releases</name>
+            <url>https://52north.org/maven/repo/releases</url>
+        </repository>
+        <repository>
+			<id>opengeo</id>
+			<url>http://repo.opengeo.org/</url>
 		</repository>
 		<repository>
 			<id>ucar-releases</id>
