@@ -8,6 +8,17 @@
 	</parent>
 	<artifactId>gdp-common-utilities</artifactId>
 	<name>GDP Common Utilities</name>
+	<licenses>
+		<license>
+			<name>Public Domain</name>
+			<url>http://en.wikipedia.org/wiki/Public_domain_software</url>
+			<comments>
+				All work of the US Government enter into the Public Domain within
+				the United States.  Whether that work is public domain outside of
+				the United States depends on various factors.
+			</comments>
+		</license>
+	</licenses>
 	<dependencies>
 		<!-- version numbers set in parent pom -->
 		<dependency>

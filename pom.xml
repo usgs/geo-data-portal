@@ -13,8 +13,6 @@
 		<!-- can't add in until netcdf-jna, netcdf-dsg and aparapi projects as added to jenkins/maven -->
 		<!--        <module>gdp-derivative-processing</module>-->
 		<module>gdp-proxy</module>
-		<module>gdp-52n-wps-patches</module>
-		<module>gdp-52n-wps-extensions</module>
 		<module>gdp-52n-wps-tests</module>
 		<module>gdp-utility-wps</module>
 		<module>gdp-process-wps</module>
@@ -22,7 +20,6 @@
 		<module>gdp-ui</module>
 		<module>gdp-derivative-ui</module>
 		<module>gdp-deployer</module>
-		<module>gdp-prms-ui</module>
 	</modules>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -31,6 +28,7 @@
 		<slf4j.version>1.7.5</slf4j.version>
 		<logback.version>0.9.26</logback.version>
 		<netcdf.version>4.3.17</netcdf.version>
+		<cida.maven.url>https://internal.cida.usgs.gov/maven</cida.maven.url>
 	</properties>
 	<description>
 		Owner: NB
@@ -92,7 +90,10 @@
 		<url>http://igsarm-cida-hudson1.er.usgs.gov:8080/hudson/job/GeoDataPortal/</url>
 	</ciManagement>
 	<scm>
-		<developerConnection>scm:svn:https://cida-svn.er.usgs.gov/repos/dev/usgs/gdp/trunk</developerConnection>
+		<url>http://github.com/USGS-CIDA/geo-data-portal</url>
+		<connection>scm:git:git@github.com:USGS-CIDA/geo-data-portal.git</connection>
+		<developerConnection>scm:git:git@github.com:USGS-CIDA/geo-data-portal.git</developerConnection>
+		<tag>HEAD</tag>
 	</scm>
 	<issueManagement>
 		<system>JIRA</system>
@@ -102,28 +103,28 @@
 		<repository>
 			<id>cida-gdp-releases</id>
 			<name>CIDA GDP Releases</name>
-			<url>http://internal.cida.usgs.gov/maven/content/repositories/cida-gdp-releases</url>
+			<url>${cida.maven.url}/content/repositories/cida-gdp-releases</url>
 		</repository>
 		<snapshotRepository>
 			<id>cida-gdp-snapshots</id>
 			<name>CIDA GDP Snapshots</name>
-			<url>http://internal.cida.usgs.gov/maven/content/repositories/cida-gdp-snapshots</url>
+			<url>${cida.maven.url}/content/repositories/cida-gdp-snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 	<repositories>
         <repository>
 			<id>cida-public</id>
 			<name>CIDA Public</name>
-			<url>https://cida.usgs.gov/maven/cida-public</url>
+			<url>${cida.maven.url}/cida-public</url>
 		</repository>
 		<repository>
 			<id>cida-gdp-development</id>
 			<name>CIDA GDP Development</name>
-			<url>https://internal.cida.usgs.gov/maven/content/groups/cida-gdp-development</url>
+			<url>${cida.maven.url}/content/groups/cida-gdp-development</url>
 		</repository>
 		<repository>
 			<id>cida-thirdparty</id>
-			<url>https://internal.cida.usgs.gov/maven/content/repositories/cida-thirdparty</url>
+			<url>${cida.maven.url}/content/repositories/cida-thirdparty</url>
 		</repository>
 		<repository>
 			<id>ucar-releases</id>
@@ -266,7 +267,7 @@
 			<dependency>
 				<groupId>gov.usgs.cida.netcdf.iosp</groupId>
 				<artifactId>geotiff-iosp</artifactId>
-				<version>1.1</version>
+				<version>1.2-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>gov.usgs.cida.owsutils</groupId>
@@ -378,12 +379,6 @@
 				<scope>runtime</scope>
 			</dependency>
 			<dependency>
-				<groupId>gov.usgs.cida</groupId>
-				<artifactId>tomcat-filters</artifactId>
-				<version>1.2</version>
-				<scope>runtime</scope>
-			</dependency>
-			<dependency>
 				<groupId>org.geotools</groupId>
 				<artifactId>gt-api</artifactId>
 				<version>${geotools.version}</version>
@@ -479,7 +474,7 @@
 			<dependency>
 				<groupId>gov.usgs.cida.jmx</groupId>
 				<artifactId>jmx-log4j</artifactId>
-				<version>1.0</version>
+				<version>1.1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.santuario</groupId>
