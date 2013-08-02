@@ -1159,9 +1159,8 @@ var Dataset = function() {
 		} else { //     == datasetTypeEnum.OPENDAP
 			if (!data
 					|| !data.datatypecollection
-					|| !data.datatypecollection.types
-					|| !data.datatypecollection.types.length) {
-				showErrorNotification(message);
+					|| !data.datatypecollection.types) {
+				showErrorNotification("GDP: A WPS error was encountered: Error getting dataset ID's from server.");
 				hideThrobber();
 				logger.error("GDP: A WPS error was encountered: Error getting dataset ID's from server.");
 				return;
