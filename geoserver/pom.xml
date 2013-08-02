@@ -20,7 +20,7 @@
 		</license>
 	</licenses>
 	<properties>
-		<cida.gs.version>2.3.2-1</cida.gs.version>
+		<cida.gs.version>2.3.2-3</cida.gs.version>
 	</properties>
 	<dependencies>
 		<dependency>
