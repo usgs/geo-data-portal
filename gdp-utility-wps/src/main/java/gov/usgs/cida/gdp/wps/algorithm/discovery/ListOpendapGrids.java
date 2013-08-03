@@ -89,7 +89,7 @@ public class ListOpendapGrids extends AbstractAnnotatedAlgorithm {
 
 			if (this.response == null) {
 				this.response = OpendapServerHelper.callDDSandDAS(catalogURL);
-				if (this.response != null && useCache) {
+				if (this.response != null && !((DataTypeCollection) this.response).getDataTypeCollection().isEmpty() && useCache) {
 					this.response.writeToCache(cacheIdentifier);
 				}
 			}
