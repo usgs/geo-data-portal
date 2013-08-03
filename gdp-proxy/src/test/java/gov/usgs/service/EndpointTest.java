@@ -23,20 +23,22 @@ public class EndpointTest {
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {
-		testpoint = new Endpoint("http://internal.cida.usgs.gov/gdp/process/WebProcessingService?service=WPS&request=GetCapabilities");
+		
 	}
 
 	@AfterClass
 	public static void tearDownClass() throws Exception {
-		testpoint = null;
+		
 	}
 
     @Before
     public void setUp() {
+		testpoint = new Endpoint("http://internal.cida.usgs.gov/gdp/process/WebProcessingService?service=WPS&request=GetCapabilities");
     }
     
     @After
     public void tearDown() {
+		testpoint = null;
     }
 
     /**
