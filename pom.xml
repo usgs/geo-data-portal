@@ -100,34 +100,40 @@
 	</issueManagement>
 	<distributionManagement>
 		<repository>
-			<id>cida-gdp-releases</id>
-			<name>CIDA GDP Releases</name>
-			<url>https://internal.cida.usgs.gov/maven/content/repositories/cida-gdp-releases</url>
+			<id>cida-releases</id>
+			<name>CIDA eleases</name>
+			<url>https://internal.cida.usgs.gov/maven/content/repositories/cida-releases</url>
 		</repository>
 		<snapshotRepository>
-			<id>cida-gdp-snapshots</id>
-			<name>CIDA GDP Snapshots</name>
-			<url>https://internal.cida.usgs.gov/maven/content/repositories/cida-gdp-snapshots</url>
+			<id>cida-snapshots</id>
+			<name>CIDA Snapshots</name>
+			<url>https://internal.cida.usgs.gov/maven/content/repositories/cida-snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 	<repositories>
-        <repository>
+		<repository>
 			<id>cida-public</id>
-			<name>CIDA Public</name>
+			<name>CIDA Public Nexus</name>
 			<url>https://cida.usgs.gov/maven/cida-public</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
 		</repository>
-        <repository>
-            <id>n52-releases</id>
-            <name>52 North Releases</name>
-            <url>https://52north.org/maven/repo/releases</url>
-        </repository>
-        <repository>
+		<repository>
 			<id>opengeo</id>
 			<url>http://repo.opengeo.org/</url>
 		</repository>
 		<repository>
 			<id>ucar-releases</id>
 			<url>https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases</url>
+		</repository>
+		<repository>
+			<id>n52-releases</id>
+			<name>52 North Releases</name>
+			<url>https://52north.org/maven/repo/releases</url>
 		</repository>
 	</repositories>
 	<dependencies>
@@ -162,6 +168,12 @@
 				<scope>import</scope>
 			</dependency>
 			<!-- 52North WPS dependencies -->
+			<dependency>
+				<groupId>gov.usgs.cida.jslibs</groupId>
+				<artifactId>log4js</artifactId>
+				<version>1.4.3-3</version>
+				<type>war</type>
+			</dependency>
 			<dependency>
 				<groupId>org.n52.wps</groupId>
 				<artifactId>52n-wps-commons</artifactId>
@@ -449,11 +461,11 @@
 				<artifactId>jackson-asl</artifactId>
 				<version>0.9.5</version>
 			</dependency>
-            <dependency>
-                <groupId>org.jdom</groupId>
-                <artifactId>jdom</artifactId>
-                <version>2.0.2</version>
-            </dependency>
+			<dependency>
+				<groupId>org.jdom</groupId>
+				<artifactId>jdom</artifactId>
+				<version>2.0.2</version>
+			</dependency>
 			<dependency>
 				<groupId>org.easymock</groupId>
 				<artifactId>easymock</artifactId>

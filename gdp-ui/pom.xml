@@ -103,7 +103,6 @@
 		<dependency>
 			<groupId>gov.usgs.cida.jslibs</groupId>
 			<artifactId>log4js</artifactId>
-			<version>1.4.3-3</version>
 			<type>war</type>
 		</dependency>
 		<!-- /JS LIBS -->
