@@ -1,3 +1,6 @@
+8-5-2013:
+	- Removed local version of ReadOnlyProperties, replaced with common module
+
 8-10-2011 - 8-24-2011:
     - Moved legend window from the control panel to the map container
     - Gave legend window a minimizer
