@@ -43,6 +43,16 @@
 		</dependency>
 		<dependency>
 			<groupId>gov.usgs.cida.jslibs</groupId>
+			<artifactId>dygraphs-core</artifactId>
+			<type>war</type>
+		</dependency>
+		<dependency>
+			<groupId>gov.usgs.cida.jslibs</groupId>
+			<artifactId>dygraphs-export</artifactId>
+			<type>war</type>
+		</dependency>
+		<dependency>
+			<groupId>gov.usgs.cida.jslibs</groupId>
 			<artifactId>log4js</artifactId>
 			<type>war</type>
 		</dependency>

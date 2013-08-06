@@ -34,9 +34,12 @@
 <jsp:include page="../js/geoext/geoext.jsp">
 	<jsp:param name="relPath" value="" />
 </jsp:include>
-<!--<script type="text/javascript" src="js/geoext/GeoExt.js"></script>-->
-<script type="text/javascript" src="js/dygraph/dygraph-combined.js"></script>
-<script type="text/javascript" src="js/dygraph/dygraph-extra.js"></script>
+<jsp:include page="../js/dygraphs/dygraphs.jsp">
+	<jsp:param name="relPath" value="" />
+</jsp:include>
+<jsp:include page="../js/dygraphs/export/export.jsp">
+	<jsp:param name="relPath" value="" />
+</jsp:include>
 
 <%-- Extended Openlayers/GeoExt readers/writers --%>
 <script type="text/javascript" src='${param["ComponentDir"]}/CSW/Format/v2_0_2.js'></script>
