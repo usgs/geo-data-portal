@@ -1,3 +1,4 @@
+<%@page import="gov.usgs.cida.gdp.utilities.JNDISingleton"%>
 <%@page import="org.apache.commons.lang.StringUtils"%>
 <%@page import="gov.usgs.cida.config.DynamicReadOnlyProperties"%>
 
@@ -24,23 +25,21 @@
 <script type="text/javascript" src='${param["ComponentDir"]}/extension/notify.js'></script>
 
 <%-- Other JavaScript modules (Mapping, logging and plotting) --%>
-<script type="text/javascript" src="js/log4javascript/log4javascript.js" ></script>
-<script type="text/javascript" src="js/openlayers/OpenLayers.js"></script>
-<script type="text/javascript" src="js/geoext/GeoExt.js"></script>
-<script type="text/javascript" src="js/dygraph/dygraph-combined.js"></script>
-<script type="text/javascript" src="js/dygraph/dygraph-extra.js"></script>
-
-<!--To be used if dygraphs is not working and needs to be debugged-->
-<!--<script type="text/javascript" src="js/dygraph-unminified/dygraph-layout.js"></script>
-<script type="text/javascript" src="js/dygraph-unminified/dygraph-canvas.js"></script>
-<script type="text/javascript" src="js/dygraph-unminified/dygraph.js"></script>
-<script type="text/javascript" src="js/dygraph-unminified/dygraph-utils.js"></script>
-<script type="text/javascript" src="js/dygraph-unminified/dygraph-gviz.js"></script>
-<script type="text/javascript" src="js/dygraph-unminified/dygraph-interaction-model.js"></script>
-<script type="text/javascript" src="js/dygraph-unminified/dygraph-range-selector.js"></script>
-<script type="text/javascript" src="js/dygraph-unminified/dygraph-tickers.js"></script>
-<script type="text/javascript" src="js/dygraph-unminified/rgbcolor/rgbcolor.js"></script>
-<script type="text/javascript" src="js/dygraph-unminified/strftime/strftime-min.js"></script>-->
+<jsp:include page="../js/log4javascript/log4javascript.jsp">
+	<jsp:param name="relPath" value="" />
+</jsp:include>
+<jsp:include page="../js/openlayers/openlayers.jsp">
+	<jsp:param name="relPath" value="" />
+</jsp:include>
+<jsp:include page="../js/geoext/geoext.jsp">
+	<jsp:param name="relPath" value="" />
+</jsp:include>
+<jsp:include page="../js/dygraphs/dygraphs.jsp">
+	<jsp:param name="relPath" value="" />
+</jsp:include>
+<jsp:include page="../js/dygraphs/export/export.jsp">
+	<jsp:param name="relPath" value="" />
+</jsp:include>
 
 <%-- Extended Openlayers/GeoExt readers/writers --%>
 <script type="text/javascript" src='${param["ComponentDir"]}/CSW/Format/v2_0_2.js'></script>
@@ -60,7 +59,7 @@
 <script type="text/javascript" src='${param["UIScriptFile"]}'></script>
 
 <%-- Read JNDI config from context.xml --%>
-<% DynamicReadOnlyProperties props = DynamicReadOnlyProperties.initProps();%>
+<% DynamicReadOnlyProperties props = JNDISingleton.getInstance();%>
 
 <script type="text/javascript">
     GDP.LOG4JS_PATTERN_LAYOUT = '<%= props.getProperty("LOG4JS_PATTERN_LAYOUT", "%rms - %-5p - %m%n")%>';

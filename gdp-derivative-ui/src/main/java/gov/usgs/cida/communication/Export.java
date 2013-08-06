@@ -13,7 +13,8 @@ import org.apache.commons.lang.StringUtils;
 import sun.misc.BASE64Decoder;
 
 /**
- *
+ * This is primarily used as an echo servlet in order for the client to be able 
+ * to pass in a file and get it back through an upload.
  * @author isuftin
  */
 public class Export extends HttpServlet {

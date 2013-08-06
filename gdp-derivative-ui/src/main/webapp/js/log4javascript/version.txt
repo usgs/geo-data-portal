@@ -1,3 +1,0 @@
-log4javascript 1.4.1
-http://log4javascript.org/docs/index.html
-http://sourceforge.net/projects/log4javascript/files/log4javascript/1.4.1/log4javascript-1.4.1.zip/download

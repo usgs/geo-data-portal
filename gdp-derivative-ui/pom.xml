@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<artifactId>gdp</artifactId>
@@ -23,8 +23,38 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>gdp-common-utilities</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>gdp-proxy</artifactId>
 			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>gov.usgs.cida.jslibs</groupId>
+			<artifactId>openlayers</artifactId>
+			<type>war</type>
+		</dependency>
+		<dependency>
+			<groupId>gov.usgs.cida.jslibs</groupId>
+			<artifactId>geoext</artifactId>
+			<type>war</type>
+		</dependency>
+		<dependency>
+			<groupId>gov.usgs.cida.jslibs</groupId>
+			<artifactId>dygraphs-core</artifactId>
+			<type>war</type>
+		</dependency>
+		<dependency>
+			<groupId>gov.usgs.cida.jslibs</groupId>
+			<artifactId>dygraphs-export</artifactId>
+			<type>war</type>
+		</dependency>
+		<dependency>
+			<groupId>gov.usgs.cida.jslibs</groupId>
+			<artifactId>log4js</artifactId>
+			<type>war</type>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet.jsp</groupId>
@@ -61,6 +91,10 @@
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>gov.usgs.cida</groupId>
+			<artifactId>dynamicProperties</artifactId>
 		</dependency>
 		<dependency>
 			<artifactId>commons-logging</artifactId>
