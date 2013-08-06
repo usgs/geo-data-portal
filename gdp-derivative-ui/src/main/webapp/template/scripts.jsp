@@ -28,7 +28,9 @@
 <jsp:include page="../js/log4javascript/log4javascript.jsp">
 	<jsp:param name="relPath" value="" />
 </jsp:include>
-<script type="text/javascript" src="js/openlayers/OpenLayers.js"></script>
+<jsp:include page="../js/openlayers/openlayers.jsp">
+	<jsp:param name="relPath" value="" />
+</jsp:include>
 <script type="text/javascript" src="js/geoext/GeoExt.js"></script>
 <script type="text/javascript" src="js/dygraph/dygraph-combined.js"></script>
 <script type="text/javascript" src="js/dygraph/dygraph-extra.js"></script>

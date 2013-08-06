@@ -174,6 +174,23 @@
 				<version>1.4.3-3</version>
 				<type>war</type>
 			</dependency>
+			<!--			<dependency>
+				<groupId>gov.usgs.cida.jslibs</groupId>
+				<artifactId>geoext</artifactId>
+				<version>1.1-7</version>
+				<type>war</type>
+			</dependency>-->
+			<!--			<dependency>
+				<groupId>org.webjars</groupId>
+				<artifactId>extjs</artifactId>
+				<version>3.4.0</version>
+			</dependency>-->
+			<dependency>
+				<groupId>gov.usgs.cida.jslibs</groupId>
+				<artifactId>openlayers</artifactId>
+				<version>2.11-3</version>
+				<type>war</type>
+			</dependency>
 			<dependency>
 				<groupId>org.n52.wps</groupId>
 				<artifactId>52n-wps-commons</artifactId>
