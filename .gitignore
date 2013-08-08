@@ -4,3 +4,4 @@
 !/gdp-prms-ui/src/main/webapp/META-INF/context.xml
 /gdp-ui/src/main/webapp/scratch/
 /gdp-jemeter/
+gdp-utility-wps/src/main/resources/gdp_opts.sh
