@@ -7,3 +7,4 @@
 gdp-utility-wps/src/main/resources/gdp_opts.sh
 gdp-geoserver/geoserver/src/main/webapp/data/security/users.properties
 gdp-wps-test/
+gdp-utility-wps/src/main/webapp/WEB-INF/server-config.wsdd
