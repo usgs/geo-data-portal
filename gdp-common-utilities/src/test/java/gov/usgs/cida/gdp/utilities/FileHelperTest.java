@@ -183,7 +183,7 @@ public class FileHelperTest {
     public void testWipeOldFilesWithNoOldFiles() {
 		System.out.println("Test: " + "testWipeOldFilesWithNoOldFiles");
         Collection<File> result = FileHelper.wipeOldFiles(new File(this.tempDir), 3600000l, true);
-        assertFalse(result.isEmpty());
+        assertTrue(result.isEmpty());
     }
 
     @Test
