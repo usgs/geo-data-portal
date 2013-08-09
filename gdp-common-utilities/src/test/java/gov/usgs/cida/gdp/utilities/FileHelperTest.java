@@ -6,7 +6,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -90,6 +92,7 @@ public class FileHelperTest {
 
     @Test
     public void base64EncodeWithFile() throws IOException {
+		System.out.println("Test: " + "base64EncodeWithFile");
         File file = new File(this.sampleDir + this.secondTestFile + ".prj");
         byte[] result = FileHelper.base64Encode(file);
         assertThat(result, is(not(nullValue())));
@@ -97,6 +100,7 @@ public class FileHelperTest {
 
     @Test
     public void base64EncodeWithByteArray() throws IOException {
+		System.out.println("Test: " + "base64EncodeWithByteArray");
         byte[] result = FileHelper.base64Encode(new byte[]{'a', 'b', 'c', 'd', 'e', 'f', 'g'});
         assertThat(result, is(not(nullValue())));
         assertThat(result.length, is(equalTo(14)));
@@ -104,6 +108,7 @@ public class FileHelperTest {
 
     @Test
     public void base64EncodeWithNullByteArray() throws IOException {
+		System.out.println("Test: " + "base64EncodeWithNullByteArray");
         byte[] input = null;
         byte[] result = FileHelper.base64Encode(input);
         assertThat(result, is(not(nullValue())));
@@ -112,6 +117,7 @@ public class FileHelperTest {
 
     @Test
     public void testGetCanonicalPathname() {
+		System.out.println("Test: " + "testGetCanonicalPathname");
         File file = new File(this.sampleDir + this.secondTestFile + ".prj");
         assertTrue(file.exists());
 
@@ -126,6 +132,7 @@ public class FileHelperTest {
 
     @Test
     public void testRenameFile() {
+		System.out.println("Test: " + "testRenameFile");
         try {
             File file = File.createTempFile("delete", "me");
             assertTrue(file.exists());
@@ -143,6 +150,7 @@ public class FileHelperTest {
 
     @Test
     public void testRenameFilesWithoutBeingAbleToWriteDestinationFile() {
+			System.out.println("Test: " + "testRenameFilesWithoutBeingAbleToWriteDestinationFile");
             try {
             File file = File.createTempFile("delete", "me");
             assertTrue(file.exists());
@@ -156,6 +164,7 @@ public class FileHelperTest {
 
     @Test
     public void testRenameFileWithSameFiles() {
+		System.out.println("Test: " + "testRenameFileWithSameFiles");
         try {
             File file = File.createTempFile("delete", "me");
             assertTrue(file.exists());
@@ -172,34 +181,35 @@ public class FileHelperTest {
      * If this fails, try cleaning/building the project and re-run
      */
     public void testWipeOldFilesWithNoOldFiles() {
+		System.out.println("Test: " + "testWipeOldFilesWithNoOldFiles");
+        Collection<File> result = FileHelper.wipeOldFiles(new File(this.tempDir), 3600000l, true);
+        assertFalse(result.isEmpty());
+    }
+
+    @Test
+	@Ignore
+    public void testWipeOldFilesWithAnAlreadyOpenFile() throws FileNotFoundException, IOException {
         Collection<File> result = new ArrayList<File>();
-        result = FileHelper.wipeOldFiles(new File(this.tempDir), 3600000l, true);
+        File openFile = new File(FileHelperTest.sampleDir);
+        InputStream is = null;
+        try {
+            is = new FileInputStream(openFile);
+            result = FileHelper.wipeOldFiles(openFile, 3600000l, false);
+        } finally {
+            if (is != null) {
+                is.close();
+            }
+        }
         assertTrue(result.isEmpty());
     }
-//
-//    @Test
-//    public void testWipeOldFilesWithAnAlreadyOpenFile() throws FileNotFoundException, IOException {
-//        Collection<File> result = new ArrayList<File>();
-//        File openFile = new File(FileHelperTest.sampleDir);
-//        InputStream is = null;
-//        try {
-//            is = new FileInputStream(openFile);
-//            result = FileHelper.wipeOldFiles(openFile, 3600000l, false);
-//        } finally {
-//            if (is != null) {
-//                is.close();
-//            }
-//        }
-//        assertTrue(result.isEmpty());
-//    }
 
     /**
      * If this fails, try cleaning/building the project and re-run
      */
     @Test
     public void testWipeOldFilesWithFakeDirectory() {
-        Collection<File> result = new ArrayList<File>();
-        result = FileHelper.wipeOldFiles(new File("/not/real"), 3600000l, true);
+		System.out.println("Test: " + "testWipeOldFilesWithFakeDirectory");
+        Collection<File> result = FileHelper.wipeOldFiles(new File("/not/real"), 3600000l, true);
         assertTrue(result.isEmpty());
     }
 
@@ -208,6 +218,7 @@ public class FileHelperTest {
      */
     @Test
     public void testWipeOldFilesWithNullArgument() {
+		System.out.println("Test: " + "testWipeOldFilesWithNullArgument");
         Collection<File> result = new ArrayList<File>();
         result = FileHelper.wipeOldFiles(null, 3600000l, true);
         assertTrue(result.isEmpty());
@@ -215,6 +226,7 @@ public class FileHelperTest {
 
     @Test
     public void testWipeOldFilesWithOldFiles() {
+		System.out.println("Test: " + "testWipeOldFilesWithOldFiles");
         Collection<File> result = new ArrayList<File>();
         result = FileHelper.wipeOldFiles(new File(this.tempDir), 1l, true);
         assertTrue(!result.isEmpty());
@@ -222,6 +234,7 @@ public class FileHelperTest {
 
     @Test
     public void testWipeOldFilesWithOldFilesWhileLockingDirectory() throws FileNotFoundException, IOException {
+		System.out.println("Test: " + "testWipeOldFilesWithOldFilesWhileLockingDirectory");
         Collection<File> result = new ArrayList<File>();
 
         File directory = new File(this.tempDir);
@@ -256,6 +269,7 @@ public class FileHelperTest {
 
     @Test
     public void testCreateDirUsingStringObject() {
+		System.out.println("Test: " + "testCreateDirUsingStringObject");
         boolean result = false;
         String testDir = System.getProperty("java.io.tmpdir")
                 + java.io.File.separator
@@ -267,6 +281,7 @@ public class FileHelperTest {
 
     @Test
     public void testCreateDirUsingFileObject() {
+		System.out.println("Test: " + "testCreateDirUsingFileObject");
         boolean result = false;
         String testDir = System.getProperty("java.io.tmpdir")
                 + java.io.File.separator
@@ -278,6 +293,7 @@ public class FileHelperTest {
 
     @Test
     public void testDoesDirectoryOrFileExist() {
+		System.out.println("Test: " + "testDoesDirectoryOrFileExist");
         boolean result = false;
         String fileToCheckFor = testFilePath + ".shx";
 
@@ -293,6 +309,7 @@ public class FileHelperTest {
 
     @Test
     public void testCopyFileToPathWithoutDeletingOriginal() {
+		System.out.println("Test: " + "testCopyFileToPathWithoutDeletingOriginal");
         File fileToCopy = new File(testFilePath + ".shx");
 
         String fileToCopyTo = testFilePath + ".COPY";
@@ -316,6 +333,7 @@ public class FileHelperTest {
 
     @Test
     public void testCopyFileToPathWithDeletingOriginal() {
+		System.out.println("Test: " + "testCopyFileToPathWithDeletingOriginal");
         File fileToCopy = new File(testFilePath + ".shx");
 
         String fileToCopyTo = testFilePath + ".COPY";
@@ -339,6 +357,7 @@ public class FileHelperTest {
 
     @Test
     public void testDeleteFileQuietly() {
+		System.out.println("Test: " + "testDeleteFileQuietly");
         String fileToLoad = testFilePath + ".shx";
 
         boolean result = FileHelper.deleteFileQuietly("File/That/Doesnt/Exist");
@@ -349,6 +368,7 @@ public class FileHelperTest {
 
     @Test
     public void testDeleteFile() {
+		System.out.println("Test: " + "testDeleteFile");
         String fileToLoad = testFilePath + ".shx";
 
         boolean result = false;
@@ -364,6 +384,7 @@ public class FileHelperTest {
 
     @Test
     public void testDeleteDirRecursively() {
+		System.out.println("Test: " + "testDeleteDirRecursively");
         File lockedFile = new File(testFilePath + ".shx");
         lockedFile.setWritable(false);
 
@@ -404,6 +425,7 @@ public class FileHelperTest {
 
     @Test
     public void testDeleteDirRecursivelyUsingString() {
+		System.out.println("Test: " + "testDeleteDirRecursivelyUsingString");
         String dirToDelete = this.tempDir
                 + this.seperator;
         boolean result = false;
@@ -423,12 +445,14 @@ public class FileHelperTest {
 
     @Test
     public void testFileHelper() {
+		System.out.println("Test: " + "testFileHelper");
         FileHelper result = new FileHelper();
         assertNotNull(result);
     }
 
     @Test
     public void testFindFile() {
+		System.out.println("Test: " + "testFindFile");
         String fileToLoad = testFile + ".shx";
         String rootDir = this.tempDir + this.seperator;
         File result = FileHelper.findFile(fileToLoad, rootDir);
@@ -440,6 +464,7 @@ public class FileHelperTest {
 
     @Test
     public void testFindFileWithNull() {
+		System.out.println("Test: " + "testFindFileWithNull");
         File result = FileHelper.findFile(null, null);
         assertNull(result);
     }
@@ -447,12 +472,14 @@ public class FileHelperTest {
 
     @Test
     public void testFindFileWithEmptyString() {
+		System.out.println("Test: " + "testFindFileWithEmptyString");
         File result = FileHelper.findFile("", "");
         assertNull(result);
     }
 
     @Test
     public void testGetFileList() {
+		System.out.println("Test: " + "testGetFileList");
         String dirToList = this.tempDir + this.seperator;
         List<String> result = null;
         result = FileHelper.getFileList(null, true);
@@ -471,6 +498,7 @@ public class FileHelperTest {
 
     @Test
     public void testGetSystemTemp() {
+		System.out.println("Test: " + "testGetSystemTemp");
         String result = FileHelper.getSystemTemp();
         assertNotNull(result);
         assertFalse("".equals(result));
@@ -479,6 +507,7 @@ public class FileHelperTest {
 
     @Test
     public void testGetFileCollection() {
+		System.out.println("Test: " + "testGetFileCollection");
         String dirToList = this.tempDir + this.seperator;
         Collection<File> result = null;
 
@@ -498,18 +527,21 @@ public class FileHelperTest {
 
     @Test
     public void testCreateDirWithExistingDir() {
+		System.out.println("Test: " + "testCreateDirWithExistingDir");
         String existingDirectory = this.seperator + this.tempDir;
         boolean result = FileHelper.createDir(existingDirectory);
         assertTrue(result);
     }
     @Test
     public void testDeleteFileWithEmptyFilePath() {
+		System.out.println("Test: " + "testDeleteFileWithEmptyFilePath");
         boolean result = FileHelper.deleteFile("");
         assertFalse(result);
     }
 
     @Test
     public void testDeleteFileWithNullArgument() {
+		System.out.println("Test: " + "testDeleteFileWithNullArgument");
         File nullFile = null;
         boolean result = FileHelper.deleteFile(nullFile);
         assertFalse(result);
@@ -517,6 +549,7 @@ public class FileHelperTest {
 
     @Test
     public void testUnzipFile() {
+		System.out.println("Test: " + "testUnzipFile");
         File zipFile = new File(FileHelperTest.sampleDir + "test_zip.zip");
         boolean result = false;
         try {
@@ -533,6 +566,7 @@ public class FileHelperTest {
 
     @Test
     public void testCreateUserDirectory() {
+		System.out.println("Test: " + "testCreateUserDirectory");
         String createdDir = FileHelper.createUserDirectory(this.tempDir + this.seperator);
         assertFalse(createdDir.isEmpty());
     }
@@ -540,6 +574,7 @@ public class FileHelperTest {
     @Test
     @Ignore
     public void testCreateUserDirectoryWithInvalidDirectoryName() {
+		System.out.println("Test: " + "testCreateUserDirectoryWithInvalidDirectoryName");
         String dirToCreate = this.seperator + "nonexistent";
         String createdDir = FileHelper.createUserDirectory(dirToCreate);
         assertTrue(createdDir.equals(""));
@@ -547,6 +582,7 @@ public class FileHelperTest {
 
     @Test
     public void testUpdateTimeStampWithNullPath() {
+		System.out.println("Test: " + "testUpdateTimeStampWithNullPath");
         boolean result = true;
         try {
             result = FileHelper.updateTimestamp(null, true);
@@ -558,6 +594,7 @@ public class FileHelperTest {
 
     @Test
     public void testUpdateTimeStampWithEmptyStringPath() {
+		System.out.println("Test: " + "testUpdateTimeStampWithEmptyStringPath");
         boolean result = true;
         try {
             result = FileHelper.updateTimestamp("", true);
@@ -569,6 +606,7 @@ public class FileHelperTest {
 
     @Test
     public void testUpdateTimeStampOnSingleFile() {
+		System.out.println("Test: " + "testUpdateTimeStampOnSingleFile");
         File file1 = new File(FileHelperTest.testFilePath + ".dbf");
         long file1Date = file1.lastModified();
 
@@ -587,6 +625,7 @@ public class FileHelperTest {
 
     @Test
     public void testUpdateTimeStampOnSingleNonexistentFile() {
+		System.out.println("Test: " + "testUpdateTimeStampOnSingleNonexistentFile");
         File file1 = new File(FileHelperTest.testFilePath);
         long file1Date = file1.lastModified();
 
@@ -601,6 +640,7 @@ public class FileHelperTest {
 
     @Test
     public void testUpdateTimeStampOnSingleDirectoryRecursive() {
+		System.out.println("Test: " + "testUpdateTimeStampOnSingleDirectoryRecursive");
         File file1 = new File(FileHelperTest.sampleDir);
         long file1Date = file1.lastModified();
 
@@ -615,18 +655,21 @@ public class FileHelperTest {
 
     @Test
     public void testGetFilesOlderThanWithNullFilePath() {
+		System.out.println("Test: " + "testGetFilesOlderThanWithNullFilePath");
         Collection<File> result = FileHelper.getFilesOlderThan(null, Long.MIN_VALUE, Boolean.TRUE);
         assertTrue(result.isEmpty());
     }
 
     @Test
     public void testGetFilesOlderThanWithNonExistantFilePath() {
+		System.out.println("Test: " + "testGetFilesOlderThanWithNonExistantFilePath");
         Collection<File> result = FileHelper.getFilesOlderThan(new File("derp"), Long.MIN_VALUE, Boolean.TRUE);
         assertTrue(result.isEmpty());
     }
 
     @Test
     public void testGetFilesOlderThanWithRealFilePathAndRecursiveWithMaxAgeValue() {
+		System.out.println("Test: " + "testGetFilesOlderThanWithRealFilePathAndRecursiveWithMaxAgeValue");
         // We should find no files older than the maximum long value
         Collection<File> result = FileHelper.getFilesOlderThan(new File(this.tempDir), Long.MAX_VALUE, Boolean.TRUE);
         assertTrue(result.isEmpty());
@@ -634,6 +677,7 @@ public class FileHelperTest {
 
     @Test
     public void testGetFilesOlderThanWithRealFilePathAndNonRecursiveWithMaxAgeValue() {
+		System.out.println("Test: " + "testGetFilesOlderThanWithRealFilePathAndNonRecursiveWithMaxAgeValue");
         // We should find no files older than the maximum long value
         Collection<File> result = FileHelper.getFilesOlderThan(new File(this.tempDir), Long.MAX_VALUE, Boolean.FALSE);
         assertTrue(result.isEmpty());
@@ -641,6 +685,7 @@ public class FileHelperTest {
 
     @Test
     public void testFileToByteArray() {
+		System.out.println("Test: " + "testFileToByteArray");
         File input = null;
         byte[] result = null;
 
@@ -659,6 +704,7 @@ public class FileHelperTest {
 
     @Test
     public void testFileToByteArrayWithNullInput() {
+		System.out.println("Test: " + "testFileToByteArrayWithNullInput");
         File input = null;
         byte[] result = null;
 
@@ -676,6 +722,7 @@ public class FileHelperTest {
 
     @Test
     public void testByteArrayToBase64() {
+		System.out.println("Test: " + "testByteArrayToBase64");
         File input = null;
         byte[] inputByteArray = null;
         byte[] result = null;
