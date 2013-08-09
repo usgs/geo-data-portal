@@ -1,0 +1,55 @@
+<featureType>
+  <id>FeatureTypeInfoImpl-271a321d:14064762891:-7fd1</id>
+  <name>wbdhu8_alb_simp</name>
+  <nativeName>wbdhu8_alb_simp</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl-271a321d:14064762891:-7fe0</id>
+  </namespace>
+  <title>wbdhu8_alb_simp</title>
+  <description>Contents of file</description>
+  <keywords>
+    <string>features</string>
+    <string>wbdhu8_alb_simp</string>
+  </keywords>
+  <nativeCRS>GEOGCS[&quot;GCS_WGS_1984&quot;, 
+  DATUM[&quot;D_WGS_1984&quot;, 
+    SPHEROID[&quot;WGS_1984&quot;, 6378137.0, 298.257223563]], 
+  PRIMEM[&quot;Greenwich&quot;, 0.0], 
+  UNIT[&quot;degree&quot;, 0.017453292519943295], 
+  AXIS[&quot;Longitude&quot;, EAST], 
+  AXIS[&quot;Latitude&quot;, NORTH]]</nativeCRS>
+  <srs>EPSG:4326</srs>
+  <nativeBoundingBox>
+    <minx>-124.77148019908924</minx>
+    <maxx>-66.88543928165748</maxx>
+    <miny>24.512236010285942</miny>
+    <maxy>49.38447884756701</maxy>
+    <crs>GEOGCS[&quot;GCS_WGS_1984&quot;, 
+  DATUM[&quot;D_WGS_1984&quot;, 
+    SPHEROID[&quot;WGS_1984&quot;, 6378137.0, 298.257223563]], 
+  PRIMEM[&quot;Greenwich&quot;, 0.0], 
+  UNIT[&quot;degree&quot;, 0.017453292519943295], 
+  AXIS[&quot;Longitude&quot;, EAST], 
+  AXIS[&quot;Latitude&quot;, NORTH]]</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>-124.77148019908924</minx>
+    <maxx>-66.88543928165748</maxx>
+    <miny>24.512236010285942</miny>
+    <maxy>49.38447884756701</maxy>
+    <crs>GEOGCS[&quot;WGS84(DD)&quot;, 
+  DATUM[&quot;WGS84&quot;, 
+    SPHEROID[&quot;WGS84&quot;, 6378137.0, 298.257223563]], 
+  PRIMEM[&quot;Greenwich&quot;, 0.0], 
+  UNIT[&quot;degree&quot;, 0.017453292519943295], 
+  AXIS[&quot;Geodetic longitude&quot;, EAST], 
+  AXIS[&quot;Geodetic latitude&quot;, NORTH]]</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>REPROJECT_TO_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl-271a321d:14064762891:-7fdc</id>
+  </store>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+</featureType>

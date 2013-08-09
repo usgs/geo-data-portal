@@ -101,7 +101,7 @@
 	<distributionManagement>
 		<repository>
 			<id>cida-releases</id>
-			<name>CIDA eleases</name>
+			<name>CIDA Releases</name>
 			<url>https://internal.cida.usgs.gov/maven/content/repositories/cida-releases</url>
 		</repository>
 		<snapshotRepository>
@@ -115,12 +115,6 @@
 			<id>cida-public</id>
 			<name>CIDA Public Nexus</name>
 			<url>https://cida.usgs.gov/maven/cida-public</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
 		</repository>
 		<repository>
 			<id>opengeo</id>
