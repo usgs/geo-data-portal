@@ -1,0 +1,55 @@
+<featureType>
+  <id>FeatureTypeInfoImpl-271a321d:14064762891:-7fd7</id>
+  <name>Level_III_Ecoregions</name>
+  <nativeName>Level_III_Ecoregions</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl-271a321d:14064762891:-7fe0</id>
+  </namespace>
+  <title>Level_III_Ecoregions</title>
+  <description>Contents of file</description>
+  <keywords>
+    <string>features</string>
+    <string>Level_III_Ecoregions</string>
+  </keywords>
+  <nativeCRS>GEOGCS[&quot;DD_NAD83&quot;, 
+  DATUM[&quot;D_North_American_1983&quot;, 
+    SPHEROID[&quot;GRS_1980&quot;, 6378137.0, 298.257222101]], 
+  PRIMEM[&quot;Greenwich&quot;, 0.0], 
+  UNIT[&quot;degree&quot;, 0.017453292519943295], 
+  AXIS[&quot;Longitude&quot;, EAST], 
+  AXIS[&quot;Latitude&quot;, NORTH]]</nativeCRS>
+  <srs>EPSG:4269</srs>
+  <nativeBoundingBox>
+    <minx>-179.13339320062786</minx>
+    <maxx>179.78820610148102</maxx>
+    <miny>24.518322446858004</miny>
+    <maxy>71.39804835726386</maxy>
+    <crs>GEOGCS[&quot;DD_NAD83&quot;, 
+  DATUM[&quot;D_North_American_1983&quot;, 
+    SPHEROID[&quot;GRS_1980&quot;, 6378137.0, 298.257222101]], 
+  PRIMEM[&quot;Greenwich&quot;, 0.0], 
+  UNIT[&quot;degree&quot;, 0.017453292519943295], 
+  AXIS[&quot;Longitude&quot;, EAST], 
+  AXIS[&quot;Latitude&quot;, NORTH]]</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>-179.13339320062786</minx>
+    <maxx>179.78820610148102</maxx>
+    <miny>24.518322446144964</miny>
+    <maxy>71.39804835669429</maxy>
+    <crs>GEOGCS[&quot;WGS84(DD)&quot;, 
+  DATUM[&quot;WGS84&quot;, 
+    SPHEROID[&quot;WGS84&quot;, 6378137.0, 298.257223563]], 
+  PRIMEM[&quot;Greenwich&quot;, 0.0], 
+  UNIT[&quot;degree&quot;, 0.017453292519943295], 
+  AXIS[&quot;Geodetic longitude&quot;, EAST], 
+  AXIS[&quot;Geodetic latitude&quot;, NORTH]]</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>REPROJECT_TO_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl-271a321d:14064762891:-7fdc</id>
+  </store>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+</featureType>

@@ -1,0 +1,55 @@
+<featureType>
+  <id>FeatureTypeInfoImpl-271a321d:14064762891:-7fd3</id>
+  <name>US_Counties</name>
+  <nativeName>US_Counties</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl-271a321d:14064762891:-7fe0</id>
+  </namespace>
+  <title>US_Counties</title>
+  <description>Contents of file</description>
+  <keywords>
+    <string>US_Counties</string>
+    <string>features</string>
+  </keywords>
+  <nativeCRS>GEOGCS[&quot;Geographic&quot;, 
+  DATUM[&quot;D_North_American_1983&quot;, 
+    SPHEROID[&quot;GRS_1980&quot;, 6378137.0, 298.257222101]], 
+  PRIMEM[&quot;&lt;custom&gt;&quot;, 0.0], 
+  UNIT[&quot;degree&quot;, 0.017453292519943295], 
+  AXIS[&quot;Longitude&quot;, EAST], 
+  AXIS[&quot;Latitude&quot;, NORTH]]</nativeCRS>
+  <srs>EPSG:4269</srs>
+  <nativeBoundingBox>
+    <minx>-179.13339233398438</minx>
+    <maxx>179.7882080078125</maxx>
+    <miny>17.674692153930664</miny>
+    <maxy>71.3980484008789</maxy>
+    <crs>GEOGCS[&quot;Geographic&quot;, 
+  DATUM[&quot;D_North_American_1983&quot;, 
+    SPHEROID[&quot;GRS_1980&quot;, 6378137.0, 298.257222101]], 
+  PRIMEM[&quot;&lt;custom&gt;&quot;, 0.0], 
+  UNIT[&quot;degree&quot;, 0.017453292519943295], 
+  AXIS[&quot;Longitude&quot;, EAST], 
+  AXIS[&quot;Latitude&quot;, NORTH]]</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>-179.13339233398438</minx>
+    <maxx>179.78820800781253</maxx>
+    <miny>17.674692153384203</miny>
+    <maxy>71.39804840030934</maxy>
+    <crs>GEOGCS[&quot;WGS84(DD)&quot;, 
+  DATUM[&quot;WGS84&quot;, 
+    SPHEROID[&quot;WGS84&quot;, 6378137.0, 298.257223563]], 
+  PRIMEM[&quot;Greenwich&quot;, 0.0], 
+  UNIT[&quot;degree&quot;, 0.017453292519943295], 
+  AXIS[&quot;Geodetic longitude&quot;, EAST], 
+  AXIS[&quot;Geodetic latitude&quot;, NORTH]]</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>REPROJECT_TO_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl-271a321d:14064762891:-7fdc</id>
+  </store>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+</featureType>
