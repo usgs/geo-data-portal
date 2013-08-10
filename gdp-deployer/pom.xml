@@ -11,7 +11,6 @@
     <packaging>pom</packaging>
     <name>GDP Deployer</name>
     <modules>
-        <module>geoserver</module>
         <module>gdp-process-wps</module>
         <module>gdp-utility-wps</module>
         <module>gdp-ui</module>
