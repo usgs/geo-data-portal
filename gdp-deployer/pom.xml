@@ -13,7 +13,6 @@
     <modules>
         <module>gdp-process-wps</module>
         <module>gdp-utility-wps</module>
-        <module>gdp-ui-climate</module>
     </modules>
     <properties>
         <!-- skip deployment unless explicitly enabled -->
