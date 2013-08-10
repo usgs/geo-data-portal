@@ -15,7 +15,6 @@
         <module>gdp-process-wps</module>
         <module>gdp-utility-wps</module>
         <module>gdp-ui</module>
-        <module>gdp-derivative-ui</module>
         <module>gdp-ui-climate</module>
     </modules>
     <properties>
