@@ -21,7 +21,7 @@
     </servlet-mapping>
     <servlet>
         <servlet-name>GeonetworkProxy</servlet-name>
-        <servlet-class>gov.usgs.cida.geonetwork.GeonetworkProxy</servlet-class>
+        <servlet-class>gov.usgs.cida.proxy.GeonetworkProxy</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>GeonetworkProxy</servlet-name>
