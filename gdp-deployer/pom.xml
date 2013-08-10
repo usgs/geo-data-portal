@@ -10,9 +10,7 @@
     <artifactId>gdp-deployer</artifactId>
     <packaging>pom</packaging>
     <name>GDP Deployer</name>
-    <modules>
-        <module>gdp-utility-wps</module>
-    </modules>
+    <modules></modules>
     <properties>
         <!-- skip deployment unless explicitly enabled -->
         <cargo.deploy.skip>true</cargo.deploy.skip>
