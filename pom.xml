@@ -170,19 +170,19 @@
 			<dependency>
 				<groupId>gov.usgs.cida.jslibs</groupId>
 				<artifactId>geoext</artifactId>
-				<version>1.1-8-SNAPSHOT</version>
+				<version>1.1-8</version>
 				<type>war</type>
 			</dependency>
 			<dependency>
 				<groupId>gov.usgs.cida.jslibs</groupId>
 				<artifactId>dygraphs-core</artifactId>
-				<version>20130314-3-SNAPSHOT</version>
+				<version>20130314-3</version>
 				<type>war</type>
 			</dependency>
 			<dependency>
 				<groupId>gov.usgs.cida.jslibs</groupId>
 				<artifactId>dygraphs-export</artifactId>
-				<version>20130314-3-SNAPSHOT</version>
+				<version>20130314-3</version>
 				<type>war</type>
 			</dependency>
 			<dependency>
@@ -295,7 +295,7 @@
 			<dependency>
 				<groupId>gov.usgs.cida.netcdf.iosp</groupId>
 				<artifactId>geotiff-iosp</artifactId>
-				<version>1.2-SNAPSHOT</version>
+				<version>1.2</version>
 			</dependency>
 			<dependency>
 				<groupId>gov.usgs.cida.owsutils</groupId>
@@ -502,7 +502,7 @@
 			<dependency>
 				<groupId>gov.usgs.cida.jmx</groupId>
 				<artifactId>jmx-log4j</artifactId>
-				<version>1.1-SNAPSHOT</version>
+				<version>1.1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.santuario</groupId>
