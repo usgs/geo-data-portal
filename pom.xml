@@ -572,6 +572,11 @@
 				<scope>test</scope>
 				<type>jar</type>
 			</dependency>
+			<dependency>
+				<groupId>gov.usgs.cida.owsutils</groupId>
+				<artifactId>cida-owsutils-geonetwork</artifactId>
+				<version>1.0</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<build>
