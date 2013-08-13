@@ -4,7 +4,7 @@
 	<groupId>gov.usgs.cida.gdp</groupId>
 	<artifactId>gdp</artifactId>
 	<packaging>pom</packaging>
-	<version>22-SNAPSHOT</version>
+	<version>22</version>
 	<name>GDP</name>
 	<modules>
 		<module>gdp-common-utilities</module>
