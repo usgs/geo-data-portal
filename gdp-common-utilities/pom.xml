@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>gov.usgs.cida.gdp</groupId>
 		<artifactId>gdp</artifactId>
-		<version>22</version>
+		<version>23-SNAPSHOT</version>
 	</parent>
 	<artifactId>gdp-common-utilities</artifactId>
 	<name>GDP Common Utilities</name>
