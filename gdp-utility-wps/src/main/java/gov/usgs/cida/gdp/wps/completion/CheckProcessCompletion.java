@@ -136,7 +136,7 @@ class EmailCheckTask extends TimerTask {
 									+ "a network or server issue preventing the status "
 									+ "document from being retrieved. However, the request may "
 									+ "still be running. For more information, check the "
-									+ "status url" + this.wpsCheckPoint);
+									+ "status url " + this.wpsCheckPoint);
 						} catch (Exception ex2) {
 							log.error("Also, email was bad, cannot send " + ex2.getMessage());
 						}
