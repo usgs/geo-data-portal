@@ -36,7 +36,6 @@ public class GMLStreamingFeatureCollectionTest {
     }
 
     @Test
-	@Ignore
     public void testSimpleWFSParse() {
         GMLStreamingFeatureCollection fc = new GMLStreamingFeatureCollection(conusStates);
         assertThat(fc, notNullValue());
