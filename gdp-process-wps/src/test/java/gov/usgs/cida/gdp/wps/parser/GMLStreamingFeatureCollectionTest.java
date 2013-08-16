@@ -3,11 +3,14 @@ package gov.usgs.cida.gdp.wps.parser;
 
 import com.vividsolutions.jts.geom.Geometry;
 import java.io.File;
+import java.net.URISyntaxException;
 import java.net.URL;
 import org.geotools.feature.FeatureIterator;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 
@@ -17,15 +20,25 @@ import org.opengis.feature.simple.SimpleFeature;
  */
 public class GMLStreamingFeatureCollectionTest {
     
+	static File conusStates;
+	static File arcGis;
+	
+	@BeforeClass
+	public static void before() throws URISyntaxException {
+		URL url = GMLStreamingFeatureCollectionTest.class.getResource("/gml/conus-states-sample.xml");
+		conusStates = new File(url.toURI());
+		
+		url = GMLStreamingFeatureCollectionTest.class.getResource("/gml/arcgis-sample.xml");
+		arcGis = new File(url.toURI());
+	}
+	
     public GMLStreamingFeatureCollectionTest() {
     }
 
     @Test
+	@Ignore
     public void testSimpleWFSParse() {
-        File file = getFile();
-        assertThat(file, notNullValue());
-        
-        GMLStreamingFeatureCollection fc = new GMLStreamingFeatureCollection(file);
+        GMLStreamingFeatureCollection fc = new GMLStreamingFeatureCollection(conusStates);
         assertThat(fc, notNullValue());
         assertThat(fc.getBounds(), notNullValue());
         assertThat(fc.getSchema(), notNullValue());
@@ -48,17 +61,15 @@ public class GMLStreamingFeatureCollectionTest {
                 fi.close();
             }
         }
-        
     }
-    
-    private File getFile() {
-        URL url = getClass().getClassLoader().getResource("gml/wfs-sample.xml");
-        assertThat(url, notNullValue());
-        assertThat(url.getProtocol(), equalTo("file"));
-        String path = url.getPath();
-        assertThat(path, notNullValue());
-        File file = new File(path);
-        assertThat(file.canRead(), equalTo(true));
-        return file;
-    } 
+	
+    @Test
+    public void testArcGISWFSParse() {
+		try {
+        GMLStreamingFeatureCollection fc = new GMLStreamingFeatureCollection(arcGis);
+		} catch (RuntimeException ex) {
+			assertEquals(ex.getMessage(), "Error extracting CRS from feature geometry");
+		}
+       
+    }
 }
