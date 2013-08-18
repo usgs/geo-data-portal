@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <wfs:FeatureCollection xsi:schemaLocation='http://igscsahcpags02:6080/arcgis/services/GeospatialFabric/mows_mapping/MapServer/WFSServer http://www.sciencebase.gov/arcgis/services/GeospatialFabric/mows_mapping/MapServer/WFSServer?request=DescribeFeatureType%26version=1.1.0%26typename=NHDPlus_Catchment http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd' xmlns:GeospatialFabric_mows_mapping='http://igscsahcpags02:6080/arcgis/services/GeospatialFabric/mows_mapping/MapServer/WFSServer' xmlns:gml='http://www.opengis.net/gml' xmlns:wfs='http://www.opengis.net/wfs' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>
 	<gml:boundedBy>
 		<gml:Envelope srsName='urn:ogc:def:crs:EPSG:6.9:3857'>

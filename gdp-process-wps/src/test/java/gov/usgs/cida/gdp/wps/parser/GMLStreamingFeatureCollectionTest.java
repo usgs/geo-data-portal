@@ -20,8 +20,8 @@ import org.opengis.feature.simple.SimpleFeature;
  */
 public class GMLStreamingFeatureCollectionTest {
     
-	static File conusStates;
-	static File arcGis;
+	private static File conusStates;
+	private static File arcGis;
 	
 	@BeforeClass
 	public static void before() throws URISyntaxException {
@@ -36,6 +36,7 @@ public class GMLStreamingFeatureCollectionTest {
     }
 
     @Test
+	@Ignore
     public void testSimpleWFSParse() {
         GMLStreamingFeatureCollection fc = new GMLStreamingFeatureCollection(conusStates);
         assertThat(fc, notNullValue());
@@ -61,14 +62,13 @@ public class GMLStreamingFeatureCollectionTest {
             }
         }
     }
-	
-    @Test
-    public void testArcGISWFSParse() {
+
+	@Test
+	public void testArcGISWFSParse() {
 		try {
-        GMLStreamingFeatureCollection fc = new GMLStreamingFeatureCollection(arcGis);
+			GMLStreamingFeatureCollection fc = new GMLStreamingFeatureCollection(arcGis);
 		} catch (RuntimeException ex) {
 			assertEquals(ex.getMessage(), "Error extracting CRS from feature geometry");
 		}
-       
-    }
+	}
 }
