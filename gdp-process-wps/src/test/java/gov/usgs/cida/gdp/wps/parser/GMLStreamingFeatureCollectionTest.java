@@ -1,4 +1,3 @@
-
 package gov.usgs.cida.gdp.wps.parser;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -19,56 +18,74 @@ import org.opengis.feature.simple.SimpleFeature;
  * @author tkunicki
  */
 public class GMLStreamingFeatureCollectionTest {
-    
+
 	private static File conusStates;
 	private static File arcGis;
-	
+
 	@BeforeClass
 	public static void before() throws URISyntaxException {
 		URL url = GMLStreamingFeatureCollectionTest.class.getResource("/gml/conus-states-sample.xml");
 		conusStates = new File(url.toURI());
-		
+
 		url = GMLStreamingFeatureCollectionTest.class.getResource("/gml/arcgis-sample.xml");
 		arcGis = new File(url.toURI());
 	}
-	
-    public GMLStreamingFeatureCollectionTest() {
-    }
 
-    @Test
-	@Ignore
-    public void testSimpleWFSParse() {
-        GMLStreamingFeatureCollection fc = new GMLStreamingFeatureCollection(conusStates);
-        assertThat(fc, notNullValue());
-        assertThat(fc.getBounds(), notNullValue());
-        assertThat(fc.getSchema(), notNullValue());
-        assertThat(fc.size(), equalTo(1));
-        
-        FeatureIterator fi = null;
-        try {
-            fi = fc.features();
-            assertThat(fi, notNullValue());
-            assertThat(fi.hasNext(), is(true));
-            while(fi.hasNext()) {
-                Feature f = fi.next();
-                assertThat(f, instanceOf(SimpleFeature.class));
-                SimpleFeature sf = (SimpleFeature)f;
-                Object go = sf.getDefaultGeometry();
-                assertThat(go, instanceOf(Geometry.class));
-            }
-        } finally {
-            if (fi != null) {
-                fi.close();
-            }
-        }
-    }
+	public GMLStreamingFeatureCollectionTest() {
+	}
+
+	@Test
+	public void testSimpleWFSParse() {
+		GMLStreamingFeatureCollection fc = new GMLStreamingFeatureCollection(conusStates);
+		assertThat(fc, notNullValue());
+		assertThat(fc.getBounds(), notNullValue());
+		assertThat(fc.getSchema(), notNullValue());
+		assertThat(fc.size(), equalTo(1));
+
+		FeatureIterator fi = null;
+		try {
+			fi = fc.features();
+			assertThat(fi, notNullValue());
+			assertThat(fi.hasNext(), is(true));
+			while (fi.hasNext()) {
+				Feature f = fi.next();
+				assertThat(f, instanceOf(SimpleFeature.class));
+				SimpleFeature sf = (SimpleFeature) f;
+				Object go = sf.getDefaultGeometry();
+				assertThat(go, instanceOf(Geometry.class));
+			}
+		} finally {
+			if (fi != null) {
+				fi.close();
+			}
+		}
+	}
 
 	@Test
 	public void testArcGISWFSParse() {
+		GMLStreamingFeatureCollection fc = new GMLStreamingFeatureCollection(arcGis);
+		assertThat(fc, notNullValue());
+		assertThat(fc.getBounds(), notNullValue());
+		assertThat(fc.getSchema(), notNullValue());
+		assertThat(fc.size(), equalTo(1));
+		
+		
+		FeatureIterator fi = null;
 		try {
-			GMLStreamingFeatureCollection fc = new GMLStreamingFeatureCollection(arcGis);
-		} catch (RuntimeException ex) {
-			assertEquals(ex.getMessage(), "Error extracting CRS from feature geometry");
+			fi = fc.features();
+			assertThat(fi, notNullValue());
+			assertThat(fi.hasNext(), is(true));
+			while (fi.hasNext()) {
+				Feature f = fi.next();
+				assertThat(f, instanceOf(SimpleFeature.class));
+				SimpleFeature sf = (SimpleFeature) f;
+				Object go = sf.getDefaultGeometry();
+				assertThat(go, instanceOf(Geometry.class));
+			}
+		} finally {
+			if (fi != null) {
+				fi.close();
+			}
 		}
 	}
 }
