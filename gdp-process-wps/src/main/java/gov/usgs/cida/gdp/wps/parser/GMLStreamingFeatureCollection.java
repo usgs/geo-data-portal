@@ -47,22 +47,29 @@ import org.xml.sax.SAXException;
 public class GMLStreamingFeatureCollection implements FeatureCollection {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(GMLStreamingFeatureCollection.class);
-    
-	final private File file;
-	final private SimpleFeatureType featureType;
-	final private ReferencedEnvelope bounds;
-	final private int size;
-	final private Configuration configuration;
+	private final File file;
+	private final SimpleFeatureType featureType;
+	private final ReferencedEnvelope bounds;
+	private final int size;
+	private final Configuration configuration;
+	private final String MSG_NOT_SUPP_YET = "Not supported yet.";
+	private final String MSG_READ_ONLY = "This instance is read-only";
 
 	GMLStreamingFeatureCollection(File file) {
-
         LOGGER.debug("Starting parse of file {}", file.getName());
 		this.file = file;
 		this.configuration = GMLUtil.generateGMLConfiguration(file);
-
+		
 		StreamingFeatureIterator iterator = null;
 		try {
-			MetaDataFilter metaDataFilter = new MetaDataFilter();
+			ReferencedEnvelope envelope = getEnvelope(file);
+			MetaDataFilter metaDataFilter;
+			if (envelope != null && envelope.getCoordinateReferenceSystem() != null) {
+				metaDataFilter = new MetaDataFilter(envelope);
+			} else {
+				metaDataFilter = new MetaDataFilter();
+			}
+			
 			iterator = new StreamingFeatureIterator(metaDataFilter, false);
 			while (iterator.hasNext()) {
 				iterator.next();
@@ -88,6 +95,14 @@ public class GMLStreamingFeatureCollection implements FeatureCollection {
 		}
         LOGGER.debug("Finished parse of file {}, {} features found", file.getName(), size);
 	}
+	
+	private ReferencedEnvelope getEnvelope(File file) {
+		try {
+			return GMLUtil.determineCollectionEnvelope(file);
+		} catch (IOException ex) {
+			return null;
+		}
+	}
     
     public void dispose() {
         FileUtils.deleteQuietly(file);
@@ -107,7 +122,7 @@ public class GMLStreamingFeatureCollection implements FeatureCollection {
 	private StreamingFeatureIterator createStreamingFeatureIterator() {
 		StreamingFeatureIterator iterator = null;
 		try {
-			iterator = new StreamingFeatureIterator(FILTER_PASSTHRU);
+			iterator = new StreamingFeatureIterator(filterPassthru);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -152,22 +167,22 @@ public class GMLStreamingFeatureCollection implements FeatureCollection {
 
 	@Override
 	public String getID() {
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException(MSG_NOT_SUPP_YET);
 	}
 
 	@Override
 	public void accepts(FeatureVisitor visitor, ProgressListener progress) throws IOException {
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException(MSG_NOT_SUPP_YET);
 	}
 
 	@Override
 	public FeatureCollection subCollection(Filter filter) {
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException(MSG_NOT_SUPP_YET);
 	}
 
 	@Override
 	public FeatureCollection sort(SortBy order) {
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException(MSG_NOT_SUPP_YET);
 	}
 
 	@Override
@@ -182,37 +197,37 @@ public class GMLStreamingFeatureCollection implements FeatureCollection {
 
 	@Override
 	public void purge() {
-		throw new UnsupportedOperationException("This instance is read-only");
+		throw new UnsupportedOperationException(MSG_READ_ONLY);
 	}
 
 	@Override
 	public boolean add(Feature obj) {
-		throw new UnsupportedOperationException("This instance is read-only");
+		throw new UnsupportedOperationException(MSG_READ_ONLY);
 	}
 
 	@Override
 	public boolean addAll(Collection collection) {
-		throw new UnsupportedOperationException("This instance is read-only");
+		throw new UnsupportedOperationException(MSG_READ_ONLY);
 	}
 
 	@Override
 	public boolean addAll(FeatureCollection resource) {
-		throw new UnsupportedOperationException("This instance is read-only");
+		throw new UnsupportedOperationException(MSG_READ_ONLY);
 	}
 
 	@Override
 	public void clear() {
-		throw new UnsupportedOperationException("This instance is read-only");
+		throw new UnsupportedOperationException(MSG_READ_ONLY);
 	}
 
 	@Override
 	public boolean contains(Object o) {
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException(MSG_NOT_SUPP_YET);
 	}
 
 	@Override
 	public boolean containsAll(Collection o) {
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException(MSG_NOT_SUPP_YET);
 	}
 
 	@Override
@@ -222,27 +237,27 @@ public class GMLStreamingFeatureCollection implements FeatureCollection {
 
 	@Override
 	public boolean remove(Object o) {
-		throw new UnsupportedOperationException("This instance is read-only");
+		throw new UnsupportedOperationException(MSG_READ_ONLY);
 	}
 
 	@Override
 	public boolean removeAll(Collection c) {
-		throw new UnsupportedOperationException("This instance is read-only");
+		throw new UnsupportedOperationException(MSG_READ_ONLY);
 	}
 
 	@Override
 	public boolean retainAll(Collection c) {
-		throw new UnsupportedOperationException("This instance is read-only");
+		throw new UnsupportedOperationException(MSG_READ_ONLY);
 	}
 
 	@Override
 	public Object[] toArray() {
-		throw new UnsupportedOperationException("Only streaming supported");
+		throw new UnsupportedOperationException(MSG_READ_ONLY);
 	}
 
 	@Override
 	public Object[] toArray(Object[] a) {
-		throw new UnsupportedOperationException("Only streaming supported");
+		throw new UnsupportedOperationException(MSG_READ_ONLY);
 	}
 
     private SimpleFeature wrap(SimpleFeature base) {
@@ -339,7 +354,7 @@ public class GMLStreamingFeatureCollection implements FeatureCollection {
 		}
 	}
 
-	private static Filter FILTER_PASSTHRU = new Filter() {
+	private static Filter filterPassthru = new Filter() {
 		@Override public boolean evaluate(Object object) { return true; }
 		@Override public Object accept(FilterVisitor visitor, Object extraData) { return true; }
 	};
@@ -351,35 +366,53 @@ public class GMLStreamingFeatureCollection implements FeatureCollection {
         private SimpleFeatureType baseFeatureType;
 		private SimpleFeatureType wrappedFeatureType;
 		private int size;
-
+		private CoordinateReferenceSystem crs;
+		
+		public MetaDataFilter() {
+			super();
+		}
+		
+		public MetaDataFilter(ReferencedEnvelope envelope) {
+			super();
+			CoordinateReferenceSystem crs = envelope.getCoordinateReferenceSystem();
+			if (crs != null) {
+				this.crs = crs;
+			}
+			this.collectionBounds = envelope;
+		}
+		
 		@Override
 		public boolean evaluate(Object object) {
 			if (object instanceof SimpleFeature) {
 				SimpleFeature feature = (SimpleFeature) object;
                 
-                Object geometryObject = feature.getDefaultGeometry();
-                if (geometryObject instanceof Geometry) {
-                    Object crsObject = ((Geometry)feature.getDefaultGeometry()).getUserData();
-                    if (crsObject instanceof CoordinateReferenceSystem) {
-                        CoordinateReferenceSystem featureCRS = (CoordinateReferenceSystem)crsObject;
-                        if (collectionCRS == null) {
-                            collectionCRS = featureCRS;
-                            LOGGER.debug("CRS for file {}: {}", collectionCRS);
-                        }
-                        if (collectionBounds == null) {
-                            collectionBounds = new ReferencedEnvelope(collectionCRS);
-                        }
-                        if (CRS.equalsIgnoreMetadata(featureCRS, collectionCRS)) {
-                            collectionBounds.include(feature.getBounds());
-                        } else {
-                            throw new RuntimeException("Inconsistent CRS encountered.");
-                        }
-                    } else {
-                        throw new RuntimeException("Error extracting CRS from feature geometry");
-                    }
-                } else {
-                    throw new RuntimeException("Error extracting geometry from feature");
-                }
+				if (this.crs != null) {
+					collectionCRS = this.crs;
+				} else {
+					Object geometryObject = feature.getDefaultGeometry();
+					if (geometryObject instanceof Geometry) {
+						Object crsObject = ((Geometry) feature.getDefaultGeometry()).getUserData();
+						if (crsObject instanceof CoordinateReferenceSystem) {
+							CoordinateReferenceSystem featureCRS = (CoordinateReferenceSystem) crsObject;
+							if (collectionCRS == null) {
+								collectionCRS = featureCRS;
+							}
+							if (collectionBounds == null) {
+								collectionBounds = new ReferencedEnvelope(collectionCRS);
+							}
+							if (CRS.equalsIgnoreMetadata(featureCRS, collectionCRS)) {
+								collectionBounds.include(feature.getBounds());
+							} else {
+								throw new RuntimeException("Inconsistent CRS encountered.");
+							}
+						} else {
+							throw new RuntimeException("Error extracting CRS from feature geometry");
+						}
+					} else {
+						throw new RuntimeException("Error extracting geometry from feature");
+					}
+				}
+				LOGGER.debug("CRS for file {}: {}", collectionCRS);
 
                 if (baseFeatureType == null) {
                     baseFeatureType = feature.getFeatureType();
