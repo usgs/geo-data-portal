@@ -65,17 +65,15 @@
     GDP.LOG4JS_PATTERN_LAYOUT = '<%= props.getProperty("LOG4JS_PATTERN_LAYOUT", "%rms - %-5p - %m%n")%>';
     GDP.PROXY_PREFIX = '<%= props.getProperty("derivative/PROXY_PREFIX", "proxy/")%>';
     GDP.DEFAULT_LEGEND_NAME = '<%= props.getProperty("derivative/DEFAULT_LEGEND_NAME", "boxfill/occam")%>';
-    GDP.CSW_QUERY_CONSTRAINT_FILTER_VALUE = '<%= props.getProperty("derivative/CSW_QUERY_CONSTRAINT_FILTER_VALUE",
-            "a0a3c56c-2be5-4d45-9924-72b13e348919")%>';
-                GDP.FOI_GETCAPS_URL = GDP.PROXY_PREFIX + '<%= props.getProperty("derivative/FOI_GETCAPS_URL",
-            "http://cida-wiwsc-gdp2qa.er.usgs.gov:8082/geoserver/derivative/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities")%>';
+    GDP.CSW_QUERY_CONSTRAINT_FILTER_VALUE = '<%= props.getProperty("derivative/CSW_QUERY_CONSTRAINT_FILTER_VALUE", "a0a3c56c-2be5-4d45-9924-72b13e348919")%>';
+	GDP.FOI_GETCAPS_URL = GDP.PROXY_PREFIX + '<%= props.getProperty("derivative/FOI_GETCAPS_URL", "http://cida-wiwsc-gdp2qa.er.usgs.gov:8082/geoserver/derivative/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities")%>';
     
                 Ext.override(Ext.data.Connection, { timeout: 60000 });
     
                 // http://ejohn.org/blog/fast-javascript-maxmin/
                 Array.max = function( array , maxVal ){
                     var arrMax = Math.max.apply( Math, array );
-                    if (arguments.length == 1) {
+                    if (arguments.length === 1) {
                         return arrMax;
                     }
                     else {
@@ -84,7 +82,7 @@
                 };
                 Array.min = function( array , minVal ){
                     var arrMin = Math.min.apply( Math, array );
-                    if (arguments.length == 1) {
+                    if (arguments.length === 1) {
                         return arrMin;
                     }
                     else {
@@ -92,13 +90,13 @@
                     }
                 };
                 Array.mean = function( array ) {
-                    if (array.length == 0) return NaN;
+                    if (array.length === 0) return NaN;
                     var total = 0;
                     Ext.each(array, function(item) {
                         total += item; 
                     });
                     return total / array.length;
-                }
+                };
     
                 // http://jibbering.com/faq/#parseDate
                 Date.parseISO8601 = function(dateStringInRange){
@@ -109,7 +107,7 @@
                     if(parts) {
                         month = +parts[2];
                         date.setFullYear(parts[1], month - 1, parts[3]);
-                        if(month != date.getMonth() + 1) {
+                        if(month !== date.getMonth() + 1) {
                             date.setTime(NaN);
                         }
                     }
