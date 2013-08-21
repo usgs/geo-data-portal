@@ -5,12 +5,12 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
     // Got this number from Hollister, and he's not sure where it came from.
     // Without this line, the esri road and relief layers will not display
     // outside of the upper western hemisphere.
-    MAX_RESOLUTION : 1.40625/2, //0.703125
-    
+    MAX_RESOLUTION : 1.40625 / 2, //0.703125
+
     DEFAULT_LEGEND_X : 110,
     DEFAULT_LEGEND_Y : 293,
-    
-    changeProdToggleButton : undefined, 
+
+	changeProdToggleButton : undefined,
     currentLayer : undefined,
     baseLayerCombo : undefined,
     expandContractButton : undefined,
@@ -19,48 +19,51 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
     layerController : undefined,
     layerOpacitySlider : undefined,
     legendCombo : undefined,
-    legendImage : undefined, 
+    legendImage : undefined,
     legendSwitch : undefined,
     legendWindow : undefined,
     notificationWindow : undefined,
     bounds : undefined,
-    constructor : function(config) {
+    constructor : function (config) {
         LOG.debug('BaseMap:constructor: Constructing self.');
-        
-        this.layerController = config.layerController;
-        
-        if (!config) config = {};
+
+		this.layerController = config.layerController;
+
+		if (!config) {
+			config = {};
+		}
 
         // Set up the map and controls on the map
         var map = new OpenLayers.Map({
             maxResolution: this.MAX_RESOLUTION,
             controls: [
-            new OpenLayers.Control.MousePosition(),
-            new OpenLayers.Control.ScaleLine(),
-            new OpenLayers.Control.PanZoomBar({
-                panIcons : false,
-                position : new OpenLayers.Pixel(3,30)
-            })
+				new OpenLayers.Control.MousePosition(),
+				new OpenLayers.Control.ScaleLine(),
+				new OpenLayers.Control.PanZoomBar({
+					panIcons : false,
+					position : new OpenLayers.Pixel(3, 30)
+				})
             ]
-        });
+        }),
 
         // Set up the map control panel
-        var navigationCtrl = new OpenLayers.Control.Navigation({
-            title:'You can use the default mouse configuration',
+        navigationCtrl = new OpenLayers.Control.Navigation({
+            title: 'You can use the default mouse configuration',
             autoActivate : true
-        });
-        var mapControlPanel = new OpenLayers.Control.Panel({
-            defaultControl: navigationCtrl
-        });
+        }),
+		mapControlPanel = new OpenLayers.Control.Panel({
+			defaultControl: navigationCtrl
+		});
         mapControlPanel.addControls([
-            navigationCtrl, 
+            navigationCtrl,
             new OpenLayers.Control.ZoomBox({
                 title:"Zoom box: Selecting it you can zoom on an area by clicking and dragging."
             })
-        ]);                
-        map.addControl(mapControlPanel);
-        
-        // Set up the toolbar above the map
+        ]);
+
+		map.addControl(mapControlPanel);
+
+		// Set up the toolbar above the map
         this.baseLayerCombo = new Ext.form.ComboBox({
             id : 'baseLayerCombo',
             xtype : 'combo',
@@ -75,14 +78,13 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             autoSelect : false, // Value is programatically selected on store load
             store : config.baseLayerStore,
             listeners : {
-                select : function(combo, record) {
+                select : function (combo, record) {
                     LOG.debug('BaseMap: Base Layer Combo Box ' + combo.getEl().id + ' observed select.');
                     this.layerController.requestBaseLayer(record);
                 },
                 scope : this
             }
         });
-        
         this.changeProdToggleButton = new Ext.Button({
             itemId : 'changeProdToggleButton',
             id : 'changeProdToggleButton',
@@ -91,19 +93,19 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             pressed : false,
             enableToggle: true,
             listeners : {
-                click : function(button) {
+                click : function (button) {
                     this.layerController.onChangeProductToggled(button.pressed);
                 },
                 scope : this
             }
-        })
-        
-        this.legendSwitch = new Ext.Button({
+        });
+
+		this.legendSwitch = new Ext.Button({
             text : 'Off',
             pressed: true,
             enableToggle: true,
             listeners : {
-                click : function() {
+                click : function () {
                     if (this.legendWindow.collapsed) {
                         this.legendWindow.expand();
                         this.legendSwitch.setText('Off');
@@ -128,14 +130,14 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             editable : false,
             emptyText : 'Loading...',
             listeners : {
-                select : function(obj, rec) {
+                select : function (obj, rec) {
                     LOG.debug('BaseMap: A new legend style chosen: ' + rec.id + ' (' + rec.data.abstrakt + ')');
                     this.layerController.requestLegendRecord(rec);
                 },
                 scope : this
             }
         });
-        this.legendCombo.store.on('load', function(store) {
+        this.legendCombo.store.on('load', function (store) {
             LOG.debug('BaseMap: Legend Combobox store Loaded.');
             //  http://internal.cida.usgs.gov/jira/browse/GDP-372
             var recordIndex = store.find('name', GDP.DEFAULT_LEGEND_NAME);
@@ -149,80 +151,79 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                 template: '<div>Opacity: {opacity}%</div>'
             })
         });
-        
+
         this.infoButton = new Ext.Button({
-            itemId : 'infoButton',
-            id : 'infoButton',
-            text : 'Info',
-            ref : '../toolbar-info-button',
-            hidden: true,
-            listeners: {
-                click : function() {
-                    var win = new Ext.Window({
-                        id : 'infowindow',
-                        width:640,
-                        shadow : true,
-                        title:'USGS Derived Downscaled Climate Projection Portal Information',
-                        autoScroll:true,
-                        modal:true,
-                        floating : true
-                    });
-            
-                    var infoDivId = 'information_div';
-                    var infoDiv = {
-                        id: infoDivId,
-                        tag:'div',
-                        width:'100%',
-                        height:'100%'
-                    }
-                    win.show();
-                    Ext.DomHelper.insertFirst(win.body, infoDiv);
-                    Ext.DomHelper.append(Ext.DomQuery.selectNode('div[id="'+infoDivId+'"]'), this.infoText);
-                },
-                scope : this
-            }
-        });
+			itemId: 'infoButton',
+			id: 'infoButton',
+			text: 'Info',
+			ref: '../toolbar-info-button',
+			hidden: true,
+			listeners: {
+				click: function () {
+					var win = new Ext.Window({
+						id: 'infowindow',
+						width: 640,
+						shadow: true,
+						title: 'USGS Derived Downscaled Climate Projection Portal Information',
+						autoScroll: true,
+						modal: true,
+						floating: true
+					}),
+					infoDivId = 'information_div',
+							infoDiv = {
+						id: infoDivId,
+						tag: 'div',
+						width: '100%',
+						height: '100%'
+					};
+					win.show();
+					Ext.DomHelper.insertFirst(win.body, infoDiv);
+					Ext.DomHelper.append(Ext.DomQuery.selectNode('div[id="' + infoDivId + '"]'), this.infoText);
+				},
+				scope: this
+			}
+		});
         this.expandContractButton = new Ext.Button({
-           itemId : 'expandContractButtion',
-           id : 'expandContractButton',
-           icon : 'images/expand.png',
-           ref : '../expandContractButton',
-           enableToggle: true,
-           listeners : {
-               click : function(button) {
-                   var expandContractText = button.pressed ? 'Contract' : 'Expand';
-                   var expandContractIcon = button.pressed ? 'images/contract.png' : 'images/expand.png';
-                   LOG.debug('BaseMap:expandContractButton:Clicked: User wants to '+expandContractText+' application view');
-                   button.setIcon(expandContractIcon);
-                   this.layerController.requestApplicationResize(button.pressed);
-               },
-               scope : this
-           }
-        });
+			itemId: 'expandContractButtion',
+			id: 'expandContractButton',
+			icon: 'images/expand.png',
+			ref: '../expandContractButton',
+			enableToggle: true,
+			listeners: {
+				click: function (button) {
+					var expandContractText = button.pressed ? 'Contract' : 'Expand',
+					expandContractIcon = button.pressed ? 'images/contract.png' : 'images/expand.png';
+					LOG.debug('BaseMap:expandContractButton:Clicked: User wants to ' + expandContractText + ' application view');
+					button.setIcon(expandContractIcon);
+					this.layerController.requestApplicationResize(button.pressed);
+				},
+				scope: this
+			}
+		});
         var toolbar = new Ext.Toolbar({
-            items : [
-            this.infoButton,
-            this.expandContractButton,
-            '->',
-            this.changeProdToggleButton,
-            ' ' ,
-            '-',
-            ' ',
-            'Opacity: ',
-            this.layerOpacitySlider,
-            ' ',
-            '-',
-            ' ',
-            'Base Layer: ',
-            this.baseLayerCombo,
-            ' ',
-            '-',
-            ' ',
-            'Legend: ',
-            this.legendSwitch,
-            this.legendCombo
-            ]
-        })
+			items: [
+				this.infoButton,
+				this.expandContractButton,
+				'->',
+				this.changeProdToggleButton,
+				' ',
+				'-',
+				' ',
+				'Opacity: ',
+				this.layerOpacitySlider,
+				' ',
+				'-',
+				' ',
+				'Base Layer: ',
+				this.baseLayerCombo,
+				' ',
+				'-',
+				' ',
+				'Legend: ',
+				this.legendSwitch,
+				this.legendCombo
+			]
+		});
         LOG.debug('DatasetConfigPanel:constructor: Registering listeners.');
         config = Ext.apply({
             map : map,
@@ -230,84 +231,83 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             tbar : toolbar,
             bufferResize : true
         }, config);
-                
-        GDP.BaseMap.superclass.constructor.call(this, config);
+
+		GDP.BaseMap.superclass.constructor.call(this, config);
         LOG.debug('BaseMap:constructor: Construction complete.');
-        
-        LOG.debug('BaseMap:constructor: Registering Listeners.');
-        this.layerController.on('updateplotter', function(){
+
+		LOG.debug('BaseMap:constructor: Registering Listeners.');
+        this.layerController.on('updateplotter', function () {
             this.infoButton.show();
-        }, this)
-        this.layerController.on('changebaselayer', function() {
+        }, this);
+        this.layerController.on('changebaselayer', function () {
             LOG.debug('BaseMap: Observed "changebaselayer".');
             this.baseLayerCombo.setValue(this.layerController.getBaseLayer().data.title);
         }, this);
-        this.layerOpacitySlider.on('change', function() {
+        this.layerOpacitySlider.on('change', function () {
             LOG.debug('BaseMap:layerOpacitySlider: Observed \'change\'.');
             this.layerController.requestOpacity(this.layerOpacitySlider.getValue() / 100);
         }, this, {
             buffer: 5
         });
-        this.layerController.on('loaded-catstore', function(args) {
+        this.layerController.on('loaded-catstore', function (args) {
             LOG.debug('BaseMap:onLoadedCatstore');
             this.onLoadedCatstore(args);
         }, this);
-        this.layerController.on('changebaselayer', function() {
+        this.layerController.on('changebaselayer', function () {
             LOG.debug('BaseMap: Observed "changebaselayer".');
             this.onReplaceBaseLayer();
-        },this);
-        this.layerController.on('changelayer', function() {
+        }, this);
+        this.layerController.on('changelayer', function () {
             LOG.debug('BaseMap: Observed "changelayer".');
             this.onChangeLayer();
         }, this);
-        this.layerController.on('changedimension', function(extentName) {
+        this.layerController.on('changedimension', function (extentName) {
             LOG.debug('BaseMap: Observed "changedimension".');
             this.onChangeDimension(extentName);
         }, this);
-        this.layerController.on('changeopacity', function() {
+        this.layerController.on('changeopacity', function () {
             LOG.debug('BaseMap: Observed "changeopacity".');
             this.onChangeOpacity();
         }, this);
-        this.layerController.on('changelegend', function() {
+        this.layerController.on('changelegend', function () {
             LOG.debug('BaseMap: Observed "changelegend".');
             this.onChangeLegend();
         }, this);
-        this.layerController.on('requestfoi', function(args){
+        this.layerController.on('requestfoi', function (args) {
             LOG.debug('BaseMap: Observed "requestfoi".');
-            
-            // Clean up befre re-adding layers and controls
-            Ext.each(this.map.getLayersByName('foilayer'), function(item){
+
+			// Clean up befre re-adding layers and controls
+            Ext.each(this.map.getLayersByName('foilayer'), function (item) {
                 item.destroy();
             });
-            
-            Ext.each(this.map.getLayersByName('selectedFeature'), function(item){
+
+			Ext.each(this.map.getLayersByName('selectedFeature'), function (item) {
                 item.destroy();
             });
-            
-            Ext.each(this.map.getControlsByClass('OpenLayers.Control.WMSGetFeatureInfo'), function(item){
+
+			Ext.each(this.map.getControlsByClass('OpenLayers.Control.WMSGetFeatureInfo'), function (item) {
                 item.deactivate();
                 this.removeControl(item);
             }, this.map);
-            
-            
-            var foiLayer = args.clone().getLayer();
-            var highestZ = this.getHighestZIndex();
+
+			var foiLayer = args.clone().getLayer(),
+				highestZ = this.getHighestZIndex();
             foiLayer.setZIndex(highestZ + 1);
             foiLayer.displayInLayerSwitcher = false;
             foiLayer.setVisibility(true);
             foiLayer.name = "foilayer";
             foiLayer.events.on({
-                'added' : function(features) {
+                'added' : function (features) {
                     // Pull defaults for Ext.ux.NotifyMgr settings to be reset later
-                    var alignment = Ext.ux.NotifyMgr.alignment;
-                    var offsets = Ext.ux.NotifyMgr.offsets;
-                    
+                    var alignment = Ext.ux.NotifyMgr.alignment,
+					offsets = Ext.ux.NotifyMgr.offsets;
+
                     // Set up the notification
                     // http://internal.cida.usgs.gov/jira/browse/GDP-425
                     Ext.ux.NotifyMgr.alignment = 'top-left';
                     var tooltipTopPosition = Ext.ComponentMgr.get('plotFieldSet').getPosition()[1] + Ext.ComponentMgr.get('plotFieldSet').getHeight() + 5;
-                    Ext.ux.NotifyMgr.offsets = [tooltipTopPosition,10];
-                    
+                    Ext.ux.NotifyMgr.offsets = [tooltipTopPosition, 10];
+
                     // TODO - There should be a better way of getting at this. 
                     // Look into OpenLayers scoping for layer.on events
                     if (!Ext.ComponentMgr.get('mapPanel').notificationWindow) {
@@ -325,8 +325,8 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                     Ext.ux.NotifyMgr.offsets = offsets;
                     features.object.map.zoomToExtent(features.layer.getExtent());
                 }
-            })
-            
+            });
+
             var selectorControl = new OpenLayers.Control.WMSGetFeatureInfo({
                 id : 'clickcontrol',
                 maxFeatures : 1,
@@ -336,37 +336,50 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                 layers : [foiLayer],
                 url : foiLayer.url
             });
-            
-            selectorControl.events.register("getfeatureinfo", this, function(evt) {
+
+           selectorControl.events.register("getfeatureinfo", this, function (evt) {
                 if (!evt.features[0]) return; // User clicked somewhere they shouldn't have
-                
-                Ext.each(this.map.getLayersByName('selectedFeature'), function(item){
+
+                Ext.each(this.map.getLayersByName('selectedFeature'), function (item){
                     item.destroy();
-                })
-                
+                });
+
                 // http://internal.cida.usgs.gov/jira/browse/GDP-423
                 // http://internal.cida.usgs.gov/jira/browse/GDP-435
-                evt.features[0].attributes.TITLE = function() {
+                evt.features[0].attributes.TITLE = function () {
                     var fid = evt.object.layers[0].params.LAYERS.toLowerCase();
-                    if (fid == 'conus_states') return evt.features[0].attributes.STATE;
-                    if (fid == 'us_counties') return evt.features[0].attributes.FIPS;
-                    if (fid == 'level_iii_ecoregions') return evt.features[0].attributes.LEVEL3_NAM;
-                    if (fid == 'wbdhu8_alb_simp') return evt.features[0].attributes.HUC_8;
-                    if (fid == 'fws_lcc') return evt.features[0].attributes.area_names;
-                    if (fid == 'nca_regions') return evt.features[0].attributes.NCA_Region;
-                    return '';
+                    if (fid === 'conus_states') {
+						return evt.features[0].attributes.STATE;
+					} else if (fid === 'us_counties') {
+						return evt.features[0].attributes.FIPS;
+					} else if (fid === 'level_iii_ecoregions') {
+						return evt.features[0].attributes.LEVEL3_NAM;
+					} else if (fid === 'wbdhu8_alb_simp') {
+						return evt.features[0].attributes.HUC_8;
+					} else if (fid === 'fws_lcc') {
+						return evt.features[0].attributes.area_names;
+					} else if (fid === 'nca_regions') {
+						return evt.features[0].attributes.NCA_Region;
+					} else {
+						return '';
+					}
                 }();
-                
-                this.layerController.featureTitle = function() {
+
+				this.layerController.featureTitle = function () {
                     var fid = evt.object.layers[0].params.LAYERS.toLowerCase();
-                    if (fid == 'wbdhu8_alb_simp') return evt.features[0].attributes.SUBBASIN;
-                    if (fid == 'us_counties') return evt.features[0].attributes.COUNTY;
-                    return evt.features[0].attributes.TITLE;
+                    if (fid === 'wbdhu8_alb_simp') {
+						return evt.features[0].attributes.SUBBASIN;
+					} else if (fid === 'us_counties') {
+						return evt.features[0].attributes.COUNTY;
+					} else {
+						return evt.features[0].attributes.TITLE;
+					}
                 }();
-                this.layerController.featureAttribute = evt.features[0].attributes.TITLE;
+
+				this.layerController.featureAttribute = evt.features[0].attributes.TITLE;
                 this.layerController.updatePlotter();
-                
-                var selectedLayer = new OpenLayers.Layer.Vector(
+
+				var selectedLayer = new OpenLayers.Layer.Vector(
                     "selectedFeature",
                     {
                         styleMap : new OpenLayers.StyleMap({
@@ -380,11 +393,11 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                         }),
                         displayInLayerSwitcher : false
                     }
-                    );
+				);
                 selectedLayer.addFeatures(evt.features);
-                
-                this.map.addLayers([selectedLayer]);
-                
+
+				this.map.addLayers([selectedLayer]);
+
                 // TODO - There should be a better way of getting at this. 
                 // Look into OpenLayers scoping for layer.on events
                 if (Ext.ComponentMgr.get('mapPanel').notificationWindow) {
@@ -395,24 +408,22 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                 this.map.getLayersByName('foilayer')[0].setZIndex(highestZ + 1);
                 selectedLayer.setZIndex(highestZ + 2);
             });
-            
-            this.map.addLayers([foiLayer]);
+
+			this.map.addLayers([foiLayer]);
             this.map.addControl(selectorControl);
             selectorControl.activate();
         }, this);
-        this.layerController.on('exception-catstore', function() {
-            
-        }, this);
-        this.on('resize', function() {
+        this.layerController.on('exception-catstore', function () {}, this);
+        this.on('resize', function () {
             this.realignLegend();
         }, this);
-        
-        this.createLegendImage();
+
+		this.createLegendImage();
     },
-    createLegendImage : function() {
+    createLegendImage : function () {
         LOG.debug('BaseMap: Setting up legend window.');
         var legendImage = Ext.extend(GeoExt.LegendImage, {
-            setUrl: function(url) {
+            setUrl: function (url) {
                 this.url = url;
                 var el = this.getEl();
                 if (el) {
@@ -428,9 +439,11 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             }
         });
         this.legendImage = new legendImage();
-        this.legendImage.on('afterrender', function() {
-            (function() {
-                if(LOADMASK) LOADMASK.hide();
+        this.legendImage.on('afterrender', function () {
+            (function () {
+                if (LOADMASK) {
+					LOADMASK.hide();
+				}
             }).defer(2000);
         });
         this.legendWindow = new Ext.Window({
@@ -448,43 +461,38 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             collapsed : true,
             expandOnShow : false
         });
-        this.legendWindow.on('beforeexpand', function() {
-                if (this.legendSwitch.pressed) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            },
-            this
-        );
-        this.legendWindow.show();
+        this.legendWindow.on('beforeexpand', function () {
+			if (this.legendSwitch.pressed) {
+				return true;
+			} else {
+				return false;
+			}
+		}, this);
+		this.legendWindow.show();
     },
-    onLoadedCatstore : function(args) {
+    onLoadedCatstore : function (args) {
         this.infoText = args.record.get('helptext')['plotWindowIntroText'];
         this.changeProdToggleButton.setTooltip(args.record.get('helptext')['changeProdText']);
     },
-    getHighestZIndex : function() {
+    getHighestZIndex : function () {
         var highestZIndex = 0;
-        Ext.each(this.map.layers, function(item) {
+        Ext.each(this.map.layers, function (item) {
             if (highestZIndex < item.getZIndex()) highestZIndex = item.getZIndex();
-        }, highestZIndex)
+        }, highestZIndex);
         return highestZIndex;
     },
-    realignLegend : function() {
+    realignLegend : function () {
         if (this.legendWindow) {
             this.legendWindow.alignTo(this.body, "tr-tr");
         }
     },
-    zoomToExtent : function(record) {
+    zoomToExtent : function (record) {
         if (!record) return;
-        this.map.zoomToExtent(
-            OpenLayers.Bounds.fromArray(record.get("llbbox"))
-            );
+        this.map.zoomToExtent(OpenLayers.Bounds.fromArray(record.get("llbbox")));
     },
-    findCurrentLayer : function() {
+    findCurrentLayer : function () {
         LOG.debug('BaseMap:findCurrentLayer().');
-        var storeIndex = this.layers.findBy(function(record, id) {
+        var storeIndex = this.layers.findBy(function (record, id) {
             return (this.layerController.getLayerOpacity() === record.get('layer').opacity);
         }, this, 1);
         if (-1 < storeIndex) {
@@ -495,9 +503,9 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             return null;
         }
     },
-    clearLayers : function() { 
+    clearLayers : function () { 
         LOG.debug('BaseMap:clearLayers: Handling request.');
-        Ext.each(this.layers.data.getRange(), function(item){
+        Ext.each(this.layers.data.getRange(), function (item){
             var layer = item.data.layer;
             if (layer.isBaseLayer || layer.CLASS_NAME === 'OpenLayers.Layer.Vector' || layer.name === 'foilayer') {
                 LOG.debug('BaseMap:clearLayers: Layer '+layer.id+' is a base layer and will not be cleared.');
@@ -511,14 +519,14 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         },this);
         LOG.debug('BaseMap:clearLayers: Clearing layers complete');
     },
-    onChangeLayer : function() {
-        LOG.debug('BaseMap:onChangeLayer: Handling request.')
+    onChangeLayer : function () {
+        LOG.debug('BaseMap:onChangeLayer: Handling request.');
             
         var layer = this.layerController.getLayer();
 
         if (!this.currentLayer || this.currentLayer.getLayer() !== layer) {
             if (!this.bounds) {
-                this.bounds = OpenLayers.Bounds.fromArray(layer.get("llbbox"))
+                this.bounds = OpenLayers.Bounds.fromArray(layer.get("llbbox"));
                 this.zoomToExtent(layer);
             }
             this.clearLayers();
@@ -529,20 +537,20 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         }
         this.currentLayer = this.findCurrentLayer();
     },
-    onChangeDimension : function(extentName) {
+    onChangeDimension : function (extentName) {
         LOG.debug('BaseMap:onChangeDimension: Handling request.');
-        var existingLayerIndex = this.layers.findBy(function(record, id) {
+        var existingLayerIndex = this.layers.findBy(function (record, id) {
             LOG.debug(' BaseMap:onChangeDimension: Checking existing layer index.');
             var result = true;
             var requestedDimensions = this.layerController.getAllDimensions();
-            Ext.iterate(requestedDimensions, function(extentName, value) {
+            Ext.iterate(requestedDimensions, function (extentName, value) {
                 var layer = record.getLayer();
                 if (layer.CLASS_NAME === 'OpenLayers.Layer.Vector' || layer.isBaseLayer) {
                     result = false;
                 }
                 else {
                     var existingDimension = record.getLayer().params[extentName.toUpperCase()];
-                    result = result && (existingDimension === value)
+                    result = result && (existingDimension === value);
                 }
             }, this);
             LOG.debug(' BaseMap:onChangeDimension: Found existing layer index ' + result);
@@ -559,7 +567,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             );
         this.currentLayer = this.findCurrentLayer();
     },
-    onChangeLegend : function() {
+    onChangeLegend : function () {
         LOG.debug('BaseMap:onChangeLegend: Handling Request.');
         if (!this.layerController.getLayer()) return;
         
@@ -581,25 +589,25 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             );
         this.currentLayer = this.findCurrentLayer();
     },
-    onChangeOpacity : function() {
+    onChangeOpacity : function () {
         LOG.debug('BaseMap:onChangeOpacity: Handling Request.');
         if (this.currentLayer) {
             LOG.debug('BaseMap:onChangeOpacity: Current layer opacity: ' + this.currentLayer.getLayer().opacity + '. Changing to: ' + this.layerController.getLayerOpacity());
             this.currentLayer.getLayer().setOpacity(this.layerController.getLayerOpacity());
         }
     },
-    onReplaceBaseLayer : function(record) {
+    onReplaceBaseLayer : function (record) {
         LOG.debug('BaseMap:onReplaceBaseLayer: Handling Request.');
         if (!record) {
             LOG.debug('BaseMap:onReplaceBaseLayer: A record object was not passed in. Using map\'s baselayer.');
-            record = this.layerController.getBaseLayer()
+            record = this.layerController.getBaseLayer();
         }
             
         var baseLayerIndex = 0;
         if (this.layers.getCount() > 0) {
             LOG.debug('BaseMap:onReplaceBaseLayer: Trying to find current base layer to remove it.');
-            baseLayerIndex = this.layers.findBy(function(r, id){
-                return r.data.layer.isBaseLayer
+            baseLayerIndex = this.layers.findBy(function (r, id){
+                return r.data.layer.isBaseLayer;
             });
                 
             if (baseLayerIndex > -1 ) {
@@ -615,7 +623,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         //        this.redraw();
         LOG.debug('BaseMap:onReplaceBaseLayer: Added base layer to this object\'s map.layers at index ' + baseLayerIndex);
     },    
-    replaceLayer : function(record, params, existingIndex) {
+    replaceLayer : function (record, params, existingIndex) {
         LOG.debug('BaseMap:replaceLayer: Handling request.');
         if (!record) return;
         if (!params) {
@@ -648,7 +656,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             copy.get('layer').mergeNewParams(params);
             copy.getLayer().setOpacity(this.layerController.getLayerOpacity());
             copy.get('layer')['url'] = GDP.PROXY_PREFIX + copy.get('layer')['url'];
-            copy.getLayer().events.register('loadend', this, function() {
+            copy.getLayer().events.register('loadend', this, function () {
                 //                if (LOADMASK) LOADMASK.hide();
                 });
             this.layers.add(copy);
@@ -666,8 +674,8 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
         }
         
     },
-    createGeomOverlay : function(args) {
-        LOG.debug('BaseMap:createGeometryOverlay: Drawing vector')
+    createGeomOverlay : function (args) {
+        LOG.debug('BaseMap:createGeometryOverlay: Drawing vector');
         var bounds = args.bounds;
         var geom = bounds.toGeometry();
         var feature = new OpenLayers.Feature.Vector(geom, {
