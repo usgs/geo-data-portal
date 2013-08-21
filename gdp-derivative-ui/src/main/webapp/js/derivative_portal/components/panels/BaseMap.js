@@ -46,14 +46,15 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
             ]
         }),
 
-        // Set up the map control panel
-        navigationCtrl = new OpenLayers.Control.Navigation({
-            title: 'You can use the default mouse configuration',
-            autoActivate : true
-        }),
-		mapControlPanel = new OpenLayers.Control.Panel({
-			defaultControl: navigationCtrl
-		});
+			// Set up the map control panel
+			navigationCtrl = new OpenLayers.Control.Navigation({
+				title: 'You can use the default mouse configuration',
+				autoActivate: true
+			}),
+			mapControlPanel = new OpenLayers.Control.Panel({
+				defaultControl: navigationCtrl
+			});
+
         mapControlPanel.addControls([
             navigationCtrl,
             new OpenLayers.Control.ZoomBox({
@@ -169,13 +170,13 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 						modal: true,
 						floating: true
 					}),
-					infoDivId = 'information_div',
-							infoDiv = {
-						id: infoDivId,
-						tag: 'div',
-						width: '100%',
-						height: '100%'
-					};
+						infoDivId = 'information_div',
+						infoDiv = {
+							id: infoDivId,
+							tag: 'div',
+							width: '100%',
+							height: '100%'
+						};
 					win.show();
 					Ext.DomHelper.insertFirst(win.body, infoDiv);
 					Ext.DomHelper.append(Ext.DomQuery.selectNode('div[id="' + infoDivId + '"]'), this.infoText);
@@ -192,7 +193,7 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
 			listeners: {
 				click: function (button) {
 					var expandContractText = button.pressed ? 'Contract' : 'Expand',
-					expandContractIcon = button.pressed ? 'images/contract.png' : 'images/expand.png';
+						expandContractIcon = button.pressed ? 'images/contract.png' : 'images/expand.png';
 					LOG.debug('BaseMap:expandContractButton:Clicked: User wants to ' + expandContractText + ' application view');
 					button.setIcon(expandContractIcon);
 					this.layerController.requestApplicationResize(button.pressed);
@@ -337,10 +338,12 @@ GDP.BaseMap = Ext.extend(GeoExt.MapPanel, {
                 url : foiLayer.url
             });
 
-           selectorControl.events.register("getfeatureinfo", this, function (evt) {
-                if (!evt.features[0]) return; // User clicked somewhere they shouldn't have
+            selectorControl.events.register("getfeatureinfo", this, function (evt) {
+                if (!evt.features[0]) {
+					return;
+				} // User clicked somewhere they shouldn't have
 
-                Ext.each(this.map.getLayersByName('selectedFeature'), function (item){
+                Ext.each(this.map.getLayersByName('selectedFeature'), function (item) {
                     item.destroy();
                 });
 
