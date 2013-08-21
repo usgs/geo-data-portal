@@ -15,9 +15,12 @@
         </web-resource-collection>
         <auth-constraint>
             <role-name>manager</role-name>
+            <role-name>manager-script</role-name>
+            <role-name>manager-gui</role-name>
+            <role-name>manager-text</role-name>
         </auth-constraint>
     </security-constraint>
-    
+
     <error-page>
         <error-code>404</error-code>
         <location>/jsp/error/error404.jsp</location>
@@ -26,7 +29,7 @@
         <error-code>500</error-code>
         <location>/jsp/error/error500.jsp</location>
     </error-page>
-    
+
     <filter>
         <description>Returns the XClientIP Header on getRemoteAddr()</description>
         <filter-name>XClientIPFilter</filter-name>
@@ -49,7 +52,7 @@
         <description>Allows dynamic Log4J log level changes via JMX</description>
         <listener-class>gov.usgs.cida.jmx.log4j.JMXLog4JLoggerServletContextListener</listener-class>
     </listener>
-    
+
     <!-- Feedback services -->
     <servlet>
         <servlet-name>ContactService</servlet-name>
@@ -67,8 +70,8 @@
         <servlet-name>ContactService</servlet-name>
         <url-pattern>/service/contact/*</url-pattern>
     </servlet-mapping>
-    
-    
+
+
     <servlet>
         <servlet-name>OWSProxy</servlet-name>
         <servlet-class>gov.usgs.service.OWSProxyServletX</servlet-class>
@@ -105,14 +108,14 @@
         <servlet-name>BlacklistServlet</servlet-name>
         <url-pattern>/blacklist</url-pattern>
     </servlet-mapping>
-    
+
     <!-- Upload Servlet -->
     <servlet>
         <servlet-name>shapefile-upload-servlet</servlet-name>
         <servlet-class>gov.usgs.cida.geoutils.geoserver.servlet.ShapefileUploadServlet</servlet-class>
-        <!-- 
-        Used for reading JNDI variables. All JNDI variables used for this application 
-        will be prefixed with this parameter. Example: 
+        <!--
+        Used for reading JNDI variables. All JNDI variables used for this application
+        will be prefixed with this parameter. Example:
         <Environment name="coastal-hazards.max.upload.file.size" type="java.lang.String" value="20000" />
         -->
         <init-param>
@@ -142,7 +145,7 @@
             <param-value>admin</param-value>
         </init-param>
         <!--
-        Workspace name that files will be uploaded to by default. [Optional. If this 
+        Workspace name that files will be uploaded to by default. [Optional. If this
         parameter is not provided here, in JNDI and during the request, upload will fail]
         -->
         <init-param>
@@ -150,7 +153,7 @@
             <param-value>upload</param-value>
         </init-param>
         <!--
-        Store name that files will be uploaded to by default. [Optional. If this 
+        Store name that files will be uploaded to by default. [Optional. If this
         parameter is not provided here, in JNDI and during the request, upload will fail]
         -->
         <init-param>
@@ -158,8 +161,8 @@
             <param-value></param-value>
         </init-param>
         <!--
-        Default SRS is not defined. If a SRS name is not passed to during the 
-        request, the request will fail [Optional. If this parameter is not provided 
+        Default SRS is not defined. If a SRS name is not passed to during the
+        request, the request will fail [Optional. If this parameter is not provided
         here, in JNDI and during the request, upload will fail]
         -->
         <init-param>
@@ -167,7 +170,7 @@
             <param-value>EPSG:4326</param-value>
         </init-param>
         <!--
-        The key to search for in the upload form post to find the file 
+        The key to search for in the upload form post to find the file
         [Optional. If this parameter is not provided "qqfile" will be used]
         -->
         <init-param>
@@ -209,5 +212,5 @@
         <servlet-name>shapefile-upload-servlet</servlet-name>
         <url-pattern>/uploadhandler</url-pattern>
     </servlet-mapping>
-    
+
 </web-app>
