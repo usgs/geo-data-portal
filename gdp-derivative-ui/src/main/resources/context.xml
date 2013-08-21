@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Environment name="derivative/LOG4JS_PATTERN_LAYOUT" type="java.lang.String" value="%rms - %-5p - %m%n" override="false" />
+<Environment name="derivative/PROXY_PREFIX" type="java.lang.String" value="proxy/" override="false" />
+<Environment name="derivative/DEFAULT_LEGEND_NAME" type="java.lang.String" value="boxfill/occam" override="false" />
+<Environment name="derivative/CSW_QUERY_CONSTRAINT_FILTER_VALUE" type="java.lang.String" value="a0a3c56c-2be5-4d45-9924-72b13e348919" override="false" />
+<Environment name="derivative/FOI_GETCAPS_URL" type="java.lang.String" value="http://cida-wiwsc-gdp2qa.er.usgs.gov:8082/geoserver/derivative/wms?SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetCapabilities" override="false" />
+<Environment name="cida.geonetwork.addr" type="java.lang.String" value="http://cida.usgs.gov/geonetwork" override="false" />
+<Environment name="cida.geonetwork.user" type="java.lang.String" value="********" override="false" />
+<Environment name="cida.geonetwork.pass" type="java.lang.String" value="********" override="false" />
+<Environment name="cida.csw.identifier.parent" type="java.lang.String" value="a0a3c56c-2be5-4d45-9924-72b13e348919" override="false" />
