@@ -145,112 +145,103 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
     },
     requestBaseLayer : function (baseLayer) {
         LOG.debug('LayerController:requestBaseLayer');
-        if (!baseLayer) {
-			return;
+        if (baseLayer) {
+			this.baseLayer = baseLayer;
+			LOG.debug('LayerController:requestBaseLayer: Added new base layer to LayerController. Firing "changebaselayer".');
+			this.fireEvent('changebaselayer');
 		}
-        this.baseLayer = baseLayer;
-        LOG.debug('LayerController:requestBaseLayer: Added new base layer to LayerController. Firing "changebaselayer".');
-        this.fireEvent('changebaselayer');
     },
     requestLayer : function (layerRecord) {
         LOG.debug('LayerController:requestLayer');
-        if (!layerRecord) {
-			return;
+        if (layerRecord) {
+			this.layer = layerRecord;
+
+			var dims = layerRecord.get('dimensions');
+
+			// var layerName = layerRecord.get('name');
+			//this.zaxisName = dims.elevation.name + ' (' + dims.elevation.units + ')
+			//TODO switch back to above, with proper variable name
+			this.units = dims.elevation.units;
+			this.zaxisName = 'Threshold (' + this.units + ')';
+			LOG.debug('LayerController:requestLayer: Firing event "changelayer".');
+			this.modifyLegendStore(layerRecord.data);
+			this.fireEvent('changelayer', {
+				zaxisName : this.zaxisName,
+				record : layerRecord
+			});
 		}
-        this.layer = layerRecord;
-
-        var dims = layerRecord.get('dimensions');
-
-        // var layerName = layerRecord.get('name');
-        //this.zaxisName = dims.elevation.name + ' (' + dims.elevation.units + ')
-        //TODO switch back to above, with proper variable name
-        this.units = dims.elevation.units;
-        this.zaxisName = 'Threshold (' + this.units + ')';
-        LOG.debug('LayerController:requestLayer: Firing event "changelayer".');
-        this.modifyLegendStore(layerRecord.data);
-        this.fireEvent('changelayer', {
-            zaxisName : this.zaxisName,
-            record : layerRecord
-        });
     },
     requestDerivative : function (derivRecord) {
         LOG.debug('LayerController:requestDerivative');
-        if (!derivRecord) {
-			return;
-		}
-        this.derivative = derivRecord;
+        if (derivRecord) {
+			this.derivative = derivRecord;
 
-        this.fireEvent('changederiv', {
-            record : derivRecord
-        });
+			this.fireEvent('changederiv', {
+				record : derivRecord
+			});
+		}
     },
     requestScenario : function (scenRecord) {
         LOG.debug('LayerController:requestScenario');
-        if (!scenRecord) {
-			return;
-		}
-        this.scenario = scenRecord;
+        if (scenRecord) {
+			this.scenario = scenRecord;
 
-        this.fireEvent('changescenario', {
-            record : scenRecord
-        });
+			this.fireEvent('changescenario', {
+				record : scenRecord
+			});
+		}
     },
     requestGcm : function (gcmRecord) {
         LOG.debug('LayerController:requestGcm');
-        if (!gcmRecord) {
-			return;
-		}
-        this.gcm = gcmRecord;
+        if (gcmRecord) {
+			this.gcm = gcmRecord;
 
-        this.fireEvent('changegcm', {
-            record : gcmRecord
-        });
+			this.fireEvent('changegcm', {
+				record : gcmRecord
+			});
+		}
     },
     requestLegendStore : function (legendStore) {
         LOG.debug('LayerController:requestLegendStore: Handling request.');
-        if (!legendStore) {
-			return;
+        if (legendStore) {
+			this.legendStore = legendStore;
+			LOG.debug('LayerController:requestLegendStore: Firing event "changelegend".');
+			this.fireEvent('changelegend');
 		}
-        this.legendStore = legendStore;
-        LOG.debug('LayerController:requestLegendStore: Firing event "changelegend".');
-        this.fireEvent('changelegend');
     },
     modifyLegendStore : function (jsonObject) {
         LOG.debug('LayerController:modifyLegendStore: Handling request.');
-        if (!jsonObject || !this.legendStore) {
-			return;
+        if (jsonObject && this.legendStore) {
+			this.legendStore.loadData(jsonObject);
+
+			//  http://internal.cida.usgs.gov/jira/browse/GDP-372
+			var recordIndex = this.legendStore.find('name', GDP.DEFAULT_LEGEND_NAME);
+			recordIndex = (recordIndex < 0) ? 0 : recordIndex;
+
+			this.requestLegendRecord(this.legendStore.getAt(recordIndex));
+
+			LOG.debug('LayerController:modifyLegendStore: Firing event "changelegend".');
+			this.fireEvent('changelegend');
 		}
-        this.legendStore.loadData(jsonObject);
-
-        //  http://internal.cida.usgs.gov/jira/browse/GDP-372
-        var recordIndex = this.legendStore.find('name', GDP.DEFAULT_LEGEND_NAME);
-        recordIndex = (recordIndex < 0) ? 0 : recordIndex;
-
-        this.requestLegendRecord(this.legendStore.getAt(recordIndex));
-
-        LOG.debug('LayerController:modifyLegendStore: Firing event "changelegend".');
-        this.fireEvent('changelegend');
     },
     requestLegendRecord : function (legendRecord) {
         LOG.debug('LayerController:requestLegendRecord: Handling request.');
-        if (!legendRecord) {
-			return;
+        if (legendRecord) {
+			this.legendRecord = legendRecord;
+			LOG.debug('LayerController:requestLegendRecord: Firing event "changelegend".');
+			this.fireEvent('changelegend');
 		}
-        this.legendRecord = legendRecord;
-        LOG.debug('LayerController:requestLegendRecord: Firing event "changelegend".');
-        this.fireEvent('changelegend');
     },
     requestOpacity : function (opacity) {
-        if (!opacity && opacity !== 0) {
-			return;
+        if (opacity && opacity === 0) {
+			LOG.debug('LayerController:requestOpacity: Handling request.');
+			if (0 <= opacity && 1 >= opacity) {
+				LOG.debug('LayerController:requestOpacity: Setting opacity to ' + opacity);
+				this.layerOpacity = opacity;
+				LOG.debug('LayerController:requestOpacity: Firing event "changeopacity".');
+				this.fireEvent('changeopacity');
+			}
 		}
-        LOG.debug('LayerController:requestOpacity: Handling request.');
-        if (0 <= opacity && 1 >= opacity) {
-            LOG.debug('LayerController:requestOpacity: Setting opacity to ' + opacity);
-            this.layerOpacity = opacity;
-            LOG.debug('LayerController:requestOpacity: Firing event "changeopacity".');
-            this.fireEvent('changeopacity');
-        }
     },
     requestFeatureOfInterest : function (args) {
         LOG.debug('LayerController:requestFeatureOfInterest: Firing Event "requestfoi".');
@@ -258,14 +249,15 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
     },
     requestDimension : function (extentName, value) {
         LOG.debug('LayerController:requestDimension: Handling request.');
-        if (!extentName) return;
-        if (this.modifyDimensions(extentName, value)) {
-            LOG.debug('LayerController:requestDimension: Firing event "changedimension".');
+        if (extentName) {
+			if (this.modifyDimensions(extentName, value)) {
+				LOG.debug('LayerController:requestDimension: Firing event "changedimension".');
 
-            this.fireEvent('changedimension', extentName);
-        } else {
-            LOG.info('Requested dimension (' + extentName + ') does not exist');
-        }
+				this.fireEvent('changedimension', extentName);
+			} else {
+				LOG.info('Requested dimension (' + extentName + ') does not exist');
+			}
+		}
     },
     modifyDimensions : function (extentName, value) {
         LOG.debug('LayerController:modifyDimensions: Handling request.');
@@ -278,7 +270,9 @@ GDP.LayerController = Ext.extend(Ext.util.Observable, {
         }
     },
     loadDimensionStore : function (record, store, extentName, maxCount) {
-        if (!record || !store || !extentName) return null;
+        if (!record || !store || !extentName) {
+			return null;
+		}
         LOG.debug('LayerController:loadDimensionStore: Handling request.');
         var maxNum = maxCount || this.MAXIMUM_DIMENSION_COUNT;
 
